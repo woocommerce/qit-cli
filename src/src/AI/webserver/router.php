@@ -7,6 +7,8 @@
  * {{NODE_TOKEN}} - The node authentication token
  * {{OLLAMA_API_URL}} - The Ollama API base URL
  * {{LOG_FILE}} - The log file path
+ * {{PROVIDER}} - The LLM provider
+ * {{PROVIDER_CONFIG}} - The provider configuration JSON
  */
 
 header( 'Content-Type: application/json' );
@@ -273,12 +275,16 @@ use QIT_AI_Webserver\Endpoints\PromptWithToolsEndpoint;
 use QIT_AI_Webserver\Endpoints\ZipExtractionEndpoint;
 use QIT_AI_Webserver\Endpoints\FileReadingEndpoint;
 
-// Create endpoint instances
+// Add these lines near the top after the placeholders section:
+$provider = '{{PROVIDER}}';
+$providerConfig = json_decode( '{{PROVIDER_CONFIG}}', true );
+
+// Create endpoint instances with provider config
 $endpoints = [
-	new BasicPromptEndpoint( '{{OLLAMA_API_URL}}' ),
-	new ZipExtractionEndpoint( '{{OLLAMA_API_URL}}' ),
-	new PromptWithToolsEndpoint( '{{OLLAMA_API_URL}}' ),
-	new FileReadingEndpoint( '{{OLLAMA_API_URL}}' )
+	new BasicPromptEndpoint( $provider, $providerConfig ),
+	new ZipExtractionEndpoint( $provider, $providerConfig ),
+	new PromptWithToolsEndpoint( $provider, $providerConfig ),
+	new FileReadingEndpoint( $provider, $providerConfig )
 ];
 
 // Build route map from endpoints

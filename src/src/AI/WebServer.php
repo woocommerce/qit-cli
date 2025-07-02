@@ -13,6 +13,8 @@ class WebServer {
 	private ?\QIT_CLI\Logging\Logger $logger = null;
 	private string $ollama_api_url = 'http://localhost:11434';
 	private bool $use_local_mode = false;
+	private string $provider = 'ollama';
+	private array $providerConfig = [];
 
 	public function __construct( bool $use_local_mode = false ) {
 		$this->use_local_mode = $use_local_mode;
@@ -25,6 +27,11 @@ class WebServer {
 	 */
 	public function setLogger( \QIT_CLI\Logging\Logger $logger ): void {
 		$this->logger = $logger;
+	}
+
+	public function setProviderConfig( string $provider, array $config ): void {
+		$this->provider = $provider;
+		$this->providerConfig = $config;
 	}
 
 	public function start(): string {
@@ -247,9 +254,11 @@ class WebServer {
 
 		// Replace placeholders
 		$replacements = [
-			'{{NODE_TOKEN}}'     => $this->node_token,
-			'{{OLLAMA_API_URL}}' => $this->getOllamaApiUrl(),
-			'{{LOG_FILE}}'       => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log'
+			'{{NODE_TOKEN}}'       => $this->node_token,
+			'{{OLLAMA_API_URL}}'   => $this->getOllamaApiUrl(),
+			'{{LOG_FILE}}'         => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
+			'{{PROVIDER}}'         => $this->provider,
+			'{{PROVIDER_CONFIG}}'  => json_encode( $this->providerConfig )
 		];
 
 		foreach ( $replacements as $placeholder => $value ) {
@@ -283,9 +292,11 @@ class WebServer {
 
 		// Replace placeholders
 		$replacements = [
-			'{{NODE_TOKEN}}'     => $this->node_token,
-			'{{OLLAMA_API_URL}}' => $this->getOllamaApiUrl(),
-			'{{LOG_FILE}}'       => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log'
+			'{{NODE_TOKEN}}'       => $this->node_token,
+			'{{OLLAMA_API_URL}}'   => $this->getOllamaApiUrl(),
+			'{{LOG_FILE}}'         => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
+			'{{PROVIDER}}'         => $this->provider,
+			'{{PROVIDER_CONFIG}}'  => json_encode( $this->providerConfig )
 		];
 
 		foreach ( $replacements as $placeholder => $value ) {

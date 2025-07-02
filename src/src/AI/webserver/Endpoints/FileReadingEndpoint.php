@@ -4,8 +4,8 @@ namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
 use QIT_AI_Webserver\NodeResponse;
-use QIT_AI_Webserver\Lib\ToolRegistry;
 use QIT_AI_Webserver\Lib\ExtractPathResolver;
+use QIT_AI_Webserver\ToolRegistry;
 
 /**
  * File Reading Endpoint

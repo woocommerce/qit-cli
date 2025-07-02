@@ -49,7 +49,11 @@ class NodeStartCommand extends QITCommand {
 		$this->setDescription( 'Start an AI processing node' )
 		     ->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
 		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'cloudflared-docker' )
-		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' );
+		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' )
+		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (ollama, openai, anthropic)', 'ollama' )
+		     ->addOption( 'api-key', null, InputOption::VALUE_OPTIONAL, 'API key for cloud providers' )
+		     ->addOption( 'model', null, InputOption::VALUE_OPTIONAL, 'Default model to use' )
+		     ->addOption( 'ollama-url', null, InputOption::VALUE_OPTIONAL, 'Ollama API URL', 'http://localhost:11434' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -72,30 +76,67 @@ class NodeStartCommand extends QITCommand {
 		// Pass logger to WebServer
 		$this->webserver->setLogger( $this->logger );
 
-		// Check if Ollama is available through WebServer
-		if ( ! $this->webserver->isOllamaAvailable() ) {
-			$this->logger->error( 'Ollama CLI is not available' );
-			$output->writeln( '<error>Ollama CLI is not available. Please install it first: https://ollama.ai</error>' );
+		// Get provider configuration
+		$provider = $input->getOption( 'provider' );
+		$providerConfig = [];
 
-			return self::FAILURE;
+		switch ( $provider ) {
+			case 'ollama':
+				$providerConfig['url'] = $input->getOption( 'ollama-url' );
+				if ( $input->getOption( 'model' ) ) {
+					$providerConfig['model'] = $input->getOption( 'model' );
+				}
+				break;
+
+			case 'openai':
+			case 'anthropic':
+				if ( ! $input->getOption( 'api-key' ) ) {
+					$output->writeln( '<error>API key is required for ' . $provider . '</error>' );
+					return self::FAILURE;
+				}
+				$providerConfig['api_key'] = $input->getOption( 'api-key' );
+				if ( $input->getOption( 'model' ) ) {
+					$providerConfig['model'] = $input->getOption( 'model' );
+				}
+				break;
+
+			default:
+				$output->writeln( '<error>Unsupported provider: ' . $provider . '</error>' );
+				return self::FAILURE;
 		}
 
-		// Ensure Ollama API is running through WebServer
-		$output->write( 'Checking Ollama API... ' );
-		try {
-			if ( $this->webserver->ensureOllamaApiRunning() ) {
-				$output->writeln( '<info>✓</info>' );
-			} else {
-				$output->writeln( '<error>✗</error>' );
-				$output->writeln( '<error>Failed to start Ollama API server. Is Ollama installed correctly?</error>' );
+		// Pass provider config to webserver
+		$this->webserver->setProviderConfig( $provider, $providerConfig );
+
+		// Only check Ollama if using Ollama provider
+		if ( $provider === 'ollama' ) {
+			// Check if Ollama is available through WebServer
+			if ( ! $this->webserver->isOllamaAvailable() ) {
+				$this->logger->error( 'Ollama CLI is not available' );
+				$output->writeln( '<error>Ollama CLI is not available. Please install it first: https://ollama.ai</error>' );
 
 				return self::FAILURE;
 			}
-		} catch ( \Exception $e ) {
-			$output->writeln( '<error>✗</error>' );
-			$output->writeln( '<error>' . $e->getMessage() . '</error>' );
 
-			return self::FAILURE;
+			// Ensure Ollama API is running through WebServer
+			$output->write( 'Checking Ollama API... ' );
+			try {
+				if ( $this->webserver->ensureOllamaApiRunning() ) {
+					$output->writeln( '<info>✓</info>' );
+				} else {
+					$output->writeln( '<error>✗</error>' );
+					$output->writeln( '<error>Failed to start Ollama API server. Is Ollama installed correctly?</error>' );
+
+					return self::FAILURE;
+				}
+			} catch ( \Exception $e ) {
+				$output->writeln( '<error>✗</error>' );
+				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
+
+				return self::FAILURE;
+			}
+		} else {
+			$output->writeln( '<info>Using ' . $provider . ' provider</info>' );
 		}
 
 		// Check authentication

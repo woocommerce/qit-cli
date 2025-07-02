@@ -3,19 +3,25 @@
 namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
+use QIT_AI_Webserver\Lib\ExtractPathResolver;
 use QIT_AI_Webserver\NodeResponse;
+use QIT_AI_Webserver\Lib\LLPhantIntegration;
+use QIT_AI_Webserver\ToolRegistry;
 
 /**
  * Abstract Base Endpoint
  *
  * Base class for all AI endpoints providing common functionality
- * including Ollama API communication, logging, and route definition.
+ * including LLM API communication, logging, and route definition.
  */
 abstract class AbstractEndpoint {
-	protected string $ollamaApiUrl;
+	protected ?LLPhantIntegration $llm = null;
+	protected string $provider;
+	protected array $providerConfig;
 
-	public function __construct( string $ollamaApiUrl ) {
-		$this->ollamaApiUrl = $ollamaApiUrl;
+	public function __construct( string $provider = 'ollama', array $providerConfig = [] ) {
+		$this->provider       = $provider;
+		$this->providerConfig = $providerConfig;
 	}
 
 	/**
@@ -32,153 +38,74 @@ abstract class AbstractEndpoint {
 	 */
 	abstract public function handle( array $input ): void;
 
+	protected function initializeLLM(): void {
+		if ( ! $this->llm ) {
+			$this->llm = new LLPhantIntegration( $this->provider, $this->providerConfig, $this );
+		}
+	}
+
 	/**
-	 * Call Ollama API with automatic model config application
-	 *
-	 * @param string $endpoint API endpoint (e.g., '/api/generate', '/api/chat')
-	 * @param array $data Request data
-	 * @param array $input Original input data containing potential options
-	 *
-	 * @return array Response data
-	 * @throws Exception On API error
+	 * Call LLM with automatic model config application
 	 */
-	protected function callOllama( string $endpoint, array $data, array $input = [] ): array {
-		// Automatically apply options if this is an AI request
-		if ( isset( $data['model'] ) && isset( $input['options'] ) && is_array( $input['options'] ) ) {
-			$data['options'] = $input['options'];
+	protected function callLLM( array $messages, array $input = [] ): array {
+		$this->initializeLLM();
 
-			$this->log_debug( "Applied model options", [
-				'model'   => $data['model'],
-				'options' => $data['options']
-			] );
+		// Build options including model and format from input
+		$options = $input['options'] ?? [];
+
+		// Add model if provided in input
+		if ( isset( $input['model'] ) ) {
+			$options['model'] = $input['model'];
 		}
 
-		// Ensure we have the full URL
-		$url = $this->ollamaApiUrl . $endpoint;
-
-		// Determine if this is a tool call or regular generation
-		$hasTools = isset( $data['tools'] ) && ! empty( $data['tools'] );
-
-		$this->log_debug( "Calling Ollama API", $data );
-
-		// IMPORTANT: Use the correct endpoint for tool calls
-		if ( $hasTools && strpos( $url, '/api/generate' ) !== false ) {
-			// For tool calls, we MUST use /api/chat endpoint
-			$url = str_replace( '/api/generate', '/api/chat', $url );
-			$this->log_info( "Using chat endpoint for tool-enabled request", [ 'url' => $url ] );
+		// Add format if provided in input
+		if ( isset( $input['format'] ) ) {
+			$options['format'] = $input['format'];
 		}
+
+		$this->log_debug( "Calling LLM", [
+			'provider'      => $this->provider,
+			'message_count' => count( $messages ),
+			'has_format'    => isset( $options['format'] ) ? 'yes' : 'no'
+		] );
 
 		$startTime = microtime( true );
 
-		$ch = curl_init( $url );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_POST, true );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $data ) );
-		if ( ! empty( $data['format'] ) ) {
-			$this->log_info( 'Setting content type for format', [
-				'format' => $data['format']
+		try {
+			$response = $this->llm->generateResponse( $messages, $options );
+
+			$duration = microtime( true ) - $startTime;
+
+			$this->log_debug( "LLM response received", [
+				'duration_seconds' => round( $duration, 2 ),
+				'response_length'  => strlen( $response['response'] )
 			] );
-			curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
+
+			return $response;
+		} catch ( Exception $e ) {
+			$this->log_error( "LLM call failed", [ 'error' => $e->getMessage() ] );
+			throw new Exception( "LLM call failed: " . $e->getMessage() );
 		}
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 300 );
-
-		$response = curl_exec( $ch );
-		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		$error    = curl_error( $ch );
-		$info     = curl_getinfo( $ch );
-		curl_close( $ch );
-
-		$duration = microtime( true ) - $startTime;
-
-		$this->log_debug( "Ollama API response", [
-			'http_code'        => $httpCode,
-			'duration_seconds' => round( $duration, 2 ),
-			'response_size'    => $response ? strlen( $response ) : 0,
-			'curl_error'       => $error ?: null,
-			'total_time'       => $info['total_time'] ?? null,
-			'response'         => $response,
-		] );
-
-		if ( $response === false ) {
-			throw new Exception( "Ollama API curl error: $error" );
-		}
-
-		if ( $httpCode !== 200 ) {
-			$this->log_error( "Ollama API error response", [
-				'http_code' => $httpCode,
-				'response'  => substr( $response, 0, 500 )
-			] );
-			throw new Exception( "Ollama API error: HTTP $httpCode" );
-		}
-
-		$decoded = json_decode( $response, true );
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			throw new Exception( "Invalid JSON response from Ollama: " . json_last_error_msg() );
-		}
-
-		// Log tool calls if present
-		if ( isset( $decoded['message']['tool_calls'] ) ) {
-			$this->log_info( "Ollama returned tool calls", [
-				'tool_calls_count' => count( $decoded['message']['tool_calls'] ),
-				'tool_names'       => array_map( function ( $tc ) {
-					return $tc['function']['name'] ?? 'unknown';
-				}, $decoded['message']['tool_calls'] )
-			] );
-		}
-
-		// Model stopping moved to per-request level to preserve context in multi-round conversations
-
-		return $decoded;
 	}
 
 	/**
-	 * Call Ollama Generate API with automatic model config
-	 *
-	 * @param array $request Request data
-	 * @param array $input Original input for options extraction
-	 *
-	 * @return array Response data
-	 * @throws Exception On API error
+	 * Call LLM with tools
 	 */
-	protected function callOllamaGenerate( array $request, array $input = [] ): array {
-		$response = $this->callOllama( '/api/generate', $request, $input );
+	protected function callLLMWithTools( array $messages, array $tools, array $input = [] ): array {
+		$this->initializeLLM();
 
-		if ( ! isset( $response['response'] ) ) {
-			$this->log_error( "Invalid Ollama response structure", [
-				'keys'             => array_keys( $response ),
-				'response_excerpt' => substr( json_encode( $response ), 0, 500 )
-			] );
-			throw new Exception( 'Invalid response from Ollama' );
+		// Need to get ToolRegistry somehow - maybe pass it as parameter
+		$workDir      = ExtractPathResolver::resolve( $input );
+		$toolRegistry = new ToolRegistry( $workDir );
+
+		$options = $input['options'] ?? [];
+
+		try {
+			return $this->llm->generateWithTools( $messages, $tools, $toolRegistry, $options );
+		} catch ( Exception $e ) {
+			$this->log_error( "LLM tool call failed", [ 'error' => $e->getMessage() ] );
+			throw new Exception( "LLM tool call failed: " . $e->getMessage() );
 		}
-
-		// Check for schema response issues
-		if ( isset( $request['format'] ) ) {
-			if ( is_string( $response['response'] ) ) {
-				$decoded = json_decode( $response['response'], true );
-				if ( json_last_error() !== JSON_ERROR_NONE ) {
-					$this->log_error( "Schema response is not valid JSON", [
-						'job_id'           => $request['job_id'] ?? 'unknown',
-						'json_error'       => json_last_error_msg(),
-						'response_excerpt' => substr( $response['response'], 0, 200 )
-					] );
-				}
-			}
-		}
-
-		return $response;
-	}
-
-	/**
-	 * Call Ollama Chat API with automatic model config
-	 *
-	 * @param array $request Request data
-	 * @param array $input Original input for options extraction
-	 *
-	 * @return array Response data
-	 * @throws Exception On API error
-	 */
-	protected function callOllamaChat( array $request, array $input = [] ): array {
-		return $this->callOllama( '/api/chat', $request, $input );
 	}
 
 	/**
@@ -189,9 +116,9 @@ abstract class AbstractEndpoint {
 	 * @return bool True if available
 	 */
 	protected function ensureModelAvailable( string $model ): bool {
-		// This would call the global ensure_model_available function
-		// For now, we'll assume it's available
-		return ensure_model_available( $model, $this->ollamaApiUrl );
+		$this->initializeLLM();
+
+		return $this->llm->ensureModel( $model );
 	}
 
 	/**
@@ -255,46 +182,20 @@ abstract class AbstractEndpoint {
 	}
 
 	// Logging methods - these would use the global logging functions
-	protected function log_info( string $message, array $context = [] ): void {
+	public function log_info( string $message, array $context = [] ): void {
 		log_info( $message, $context );
 	}
 
-	protected function log_debug( string $message, array $context = [] ): void {
+	public function log_debug( string $message, array $context = [] ): void {
 		log_debug( $message, $context );
 	}
 
-	protected function log_error( string $message, array $context = [] ): void {
+	public function log_error( string $message, array $context = [] ): void {
 		log_error( $message, $context );
 	}
 
-	protected function log_warning( string $message, array $context = [] ): void {
+	public function log_warning( string $message, array $context = [] ): void {
 		log_warning( $message, $context );
 	}
 
-	/**
-	 * Stop an Ollama model to free up VRAM
-	 *
-	 * @param string $model Model name to stop
-	 */
-	protected function stopOllamaModel( string $model ): void {
-		try {
-			$this->log_debug( "Stopping Ollama model to free VRAM", [ 'model' => $model ] );
-
-			// Execute ollama stop command
-			$command = "ollama stop " . escapeshellarg( $model ) . " 2>&1";
-			$output  = shell_exec( $command );
-
-			$this->log_debug( "Ollama stop command executed", [
-				'model'   => $model,
-				'command' => $command,
-				'output'  => trim( $output ?: '' )
-			] );
-		} catch ( Exception $e ) {
-			// Don't throw exceptions for stop failures - just log them
-			$this->log_warning( "Failed to stop Ollama model", [
-				'model' => $model,
-				'error' => $e->getMessage()
-			] );
-		}
-	}
 }

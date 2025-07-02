@@ -74,76 +74,39 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				throw new Exception( 'Failed to ensure model availability: ' . $model );
 			}
 
-			// Convert messages to Ollama format
+			// Use messages directly with LLM
 			$messages = $input['messages'];
-			$systemMessage = '';
-			$userPrompt = '';
-
-			// Extract system and user messages
-			foreach ( $messages as $message ) {
-				if ( $message['role'] === 'system' ) {
-					$systemMessage .= $message['content'] . "\n";
-				} elseif ( $message['role'] === 'user' ) {
-					$userPrompt .= $message['content'] . "\n";
-				}
-			}
 
 			$this->log_info( "Starting AI processing", [
 				'model'           => $model,
 				'job_id'          => $input['job_id'] ?? 'unknown',
 				'message_count'   => count( $messages ),
-				'prompt_length'   => strlen( trim( $userPrompt ) ),
-				'has_system'      => ! empty( trim( $systemMessage ) ) ? 'yes' : 'no',
 				'has_schema'      => isset( $input['format'] ) ? 'yes' : 'no',
 				'has_options'     => isset( $input['options'] ) ? 'yes' : 'no'
 			] );
 
-			$ollamaRequest = [
-				'model'  => $model,
-				'prompt' => trim( $userPrompt ),
-				'stream' => false,
-			];
-
-			// Add system message if present
-			if ( ! empty( trim( $systemMessage ) ) ) {
-				$ollamaRequest['system'] = trim( $systemMessage );
-			} else {
-				$ollamaRequest['system'] = '/no_think'; // Disable thinking for models that support it
-			}
-
-			// Add format if schema is provided
-			if ( isset( $input['format'] ) && is_array( $input['format'] ) ) {
-				$ollamaRequest['format'] = $input['format'];
-			}
-
-			// Make the API call - options are automatically applied by parent class
-			NodeResponse::mark( 'ollama_call' );
-			$response = $this->callOllamaGenerate( $ollamaRequest, $input );
+			// Make the API call using LLM integration
+			NodeResponse::mark( 'llm_call' );
+			$response = $this->callLLM( $messages, $input );
 
 			// Log performance metrics
 			$this->log_info( "AI processing completed successfully", [
 				'job_id'           => $input['job_id'] ?? 'unknown',
 				'model'            => $response['model'] ?? $model,
-				'tokens_generated' => $response['eval_count'] ?? 0,
+				'provider'         => $response['provider'] ?? 'unknown',
+				'duration'         => $response['duration'] ?? 0,
 				'response_length'  => strlen( $response['response'] ),
 			] );
-
-			// Stop the model after the entire request is complete (per-request stopping)
-			$this->stopOllamaModel( $model );
 
 			// Use NodeResponse::prompt for standardized response
 			NodeResponse::prompt(
 				trim( $response['response'] ),
 				$response['model'] ?? $model,
-				$response, // Pass full response for token stats
+				$response, // Pass full response for stats
 				[ 'job_id' => $input['job_id'] ?? null ]
 			);
 
 		} catch ( Exception $e ) {
-			// Stop the model even on error (per-request stopping)
-			if ( isset( $model ) ) {
-				$this->stopOllamaModel( $model );
-			}
 
 			$this->handleError( $e, [
 				'job_id'   => $input['job_id'] ?? null,
