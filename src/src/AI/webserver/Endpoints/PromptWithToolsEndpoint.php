@@ -12,7 +12,6 @@ use QIT_AI_Webserver\Lib\ToolPathGuard;
 use QIT_AI_Webserver\Lib\SimpleToolDialectAdapter as Dialect;
 use QIT_AI_Webserver\NodeResponse;
 use QIT_AI_Webserver\ToolRegistry;
-use LLPhant\Utils\TokenCounter;      // ← token helper
 
 class PromptWithToolsEndpoint extends AbstractEndpoint {
 
@@ -35,9 +34,9 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		// 'llama-3-70b-instruct'     => Dialect::LLAMA,
 	];
 
-	/* -------- Context‑safety thresholds (token counts) ---------------- */
-	private const MAX_ASSISTANT_TOKENS   = 3500;
-	private const MAX_TOOL_RESULT_TOKENS = 2500;
+	/* -------- Context‑safety thresholds (character length) ---------------- */
+	private const MAX_ASSISTANT_TOKENS   = 16384;
+	private const MAX_TOOL_RESULT_TOKENS = 16384;
 
 	/* ------------------------------------------------------------------ */
 	/* 3.  Helpers                                                        */
@@ -186,7 +185,7 @@ SCRIPT;
 			[ $rawOut, $nativeCalls ] = $unwrap( $chat->generateChat( $conv ) );
 
 			/* ⚖️  Oversize guard – assistant reply --------------------- */
-			if ( TokenCounter::countTokens( $rawOut, $model ) > self::MAX_ASSISTANT_TOKENS ) {
+			if ( strlen( $rawOut ) > self::MAX_ASSISTANT_TOKENS ) {
 				$rawOut = trim(
 					$this->llm->getChat()->generateChat( [
 						Message::system(
@@ -196,7 +195,7 @@ SCRIPT;
 							"summary."
 						),
 						Message::user( $rawOut ),
-					] )->getContent()
+					] )
 				);
 			}
 
@@ -337,8 +336,7 @@ SCRIPT;
 
 		/* ⚖️  Oversize guard – tool result ------------------------------ */
 		$resultJson = json_encode( $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
-		if ( TokenCounter::countTokens( $resultJson, $this->providerConfig['model'] ?? 'gpt-4o' )
-		     > self::MAX_TOOL_RESULT_TOKENS ) {
+		if ( strlen( $resultJson ) > self::MAX_TOOL_RESULT_TOKENS ) {
 			$result = [
 				'__summary' => trim(
 					$this->llm->getChat()->generateChat( [
@@ -347,7 +345,7 @@ SCRIPT;
 							"keeping every path, line number and code block intact. Return only the summary."
 						),
 						Message::user( $resultJson ),
-					] )->getContent()
+					] )
 				),
 			];
 		}
