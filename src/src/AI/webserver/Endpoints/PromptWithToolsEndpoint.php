@@ -27,6 +27,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	/* ------------------------------------------------------------------ */
 	private const MODEL_DIALECT_MAP = [
 		'qwen2.5-coder:7b'            => Dialect::QWEN,
+		'qwen2.5-coder:32b'           => Dialect::QWEN,
 		'hhao/qwen2.5-coder-tools:7b' => Dialect::QWEN,
 		'mistral-small3.2:24b'        => Dialect::MISTRAL,
 		// 'gpt-4o'                   => Dialect::OPENAI,
@@ -111,18 +112,25 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		}
 
 		$system .= <<<SCRIPT
-Run a **structured vulnerability investigation**.
+Run a **structured vulnerability investigation** with tools.
 
-**When you decide to call a tool you MUST respond with
-   exactly ONE line, in exactly this shape
-   <tool_call>{"name":"…","arguments":{…}}</tool_call>
-NO leading text, NO markdown, NO line‑breaks inside.**
-
-If no tool is needed write the single word **done**.
+You must find:
+- The name of the function that wraps the vulnerability
+- Where this function is invoked in the codebase
+- Whether this function is hooked to any WordPress action or filter (hooks)
+- Whether these hooks are user-driven (tainted)
+- If there are other forms of user input that can trigger the vulnerability
+- The evidence for your findings (file, line range, code snippet)
+- Any other relevant information you deem relevant for context awareness
+- Then, you should look inward for the function and the logic around the vulnerability
+- Understand the intended behavior of the developer
+- Understand the business rules
+- Understand what the code do
+- Understand what the code should do
+- Understand what the code should not do
+- Understand the security implications of the code
+- Any other relevant information you deem relevant for context awareness
 SCRIPT;
-
-
-		$system .= "\nYou must execute at least {$minToolCalls} tool calls.";
 
 		if ( ! Dialect::supportsNative( $dialect ) ) {
 			$system .= "\n" . Dialect::callInstruction( $dialect );
@@ -237,8 +245,6 @@ SCRIPT;
 		$chat->setModelOption( 'tool_choice', 'none' );
 		$chat->setModelOption( 'format', $format );
 
-		$jsonEval = new JSONFormatEvaluator();
-
 		for ( $attempt = 0; $attempt < 3; $attempt ++ ) {
 			$log( 'prompt', '[final JSON request]' );
 			[ $finRaw ] = $unwrap( $chat->generateChat( $conv ) );
@@ -254,40 +260,6 @@ SCRIPT;
 			/* evidence & schema check identical to previous version -------- */
 			if ( ! isset( $decoded['evidence'][0] ) ) {
 				$conv[] = Message::assistant( "❌ Provide at least one evidence block." );
-				continue;
-			}
-			$evidenceOk = true;
-			foreach ( $decoded['evidence'] as $idx => $ev ) {
-				if ( ! isset( $ev['file'], $ev['start_line'], $ev['end_line'], $ev['snippet'] ) ) {
-					$evidenceOk = false;
-					break;
-				}
-				try {
-					$src = $registry->getTool( 'read_file' )->execute( [
-						'path'       => $pathGuard->normalise( $ev['file'] ),
-						'start_line' => $ev['start_line'],
-						'end_line'   => $ev['end_line'],
-					] )['content'] ?? '';
-					if (
-						strpos(
-							preg_replace( '/\s+/', '', $src ),
-							preg_replace( '/\s+/', '', $ev['snippet'] )
-						) === false
-					) {
-						$evidenceOk = false;
-						break;
-					}
-				} catch ( \Throwable ) {
-					$evidenceOk = false;
-					break;
-				}
-			}
-			if ( ! $evidenceOk ) {
-				$conv[] = Message::assistant( "❌ Evidence does not match cited lines." );
-				continue;
-			}
-			if ( ( $jsonEval->evaluateText( $answer )->getResults()['score'] ?? 0 ) !== 1 ) {
-				$conv[] = Message::assistant( "❌ JSON does not match required schema." );
 				continue;
 			}
 

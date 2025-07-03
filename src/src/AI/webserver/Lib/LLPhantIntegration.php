@@ -216,7 +216,7 @@ class LLPhantIntegration {
 				$this->chat->setModelOption( 'max_tokens', $options['max_tokens'] );
 			}
 
-			$this->chat->setModelOption( 'keep_alive', 0 );
+			//$this->chat->setModelOption( 'keep_alive', 0 );
 
 			// Convert messages to LLPhant Message objects
 			// Based on documentation: Message::system(), Message::user(), Message::assistant()
