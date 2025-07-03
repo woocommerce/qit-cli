@@ -6,7 +6,6 @@ namespace QIT_AI_Webserver\Endpoints;
 use LLPhant\Chat\Message;
 use LLPhant\Chat\FunctionInfo\FunctionFormatter;
 use LLPhant\Chat\FunctionInfo\ToolCall;
-use LLPhant\Evaluation\Output\JSONFormatEvaluator;
 use QIT_AI_Webserver\Lib\ExtractPathResolver;
 use QIT_AI_Webserver\Lib\ToolPathGuard;
 use QIT_AI_Webserver\Lib\SimpleToolDialectAdapter as Dialect;
@@ -35,8 +34,15 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	];
 
 	/* -------- Context‑safety thresholds (character length) ---------------- */
-	private const MAX_ASSISTANT_TOKENS   = 16384;
+	private const MAX_ASSISTANT_TOKENS = 16384;
 	private const MAX_TOOL_RESULT_TOKENS = 16384;
+
+	/* -------- Deduplication properties ------------------------------------ */
+	// generic hash cache:  tool|json(args) => true
+	private array $callHashes = [];
+
+	// read_file coverage:  path => [ [start,end], … ]
+	private array $readCoverage = [];
 
 	/* ------------------------------------------------------------------ */
 	/* 3.  Helpers                                                        */
@@ -50,10 +56,35 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		return isset( $props['path'] ) || isset( $props['directory'] );
 	}
 
+	private function hashCall( string $tool, array $args ): string {
+		return md5( $tool . '|' . json_encode( $args ) );
+	}
+
+	private function rangeCovered( string $path, int $start, int $end ): bool {
+		if ( ! isset( $this->readCoverage[ $path ] ) ) {
+			return false;
+		}
+		foreach ( $this->readCoverage[ $path ] as [$s, $e] ) {
+			if ( $start >= $s && $end <= $e ) {
+				return true;
+			}   // fully inside
+		}
+
+		return false;
+	}
+
+	private function rememberRange( string $path, int $start, int $end ): void {
+		$this->readCoverage[ $path ][] = [ $start, $end ];
+		// TODO: coalesce overlaps if heavy usage is expected
+	}
+
 	/* ------------------------------------------------------------------ */
 	/* 4.  Main handler                                                   */
 	/* ------------------------------------------------------------------ */
 	public function handle( array $input ): void {
+		// reset dedup caches (one request = one clean slate)
+		$this->callHashes  = [];
+		$this->readCoverage = [];
 
 		/* 4.0  logger ---------------------------------------------------- */
 		$dbg     = [];
@@ -245,6 +276,11 @@ SCRIPT;
 					$uniqueId   = $toolResult['id'];
 					$log( 'tool_executed', [ 'id' => $id, 'unique_id' => $uniqueId, 'result' => $result ] );
 
+					if ( ! empty( $toolResult['duplicate'] ) ) {
+						// skip sending toolResultMessage for duplicates
+						continue;
+					}
+
 					$conv[] = Dialect::toolResultMessage( $dialect, json_encode( $result ), $uniqueId );
 				}
 				continue;
@@ -330,9 +366,54 @@ SCRIPT;
 			return [ 'result' => null, 'id' => $id ];
 		}
 
+		// --- duplicate guard -----------------------------------------------
+		$hash = $this->hashCall( $tool, $args );
+		if ( isset( $this->callHashes[ $hash ] ) ) {
+			// Tell the LLM we skipped and avoid counting success
+			$conv[] = Message::assistant( "🔄 Duplicate $tool call skipped." );
+
+			return [
+				'result'    => [ '__note' => 'duplicate-skip' ],
+				'id'        => $id,
+				'duplicate' => true          // flag for caller
+			];
+		}
+
+		// Special handling for read_file sub-ranges
+		if ( $tool === 'read_file' && isset( $args['path'], $args['start_line'], $args['end_line'] ) ) {
+			$path  = $args['path'];
+			$start = (int) $args['start_line'];
+			$end   = (int) $args['end_line'];
+			if ( $this->rangeCovered( $path, $start, $end ) ) {
+				$conv[] = Message::assistant(
+					"🔄 read_file `$path` lines $start-$end already provided. Skipping."
+				);
+
+				return [
+					'result'    => [ '__note' => 'duplicate-skip' ],
+					'id'        => $id,
+					'duplicate' => true          // flag for caller
+				];
+			}
+		}
+
 		$logTool( 'tool_call', [ 'id' => $id, 'name' => $tool, 'args' => $args ] );
 		$result = $reg->getTool( $tool )->execute( $args );
 		$logTool( 'tool_result', [ 'id' => $id, 'result' => $result ] );
+
+		$this->callHashes[ $hash ] = true;
+		if ( $tool === 'read_file' && isset( $path, $start, $end ) ) {
+			$this->rememberRange( $path, $start, $end );
+			// (Optional) brief ledger for model - truncate to last 5 ranges
+			$ranges = array_map( fn( $r ) => "{$r[0]}-{$r[1]}", $this->readCoverage[ $path ] );
+			if ( count( $ranges ) > 5 ) {
+				$ranges = array_slice( $ranges, -5 );
+				$ranges[0] = '...' . $ranges[0];
+			}
+			$conv[] = Message::assistant(
+				"📚 Coverage for `$path`: [" . implode( ', ', $ranges ) . "]"
+			);
+		}
 
 		/* ⚖️  Oversize guard – tool result ------------------------------ */
 		$resultJson = json_encode( $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
