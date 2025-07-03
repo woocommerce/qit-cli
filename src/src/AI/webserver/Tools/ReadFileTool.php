@@ -39,17 +39,18 @@ class ReadFileTool implements ToolInterface {
 	}
 
 	public function getFunctionInfo(): FunctionInfo {
-		$parameters = [
-			new Parameter( 'path', 'string', 'Path to the file' ),
-			new Parameter( 'start_line', 'int', 'Starting line number (optional)' ),
-			new Parameter( 'end_line', 'int', 'Ending line number (optional)' )
-		];
 
 		return new FunctionInfo(
 			$this->getName(),
 			$this,
 			$this->getDescription(),
-			$parameters
+			[
+				new Parameter( 'start_line', 'int', 'Starting line number (optional)' ),
+				new Parameter( 'end_line', 'int', 'Ending line number (optional)' )
+			],
+			[
+				new Parameter( 'path', 'string', 'Path to the file (required)' ),
+			]
 		);
 	}
 

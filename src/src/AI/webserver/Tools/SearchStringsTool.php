@@ -23,12 +23,14 @@ class SearchStringsTool extends BaseTool {
 			$this,
 			$this->getDescription(),
 			[
-				new Parameter( 'needles', 'array', 'Array of substrings to match (required)', [], null, 'string' ),
 				new Parameter( 'directory', 'string', 'Directory to search (default ".")' ),
 				new Parameter( 'file_types', 'array', 'e.g. ["php","js"] (default ["php"])', [], null, 'string' ),
 				new Parameter( 'case_sensitive', 'bool', 'Case‑sensitive search? (default false)' ),
 				new Parameter( 'max_results', 'int', 'Ceiling on matches (default 50)' ),
 				new Parameter( 'max_depth', 'int', 'Directory depth (default 10)' ),
+			],
+			[
+				new Parameter( 'needles', 'array', 'Array of substrings to match (required)', [], null, 'string' ),
 			]
 		);
 	}

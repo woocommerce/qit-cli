@@ -27,16 +27,24 @@ class ParsePhpTool extends BaseTool {
 			$this,
 			$this->getDescription(),
 			[
-				new Parameter( 'path', 'string', 'File to parse (relative)' ),
+
+			],
+			[
+				new Parameter( 'path', 'string', 'File to parse (relative) (required)' ),
 			]
 		);
 	}
 
 	protected function do( array $p ) {
 		$code   = file_get_contents( $this->r->toAbsolute( $p['path'] ) );
-		$parser = ( new ParserFactory )
-			->create( ParserFactory::PREFER_PHP7 );
-		$ast    = $parser->parse( $code );
+		$parser = ( new ParserFactory() )->createForNewestSupportedVersion();
+		try {
+			$ast = $parser->parse( $code );
+		} catch ( Error $error ) {
+			echo "Parse error: {$error->getMessage()}\n";
+
+			return '';
+		}
 
 		return $ast;
 	}

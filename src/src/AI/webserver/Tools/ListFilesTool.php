@@ -24,22 +24,21 @@ class ListFilesTool implements ToolInterface {
 		return 'List files and directories';
 	}
 
-	public function list_files(string $directory = '.'): string
-	{
-		$result = $this->execute(['directory' => $directory]);
-		return json_encode($result, JSON_UNESCAPED_SLASHES);
+	public function list_files( string $directory = '.' ): string {
+		$result = $this->execute( [ 'directory' => $directory ] );
+
+		return json_encode( $result, JSON_UNESCAPED_SLASHES );
 	}
 
 	public function getFunctionInfo(): FunctionInfo {
-		$parameters = [
-			new Parameter( 'directory', 'string', 'Directory to list (default: root)' )
-		];
-
 		return new FunctionInfo(
 			$this->getName(),
 			$this,
 			$this->getDescription(),
-			$parameters
+			[],
+			[
+				new Parameter( 'directory', 'string', 'Directory to list (default: root)' )
+			]
 		);
 	}
 
@@ -59,32 +58,34 @@ class ListFilesTool implements ToolInterface {
 		$realDir     = realpath( $absoluteDir );
 
 		if ( $realDir === false || strpos( $realDir, $realWorkDir ) !== 0 ) {
-			DebugLogger::log('list_files_error', [
-				'reason'        => 'directory_not_found_or_outside_bounds',
-				'directory'     => $directory,
-				'absolute_dir'  => $absoluteDir,
-				'work_dir'      => $this->workDirectory,
-				'dir_tree'      => DebugLogger::dirTree($this->workDirectory),
-			]);
+			DebugLogger::log( 'list_files_error', [
+				'reason'       => 'directory_not_found_or_outside_bounds',
+				'directory'    => $directory,
+				'absolute_dir' => $absoluteDir,
+				'work_dir'     => $this->workDirectory,
+				'dir_tree'     => DebugLogger::dirTree( $this->workDirectory ),
+			] );
+
 			return [
-				'error' => 'Directory not found or outside bounds: ' . $directory,
+				'error'         => 'Directory not found or outside bounds: ' . $directory,
 				'attemptedPath' => $directory,
-				'workDir' => $this->workDirectory,
+				'workDir'       => $this->workDirectory,
 			];
 		}
 
 		if ( ! is_dir( $absoluteDir ) ) {
-			DebugLogger::log('list_files_error', [
-				'reason'        => 'not_a_directory',
-				'directory'     => $directory,
-				'absolute_dir'  => $absoluteDir,
-				'work_dir'      => $this->workDirectory,
-				'dir_tree'      => DebugLogger::dirTree(dirname($absoluteDir)),
-			]);
+			DebugLogger::log( 'list_files_error', [
+				'reason'       => 'not_a_directory',
+				'directory'    => $directory,
+				'absolute_dir' => $absoluteDir,
+				'work_dir'     => $this->workDirectory,
+				'dir_tree'     => DebugLogger::dirTree( dirname( $absoluteDir ) ),
+			] );
+
 			return [
-				'error' => 'Directory not found: ' . $directory,
+				'error'         => 'Directory not found: ' . $directory,
 				'attemptedPath' => $directory,
-				'workDir' => $this->workDirectory,
+				'workDir'       => $this->workDirectory,
 			];
 		}
 
@@ -93,17 +94,18 @@ class ListFilesTool implements ToolInterface {
 
 		$items = @scandir( $absoluteDir );
 		if ( $items === false ) {
-			DebugLogger::log('list_files_error', [
-				'reason'        => 'cannot_read_directory',
-				'directory'     => $directory,
-				'absolute_dir'  => $absoluteDir,
-				'work_dir'      => $this->workDirectory,
-				'dir_tree'      => DebugLogger::dirTree(dirname($absoluteDir)),
-			]);
+			DebugLogger::log( 'list_files_error', [
+				'reason'       => 'cannot_read_directory',
+				'directory'    => $directory,
+				'absolute_dir' => $absoluteDir,
+				'work_dir'     => $this->workDirectory,
+				'dir_tree'     => DebugLogger::dirTree( dirname( $absoluteDir ) ),
+			] );
+
 			return [
-				'error' => 'Cannot read directory: ' . $directory,
+				'error'         => 'Cannot read directory: ' . $directory,
 				'attemptedPath' => $directory,
-				'workDir' => $this->workDirectory,
+				'workDir'       => $this->workDirectory,
 			];
 		}
 
