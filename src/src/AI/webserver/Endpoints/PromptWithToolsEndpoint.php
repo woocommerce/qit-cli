@@ -12,6 +12,7 @@ use QIT_AI_Webserver\Lib\ToolPathGuard;
 use QIT_AI_Webserver\Lib\SimpleToolDialectAdapter as Dialect;
 use QIT_AI_Webserver\NodeResponse;
 use QIT_AI_Webserver\ToolRegistry;
+use LLPhant\Utils\TokenCounter;      // ← token helper
 
 class PromptWithToolsEndpoint extends AbstractEndpoint {
 
@@ -33,6 +34,10 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		// 'gpt-4o'                   => Dialect::OPENAI,
 		// 'llama-3-70b-instruct'     => Dialect::LLAMA,
 	];
+
+	/* -------- Context‑safety thresholds (token counts) ---------------- */
+	private const MAX_ASSISTANT_TOKENS   = 3500;
+	private const MAX_TOOL_RESULT_TOKENS = 2500;
 
 	/* ------------------------------------------------------------------ */
 	/* 3.  Helpers                                                        */
@@ -179,6 +184,22 @@ SCRIPT;
 			$log( 'prompt', json_encode( $conv ) );
 
 			[ $rawOut, $nativeCalls ] = $unwrap( $chat->generateChat( $conv ) );
+
+			/* ⚖️  Oversize guard – assistant reply --------------------- */
+			if ( TokenCounter::countTokens( $rawOut, $model ) > self::MAX_ASSISTANT_TOKENS ) {
+				$rawOut = trim(
+					$this->llm->getChat()->generateChat( [
+						Message::system(
+							"Summarise the following assistant reply to roughly 25 % of its original " .
+							"token count (never >900 tokens). Preserve **all** file paths, line numbers, " .
+							"function/class names and any code blocks verbatim. Respond with *only* the " .
+							"summary."
+						),
+						Message::user( $rawOut ),
+					] )->getContent()
+				);
+			}
+
 			$log( 'response_raw', $rawOut );
 			$toolCalls = Dialect::parseToolCalls( $dialect, $rawOut, $nativeCalls );
 
@@ -313,6 +334,23 @@ SCRIPT;
 		$logTool( 'tool_call', [ 'id' => $id, 'name' => $tool, 'args' => $args ] );
 		$result = $reg->getTool( $tool )->execute( $args );
 		$logTool( 'tool_result', [ 'id' => $id, 'result' => $result ] );
+
+		/* ⚖️  Oversize guard – tool result ------------------------------ */
+		$resultJson = json_encode( $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		if ( TokenCounter::countTokens( $resultJson, $this->providerConfig['model'] ?? 'gpt-4o' )
+		     > self::MAX_TOOL_RESULT_TOKENS ) {
+			$result = [
+				'__summary' => trim(
+					$this->llm->getChat()->generateChat( [
+						Message::system(
+							"Summarise the following tool output to ≤20 % of its length (cap 600 tokens), " .
+							"keeping every path, line number and code block intact. Return only the summary."
+						),
+						Message::user( $resultJson ),
+					] )->getContent()
+				),
+			];
+		}
 
 		// Generate a new unique ID for the ToolCall to avoid duplicate counting
 		$uniqueId = uniqid( 'call_', true );
