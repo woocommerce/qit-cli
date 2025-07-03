@@ -1,5 +1,5 @@
 <?php
-/**  QIT – dynamic tool‑calling endpoint (v2, dialect‑aware)  */
+/**  QIT – dynamic tool‑calling endpoint (v3‑b, resilient parser)  */
 
 namespace QIT_AI_Webserver\Endpoints;
 
@@ -16,47 +16,48 @@ use QIT_AI_Webserver\ToolRegistry;
 class PromptWithToolsEndpoint extends AbstractEndpoint {
 
 	/* ------------------------------------------------------------------ */
-	/*  ❱❱ 1.  HTTP route                                                */
+	/* 1.  HTTP route                                                     */
 	/* ------------------------------------------------------------------ */
 	public function get_route(): string {
 		return '/prompt-with-tools';
 	}
 
 	/* ------------------------------------------------------------------ */
-	/*  ❱❱ 2.  Map your models → dialects here (fill in as needed)       */
+	/* 2.  Model ↔ dialect map                                            */
 	/* ------------------------------------------------------------------ */
 	private const MODEL_DIALECT_MAP = [
-		// 'gpt-4o'              => Dialect::OPENAI,
-		// 'llama-3-70b-instruct'=> Dialect::LLAMA,
 		'qwen2.5-coder:7b'            => Dialect::QWEN,
 		'hhao/qwen2.5-coder-tools:7b' => Dialect::QWEN,
 		'mistral-small3.2:24b'        => Dialect::MISTRAL,
+		// 'gpt-4o'                   => Dialect::OPENAI,
+		// 'llama-3-70b-instruct'     => Dialect::LLAMA,
 	];
 
 	/* ------------------------------------------------------------------ */
-	/*  ❱❱ 3.  Helpers                                                   */
+	/* 3.  Helpers                                                        */
 	/* ------------------------------------------------------------------ */
-	/** True iff the tool’s schema defines a 'path' or 'directory' field. */
-	private function needsPathNormalisation( string $toolName, ToolRegistry $registry ): bool {
-		$tool = $registry->getTool( $toolName );
-		if ( ! $tool ) {
-			return false;
-		}
-		$spec  = FunctionFormatter::formatOneFunctionToOpenAI( $tool->getFunctionInfo() );
+	private function needsPathNormalisation( string $tool, ToolRegistry $reg ): bool {
+		$spec  = FunctionFormatter::formatOneFunctionToOpenAI(
+			$reg->getTool( $tool )->getFunctionInfo()
+		);
 		$props = $spec['parameters']['properties'] ?? [];
 
 		return isset( $props['path'] ) || isset( $props['directory'] );
 	}
 
 	/* ------------------------------------------------------------------ */
-	/*  ❱❱ 4.  Main handler                                              */
+	/* 4.  Main handler                                                   */
 	/* ------------------------------------------------------------------ */
 	public function handle( array $input ): void {
 
-		/* — 4.0  Logging helper — */
+		/* 4.0  logger ---------------------------------------------------- */
 		$dbg     = [];
 		$log     = function ( string $stage, $data = null ) use ( &$dbg ) {
-			$dbg[] = [ 'ts_ms' => (int) ( microtime( true ) * 1000 ), 'stage' => $stage, 'data' => $data ];
+			$dbg[] = [
+				'ts_ms' => (int) ( microtime( true ) * 1000 ),
+				'stage' => $stage,
+				'data'  => $data,
+			];
 			file_put_contents(
 				'/tmp/debug-prompt.log',
 				json_encode( $dbg, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE )
@@ -64,7 +65,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		};
 		$logTool = fn( string $ev, array $p ) => $log( $ev, $p );
 
-		/* — 4.1  Validate input — */
+		/* 4.1  validate -------------------------------------------------- */
 		foreach ( [ 'messages', 'model' ] as $k ) {
 			if ( ! isset( $input[ $k ] ) ) {
 				NodeResponse::error( "Missing required parameter: {$k}", 400 );
@@ -73,33 +74,32 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		$raw           = $input['messages'];
 		$model         = (string) $input['model'];
 		$format        = $input['format'] ?? null;
-		$maxIterations = (int) ( $input['max_iterations'] ?? 10 );
+		$maxIterations = (int) ( $input['max_iterations'] ?? 12 );
 		$minToolCalls  = (int) ( $input['min_tool_calls'] ?? 2 );
 		$log( 'validated', compact( 'model', 'format', 'minToolCalls' ) );
 
-		/* — 4.2  Pick dialect (throw if unmapped) — */
 		if ( ! isset( self::MODEL_DIALECT_MAP[ $model ] ) ) {
-			NodeResponse::error( "Model '{$model}' is not mapped to a tool‑calling dialect.", 400 );
+			NodeResponse::error( "Model '{$model}' not mapped.", 400 );
 		}
 		$dialect = self::MODEL_DIALECT_MAP[ $model ];
 		$log( 'dialect', $dialect );
 
-		/* — 4.3  Boot the LLM — */
+		/* 4.3  boot LLM -------------------------------------------------- */
 		$this->providerConfig['model'] = $model;
 		$this->initializeLLM();
 		$this->llm->ensureInitialized();
 		$chat = $this->llm->getChat();
 		$chat->setModelOption( 'think', false );
 
-		/* — 4.4  Register tools — */
+		/* 4.4  register tools ------------------------------------------- */
 		$workDir   = ExtractPathResolver::resolve( $input );
 		$registry  = new ToolRegistry( $workDir );
 		$pathGuard = new ToolPathGuard( $workDir );
 		foreach ( $registry->getTools() as $t ) {
-			$chat->addTool( $t->getFunctionInfo() );   // still required for OPENAI family
+			$chat->addTool( $t->getFunctionInfo() );
 		}
 
-		/* — 4.5  Build initial conversation — */
+		/* 4.5  build conversation --------------------------------------- */
 		$system = '';
 		$conv   = [];
 		foreach ( $raw as $m ) {
@@ -109,32 +109,29 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 				$conv[] = Message::{$m['role']}( $m['content'] );
 			}
 		}
-		$system .= "\nWhen the investigation is complete, say **done** and give a short summary.\n";
-		$system .= "You must execute at least {$minToolCalls} tool calls.";
 
-		// If using a dialect that requires tool specs in the system message,
-		if (!Dialect::supportsNative($dialect)) {
-			$system .= "\n" . Dialect::callInstruction($dialect);
+		$system .= <<<SCRIPT
+Run a **structured vulnerability investigation**.
+
+**When you decide to call a tool you MUST respond with
+   exactly ONE line, in exactly this shape
+   <tool_call>{"name":"…","arguments":{…}}</tool_call>
+NO leading text, NO markdown, NO line‑breaks inside.**
+
+If no tool is needed write the single word **done**.
+SCRIPT;
+
+
+		$system .= "\nYou must execute at least {$minToolCalls} tool calls.";
+
+		if ( ! Dialect::supportsNative( $dialect ) ) {
+			$system .= "\n" . Dialect::callInstruction( $dialect );
 		}
-
-		/*  ▼▼  ← you lost this line while editing  */
-		Dialect::injectTools($dialect, $registry, $system, $conv);
-		/*  ▲▲  keep it right here                  */
-
-		if ($demo = Dialect::demoCall($dialect)) {
-			[$assistantCall, $toolResp] = $demo;
-
-			$conv[] = Message::assistant($assistantCall);
-			$conv[] = Dialect::toolResultMessage(      // correct wrapper
-				$dialect,
-				$toolResp,
-				uniqid('demo_', true)
-			);
-		}
+		Dialect::injectTools( $dialect, $registry, $system, $conv );
 
 		$chat->setSystemMessage( trim( $system ) );
 
-		/* — 4.6  Helper to unwrap ChatResponse/ChatMessage — */
+		/* 4.6  unwrap helper -------------------------------------------- */
 		$unwrap = function ( $resp ) use ( $log ): array {
 			$raw = $calls = null;
 			if ( is_object( $resp ) && method_exists( $resp, 'getContent' ) ) {
@@ -149,76 +146,84 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			} else {
 				$raw = (string) $resp;
 			}
-			$log( 'raw_response_object', is_scalar( $resp ) ? $resp : json_encode( $resp, JSON_PARTIAL_OUTPUT_ON_ERROR ) );
 
 			return [ $raw ?? '', $calls ?? [] ];
 		};
 
-		/* — 4.7  Main loop — */
-		$iter         = 0;
-		$successful   = 0;
-		$summary      = '';
-		$calls        = [];
-		$noToolRounds = 0;
-		$nativeOK     = Dialect::supportsNative( $dialect );
+		/* 4.7  main loop ------------------------------------------------- */
+		$iter    = $successful = 0;
+		$summary = '';
+		$calls   = [];
 
 		while ( ++ $iter <= $maxIterations ) {
 
-			$conv[] = $ask = Message::user(
-				"🧠 Reason about the next step. " . Dialect::callInstruction( $dialect )
-			);
-			$log( 'prompt', $ask->content );
+			$example             = '<tool_call>{"name":"list_files","arguments":{"directory":"."}}</tool_call>';
+			$remaining           = $minToolCalls - $successful;
+			$quota_unmet_message = "🧠 Decide next step → emit ONE <tool_call>…</tool_call> "
+			                       . "(you have executed $successful, need $remaining more).\n"
+			                       . "Format example → {$example}";
+
+			$quota_met_message = "🧠 Decide next step → either emit ONE <tool_call>…</tool_call> "
+			                     . "or reply **done**.\n"
+			                     . "Format example → {$example}";
+			$conv[]            = Message::user( $remaining > 0 ? $quota_unmet_message : $quota_met_message );
+
+			$log( 'prompt', json_encode( $conv ) );
 
 			[ $rawOut, $nativeCalls ] = $unwrap( $chat->generateChat( $conv ) );
 			$log( 'response_raw', $rawOut );
-
-			/* Parse tool calls (dialect aware) */
 			$toolCalls = Dialect::parseToolCalls( $dialect, $rawOut, $nativeCalls );
-			$log( 'parsed_tool_calls', $toolCalls );
 
-			/* Show assistant thought if any text remains */
+			/*  🚑  fallback parser:  toolName { json‑args } ---------------- */
+			if ( empty( $toolCalls ) ) {
+				foreach ( preg_split( '/\R+/', $rawOut ) as $line ) {
+					if ( preg_match( '/^\s*([a-zA-Z_][\w-]*)\s+(\{.*\})\s*$/s', trim( $line ), $m ) ) {
+						$args = json_decode( $m[2], true );
+						if ( is_array( $args ) ) {
+							$toolCalls[] = [ $m[1], $args, uniqid( 'rx_', true ) ];
+						}
+					}
+				}
+				if ( $toolCalls ) {
+					$log( 'parsed_tool_calls_fallback', $toolCalls );
+				}
+			}
+
 			$thought = trim( $rawOut );
 			if ( $thought !== '' && empty( $toolCalls ) ) {
 				$conv[] = Message::assistant( $thought );
 			}
 
-			/* Check for "done" */
+			/* done? */
 			if ( preg_match( '/\b(done|finished)\b/i', $thought ) ) {
 				if ( $successful >= $minToolCalls ) {
 					$summary = $thought;
 					break;
 				}
-				$conv[] = Message::assistant(
-					"❌ Only {$successful} tool calls executed; need {$minToolCalls}. Continue."
-				);
 				continue;
 			}
 
-			/* Execute each detected tool call */
+			/* execute tool(s) */
 			if ( $toolCalls ) {
 				foreach ( $toolCalls as [$name, $args, $id] ) {
 					$log( 'tool_execute', [ 'id' => $id, 'name' => $name, 'args' => $args ] );
-					$result = $this->executeTool(
+					$toolResult = $this->executeTool(
 						$dialect, $name, $args, $id,
 						$registry, $pathGuard,
 						$conv, $logTool,
 						$successful, $calls
 					);
-					$log( 'tool_executed', [ 'id' => $id, 'result' => $result ] );
-					/* Insert tool result message in dialect‑specific wrapper */
-					$conv[] = Dialect::toolResultMessage( $dialect, json_encode( $result ), $id );
-					// ask the model to reason on the fresh evidence
-					$conv[] = Message::user( "✅ Result received – interpret it, then decide next step or **done**." );
+					$result     = $toolResult['result'];
+					$uniqueId   = $toolResult['id'];
+					$log( 'tool_executed', [ 'id' => $id, 'unique_id' => $uniqueId, 'result' => $result ] );
+
+					$conv[] = Dialect::toolResultMessage( $dialect, json_encode( $result ), $uniqueId );
 				}
 				continue;
 			}
 
-			/* Nothing actionable */
-			$conv[] = Message::assistant( "❌ You produced no usable tool call. Think again." );
-			if ( ++ $noToolRounds >= 3 ) {
-				$conv[]       = Message::assistant( "❌ You must now issue a valid tool call." );
-				$noToolRounds = 0;
-			}
+			/* nothing actionable */
+			$conv[] = Message::assistant( "❌ No usable tool call. Think again." );
 		}
 
 		if ( $summary === '' ) {
@@ -226,7 +231,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			NodeResponse::error( 'Model never produced summary.', 500 );
 		}
 
-		/* — 4.8  Ask for the final JSON answer (unchanged from original) — */
+		/* 4.8  final JSON ------------------------------------------------ */
 		$conv[] = Message::assistant( $summary );
 		$conv[] = Message::user( "🟢 Reply ONLY with the final JSON object." );
 		$chat->setModelOption( 'tool_choice', 'none' );
@@ -246,17 +251,15 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 				continue;
 			}
 
-			/* evidence verifier + schema checker …  (identical to your previous code) */
-			if ( ! isset( $decoded['evidence'] ) || $decoded['evidence'] === [] ) {
+			/* evidence & schema check identical to previous version -------- */
+			if ( ! isset( $decoded['evidence'][0] ) ) {
 				$conv[] = Message::assistant( "❌ Provide at least one evidence block." );
 				continue;
 			}
 			$evidenceOk = true;
-			$badIdx     = null;
-			foreach ( ( $decoded['evidence'] ?? [] ) as $idx => $ev ) {
+			foreach ( $decoded['evidence'] as $idx => $ev ) {
 				if ( ! isset( $ev['file'], $ev['start_line'], $ev['end_line'], $ev['snippet'] ) ) {
 					$evidenceOk = false;
-					$badIdx     = $idx;
 					break;
 				}
 				try {
@@ -272,32 +275,34 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 						) === false
 					) {
 						$evidenceOk = false;
-						$badIdx     = $idx;
 						break;
 					}
-				} catch ( \Throwable $e ) {
+				} catch ( \Throwable ) {
 					$evidenceOk = false;
-					$badIdx     = $idx;
 					break;
 				}
 			}
 			if ( ! $evidenceOk ) {
-				$conv[] = Message::assistant( "❌ Evidence block #{$badIdx} does not match cited lines. Fix it." );
+				$conv[] = Message::assistant( "❌ Evidence does not match cited lines." );
 				continue;
 			}
-
 			if ( ( $jsonEval->evaluateText( $answer )->getResults()['score'] ?? 0 ) !== 1 ) {
-				$conv[] = Message::assistant( "❌ JSON does not match required schema. Only the object!" );
+				$conv[] = Message::assistant( "❌ JSON does not match required schema." );
 				continue;
 			}
 
 			$log( 'done', [ 'iterations' => $iter, 'json_bytes' => strlen( $answer ) ] );
-			NodeResponse::toolPrompt( $answer, $calls, $model, [
-				'iterations'     => $iter,
-				'job_id'         => $input['job_id'] ?? null,
-				'session_id'     => $input['session_id'] ?? null,
-				'execution_time' => (int) ( ( microtime( true ) - $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000 ),
-			] );
+			NodeResponse::toolPrompt(
+				$answer,
+				$calls,
+				$model,
+				[
+					'iterations'     => $iter,
+					'job_id'         => $input['job_id'] ?? null,
+					'session_id'     => $input['session_id'] ?? null,
+					'execution_time' => (int) ( ( microtime( true ) - $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000 ),
+				]
+			);
 
 			return;
 		}
@@ -307,48 +312,45 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	}
 
 	/* ------------------------------------------------------------------
-	   ❱❱ 5.  Execute a tool + logging (returns result)                   */
+	   5.  Execute a tool + logging                                       */
 	/* ------------------------------------------------------------------ */
 	private function executeTool(
 		string $dialect,
-		string $toolName,
+		string $tool,
 		array $args,
 		string $id,
-		ToolRegistry $registry,
-		ToolPathGuard $pathGuard,
+		ToolRegistry $reg,
+		ToolPathGuard $guard,
 		array &$conv,
 		callable $logTool,
-		int &$successful,
+		int &$ok,
 		array &$calls
 	) {
-		/* Special‑case alias for list_files */
-		if ( $toolName === 'list_files' && isset( $args['path'] ) && ! isset( $args['directory'] ) ) {
+		if ( $tool === 'list_files' && isset( $args['path'] ) && ! isset( $args['directory'] ) ) {
 			$args['directory'] = $args['path'];
 		}
-
-		/* Path guard if required */
 		try {
-			if ( $this->needsPathNormalisation( $toolName, $registry ) ) {
-				$key          = $toolName === 'read_file' ? 'path' : 'directory';
-				$args[ $key ] = $pathGuard->normalise( $args[ $key ] ?? '.' );
+			if ( $this->needsPathNormalisation( $tool, $reg ) ) {
+				$key          = $tool === 'read_file' ? 'path' : 'directory';
+				$args[ $key ] = $guard->normalise( $args[ $key ] ?? '.' );
 			}
-		} catch ( \RuntimeException $e ) {
-			return null;
+		} catch ( \RuntimeException ) {
+			return [ 'result' => null, 'id' => $id ];
 		}
 
-		/* Execute & log */
-		$logTool( 'tool_call', [ 'id' => $id, 'name' => $toolName, 'args' => $args ] );
-		$result = $registry->getTool( $toolName )->execute( $args );
+		$logTool( 'tool_call', [ 'id' => $id, 'name' => $tool, 'args' => $args ] );
+		$result = $reg->getTool( $tool )->execute( $args );
 		$logTool( 'tool_result', [ 'id' => $id, 'result' => $result ] );
 
-		/* Notify the LLM that a tool was called */
-		$conv[] = Message::assistantAskingTools( [
-			new ToolCall( $id, $toolName, json_encode( $args, JSON_UNESCAPED_UNICODE ) ),
+		// Generate a new unique ID for the ToolCall to avoid duplicate counting
+		$uniqueId = uniqid( 'call_', true );
+		$conv[]   = Message::assistantAskingTools( [
+			new ToolCall( $uniqueId, $tool, json_encode( $args, JSON_UNESCAPED_UNICODE ) ),
 		] );
 
-		++ $successful;      // actually propagates because $successful is &‑passed
-		$calls[] = [ 'toolName' => $toolName, 'args' => $args, 'result' => $result ];
+		++ $ok;
+		$calls[] = [ 'toolName' => $tool, 'args' => $args, 'result' => $result ];
 
-		return $result;
+		return [ 'result' => $result, 'id' => $uniqueId ];
 	}
 }

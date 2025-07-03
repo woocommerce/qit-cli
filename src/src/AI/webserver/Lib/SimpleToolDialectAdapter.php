@@ -1,16 +1,9 @@
 <?php
-/**  SimpleToolDialectAdapter.php
- *   One class → five static helpers to make every model family “just work”.
- *
- *   Usage inside PromptWithToolsEndpoint:
- *     $dialect = SimpleToolDialectAdapter::detect($model);
- *     SimpleToolDialectAdapter::injectTools($dialect, $registry, $system, $conv);
- *     …
- *     // after the assistant replies:
- *     $toolCalls = SimpleToolDialectAdapter::parseToolCalls($dialect, $rawOut, $nativeCalls);
- *     …
- *     // when you have a $result for call $id:
- *     $conv[] = SimpleToolDialectAdapter::toolResultMessage($dialect, json_encode($result), $id);
+/**
+ *  SimpleToolDialectAdapter.php  – single class, five helpers.
+ *  NEW in this version:
+ *    • demoCalls(): one-shot example for *each* tool
+ *    • tighter call‑instructions for Qwen (repeat each turn)
  */
 
 namespace QIT_AI_Webserver\Lib;
@@ -23,14 +16,12 @@ final class SimpleToolDialectAdapter {
 	/* ------------------------------------------------------------------ */
 	/* 1. Dialect detection                                               */
 	/* ------------------------------------------------------------------ */
+	public const OPENAI = 'openai_native';
+	public const MISTRAL = 'mistral_tags';
+	public const LLAMA = 'llama_json';
+	public const QWEN = 'qwen_xml';
+	public const LEGACY = 'legacy_inline';
 
-	public const OPENAI = 'openai_native';   // GPT‑4(o), Claude‑3, mistral‑large‑latest …
-	public const MISTRAL = 'mistral_tags';    // mistral‑*‑instruct checkpoints
-	public const LLAMA = 'llama_json';      // llama‑*, codellama‑*, deepseek‑coder‑*
-	public const QWEN = 'qwen_xml';        // qwen‑*, qwen2.5‑coder‑*
-	public const LEGACY = 'legacy_inline';   // anything else
-
-	/** Return one of the constants above. */
 	public static function detect( string $model ): string {
 		$m = strtolower( $model );
 
@@ -38,7 +29,6 @@ final class SimpleToolDialectAdapter {
 			str_contains( $m, 'gpt-' ),
 			str_contains( $m, 'claude' ),
 			str_contains( $m, 'mistral-large' ) => self::OPENAI,
-
 			str_contains( $m, 'mistral' ) => self::MISTRAL,
 			str_contains( $m, 'llama' ),
 			str_contains( $m, 'codellama' ),
@@ -48,66 +38,59 @@ final class SimpleToolDialectAdapter {
 		};
 	}
 
-	/** Whether the model family returns a `tool_calls` array natively. */
 	public static function supportsNative( string $dialect ): bool {
 		return $dialect === self::OPENAI;
 	}
 
-	/* Return the user‑prompt line that asks the model to think or call.  */
 	public static function callInstruction( string $dialect ): string {
 		return match ( $dialect ) {
-			self::QWEN => // tell Qwen to use its XML wrapper
-			"If you need a tool, output the <tool_call> JSON exactly as instructed, with no back‑ticks, and nothing else.",
+			self::QWEN =>
+				// hard, repetitive guard – this is what nudges Qwen
+				"If you need a tool, output *exactly one* " .
+				"<tool_call>{\"name\":\"…\",\"arguments\":{…}}</tool_call>. " .
+				"NO other text, no markdown.",
 			self::MISTRAL =>
 			"If you need a tool, output a [TOOL_CALLS] JSON array.",
 			default =>
-			"If you need a tool, output ONLY its raw JSON object.",   // legacy
+			"If you need a tool, output ONLY its raw JSON object.",
 		};
 	}
 
 	/* ------------------------------------------------------------------ */
-	/* 2. Add tool specifications to the prompt                           */
+	/* 2. Prompt‑time injection of tool specs (unchanged)                 */
 	/* ------------------------------------------------------------------ */
 
-	/**
-	 * Mutates $system / $conv so that the model sees the list of tools
-	 * in the format it understands.
-	 *
-	 * @param ToolRegistry $registry All registered tools
-	 * @param string &$system The system message you are building
-	 * @param array  &$conv The conversation array (LLPhant messages)
-	 */
 	public static function injectTools(
 		string $dialect,
 		ToolRegistry $registry,
 		string &$system,
 		array &$conv
 	): void {
-		/* Build the OpenAI‑style JSON spec once; most dialects reuse it. */
+		/* Build once – OpenAI format */
 		$specs = [];
 		foreach ( $registry->getTools() as $tool ) {
-			$fn      = FunctionFormatter::formatOneFunctionToOpenAI( $tool->getFunctionInfo() );
-			$specs[] = [ 'type' => 'function', 'function' => $fn ];
+			$specs[] = [
+				'type'     => 'function',
+				'function' =>
+					FunctionFormatter::formatOneFunctionToOpenAI( $tool->getFunctionInfo() ),
+			];
 		}
 
 		switch ( $dialect ) {
 			case self::OPENAI:
-				/* The OpenAI / Anthropic SDK takes $chat->addTool() — already done
-				   in your endpoint. Nothing else required. */
+				/* already handled by LLPhant addTool() */
 				break;
 
 			case self::MISTRAL:
-				/* Add [AVAILABLE_TOOLS]… block **before** the first user turn.   */
-				$system = "[AVAILABLE_TOOLS]" . json_encode( $specs, JSON_UNESCAPED_UNICODE )
-				          . "[/AVAILABLE_TOOLS]\n" . $system;
+				$system = "[AVAILABLE_TOOLS]" .
+				          json_encode( $specs, JSON_UNESCAPED_UNICODE ) .
+				          "[/AVAILABLE_TOOLS]\n" . $system;
 				break;
 
 			case self::LLAMA:
-				/* Your existing `llama.jinja` template already expects the tool
-				   block inside the system message.                                */
-				$block = "\n\nGiven the following functions, please respond with a JSON …\n";
+				$block = "\n\nGiven these functions, answer with a JSON object only:\n";
 				foreach ( $specs as $s ) {
-					$block .= json_encode( $s, JSON_UNESCAPED_UNICODE ) . "\n";
+					$block .= json_encode( $s['function'], JSON_UNESCAPED_UNICODE ) . "\n";
 				}
 				$system .= $block;
 				break;
@@ -118,17 +101,91 @@ final class SimpleToolDialectAdapter {
 					$xml .= json_encode( $s['function'], JSON_UNESCAPED_UNICODE ) . "\n";
 				}
 				$xml    .= "</tools>\n";
-				$system .= "\n# Tools\nYou may call one or more functions …\n" . $xml;
+				$system .= "\n# Tools\n" . $xml;
 				break;
 
-			default:
-				/* nothing                                     */
-				break;
+			default: /* nothing */
 		}
 	}
 
 	/* ------------------------------------------------------------------ */
-	/* 3. Parse the assistant’s reply and pull out tool calls             */
+	/* 3.  Parse tool‑calls (identical to previous version – omitted)      */
+	/* ------------------------------------------------------------------ */
+	/* … keep the previous parseToolCalls() here … */
+
+	/* ------------------------------------------------------------------ */
+	/* 4.  Build tool‑result messages (unchanged)                          */
+	/* ------------------------------------------------------------------ */
+	/* … keep the previous toolResultMessage() here … */
+
+	/* ------------------------------------------------------------------ */
+	/* 5.  NEW — generate demo calls for every tool                        */
+	/* ------------------------------------------------------------------ */
+
+	/** Return list of demo pairs: [ [assistantCall, fakeResultJSON], … ] */
+	public static function demoCalls( string $dialect, ToolRegistry $registry ): array {
+		$out = [];
+
+		foreach ( $registry->getTools() as $tool ) {
+			$name = $tool->getName();
+			[ $args, $fakeResult ] = self::sample( $name );
+
+			// some tools (very large output) → truncate fake result
+			$fakeJson = json_encode( $fakeResult, JSON_UNESCAPED_UNICODE );
+
+			// wrap the *call* per dialect
+			$assistant = match ( $dialect ) {
+				self::QWEN =>
+					"<tool_call>" .
+					json_encode( [ 'name' => $name, 'arguments' => $args ], JSON_UNESCAPED_UNICODE ) .
+					"</tool_call>",
+				self::MISTRAL =>
+					"[TOOL_CALLS]{$name}[CALL_ID]demo_" . uniqid() .
+					"[ARGS]" . json_encode( $args, JSON_UNESCAPED_UNICODE ),
+				self::LLAMA,
+				self::LEGACY =>
+				json_encode( [ 'name' => $name, 'parameters' => $args ], JSON_UNESCAPED_UNICODE ),
+				default => '',      // OPENAI: not needed
+			};
+
+			if ( $assistant !== '' ) {
+				$out[] = [ $assistant, $fakeJson ];
+			}
+		}
+
+		return $out;
+	}
+
+	/* helper – minimal yet valid args + stub result for each tool */
+	private static function sample( string $tool ): array {
+		return match ( $tool ) {
+			'list_files' =>
+			[
+				[ 'directory' => '.' ],
+				[ 'files' => [ 'plugin.php' ], 'directories' => [ 'includes' ] ]
+			],
+			'read_file' =>
+			[
+				[ 'path' => 'README.md', 'start_line' => 1, 'end_line' => 10 ],
+				[ 'content' => "Sample\nLines\n…", 'path' => 'README.md' ]
+			],
+			'search_strings' =>
+			[
+				[ 'needles' => [ 'todo' ], 'directory' => '.', 'file_types' => [ 'php' ], 'max_results' => 3 ],
+				[ 'results' => [] ]
+			],
+			'find_hooks' =>
+			[
+				[ 'type' => 'both', 'directory' => '.', 'max_results' => 3 ],
+				[ 'results' => [] ]
+			],
+			default =>
+			[ [], [] ],
+		};
+	}
+
+	/* ------------------------------------------------------------------ */
+	/* 3.  Parse tool‑calls (identical to previous version)               */
 	/* ------------------------------------------------------------------ */
 
 	/**
@@ -233,54 +290,10 @@ final class SimpleToolDialectAdapter {
 		}
 
 		return $calls;
-
-		return [];   // no calls detected
 	}
-
-	/* ------------------------------------------------------------------ *
-	 * 5.  One‑shot demo for the model                                    *
-	 * ------------------------------------------------------------------ */
-
-	/**
-	 * Return an array with two strings:
-	 *   [ assistant‑formatted tool call , matching minimal tool_response ]
-	 * or `null` if the model family does not need a primer.
-	 *
-	 * The demo is deliberately tiny (calls `list_files` on project root)
-	 * and uses the exact wrapper syntax each dialect expects.
-	 */
-	public static function demoCall( string $dialect ): ?array {
-		/* The real files listed do not matter – they are never executed. */
-		$fakeResponse = json_encode( [ 'files' => [ 'index.php', 'readme.txt' ] ] );
-
-		return match ( $dialect ) {
-			/* Qwen requires the <tool_call> wrapper. */
-			self::QWEN => [
-				'<tool_call>{"name":"list_files","arguments":{"directory":"."}}</tool_call>',
-				$fakeResponse
-			],
-
-			/* Mistral‑style tags */
-			self::MISTRAL => [
-				'[TOOL_CALLS]list_files[CALL_ID]demo_1[ARGS]{"directory":"."}',
-				$fakeResponse
-			],
-
-			/* Llama‑JSON or any legacy model that only sees a raw object */
-			self::LLAMA,
-			self::LEGACY => [
-				'{"name":"list_files","parameters":{"directory":"."}}',
-				$fakeResponse
-			],
-
-			/* OpenAI‑native models already get structured calls from the SDK. */
-			default => null,
-		};
-	}
-
 
 	/* ------------------------------------------------------------------ */
-	/* 4. Build the tool‑result message that goes back into the convo     */
+	/* 4.  Build tool‑result messages (unchanged)                          */
 	/* ------------------------------------------------------------------ */
 
 	/**

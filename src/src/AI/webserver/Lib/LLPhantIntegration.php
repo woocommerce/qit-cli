@@ -73,7 +73,8 @@ class LLPhantIntegration {
 		// Create composer.json
 		$composerJson = [
 			'require' => [
-				'theodo-group/llphant' => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e'
+				'theodo-group/llphant' => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
+				'nikic/php-parser'     => '^5',
 			],
 			'config'  => [
 				'optimize-autoloader'    => true,
