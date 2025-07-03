@@ -274,6 +274,7 @@ use QIT_AI_Webserver\Endpoints\BasicPromptEndpoint;
 use QIT_AI_Webserver\Endpoints\PromptWithToolsEndpoint;
 use QIT_AI_Webserver\Endpoints\ZipExtractionEndpoint;
 use QIT_AI_Webserver\Endpoints\FileReadingEndpoint;
+use QIT_AI_Webserver\Endpoints\VulnerabilityScanEndpoint;
 
 // Add these lines near the top after the placeholders section:
 $provider = '{{PROVIDER}}';
@@ -284,7 +285,8 @@ $endpoints = [
 	new BasicPromptEndpoint( $provider, $providerConfig ),
 	new ZipExtractionEndpoint( $provider, $providerConfig ),
 	new PromptWithToolsEndpoint( $provider, $providerConfig ),
-	new FileReadingEndpoint( $provider, $providerConfig )
+	new FileReadingEndpoint( $provider, $providerConfig ),
+	new VulnerabilityScanEndpoint( $provider, $providerConfig )
 ];
 
 // Build route map from endpoints
