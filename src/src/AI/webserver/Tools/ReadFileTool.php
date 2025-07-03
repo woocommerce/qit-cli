@@ -81,7 +81,12 @@ class ReadFileTool implements ToolInterface {
 				'total_lines' => count( $lines )
 			];
 		} catch ( Exception $e ) {
-			return [ 'error' => 'File not found: ' . $path ];
+			// The resolver already logged, but bubble up context to the caller
+			return [
+				'error'         => $e->getMessage(),
+				'attemptedPath' => $path,
+				'workDir'       => $this->workDirectory,
+			];
 		}
 	}
 

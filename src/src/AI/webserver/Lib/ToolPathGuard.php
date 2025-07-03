@@ -7,16 +7,16 @@ namespace QIT_AI_Webserver\Lib;
  *
  * Rules
  * -----
- *  1. Paths **must stay inside** $workDir – no “..” escape.
- *  2. Both absolute and relative input is accepted:
- *     •  absolute, but inside $workDir  → strip prefix and return relative
- *     •  absolute and *outside*         → RuntimeException
+ *  1. Paths must stay **inside** $workDir – no “..” escape.
+ *  2. Absolute *and* relative input is accepted:
+ *       •  absolute, but inside $workDir  → strip prefix and return relative
+ *       •  absolute and outside           → RuntimeException
  *  3. Normalise back‑slashes and duplicate slashes.
- *  4. We **don’t** check that the file / dir exists – the tool itself will
+ *  4. We don’t check that the file/dir exists – the tool itself will
  *     return an error the model can read.
  */
 class ToolPathGuard {
-	private string $workDir;   // canonical absolute path with no trailing “/”
+	private string $workDir;           // canonical absolute path, no trailing “/”
 
 	public function __construct( string $workDir ) {
 		$real = realpath( $workDir );
@@ -30,33 +30,44 @@ class ToolPathGuard {
 	 * Convert user‑supplied $path to a *relative* canonical path or throw.
 	 */
 	public function normalise( string $path ): string {
-		$path = str_replace( '\\', '/', $path );
-		$path = preg_replace( '#/+#', '/', $path );      // “foo//bar” → “foo/bar”
-		$path = trim( $path );
 
-		/* ------------------------------------------------ absolute input */
-		if ( strpos( $path, '/' ) === 0 ) {
-			// normalise and compare with workDir
-			$real = realpath( $path );
-			if ( $real === false ) {
-				throw new \RuntimeException( 'Path is outside the working directory.' );
+		$path = str_replace( '\\', '/', trim( $path ) );
+
+		/* ① “.” or ""  → project root  */
+		if ( $path === '' || $path === '.' ) {
+			return '';
+		}
+
+		/* ② Build an absolute candidate path */
+		$isAbsolute = $path[0] === '/' || preg_match( '#^[A-Za-z]:/#', $path ); // *nix or Win drive
+		$candidate  = $isAbsolute ? $path : $this->workDir . '/' . ltrim( $path, '/' );
+
+		/* ③ Canonicalise.  If the target does not exist realpath() returns
+		      false – in that case fall back to a purely string‑based clean‑up. */
+		$real = realpath( $candidate );
+		if ( $real === false ) {
+			$parts = [];
+			foreach ( explode( '/', preg_replace( '#/+#', '/', $candidate ) ) as $part ) {
+				if ( $part === '' || $part === '.' ) {
+					continue;
+				}
+				if ( $part === '..' ) {
+					array_pop( $parts );
+				} else {
+					$parts[] = $part;
+				}
 			}
-			$real = str_replace( '\\', '/', $real );
-			if ( strpos( $real, $this->workDir . '/' ) !== 0 ) {
-				throw new \RuntimeException( 'Path escapes the working directory.' );
-			}
-			// strip the prefix and make relative
-			$path = ltrim( substr( $real, strlen( $this->workDir ) ), '/' );
+			$real = '/' . implode( '/', $parts );
+		}
+		$real = str_replace( '\\', '/', $real );         // win → unix slashes
+
+		/* ④ Verify the path is inside $workDir */
+		if ( $real !== $this->workDir && ! str_starts_with( $real, $this->workDir . '/' ) ) {
+			throw new \RuntimeException( "Path escapes workspace: {$path}" );
 		}
 
-		/* ------------------------------------ reject obvious traversal */
-		if ( $path === '' || $path === '.' || $path === './' ) {
-			return '.';
-		}
-		if ( preg_match( '#(^|/)\.\.(?:/|$)#', $path ) ) {
-			throw new \RuntimeException( 'Directory traversal (“..”) is not allowed.' );
-		}
+		/* ⑤ Return the path *relative* to the extraction root */
 
-		return ltrim( $path, '/' );
+		return ltrim( substr( $real, strlen( $this->workDir ) ), '/' );
 	}
 }

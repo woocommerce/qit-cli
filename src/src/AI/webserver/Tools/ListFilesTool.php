@@ -5,6 +5,7 @@ namespace QIT_AI_Webserver\Tools;
 use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use LLPhant\Chat\FunctionInfo\Parameter;
 use QIT_AI_Webserver\Lib\FilePathResolver;
+use QIT_AI_Webserver\Lib\DebugLogger;
 
 class ListFilesTool implements ToolInterface {
 	private string $workDirectory;
@@ -58,11 +59,33 @@ class ListFilesTool implements ToolInterface {
 		$realDir     = realpath( $absoluteDir );
 
 		if ( $realDir === false || strpos( $realDir, $realWorkDir ) !== 0 ) {
-			return [ 'error' => 'Directory not found or outside bounds: ' . $directory ];
+			DebugLogger::log('list_files_error', [
+				'reason'        => 'directory_not_found_or_outside_bounds',
+				'directory'     => $directory,
+				'absolute_dir'  => $absoluteDir,
+				'work_dir'      => $this->workDirectory,
+				'dir_tree'      => DebugLogger::dirTree($this->workDirectory),
+			]);
+			return [
+				'error' => 'Directory not found or outside bounds: ' . $directory,
+				'attemptedPath' => $directory,
+				'workDir' => $this->workDirectory,
+			];
 		}
 
 		if ( ! is_dir( $absoluteDir ) ) {
-			return [ 'error' => 'Directory not found: ' . $directory ];
+			DebugLogger::log('list_files_error', [
+				'reason'        => 'not_a_directory',
+				'directory'     => $directory,
+				'absolute_dir'  => $absoluteDir,
+				'work_dir'      => $this->workDirectory,
+				'dir_tree'      => DebugLogger::dirTree(dirname($absoluteDir)),
+			]);
+			return [
+				'error' => 'Directory not found: ' . $directory,
+				'attemptedPath' => $directory,
+				'workDir' => $this->workDirectory,
+			];
 		}
 
 		$files = [];
@@ -70,7 +93,18 @@ class ListFilesTool implements ToolInterface {
 
 		$items = @scandir( $absoluteDir );
 		if ( $items === false ) {
-			return [ 'error' => 'Cannot read directory: ' . $directory ];
+			DebugLogger::log('list_files_error', [
+				'reason'        => 'cannot_read_directory',
+				'directory'     => $directory,
+				'absolute_dir'  => $absoluteDir,
+				'work_dir'      => $this->workDirectory,
+				'dir_tree'      => DebugLogger::dirTree(dirname($absoluteDir)),
+			]);
+			return [
+				'error' => 'Cannot read directory: ' . $directory,
+				'attemptedPath' => $directory,
+				'workDir' => $this->workDirectory,
+			];
 		}
 
 		foreach ( $items as $item ) {

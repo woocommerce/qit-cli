@@ -42,3 +42,5 @@ src/tests/unit/data/sync.json
 
 
 src/tests/integration/cache/
+
+src/src/AI/webserver/router.local.php

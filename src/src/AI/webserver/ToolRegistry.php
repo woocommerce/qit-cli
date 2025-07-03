@@ -7,8 +7,9 @@ namespace QIT_AI_Webserver;
 use Exception;
 use QIT_AI_Webserver\Tools\ToolInterface;
 use QIT_AI_Webserver\Tools\ReadFileTool;
-use QIT_AI_Webserver\Tools\SearchPatternTool;
 use QIT_AI_Webserver\Tools\ListFilesTool;
+use QIT_AI_Webserver\Tools\SearchStringsTool;
+use QIT_AI_Webserver\Tools\FindHooksTool;
 
 class ToolRegistry {
 	private array $tools = [];
@@ -31,8 +32,9 @@ class ToolRegistry {
 	private function register_default_tools(): void {
 		// Create tool instances
 		$this->registerTool( new ReadFileTool( $this->workDirectory ) );
-		$this->registerTool( new SearchPatternTool( $this->workDirectory ) );
 		$this->registerTool( new ListFilesTool( $this->workDirectory ) );
+		$this->registerTool( new SearchStringsTool( $this->workDirectory ) );
+		$this->registerTool( new FindHooksTool( $this->workDirectory ) );
 	}
 
 	public function registerTool( ToolInterface $tool ): void {
@@ -43,15 +45,8 @@ class ToolRegistry {
 		return $this->tools[ $name ] ?? null;
 	}
 
-	public function getTools( array $names ): array {
-		$tools = [];
-		foreach ( $names as $name ) {
-			if ( isset( $this->tools[ $name ] ) ) {
-				$tools[ $name ] = $this->tools[ $name ];
-			}
-		}
-
-		return $tools;
+	public function getTools(): array {
+		return $this->tools;
 	}
 
 	public function execute_tool( string $name, array $params ): array {
@@ -65,9 +60,5 @@ class ToolRegistry {
 		} catch ( Exception $e ) {
 			return [ 'error' => $e->getMessage() ];
 		}
-	}
-
-	public function get_available_tools(): array {
-		return array_keys( $this->tools );
 	}
 }
