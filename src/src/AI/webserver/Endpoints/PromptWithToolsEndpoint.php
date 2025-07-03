@@ -48,8 +48,14 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	/* 3.  Helpers                                                        */
 	/* ------------------------------------------------------------------ */
 	private function needsPathNormalisation( string $tool, ToolRegistry $reg ): bool {
+		$toolObj = $reg->getTool( $tool );
+		if ( ! $toolObj ) {
+			// Unknown tool – nothing to normalise
+			return false;
+		}
+
 		$spec  = FunctionFormatter::formatOneFunctionToOpenAI(
-			$reg->getTool( $tool )->getFunctionInfo()
+			$toolObj->getFunctionInfo()
 		);
 		$props = $spec['parameters']['properties'] ?? [];
 
@@ -391,7 +397,14 @@ SCRIPT;
 		}
 
 		$logTool( 'tool_call', [ 'id' => $id, 'name' => $tool, 'args' => $args ] );
-		$result = $reg->getTool( $tool )->execute( $args );
+
+		$toolObj = $reg->getTool( $tool );
+		if ( ! $toolObj ) {
+			$conv[] = Message::assistant( "⚠️ Unknown tool '$tool' – skipping." );
+			return [ 'result' => [ '__note' => 'unknown-tool' ], 'id' => $id ];
+		}
+
+		$result = $toolObj->execute( $args );
 		$logTool( 'tool_result', [ 'id' => $id, 'result' => $result ] );
 
 		$this->callHashes[ $hash ] = true;
