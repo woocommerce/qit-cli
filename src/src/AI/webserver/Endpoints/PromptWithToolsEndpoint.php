@@ -82,9 +82,6 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	/* 4.  Main handler                                                   */
 	/* ------------------------------------------------------------------ */
 	public function handle( array $input ): void {
-		// reset dedup caches (one request = one clean slate)
-		$this->callHashes  = [];
-		$this->readCoverage = [];
 
 		/* 4.0  logger ---------------------------------------------------- */
 		$dbg     = [];
@@ -248,6 +245,17 @@ SCRIPT;
 				}
 			}
 
+			$toolCalls = Dialect::parseToolCalls( $dialect, $rawOut, $nativeCalls );
+
+			/* 🩹 Simplified repair rule ------------------------------------ */
+			if ( empty( $toolCalls ) && $this->hasToolName( $rawOut, $registry ) ) {
+				$toolCalls = $this->repairToolCalls( $dialect, $rawOut );
+				if ( $toolCalls ) {
+					$log( 'parsed_tool_calls_repaired', $toolCalls );
+				}
+			}
+
+
 			$thought = trim( $rawOut );
 			if ( $thought !== '' && empty( $toolCalls ) ) {
 				$conv[] = Message::assistant( $thought );
@@ -265,7 +273,6 @@ SCRIPT;
 			/* execute tool(s) */
 			if ( $toolCalls ) {
 				foreach ( $toolCalls as [$name, $args, $id] ) {
-					$log( 'tool_execute', [ 'id' => $id, 'name' => $name, 'args' => $args ] );
 					$toolResult = $this->executeTool(
 						$dialect, $name, $args, $id,
 						$registry, $pathGuard,
@@ -274,12 +281,6 @@ SCRIPT;
 					);
 					$result     = $toolResult['result'];
 					$uniqueId   = $toolResult['id'];
-					$log( 'tool_executed', [ 'id' => $id, 'unique_id' => $uniqueId, 'result' => $result ] );
-
-					if ( ! empty( $toolResult['duplicate'] ) ) {
-						// skip sending toolResultMessage for duplicates
-						continue;
-					}
 
 					$conv[] = Dialect::toolResultMessage( $dialect, json_encode( $result ), $uniqueId );
 				}
@@ -372,11 +373,7 @@ SCRIPT;
 			// Tell the LLM we skipped and avoid counting success
 			$conv[] = Message::assistant( "🔄 Duplicate $tool call skipped." );
 
-			return [
-				'result'    => [ '__note' => 'duplicate-skip' ],
-				'id'        => $id,
-				'duplicate' => true          // flag for caller
-			];
+			return [ 'result' => [ '__note' => 'duplicate-skip' ], 'id' => $id ];
 		}
 
 		// Special handling for read_file sub-ranges
@@ -389,11 +386,7 @@ SCRIPT;
 					"🔄 read_file `$path` lines $start-$end already provided. Skipping."
 				);
 
-				return [
-					'result'    => [ '__note' => 'duplicate-skip' ],
-					'id'        => $id,
-					'duplicate' => true          // flag for caller
-				];
+				return [ 'result' => [ '__note' => 'duplicate-skip' ], 'id' => $id ];
 			}
 		}
 
@@ -404,12 +397,8 @@ SCRIPT;
 		$this->callHashes[ $hash ] = true;
 		if ( $tool === 'read_file' && isset( $path, $start, $end ) ) {
 			$this->rememberRange( $path, $start, $end );
-			// (Optional) brief ledger for model - truncate to last 5 ranges
+			// (Optional) brief ledger for model
 			$ranges = array_map( fn( $r ) => "{$r[0]}-{$r[1]}", $this->readCoverage[ $path ] );
-			if ( count( $ranges ) > 5 ) {
-				$ranges = array_slice( $ranges, -5 );
-				$ranges[0] = '...' . $ranges[0];
-			}
 			$conv[] = Message::assistant(
 				"📚 Coverage for `$path`: [" . implode( ', ', $ranges ) . "]"
 			);
@@ -442,4 +431,57 @@ SCRIPT;
 
 		return [ 'result' => $result, 'id' => $uniqueId ];
 	}
+
+	/** Return true if $assistantRaw contains any registered tool name. */
+	private function hasToolName( string $assistantRaw, ToolRegistry $registry ): bool {
+		$text = strtolower( $assistantRaw );
+		foreach ( $registry->getTools() as $tool ) {
+			$name = strtolower( $tool->getName() );
+			// whole‑word match to avoid false positives like "path"
+			if ( preg_match( '/\b' . preg_quote( $name, '/' ) . '\b/', $text ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	/** ------------------------------------------------------------------
+	 *  Try to “repair” a malformed tool request with a micro‑prompt.
+	 *  Return the parsed calls in the usual [ [name,args,id], … ] format,
+	 *  or an empty array if nothing usable is produced.
+	 *  ------------------------------------------------------------------ */
+	private function repairToolCalls(
+		string $dialect,
+		string $assistantRaw
+	): array {
+		// 1 · spin up a **fresh, stateless** Chat object so that we
+		//    don’t pollute the main conversation with extra tokens.
+		$llm     = clone $this->llm;
+		$chatFix = $llm->getChat();
+		$chatFix->setModelOption( 'think', false );
+		$chatFix->setModelOption( 'tool_choice', 'none' );   // we want *text*, not calls
+		$chatFix->setModelOption( 'format', 'text' );        // keep it simple
+
+		// 2 · Explain what we need, once, very explicitly
+		$callSyntax = Dialect::callInstruction( $dialect );
+		$sys        = "You convert *informal* instructions into ONE valid tool call " .
+		              "for the target dialect.\n" .
+		              "Dialect‑specific rule: {$callSyntax}\n" .
+		              "• NO analysis, no markdown, no extra words.\n" .
+		              "• Echo **only** the tool call.";
+
+		// 3 · Do the round‑trip with the malformed text
+		$resp = $chatFix->generateChat( [
+			Message::system( $sys ),
+			Message::user( $assistantRaw ),
+		] );
+
+		// 4 · Parse the result with the normal dialect parser
+		$content = method_exists( $resp, 'getContent' ) ? $resp->getContent() : (string) $resp;
+		$native  = method_exists( $resp, 'getToolCalls' ) ? $resp->getToolCalls() : [];
+
+		return Dialect::parseToolCalls( $dialect, $content, $native );
+	}
+
 }
