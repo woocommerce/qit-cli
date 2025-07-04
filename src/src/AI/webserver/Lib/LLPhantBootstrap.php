@@ -10,9 +10,43 @@ use LLPhant\Chat\OpenAIChat;
 use LLPhant\OpenAIConfig;
 use QIT_AI_Webserver\ToolRegistry;
 
-class LLPhantIntegration {
+final class LLPhantBootstrap {
+	/* ───────── 1. STATIC SINGLETON – BOOT ONLY ONCE ───────── */
+
+	private static ?ChatInterface $chat = null;
+
+	/** Initialise exactly once per PHP process (router‑level). */
+	public static function boot(string $provider, array $conf): void
+	{
+		if (self::$chat) {            // already initialised
+			return;
+		}
+		$self = new self($provider, $conf);   // reuse existing ctor logic
+		$self->ensureInitialized();           // still installs composer etc.
+		self::$chat = $self->getChat();
+
+		// Apply options once during boot()
+		foreach (['model','temperature','max_tokens'] as $opt) {
+			if (isset($conf[$opt])) {
+				self::$chat->setModelOption($opt, $conf[$opt]);
+			}
+		}
+	}
+
+	/** Retrieve the ready‑to‑use ChatInterface for endpoints. */
+	public static function chat(): ChatInterface
+	{
+		if (!self::$chat) {
+			throw new \RuntimeException('LLPhantBootstrap::boot() not called');
+		}
+		return self::$chat;
+	}
+
+	/* ───────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ─────── */
+	// (constructor, ensureInitialized, initializeProvider, generate* …)
+
 	private string $installDir;
-	private ?ChatInterface $chat = null;
+	private ?ChatInterface $chat_instance = null;
 	private string $provider;
 	private array $config;
 	private $logger;
@@ -27,12 +61,12 @@ class LLPhantIntegration {
 	}
 
 	public function getChat(): ChatInterface {
-		return $this->chat;
+		return $this->chat_instance;
 	}
 
 	public function reinitialize( array $runtimeConfig = [] ): void {
 		// invalidate old chat
-		$this->chat   = null;
+		$this->chat_instance   = null;
 		$this->config = array_merge( $this->config, $runtimeConfig );
 		$this->initializeProvider( $runtimeConfig );
 	}
@@ -43,7 +77,7 @@ class LLPhantIntegration {
 	 * @param array $options Runtime options for initialization
 	 */
 	public function ensureInitialized( array $options = [] ): void {
-		if ( ! $this->chat ) {
+		if ( ! $this->chat_instance ) {
 			$this->initializeProvider( $options );
 		}
 	}
@@ -124,7 +158,7 @@ class LLPhantIntegration {
 		// Apply schema if provided
 		if ( isset( $config['format'] ) ) {
 			// OpenAI/Anthropic: response_format for JSON schema
-			if ( $this->chat instanceof OpenAIChat || $this->chat instanceof AnthropicChat ) {
+			if ( $this->chat_instance instanceof OpenAIChat || $this->chat_instance instanceof AnthropicChat ) {
 				OpenAIChat::setModelOption( 'response_format', [ 'type' => 'json_schema', 'schema' => $config['format'] ] );
 			}
 		}
@@ -149,7 +183,7 @@ class LLPhantIntegration {
 			$openaiConfig->url = $config['base_url'];
 		}
 
-		$this->chat = new OpenAIChat( $openaiConfig );
+		$this->chat_instance = new OpenAIChat( $openaiConfig );
 	}
 
 	private function initializeAnthropic( array $config ): void {
@@ -161,212 +195,12 @@ class LLPhantIntegration {
 			'model' => 'claude-3-opus-20240229'
 		], $config );
 
-		$this->chat = new AnthropicChat(
+		$this->chat_instance = new AnthropicChat(
 			$config['api_key'],
 			$config['model']
 		);
 	}
 
-	/**
-	 * Generate a response from the chat model
-	 *
-	 * Based on LLPhant documentation:
-	 * - Uses Message objects for generateChat()
-	 * - System messages are set via setSystemMessage()
-	 * - generateText() for single prompts, generateChat() for conversations
-	 *
-	 * @param array $messages Array of messages with 'role' and 'content'
-	 * @param array $options Additional options like temperature, max_tokens
-	 *
-	 * @return array Response with 'response', 'model', 'duration', 'provider'
-	 */
-	public function generateResponse( array $messages, array $options = [] ): array {
-		// Initialize on first use with runtime options
-		if ( ! $this->chat ) {
-			$this->initializeProvider( $options );
-		}
-
-		try {
-			$startTime = microtime( true );
-
-			// Set model options if provided
-			if ( isset( $options['temperature'] ) ) {
-				$this->chat->setModelOption( 'temperature', $options['temperature'] );
-			}
-			if ( isset( $options['max_tokens'] ) ) {
-				$this->chat->setModelOption( 'max_tokens', $options['max_tokens'] );
-			}
-
-			//$this->chat->setModelOption( 'keep_alive', 0 );
-
-			// Convert messages to LLPhant Message objects
-			// Based on documentation: Message::system(), Message::user(), Message::assistant()
-			$llphantMessages = [];
-			$systemMessage   = '';
-
-			foreach ( $messages as $message ) {
-				switch ( $message['role'] ) {
-					case 'system':
-						// System messages are concatenated and set separately
-						$systemMessage .= $message['content'] . "\n";
-						break;
-					case 'user':
-						$llphantMessages[] = Message::user( $message['content'] );
-						break;
-					case 'assistant':
-						$llphantMessages[] = Message::assistant( $message['content'] );
-						break;
-					case 'tool':
-						// Tool results are passed as user messages with context
-						$llphantMessages[] = Message::user( "Tool Result: " . $message['content'] );
-						break;
-				}
-			}
-
-			// Set system message if present
-			if ( ! empty( trim( $systemMessage ) ) ) {
-				$this->chat->setSystemMessage( trim( $systemMessage ) );
-			}
-
-			// Generate response
-			if ( empty( $llphantMessages ) ) {
-				throw new Exception( "No messages provided for generation" );
-			}
-
-			// Use generateChat for conversations, generateText for single messages
-			$response = count( $llphantMessages ) > 1
-				? $this->chat->generateChat( $llphantMessages )
-				: $this->chat->generateText( $llphantMessages[0]->content );
-
-			$duration = microtime( true ) - $startTime;
-
-			// Get model from options or config
-			$model = $options['model'] ?? $this->config['model'] ?? 'unknown';
-
-			return [
-				'response' => is_string( $response ) ? $response : (string) $response,
-				'model'    => $model,
-				'duration' => $duration,
-				'provider' => $this->provider
-			];
-
-		} catch ( Exception $e ) {
-			$this->log_error( "LLPhant generation failed: " . $e->getMessage() );
-			throw $e;
-		}
-	}
-
-	/**
-	 * Generate a response with tool support
-	 *
-	 * Uses generateTextOrReturnFunctionCalled() for tool interactions
-	 * Processes tool results and recurses if needed
-	 *
-	 * @param array $messages Conversation messages
-	 * @param array $tools Array of tool names to register
-	 * @param ToolRegistry $toolRegistry Registry containing tool implementations
-	 * @param array $options Additional options
-	 *
-	 * @return array Response with message content and tool_calls
-	 */
-	public function generateWithTools(
-		array $messages,
-		array $tools,
-		ToolRegistry $toolRegistry,
-		array $options = []
-	): array {
-		// Initialize on first use with runtime options
-		if ( ! $this->chat ) {
-			$this->initializeProvider( $options );
-		}
-
-		try {
-			// Set model options if provided
-			if ( isset( $options['temperature'] ) ) {
-				$this->chat->setModelOption( 'temperature', $options['temperature'] );
-			}
-			if ( isset( $options['max_tokens'] ) ) {
-				$this->chat->setModelOption( 'max_tokens', $options['max_tokens'] );
-			}
-
-			// Register tools with the chat instance
-			foreach ( $tools as $toolName ) {
-				if ( $tool = $toolRegistry->getTool( $toolName ) ) {
-					$this->chat->addTool( $tool->getFunctionInfo() );
-				}
-			}
-
-			// Convert messages to LLPhant Message objects
-			$llphantMessages = [];
-			$systemMessage   = '';
-
-			foreach ( $messages as $message ) {
-				switch ( $message['role'] ) {
-					case 'system':
-						$systemMessage .= $message['content'] . "\n";
-						break;
-					case 'user':
-						$llphantMessages[] = Message::user( $message['content'] );
-						break;
-					case 'assistant':
-						$llphantMessages[] = Message::assistant( $message['content'] );
-						break;
-					case 'tool':
-						$llphantMessages[] = Message::user( "Tool Result: " . $message['content'] );
-						break;
-				}
-			}
-
-			// Set system message if present
-			if ( ! empty( trim( $systemMessage ) ) ) {
-				$this->chat->setSystemMessage( trim( $systemMessage ) );
-			}
-
-			if ( empty( $llphantMessages ) ) {
-				throw new Exception( "No messages provided for tool generation" );
-			}
-
-			// Use the last message content for tool calls
-			// LLPhant's generateTextOrReturnFunctionCalled expects a string prompt
-			$lastMessageContent = $llphantMessages[ count( $llphantMessages ) - 1 ]->content;
-			$answer             = $this->chat->generateTextOrReturnFunctionCalled( $lastMessageContent );
-
-			// Handle tool calls if returned
-			if ( is_array( $answer ) ) {
-				$toolCalls = [];
-				foreach ( $answer as $functionInfo ) {
-					$args   = json_decode( $functionInfo->jsonArgs, true ) ?? [];
-					$result = $toolRegistry->execute_tool( $functionInfo->name, $args );
-
-					$toolCalls[] = [
-						'function' => [
-							'name'      => $functionInfo->name,
-							'arguments' => $args,
-						],
-						'result'   => $result,
-					];
-
-					// Add tool result to messages for next iteration
-					$messages[] = [ 'role' => 'tool', 'content' => json_encode( $result ) ];
-				}
-
-				// Recurse to handle additional tool calls or generate final response
-				return $this->generateWithTools( $messages, $tools, $toolRegistry, $options );
-			}
-
-			// Return final text response
-			return [
-				'message' => [
-					'content'    => is_string( $answer ) ? $answer : (string) $answer,
-					'tool_calls' => [],
-				],
-			];
-
-		} catch ( Exception $e ) {
-			$this->log_error( "LLPhant tool generation failed: " . $e->getMessage() );
-			throw $e;
-		}
-	}
 
 	public function ensureModel( string $model ): bool {
 		if ( $this->provider === 'lmstudio' ) {

@@ -5,8 +5,9 @@ namespace QIT_AI_Webserver\Endpoints;
 use Exception;
 use QIT_AI_Webserver\Lib\ExtractPathResolver;
 use QIT_AI_Webserver\NodeResponse;
-use QIT_AI_Webserver\Lib\LLPhantIntegration;
+use QIT_AI_Webserver\Lib\LLPhantBootstrap;
 use QIT_AI_Webserver\ToolRegistry;
+use LLPhant\Chat\Message;
 
 /**
  * Abstract Base Endpoint
@@ -15,13 +16,10 @@ use QIT_AI_Webserver\ToolRegistry;
  * including LLM API communication, logging, and route definition.
  */
 abstract class AbstractEndpoint {
-	protected ?LLPhantIntegration $llm = null;
-	protected string $provider;
-	protected array $providerConfig;
+	protected \LLPhant\Chat\ChatInterface $chat;
 
-	public function __construct( string $provider, array $providerConfig = [] ) {
-		$this->provider       = $provider;
-		$this->providerConfig = $providerConfig;
+	public function __construct() {
+		$this->chat = \QIT_AI_Webserver\Lib\LLPhantBootstrap::chat();
 	}
 
 	/**
@@ -38,88 +36,14 @@ abstract class AbstractEndpoint {
 	 */
 	abstract public function handle( array $input ): void;
 
-	protected function initializeLLM(): void {
-		if ( ! $this->llm ) {
-			$this->llm = new LLPhantIntegration( $this->provider, $this->providerConfig, $this );
-		}
+	/** Optional helper to map raw message arrays → LL‑Phant messages */
+	protected function toMessages( array $raw ): array {
+		return array_map(
+			fn( $m ) => \LLPhant\Chat\Message::{$m['role']}( $m['content'] ),
+			$raw
+		);
 	}
 
-	/**
-	 * Call LLM with automatic model config application
-	 */
-	protected function callLLM( array $messages, array $input = [] ): array {
-		$this->initializeLLM();
-
-		// Build options including model and format from input
-		$options = $input['options'] ?? [];
-
-		// Add model if provided in input
-		if ( isset( $input['model'] ) ) {
-			$options['model'] = $input['model'];
-		}
-
-		// Add format if provided in input
-		if ( isset( $input['format'] ) ) {
-			$options['format'] = $input['format'];
-		}
-
-		$this->log_debug( "Calling LLM", [
-			'provider'      => $this->provider,
-			'message_count' => count( $messages ),
-			'has_format'    => isset( $options['format'] ) ? 'yes' : 'no'
-		] );
-
-		$startTime = microtime( true );
-
-		try {
-			$response = $this->llm->generateResponse( $messages, $options );
-
-			$duration = microtime( true ) - $startTime;
-
-			$this->log_debug( "LLM response received", [
-				'duration_seconds' => round( $duration, 2 ),
-				'response_length'  => strlen( $response['response'] )
-			] );
-
-			return $response;
-		} catch ( Exception $e ) {
-			$this->log_error( "LLM call failed", [ 'error' => $e->getMessage() ] );
-			throw new Exception( "LLM call failed: " . $e->getMessage() );
-		}
-	}
-
-	/**
-	 * Call LLM with tools
-	 */
-	protected function callLLMWithTools( array $messages, array $tools, array $input = [] ): array {
-		$this->initializeLLM();
-
-		// Need to get ToolRegistry somehow - maybe pass it as parameter
-		$workDir      = ExtractPathResolver::resolve( $input );
-		$toolRegistry = new ToolRegistry( $workDir );
-
-		$options = $input['options'] ?? [];
-
-		try {
-			return $this->llm->generateWithTools( $messages, $tools, $toolRegistry, $options );
-		} catch ( Exception $e ) {
-			$this->log_error( "LLM tool call failed", [ 'error' => $e->getMessage() ] );
-			throw new Exception( "LLM tool call failed: " . $e->getMessage() );
-		}
-	}
-
-	/**
-	 * Ensure model is available
-	 *
-	 * @param string $model Model name
-	 *
-	 * @return bool True if available
-	 */
-	protected function ensureModelAvailable( string $model ): bool {
-		$this->initializeLLM();
-
-		return $this->llm->ensureModel( $model );
-	}
 
 	/**
 	 * Handle errors consistently across all endpoints

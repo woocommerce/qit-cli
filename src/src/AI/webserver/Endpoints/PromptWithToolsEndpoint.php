@@ -125,10 +125,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		$log( 'dialect', $dialect );
 
 		/* 4.3  boot LLM -------------------------------------------------- */
-		$this->providerConfig['model'] = $model;
-		$this->initializeLLM();
-		$this->llm->ensureInitialized();
-		$chat = $this->llm->getChat();
+		$chat = $this->chat;
 		$chat->setModelOption( 'think', false );
 
 		/* 4.4  register tools ------------------------------------------- */
@@ -140,9 +137,9 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		}
 
 		/* 4.5  build conversation --------------------------------------- */
-		$pathCtx = PromptContext::forWorkspace($workDir);
-		$system = $pathCtx;
-		$conv   = [];
+		$pathCtx = PromptContext::forWorkspace( $workDir );
+		$system  = $pathCtx;
+		$conv    = [];
 		foreach ( $raw as $m ) {
 			if ( $m['role'] === 'system' ) {
 				$system .= $m['content'] . "\n";
@@ -395,14 +392,16 @@ SCRIPT;
 		$toolObj = $reg->getTool( $tool );
 		if ( ! $toolObj ) {
 			$conv[] = Message::assistant( "⚠️ Unknown tool '$tool' – skipping." );
+
 			return [ 'result' => [ '__note' => 'unknown-tool' ], 'id' => $id ];
 		}
 
 		$result = $toolObj->execute( $args );
 
 		// Handle tool errors
-		if ( !$result['success'] ) {
+		if ( ! $result['success'] ) {
 			$conv[] = Message::assistant( "⚠️ Tool '$tool' failed: " . ( $result['error'] ?? 'Unknown error' ) );
+
 			return [ 'result' => [ '__note' => 'tool-error', 'error' => $result['error'] ], 'id' => $id ];
 		}
 
@@ -480,7 +479,7 @@ SCRIPT;
 
 		// 2 · Explain what we need, once, very explicitly
 		$callSyntax = Dialect::callInstruction( $dialect );
-		$sys = <<<SYS
+		$sys        = <<<SYS
 Convert the user text into **one** valid tool call.
 {$callSyntax}
 • Root‑relative paths only (e.g., "includes/utils.php", not "/includes/utils.php").

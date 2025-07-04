@@ -53,13 +53,13 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 
 		if ( ! empty( $missing ) ) {
 			$this->log_error( "Missing or invalid required parameters", [
-				'missing' => $missing,
-				'uri' => $_SERVER['REQUEST_URI'] ?? 'unknown',
-				'messages_type' => gettype( $input['messages'] ?? 'undefined' ),
+				'missing'        => $missing,
+				'uri'            => $_SERVER['REQUEST_URI'] ?? 'unknown',
+				'messages_type'  => gettype( $input['messages'] ?? 'undefined' ),
 				'messages_value' => $input['messages'] ?? 'undefined'
 			] );
 
-			NodeResponse::error( 'Missing or invalid required parameters: ' . implode(', ', $missing), 400, [
+			NodeResponse::error( 'Missing or invalid required parameters: ' . implode( ', ', $missing ), 400, [
 				'job_id' => $input['job_id'] ?? null
 			] );
 
@@ -67,35 +67,38 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 		}
 
 		try {
-			// Ensure the model is available before processing
-			$model = $input['model'];
-			NodeResponse::mark( 'model_check' );
-			if ( ! $this->ensureModelAvailable( $model ) ) {
-				throw new Exception( 'Failed to ensure model availability: ' . $model );
-			}
-
 			// Use messages directly with LLM
-			$messages = $input['messages'];
+			$messages = $this->toMessages( $input['messages'] );
+			$model    = $input['model'];
 
 			$this->log_info( "Starting AI processing", [
-				'model'           => $model,
-				'job_id'          => $input['job_id'] ?? 'unknown',
-				'message_count'   => count( $messages ),
-				'has_schema'      => isset( $input['format'] ) ? 'yes' : 'no',
-				'has_options'     => isset( $input['options'] ) ? 'yes' : 'no'
+				'model'         => $model,
+				'job_id'        => $input['job_id'] ?? 'unknown',
+				'message_count' => count( $messages ),
+				'has_schema'    => isset( $input['format'] ) ? 'yes' : 'no',
+				'has_options'   => isset( $input['options'] ) ? 'yes' : 'no'
 			] );
 
-			// Make the API call using LLM integration
+			// Make the API call using chat
 			NodeResponse::mark( 'llm_call' );
-			$response = $this->callLLM( $messages, $input );
+			$start   = microtime( true );
+			$result  = $this->chat->generateChat( $messages );
+			$elapsed = microtime( true ) - $start;
+
+			$response = [
+				'response' => trim( (string) $result ),
+				'model'    => $model,
+				'duration' => $elapsed,
+				'provider' => 'openai' // provider is immutable
+			];
 
 			// Log performance metrics
 			$this->log_info( "AI processing completed successfully", [
-				'job_id'           => $input['job_id'] ?? 'unknown',
-				'model'            => $response['model'] ?? $model,
-				'provider'         => $response['provider'] ?? 'unknown',
-				'duration'         => $response['duration'] ?? 0,
-				'response_length'  => strlen( $response['response'] ),
+				'job_id'          => $input['job_id'] ?? 'unknown',
+				'model'           => $response['model'] ?? $model,
+				'provider'        => $response['provider'] ?? 'unknown',
+				'duration'        => $response['duration'] ?? 0,
+				'response_length' => strlen( $response['response'] ),
 			] );
 
 			// Use NodeResponse::prompt for standardized response

@@ -210,6 +210,16 @@ use QIT_AI_Webserver\NodeResponse;
 
 NodeResponse::init();
 
+// Boot LLPhant with provider config and per-request options
+$provider       = '{{PROVIDER}}';
+$providerConfig = json_decode( '{{PROVIDER_CONFIG}}', true ) + [
+		'model'       => $input['model'] ?? null,
+		'temperature' => $input['temperature'] ?? null,
+		'max_tokens'  => $input['max_tokens'] ?? null,
+	];
+
+\QIT_AI_Webserver\Lib\LLPhantBootstrap::boot( $provider, $providerConfig );
+
 // Route to appropriate endpoint
 log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
 
@@ -223,17 +233,13 @@ use QIT_AI_Webserver\Endpoints\ZipExtractionEndpoint;
 use QIT_AI_Webserver\Endpoints\FileReadingEndpoint;
 use QIT_AI_Webserver\Endpoints\VulnerabilityScanEndpoint;
 
-// Add these lines near the top after the placeholders section:
-$provider = '{{PROVIDER}}';
-$providerConfig = json_decode( '{{PROVIDER_CONFIG}}', true );
-
-// Create endpoint instances with provider config
+/* Endpoints no longer need provider/config arguments */
 $endpoints = [
-	new BasicPromptEndpoint( $provider, $providerConfig ),
-	new ZipExtractionEndpoint( $provider, $providerConfig ),
-	new PromptWithToolsEndpoint( $provider, $providerConfig ),
-	new FileReadingEndpoint( $provider, $providerConfig ),
-	new VulnerabilityScanEndpoint( $provider, $providerConfig )
+	new BasicPromptEndpoint(),
+	new ZipExtractionEndpoint(),
+	new PromptWithToolsEndpoint(),
+	new FileReadingEndpoint(),
+	new VulnerabilityScanEndpoint()
 ];
 
 // Build route map from endpoints
