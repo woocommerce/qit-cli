@@ -5,8 +5,8 @@
 namespace QIT_AI_Webserver;
 
 use Exception;
+use QIT_AI_Webserver\Tools\BaseTool;
 use QIT_AI_Webserver\Tools\ParsePhpTool;
-use QIT_AI_Webserver\Tools\ToolInterface;
 use QIT_AI_Webserver\Tools\ReadFileTool;
 use QIT_AI_Webserver\Tools\ListFilesTool;
 use QIT_AI_Webserver\Tools\SearchStringsTool;
@@ -39,11 +39,11 @@ class ToolRegistry {
 		$this->registerTool( new ParsePhpTool( $this->workDirectory ) );
 	}
 
-	public function registerTool( ToolInterface $tool ): void {
+	public function registerTool( BaseTool $tool ): void {
 		$this->tools[ $tool->getName() ] = $tool;
 	}
 
-	public function getTool( string $name ): ?ToolInterface {
+	public function getTool( string $name ): ?BaseTool {
 		return $this->tools[ $name ] ?? null;
 	}
 

@@ -5,16 +5,8 @@ namespace QIT_AI_Webserver\Tools;
 use Exception;
 use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use LLPhant\Chat\FunctionInfo\Parameter;
-use QIT_AI_Webserver\Lib\FilePathResolver;
 
-class ReadFileTool implements ToolInterface {
-	private string $workDirectory;
-	private FilePathResolver $resolver;
-
-	public function __construct( string $workDirectory ) {
-		$this->workDirectory = rtrim( $workDirectory, '/\\' );
-		$this->resolver      = new FilePathResolver( $this->workDirectory );
-	}
+class ReadFileTool extends BaseTool {
 
 	public function getName(): string {
 		return 'read_file';
@@ -54,46 +46,32 @@ class ReadFileTool implements ToolInterface {
 		);
 	}
 
-	public function execute( array $params ): array {
-		try {
-			$relPath = $this->resolver->canonRelative( $params['path'] ?? '' );
-		} catch (\Throwable $e) {
-			return [ 'success' => false, 'error' => $e->getMessage() ];
-		}
-		$path = $relPath;
+	protected function do( array $params ) {
+		$path = $this->safePath( $params['path'] ?? '' );
 		$start_line = $params['start_line'] ?? null;
 		$end_line   = $params['end_line'] ?? null;
 
 		if ( ! $path ) {
-			return [ 'error' => 'Path is required' ];
+			throw new \InvalidArgumentException( 'Path is required' );
 		}
 
-		try {
-			$content = $this->resolver->readFile( $path );
-			$lines   = explode( "\n", $content );
+		$content = $this->r->readFile( $path );
+		$lines   = explode( "\n", $content );
 
-			// Apply line filtering if specified
-			if ( $start_line !== null || $end_line !== null ) {
-				$start          = max( 0, ( $start_line ?? 1 ) - 1 );
-				$end            = min( count( $lines ), $end_line ?? count( $lines ) );
-				$selected_lines = array_slice( $lines, $start, $end - $start );
-				$content        = implode( "\n", $selected_lines );
-			}
-
-			return [
-				'content'     => $content,
-				'path'        => $path,
-				'lines_read'  => [ $start_line ?? 1, $end_line ?? substr_count( $content, "\n" ) + 1 ],
-				'total_lines' => count( $lines )
-			];
-		} catch ( Exception $e ) {
-			// The resolver already logged, but bubble up context to the caller
-			return [
-				'error'         => $e->getMessage(),
-				'attemptedPath' => $path,
-				'workDir'       => $this->workDirectory,
-			];
+		// Apply line filtering if specified
+		if ( $start_line !== null || $end_line !== null ) {
+			$start          = max( 0, ( $start_line ?? 1 ) - 1 );
+			$end            = min( count( $lines ), $end_line ?? count( $lines ) );
+			$selected_lines = array_slice( $lines, $start, $end - $start );
+			$content        = implode( "\n", $selected_lines );
 		}
+
+		return [
+			'content'     => $content,
+			'path'        => $path,
+			'lines_read'  => [ $start_line ?? 1, $end_line ?? substr_count( $content, "\n" ) + 1 ],
+			'total_lines' => count( $lines )
+		];
 	}
 
 	public function __invoke( string $path, ?int $start_line = null, ?int $end_line = null ): string {

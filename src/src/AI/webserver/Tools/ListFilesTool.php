@@ -4,17 +4,9 @@ namespace QIT_AI_Webserver\Tools;
 
 use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use LLPhant\Chat\FunctionInfo\Parameter;
-use QIT_AI_Webserver\Lib\FilePathResolver;
 use QIT_AI_Webserver\Lib\DebugLogger;
 
-class ListFilesTool implements ToolInterface {
-	private string $workDirectory;
-	private FilePathResolver $resolver;
-
-	public function __construct( string $workDirectory ) {
-		$this->workDirectory = rtrim( $workDirectory, '/\\' );
-		$this->resolver      = new FilePathResolver( $this->workDirectory );
-	}
+class ListFilesTool extends BaseTool {
 
 	public function getName(): string {
 		return 'list_files';
@@ -42,24 +34,19 @@ class ListFilesTool implements ToolInterface {
 		);
 	}
 
-	public function execute( array $params ): array {
-		try {
-			$relPath = $this->resolver->canonRelative( $params['directory'] ?? '.' );
-		} catch (\Throwable $e) {
-			return [ 'success' => false, 'error' => $e->getMessage() ];
-		}
-		$directory = $relPath;
+	protected function do( array $params ) {
+		$directory = $this->safePath( $params['directory'] ?? '.' );
 
 		// Normalize directory path
 		$relativeDir = $directory;
 		if ( $relativeDir === '.' || $relativeDir === '' ) {
-			$absoluteDir = $this->workDirectory;
+			$absoluteDir = $this->workDir;
 		} else {
-			$absoluteDir = $this->resolver->toAbsolute( $relativeDir );
+			$absoluteDir = $this->r->toAbsolute( $relativeDir );
 		}
 
 		// Verify directory is within bounds
-		$realWorkDir = realpath( $this->workDirectory );
+		$realWorkDir = realpath( $this->workDir );
 		$realDir     = realpath( $absoluteDir );
 
 		if ( $realDir === false || strpos( $realDir, $realWorkDir ) !== 0 ) {
@@ -67,15 +54,11 @@ class ListFilesTool implements ToolInterface {
 				'reason'       => 'directory_not_found_or_outside_bounds',
 				'directory'    => $directory,
 				'absolute_dir' => $absoluteDir,
-				'work_dir'     => $this->workDirectory,
-				'dir_tree'     => DebugLogger::dirTree( $this->workDirectory ),
+				'work_dir'     => $this->workDir,
+				'dir_tree'     => DebugLogger::dirTree( $this->workDir ),
 			] );
 
-			return [
-				'error'         => 'Directory not found or outside bounds: ' . $directory,
-				'attemptedPath' => $directory,
-				'workDir'       => $this->workDirectory,
-			];
+			throw new \InvalidArgumentException( 'Directory not found or outside bounds: ' . $directory );
 		}
 
 		if ( ! is_dir( $absoluteDir ) ) {
@@ -83,15 +66,11 @@ class ListFilesTool implements ToolInterface {
 				'reason'       => 'not_a_directory',
 				'directory'    => $directory,
 				'absolute_dir' => $absoluteDir,
-				'work_dir'     => $this->workDirectory,
+				'work_dir'     => $this->workDir,
 				'dir_tree'     => DebugLogger::dirTree( dirname( $absoluteDir ) ),
 			] );
 
-			return [
-				'error'         => 'Directory not found: ' . $directory,
-				'attemptedPath' => $directory,
-				'workDir'       => $this->workDirectory,
-			];
+			throw new \InvalidArgumentException( 'Directory not found: ' . $directory );
 		}
 
 		$files = [];
@@ -103,15 +82,11 @@ class ListFilesTool implements ToolInterface {
 				'reason'       => 'cannot_read_directory',
 				'directory'    => $directory,
 				'absolute_dir' => $absoluteDir,
-				'work_dir'     => $this->workDirectory,
+				'work_dir'     => $this->workDir,
 				'dir_tree'     => DebugLogger::dirTree( dirname( $absoluteDir ) ),
 			] );
 
-			return [
-				'error'         => 'Cannot read directory: ' . $directory,
-				'attemptedPath' => $directory,
-				'workDir'       => $this->workDirectory,
-			];
+			throw new \RuntimeException( 'Cannot read directory: ' . $directory );
 		}
 
 		foreach ( $items as $item ) {
@@ -120,7 +95,7 @@ class ListFilesTool implements ToolInterface {
 			}
 
 			$itemPath     = $absoluteDir . '/' . $item;
-			$relativePath = $this->resolver->toRelative( $itemPath );
+			$relativePath = $this->r->toRelative( $itemPath );
 
 			if ( is_dir( $itemPath ) ) {
 				$dirs[] = $relativePath;

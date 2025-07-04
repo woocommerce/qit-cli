@@ -33,6 +33,16 @@ class FilePathResolver {
 	/**  Convert *user* path → absolute canon path or throw  */
 	public function toAbsolute( string $userPath ): string {
 		$rel = $this->canonRelative( $userPath );     // throws if illegal
+
+		// Special case: when user specifies "." they want to search the WordPress root directory
+		// instead of just the SUT directory
+		if ( $rel === '.' || $rel === '' ) {
+			$wordpressRoot = $this->findWordPressRoot();
+			if ( $wordpressRoot !== null ) {
+				return $wordpressRoot;
+			}
+		}
+
 		return $this->extractPath . '/' . $rel;
 	}
 
@@ -128,5 +138,36 @@ class FilePathResolver {
 			'lines'         => substr_count( $content, "\n" ) + 1,
 			'extension'     => pathinfo( $relativePath, PATHINFO_EXTENSION )
 		];
+	}
+
+	/**
+	 * Find the WordPress root directory by traversing up from the SUT directory
+	 * looking for a directory that contains wp-content
+	 */
+	private function findWordPressRoot(): ?string {
+		$currentPath = $this->extractPath;
+		$maxLevels = 5; // Prevent infinite loops
+		$level = 0;
+
+		while ( $level < $maxLevels ) {
+			// Check if current directory contains wp-content
+			if ( is_dir( $currentPath . '/wp-content' ) ) {
+				return $currentPath;
+			}
+
+			// Move up one level
+			$parentPath = dirname( $currentPath );
+
+			// If we've reached the root or can't go up further, stop
+			if ( $parentPath === $currentPath || $parentPath === '/' ) {
+				break;
+			}
+
+			$currentPath = $parentPath;
+			$level++;
+		}
+
+		// If no WordPress root found, return null to fall back to original behavior
+		return null;
 	}
 }

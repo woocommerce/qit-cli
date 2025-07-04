@@ -2,10 +2,11 @@
 namespace QIT_AI_Webserver\Tools;
 
 use Exception;
+use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use QIT_AI_Webserver\Lib\DebugLogger;
 use QIT_AI_Webserver\Lib\FilePathResolver;
 
-abstract class BaseTool implements ToolInterface
+abstract class BaseTool
 {
     protected FilePathResolver $r;
     protected string $workDir;
@@ -15,6 +16,21 @@ abstract class BaseTool implements ToolInterface
         $this->workDir = rtrim($workDirectory, '/\\');
         $this->r       = new FilePathResolver($this->workDir);
     }
+
+    /**
+     * Get the tool name
+     */
+    abstract public function getName(): string;
+
+    /**
+     * Get the tool description
+     */
+    abstract public function getDescription(): string;
+
+    /**
+     * Get the FunctionInfo object for LLPhant
+     */
+    abstract public function getFunctionInfo(): FunctionInfo;
 
     /** Canonical, safe, *relative* path – throws if invalid */
     protected function safePath(string $userPath): string

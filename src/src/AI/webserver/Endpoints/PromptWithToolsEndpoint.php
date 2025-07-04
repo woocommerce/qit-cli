@@ -399,7 +399,16 @@ SCRIPT;
 		}
 
 		$result = $toolObj->execute( $args );
-		$logTool( 'tool_result', [ 'id' => $id, 'result' => $result ] );
+
+		// Handle tool errors
+		if ( !$result['success'] ) {
+			$conv[] = Message::assistant( "⚠️ Tool '$tool' failed: " . ( $result['error'] ?? 'Unknown error' ) );
+			return [ 'result' => [ '__note' => 'tool-error', 'error' => $result['error'] ], 'id' => $id ];
+		}
+
+		// Extract the actual data for the LLM
+		$actualResult = $result['data'];
+		$logTool( 'tool_result', [ 'id' => $id, 'result' => $actualResult ] );
 
 		$this->callHashes[ $hash ] = true;
 		if ( $tool === 'read_file' && isset( $path, $start, $end ) ) {
@@ -412,9 +421,9 @@ SCRIPT;
 		}
 
 		/* ⚖️  Oversize guard – tool result ------------------------------ */
-		$resultJson = json_encode( $result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
+		$resultJson = json_encode( $actualResult, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES );
 		if ( strlen( $resultJson ) > self::MAX_TOOL_RESULT_TOKENS ) {
-			$result = [
+			$actualResult = [
 				'__summary' => trim(
 					$this->llm->getChat()->generateChat( [
 						Message::system(
@@ -434,9 +443,9 @@ SCRIPT;
 		] );
 
 		++ $ok;
-		$calls[] = [ 'tool' => $tool, 'args' => $args, 'result' => $result ];
+		$calls[] = [ 'tool' => $tool, 'args' => $args, 'result' => $actualResult ];
 
-		return [ 'result' => $result, 'id' => $uniqueId ];
+		return [ 'result' => $actualResult, 'id' => $uniqueId ];
 	}
 
 	/** Return true if $assistantRaw contains any registered tool name. */

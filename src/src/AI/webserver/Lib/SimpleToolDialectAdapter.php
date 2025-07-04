@@ -162,22 +162,22 @@ final class SimpleToolDialectAdapter {
 			'list_files' =>
 			[
 				[ 'directory' => '.' ],
-				[ 'files' => [ 'plugin.php' ], 'directories' => [ 'includes' ] ]
+				[ 'success' => true, 'data' => [ 'files' => [ 'plugin.php' ], 'directories' => [ 'includes' ] ], 'truncated' => false, 'error' => null, 'debug' => [] ]
 			],
 			'read_file' =>
 			[
 				[ 'path' => 'README.md', 'start_line' => 1, 'end_line' => 10 ],
-				[ 'content' => "Sample\nLines\n…", 'path' => 'README.md' ]
+				[ 'success' => true, 'data' => [ 'content' => "Sample\nLines\n…", 'path' => 'README.md' ], 'truncated' => false, 'error' => null, 'debug' => [] ]
 			],
 			'search_strings' =>
 			[
 				[ 'needles' => [ 'todo' ], 'directory' => '.', 'file_types' => [ 'php' ], 'max_results' => 3 ],
-				[ 'results' => [] ]
+				[ 'success' => true, 'data' => [ 'results' => [] ], 'truncated' => false, 'error' => null, 'debug' => [] ]
 			],
 			'find_hooks' =>
 			[
 				[ 'type' => 'both', 'directory' => '.', 'max_results' => 3 ],
-				[ 'results' => [] ]
+				[ 'success' => true, 'data' => [ 'results' => [] ], 'truncated' => false, 'error' => null, 'debug' => [] ]
 			],
 			default =>
 			[ [], [] ],
