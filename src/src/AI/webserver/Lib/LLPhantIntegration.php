@@ -6,9 +6,8 @@ use Exception;
 use LLPhant\Chat\AnthropicChat;
 use LLPhant\Chat\ChatInterface;
 use LLPhant\Chat\Message;
-use LLPhant\Chat\OllamaChat;
 use LLPhant\Chat\OpenAIChat;
-use LLPhant\OllamaConfig;
+use LLPhant\OpenAIConfig;
 use QIT_AI_Webserver\ToolRegistry;
 
 class LLPhantIntegration {
@@ -18,7 +17,7 @@ class LLPhantIntegration {
 	private array $config;
 	private $logger;
 
-	public function __construct( string $provider = 'ollama', array $config = [], $logger = null ) {
+	public function __construct( string $provider, array $config = [], $logger = null ) {
 		$this->provider   = $provider;
 		$this->config     = $config;
 		$this->logger     = $logger;
@@ -111,9 +110,7 @@ class LLPhantIntegration {
 		$config = array_merge( $this->config, $runtimeOptions );
 
 		switch ( $this->provider ) {
-			case 'ollama':
-				$this->initializeOllama( $config );
-				break;
+			case 'lmstudio': // fall through
 			case 'openai':
 				$this->initializeOpenAI( $config );
 				break;
@@ -127,33 +124,10 @@ class LLPhantIntegration {
 		// Apply schema if provided
 		if ( isset( $config['format'] ) ) {
 			// OpenAI/Anthropic: response_format for JSON schema
-			// Ollama: format for JSON structure
 			if ( $this->chat instanceof OpenAIChat || $this->chat instanceof AnthropicChat ) {
 				OpenAIChat::setModelOption( 'response_format', [ 'type' => 'json_schema', 'schema' => $config['format'] ] );
-			} elseif ( $this->chat instanceof OllamaChat ) {
-				$this->chat->setModelOption( 'format', $config['format'] );
 			}
 		}
-	}
-
-	private function initializeOllama( array $config ): void {
-		$config = array_merge( [
-			'url'   => 'http://localhost:11434',
-			'model' => 'llama3.2'
-		], $config );
-
-		// Parse URL to get host and port
-		$parsedUrl = parse_url( $config['url'] );
-		$host      = ( $parsedUrl['scheme'] ?? 'http' ) . '://' . ( $parsedUrl['host'] ?? 'localhost' );
-		$port      = $parsedUrl['port'] ?? 11434;
-
-		// Create OllamaConfig object
-		$ollamaConfig        = new OllamaConfig();
-		$ollamaConfig->url   = $host . ':' . $port . '/api/';
-		$ollamaConfig->model = $config['model'];
-
-		// Create Ollama chat instance using the correct LLPhant API
-		$this->chat = new OllamaChat( $ollamaConfig );
 	}
 
 	private function initializeOpenAI( array $config ): void {
@@ -165,10 +139,17 @@ class LLPhantIntegration {
 			'model' => 'gpt-4-turbo-preview'
 		], $config );
 
-		$this->chat = new OpenAIChat(
-			$config['api_key'],
-			$config['model']
-		);
+		// Create OpenAIConfig object
+		$openaiConfig = new OpenAIConfig();
+		$openaiConfig->apiKey = $config['api_key'];
+		$openaiConfig->model = $config['model'];
+
+		// Set custom base URL if provided (for LM Studio compatibility)
+		if ( ! empty( $config['base_url'] ) ) {
+			$openaiConfig->url = $config['base_url'];
+		}
+
+		$this->chat = new OpenAIChat( $openaiConfig );
 	}
 
 	private function initializeAnthropic( array $config ): void {
@@ -388,24 +369,81 @@ class LLPhantIntegration {
 	}
 
 	public function ensureModel( string $model ): bool {
-		if ( $this->provider === 'ollama' ) {
-			// For Ollama, check if model exists
-			$cmd = sprintf( 'ollama show %s 2>&1', escapeshellarg( $model ) );
-			exec( $cmd, $output, $returnCode );
+		if ( $this->provider === 'lmstudio' ) {
+			// For LM Studio, check if model is available via OpenAI-compatible API
+			return $this->checkLMStudioModelAvailability( $model );
+		}
 
-			if ( $returnCode !== 0 ) {
-				// Try to pull the model
-				$this->log_info( "Pulling Ollama model: $model" );
-				$cmd = sprintf( 'ollama pull %s 2>&1', escapeshellarg( $model ) );
-				exec( $cmd, $output, $returnCode );
+		// For cloud providers (OpenAI, Anthropic), models are always available
+		return true;
+	}
 
-				return $returnCode === 0;
-			}
+	/**
+	 * Check if a model is available in LM Studio via OpenAI-compatible API
+	 *
+	 * @param string $model Model name to check
+	 * @return bool True if model is available, false otherwise
+	 */
+	private function checkLMStudioModelAvailability( string $model ): bool {
+		// Get base URL from config, default to LM Studio default
+		$baseUrl = $this->config['base_url'] ?? 'http://localhost:1234/v1';
+		$modelsEndpoint = rtrim( $baseUrl, '/' ) . '/models';
 
+		$this->log_info( "Checking LM Studio model availability", [
+			'model' => $model,
+			'endpoint' => $modelsEndpoint
+		] );
+
+		// Make API call to check available models
+		$ch = curl_init( $modelsEndpoint );
+		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
+		curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+			'Content-Type: application/json',
+			'Authorization: Bearer ' . ( $this->config['api_key'] ?? 'dummy' )
+		] );
+
+		$response = curl_exec( $ch );
+		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		$error = curl_error( $ch );
+		curl_close( $ch );
+
+		if ( $httpCode !== 200 ) {
+			$this->log_error( "Failed to check LM Studio models", [
+				'http_code' => $httpCode,
+				'error' => $error,
+				'response' => substr( $response, 0, 500 )
+			] );
+			// If we can't check, assume model is available (LM Studio might be starting up)
 			return true;
 		}
 
-		// For cloud providers, models are always available
+		$data = json_decode( $response, true );
+		if ( ! isset( $data['data'] ) || ! is_array( $data['data'] ) ) {
+			$this->log_error( "Invalid response format from LM Studio models endpoint", [
+				'response' => substr( $response, 0, 500 )
+			] );
+			// If response format is unexpected, assume model is available
+			return true;
+		}
+
+		// Check if the requested model is in the list of available models
+		foreach ( $data['data'] as $availableModel ) {
+			if ( isset( $availableModel['id'] ) && $availableModel['id'] === $model ) {
+				$this->log_info( "Model found in LM Studio", [ 'model' => $model ] );
+				return true;
+			}
+		}
+
+		$this->log_info( "Model not found in LM Studio", [
+			'model' => $model,
+			'available_models' => array_column( $data['data'], 'id' )
+		] );
+
+		// Model not found, but for LM Studio this might mean:
+		// 1. Model needs to be loaded through LM Studio UI
+		// 2. Model name doesn't match exactly
+		// We'll return true and let the actual generation call handle the error
 		return true;
 	}
 

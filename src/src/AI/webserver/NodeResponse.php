@@ -80,34 +80,49 @@ class NodeResponse {
     }
 
     /**
-     * Extract token statistics from Ollama response
+     * Extract token statistics from provider response
      * 
-     * @param array $ollamaResponse Raw Ollama response
+     * @param array $providerResponse Raw provider response (Ollama, OpenAI, etc.)
      * @return array Token statistics
      */
-    private static function extractTokenStats(array $ollamaResponse): array {
+    private static function extractProviderStats(array $providerResponse): array {
         $stats = [];
 
-        if (isset($ollamaResponse['eval_count'])) {
-            $stats['tokens_generated'] = $ollamaResponse['eval_count'];
+        // Ollama-style response format
+        if (isset($providerResponse['eval_count'])) {
+            $stats['tokens_generated'] = $providerResponse['eval_count'];
         }
 
-        if (isset($ollamaResponse['eval_duration']) && $ollamaResponse['eval_duration'] > 0 && isset($ollamaResponse['eval_count'])) {
-            $evalSeconds = $ollamaResponse['eval_duration'] / 1000000000;
-            $stats['tokens_per_second'] = round($ollamaResponse['eval_count'] / $evalSeconds, 2);
-            $stats['generation_duration_ms'] = round($ollamaResponse['eval_duration'] / 1000000, 2);
+        if (isset($providerResponse['eval_duration']) && $providerResponse['eval_duration'] > 0 && isset($providerResponse['eval_count'])) {
+            $evalSeconds = $providerResponse['eval_duration'] / 1000000000;
+            $stats['tokens_per_second'] = round($providerResponse['eval_count'] / $evalSeconds, 2);
+            $stats['generation_duration_ms'] = round($providerResponse['eval_duration'] / 1000000, 2);
         }
 
-        if (isset($ollamaResponse['prompt_eval_count'])) {
-            $stats['prompt_tokens'] = $ollamaResponse['prompt_eval_count'];
+        if (isset($providerResponse['prompt_eval_count'])) {
+            $stats['prompt_tokens'] = $providerResponse['prompt_eval_count'];
         }
 
-        if (isset($ollamaResponse['prompt_eval_duration'])) {
-            $stats['prompt_eval_duration_ms'] = round($ollamaResponse['prompt_eval_duration'] / 1000000, 2);
+        if (isset($providerResponse['prompt_eval_duration'])) {
+            $stats['prompt_eval_duration_ms'] = round($providerResponse['prompt_eval_duration'] / 1000000, 2);
         }
 
-        if (isset($ollamaResponse['total_duration'])) {
-            $stats['total_duration_ms'] = round($ollamaResponse['total_duration'] / 1000000, 2);
+        if (isset($providerResponse['total_duration'])) {
+            $stats['total_duration_ms'] = round($providerResponse['total_duration'] / 1000000, 2);
+        }
+
+        // OpenAI-style response format (usage object)
+        if (isset($providerResponse['usage'])) {
+            $usage = $providerResponse['usage'];
+            if (isset($usage['prompt_tokens'])) {
+                $stats['prompt_tokens'] = $usage['prompt_tokens'];
+            }
+            if (isset($usage['completion_tokens'])) {
+                $stats['tokens_generated'] = $usage['completion_tokens'];
+            }
+            if (isset($usage['total_tokens'])) {
+                $stats['total_tokens'] = $usage['total_tokens'];
+            }
         }
 
         return $stats;
@@ -119,10 +134,10 @@ class NodeResponse {
      * 
      * @param string $response AI response text
      * @param string $model Model used
-     * @param array $ollamaResponse Raw Ollama response for token stats
+     * @param array $providerResponse Raw provider response for token stats
      * @param array $additional Additional data (job_id, etc.)
      */
-    public static function prompt(string $response, string $model, array $ollamaResponse = [], array $additional = []): void {
+    public static function prompt(string $response, string $model, array $providerResponse = [], array $additional = []): void {
         header('Content-Type: application/json');
 
         $data = array_merge([
@@ -131,7 +146,7 @@ class NodeResponse {
         ], $additional);
 
         // Add token statistics if available
-        $tokenStats = self::extractTokenStats($ollamaResponse);
+        $tokenStats = self::extractProviderStats($providerResponse);
         if (!empty($tokenStats)) {
             $data['token_stats'] = $tokenStats;
         }

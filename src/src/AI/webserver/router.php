@@ -5,7 +5,6 @@
  * This file is a template that will be copied to temp directory
  * Placeholders will be replaced during runtime:
  * {{NODE_TOKEN}} - The node authentication token
- * {{OLLAMA_API_URL}} - The Ollama API base URL
  * {{LOG_FILE}} - The log file path
  * {{PROVIDER}} - The LLM provider
  * {{PROVIDER_CONFIG}} - The provider configuration JSON
@@ -94,58 +93,6 @@ function log_error( $message, $context = [] ) {
 	log_message( 'error', $message, $context );
 }
 
-// Function to ensure model is available
-function ensure_model_available( $model, $ollama_api_url ) {
-	log_info( "Checking if model is available", [ 'model' => $model ] );
-
-	// Check if model exists by trying to show it
-	$ch = curl_init( $ollama_api_url . '/api/show' );
-	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-	curl_setopt( $ch, CURLOPT_POST, true );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( [ 'model' => $model ] ) );
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
-	curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
-
-	$response  = curl_exec( $ch );
-	$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-	curl_close( $ch );
-
-	if ( $http_code === 200 ) {
-		log_info( "Model already exists", [ 'model' => $model ] );
-
-		return true;
-	}
-
-	// Model doesn't exist, try to pull it
-	log_info( "Model not found, attempting to pull", [ 'model' => $model ] );
-
-	$ch = curl_init( $ollama_api_url . '/api/pull' );
-	curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-	curl_setopt( $ch, CURLOPT_POST, true );
-	curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( [ 'model' => $model ] ) );
-	curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
-	curl_setopt( $ch, CURLOPT_TIMEOUT, 1800 ); // 30 minutes timeout for pulling
-
-	$response  = curl_exec( $ch );
-	$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-	$error     = curl_error( $ch );
-	curl_close( $ch );
-
-	if ( $http_code !== 200 ) {
-		log_error( "Failed to pull model", [
-			'model'     => $model,
-			'http_code' => $http_code,
-			'error'     => $error,
-			'response'  => substr( $response, 0, 500 )
-		] );
-
-		return false;
-	}
-
-	log_info( "Model pulled successfully", [ 'model' => $model ] );
-
-	return true;
-}
 
 // Route handling
 $uri    = $_SERVER['REQUEST_URI'];

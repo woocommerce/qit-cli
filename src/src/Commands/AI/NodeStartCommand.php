@@ -50,10 +50,10 @@ class NodeStartCommand extends QITCommand {
 		     ->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
 		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'cloudflared-docker' )
 		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' )
-		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (ollama, openai, anthropic)', 'ollama' )
+		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (ollama, openai, lmstudio, anthropic)', 'ollama' )
 		     ->addOption( 'api-key', null, InputOption::VALUE_OPTIONAL, 'API key for cloud providers' )
 		     ->addOption( 'model', null, InputOption::VALUE_OPTIONAL, 'Default model to use' )
-		     ->addOption( 'ollama-url', null, InputOption::VALUE_OPTIONAL, 'Ollama API URL', 'http://localhost:11434' );
+		     ->addOption( 'base-url', null, InputOption::VALUE_OPTIONAL, 'Base URL for OpenAI-compatible providers (e.g., LM Studio)', 'http://localhost:1234/v1' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -82,13 +82,34 @@ class NodeStartCommand extends QITCommand {
 
 		switch ( $provider ) {
 			case 'ollama':
-				$providerConfig['url'] = $input->getOption( 'ollama-url' );
+				$providerConfig['url'] = 'http://localhost:11434'; // Default Ollama URL
 				if ( $input->getOption( 'model' ) ) {
 					$providerConfig['model'] = $input->getOption( 'model' );
 				}
 				break;
 
+			case 'lmstudio':
+				// LM Studio uses OpenAI-compatible API but doesn't require API key
+				$providerConfig['api_key'] = $input->getOption( 'api-key' ) ?: 'dummy'; // LM Studio ignores this
+				$providerConfig['base_url'] = $input->getOption( 'base-url' ) ?: 'http://localhost:1234/v1';
+				$providerConfig['model'] = $input->getOption( 'model' ) ?: 'lmstudio-default';
+				break;
+
 			case 'openai':
+				if ( ! $input->getOption( 'api-key' ) ) {
+					$output->writeln( '<error>API key is required for ' . $provider . '</error>' );
+					return self::FAILURE;
+				}
+				$providerConfig['api_key'] = $input->getOption( 'api-key' );
+				if ( $input->getOption( 'model' ) ) {
+					$providerConfig['model'] = $input->getOption( 'model' );
+				}
+				// Support custom base URL for OpenAI-compatible providers
+				if ( $input->getOption( 'base-url' ) ) {
+					$providerConfig['base_url'] = $input->getOption( 'base-url' );
+				}
+				break;
+
 			case 'anthropic':
 				if ( ! $input->getOption( 'api-key' ) ) {
 					$output->writeln( '<error>API key is required for ' . $provider . '</error>' );
@@ -205,25 +226,10 @@ class NodeStartCommand extends QITCommand {
 				$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
 			}
 
-			$output->writeln( '' );
-			$output->writeln( 'Ensuring required models are available...' );
-
-			// Model preloading through WebServer
-			$required_models = [ 'llama3.2', 'qwen3:8b' ]; // qwen2.5:3b is ~2GB, qwen3:8b is 5gb~.
-
-			foreach ( $required_models as $model ) {
-				$output->write( "Checking $model... " );
-
-				try {
-					if ( $this->webserver->ensureModel( $model, $output ) ) {
-						$output->writeln( '<info>✓</info>' );
-					} else {
-						$output->writeln( '<error>✗ Failed to pull model</error>' );
-					}
-				} catch ( \Exception $e ) {
-					$output->writeln( '<error>✗ ' . $e->getMessage() . '</error>' );
-				}
-			}
+			// Note: Model preloading is not needed for supported providers
+			// - LM Studio loads models interactively through its UI
+			// - OpenAI and Anthropic are cloud-based (models always available)
+			// - Model availability is checked during actual inference calls
 
 			$output->writeln( '' );
 			$output->writeln( '<info>Node started successfully!</info>' );

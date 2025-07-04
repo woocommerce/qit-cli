@@ -11,9 +11,8 @@ class WebServer {
 	private string $webroot;
 	private string $node_token;
 	private ?\QIT_CLI\Logging\Logger $logger = null;
-	private string $ollama_api_url = 'http://localhost:11434';
 	private bool $use_local_mode = false;
-	private string $provider = 'ollama';
+	private string $provider = 'lmstudio';
 	private array $providerConfig = [];
 
 	public function __construct( bool $use_local_mode = false ) {
@@ -30,7 +29,7 @@ class WebServer {
 	}
 
 	public function setProviderConfig( string $provider, array $config ): void {
-		$this->provider = $provider;
+		$this->provider       = $provider;
 		$this->providerConfig = $config;
 	}
 
@@ -254,11 +253,10 @@ class WebServer {
 
 		// Replace placeholders
 		$replacements = [
-			'{{NODE_TOKEN}}'       => $this->node_token,
-			'{{OLLAMA_API_URL}}'   => $this->getOllamaApiUrl(),
-			'{{LOG_FILE}}'         => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
-			'{{PROVIDER}}'         => $this->provider,
-			'{{PROVIDER_CONFIG}}'  => json_encode( $this->providerConfig )
+			'{{NODE_TOKEN}}'      => $this->node_token,
+			'{{LOG_FILE}}'        => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
+			'{{PROVIDER}}'        => $this->provider,
+			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig )
 		];
 
 		foreach ( $replacements as $placeholder => $value ) {
@@ -292,11 +290,10 @@ class WebServer {
 
 		// Replace placeholders
 		$replacements = [
-			'{{NODE_TOKEN}}'       => $this->node_token,
-			'{{OLLAMA_API_URL}}'   => $this->getOllamaApiUrl(),
-			'{{LOG_FILE}}'         => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
-			'{{PROVIDER}}'         => $this->provider,
-			'{{PROVIDER_CONFIG}}'  => json_encode( $this->providerConfig )
+			'{{NODE_TOKEN}}'      => $this->node_token,
+			'{{LOG_FILE}}'        => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
+			'{{PROVIDER}}'        => $this->provider,
+			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig )
 		];
 
 		foreach ( $replacements as $placeholder => $value ) {
@@ -321,100 +318,6 @@ class WebServer {
 		return $this->node_token;
 	}
 
-	/**
-	 * Check if Ollama is available by making a simple check
-	 */
-	public function isOllamaAvailable(): bool {
-		// Check if ollama binary exists
-		$process = new Process( [ 'which', 'ollama' ] );
-		$process->run();
-
-		return $process->isSuccessful();
-	}
-
-	/**
-	 * Ensure Ollama API is running by checking the API endpoint
-	 */
-	public function ensureOllamaApiRunning(): bool {
-		// Try to reach the Ollama API
-		$ch = curl_init( $this->ollama_api_url . '/api/tags' );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
-		curl_setopt( $ch, CURLOPT_NOBODY, true );
-
-		$response = curl_exec( $ch );
-		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		curl_close( $ch );
-
-		if ( $httpCode === 200 || $httpCode === 204 ) {
-			return true;
-		}
-
-		// Try to start Ollama
-		$process = new Process( [ 'ollama', 'serve' ] );
-		$process->start(); // Start in background
-
-		// Give it a moment to start
-		sleep( 2 );
-
-		// Check again
-		$ch = curl_init( $this->ollama_api_url . '/api/tags' );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
-		curl_setopt( $ch, CURLOPT_NOBODY, true );
-
-		$response = curl_exec( $ch );
-		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		curl_close( $ch );
-
-		return $httpCode === 200 || $httpCode === 204;
-	}
-
-	/**
-	 * Ensure a specific model is available
-	 * This will be checked by the node itself when processing requests
-	 */
-	public function ensureModel( string $model, OutputInterface $output ): bool {
-		// Make a request to the node's ensure_model endpoint
-		// For now, we'll do a basic check via Ollama API
-		$ch = curl_init( $this->ollama_api_url . '/api/show' );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_POST, true );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( [ 'name' => $model ] ) );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
-
-		$response = curl_exec( $ch );
-		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		curl_close( $ch );
-
-		if ( $httpCode === 200 ) {
-			return true;
-		}
-
-		// Try to pull the model
-		$output->writeln( " (pulling model, this may take a while...)" );
-
-		$ch = curl_init( $this->ollama_api_url . '/api/pull' );
-		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-		curl_setopt( $ch, CURLOPT_POST, true );
-		curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( [ 'name' => $model ] ) );
-		curl_setopt( $ch, CURLOPT_HTTPHEADER, [ 'Content-Type: application/json' ] );
-		curl_setopt( $ch, CURLOPT_TIMEOUT, 1800 ); // 30 minutes
-
-		$response = curl_exec( $ch );
-		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		curl_close( $ch );
-
-		return $httpCode === 200;
-	}
-
-	/**
-	 * Get Ollama API base URL
-	 */
-	public function getOllamaApiUrl(): string {
-		return $this->ollama_api_url;
-	}
 
 	private function findAvailablePort(): int {
 		// Let PHP find an available port by binding to port 0

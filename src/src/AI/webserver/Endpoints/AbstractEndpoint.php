@@ -19,7 +19,7 @@ abstract class AbstractEndpoint {
 	protected string $provider;
 	protected array $providerConfig;
 
-	public function __construct( string $provider = 'ollama', array $providerConfig = [] ) {
+	public function __construct( string $provider, array $providerConfig = [] ) {
 		$this->provider       = $provider;
 		$this->providerConfig = $providerConfig;
 	}
