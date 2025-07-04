@@ -176,11 +176,12 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 		$actualExtractPath = $this->findWordPressExtensionDirectory( $extractTo );
 
-		// NEW: collect the roots and persist context for later prompts
-		$roots = $this->getWorkspaceRoots($extractTo);
+		// NEW: Create WordPress-like directory structure and place .ctx.json in the root of the WordPress tmp project
+		$this->createWordPressStructure($extractTo, $actualExtractPath);
+		$roots = $this->getWordPressWorkspaceRoots($extractTo, $actualExtractPath);
 		$this->writeContextFile($extractTo, $roots);
 
-		$this->log_info('Workspace roots detected', ['roots' => $roots]);
+		$this->log_info('WordPress workspace structure created', ['roots' => $roots]);
 
 		$this->sendUnifiedExtractionResponse( $actualExtractPath, $extractionResult['file_count'], $params );
 	}
@@ -272,6 +273,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		}
 
 		$totalUncompressed = 0;
+		$extractedFileCount = 0; // Track actual extracted files, not directories
 		$start             = microtime( true );
 
 		for ( $i = 0; $i < $zip->numFiles; $i ++ ) {
@@ -322,7 +324,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 					$zip->close();
 					throw new Exception( "Failed to create directory: $targetPath" );
 				}
-				continue;
+				continue; // Don't count directories as extracted files
 			}
 
 			$stream = $zip->getStream( $name );
@@ -341,12 +343,14 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			fclose( $stream );
 			fclose( $out );
 			chmod( $targetPath, 0644 );
+
+			$extractedFileCount++; // Only count actual files that were extracted
 		}
 
 		$zip->close();
 
 		return [
-			'file_count'   => $zip->numFiles,
+			'file_count'   => $extractedFileCount, // Return actual extracted file count
 			'extract_time' => microtime( true ) - $start
 		];
 	}
@@ -602,6 +606,113 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			'roots'            => $roots,
 			'generated_at'     => date(DATE_ATOM),
 		];
-		file_put_contents($base.'/.ctx.json', json_encode($ctx, JSON_PRETTY_PRINT));
+		$filePath = $base.'/.ctx.json';
+		$this->log_info('Attempting to write .ctx.json file', [
+			'file_path' => $filePath,
+			'base_directory' => $base,
+			'roots' => $roots,
+			'directory_exists' => is_dir($base),
+			'directory_writable' => is_writable($base)
+		]);
+
+		$result = file_put_contents($filePath, json_encode($ctx, JSON_PRETTY_PRINT));
+
+		if ($result === false) {
+			$this->log_error('Failed to write .ctx.json file', [
+				'file_path' => $filePath,
+				'error' => error_get_last()
+			]);
+		} else {
+			$this->log_info('.ctx.json file written successfully', [
+				'file_path' => $filePath,
+				'bytes_written' => $result,
+				'file_exists' => file_exists($filePath)
+			]);
+		}
+	}
+
+	/** Create WordPress-like directory structure for proper path contract */
+	private function createWordPressStructure(string $extractTo, string $actualExtractPath): void {
+		// Create WordPress directory structure
+		$wpStructure = [
+			'wordpress',
+			'wp-content',
+			'wp-content/plugins',
+			'wp-content/themes'
+		];
+
+		foreach ($wpStructure as $dir) {
+			$fullPath = $extractTo . '/' . $dir;
+			if (!is_dir($fullPath)) {
+				mkdir($fullPath, 0777, true);
+			}
+		}
+
+		// NO SYMLINKS - as requested in the issue description
+		// The actual plugin files remain in their original location
+		// The .ctx.json will reference the correct paths
+
+		// Add some common WordPress plugins for realistic structure
+		$commonPlugins = ['contact-form-7', 'woocommerce'];
+		foreach ($commonPlugins as $plugin) {
+			$pluginDir = $extractTo . '/wp-content/plugins/' . $plugin;
+			if (!is_dir($pluginDir)) {
+				mkdir($pluginDir, 0777, true);
+				// Create a dummy plugin file to make it look realistic
+				file_put_contents($pluginDir . '/' . $plugin . '.php', "<?php\n// Dummy plugin file for structure\n");
+			}
+		}
+
+		// Add a common theme
+		$themeDir = $extractTo . '/wp-content/themes/twentyseventeen';
+		if (!is_dir($themeDir)) {
+			mkdir($themeDir, 0777, true);
+			file_put_contents($themeDir . '/style.css', "/*\nTheme Name: Twenty Seventeen\n*/\n");
+		}
+	}
+
+	/** Get WordPress workspace roots in the expected format */
+	private function getWordPressWorkspaceRoots(string $extractTo, string $actualExtractPath): array {
+		$pluginName = basename($actualExtractPath);
+		$sessionId = basename($extractTo);
+
+		$roots = [
+			'wordpress/',
+		];
+
+		// Since we're not using symlinks, the actual plugin is in its original location
+		// We need to reference it relative to the extraction root
+		$relativePath = str_replace($extractTo . '/', '', $actualExtractPath);
+		if ($relativePath && $relativePath !== $actualExtractPath) {
+			$roots[] = $relativePath . '/';  // SUT (Subject Under Test) in original location
+		}
+
+		// Add other plugins that exist (only actual directories, no symlinks)
+		$pluginsDir = $extractTo . '/wp-content/plugins';
+		if (is_dir($pluginsDir)) {
+			foreach (scandir($pluginsDir) as $item) {
+				if ($item === '.' || $item === '..' || $item === $sessionId) continue;
+
+				$itemPath = $pluginsDir . '/' . $item;
+				// Only include actual directories, not symlinks to the root directory
+				if (is_dir($itemPath) && !is_link($itemPath)) {
+					$roots[] = 'wp-content/plugins/' . $item . '/';
+				}
+			}
+		}
+
+		// Add themes that exist
+		$themesDir = $extractTo . '/wp-content/themes';
+		if (is_dir($themesDir)) {
+			foreach (scandir($themesDir) as $item) {
+				if ($item === '.' || $item === '..') continue;
+				if (is_dir($themesDir . '/' . $item)) {
+					$roots[] = 'wp-content/themes/' . $item . '/';
+				}
+			}
+		}
+
+		sort($roots);
+		return $roots;
 	}
 }

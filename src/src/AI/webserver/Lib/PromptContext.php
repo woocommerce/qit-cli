@@ -6,7 +6,12 @@ class PromptContext {
     public static function forWorkspace(string $root): string {
         $ctxFile = $root.'/.ctx.json';
         if (!is_file($ctxFile)) {
-            return '';                       // extraction step not run?  silently ignore
+            // Try parent directory if not found in current directory
+            $parentCtxFile = dirname($root).'/.ctx.json';
+            if (!is_file($parentCtxFile)) {
+                return '';                   // extraction step not run?  silently ignore
+            }
+            $ctxFile = $parentCtxFile;
         }
         $ctx   = json_decode(file_get_contents($ctxFile), true) ?? [];
         $roots = $ctx['roots'] ?? [];
