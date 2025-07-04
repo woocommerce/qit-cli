@@ -16,10 +16,10 @@ class ReadFileTool extends BaseTool {
 		return 'Read contents of a file';
 	}
 
-	public function read_file( string $path, ?int $start_line = null, ?int $end_line = null ): string {
+	public function read_file( string $file, ?int $start_line = null, ?int $end_line = null ): string {
 		// Re-use your internal logic
 		$result = $this->execute( [
-			'path'       => $path,
+			'file'       => $file,
 			'start_line' => $start_line,
 			'end_line'   => $end_line,
 		] );
@@ -41,21 +41,29 @@ class ReadFileTool extends BaseTool {
 				new Parameter( 'end_line', 'int', 'Ending line number (optional)' )
 			],
 			[
-				new Parameter( 'path', 'string', 'Path to the file (required)' ),
+				new Parameter( 'file', 'string', 'Path to the file (required)' ),
 			]
 		);
 	}
 
 	protected function do( array $params ) {
-		$path = $this->safePath( $params['path'] ?? '' );
+		$file = $this->safePath( $params['file'] ?? '' );
 		$start_line = $params['start_line'] ?? null;
 		$end_line   = $params['end_line'] ?? null;
 
-		if ( ! $path ) {
-			throw new \InvalidArgumentException( 'Path is required' );
+		if ( ! $file ) {
+			throw new \InvalidArgumentException( 'File is required' );
 		}
 
-		$content = $this->r->readFile( $path );
+		// Treat 0 values as null (no filtering)
+		if ( $start_line === 0 ) {
+			$start_line = null;
+		}
+		if ( $end_line === 0 ) {
+			$end_line = null;
+		}
+
+		$content = $this->file_path_resolver->readFile( $file );
 		$lines   = explode( "\n", $content );
 
 		// Apply line filtering if specified
@@ -68,15 +76,15 @@ class ReadFileTool extends BaseTool {
 
 		return [
 			'content'     => $content,
-			'path'        => $path,
+			'path'        => $file,
 			'lines_read'  => [ $start_line ?? 1, $end_line ?? substr_count( $content, "\n" ) + 1 ],
 			'total_lines' => count( $lines )
 		];
 	}
 
-	public function __invoke( string $path, ?int $start_line = null, ?int $end_line = null ): string {
+	public function __invoke( string $file, ?int $start_line = null, ?int $end_line = null ): string {
 		$result = $this->execute( [
-			'path'       => $path,
+			'file'       => $file,
 			'start_line' => $start_line,
 			'end_line'   => $end_line
 		] );

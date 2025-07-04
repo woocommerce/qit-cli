@@ -68,7 +68,7 @@ class FindHooksTool extends BaseTool {
 		      '(?:,\s*(?P<args>\d+))?' .
 		      '\s*\)/i';
 
-		$absDir = $this->r->toAbsolute( $directory );
+		$absDir = $this->file_path_resolver->toAbsolute( $directory );
 		$it     = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator(
 				$absDir,
@@ -83,7 +83,7 @@ class FindHooksTool extends BaseTool {
 			if ( ! $file->isFile() || $file->getExtension() !== 'php' ) {
 				continue;
 			}
-			$relPath = $this->r->toRelative( $file->getPathname() );
+			$relPath = $this->file_path_resolver->toRelative( $file->getPathname() );
 
 			$lines = file( $file->getPathname(), FILE_IGNORE_NEW_LINES );
 			foreach ( $lines as $ln => $line ) {

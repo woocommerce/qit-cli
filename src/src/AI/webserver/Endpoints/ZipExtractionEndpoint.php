@@ -176,14 +176,20 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 		$actualExtractPath = $this->findWordPressExtensionDirectory( $extractTo );
 
-		// NEW: Create WordPress-like directory structure and place .ctx.json in the root of the WordPress tmp project
+		// NEW: Create WordPress-like directory structure and move plugin to correct location
 		$this->createWordPressStructure($extractTo, $actualExtractPath);
+
+		// After moving, the plugin is now at the WordPress structure location
+		$pluginName = basename($actualExtractPath);
+		$newPluginPath = $extractTo . '/wp-content/plugins/' . $pluginName;
+
 		$roots = $this->getWordPressWorkspaceRoots($extractTo, $actualExtractPath);
 		$this->writeContextFile($extractTo, $roots);
 
 		$this->log_info('WordPress workspace structure created', ['roots' => $roots]);
 
-		$this->sendUnifiedExtractionResponse( $actualExtractPath, $extractionResult['file_count'], $params );
+		// Return the project root (extractTo) as the working directory, not the plugin subdirectory
+		$this->sendUnifiedExtractionResponse( $extractTo, $extractionResult['file_count'], $params );
 	}
 
 	/* --------------------------------------------------------------------
@@ -631,14 +637,15 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		}
 	}
 
-	/** Create WordPress-like directory structure for proper path contract */
+	/** Create WordPress-like directory structure and move plugin files to correct location */
 	private function createWordPressStructure(string $extractTo, string $actualExtractPath): void {
 		// Create WordPress directory structure
 		$wpStructure = [
-			'wordpress',
 			'wp-content',
 			'wp-content/plugins',
-			'wp-content/themes'
+			'wp-content/themes',
+			'wp-includes',
+			'wp-admin'
 		];
 
 		foreach ($wpStructure as $dir) {
@@ -648,9 +655,24 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			}
 		}
 
-		// NO SYMLINKS - as requested in the issue description
-		// The actual plugin files remain in their original location
-		// The .ctx.json will reference the correct paths
+		// Move the actual plugin files to the correct WordPress location
+		$pluginName = basename($actualExtractPath);
+		$targetPluginDir = $extractTo . '/wp-content/plugins/' . $pluginName;
+
+		if ($actualExtractPath !== $targetPluginDir) {
+			$this->log_info('Moving plugin files to WordPress structure', [
+				'from' => $actualExtractPath,
+				'to' => $targetPluginDir
+			]);
+
+			// Create target directory
+			if (!is_dir($targetPluginDir)) {
+				mkdir($targetPluginDir, 0777, true);
+			}
+
+			// Move all files from actual extract path to target location
+			$this->moveDirectory($actualExtractPath, $targetPluginDir);
+		}
 
 		// Add some common WordPress plugins for realistic structure
 		$commonPlugins = ['contact-form-7', 'woocommerce'];
@@ -669,32 +691,42 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			mkdir($themeDir, 0777, true);
 			file_put_contents($themeDir . '/style.css', "/*\nTheme Name: Twenty Seventeen\n*/\n");
 		}
+
+		// Add some basic WordPress core files for realism
+		$wpFiles = [
+			'wp-includes/version.php' => "<?php\n// WordPress version file\n\$wp_version = '6.0';\n",
+			'wp-admin/admin.php' => "<?php\n// WordPress admin\n",
+		];
+
+		foreach ($wpFiles as $file => $content) {
+			$filePath = $extractTo . '/' . $file;
+			if (!file_exists($filePath)) {
+				$dir = dirname($filePath);
+				if (!is_dir($dir)) {
+					mkdir($dir, 0777, true);
+				}
+				file_put_contents($filePath, $content);
+			}
+		}
 	}
 
 	/** Get WordPress workspace roots in the expected format */
 	private function getWordPressWorkspaceRoots(string $extractTo, string $actualExtractPath): array {
 		$pluginName = basename($actualExtractPath);
-		$sessionId = basename($extractTo);
 
-		$roots = [
-			'wordpress/',
-		];
+		$roots = [];
 
-		// Since we're not using symlinks, the actual plugin is in its original location
-		// We need to reference it relative to the extraction root
-		$relativePath = str_replace($extractTo . '/', '', $actualExtractPath);
-		if ($relativePath && $relativePath !== $actualExtractPath) {
-			$roots[] = $relativePath . '/';  // SUT (Subject Under Test) in original location
-		}
+		// Add the SUT (Subject Under Test) - now it's actually in the WordPress structure
+		$sutPath = 'wp-content/plugins/' . $pluginName . '/';
+		$roots[] = $sutPath . ' (System under test)';
 
-		// Add other plugins that exist (only actual directories, no symlinks)
+		// Add other plugins that exist
 		$pluginsDir = $extractTo . '/wp-content/plugins';
 		if (is_dir($pluginsDir)) {
 			foreach (scandir($pluginsDir) as $item) {
-				if ($item === '.' || $item === '..' || $item === $sessionId) continue;
+				if ($item === '.' || $item === '..' || $item === $pluginName) continue;
 
 				$itemPath = $pluginsDir . '/' . $item;
-				// Only include actual directories, not symlinks to the root directory
 				if (is_dir($itemPath) && !is_link($itemPath)) {
 					$roots[] = 'wp-content/plugins/' . $item . '/';
 				}
@@ -712,7 +744,74 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			}
 		}
 
+		// Add WordPress core directories
+		$coreDirectories = ['wp-includes/', 'wp-admin/'];
+		foreach ($coreDirectories as $coreDir) {
+			if (is_dir($extractTo . '/' . rtrim($coreDir, '/'))) {
+				$roots[] = $coreDir;
+			}
+		}
+
 		sort($roots);
 		return $roots;
+	}
+
+	/** Helper method to move directory contents recursively */
+	private function moveDirectory(string $source, string $destination): void {
+		if (!is_dir($source)) {
+			throw new \RuntimeException("Source directory does not exist: $source");
+		}
+
+		// Create destination directory if it doesn't exist
+		if (!is_dir($destination)) {
+			mkdir($destination, 0777, true);
+		}
+
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ($iterator as $item) {
+			$relativePath = substr($item->getPathname(), strlen($source) + 1);
+			$destPath = $destination . '/' . $relativePath;
+
+			if ($item->isDir()) {
+				if (!is_dir($destPath)) {
+					mkdir($destPath, 0777, true);
+				}
+			} else {
+				$destDir = dirname($destPath);
+				if (!is_dir($destDir)) {
+					mkdir($destDir, 0777, true);
+				}
+				copy($item->getPathname(), $destPath);
+			}
+		}
+
+		// Remove the source directory after successful move
+		$this->removeDirectory($source);
+	}
+
+	/** Helper method to remove directory recursively */
+	private function removeDirectory(string $dir): void {
+		if (!is_dir($dir)) {
+			return;
+		}
+
+		$iterator = new RecursiveIteratorIterator(
+			new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
+			RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		foreach ($iterator as $file) {
+			if ($file->isDir()) {
+				rmdir($file->getRealPath());
+			} else {
+				unlink($file->getRealPath());
+			}
+		}
+
+		rmdir($dir);
 	}
 }

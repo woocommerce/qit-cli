@@ -6,15 +6,15 @@ namespace QIT_AI_Webserver\Lib;
  * File Path Contract
  *
  * All file paths in the system follow these rules:
- * 1. ALWAYS relative to the extracted SUT directory
- * 2. NEVER include the extract_path prefix
+ * 1. ALWAYS relative to the project root directory
+ * 2. NEVER include absolute path prefixes
  * 3. Use forward slashes (/) even on Windows
  * 4. No leading slash
  *
  * Example:
- * - Actual file: /tmp/qit-code-analysis/abc123/fortis-for-woocommerce/classes/FortisApi.php
- * - Extract path: /tmp/qit-code-analysis/abc123/fortis-for-woocommerce
- * - Relative path: classes/FortisApi.php
+ * - Actual file: /project/wp-content/plugins/my-plugin/classes/FortisApi.php
+ * - Project root: /project
+ * - Relative path: wp-content/plugins/my-plugin/classes/FortisApi.php
  */
 
 /**
@@ -34,13 +34,9 @@ class FilePathResolver {
 	public function toAbsolute( string $userPath ): string {
 		$rel = $this->canonRelative( $userPath );     // throws if illegal
 
-		// Special case: when user specifies "." they want to search the WordPress root directory
-		// instead of just the SUT directory
+		// Always use the project root (extractPath) as the base
 		if ( $rel === '.' || $rel === '' ) {
-			$wordpressRoot = $this->findWordPressRoot();
-			if ( $wordpressRoot !== null ) {
-				return $wordpressRoot;
-			}
+			return $this->extractPath;
 		}
 
 		return $this->extractPath . '/' . $rel;
@@ -140,34 +136,4 @@ class FilePathResolver {
 		];
 	}
 
-	/**
-	 * Find the WordPress root directory by traversing up from the SUT directory
-	 * looking for a directory that contains wp-content
-	 */
-	private function findWordPressRoot(): ?string {
-		$currentPath = $this->extractPath;
-		$maxLevels = 5; // Prevent infinite loops
-		$level = 0;
-
-		while ( $level < $maxLevels ) {
-			// Check if current directory contains wp-content
-			if ( is_dir( $currentPath . '/wp-content' ) ) {
-				return $currentPath;
-			}
-
-			// Move up one level
-			$parentPath = dirname( $currentPath );
-
-			// If we've reached the root or can't go up further, stop
-			if ( $parentPath === $currentPath || $parentPath === '/' ) {
-				break;
-			}
-
-			$currentPath = $parentPath;
-			$level++;
-		}
-
-		// If no WordPress root found, return null to fall back to original behavior
-		return null;
-	}
 }

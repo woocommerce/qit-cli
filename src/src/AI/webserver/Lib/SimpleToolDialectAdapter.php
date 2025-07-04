@@ -166,12 +166,12 @@ final class SimpleToolDialectAdapter {
 			],
 			'read_file' =>
 			[
-				[ 'path' => 'README.md', 'start_line' => 1, 'end_line' => 10 ],
+				[ 'file' => 'README.md', 'start_line' => 1, 'end_line' => 10 ],
 				[ 'success' => true, 'data' => [ 'content' => "Sample\nLines\n…", 'path' => 'README.md' ], 'truncated' => false, 'error' => null, 'debug' => [] ]
 			],
 			'search_strings' =>
 			[
-				[ 'needles' => [ 'todo' ], 'directory' => '.', 'file_types' => [ 'php' ], 'max_results' => 3 ],
+				[ 'needles' => [ 'todo' ], 'directory_or_file' => '.', 'file_types' => [ 'php' ], 'max_results' => 3 ],
 				[ 'success' => true, 'data' => [ 'results' => [] ], 'truncated' => false, 'error' => null, 'debug' => [] ]
 			],
 			'find_hooks' =>

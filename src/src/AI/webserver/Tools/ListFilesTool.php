@@ -42,7 +42,7 @@ class ListFilesTool extends BaseTool {
 		if ( $relativeDir === '.' || $relativeDir === '' ) {
 			$absoluteDir = $this->workDir;
 		} else {
-			$absoluteDir = $this->r->toAbsolute( $relativeDir );
+			$absoluteDir = $this->file_path_resolver->toAbsolute( $relativeDir );
 		}
 
 		// Verify directory is within bounds
@@ -95,7 +95,7 @@ class ListFilesTool extends BaseTool {
 			}
 
 			$itemPath     = $absoluteDir . '/' . $item;
-			$relativePath = $this->r->toRelative( $itemPath );
+			$relativePath = $this->file_path_resolver->toRelative( $itemPath );
 
 			if ( is_dir( $itemPath ) ) {
 				$dirs[] = $relativePath;

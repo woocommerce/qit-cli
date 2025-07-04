@@ -31,21 +31,21 @@ class FileReadingEndpoint extends AbstractEndpoint {
 	 */
 	public function handle( array $input ): void {
 		$this->log_info( 'Starting file reading endpoint', [
-			'input_keys'       => array_keys( $input ),
-			'has_file_path'    => isset( $input['file_path'] ),
+			'input_keys'    => array_keys( $input ),
+			'has_file'      => isset( $input['file'] ),
 			'has_extract_path' => isset( $input['extract_path'] )
 		] );
 
 		// Access parameters directly from input (consistent with Actions)
-		if ( ! isset( $input['file_path'] ) || empty( $input['file_path'] ) ) {
-			$this->log_error( 'No file path provided for reading' );
+		if ( ! isset( $input['file'] ) || empty( $input['file'] ) ) {
+			$this->log_error( 'No file provided for reading' );
 			http_response_code( 400 );
-			NodeResponse::error( 'Missing file_path parameter' );
+			NodeResponse::error( 'Missing file parameter' );
 
 			return;
 		}
 
-		$filePath = $input['file_path'];
+		$filePath = $input['file'];
 
 		// Use centralized path resolution
 		try {
@@ -54,7 +54,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 		} catch ( Exception $e ) {
 			$this->log_error( 'Path resolution failed for file reading', [
 				'error'       => $e->getMessage(),
-				'file_path'   => $filePath,
+				'file'        => $filePath,
 				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input )
 			] );
 			http_response_code( 400 );
@@ -65,29 +65,29 @@ class FileReadingEndpoint extends AbstractEndpoint {
 
 		// SECURITY: Prevent directory traversal attacks
 		if ( strpos( $filePath, '..' ) !== false ) {
-			$this->log_error( 'Directory traversal attempt detected in file_path', [
-				'file_path' => $filePath
+			$this->log_error( 'Directory traversal attempt detected in file', [
+				'file' => $filePath
 			] );
 			http_response_code( 400 );
-			NodeResponse::error( 'Directory traversal sequences (..) are not allowed in file_path.' );
+			NodeResponse::error( 'Directory traversal sequences (..) are not allowed in file.' );
 
 			return;
 		}
 
 		// SECURITY: Reject any path containing null bytes
 		if ( strpos( $filePath, "\0" ) !== false ) {
-			$this->log_error( 'Null byte injection attempt detected in file_path', [
-				'file_path' => $filePath
+			$this->log_error( 'Null byte injection attempt detected in file', [
+				'file' => $filePath
 			] );
 			http_response_code( 400 );
-			NodeResponse::error( 'Null bytes are not allowed in file_path.' );
+			NodeResponse::error( 'Null bytes are not allowed in file.' );
 
 			return;
 		}
 
 		try {
 			$this->log_info( 'Reading file content', [
-				'file_path'    => $filePath,
+				'file'         => $filePath,
 				'extract_path' => $extractPath
 			] );
 
@@ -96,13 +96,13 @@ class FileReadingEndpoint extends AbstractEndpoint {
 
 			// Use the read_file tool to read the file content
 			$result = $registry->execute_tool( 'read_file', [
-				'path' => $filePath
+				'file' => $filePath
 			] );
 
 			if ( !$result['success'] ) {
 				$this->log_error( 'Failed to read file', [
-					'file_path' => $filePath,
-					'error'     => $result['error']
+					'file'  => $filePath,
+					'error' => $result['error']
 				] );
 
 				http_response_code( 404 );
@@ -122,7 +122,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 			}
 
 			$this->log_info( 'File read successfully', [
-				'file_path'    => $filePath,
+				'file'         => $filePath,
 				'content_size' => strlen( $content ),
 				'total_lines'  => $lines
 			] );
@@ -133,13 +133,13 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				'file_lines'                => $lines,
 				'file_size'                 => strlen( $content ),
 				'content_with_line_numbers' => implode( "\n", $numbered ),
-				'file_path'                 => $filePath,
+				'file'                      => $filePath,
 				'extract_path'              => $extractPath
 			], 'file_reading' );
 
 		} catch ( Exception $e ) {
 			$this->log_error( 'File reading failed: ' . $e->getMessage(), [
-				'file_path'    => $filePath,
+				'file'         => $filePath,
 				'extract_path' => $extractPath
 			] );
 

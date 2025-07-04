@@ -15,8 +15,8 @@ class ParsePhpTool extends BaseTool {
 		return 'Return a AST of a PHP file using nikic/PHP-Parser.';
 	}
 
-	function parse_php( string $path ): string {
-		$result = $this->execute( [ 'path' => $path ] );
+	function parse_php( string $file ): string {
+		$result = $this->execute( [ 'file' => $file ] );
 
 		return json_encode( $result, JSON_UNESCAPED_SLASHES );
 	}
@@ -30,13 +30,25 @@ class ParsePhpTool extends BaseTool {
 
 			],
 			[
-				new Parameter( 'path', 'string', 'File to parse (relative) (required)' ),
+				new Parameter( 'file', 'string', 'File to parse (relative) (required)' ),
 			]
 		);
 	}
 
 	protected function do( array $p ) {
-		$code   = file_get_contents( $this->r->toAbsolute( $p['path'] ) );
+		$file = $this->safePath( $p['file'] ?? '' );
+
+		if ( ! $file ) {
+			throw new \InvalidArgumentException( 'File is required' );
+		}
+
+		$path = $this->file_path_resolver->toAbsolute( $file );
+
+		if ( ! file_exists( $path ) ) {
+			throw new \InvalidArgumentException( "File does not exist: {$path}" );
+		}
+
+		$code   = file_get_contents( $path );
 		$parser = ( new ParserFactory() )->createForNewestSupportedVersion();
 		try {
 			$ast = $parser->parse( $code );

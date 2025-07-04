@@ -5,45 +5,61 @@ namespace QIT_AI_Webserver\Lib;
 /**
  * Centralized Extract Path Resolution
  * 
- * This class implements the "one way" approach to path resolution:
- * - Always require extract_path to be provided explicitly
- * - No complex fallback mechanisms or searching
- * - Fail fast with clear error messages
+ * This class provides a single source of truth for resolving extract paths:
+ * - Use extract_path from input when provided (normal operation)
+ * - Fall back to current working directory if needed
+ * - All paths are relative to the resolved extract path
  * - Single source of truth for all endpoints
  */
 class ExtractPathResolver {
 
     /**
-     * Single-method path resolution - no fallbacks, no complexity
+     * Resolve the extract path from input data
      * 
-     * @param array $input Input data that must contain extract_path
+     * @param array $input Input data that should contain extract_path
      * @return string Validated extract path
-     * @throws \InvalidArgumentException If extract_path is missing or invalid
-     * @throws \RuntimeException If extract_path doesn't exist
+     * @throws \RuntimeException If path resolution fails
      */
     public static function resolve(array $input): string {
-        // The ONE way: extract_path must be provided
-        if (!isset($input['extract_path']) || empty($input['extract_path'])) {
-            throw new \InvalidArgumentException(
-                'extract_path is required and must be provided in input. ' .
-                'Ensure your pipeline properly passes the extraction path from zip_extraction step.'
-            );
+        // Primary approach: use extract_path from input (normal operation)
+        if (isset($input['extract_path']) && !empty($input['extract_path'])) {
+            $path = $input['extract_path'];
+
+            // Validate it exists and is readable
+            if (!is_dir($path)) {
+                throw new \RuntimeException(
+                    "Extract path does not exist: {$path}. " .
+                    "Check that zip extraction completed successfully."
+                );
+            }
+
+            if (!is_readable($path)) {
+                throw new \RuntimeException(
+                    "Extract path is not readable: {$path}. " .
+                    "Check directory permissions."
+                );
+            }
+
+            return $path;
         }
 
-        $path = $input['extract_path'];
+        // Fallback: use current working directory (for testing/development)
+        $path = getcwd();
 
-        // Validate it exists
+        if ($path === false) {
+            throw new \RuntimeException("Could not determine current working directory.");
+        }
+
+        // Validate it exists and is readable
         if (!is_dir($path)) {
             throw new \RuntimeException(
-                "Extract path does not exist: {$path}. " .
-                "Check that zip extraction completed successfully."
+                "Current working directory does not exist: {$path}."
             );
         }
 
-        // Additional validation: ensure it's readable
         if (!is_readable($path)) {
             throw new \RuntimeException(
-                "Extract path is not readable: {$path}. " .
+                "Current working directory is not readable: {$path}. " .
                 "Check directory permissions."
             );
         }
