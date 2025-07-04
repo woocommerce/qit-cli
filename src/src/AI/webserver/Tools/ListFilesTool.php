@@ -43,10 +43,15 @@ class ListFilesTool implements ToolInterface {
 	}
 
 	public function execute( array $params ): array {
-		$directory = $params['directory'] ?? '.';
+		try {
+			$relPath = $this->resolver->canonRelative( $params['directory'] ?? '.' );
+		} catch (\Throwable $e) {
+			return [ 'success' => false, 'error' => $e->getMessage() ];
+		}
+		$directory = $relPath;
 
 		// Normalize directory path
-		$relativeDir = trim( $directory, '/' );
+		$relativeDir = $directory;
 		if ( $relativeDir === '.' || $relativeDir === '' ) {
 			$absoluteDir = $this->workDirectory;
 		} else {

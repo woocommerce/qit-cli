@@ -23,18 +23,22 @@ namespace QIT_AI_Webserver\Lib;
  */
 class FilePathResolver {
 	private string $extractPath;
+	private ToolPathGuard $g;
 
 	public function __construct( string $extractPath ) {
 		$this->extractPath = rtrim( $extractPath, '/\\' );
+		$this->g           = new ToolPathGuard( $this->extractPath );
 	}
 
-	/**
-	 * Convert a relative path to absolute
-	 */
-	public function toAbsolute( string $relativePath ): string {
-		$relativePath = $this->normalize( $relativePath );
+	/**  Convert *user* path → absolute canon path or throw  */
+	public function toAbsolute( string $userPath ): string {
+		$rel = $this->canonRelative( $userPath );     // throws if illegal
+		return $this->extractPath . '/' . $rel;
+	}
 
-		return $this->extractPath . '/' . $relativePath;
+	/**  Return *relative*, canonical path inside workspace  */
+	public function canonRelative( string $userPath ): string {
+		return $this->g->normalise( $userPath );      // may throw
 	}
 
 	/**

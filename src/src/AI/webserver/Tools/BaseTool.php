@@ -16,6 +16,12 @@ abstract class BaseTool implements ToolInterface
         $this->r       = new FilePathResolver($this->workDir);
     }
 
+    /** Canonical, safe, *relative* path – throws if invalid */
+    protected function safePath(string $userPath): string
+    {
+        return $this->r->canonRelative($userPath);
+    }
+
     /** ----------------------------------------------------------------
      *  Child classes must implement the "real" work here.
      *  On success return ANY serialisable value.

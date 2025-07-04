@@ -55,7 +55,12 @@ class ReadFileTool implements ToolInterface {
 	}
 
 	public function execute( array $params ): array {
-		$path       = $params['path'] ?? null;
+		try {
+			$relPath = $this->resolver->canonRelative( $params['path'] ?? '' );
+		} catch (\Throwable $e) {
+			return [ 'success' => false, 'error' => $e->getMessage() ];
+		}
+		$path = $relPath;
 		$start_line = $params['start_line'] ?? null;
 		$end_line   = $params['end_line'] ?? null;
 

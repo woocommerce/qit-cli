@@ -7,6 +7,7 @@ use LLPhant\Chat\Message;
 use LLPhant\Chat\FunctionInfo\FunctionFormatter;
 use LLPhant\Chat\FunctionInfo\ToolCall;
 use QIT_AI_Webserver\Lib\ExtractPathResolver;
+use QIT_AI_Webserver\Lib\PromptContext;
 use QIT_AI_Webserver\Lib\ToolPathGuard;
 use QIT_AI_Webserver\Lib\SimpleToolDialectAdapter as Dialect;
 use QIT_AI_Webserver\NodeResponse;
@@ -139,7 +140,8 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		}
 
 		/* 4.5  build conversation --------------------------------------- */
-		$system = '';
+		$pathCtx = PromptContext::forWorkspace($workDir);
+		$system = $pathCtx;
 		$conv   = [];
 		foreach ( $raw as $m ) {
 			if ( $m['role'] === 'system' ) {
@@ -364,14 +366,6 @@ SCRIPT;
 		if ( $tool === 'list_files' && isset( $args['path'] ) && ! isset( $args['directory'] ) ) {
 			$args['directory'] = $args['path'];
 		}
-		try {
-			if ( $this->needsPathNormalisation( $tool, $reg ) ) {
-				$key          = $tool === 'read_file' ? 'path' : 'directory';
-				$args[ $key ] = $guard->normalise( $args[ $key ] ?? '.' );
-			}
-		} catch ( \RuntimeException ) {
-			return [ 'result' => null, 'id' => $id ];
-		}
 
 		// --- duplicate guard -----------------------------------------------
 		$hash = $this->hashCall( $tool, $args );
@@ -477,11 +471,12 @@ SCRIPT;
 
 		// 2 · Explain what we need, once, very explicitly
 		$callSyntax = Dialect::callInstruction( $dialect );
-		$sys        = "You convert *informal* instructions into ONE valid tool call " .
-		              "for the target dialect.\n" .
-		              "Dialect‑specific rule: {$callSyntax}\n" .
-		              "• NO analysis, no markdown, no extra words.\n" .
-		              "• Echo **only** the tool call.";
+		$sys = <<<SYS
+Convert the user text into **one** valid tool call.
+{$callSyntax}
+• Root‑relative paths only (e.g., "includes/utils.php", not "/includes/utils.php").
+• Return exactly the <tool_call> … </tool_call> wrapper, nothing else.
+SYS;
 
 		// 3 · Do the round‑trip with the malformed text
 		$resp = $chatFix->generateChat( [
