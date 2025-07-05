@@ -31,23 +31,23 @@ class ReadFileTool extends BaseTool {
 	}
 
 	public function getFunctionInfo(): FunctionInfo {
+		$params = [
+			new Parameter( 'file', 'string', 'Path to the file (required)' ),
+			new Parameter( 'start_line', 'integer', 'Starting line number (optional)' ),
+			new Parameter( 'end_line', 'integer', 'Ending line number (optional)' ),
+		];
 
 		return new FunctionInfo(
 			$this->getName(),
-			$this,
+			[ $this, 'read_file' ],
 			$this->getDescription(),
-			[
-				new Parameter( 'start_line', 'int', 'Starting line number (optional)' ),
-				new Parameter( 'end_line', 'int', 'Ending line number (optional)' )
-			],
-			[
-				new Parameter( 'file', 'string', 'Path to the file (required)' ),
-			]
+			$params,
+			[ $params[0] ]              // pass a reference to the required parameters
 		);
 	}
 
 	protected function do( array $params ) {
-		$file = $this->safePath( $params['file'] ?? '' );
+		$file       = $this->safePath( $params['file'] ?? '' );
 		$start_line = $params['start_line'] ?? null;
 		$end_line   = $params['end_line'] ?? null;
 

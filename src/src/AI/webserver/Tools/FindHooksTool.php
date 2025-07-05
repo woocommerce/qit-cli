@@ -17,18 +17,21 @@ class FindHooksTool extends BaseTool {
 	}
 
 	public function getFunctionInfo(): FunctionInfo {
+		$params = [
+			new Parameter( 'type', 'string', 'action | filter | both', [ 'action', 'filter', 'both' ] ),
+			new Parameter( 'hook_names', 'array', 'Exact hook names to match (optional)', [], null, 'string' ),
+			new Parameter( 'callbacks', 'array', 'Callback names to match (optional)', [], null, 'string' ),
+			new Parameter( 'directory', 'string', 'Directory to scan (default ".")' ),
+			new Parameter( 'max_results', 'integer', 'Ceiling on matches (default 100)' ),
+			new Parameter( 'max_depth', 'integer', 'Directory depth (default 10)' ),
+		];
+
 		return new FunctionInfo(
 			$this->getName(),
-			$this,
+			[$this, 'find_hooks'],
 			$this->getDescription(),
-			[
-				new Parameter( 'type', 'string', 'action | filter | both', [ 'action', 'filter', 'both' ] ),
-				new Parameter( 'hook_names', 'array', 'Exact hook names to match (optional)', [], null, 'string' ),
-				new Parameter( 'callbacks', 'array', 'Callback names to match (optional)', [], null, 'string' ),
-				new Parameter( 'directory', 'string', 'Directory to scan (default ".")' ),
-				new Parameter( 'max_results', 'int', 'Ceiling on matches (default 100)' ),
-				new Parameter( 'max_depth', 'int', 'Directory depth (default 10)' ),
-			]
+			$params,
+			[]              // no required parameters
 		);
 	}
 

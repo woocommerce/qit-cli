@@ -22,16 +22,16 @@ class ParsePhpTool extends BaseTool {
 	}
 
 	public function getFunctionInfo(): FunctionInfo {
+		$params = [
+			new Parameter( 'file', 'string', 'File to parse (relative) (required)' ),
+		];
+
 		return new FunctionInfo(
 			$this->getName(),
-			$this,
+			[$this, 'parse_php'],
 			$this->getDescription(),
-			[
-
-			],
-			[
-				new Parameter( 'file', 'string', 'File to parse (relative) (required)' ),
-			]
+			$params,
+			[ $params[0] ]              // pass a reference to the required parameters
 		);
 	}
 

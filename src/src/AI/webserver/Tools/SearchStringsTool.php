@@ -18,36 +18,37 @@ class SearchStringsTool extends BaseTool {
 
 	/* ---------- LLPhant function meta ---------- */
 	public function getFunctionInfo(): FunctionInfo {
+		$params = [
+			new Parameter( 'needles', 'array', 'Array of substrings to match (required)', [], null, 'string' ),
+			new Parameter( 'directory_or_file', 'string', 'Directory or file to search (default ".")' ),
+			new Parameter( 'file_types', 'array', 'e.g. ["php","js"] (default ["php"])', [], null, 'string' ),
+			new Parameter( 'case_sensitive', 'boolean', 'Case‑sensitive search? (default false)' ),
+			new Parameter( 'max_results', 'integer', 'Ceiling on matches (default 50)' ),
+			new Parameter( 'max_depth', 'integer', 'Directory depth (default 10)' ),
+		];
+
 		return new FunctionInfo(
 			$this->getName(),
-			$this,
+			[ $this, 'search_strings' ],
 			$this->getDescription(),
-			[
-				new Parameter( 'directory_or_file', 'string', 'Directory or file to search (default ".")' ),
-				new Parameter( 'file_types', 'array', 'e.g. ["php","js"] (default ["php"])', [], null, 'string' ),
-				new Parameter( 'case_sensitive', 'bool', 'Case‑sensitive search? (default false)' ),
-				new Parameter( 'max_results', 'int', 'Ceiling on matches (default 50)' ),
-				new Parameter( 'max_depth', 'int', 'Directory depth (default 10)' ),
-			],
-			[
-				new Parameter( 'needles', 'array', 'Array of substrings to match (required)', [], null, 'string' ),
-			]
+			$params,
+			[ $params[0] ]              // pass a reference to the required parameters
 		);
 	}
 
 	public function search_strings(
-		array   $needles,
-		string  $directory_or_file = '.',
-		array   $file_types        = ['php'],
-		bool    $case_sensitive    = false,
-		int     $max_results       = 50,
-		int     $max_depth         = 10
+		array $needles,
+		string $directory_or_file = '.',
+		array $file_types = [ 'php' ],
+		bool $case_sensitive = false,
+		int $max_results = 50,
+		int $max_depth = 10
 	): string {
-		$res = $this->execute(compact(
-			'needles','directory_or_file','file_types','case_sensitive','max_results','max_depth'
-		));
+		$res = $this->execute( compact(
+			'needles', 'directory_or_file', 'file_types', 'case_sensitive', 'max_results', 'max_depth'
+		) );
 
-		return json_encode($res, JSON_UNESCAPED_SLASHES);
+		return json_encode( $res, JSON_UNESCAPED_SLASHES );
 	}
 
 	/* ---------- core implementation ---------- */
@@ -69,7 +70,7 @@ class SearchStringsTool extends BaseTool {
 		}
 
 		$absPath = $this->file_path_resolver->toAbsolute( $directoryOrFile );
-		$hits = [];
+		$hits    = [];
 
 		// Check if the path is a file or directory
 		if ( is_file( $absPath ) ) {
@@ -98,7 +99,7 @@ class SearchStringsTool extends BaseTool {
 				}
 
 				$fileHits = $this->searchInFile( $file, $needles, $case, $maxResults - count( $hits ) );
-				$hits = array_merge( $hits, $fileHits );
+				$hits     = array_merge( $hits, $fileHits );
 
 				if ( count( $hits ) >= $maxResults ) {
 					return [ 'results' => $hits, 'truncated' => true ];
@@ -115,7 +116,7 @@ class SearchStringsTool extends BaseTool {
 	 * Search for needles in a single file
 	 */
 	private function searchInFile( \SplFileInfo $file, array $needles, bool $case, int $maxResults ): array {
-		$hits = [];
+		$hits    = [];
 		$content = file_get_contents( $file->getPathname() );
 		if ( $content === false ) {
 			return $hits;

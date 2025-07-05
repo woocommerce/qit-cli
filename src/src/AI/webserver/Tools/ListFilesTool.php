@@ -23,14 +23,16 @@ class ListFilesTool extends BaseTool {
 	}
 
 	public function getFunctionInfo(): FunctionInfo {
+		$params = [
+			new Parameter( 'directory', 'string', 'Directory to list (default: root)' )
+		];
+
 		return new FunctionInfo(
 			$this->getName(),
-			$this,
+			[$this, 'list_files'],
 			$this->getDescription(),
-			[],
-			[
-				new Parameter( 'directory', 'string', 'Directory to list (default: root)' )
-			]
+			$params,
+			[]           // no required parameters
 		);
 	}
 

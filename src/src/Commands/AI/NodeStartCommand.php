@@ -85,7 +85,7 @@ class NodeStartCommand extends QITCommand {
 				// LM Studio uses OpenAI-compatible API but doesn't require API key
 				$providerConfig['api_key']  = $input->getOption( 'api-key' ) ?: 'dummy'; // LM Studio ignores this
 				$providerConfig['base_url'] = $input->getOption( 'base-url' ) ?: 'http://localhost:1234/v1';
-				$providerConfig['model']    = $input->getOption( 'model' ) ?: 'qwen/qwen2.5-coder-32b';
+				$providerConfig['model']    = $input->getOption( 'model' ) ?: 'qwen/qwen2.5-coder-14b';
 				break;
 
 			case 'openai':

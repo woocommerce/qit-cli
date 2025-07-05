@@ -18,99 +18,97 @@ final class LLPhantBootstrap {
 	private static ?string $currentModel = null;
 
 	/** Initialise exactly once per PHP process (router‑level). */
-	public static function boot(string $provider, array $conf): void
-	{
-		if (self::$chat) {            // already initialised
+	public static function boot( string $provider, array $conf ): void {
+		if ( self::$chat ) {            // already initialised
 			return;
 		}
 
 		// Track current provider
 		self::$currentProvider = $provider;
 
-		$self = new self($provider, $conf);   // reuse existing ctor logic
+		$self = new self( $provider, $conf );   // reuse existing ctor logic
 		$self->ensureInitialized();           // still installs composer etc.
 		self::$chat = $self->getChat();
 
 		// Apply options once during boot()
-		foreach (['model','temperature','max_tokens'] as $opt) {
-			if (isset($conf[$opt])) {
-				self::$chat->setModelOption($opt, $conf[$opt]);
+		foreach ( [ 'model', 'temperature', 'max_tokens' ] as $opt ) {
+			if ( isset( $conf[ $opt ] ) ) {
+				self::$chat->setModelOption( $opt, $conf[ $opt ] );
 			}
 		}
 	}
 
 	/** Retrieve the ready‑to‑use ChatInterface for endpoints. */
-	public static function chat(): ChatInterface
-	{
-		if (!self::$chat) {
-			throw new \RuntimeException('LLPhantBootstrap::boot() not called');
+	public static function chat(): ChatInterface {
+		if ( ! self::$chat ) {
+			throw new \RuntimeException( 'LLPhantBootstrap::boot() not called' );
 		}
+
 		return self::$chat;
 	}
 
 	/**
 	 * Resolve model input to a string based on current provider
-	 * 
-	 * @param mixed $modelInput - Can be string or array with provider keys
+	 *
+	 * @param mixed $modelInput - Must be an array with provider keys
 	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
+	 *
 	 * @return string - Resolved model name
 	 * @throws \InvalidArgumentException
 	 */
-	public static function resolveModel($modelInput, string $provider): string {
+	public static function resolveModel( $modelInput, string $provider ): string {
 		// Validate input
-		if (empty($modelInput)) {
-			throw new \InvalidArgumentException('Model parameter is required');
+		if ( empty( $modelInput ) ) {
+			throw new \InvalidArgumentException( 'Model parameter is required' );
 		}
 
-		// Resolve model based on input type
-		if (is_string($modelInput)) {
-			// Legacy string format
-			return $modelInput;
-		} elseif (is_array($modelInput)) {
-			// New multi-provider format
-			if (!isset($modelInput[$provider])) {
-				$available = implode(', ', array_keys($modelInput));
-				throw new \InvalidArgumentException(
-					"Model not specified for provider '{$provider}'. Available: {$available}"
-				);
-			}
-			$resolvedModel = $modelInput[$provider];
-
-			if (empty($resolvedModel)) {
-				throw new \InvalidArgumentException(
-					"Empty model specified for provider '{$provider}'"
-				);
-			}
-
-			return $resolvedModel;
-		} else {
+		// Only accept object format with provider keys
+		if ( ! is_array( $modelInput ) ) {
 			throw new \InvalidArgumentException(
-				'Model must be a string or object with provider keys'
+				'Model must be an object with provider keys (e.g., {"openai": "gpt-4", "anthropic": "claude-3"})'
 			);
 		}
+
+		// Multi-provider format
+		if ( ! isset( $modelInput[ $provider ] ) ) {
+			$available = implode( ', ', array_keys( $modelInput ) );
+			throw new \InvalidArgumentException(
+				"Model not specified for provider '{$provider}'. Available: {$available}"
+			);
+		}
+		$resolvedModel = $modelInput[ $provider ];
+
+		if ( empty( $resolvedModel ) ) {
+			throw new \InvalidArgumentException(
+				"Empty model specified for provider '{$provider}'"
+			);
+		}
+
+		return $resolvedModel;
 	}
 
 	/**
 	 * Set model - handles validation, resolution, downloading, and configuration
-	 * 
-	 * @param mixed $modelInput - Can be string or array with provider keys
+	 *
+	 * @param mixed $modelInput - Must be an array with provider keys
 	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
+	 *
 	 * @return bool - True if model was set successfully
 	 * @throws \InvalidArgumentException
 	 */
-	public static function setModel($modelInput, string $provider): bool {
+	public static function setModel( $modelInput, string $provider ): bool {
 		// Store current provider
 		self::$currentProvider = $provider;
 
 		// 1. Resolve model
-		$resolvedModel = self::resolveModel($modelInput, $provider);
+		$resolvedModel = self::resolveModel( $modelInput, $provider );
 
 		// Store resolved model
 		self::$currentModel = $resolvedModel;
 
 		// 2. Download model if needed (LM Studio only)
-		if ($provider === 'lmstudio') {
-			if (!self::downloadModelIfNeeded($resolvedModel)) {
+		if ( $provider === 'lmstudio' ) {
+			if ( ! self::downloadModelIfNeeded( $resolvedModel ) ) {
 				throw new \InvalidArgumentException(
 					"Failed to ensure model '{$resolvedModel}' is available in LM Studio"
 				);
@@ -118,8 +116,8 @@ final class LLPhantBootstrap {
 		}
 
 		// 3. Set model on chat instance
-		if (self::$chat) {
-			self::$chat->setModelOption('model', $resolvedModel);
+		if ( self::$chat ) {
+			self::$chat->setModelOption( 'model', $resolvedModel );
 		}
 
 		return true;
@@ -127,21 +125,22 @@ final class LLPhantBootstrap {
 
 	/**
 	 * Download model if needed for LM Studio
-	 * 
+	 *
 	 * @param string $model
+	 *
 	 * @return bool
 	 */
-	private static function downloadModelIfNeeded(string $model): bool {
+	private static function downloadModelIfNeeded( string $model ): bool {
 		// First check if model is already available
-		$instance = new self('lmstudio', []);
-		if ($instance->checkLMStudioModelAvailability($model)) {
+		$instance = new self( 'lmstudio', [] );
+		if ( $instance->checkLMStudioModelAvailability( $model ) ) {
 			return true; // Model already available
 		}
 
 		// TODO: Implement actual model downloading
 		// For now, we'll log that the model needs to be downloaded
 		// and return true to allow the process to continue
-		error_log("Model '{$model}' not found in LM Studio. Please load it manually through LM Studio UI.");
+		error_log( "Model '{$model}' not found in LM Studio. Please load it manually through LM Studio UI." );
 
 		// In a future implementation, this could:
 		// 1. Call LM Studio's model management API
@@ -160,7 +159,7 @@ final class LLPhantBootstrap {
 
 	/**
 	 * Get current resolved model
-	 * 
+	 *
 	 * @return string
 	 */
 	public static function getModel(): string {
@@ -177,10 +176,15 @@ final class LLPhantBootstrap {
 	private $logger;
 
 	public function __construct( string $provider, array $config = [], $logger = null ) {
-		$this->provider   = $provider;
-		$this->config     = $config;
-		$this->logger     = $logger;
-		$this->installDir = sys_get_temp_dir() . '/qit-llphant';
+		$this->provider = $provider;
+		$this->config   = $config;
+		$this->logger   = $logger;
+		// Are we in Phar?
+		if ( \Phar::running() !== '' ) {
+			$this->installDir = sys_get_temp_dir() . '/qit-llphant';
+		} else {
+			$this->installDir = __DIR__ . '/../../dev/qit-llphant';
+		}
 
 		$this->ensureLLPhantInstalled();
 	}
@@ -191,8 +195,8 @@ final class LLPhantBootstrap {
 
 	public function reinitialize( array $runtimeConfig = [] ): void {
 		// invalidate old chat
-		$this->chat_instance   = null;
-		$this->config = array_merge( $this->config, $runtimeConfig );
+		$this->chat_instance = null;
+		$this->config        = array_merge( $this->config, $runtimeConfig );
 		$this->initializeProvider( $runtimeConfig );
 	}
 
@@ -237,7 +241,7 @@ final class LLPhantBootstrap {
 			'config'  => [
 				'optimize-autoloader'    => true,
 				'classmap-authoritative' => true,
-				'minimum-stability'     => 'dev',
+				'minimum-stability'      => 'dev',
 			]
 		];
 
@@ -279,14 +283,6 @@ final class LLPhantBootstrap {
 			default:
 				throw new Exception( "Unsupported provider: " . $this->provider );
 		}
-
-		// Apply schema if provided
-		if ( isset( $config['format'] ) ) {
-			// OpenAI/Anthropic: response_format for JSON schema
-			if ( $this->chat_instance instanceof OpenAIChat || $this->chat_instance instanceof AnthropicChat ) {
-				OpenAIChat::setModelOption( 'response_format', [ 'type' => 'json_schema', 'schema' => $config['format'] ] );
-			}
-		}
 	}
 
 	private function initializeOpenAI( array $config ): void {
@@ -299,9 +295,9 @@ final class LLPhantBootstrap {
 		], $config );
 
 		// Create OpenAIConfig object
-		$openaiConfig = new OpenAIConfig();
+		$openaiConfig         = new OpenAIConfig();
 		$openaiConfig->apiKey = $config['api_key'];
-		$openaiConfig->model = $config['model'];
+		$openaiConfig->model  = $config['model'];
 
 		// Set custom base URL if provided (for LM Studio compatibility)
 		if ( ! empty( $config['base_url'] ) ) {
@@ -341,15 +337,16 @@ final class LLPhantBootstrap {
 	 * Check if a model is available in LM Studio via OpenAI-compatible API
 	 *
 	 * @param string $model Model name to check
+	 *
 	 * @return bool True if model is available, false otherwise
 	 */
 	private function checkLMStudioModelAvailability( string $model ): bool {
 		// Get base URL from config, default to LM Studio default
-		$baseUrl = $this->config['base_url'] ?? 'http://localhost:1234/v1';
+		$baseUrl        = $this->config['base_url'] ?? 'http://localhost:1234/v1';
 		$modelsEndpoint = rtrim( $baseUrl, '/' ) . '/models';
 
 		$this->log_info( "Checking LM Studio model availability", [
-			'model' => $model,
+			'model'    => $model,
 			'endpoint' => $modelsEndpoint
 		] );
 
@@ -364,15 +361,16 @@ final class LLPhantBootstrap {
 
 		$response = curl_exec( $ch );
 		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		$error = curl_error( $ch );
+		$error    = curl_error( $ch );
 		curl_close( $ch );
 
 		if ( $httpCode !== 200 ) {
 			$this->log_error( "Failed to check LM Studio models", [
 				'http_code' => $httpCode,
-				'error' => $error,
-				'response' => substr( $response, 0, 500 )
+				'error'     => $error,
+				'response'  => substr( $response, 0, 500 )
 			] );
+
 			// If we can't check, assume model is available (LM Studio might be starting up)
 			return true;
 		}
@@ -382,6 +380,7 @@ final class LLPhantBootstrap {
 			$this->log_error( "Invalid response format from LM Studio models endpoint", [
 				'response' => substr( $response, 0, 500 )
 			] );
+
 			// If response format is unexpected, assume model is available
 			return true;
 		}
@@ -390,12 +389,13 @@ final class LLPhantBootstrap {
 		foreach ( $data['data'] as $availableModel ) {
 			if ( isset( $availableModel['id'] ) && $availableModel['id'] === $model ) {
 				$this->log_info( "Model found in LM Studio", [ 'model' => $model ] );
+
 				return true;
 			}
 		}
 
 		$this->log_info( "Model not found in LM Studio", [
-			'model' => $model,
+			'model'            => $model,
 			'available_models' => array_column( $data['data'], 'id' )
 		] );
 

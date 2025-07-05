@@ -32,14 +32,6 @@ abstract class AbstractEndpoint {
 	 */
 	abstract public function handle( array $input ): void;
 
-	/** Optional helper to map raw message arrays → LL‑Phant messages */
-	protected function toMessages( array $raw ): array {
-		return array_map(
-			fn( $m ) => \LLPhant\Chat\Message::{$m['role']}( $m['content'] ),
-			$raw
-		);
-	}
-
 	/**
 	 * Handle errors consistently across all endpoints
 	 *

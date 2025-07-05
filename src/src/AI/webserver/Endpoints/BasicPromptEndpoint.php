@@ -31,51 +31,24 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 	public function handle( array $input ): void {
 		$this->log_info( "Processing basic AI request" );
 
-		// Validate input - model and messages are required
-		$missing = [];
-		if ( ! isset( $input['model'] ) || empty( $input['model'] ) ) {
-			$missing[] = 'model';
-		}
-		if ( ! isset( $input['messages'] ) || $input['messages'] === null || ! is_array( $input['messages'] ) || empty( $input['messages'] ) ) {
-			$missing[] = 'messages';
-		}
-
-		// Validate message structure if messages are provided
-		if ( ! in_array( 'messages', $missing ) ) {
-			foreach ( $input['messages'] as $index => $message ) {
-				if ( ! is_array( $message ) || ! isset( $message['role'] ) || ! isset( $message['content'] ) ) {
-					$missing[] = "messages[$index] must have 'role' and 'content' fields";
-				} elseif ( ! in_array( $message['role'], [ 'system', 'user', 'assistant', 'tool' ] ) ) {
-					$missing[] = "messages[$index] has invalid role: " . $message['role'];
-				}
-			}
-		}
-
-		if ( ! empty( $missing ) ) {
-			$this->log_error( "Missing or invalid required parameters", [
-				'missing'        => $missing,
-				'uri'            => $_SERVER['REQUEST_URI'] ?? 'unknown',
-				'messages_type'  => gettype( $input['messages'] ?? 'undefined' ),
-				'messages_value' => $input['messages'] ?? 'undefined'
-			] );
-
-			NodeResponse::error( 'Missing or invalid required parameters: ' . implode( ', ', $missing ), 400, [
-				'job_id' => $input['job_id'] ?? null
-			] );
-
-			return;
-		}
-
 		try {
-			// Use messages directly with LLM
-			$messages = $this->toMessages( $input['messages'] );
-			$model    = $input['model'];
+			// Get model and provider info from bootstrapped LLPhant integration
+			$model    = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getModel();
+			$provider = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getCurrentProvider();
+
+			$messages = [];
+			foreach ( $input['messages'] as $m ) {
+				$messages[] = \LLPhant\Chat\Message::{$m['role']}( $m['content'] );
+			}
+
+			if ( ! empty( $input['response_format'] ) ) {
+				$this->chat->setModelOption( 'response_format', $input['response_format'] );
+			}
 
 			$this->log_info( "Starting AI processing", [
-				'model'         => $model,
 				'job_id'        => $input['job_id'] ?? 'unknown',
 				'message_count' => count( $messages ),
-				'has_schema'    => isset( $input['format'] ) ? 'yes' : 'no',
+				'has_schema'    => isset( $input['response_format'] ) ? 'yes' : 'no',
 				'has_options'   => isset( $input['options'] ) ? 'yes' : 'no'
 			] );
 
@@ -86,16 +59,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			try {
 				$result = $this->chat->generateChat( $messages );
 			} catch ( \TypeError $e ) {
-				// Handle specific OpenAI client error when response is missing "choices" key
-				if ( strpos( $e->getMessage(), 'array_map()' ) !== false && strpos( $e->getMessage(), 'must be of type array, null given' ) !== false ) {
-					$this->log_error( "OpenAI API returned invalid response format (missing 'choices' key)", [
-						'job_id' => $input['job_id'] ?? 'unknown',
-						'model'  => $model,
-						'error'  => $e->getMessage()
-					] );
-					throw new \Exception( "OpenAI API returned an invalid response format. This may be due to API rate limits, service issues, or invalid request parameters." );
-				}
-				// Re-throw other TypeErrors
+				// Check if the model exists.
 				throw $e;
 			}
 
@@ -103,16 +67,16 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 
 			$response = [
 				'response' => trim( (string) $result ),
-				'model'    => $model,
 				'duration' => $elapsed,
-				'provider' => 'openai' // provider is immutable
+				'model'    => $model,
+				'provider' => $provider
 			];
 
 			// Log performance metrics
 			$this->log_info( "AI processing completed successfully", [
 				'job_id'          => $input['job_id'] ?? 'unknown',
-				'model'           => $response['model'] ?? $model,
-				'provider'        => $response['provider'] ?? 'unknown',
+				'model'           => $response['model'],
+				'provider'        => $response['provider'],
 				'duration'        => $response['duration'] ?? 0,
 				'response_length' => strlen( $response['response'] ),
 			] );
@@ -120,7 +84,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			// Use NodeResponse::prompt for standardized response
 			NodeResponse::prompt(
 				trim( $response['response'] ),
-				$response['model'] ?? $model,
+				$response['model'],
 				$response, // Pass full response for stats
 				[ 'job_id' => $input['job_id'] ?? null ]
 			);
