@@ -14,6 +14,8 @@ final class LLPhantBootstrap {
 	/* ───────── 1. STATIC SINGLETON – BOOT ONLY ONCE ───────── */
 
 	private static ?ChatInterface $chat = null;
+	private static ?string $currentProvider = null;
+	private static ?string $currentModel = null;
 
 	/** Initialise exactly once per PHP process (router‑level). */
 	public static function boot(string $provider, array $conf): void
@@ -21,6 +23,10 @@ final class LLPhantBootstrap {
 		if (self::$chat) {            // already initialised
 			return;
 		}
+
+		// Track current provider
+		self::$currentProvider = $provider;
+
 		$self = new self($provider, $conf);   // reuse existing ctor logic
 		$self->ensureInitialized();           // still installs composer etc.
 		self::$chat = $self->getChat();
@@ -40,6 +46,125 @@ final class LLPhantBootstrap {
 			throw new \RuntimeException('LLPhantBootstrap::boot() not called');
 		}
 		return self::$chat;
+	}
+
+	/**
+	 * Resolve model input to a string based on current provider
+	 * 
+	 * @param mixed $modelInput - Can be string or array with provider keys
+	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
+	 * @return string - Resolved model name
+	 * @throws \InvalidArgumentException
+	 */
+	public static function resolveModel($modelInput, string $provider): string {
+		// Validate input
+		if (empty($modelInput)) {
+			throw new \InvalidArgumentException('Model parameter is required');
+		}
+
+		// Resolve model based on input type
+		if (is_string($modelInput)) {
+			// Legacy string format
+			return $modelInput;
+		} elseif (is_array($modelInput)) {
+			// New multi-provider format
+			if (!isset($modelInput[$provider])) {
+				$available = implode(', ', array_keys($modelInput));
+				throw new \InvalidArgumentException(
+					"Model not specified for provider '{$provider}'. Available: {$available}"
+				);
+			}
+			$resolvedModel = $modelInput[$provider];
+
+			if (empty($resolvedModel)) {
+				throw new \InvalidArgumentException(
+					"Empty model specified for provider '{$provider}'"
+				);
+			}
+
+			return $resolvedModel;
+		} else {
+			throw new \InvalidArgumentException(
+				'Model must be a string or object with provider keys'
+			);
+		}
+	}
+
+	/**
+	 * Set model - handles validation, resolution, downloading, and configuration
+	 * 
+	 * @param mixed $modelInput - Can be string or array with provider keys
+	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
+	 * @return bool - True if model was set successfully
+	 * @throws \InvalidArgumentException
+	 */
+	public static function setModel($modelInput, string $provider): bool {
+		// Store current provider
+		self::$currentProvider = $provider;
+
+		// 1. Resolve model
+		$resolvedModel = self::resolveModel($modelInput, $provider);
+
+		// Store resolved model
+		self::$currentModel = $resolvedModel;
+
+		// 2. Download model if needed (LM Studio only)
+		if ($provider === 'lmstudio') {
+			if (!self::downloadModelIfNeeded($resolvedModel)) {
+				throw new \InvalidArgumentException(
+					"Failed to ensure model '{$resolvedModel}' is available in LM Studio"
+				);
+			}
+		}
+
+		// 3. Set model on chat instance
+		if (self::$chat) {
+			self::$chat->setModelOption('model', $resolvedModel);
+		}
+
+		return true;
+	}
+
+	/**
+	 * Download model if needed for LM Studio
+	 * 
+	 * @param string $model
+	 * @return bool
+	 */
+	private static function downloadModelIfNeeded(string $model): bool {
+		// First check if model is already available
+		$instance = new self('lmstudio', []);
+		if ($instance->checkLMStudioModelAvailability($model)) {
+			return true; // Model already available
+		}
+
+		// TODO: Implement actual model downloading
+		// For now, we'll log that the model needs to be downloaded
+		// and return true to allow the process to continue
+		error_log("Model '{$model}' not found in LM Studio. Please load it manually through LM Studio UI.");
+
+		// In a future implementation, this could:
+		// 1. Call LM Studio's model management API
+		// 2. Download from Hugging Face Hub
+		// 3. Use LM Studio CLI commands
+
+		return true; // Allow process to continue for now
+	}
+
+	/**
+	 * Get current provider
+	 */
+	public static function getCurrentProvider(): string {
+		return self::$currentProvider ?? 'unknown';
+	}
+
+	/**
+	 * Get current resolved model
+	 * 
+	 * @return string
+	 */
+	public static function getModel(): string {
+		return self::$currentModel ?? 'unknown';
 	}
 
 	/* ───────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ─────── */

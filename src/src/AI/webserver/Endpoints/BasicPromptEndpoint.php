@@ -79,10 +79,26 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				'has_options'   => isset( $input['options'] ) ? 'yes' : 'no'
 			] );
 
-			// Make the API call using chat
+			// Make the API call using chat with additional error handling
 			NodeResponse::mark( 'llm_call' );
-			$start   = microtime( true );
-			$result  = $this->chat->generateChat( $messages );
+			$start = microtime( true );
+
+			try {
+				$result = $this->chat->generateChat( $messages );
+			} catch ( \TypeError $e ) {
+				// Handle specific OpenAI client error when response is missing "choices" key
+				if ( strpos( $e->getMessage(), 'array_map()' ) !== false && strpos( $e->getMessage(), 'must be of type array, null given' ) !== false ) {
+					$this->log_error( "OpenAI API returned invalid response format (missing 'choices' key)", [
+						'job_id' => $input['job_id'] ?? 'unknown',
+						'model'  => $model,
+						'error'  => $e->getMessage()
+					] );
+					throw new \Exception( "OpenAI API returned an invalid response format. This may be due to API rate limits, service issues, or invalid request parameters." );
+				}
+				// Re-throw other TypeErrors
+				throw $e;
+			}
+
 			$elapsed = microtime( true ) - $start;
 
 			$response = [

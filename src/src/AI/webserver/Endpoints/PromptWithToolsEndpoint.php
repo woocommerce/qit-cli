@@ -9,7 +9,6 @@ use LLPhant\Chat\FunctionInfo\ToolCall;
 use QIT_AI_Webserver\Lib\ExtractPathResolver;
 use QIT_AI_Webserver\Lib\PromptContext;
 use QIT_AI_Webserver\Lib\ToolPathGuard;
-use QIT_AI_Webserver\Lib\SimpleToolDialectAdapter as Dialect;
 use QIT_AI_Webserver\NodeResponse;
 use QIT_AI_Webserver\ToolRegistry;
 
@@ -22,17 +21,6 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		return '/prompt-with-tools';
 	}
 
-	/* ------------------------------------------------------------------ */
-	/* 2.  Model ↔ dialect map                                            */
-	/* ------------------------------------------------------------------ */
-	private const MODEL_DIALECT_MAP = [
-		'qwen2.5-coder:7b'            => Dialect::QWEN,
-		'qwen2.5-coder:32b'           => Dialect::QWEN,
-		'hhao/qwen2.5-coder-tools:7b' => Dialect::QWEN,
-		'mistral-small3.2:24b'        => Dialect::MISTRAL,
-		// 'gpt-4o'                   => Dialect::OPENAI,
-		// 'llama-3-70b-instruct'     => Dialect::LLAMA,
-	];
 
 	/* -------- Context‑safety thresholds (character length) ---------------- */
 	private const MAX_ASSISTANT_TOKENS = 16384;
@@ -112,17 +100,11 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 			}
 		}
 		$raw           = $input['messages'];
-		$model         = (string) $input['model'];
 		$format        = $input['format'] ?? null;
 		$maxIterations = (int) ( $input['max_iterations'] ?? 12 );
 		$minToolCalls  = (int) ( $input['min_tool_calls'] ?? 2 );
-		$log( 'validated', compact( 'model', 'format', 'minToolCalls' ) );
 
-		if ( ! isset( self::MODEL_DIALECT_MAP[ $model ] ) ) {
-			NodeResponse::error( "Model '{$model}' not mapped.", 400 );
-		}
-		$dialect = self::MODEL_DIALECT_MAP[ $model ];
-		$log( 'dialect', $dialect );
+		$log( 'validated', compact( 'format', 'minToolCalls' ) );
 
 		/* 4.3  boot LLM -------------------------------------------------- */
 		$chat = $this->chat;
@@ -169,10 +151,7 @@ You must find:
 - Any other relevant information you deem relevant for context awareness
 SCRIPT;
 
-		if ( ! Dialect::supportsNative( $dialect ) ) {
-			$system .= "\n" . Dialect::callInstruction( $dialect );
-		}
-		Dialect::injectTools( $dialect, $registry, $system, $conv );
+		// Tools are already registered with chat->addTool() above
 
 		$chat->setSystemMessage( trim( $system ) );
 
@@ -233,7 +212,14 @@ SCRIPT;
 			}
 
 			$log( 'response_raw', $rawOut );
-			$toolCalls = Dialect::parseToolCalls( $dialect, $rawOut, $nativeCalls );
+
+			// Use native tool calls from LLPhant
+			$toolCalls = [];
+			if ( $nativeCalls ) {
+				foreach ( $nativeCalls as $call ) {
+					$toolCalls[] = [ $call->name, (array) $call->arguments, $call->id ?? uniqid( 'call_', true ) ];
+				}
+			}
 
 			/*  🚑  fallback parser:  toolName { json‑args } ---------------- */
 			if ( empty( $toolCalls ) ) {
@@ -250,11 +236,17 @@ SCRIPT;
 				}
 			}
 
-			$toolCalls = Dialect::parseToolCalls( $dialect, $rawOut, $nativeCalls );
+				// Use native tool calls from LLPhant
+				$toolCalls = [];
+				if ( $nativeCalls ) {
+					foreach ( $nativeCalls as $call ) {
+						$toolCalls[] = [ $call->name, (array) $call->arguments, $call->id ?? uniqid( 'call_', true ) ];
+					}
+				}
 
 			/* 🩹 Simplified repair rule ------------------------------------ */
 			if ( empty( $toolCalls ) && $this->hasToolName( $rawOut, $registry ) ) {
-				$toolCalls = $this->repairToolCalls( $dialect, $rawOut );
+				$toolCalls = $this->repairToolCalls( $rawOut );
 				if ( $toolCalls ) {
 					$log( 'parsed_tool_calls_repaired', $toolCalls );
 				}
@@ -279,7 +271,7 @@ SCRIPT;
 			if ( $toolCalls ) {
 				foreach ( $toolCalls as [$name, $args, $id] ) {
 					$toolResult = $this->executeTool(
-						$dialect, $name, $args, $id,
+						$name, $args, $id,
 						$registry, $pathGuard,
 						$conv, $logTool,
 						$successful, $calls
@@ -287,7 +279,7 @@ SCRIPT;
 					$result     = $toolResult['result'];
 					$uniqueId   = $toolResult['id'];
 
-					$conv[] = Dialect::toolResultMessage( $dialect, json_encode( $result ), $uniqueId );
+					$conv[] = Message::toolResult( json_encode( $result ), $uniqueId );
 				}
 				continue;
 			}
@@ -329,7 +321,7 @@ SCRIPT;
 			NodeResponse::toolPrompt(
 				$answer,
 				$calls,
-				$model,
+				\QIT_AI_Webserver\Lib\LLPhantBootstrap::getModel(),
 				[
 					'iterations'     => $iter,
 					'job_id'         => $input['job_id'] ?? null,
@@ -349,7 +341,6 @@ SCRIPT;
 	   5.  Execute a tool + logging                                       */
 	/* ------------------------------------------------------------------ */
 	private function executeTool(
-		string $dialect,
 		string $tool,
 		array $args,
 		string $id,
@@ -467,7 +458,6 @@ SCRIPT;
 	 *  or an empty array if nothing usable is produced.
 	 *  ------------------------------------------------------------------ */
 	private function repairToolCalls(
-		string $dialect,
 		string $assistantRaw
 	): array {
 		// 1 · spin up a **fresh, stateless** Chat object so that we
@@ -478,7 +468,7 @@ SCRIPT;
 		$chatFix->setModelOption( 'tool_choice', 'none' );   // we want *text*, not calls
 
 		// 2 · Explain what we need, once, very explicitly
-		$callSyntax = Dialect::callInstruction( $dialect );
+		$callSyntax = "If you need a tool, output ONLY its raw JSON object.";
 		$sys        = <<<SYS
 Convert the user text into **one** valid tool call.
 {$callSyntax}
@@ -496,7 +486,14 @@ SYS;
 		$content = method_exists( $resp, 'getContent' ) ? $resp->getContent() : (string) $resp;
 		$native  = method_exists( $resp, 'getToolCalls' ) ? $resp->getToolCalls() : [];
 
-		return Dialect::parseToolCalls( $dialect, $content, $native );
+		// Use native tool calls if available
+		$toolCalls = [];
+		if ( $native ) {
+			foreach ( $native as $call ) {
+				$toolCalls[] = [ $call->name, (array) $call->arguments, $call->id ?? uniqid( 'call_', true ) ];
+			}
+		}
+		return $toolCalls;
 	}
 
 }

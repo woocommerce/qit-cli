@@ -210,15 +210,30 @@ use QIT_AI_Webserver\NodeResponse;
 
 NodeResponse::init();
 
-// Boot LLPhant with provider config and per-request options
-$provider       = '{{PROVIDER}}';
+// Boot LLPhant with provider config
+$provider = '{{PROVIDER}}';
 $providerConfig = json_decode( '{{PROVIDER_CONFIG}}', true ) + [
-		'model'       => $input['model'] ?? null,
-		'temperature' => $input['temperature'] ?? null,
-		'max_tokens'  => $input['max_tokens'] ?? null,
-	];
+	'temperature' => $input['temperature'] ?? null,
+	'max_tokens'  => $input['max_tokens'] ?? null,
+];
 
 \QIT_AI_Webserver\Lib\LLPhantBootstrap::boot( $provider, $providerConfig );
+
+// Set model using the new unified method
+if ( isset( $input['model'] ) ) {
+	try {
+		\QIT_AI_Webserver\Lib\LLPhantBootstrap::setModel( $input['model'], $provider );
+	} catch ( \InvalidArgumentException $e ) {
+		log_error( "Model setup failed", [
+			'error' => $e->getMessage(),
+			'provider' => $provider,
+			'model_input' => $input['model']
+		] );
+		http_response_code( 400 );
+		echo json_encode( [ 'error' => $e->getMessage() ] );
+		exit;
+	}
+}
 
 // Route to appropriate endpoint
 log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );

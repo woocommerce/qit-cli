@@ -38,7 +38,7 @@ class NodeStartCommand extends QITCommand {
 	) {
 		parent::__construct( self::getDefaultName() );
 		$this->tunnel_runner = $tunnel_runner;
-		$this->webserver = new WebServer( true );
+		$this->webserver     = new WebServer( true );
 		$this->cache         = $cache;
 		$this->auth          = $auth;
 	}
@@ -50,7 +50,7 @@ class NodeStartCommand extends QITCommand {
 		     ->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
 		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'cloudflared-docker' )
 		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' )
-		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (ollama, openai, lmstudio, anthropic)', 'ollama' )
+		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (openai, lmstudio, anthropic)', 'lmstudio' )
 		     ->addOption( 'api-key', null, InputOption::VALUE_OPTIONAL, 'API key for cloud providers' )
 		     ->addOption( 'model', null, InputOption::VALUE_OPTIONAL, 'Default model to use' )
 		     ->addOption( 'base-url', null, InputOption::VALUE_OPTIONAL, 'Base URL for OpenAI-compatible providers (e.g., LM Studio)', 'http://localhost:1234/v1' );
@@ -77,27 +77,21 @@ class NodeStartCommand extends QITCommand {
 		$this->webserver->setLogger( $this->logger );
 
 		// Get provider configuration
-		$provider = $input->getOption( 'provider' );
+		$provider       = $input->getOption( 'provider' );
 		$providerConfig = [];
 
 		switch ( $provider ) {
-			case 'ollama':
-				$providerConfig['url'] = 'http://localhost:11434'; // Default Ollama URL
-				if ( $input->getOption( 'model' ) ) {
-					$providerConfig['model'] = $input->getOption( 'model' );
-				}
-				break;
-
 			case 'lmstudio':
 				// LM Studio uses OpenAI-compatible API but doesn't require API key
-				$providerConfig['api_key'] = $input->getOption( 'api-key' ) ?: 'dummy'; // LM Studio ignores this
+				$providerConfig['api_key']  = $input->getOption( 'api-key' ) ?: 'dummy'; // LM Studio ignores this
 				$providerConfig['base_url'] = $input->getOption( 'base-url' ) ?: 'http://localhost:1234/v1';
-				$providerConfig['model'] = $input->getOption( 'model' ) ?: 'lmstudio-default';
+				$providerConfig['model']    = $input->getOption( 'model' ) ?: 'qwen/qwen2.5-coder-32b';
 				break;
 
 			case 'openai':
 				if ( ! $input->getOption( 'api-key' ) ) {
 					$output->writeln( '<error>API key is required for ' . $provider . '</error>' );
+
 					return self::FAILURE;
 				}
 				$providerConfig['api_key'] = $input->getOption( 'api-key' );
@@ -113,6 +107,7 @@ class NodeStartCommand extends QITCommand {
 			case 'anthropic':
 				if ( ! $input->getOption( 'api-key' ) ) {
 					$output->writeln( '<error>API key is required for ' . $provider . '</error>' );
+
 					return self::FAILURE;
 				}
 				$providerConfig['api_key'] = $input->getOption( 'api-key' );
@@ -123,36 +118,56 @@ class NodeStartCommand extends QITCommand {
 
 			default:
 				$output->writeln( '<error>Unsupported provider: ' . $provider . '</error>' );
+
 				return self::FAILURE;
 		}
 
 		// Pass provider config to webserver
 		$this->webserver->setProviderConfig( $provider, $providerConfig );
 
-		// Only check Ollama if using Ollama provider
-		if ( $provider === 'ollama' ) {
-			// Check if Ollama is available through WebServer
-			if ( ! $this->webserver->isOllamaAvailable() ) {
-				$this->logger->error( 'Ollama CLI is not available' );
-				$output->writeln( '<error>Ollama CLI is not available. Please install it first: https://ollama.ai</error>' );
-
-				return self::FAILURE;
-			}
-
-			// Ensure Ollama API is running through WebServer
-			$output->write( 'Checking Ollama API... ' );
+		// Check LM Studio availability if using LM Studio provider
+		if ( $provider === 'lmstudio' ) {
+			$output->write( 'Checking LM Studio API... ' );
 			try {
-				if ( $this->webserver->ensureOllamaApiRunning() ) {
+				// Test LM Studio connection by checking models endpoint
+				$baseUrl = $providerConfig['base_url'] ?? 'http://localhost:1234/v1';
+				$modelsEndpoint = rtrim( $baseUrl, '/' ) . '/models';
+
+				$ch = curl_init( $modelsEndpoint );
+				curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+				curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
+				curl_setopt( $ch, CURLOPT_HTTPHEADER, [
+					'Content-Type: application/json',
+					'Authorization: Bearer ' . ( $providerConfig['api_key'] ?? 'dummy' )
+				] );
+
+				$response = curl_exec( $ch );
+				$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+				$error = curl_error( $ch );
+				curl_close( $ch );
+
+				if ( $httpCode === 200 ) {
 					$output->writeln( '<info>✓</info>' );
+
+					// Check if any models are loaded
+					$data = json_decode( $response, true );
+					if ( isset( $data['data'] ) && is_array( $data['data'] ) && count( $data['data'] ) > 0 ) {
+						$modelCount = count( $data['data'] );
+						$output->writeln( "<info>Found {$modelCount} model(s) loaded in LM Studio</info>" );
+					} else {
+						$output->writeln( '<comment>No models currently loaded in LM Studio. You may need to load a model through the LM Studio UI.</comment>' );
+					}
 				} else {
 					$output->writeln( '<error>✗</error>' );
-					$output->writeln( '<error>Failed to start Ollama API server. Is Ollama installed correctly?</error>' );
+					$output->writeln( '<error>Cannot connect to LM Studio API at ' . $baseUrl . '</error>' );
+					$output->writeln( '<error>Please ensure LM Studio is running and the API server is started.</error>' );
+					$output->writeln( '<comment>You can start LM Studio and enable the API server in the settings.</comment>' );
 
 					return self::FAILURE;
 				}
 			} catch ( \Exception $e ) {
 				$output->writeln( '<error>✗</error>' );
-				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
+				$output->writeln( '<error>Failed to check LM Studio: ' . $e->getMessage() . '</error>' );
 
 				return self::FAILURE;
 			}

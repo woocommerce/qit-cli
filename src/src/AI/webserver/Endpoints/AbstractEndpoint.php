@@ -3,11 +3,7 @@
 namespace QIT_AI_Webserver\Endpoints;
 
 use Exception;
-use QIT_AI_Webserver\Lib\ExtractPathResolver;
 use QIT_AI_Webserver\NodeResponse;
-use QIT_AI_Webserver\Lib\LLPhantBootstrap;
-use QIT_AI_Webserver\ToolRegistry;
-use LLPhant\Chat\Message;
 
 /**
  * Abstract Base Endpoint
@@ -43,7 +39,6 @@ abstract class AbstractEndpoint {
 			$raw
 		);
 	}
-
 
 	/**
 	 * Handle errors consistently across all endpoints
@@ -83,26 +78,6 @@ abstract class AbstractEndpoint {
 
 		// Use NodeResponse::error for standardized error response
 		NodeResponse::error( $e->getMessage(), 500, $errorReport );
-	}
-
-	/**
-	 * Format bytes to human readable format
-	 *
-	 * @param int $bytes Bytes to format
-	 * @param int $precision Decimal precision
-	 *
-	 * @return string Formatted string
-	 */
-	protected function formatBytes( int $bytes, int $precision = 2 ): string {
-		$units = [ 'B', 'KB', 'MB', 'GB', 'TB' ];
-
-		$bytes = max( $bytes, 0 );
-		$pow   = floor( ( $bytes ? log( $bytes ) : 0 ) / log( 1024 ) );
-		$pow   = min( $pow, count( $units ) - 1 );
-
-		$bytes /= pow( 1024, $pow );
-
-		return round( $bytes, $precision ) . ' ' . $units[ $pow ];
 	}
 
 	// Logging methods - these would use the global logging functions

@@ -140,9 +140,21 @@ class NodeResponse {
     public static function prompt(string $response, string $model, array $providerResponse = [], array $additional = []): void {
         header('Content-Type: application/json');
 
+        // Get current provider and suggested model from request
+        $currentProvider = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getCurrentProvider();
+        $suggestedModel = $_REQUEST['model'] ?? null;
+
         $data = array_merge([
             'response' => $response,
-            'model' => $model
+            'model' => $model,  // Actual model used by the node
+            'provider' => $currentProvider,  // Actual provider used by the node
+            'suggested_model' => $suggestedModel,  // Model suggested by Manager
+            'model_resolution' => [
+                'suggested' => $suggestedModel,
+                'actual' => $model,
+                'provider' => $currentProvider,
+                'resolved_by_node' => true
+            ]
         ], $additional);
 
         // Add token statistics if available
@@ -177,11 +189,23 @@ class NodeResponse {
     public static function toolPrompt(string $response, array $toolCalls, string $model, array $additional = []): void {
         header('Content-Type: application/json');
 
+        // Get current provider and suggested model from request
+        $currentProvider = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getCurrentProvider();
+        $suggestedModel = $_REQUEST['model'] ?? null;
+
         $data = array_merge([
             'response' => $response,
-            'model' => $model,
+            'model' => $model,  // Actual model used by the node
+            'provider' => $currentProvider,  // Actual provider used by the node
+            'suggested_model' => $suggestedModel,  // Model suggested by Manager
             'tool_calls' => $toolCalls,
-            'tool_count' => count($toolCalls)
+            'tool_count' => count($toolCalls),
+            'model_resolution' => [
+                'suggested' => $suggestedModel,
+                'actual' => $model,
+                'provider' => $currentProvider,
+                'resolved_by_node' => true
+            ]
         ], $additional);
 
         $response = [
