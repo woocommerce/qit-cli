@@ -11,6 +11,8 @@ use QIT_AI_Webserver\Tools\ReadFileTool;
 use QIT_AI_Webserver\Tools\ListFilesTool;
 use QIT_AI_Webserver\Tools\SearchStringsTool;
 use QIT_AI_Webserver\Tools\FindHooksTool;
+use QIT_AI_Webserver\Tools\ListFactsTool;
+use QIT_AI_Webserver\Tools\SearchFactsTool;
 
 class ToolRegistry {
 	private array $tools = [];
@@ -37,6 +39,8 @@ class ToolRegistry {
 		$this->registerTool( new SearchStringsTool( $this->workDirectory ) );
 		$this->registerTool( new FindHooksTool( $this->workDirectory ) );
 		$this->registerTool( new ParsePhpTool( $this->workDirectory ) );
+		$this->registerTool( new ListFactsTool( $this->workDirectory ) );
+		$this->registerTool( new SearchFactsTool( $this->workDirectory ) );
 	}
 
 	public function registerTool( BaseTool $tool ): void {
