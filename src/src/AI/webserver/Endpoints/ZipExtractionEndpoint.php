@@ -414,11 +414,15 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 					$relativePath = $resolver->toRelative( $file->getPathname() );
 					$priority     = $this->calculateSecurityPriority( $relativePath );
 
+					// Calculate SHA-1 for the file
+					$sha1 = sha1_file( $file->getPathname() );
+
 					$discoveredFiles[] = [
 						'path'     => $relativePath,
 						'size'     => $file->getSize(),
 						'lines'    => substr_count( file_get_contents( $file ), "\n" ) + 1,
-						'priority' => $priority
+						'priority' => $priority,
+						'sha1'     => $sha1
 					];
 				}
 			}
