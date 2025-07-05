@@ -8,6 +8,8 @@ namespace QIT_AI_Webserver\Lib;
  *   id, step, kind, summary, [file,line,extra…]
  */
 class FactStore {
+	public const KIND_STEP_SUMMARY = 'step_summary';   // <-- NEW
+
 	public static array $facts = [];  // cleared per request
 
 	public static function add(array $fact): void {
