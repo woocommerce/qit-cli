@@ -48,20 +48,15 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			return;
 		}
 
-		$zipUrl        = $input['zip_url'];
-		$extractSubdir = $input['extract_subdir'];
+		$zipUrl = $input['zip_url'];
+		$sessionId = $input['session_id'] ?? md5(uniqid());
 
-		NodeResponse::mark( 'path_sanitization' );
-		$sanitizedSubdir = $this->sanitizeExtractionPath( $extractSubdir );
-		if ( $sanitizedSubdir === null ) {
-			return;
-		}
-
-		$tempBase  = sys_get_temp_dir();
-		$extractTo = $tempBase . '/' . $sanitizedSubdir;
+		NodeResponse::mark( 'path_preparation' );
+		$tempBase = sys_get_temp_dir();
+		$extractTo = $tempBase . '/qit-code-analysis-' . $sessionId;
 
 		NodeResponse::mark( 'security_validation' );
-		if ( ! $this->validateExtractionSecurity( $tempBase, $extractTo, $extractSubdir, $sanitizedSubdir ) ) {
+		if ( ! $this->validateExtractionSecurity( $tempBase, $extractTo ) ) {
 			return;
 		}
 
@@ -77,7 +72,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 *  Parameter & path validation helpers (unchanged)
 	 * ===================================================================*/
 	private function validateParameters( array $input ): bool {
-		foreach ( [ 'zip_url', 'extract_subdir' ] as $k ) {
+		foreach ( [ 'zip_url', 'session_id' ] as $k ) {
 			if ( empty( $input[ $k ] ) ) {
 				$this->log_error( "Missing $k parameter" );
 				http_response_code( 400 );
@@ -90,39 +85,10 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		return true;
 	}
 
-	private function sanitizeExtractionPath( string $extractSubdir ): ?string {
-		if ( str_contains( $extractSubdir, '..' ) || str_contains( $extractSubdir, "\0" ) ) {
-			$this->log_error( 'Illegal characters in extract_subdir', [ 'extract_subdir' => $extractSubdir ] );
-			http_response_code( 400 );
-			NodeResponse::error( 'Illegal characters in extract_subdir' );
-
-			return null;
-		}
-
-		$sanitized = trim( str_replace( '\\', '/', $extractSubdir ), '/' );
-
-		if ( ! preg_match( '/^[a-zA-Z0-9\/_\-\.]+$/', $sanitized ) ) {
-			$this->log_error( 'extract_subdir contains invalid characters', [ 'extract_subdir' => $sanitized ] );
-			http_response_code( 400 );
-			NodeResponse::error( 'extract_subdir contains invalid characters' );
-
-			return null;
-		}
-		if ( empty( $sanitized ) || pathinfo( $sanitized, PATHINFO_EXTENSION ) ) {
-			http_response_code( 400 );
-			NodeResponse::error( 'extract_subdir must be a directory path' );
-
-			return null;
-		}
-
-		return $sanitized;
-	}
 
 	private function validateExtractionSecurity(
 		string $tempBase,
-		string $extractTo,
-		string $originalSubdir,
-		string $sanitizedSubdir
+		string $extractTo
 	): bool {
 
 		$realTempBase = realpath( $tempBase );
@@ -187,16 +153,26 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 * ===================================================================*/
 	private function performExtraction( string $zipUrl, string $extractTo, array $params ): void {
 
-		$this->validatePrecondition($extractTo, $params['config'] ?? []);
+		$sessionId = $params['session_id'] ?? md5($extractTo);
+		$targetSubdir = $params['config']['target_subdir'] ?? null;
 
-		/* no automatic wiping – every extraction sees the same workspace */
-		if (!is_dir($extractTo) && !mkdir($extractTo, 0777, true)) {
-			throw new Exception('Failed to create extraction directory');
+		/* Workspace root is decided here, not by the Manager */
+		$workspaceRoot = $extractTo;
+
+		$extractRoot = $targetSubdir
+			? rtrim($workspaceRoot, '/') . '/' . trim($targetSubdir, '/')
+			: $workspaceRoot;
+
+		$this->validatePrecondition($workspaceRoot, $params['config'] ?? []);
+
+		/* ensure the directory exists */
+		if (!is_dir($extractRoot) && !mkdir($extractRoot, 0777, true)) {
+			throw new Exception("Failed to create extraction directory: $extractRoot");
 		}
 
-		$zipPath = $this->downloadZipFile( $zipUrl, $extractTo );
+		$zipPath = $this->downloadZipFile( $zipUrl, $workspaceRoot );
 
-		$extractionResult = $this->extractZipFile( $zipPath, $extractTo, $params );
+		$extractionResult = $this->extractZipFile( $zipPath, $extractRoot, $params );
 
 		unlink( $zipPath );
 
@@ -207,26 +183,34 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			return;
 		}
 
-		touch( $extractTo . '/.analyzed' );
+		touch( $workspaceRoot . '/.analyzed' );
 
-		$actualExtractPath = $this->findWordPressExtensionDirectory( $extractTo );
+		// Create component manifest
+		$componentType = $params['config']['type'] ?? 'unknown';
+		$structure = $this->detectWordPressStructure( $extractRoot );
 
-		// NEW: Create WordPress-like directory structure and move plugin to correct location
-		if (($params['config']['component_type'] ?? '') !== 'wordpress_core') {
-			$this->createWordPressStructure($extractTo, $actualExtractPath);
+		// Determine component details
+		$depType = 'unknown';
+		$depSlug = basename( $extractRoot );
+
+		if ( $structure['is_plugin'] ) {
+			$depType = 'plugin';
+		} elseif ( $structure['is_theme'] ) {
+			$depType = 'theme';
+		} elseif ( $componentType === 'wordpress_core' ) {
+			$depType = 'wordpress_core';
+		} elseif ( strpos( $depSlug, 'dependency' ) !== false ) {
+			$depType = strpos( $depSlug, 'premium' ) !== false ? 'dependency_premium' : 'dependency_free';
 		}
 
-		// After moving, the plugin is now at the WordPress structure location
-		$pluginName = basename($actualExtractPath);
-		$newPluginPath = $extractTo . '/wp-content/plugins/' . $pluginName;
+		$manifest = [
+			'type'   => $depType,
+			'slug'   => $depSlug,
+			'is_sut' => $componentType === 'sut'
+		];
 
-		$roots = $this->getWordPressWorkspaceRoots($extractTo, $actualExtractPath);
-		$this->writeContextFile($extractTo, $roots);
-
-		$this->log_info('WordPress workspace structure created', ['roots' => $roots]);
-
-		// Return the project root (extractTo) as the working directory, not the plugin subdirectory
-		$this->sendUnifiedExtractionResponse( $extractTo, $extractionResult['file_count'], $params );
+		// Return the workspace root as extract_path, with proper prefix filtering
+		$this->sendUnifiedExtractionResponse( $workspaceRoot, $extractionResult['file_count'], $params, $manifest );
 	}
 
 	/* --------------------------------------------------------------------
@@ -326,7 +310,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			$name = $originalName;
 
 			// Strip "wordpress/" prefix for WordPress core extraction
-			$isWordPressCore = ($params['config']['component_type'] ?? '') === 'wordpress_core';
+ 		$isWordPressCore = ($params['config']['type'] ?? '') === 'wordpress_core';
 			if ($isWordPressCore && str_starts_with($name, 'wordpress/')) {
 				$name = substr($name, 10); // Remove "wordpress/" (10 characters)
 				// Skip if the entry becomes empty after stripping the prefix
@@ -436,8 +420,10 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 * @param string $actualExtractPath Actual extraction path
 	 * @param int $fileCount Number of files extracted
 	 * @param array $params Request parameters
+	 * @param array $manifest Optional component manifest
 	 */
-	private function sendUnifiedExtractionResponse( string $actualExtractPath, int $fileCount, array $params ): void {
+	private function sendUnifiedExtractionResponse( string $actualExtractPath, int $fileCount, array $params, array $manifest = [] ): void {
+		$listFiles = $params['config']['list_files'] ?? true;   // ★ new flag
 		$filePattern     = $params['config']['file_pattern'] ?? '*.php';
 		$resolver        = new FilePathResolver( $actualExtractPath );
 		$discoveredFiles = [];
@@ -448,8 +434,22 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			new RecursiveDirectoryIterator( $actualExtractPath, RecursiveDirectoryIterator::SKIP_DOTS )
 		);
 
+		// Pre-calculate SUT directory prefix for filtering if this is a SUT component
+		$sutPrefix = null;
+		if (($params['config']['type'] ?? '') === 'sut') {
+			$targetSubdir = $params['config']['target_subdir'] ?? null;
+			$sutPrefix = $targetSubdir ? trim($targetSubdir, '/') . '/' : null;
+		}
+
 		foreach ( $iterator as $file ) {
 			if ( $file->isFile() ) {
+				$relativePath = $resolver->toRelative( $file->getPathname() );
+
+				// Filter files for SUT components - only include files under the SUT directory
+				if ($sutPrefix !== null && !str_starts_with($relativePath, $sutPrefix)) {
+					continue; // Skip files not under the SUT directory
+				}
+
 				$totalFiles ++;
 
 				// Check if it's a PHP file for basic stats
@@ -457,9 +457,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 					$phpFiles[] = str_replace( $actualExtractPath . '/', '', $file->getPathname() );
 				}
 
-				// Check if it matches the file pattern for discovery
-				if ( fnmatch( $filePattern, $file->getFilename() ) ) {
-					$relativePath = $resolver->toRelative( $file->getPathname() );
+				// Always collect stats, but only build the heavy list if requested
+				if ( $listFiles && fnmatch( $filePattern, $file->getFilename() ) ) {
 					$priority     = $this->calculateSecurityPriority( $relativePath );
 
 					// Calculate SHA-1 for the file
@@ -492,17 +491,24 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		] );
 
 		// Send unified response with both stats and file discovery data
-		NodeResponse::success( [
+		$response = [
 			'extract_path'     => $actualExtractPath,
 			'session_id'       => $params['session_id'] ?? md5( $actualExtractPath ),
-			'files_discovered' => $discoveredFiles,
+			'files_discovered' => $listFiles ? $discoveredFiles : [],
 			'stats'            => [
 				'files_extracted'        => $fileCount,
 				'php_files_found'        => count( $phpFiles ),
 				'total_files'            => $totalFiles,
 				'files_matching_pattern' => count( $discoveredFiles )
 			]
-		] );
+		];
+
+		// Add component manifest if provided
+		if ( ! empty( $manifest ) ) {
+			$response['component'] = $manifest;
+		}
+
+		NodeResponse::success( $response );
 	}
 
 
@@ -518,47 +524,6 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		NodeResponse::error( 'Extraction failed', 500, [ 'message' => $e->getMessage() ] );
 	}
 
-	/**
-	 * Find the actual WordPress plugin/theme directory after extraction
-	 *
-	 * @param string $extractBase The base extraction directory
-	 *
-	 * @return string The actual plugin/theme directory path
-	 */
-	private function findWordPressExtensionDirectory( string $extractBase ): string {
-		// First check if the base directory itself is a plugin/theme
-		$structure = $this->detectWordPressStructure( $extractBase );
-		if ( $structure['is_plugin'] || $structure['is_theme'] ) {
-			return $extractBase;
-		}
-
-		// Otherwise, look for a subdirectory that contains the plugin/theme
-		$items = scandir( $extractBase );
-		foreach ( $items as $item ) {
-			if ( $item === '.' || $item === '..' || $item === '.analyzed' ) {
-				continue;
-			}
-
-			$fullPath = $extractBase . '/' . $item;
-			if ( is_dir( $fullPath ) ) {
-				$subStructure = $this->detectWordPressStructure( $fullPath );
-				if ( $subStructure['is_plugin'] || $subStructure['is_theme'] ) {
-					$this->log_info( 'Found WordPress extension in subdirectory', [
-						'subdirectory' => $item,
-						'type'         => $subStructure['type'],
-						'main_file'    => $subStructure['main_file']
-					] );
-
-					return $fullPath;
-				}
-			}
-		}
-
-		// If no plugin/theme structure found, return the base directory
-		$this->log_warning( 'No WordPress plugin or theme structure detected, using base directory' );
-
-		return $extractBase;
-	}
 
 	/**
 	 * Detect WordPress plugin or theme structure
@@ -689,184 +654,6 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		}
 	}
 
-	/** Create WordPress-like directory structure and move plugin files to correct location */
-	private function createWordPressStructure(string $extractTo, string $actualExtractPath): void {
-		// Abort if core is missing – upstream action *must* have provided it
-		foreach (['wp-admin/admin.php', 'wp-includes/version.php'] as $coreFile) {
-			if (!is_file($extractTo . '/' . $coreFile)) {
-				throw new \RuntimeException(
-					"WordPress core was expected at $coreFile but is missing. "
-					. "Did extract_wordpress_core run?"
-				);
-			}
-		}
 
-		// (1) Ensure wp-content/plugins & wp-content/themes exist
-		foreach (['wp-content/plugins', 'wp-content/themes'] as $dir) {
-			$full = $extractTo . '/' . $dir;
-			if (!is_dir($full)) {
-				mkdir($full, 0777, true);
-			}
-		}
 
-		// (2) Move the SUT
-		$pluginName = basename($actualExtractPath);
-		$targetPluginDir = $extractTo . '/wp-content/plugins/' . $pluginName;
-
-		if ($actualExtractPath !== $targetPluginDir) {
-			$this->moveDirectory($actualExtractPath, $targetPluginDir);
-		}
-	}
-
-	/** Get WordPress workspace roots in the expected format */
-	private function getWordPressWorkspaceRoots(string $extractTo, string $actualExtractPath): array {
-		$pluginName = basename($actualExtractPath);
-
-		$roots = [];
-
-		// Add the SUT (Subject Under Test) - now it's actually in the WordPress structure
-		$sutPath = 'wp-content/plugins/' . $pluginName . '/';
-		$roots[] = $sutPath . ' (System under test)';
-
-		// Add other plugins that exist
-		$pluginsDir = $extractTo . '/wp-content/plugins';
-		if (is_dir($pluginsDir)) {
-			foreach (scandir($pluginsDir) as $item) {
-				if ($item === '.' || $item === '..' || $item === $pluginName) continue;
-
-				$itemPath = $pluginsDir . '/' . $item;
-				if (is_dir($itemPath) && !is_link($itemPath)) {
-					$roots[] = 'wp-content/plugins/' . $item . '/';
-				}
-			}
-		}
-
-		// Add themes that exist
-		$themesDir = $extractTo . '/wp-content/themes';
-		if (is_dir($themesDir)) {
-			foreach (scandir($themesDir) as $item) {
-				if ($item === '.' || $item === '..') continue;
-				if (is_dir($themesDir . '/' . $item)) {
-					$roots[] = 'wp-content/themes/' . $item . '/';
-				}
-			}
-		}
-
-		// Add WordPress core directories
-		$coreDirectories = ['wp-includes/', 'wp-admin/'];
-		foreach ($coreDirectories as $coreDir) {
-			if (is_dir($extractTo . '/' . rtrim($coreDir, '/'))) {
-				$roots[] = $coreDir;
-			}
-		}
-
-		sort($roots);
-		return $roots;
-	}
-
-	/** Helper method to move directory contents recursively */
-	private function moveDirectory(string $source, string $destination): void {
-		if (!is_dir($source)) {
-			throw new \RuntimeException("Source directory does not exist: $source");
-		}
-
-		// Create destination directory if it doesn't exist
-		if (!is_dir($destination)) {
-			mkdir($destination, 0777, true);
-		}
-
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($source, RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::SELF_FIRST
-		);
-
-		foreach ($iterator as $item) {
-			$relativePath = substr($item->getPathname(), strlen($source) + 1);
-			$destPath = $destination . '/' . $relativePath;
-
-			if ($item->isDir()) {
-				if (!is_dir($destPath)) {
-					mkdir($destPath, 0777, true);
-				}
-			} else {
-				$destDir = dirname($destPath);
-				if (!is_dir($destDir)) {
-					mkdir($destDir, 0777, true);
-				}
-				copy($item->getPathname(), $destPath);
-			}
-		}
-
-		// Remove the source directory after successful move
-		$this->removeDirectory($source);
-	}
-
-	/** Helper method to remove directory recursively */
-	private function removeDirectory(string $dir): void {
-		if (!is_dir($dir)) {
-			return;
-		}
-
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($dir, RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::CHILD_FIRST
-		);
-
-		foreach ($iterator as $file) {
-			if ($file->isDir()) {
-				rmdir($file->getRealPath());
-			} else {
-				unlink($file->getRealPath());
-			}
-		}
-
-		rmdir($dir);
-	}
-
-	/** Helper method to flatten WordPress wrapper directory */
-	private function flattenWordPressWrapper(string $extractTo): void {
-		$wordpressDir = $extractTo . '/wordpress';
-
-		// Check if wordpress directory exists
-		if (!is_dir($wordpressDir)) {
-			$this->log_info('No wordpress wrapper directory found, skipping flatten', [
-				'extract_to' => $extractTo,
-				'wordpress_dir' => $wordpressDir
-			]);
-			return;
-		}
-
-		$this->log_info('Flattening WordPress wrapper directory', [
-			'from' => $wordpressDir,
-			'to' => $extractTo
-		]);
-
-		// Move all contents from wordpress/ to the root
-		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator($wordpressDir, RecursiveDirectoryIterator::SKIP_DOTS),
-			RecursiveIteratorIterator::SELF_FIRST
-		);
-
-		foreach ($iterator as $item) {
-			$relativePath = substr($item->getPathname(), strlen($wordpressDir) + 1);
-			$destPath = $extractTo . '/' . $relativePath;
-
-			if ($item->isDir()) {
-				if (!is_dir($destPath)) {
-					mkdir($destPath, 0777, true);
-				}
-			} else {
-				$destDir = dirname($destPath);
-				if (!is_dir($destDir)) {
-					mkdir($destDir, 0777, true);
-				}
-				copy($item->getPathname(), $destPath);
-			}
-		}
-
-		// Remove the now-empty wordpress directory
-		$this->removeDirectory($wordpressDir);
-
-		$this->log_info('WordPress wrapper directory flattened successfully');
-	}
 }
