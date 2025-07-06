@@ -309,80 +309,100 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			$originalName = $stat['name'];
 			$name = $originalName;
 
-			// Strip "wordpress/" prefix for WordPress core extraction
+ 		// Strip "wordpress/" prefix for WordPress core extraction
  		$isWordPressCore = ($params['config']['type'] ?? '') === 'wordpress_core';
-			if ($isWordPressCore && str_starts_with($name, 'wordpress/')) {
-				$name = substr($name, 10); // Remove "wordpress/" (10 characters)
-				// Skip if the entry becomes empty after stripping the prefix
-				if (empty($name)) {
-					continue;
+		if ($isWordPressCore && str_starts_with($name, 'wordpress/')) {
+			$name = substr($name, 10); // Remove "wordpress/" (10 characters)
+			// Skip if the entry becomes empty after stripping the prefix
+			if (empty($name)) {
+				continue;
+			}
+		}
+
+		// Strip extra nested directory for plugins/themes with redundant parent directories
+		$isPlugin = in_array($params['config']['type'] ?? '', ['sut', 'plugin', 'theme', 'premium_dependency', 'free_dependency']);
+		if ($isPlugin && !$isWordPressCore) {
+			// Get the expected plugin/theme name from target_subdir
+			$targetSubdir = $params['config']['target_subdir'] ?? '';
+			if (!empty($targetSubdir)) {
+				// Extract the plugin/theme name from target_subdir (e.g., "wp-content/plugins/fortis-for-woocommerce" -> "fortis-for-woocommerce")
+				$expectedName = basename($targetSubdir);
+
+				// Check if the entry starts with the expected plugin name followed by a slash
+				if (str_starts_with($name, $expectedName . '/')) {
+					$name = substr($name, strlen($expectedName) + 1); // Remove "plugin-name/" prefix
+					// Skip if the entry becomes empty after stripping the prefix
+					if (empty($name)) {
+						continue;
+					}
 				}
 			}
+		}
 
-			// Normalise & validate path
-			$targetPath = $this->canonicalisePath( $extractRoot, $name );
+		// Normalise & validate path
+		$targetPath = $this->canonicalisePath( $extractRoot, $name );
 
-			// Reject directory traversal
-			if ( str_starts_with( $targetPath, $extractRoot ) === false ) {
+		// Reject directory traversal
+		if ( str_starts_with( $targetPath, $extractRoot ) === false ) {
+			$zip->close();
+			throw new Exception( "Zip entry attempts path traversal: {$name}" );
+		}
+
+		// Reject symlinks / special files
+		if ( ( $stat['external_attributes'] >> 16 ) & 0xA000 ) { // 0xA000 = symlink
+			$zip->close();
+			throw new Exception( "Zip entry is a symlink: {$name}" );
+		}
+
+		// Compression‑ratio guard
+		if ( $stat['size'] > 0 && ( $stat['comp_size'] > 0 ) ) {
+			$ratio = $stat['size'] / $stat['comp_size'];
+			if ( $ratio > self::MAX_COMPRESSION_RATIO ) {
 				$zip->close();
-				throw new Exception( "Zip entry attempts path traversal: {$name}" );
+				throw new Exception( "Excessive compression ratio on {$name}" );
 			}
+		}
 
-			// Reject symlinks / special files
-			if ( ( $stat['external_attributes'] >> 16 ) & 0xA000 ) { // 0xA000 = symlink
+		$totalUncompressed += $stat['size'];
+		if ( $totalUncompressed > self::MAX_UNCOMPRESSED_TOTAL_BYTES ) {
+			$zip->close();
+			throw new Exception( 'Total uncompressed size limit exceeded' );
+		}
+
+		// Ensure directory exists
+		$dir = dirname( $targetPath );
+		if ( ! is_dir( $dir ) && ! mkdir( $dir, 0777, true ) ) {
+			$zip->close();
+			throw new Exception( "Failed to create directory: $dir" );
+		}
+
+		if ( substr( $name, -1 ) === '/' ) {
+			// Directory entry
+			if ( ! is_dir( $targetPath ) && ! mkdir( $targetPath, 0777, true ) ) {
 				$zip->close();
-				throw new Exception( "Zip entry is a symlink: {$name}" );
+				throw new Exception( "Failed to create directory: $targetPath" );
 			}
+			continue; // Don't count directories as extracted files
+		}
 
-			// Compression‑ratio guard
-			if ( $stat['size'] > 0 && ( $stat['comp_size'] > 0 ) ) {
-				$ratio = $stat['size'] / $stat['comp_size'];
-				if ( $ratio > self::MAX_COMPRESSION_RATIO ) {
-					$zip->close();
-					throw new Exception( "Excessive compression ratio on {$name}" );
-				}
-			}
+		$stream = $zip->getStream( $originalName );
+		if ( ! $stream ) {
+			$zip->close();
+			throw new Exception( "Failed to read entry: {$originalName}" );
+		}
 
-			$totalUncompressed += $stat['size'];
-			if ( $totalUncompressed > self::MAX_UNCOMPRESSED_TOTAL_BYTES ) {
-				$zip->close();
-				throw new Exception( 'Total uncompressed size limit exceeded' );
-			}
+		$out = fopen( $targetPath, 'wb' );
+		if ( ! $out ) {
+			$zip->close();
+			throw new Exception( "Cannot write file: {$targetPath}" );
+		}
 
-			// Ensure directory exists
-			$dir = dirname( $targetPath );
-			if ( ! is_dir( $dir ) && ! mkdir( $dir, 0777, true ) ) {
-				$zip->close();
-				throw new Exception( "Failed to create directory: $dir" );
-			}
+		stream_copy_to_stream( $stream, $out );
+		fclose( $stream );
+		fclose( $out );
+		chmod( $targetPath, 0644 );
 
-			if ( substr( $name, -1 ) === '/' ) {
-				// Directory entry
-				if ( ! is_dir( $targetPath ) && ! mkdir( $targetPath, 0777, true ) ) {
-					$zip->close();
-					throw new Exception( "Failed to create directory: $targetPath" );
-				}
-				continue; // Don't count directories as extracted files
-			}
-
-			$stream = $zip->getStream( $originalName );
-			if ( ! $stream ) {
-				$zip->close();
-				throw new Exception( "Failed to read entry: {$originalName}" );
-			}
-
-			$out = fopen( $targetPath, 'wb' );
-			if ( ! $out ) {
-				$zip->close();
-				throw new Exception( "Cannot write file: {$targetPath}" );
-			}
-
-			stream_copy_to_stream( $stream, $out );
-			fclose( $stream );
-			fclose( $out );
-			chmod( $targetPath, 0644 );
-
-			$extractedFileCount++; // Only count actual files that were extracted
+		$extractedFileCount++; // Only count actual files that were extracted
 		}
 
 		$zip->close();
