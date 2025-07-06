@@ -85,7 +85,7 @@ class NodeStartCommand extends QITCommand {
 				// LM Studio uses OpenAI-compatible API but doesn't require API key
 				$providerConfig['api_key']  = $input->getOption( 'api-key' ) ?: 'dummy'; // LM Studio ignores this
 				$providerConfig['base_url'] = $input->getOption( 'base-url' ) ?: 'http://localhost:1234/v1';
-				$providerConfig['model']    = $input->getOption( 'model' ) ?: 'qwen/qwen2.5-coder-14b';
+				$providerConfig['model']    = $input->getOption( 'model' ) ?: 'deepseek/deepseek-r1-0528-qwen3-8b';
 				break;
 
 			case 'openai':
@@ -130,7 +130,7 @@ class NodeStartCommand extends QITCommand {
 			$output->write( 'Checking LM Studio API... ' );
 			try {
 				// Test LM Studio connection by checking models endpoint
-				$baseUrl = $providerConfig['base_url'] ?? 'http://localhost:1234/v1';
+				$baseUrl        = $providerConfig['base_url'] ?? 'http://localhost:1234/v1';
 				$modelsEndpoint = rtrim( $baseUrl, '/' ) . '/models';
 
 				$ch = curl_init( $modelsEndpoint );
@@ -143,7 +143,7 @@ class NodeStartCommand extends QITCommand {
 
 				$response = curl_exec( $ch );
 				$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-				$error = curl_error( $ch );
+				$error    = curl_error( $ch );
 				curl_close( $ch );
 
 				if ( $httpCode === 200 ) {

@@ -28,7 +28,7 @@ class ToolRegistry {
 		}
 
 		$this->workDirectory = rtrim( $work_directory, '/\\' );
-		$this->sutDirectory = rtrim( $sut_directory, '/\\' );
+		$this->sutDirectory  = rtrim( $sut_directory, '/\\' );
 
 		if ( ! is_dir( $this->workDirectory ) ) {
 			throw new Exception( "Work directory does not exist: {$this->workDirectory}" );
@@ -56,8 +56,9 @@ class ToolRegistry {
 		$this->registerTool( new FindHooksTool( $this->workDirectory, $this->sutDirectory, $context ) );
 		$this->registerTool( new ParsePhpTool( $this->workDirectory, $this->sutDirectory, $context ) );
 		$this->registerTool( new ListFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
-		$this->registerTool( new SearchFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
 		$this->registerTool( new TreeDirectoryTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		// Deep investigation only, disabled.
+		//$this->registerTool( new SearchFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
 	}
 
 	public function registerTool( BaseTool $tool ): void {
