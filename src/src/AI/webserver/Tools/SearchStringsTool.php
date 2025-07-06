@@ -13,7 +13,10 @@ class SearchStringsTool extends BaseTool {
 	}
 
 	public function getDescription(): string {
-		return 'Find literal substrings in source files';
+		return $this->baseDescription(
+			'Find literal substrings in source files. "directory_or_file" may be WP_ROOT‑relative, '
+			. 'or start with the macros $WP_ROOT, $SUT, $DEP[slug].'
+		);
 	}
 
 	/* ---------- LLPhant function meta ---------- */

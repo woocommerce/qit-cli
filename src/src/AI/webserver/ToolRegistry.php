@@ -7,7 +7,6 @@ namespace QIT_AI_Webserver;
 use Exception;
 use QIT_AI_Webserver\Tools\BaseTool;
 use QIT_AI_Webserver\Tools\ParsePhpTool;
-use QIT_AI_Webserver\Tools\PathContextTool;
 use QIT_AI_Webserver\Tools\ReadFileTool;
 use QIT_AI_Webserver\Tools\ListFilesTool;
 use QIT_AI_Webserver\Tools\SearchStringsTool;
@@ -15,6 +14,8 @@ use QIT_AI_Webserver\Tools\FindHooksTool;
 use QIT_AI_Webserver\Tools\ListFactsTool;
 use QIT_AI_Webserver\Tools\SearchFactsTool;
 use QIT_AI_Webserver\Tools\TreeDirectoryTool;
+use QIT_AI_Webserver\ToolContext;
+use QIT_AI_Webserver\PathContextProvider;
 
 class ToolRegistry {
 	private array $tools = [];
@@ -37,16 +38,26 @@ class ToolRegistry {
 	}
 
 	private function register_default_tools(): void {
-		// Create tool instances
-		$this->registerTool( new ReadFileTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new ListFilesTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new SearchStringsTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new FindHooksTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new ParsePhpTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new ListFactsTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new SearchFactsTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new TreeDirectoryTool( $this->workDirectory, $this->sutDirectory ) );
-		$this->registerTool( new PathContextTool( $this->workDirectory, $this->sutDirectory ) );
+		// ❶ Get path context using PathContextProvider (not registered as a tool)
+		$pathContextProvider = new PathContextProvider( $this->workDirectory, $this->sutDirectory );
+
+		try {
+			$ctxData = $pathContextProvider->getPathContext();
+			$context = new ToolContext( $ctxData['wp_root'], $ctxData['sut'], $ctxData['deps'] );
+		} catch ( \RuntimeException $e ) {
+			// If path context fails, continue without context
+			$context = null;
+		}
+
+		// ❂ Register tools – now **context‑aware** but PathContextTool is NOT registered
+		$this->registerTool( new ReadFileTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		$this->registerTool( new ListFilesTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		$this->registerTool( new SearchStringsTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		$this->registerTool( new FindHooksTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		$this->registerTool( new ParsePhpTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		$this->registerTool( new ListFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		$this->registerTool( new SearchFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		$this->registerTool( new TreeDirectoryTool( $this->workDirectory, $this->sutDirectory, $context ) );
 	}
 
 	public function registerTool( BaseTool $tool ): void {

@@ -13,7 +13,10 @@ class ReadFileTool extends BaseTool {
 	}
 
 	public function getDescription(): string {
-		return 'Read a PHP file. Argument "file" is relative to WP_ROOT, eg "./wp-content/plugins/some-plugin/some-file.php"';
+		return $this->baseDescription(
+			'Read a text file. "file" may be WP_ROOT‑relative, '
+			. 'or start with the macros $WP_ROOT, $SUT, $DEP[slug].'
+		);
 	}
 
 	public function read_file( string $file, ?int $start_line = null, ?int $end_line = null ): string {
