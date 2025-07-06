@@ -7,13 +7,38 @@ namespace QIT_AI_Webserver\Lib;
  */
 class ToolPathGuard {
     private string $workDir;                // canonical absolute path (no trailing "/")
+    private string $sutDir;                 // SUT directory relative to workDir
 
-    public function __construct(string $workDir) {
+    public function __construct(string $workDir, string $sutDir = '') {
         $real = realpath($workDir);
         if ($real === false || !is_dir($real)) {
             throw new \RuntimeException("Invalid working directory: {$workDir}");
         }
         $this->workDir = rtrim(str_replace('\\', '/', $real), '/');
+        $this->sutDir = rtrim($sutDir, '/');
+    }
+
+    /**
+     * Resolve user path to absolute path, trying both WP-relative and SUT-relative notation
+     * @param string $userPath  The raw path coming from the LLM/tool‑call
+     * @return string           Absolute path to existing file
+     * @throws \RuntimeException on any contract violation or if file not found
+     */
+    public function resolve(string $userPath): string {
+        $userPath = ltrim(str_replace('\\','/',$userPath), '/');
+
+        // ① absolute "WP‑relative"      wp-content/plugins/…
+        $cand1 = "{$this->workDir}/{$userPath}";
+
+        // ② "SUT‑relative"              includes/admin.php ⇒ wpRoot/sutDir/…
+        $cand2 = "{$this->workDir}/{$this->sutDir}/{$userPath}";
+
+        foreach ([$cand1,$cand2] as $p) {
+            if ((is_file($p) || is_dir($p)) && substr(realpath($p), 0, strlen($this->workDir)) === $this->workDir) {
+                return $p;
+            }
+        }
+        throw new \RuntimeException("Path outside workspace: {$userPath}");
     }
 
     /**
@@ -42,7 +67,7 @@ class ToolPathGuard {
         $real      = realpath($candidate) ?: $this->pseudoRealpath($candidate);
 
         // ④ Still inside workspace?
-        if ($real !== $this->workDir && !str_starts_with($real, $this->workDir . '/')) {
+        if ($real !== $this->workDir && substr($real, 0, strlen($this->workDir . '/')) !== $this->workDir . '/') {
             throw new \RuntimeException("Path escapes workspace: {$path}");
         }
 

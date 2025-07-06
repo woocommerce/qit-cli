@@ -13,7 +13,7 @@ class ReadFileTool extends BaseTool {
 	}
 
 	public function getDescription(): string {
-		return 'Read contents of a file';
+		return 'Read a PHP file. Argument "file" is relative to WP_ROOT, eg "./wp-content/plugins/some-plugin/some-file.php"';
 	}
 
 	public function read_file( string $file, ?int $start_line = null, ?int $end_line = null ): string {
@@ -32,7 +32,7 @@ class ReadFileTool extends BaseTool {
 
 	public function getFunctionInfo(): FunctionInfo {
 		$params = [
-			new Parameter( 'file', 'string', 'Path to the file (required)' ),
+			new Parameter( 'file', 'string', 'Path relative to WP_ROOT' ),
 			new Parameter( 'start_line', 'integer', 'Starting line number (optional)' ),
 			new Parameter( 'end_line', 'integer', 'Ending line number (optional)' ),
 		];

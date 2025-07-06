@@ -25,21 +25,27 @@ class FilePathResolver {
 	private string $extractPath;
 	private ToolPathGuard $g;
 
-	public function __construct( string $extractPath ) {
+	public function __construct( string $extractPath, string $sutDir = '' ) {
 		$this->extractPath = rtrim( $extractPath, '/\\' );
-		$this->g           = new ToolPathGuard( $this->extractPath );
+		$this->g           = new ToolPathGuard( $this->extractPath, $sutDir );
 	}
 
 	/**  Convert *user* path → absolute canon path or throw  */
 	public function toAbsolute( string $userPath ): string {
-		$rel = $this->canonRelative( $userPath );     // throws if illegal
+		// For file operations, try to resolve using both WP-relative and SUT-relative paths
+		try {
+			return $this->g->resolve( $userPath );
+		} catch ( \RuntimeException $e ) {
+			// Fallback to the old method for non-file paths or when resolve fails
+			$rel = $this->canonRelative( $userPath );     // throws if illegal
 
-		// Always use the project root (extractPath) as the base
-		if ( $rel === '.' || $rel === '' ) {
-			return $this->extractPath;
+			// Always use the project root (extractPath) as the base
+			if ( $rel === '.' || $rel === '' ) {
+				return $this->extractPath;
+			}
+
+			return $this->extractPath . '/' . $rel;
 		}
-
-		return $this->extractPath . '/' . $rel;
 	}
 
 	/**  Return *relative*, canonical path inside workspace  */

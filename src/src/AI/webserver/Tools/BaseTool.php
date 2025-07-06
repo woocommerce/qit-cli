@@ -11,9 +11,9 @@ abstract class BaseTool {
 	protected FilePathResolver $file_path_resolver;
 	protected string $workDir;
 
-	public function __construct( string $workDirectory ) {
+	public function __construct( string $workDirectory, string $sutDirectory = '' ) {
 		$this->workDir            = rtrim( $workDirectory, '/\\' );
-		$this->file_path_resolver = new FilePathResolver( $this->workDir );
+		$this->file_path_resolver = new FilePathResolver( $this->workDir, $sutDirectory );
 	}
 
 	/**
