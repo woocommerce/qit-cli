@@ -27,6 +27,14 @@ class ToolPathGuard {
     public function resolve(string $userPath): string {
         $userPath = ltrim(str_replace('\\','/',$userPath), '/');
 
+        // Check if path still contains unresolved placeholders
+        if (preg_match('/__(?:WP_ROOT|SUT_DIR|DEP_\[[^\]]+\])__/', $userPath)) {
+            throw new \RuntimeException(
+                "Unresolved placeholder in path: {$userPath}. " .
+                "Placeholders should have been resolved before reaching path guard."
+            );
+        }
+
         // ① absolute "WP‑relative"      wp-content/plugins/…
         $cand1 = "{$this->workDir}/{$userPath}";
 

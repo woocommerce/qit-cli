@@ -15,7 +15,13 @@ class ReadFileTool extends BaseTool {
 	public function getDescription(): string {
 		return $this->baseDescription(
 			'Read a text file. "file" may be WP_ROOT‑relative, '
-			. 'or start with the macros $WP_ROOT, $SUT, $DEP[slug].'
+			. 'or start with the placeholders __WP_ROOT__, __SUT_DIR__, __DEP_[slug]__.',
+			[
+				'read_file("__WP_ROOT__/wp-config.php")',
+				'read_file("__SUT_DIR__/includes/class-main.php")',
+				'read_file("__SUT_DIR__/plugin.php", 10, 20)',
+				'read_file("__DEP_[woocommerce]__/woocommerce.php")'
+			]
 		);
 	}
 

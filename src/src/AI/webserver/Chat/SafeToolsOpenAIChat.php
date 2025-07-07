@@ -5,7 +5,7 @@ namespace QIT_AI_Webserver\Chat;
 use LLPhant\Chat\OpenAIChat;
 use OpenAI\Responses\Chat\CreateResponse;
 
-class SafeOpenAIChat extends OpenAIChat {
+class SafeToolsOpenAIChat extends OpenAIChat {
 	/** @var string[] */
 	private array $unknownTools = [];
 

@@ -5,10 +5,8 @@ namespace QIT_AI_Webserver\Lib;
 use Exception;
 use LLPhant\Chat\AnthropicChat;
 use LLPhant\Chat\ChatInterface;
-use LLPhant\Chat\Message;
-use LLPhant\Chat\OpenAIChat;
 use LLPhant\OpenAIConfig;
-use QIT_AI_Webserver\ToolRegistry;
+use QIT_AI_Webserver\Chat\SafeToolsOpenAIChat;
 
 final class LLPhantBootstrap {
 	/* ───────── 1. STATIC SINGLETON – BOOT ONLY ONCE ───────── */
@@ -321,7 +319,7 @@ final class LLPhantBootstrap {
 			$openaiConfig->url = $config['base_url'];
 		}
 
-		$this->chat_instance = new OpenAIChat( $openaiConfig );
+		$this->chat_instance = new SafeToolsOpenAIChat( $openaiConfig );
 	}
 
 	private function initializeAnthropic( array $config ): void {

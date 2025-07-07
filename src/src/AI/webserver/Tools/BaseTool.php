@@ -43,18 +43,27 @@ abstract class BaseTool {
 		return $this->file_path_resolver->canonRelative( $userPath );
 	}
 
-	protected function baseDescription(string $core): string
+	protected function baseDescription(string $core, array $examples = []): string
 	{
 		if ($this->context === null) {
 			return $core;
 		}
 		$deps = array_map(fn($d) => $d['slug'], $this->context->deps);
 		$macroNote = sprintf(
-			"\n\nMacros:\n• \$WP_ROOT = %s\n• \$SUT = %s\n• \$DEP[slug] where slug ∈ {%s}",
+			"\n\nPath placeholders:\n• __WP_ROOT__ = %s\n• __SUT_DIR__ = %s\n• __DEP_[slug]__ where slug ∈ {%s}",
 			$this->context->wpRoot,
 			$this->context->sutDir,
 			implode(', ', $deps) ?: '–'
 		);
+
+		// Add examples if provided
+		if (!empty($examples)) {
+			$macroNote .= "\n\nExamples:";
+			foreach ($examples as $example) {
+				$macroNote .= "\n• " . $example;
+			}
+		}
+
 		return $core . $macroNote;
 	}
 
@@ -67,7 +76,7 @@ abstract class BaseTool {
 
 	public function execute( array $params ): array {
 		try {
-			// Resolve macros in all path-related parameters before calling do()
+			// Resolve placeholders
 			$resolvedParams = $this->resolveMacrosInParams($params);
 			$data = $this->do( $resolvedParams );
 
@@ -116,20 +125,21 @@ abstract class BaseTool {
 	 */
 	protected function resolveMacroPath(string $userPath): string {
 		if ($this->context === null) {
-			return $userPath; // No context, return as-is
+			return $userPath;
 		}
 
-		// Handle $WP_ROOT
-		if (strpos($userPath, '$WP_ROOT') === 0) {
-			$remainder = substr($userPath, 8);
+		// Much simpler pattern matching with underscores
+		$userPath = trim($userPath);
+
+		// Handle __WP_ROOT__
+		if (strpos($userPath, '__WP_ROOT__') === 0) {
+			$remainder = substr($userPath, 11); // length of '__WP_ROOT__'
 			return ltrim($remainder, '/');
 		}
 
-		// Handle $SUT  
-		if (strpos($userPath, '$SUT') === 0) {
-			$remainder = substr($userPath, 4);
-
-			// Convert absolute sutDir to relative path
+		// Handle __SUT_DIR__
+		if (strpos($userPath, '__SUT_DIR__') === 0) {
+			$remainder = substr($userPath, 11); // length of '__SUT_DIR__'
 			$sutRelative = $this->file_path_resolver->toRelative($this->context->sutDir);
 
 			if (empty($remainder) || $remainder === '/') {
@@ -139,12 +149,11 @@ abstract class BaseTool {
 			}
 		}
 
-		// Handle $DEP[slug]
-		if (preg_match('/^\$DEP\[([^\]]+)\](.*)$/', $userPath, $matches)) {
+		// Handle __DEP_[slug]__
+		if (preg_match('/^__DEP_\[([^\]]+)\]__(.*)$/', $userPath, $matches)) {
 			$depSlug = $matches[1];
 			$depPath = $matches[2];
 
-			// Find the dependency in context
 			foreach ($this->context->deps as $dep) {
 				if ($dep['slug'] === $depSlug) {
 					$basePath = $dep['type'] === 'plugin' 
@@ -161,7 +170,7 @@ abstract class BaseTool {
 			throw new \InvalidArgumentException("Unknown dependency: {$depSlug}");
 		}
 
-		// No macro, return as-is
+		// No placeholder found, return as-is
 		return $userPath;
 	}
 }

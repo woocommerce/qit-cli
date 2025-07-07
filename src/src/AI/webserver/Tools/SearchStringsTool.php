@@ -15,7 +15,13 @@ class SearchStringsTool extends BaseTool {
 	public function getDescription(): string {
 		return $this->baseDescription(
 			'Find literal substrings in source files. "directory_or_file" may be WP_ROOT‑relative, '
-			. 'or start with the macros $WP_ROOT, $SUT, $DEP[slug].'
+			. 'or start with the placeholders __WP_ROOT__, __SUT_DIR__, __DEP_[slug]__.',
+			[
+				'search_strings(["wp_ajax"], "__WP_ROOT__/wp-admin")',
+				'search_strings(["add_action", "add_filter"], "__SUT_DIR__")',
+				'search_strings(["nonce"], "__SUT_DIR__/includes", ["php"], false, 100)',
+				'search_strings(["woocommerce"], "__DEP_[woocommerce]__", ["php", "js"])'
+			]
 		);
 	}
 

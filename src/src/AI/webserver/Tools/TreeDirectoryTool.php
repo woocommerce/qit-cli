@@ -30,7 +30,13 @@ class TreeDirectoryTool extends BaseTool {
 	public function getDescription(): string {
 		return $this->baseDescription(
 			'Recursively list a directory up to "depth" levels. "path" may be WP_ROOT‑relative, '
-			. 'or start with the macros $WP_ROOT, $SUT, $DEP[slug].'
+			. 'or start with the placeholders __WP_ROOT__, __SUT_DIR__, __DEP_[slug]__.',
+			[
+				'tree_directory("__WP_ROOT__/wp-content/plugins")',
+				'tree_directory("__SUT_DIR__", 3)',
+				'tree_directory("__SUT_DIR__/includes")',
+				'tree_directory("__DEP_[woocommerce]__/includes", 4)'
+			]
 		);
 	}
 
