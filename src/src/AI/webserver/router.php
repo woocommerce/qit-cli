@@ -95,7 +95,13 @@ function log_error( $message, $context = [] ) {
 
 
 // Route handling
-$uri    = $_SERVER['REQUEST_URI'];
+$uri = $_SERVER['REQUEST_URI'];
+
+// Convert "//extract-zip" to "/extract-zip" if it starts with double slashes
+if ( strpos( $uri, '//' ) === 0 ) {
+	$uri = '/' . ltrim( $uri, '/' );
+}
+
 $method = $_SERVER['REQUEST_METHOD'];
 
 // Log request details
@@ -211,11 +217,11 @@ use QIT_AI_Webserver\NodeResponse;
 NodeResponse::init();
 
 // Boot LLPhant with provider config
-$provider = '{{PROVIDER}}';
+$provider       = '{{PROVIDER}}';
 $providerConfig = json_decode( '{{PROVIDER_CONFIG}}', true ) + [
-	'temperature' => $input['temperature'] ?? null,
-	'max_tokens'  => $input['max_tokens'] ?? null,
-];
+		'temperature' => $input['temperature'] ?? null,
+		'max_tokens'  => $input['max_tokens'] ?? null,
+	];
 
 \QIT_AI_Webserver\Lib\LLPhantBootstrap::boot( $provider, $providerConfig );
 
@@ -225,8 +231,8 @@ if ( isset( $input['model'] ) ) {
 		\QIT_AI_Webserver\Lib\LLPhantBootstrap::setModel( $input['model'], $provider );
 	} catch ( \InvalidArgumentException $e ) {
 		log_error( "Model setup failed", [
-			'error' => $e->getMessage(),
-			'provider' => $provider,
+			'error'       => $e->getMessage(),
+			'provider'    => $provider,
 			'model_input' => $input['model']
 		] );
 		http_response_code( 400 );
