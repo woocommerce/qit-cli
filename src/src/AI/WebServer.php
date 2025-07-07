@@ -86,7 +86,7 @@ class WebServer {
 		// Start the PHP built-in server in the background
 		if ( $this->logger ) {
 			$this->logger->info( 'Starting PHP built-in server', [
-				'host'    => "localhost:{$this->port}",
+				'host'    => "0.0.0.0:{$this->port}",
 				'webroot' => $this->webroot,
 				'router'  => $router_path,
 				'mode'    => $this->use_local_mode ? 'local' : 'temp'
@@ -96,7 +96,7 @@ class WebServer {
 		$this->process = new Process( [
 			'php',
 			'-S',
-			"localhost:{$this->port}",
+			"0.0.0.0:{$this->port}",
 			'-t',
 			$this->webroot,
 			$router_path

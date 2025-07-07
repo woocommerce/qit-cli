@@ -195,9 +195,14 @@ class NodeStartCommand extends QITCommand {
 			$output->writeln( '<info>✓ Started local server on ' . $webserver_url . '</info>' );
 
 			// Create tunnel
-			$this->tunnel_runner->check_tunnel_support( $input->getOption( 'tunnel' ) );
-			$this->tunnel_url = $this->tunnel_runner->start_tunnel( $webserver_url, $this->env_id ); // Store as class property
-			$output->writeln( '<info>✓ Created secure tunnel: ' . $this->tunnel_url . '</info>' );
+			if ( $input->getOption( 'tunnel' ) === 'none' ) {
+				$this->tunnel_url = $webserver_url;
+				$output->writeln( '<info>✓ No tunnel created. Using local server URL: ' . $this->tunnel_url . '</info>' );
+			} else {
+				$this->tunnel_runner->check_tunnel_support( $input->getOption( 'tunnel' ) );
+				$this->tunnel_url = $this->tunnel_runner->start_tunnel( $webserver_url, $this->env_id ); // Store as class property
+				$output->writeln( '<info>✓ Created secure tunnel: ' . $this->tunnel_url . '</info>' );
+			}
 
 			// Get client ID
 			$this->client_id = $this->cache->get( 'client_id' ); // Store as class property
