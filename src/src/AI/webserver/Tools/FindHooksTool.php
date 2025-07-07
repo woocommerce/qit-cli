@@ -61,6 +61,14 @@ class FindHooksTool extends BaseTool {
 		$maxResults  = (int) ( $p['max_results'] ?? 100 );
 		$maxDepth    = (int) ( $p['max_depth'] ?? 10 );
 
+		if ( ! file_exists( $directory ) ) {
+			throw new \InvalidArgumentException( "Directory does not exist: {$directory}" );
+		}
+
+		if ( ! is_dir( $directory ) ) {
+			throw new \InvalidArgumentException( "Path is not a directory: {$directory}" );
+		}
+
 		$absDir = $this->file_path_resolver->toAbsolute( $directory );
 		$it     = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator(

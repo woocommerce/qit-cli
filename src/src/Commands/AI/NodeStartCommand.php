@@ -48,7 +48,7 @@ class NodeStartCommand extends QITCommand {
 
 		$this->setDescription( 'Start an AI processing node' )
 		     ->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
-		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'cloudflared-docker' )
+		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: cloudflared-docker, cloudflared-binary, cloudflared-persistent, jurassictube', 'cloudflared-docker' )
 		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' )
 		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (openai, lmstudio, anthropic)', 'lmstudio' )
 		     ->addOption( 'api-key', null, InputOption::VALUE_OPTIONAL, 'API key for cloud providers' )
