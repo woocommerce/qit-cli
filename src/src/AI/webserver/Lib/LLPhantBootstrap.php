@@ -235,14 +235,14 @@ final class LLPhantBootstrap {
 		// Create composer.json
 		$composerJson = [
 			'require' => [
-				'theodo-group/llphant' => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
-				'nikic/php-parser'     => '^5',
+				'theodo-group/llphant'      => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
+				'nikic/php-parser'          => '^5',
 			],
 			'config'  => [
 				'optimize-autoloader'    => true,
 				'classmap-authoritative' => true,
 				'minimum-stability'      => 'dev',
-			]
+			],
 		];
 
 		file_put_contents(
@@ -259,6 +259,23 @@ final class LLPhantBootstrap {
 		);
 
 		exec( $cmd, $output, $returnCode );
+
+		// Patch file.
+		$llphantFile = "{$this->installDir}/vendor/theodo-group/llphant/src/Chat/OpenAIChat.php";
+		file_put_contents(
+			$llphantFile,
+			str_replace(
+				[
+					'private function getToolsToCall(',
+					'private array $tools',
+				],
+				[
+					'protected function getToolsToCall(',
+					'protected array $tools',
+				],
+				file_get_contents( $llphantFile )
+			)
+		);
 
 		if ( $returnCode !== 0 ) {
 			throw new Exception( "Failed to install LLPhant: " . implode( "\n", $output ) );

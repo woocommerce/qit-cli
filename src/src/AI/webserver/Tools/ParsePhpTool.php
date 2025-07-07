@@ -23,7 +23,7 @@ class ParsePhpTool extends BaseTool {
 
 	public function getFunctionInfo(): FunctionInfo {
 		$params = [
-			new Parameter( 'file', 'string', 'File to parse (relative) (required)' ),
+			new Parameter( 'file', 'string', 'PHP file to parse. Must end in ".php". Directories are not allowed.' ),
 		];
 
 		return new FunctionInfo(
@@ -46,6 +46,10 @@ class ParsePhpTool extends BaseTool {
 
 		if ( ! file_exists( $path ) ) {
 			throw new \InvalidArgumentException( "File does not exist: {$path}" );
+		}
+
+		if ( is_dir( $path ) ) {
+			throw new \InvalidArgumentException( "Path is a directory, not a file: {$path}" );
 		}
 
 		$code   = file_get_contents( $path );

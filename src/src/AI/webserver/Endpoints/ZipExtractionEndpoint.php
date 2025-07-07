@@ -349,7 +349,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		}
 
 		// Reject symlinks / special files
-		if ( ( $stat['external_attributes'] >> 16 ) & 0xA000 ) { // 0xA000 = symlink
+		if ( isset( $stat['external_attributes'] ) && ( $stat['external_attributes'] >> 16 ) & 0xA000 ) { // 0xA000 = symlink
 			$zip->close();
 			throw new Exception( "Zip entry is a symlink: {$name}" );
 		}
