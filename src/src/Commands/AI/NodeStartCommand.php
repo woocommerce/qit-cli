@@ -50,10 +50,10 @@ class NodeStartCommand extends QITCommand {
 		     ->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
 		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: cloudflared-docker, cloudflared-binary, cloudflared-persistent, jurassictube', 'cloudflared-docker' )
 		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' )
-		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (openai, lmstudio, anthropic)', 'lmstudio' )
+		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (openai, lmstudio, anthropic)', 'openai' )
 		     ->addOption( 'api-key', null, InputOption::VALUE_OPTIONAL, 'API key for cloud providers' )
-		     ->addOption( 'model', null, InputOption::VALUE_OPTIONAL, 'Default model to use' )
-		     ->addOption( 'base-url', null, InputOption::VALUE_OPTIONAL, 'Base URL for OpenAI-compatible providers (e.g., LM Studio)', 'http://localhost:1234/v1' );
+		     ->addOption( 'model', null, InputOption::VALUE_OPTIONAL, 'Default model to use (e.g., o4-mini-2025-04-16, gpt-4-turbo, claude-3-opus-20240229)' )
+		     ->addOption( 'base-url', null, InputOption::VALUE_OPTIONAL, 'Base URL for OpenAI-compatible providers (e.g., LM Studio)' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -95,9 +95,8 @@ class NodeStartCommand extends QITCommand {
 					return self::FAILURE;
 				}
 				$providerConfig['api_key'] = $input->getOption( 'api-key' );
-				if ( $input->getOption( 'model' ) ) {
-					$providerConfig['model'] = $input->getOption( 'model' );
-				}
+				// Set default model to o4-mini-2025-04-16 if not specified
+				$providerConfig['model'] = $input->getOption( 'model' ) ?: 'o4-mini-2025-04-16';
 				// Support custom base URL for OpenAI-compatible providers
 				if ( $input->getOption( 'base-url' ) ) {
 					$providerConfig['base_url'] = $input->getOption( 'base-url' );

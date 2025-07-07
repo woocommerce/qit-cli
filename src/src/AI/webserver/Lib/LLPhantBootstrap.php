@@ -14,6 +14,7 @@ final class LLPhantBootstrap {
 	private static ?ChatInterface $chat = null;
 	private static ?string $currentProvider = null;
 	private static ?string $currentModel = null;
+	private static array $allowed_models = [];
 
 	/** Initialise exactly once per PHP process (router‑level). */
 	public static function boot( string $provider, array $conf ): void {
@@ -27,6 +28,8 @@ final class LLPhantBootstrap {
 		$self = new self( $provider, $conf );   // reuse existing ctor logic
 		$self->ensureInitialized();           // still installs composer etc.
 		self::$chat = $self->getChat();
+
+		static::$allowed_models = explode( ',', $conf['model'] );
 
 		// Apply options once during boot()
 		foreach ( [ 'model', 'temperature', 'max_tokens' ] as $opt ) {
@@ -48,7 +51,7 @@ final class LLPhantBootstrap {
 	/**
 	 * Resolve model input to a string based on current provider
 	 *
-	 * @param mixed $modelInput - Must be an array with provider keys
+	 * @param mixed $modelInput - Can be a string or an array with provider keys
 	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
 	 *
 	 * @return string - Resolved model name
@@ -60,35 +63,50 @@ final class LLPhantBootstrap {
 			throw new \InvalidArgumentException( 'Model parameter is required' );
 		}
 
-		// Only accept object format with provider keys
-		if ( ! is_array( $modelInput ) ) {
-			throw new \InvalidArgumentException(
-				'Model must be an object with provider keys (e.g., {"openai": "gpt-4", "anthropic": "claude-3"})'
-			);
+		// Handle string input directly (for backward compatibility and simpler usage)
+		if ( is_string( $modelInput ) ) {
+			return $modelInput;
 		}
 
-		// Multi-provider format
-		if ( ! isset( $modelInput[ $provider ] ) ) {
-			$available = implode( ', ', array_keys( $modelInput ) );
-			throw new \InvalidArgumentException(
-				"Model not specified for provider '{$provider}'. Available: {$available}"
-			);
-		}
-		$resolvedModel = $modelInput[ $provider ];
+		// Handle array format with provider keys
+		if ( is_array( $modelInput ) ) {
+			// Multi-provider format
+			if ( ! isset( $modelInput[ $provider ] ) ) {
+				$available = implode( ', ', array_keys( $modelInput ) );
+				throw new \InvalidArgumentException(
+					"Model not specified for provider '{$provider}'. Available: {$available}"
+				);
+			}
+			$resolvedModel = $modelInput[ $provider ];
 
-		if ( empty( $resolvedModel ) ) {
-			throw new \InvalidArgumentException(
-				"Empty model specified for provider '{$provider}'"
-			);
+			if ( empty( $resolvedModel ) ) {
+				throw new \InvalidArgumentException(
+					"Empty model specified for provider '{$provider}'"
+				);
+			}
+
+			if ( ! empty( static::$allowed_models ) ) {
+				if ( ! in_array( $resolvedModel, static::$allowed_models ) ) {
+					$available = implode( ', ', static::$allowed_models );
+					throw new \InvalidArgumentException(
+						"Model '{$resolvedModel}' is not allowed. Available models: {$available}"
+					);
+				}
+			}
+
+			return $resolvedModel;
 		}
 
-		return $resolvedModel;
+		// Invalid input type
+		throw new \InvalidArgumentException(
+			'Model must be a string or an object with provider keys (e.g., {"openai": "gpt-4", "anthropic": "claude-3"})'
+		);
 	}
 
 	/**
 	 * Set model - handles validation, resolution, downloading, and configuration
 	 *
-	 * @param mixed $modelInput - Must be an array with provider keys
+	 * @param mixed $modelInput - Can be a string or an array with provider keys
 	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
 	 *
 	 * @return bool - True if model was set successfully
@@ -306,7 +324,7 @@ final class LLPhantBootstrap {
 		}
 
 		$config = array_merge( [
-			'model' => 'gpt-4-turbo-preview'
+			'model' => 'o4-mini-2025-04-16' // Default to o4-mini-2025-04-16, but can be overridden
 		], $config );
 
 		// Create OpenAIConfig object
@@ -431,5 +449,9 @@ final class LLPhantBootstrap {
 		if ( $this->logger ) {
 			$this->logger->log_error( $message, $context );
 		}
+	}
+
+	public function getProvider(): string {
+		return $this->provider;
 	}
 }
