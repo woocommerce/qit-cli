@@ -1,0 +1,81 @@
+import { check, sleep } from "k6";
+import http from "k6/http";
+import { qitHelpers } from "/qitHelpers/qitHelpers.js";
+
+export let options = {
+    scenarios: {
+        load_test: {
+            executor: "ramping-vus",
+            stages: [
+                { duration: "30s", target: 10 },   // Ramp up to 10 users
+                { duration: "2m", target: 20 },    // Stay at 20 users for 2 minutes
+                { duration: "1m", target: 50 },    // Ramp up to 50 users
+                { duration: "2m", target: 50 },    // Stay at 50 users for 2 minutes
+                { duration: "30s", target: 0 },    // Ramp down to 0 users
+            ],
+        },
+    },
+    thresholds: {
+        http_req_duration: ["p(95)<1000"],
+        http_req_failed: ["rate<0.05"],
+        http_reqs: ["rate>10"],
+    },
+};
+
+export default function() {
+    const baseUrl = __ENV.BASE_URL || "http://localhost";
+    
+    // Simulate user journey through WooCommerce store
+    
+    // 1. Visit homepage
+    let response = http.get(baseUrl, {
+        tags: { name: "homepage" },
+    });
+    
+    qitHelpers.utils.checkResponse(response, 200);
+    qitHelpers.utils.waitFor(1);
+    
+    // 2. Browse shop
+    response = http.get(`${baseUrl}/shop/`, {
+        tags: { name: "shop" },
+    });
+    
+    qitHelpers.utils.checkResponse(response, 200);
+    qitHelpers.utils.waitFor(2);
+    
+    // 3. View a product (simulate clicking on first product)
+    // This is a simplified example - in real tests you'd parse the shop page
+    // to get actual product URLs
+    response = http.get(`${baseUrl}/product/sample-product/`, {
+        tags: { name: "product" },
+    });
+    
+    // Don't fail if product doesn't exist, just log it
+    check(response, {
+        "product page accessible": (r) => r.status === 200 || r.status === 404,
+    });
+    
+    qitHelpers.utils.waitFor(1);
+    
+    // 4. Add to cart (simulate via AJAX)
+    if (response.status === 200) {
+        const addToCartResponse = qitHelpers.woo.addToCart(baseUrl, 1, 1);
+        check(addToCartResponse, {
+            "add to cart successful": (r) => r.status === 200,
+        });
+    }
+    
+    qitHelpers.utils.waitFor(1);
+    
+    // 5. View cart
+    response = qitHelpers.woo.viewCart(baseUrl);
+    qitHelpers.utils.checkResponse(response, 200);
+    qitHelpers.utils.waitFor(1);
+    
+    // 6. Go to checkout
+    response = qitHelpers.woo.checkout(baseUrl);
+    qitHelpers.utils.checkResponse(response, 200);
+    
+    // Simulate user reading checkout page
+    qitHelpers.utils.waitFor(3);
+}

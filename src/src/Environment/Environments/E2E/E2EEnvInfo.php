@@ -57,4 +57,7 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var string The playwright test tag to be executed*/
 	public $pw_test_tag = '';
+
+	/** @var string The k6 test tag to be executed*/
+	public $k6_test_tag = '';
 }
