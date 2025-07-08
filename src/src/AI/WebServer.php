@@ -14,6 +14,7 @@ class WebServer {
 	private bool $use_local_mode = false;
 	private string $provider = 'lmstudio';
 	private array $providerConfig = [];
+	private array $runtimeConfig = [];
 
 	public function __construct( bool $use_local_mode = false ) {
 		$this->use_local_mode = $use_local_mode;
@@ -31,6 +32,15 @@ class WebServer {
 	public function setProviderConfig( string $provider, array $config ): void {
 		$this->provider       = $provider;
 		$this->providerConfig = $config;
+	}
+
+	/**
+	 * Set the runtime configuration.
+	 *
+	 * @param array $config The runtime configuration.
+	 */
+	public function setRuntimeConfig( array $config ): void {
+		$this->runtimeConfig = $config;
 	}
 
 	public function start(): string {
@@ -83,18 +93,39 @@ class WebServer {
 			$router_path = $this->webroot . '/router.php';
 		}
 
-		// Start the PHP built-in server in the background
+		// Configure open_basedir restrictions for security
+		$allowed = [];
+
+		if (!$this->use_local_mode) {
+			// In temp mode, restrict to the configured directories
+			$allowed = [
+				$this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node',  // /tmp/qit-node (parent, not child)
+				$this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai', // Fallback if ai_dir not provided
+			];
+		} else {
+			// In local mode, don't restrict
+			$allowed = [
+				dirname(__DIR__), // Allow access to the project directory
+				sys_get_temp_dir(), // Allow access to temp directory
+				getcwd(), // Allow access to the current working directory for relative includes
+			];
+		}
+
+		$openBasedir = implode(PATH_SEPARATOR, $allowed);
+
 		if ( $this->logger ) {
 			$this->logger->info( 'Starting PHP built-in server', [
-				'host'    => "0.0.0.0:{$this->port}",
-				'webroot' => $this->webroot,
-				'router'  => $router_path,
-				'mode'    => $this->use_local_mode ? 'local' : 'temp'
+				'host'         => "0.0.0.0:{$this->port}",
+				'webroot'      => $this->webroot,
+				'router'       => $router_path,
+				'mode'         => $this->use_local_mode ? 'local' : 'temp',
+				'open_basedir' => $openBasedir
 			] );
 		}
 
 		$this->process = new Process( [
 			'php',
+			'-d', 'open_basedir=' . $openBasedir,
 			'-S',
 			"0.0.0.0:{$this->port}",
 			'-t',
@@ -134,36 +165,51 @@ class WebServer {
 	 * Setup temporary webroot directory (for temp mode)
 	 */
 	private function setupTempWebroot(): void {
-		// Create the web server directory with safety checks
-		$temp_dir = sys_get_temp_dir();
-		if ( empty( $temp_dir ) || $temp_dir === '/' ) {
-			$error_msg = 'Invalid temp directory';
+		// Get base temp directory from runtime config or use default
+		$base = $this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node';
+		if ( empty( $base ) || $base === '/' ) {
+			$error_msg = 'Invalid temp base directory';
 			if ( $this->logger ) {
-				$this->logger->error( $error_msg, [ 'temp_dir' => $temp_dir ] );
+				$this->logger->error( $error_msg, [ 'tmp_base' => $base ] );
 			}
 			throw new \RuntimeException( $error_msg );
 		}
 
-		$this->webroot = $temp_dir . '/qit-node-' . uniqid();
+		// Create the base directory if it doesn't exist
+		if ( !is_dir( $base ) ) {
+			mkdir( $base, 0700, true );
+			if ( $this->logger ) {
+				$this->logger->debug( 'Created base temp directory', [ 'base' => $base ] );
+			}
+		}
+
+		// Create a unique run directory for this session
+		$this->webroot = $base . '/run-' . bin2hex(random_bytes(4));
 		if ( $this->logger ) {
 			$this->logger->debug( 'Creating webroot directory', [ 'webroot' => $this->webroot ] );
 		}
 
 		// Ensure we're creating in a safe location
-		if ( strpos( $this->webroot, $temp_dir ) !== 0 ) {
-			$error_msg = 'Webroot must be in temp directory';
+		if ( strpos( $this->webroot, $base ) !== 0 ) {
+			$error_msg = 'Webroot must be in temp base directory';
 			if ( $this->logger ) {
 				$this->logger->error( $error_msg, [
-					'webroot'  => $this->webroot,
-					'temp_dir' => $temp_dir
+					'webroot' => $this->webroot,
+					'base'    => $base
 				] );
 			}
 			throw new \RuntimeException( $error_msg );
 		}
 
-		mkdir( $this->webroot, 0777, true );
+		mkdir( $this->webroot, 0700, true );
 		if ( $this->logger ) {
 			$this->logger->debug( 'Created webroot directory' );
+		}
+
+		// Create extracted-zips directory
+		mkdir( $this->webroot . '/extracted-zips', 0700, true );
+		if ( $this->logger ) {
+			$this->logger->debug( 'Created extracted-zips directory' );
 		}
 
 		// Copy webserver files from source to temp directory
@@ -251,12 +297,24 @@ class WebServer {
 		// Read the router content
 		$content = file_get_contents( $router_file );
 
+		// Get AI directory from runtime config or use default
+		$ai_dir = $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai';
+
+		// Ensure AI directory exists
+		if (!is_dir($ai_dir)) {
+			mkdir($ai_dir, 0700, true);
+			if ($this->logger) {
+				$this->logger->debug('Created AI directory', ['ai_dir' => $ai_dir]);
+			}
+		}
+
 		// Replace placeholders
 		$replacements = [
 			'{{NODE_TOKEN}}'      => $this->node_token,
 			'{{LOG_FILE}}'        => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
 			'{{PROVIDER}}'        => $this->provider,
-			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig )
+			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig ),
+			'{{AI_DIR}}'          => $ai_dir
 		];
 
 		foreach ( $replacements as $placeholder => $value ) {
@@ -288,12 +346,24 @@ class WebServer {
 		// Read the router content
 		$content = file_get_contents( $source_router );
 
+		// Get AI directory from runtime config or use default
+		$ai_dir = $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai';
+
+		// Ensure AI directory exists
+		if (!is_dir($ai_dir)) {
+			mkdir($ai_dir, 0700, true);
+			if ($this->logger) {
+				$this->logger->debug('Created AI directory', ['ai_dir' => $ai_dir]);
+			}
+		}
+
 		// Replace placeholders
 		$replacements = [
 			'{{NODE_TOKEN}}'      => $this->node_token,
 			'{{LOG_FILE}}'        => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
 			'{{PROVIDER}}'        => $this->provider,
-			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig )
+			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig ),
+			'{{AI_DIR}}'          => $ai_dir
 		];
 
 		foreach ( $replacements as $placeholder => $value ) {
@@ -373,32 +443,20 @@ class WebServer {
 				$this->logger->debug( 'Cleaning up webroot directory', [ 'path' => $this->webroot ] );
 			}
 
-			// Safety checks before deletion
-			$temp_dir           = rtrim( sys_get_temp_dir(), '/' );
+			// Get the base temp directory
+			$base_dir = $this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node';
 			$webroot_normalized = rtrim( $this->webroot, '/' );
 
-			// Ensure we're only deleting our temporary directory
-			if ( strpos( $webroot_normalized, $temp_dir ) !== 0 ) {
+			// Ensure we're only deleting our run directory
+			if ( strpos( $webroot_normalized, $base_dir ) !== 0 ) {
 				if ( $this->logger ) {
-					$this->logger->warning( 'Skipping webroot deletion - not in temp dir', [
+					$this->logger->warning( 'Skipping webroot deletion - not in base dir', [
 						'webroot'  => $webroot_normalized,
-						'temp_dir' => $temp_dir
+						'base_dir' => $base_dir
 					] );
 				}
 
-				return; // Don't delete if not in temp dir
-			}
-
-			// Check it's exactly one level deep in temp dir
-			$relative_path = substr( $webroot_normalized, strlen( $temp_dir ) + 1 );
-			if ( strpos( $relative_path, '/' ) !== false ) {
-				if ( $this->logger ) {
-					$this->logger->warning( 'Skipping webroot deletion - too deep or unexpected location', [
-						'relative_path' => $relative_path
-					] );
-				}
-
-				return; // Too deep or not in expected location
+				return; // Don't delete if not in base dir
 			}
 
 			// Ensure it contains our marker file
@@ -410,10 +468,10 @@ class WebServer {
 				return; // Don't delete if our router isn't there
 			}
 
-			// Additional safety: ensure path contains 'qit-node-'
-			if ( strpos( $this->webroot, 'qit-node-' ) === false ) {
+			// Additional safety: ensure path contains 'run-'
+			if ( strpos( basename($this->webroot), 'run-' ) !== 0 ) {
 				if ( $this->logger ) {
-					$this->logger->warning( 'Skipping webroot deletion - missing qit-node- prefix' );
+					$this->logger->warning( 'Skipping webroot deletion - missing run- prefix' );
 				}
 
 				return;
@@ -453,8 +511,8 @@ class WebServer {
 			throw new \RuntimeException( $error_msg );
 		}
 
-		// Must have at least 2 directory separators for paths like /tmp/qit-node-123
-		if ( substr_count( $dir, '/' ) < 2 ) {
+		// Must have at least 2 directory separators for paths like /tmp/qit-node/run-123
+		if ( substr_count( $dir, '/' ) < 3 ) {
 			$error_msg = "Directory path too shallow, refusing to delete: $dir";
 			if ( $this->logger ) {
 				$this->logger->error( $error_msg );
@@ -462,22 +520,25 @@ class WebServer {
 			throw new \RuntimeException( $error_msg );
 		}
 
-		// Must be in temp directory
-		$temp_dir = rtrim( sys_get_temp_dir(), '/' );
-		if ( strpos( $dir, $temp_dir ) !== 0 ) {
-			$error_msg = "Can only delete directories in temp folder";
+		// Get the base temp directory
+		$base_dir = $this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node';
+
+		// Must be in base directory
+		if ( strpos( $dir, $base_dir ) !== 0 ) {
+			$error_msg = "Can only delete directories in base folder";
 			if ( $this->logger ) {
 				$this->logger->error( $error_msg, [
 					'dir'      => $dir,
-					'temp_dir' => $temp_dir
+					'base_dir' => $base_dir
 				] );
 			}
 			throw new \RuntimeException( $error_msg );
 		}
 
-		// Must contain our qit-node- prefix (only check the root directory name)
-		if ( strpos( $dir, 'qit-node-' ) === false ) {
-			$error_msg = "Can only delete qit-node directories";
+		// Must have run- prefix in the directory name
+		$dir_name = basename($dir);
+		if ( strpos( $dir_name, 'run-' ) !== 0 ) {
+			$error_msg = "Can only delete run directories";
 			if ( $this->logger ) {
 				$this->logger->error( $error_msg, [ 'dir' => $dir ] );
 			}

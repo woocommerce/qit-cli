@@ -63,8 +63,12 @@ abstract class AbstractEndpoint {
 		] );
 
 		// Store error for next heartbeat
+		$errorDir = rtrim(sys_get_temp_dir(), '/\\') . '/qit-node/errors';
+		if (!is_dir($errorDir)) {
+			mkdir($errorDir, 0700, true);
+		}
 		file_put_contents(
-			sys_get_temp_dir() . '/qit-node-last-error.json',
+			$errorDir . '/qit-node-last-error.json',
 			json_encode( $errorReport )
 		);
 

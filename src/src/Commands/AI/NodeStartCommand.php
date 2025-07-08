@@ -6,6 +6,7 @@ use QIT_CLI\AI\WebServer;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Config;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Logging\Logger;
 use QIT_CLI\RequestBuilder;
@@ -123,6 +124,13 @@ class NodeStartCommand extends QITCommand {
 
 		// Pass provider config to webserver
 		$this->webserver->setProviderConfig( $provider, $providerConfig );
+
+		// Set runtime configuration
+		$runtimeCfg = [
+			'ai_dir'   => Config::get_qit_dir() . 'ai' . DIRECTORY_SEPARATOR,
+			'tmp_base' => rtrim(sys_get_temp_dir(), '/\\') . '/qit-node',   // parent temp folder
+		];
+		$this->webserver->setRuntimeConfig($runtimeCfg);
 
 		// Check LM Studio availability if using LM Studio provider
 		if ( $provider === 'lmstudio' ) {

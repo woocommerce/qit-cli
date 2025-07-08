@@ -86,8 +86,12 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 				'stage' => $stage,
 				'data'  => $data,
 			];
+			$debugDir = rtrim(sys_get_temp_dir(), '/\\') . '/qit-node/debug';
+			if (!is_dir($debugDir)) {
+				mkdir($debugDir, 0700, true);
+			}
 			file_put_contents(
-				'/tmp/debug-prompt.log',
+				$debugDir . '/debug-prompt.log',
 				json_encode( $dbg, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE )
 			);
 		};

@@ -3,10 +3,16 @@
 namespace QIT_AI_Webserver\Lib;
 
 final class DebugLogger {
-	/** Append a structured message to /tmp/debug-prompt.log */
+	/** Append a structured message to debug log */
 	public static function log( string $stage, array $payload ): void {
-		$dbg = is_file( '/tmp/debug-prompt.log' )
-			? json_decode( file_get_contents( '/tmp/debug-prompt.log' ), true ) ?? []
+		$debugDir = rtrim(sys_get_temp_dir(), '/\\') . '/qit-node/debug';
+		if (!is_dir($debugDir)) {
+			mkdir($debugDir, 0700, true);
+		}
+		$logFile = $debugDir . '/debug-prompt.log';
+
+		$dbg = is_file( $logFile )
+			? json_decode( file_get_contents( $logFile ), true ) ?? []
 			: [];
 
 		$dbg[] = [
@@ -15,7 +21,7 @@ final class DebugLogger {
 			'data'  => $payload,
 		];
 
-		file_put_contents( '/tmp/debug-prompt.log',
+		file_put_contents( $logFile,
 			json_encode( $dbg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
 		);
 	}

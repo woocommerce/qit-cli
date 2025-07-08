@@ -8,6 +8,7 @@
  * {{LOG_FILE}} - The log file path
  * {{PROVIDER}} - The LLM provider
  * {{PROVIDER_CONFIG}} - The provider configuration JSON
+ * {{AI_DIR}} - The AI directory path
  */
 
 header( 'Content-Type: application/json' );
@@ -16,6 +17,10 @@ header( 'Content-Type: application/json' );
 ini_set( 'log_errors', 1 );
 ini_set( 'error_log', '{{LOG_FILE}}' );
 ini_set( 'display_errors', 0 );
+
+// Define constants for paths
+define('QIT_AI_DIR', '{{AI_DIR}}');      // e.g. /home/me/.config/woo-qit-cli/ai/
+define('QIT_DB_PATH', QIT_AI_DIR . 'node.db');
 
 // Simple SPL Autoloader for our classes
 spl_autoload_register( function ( $class ) {
@@ -148,7 +153,12 @@ if ( $headers['X-Node-Token'] !== '{{NODE_TOKEN}}' ) {
 
 // Rate limiting
 $rate_limit_key  = 'analyze_code_' . md5( $headers['X-Node-Token'] ?? '' );
-$rate_limit_file = sys_get_temp_dir() . '/' . $rate_limit_key;
+// Store rate limit files in the allowed directory
+$rate_limit_dir = rtrim(sys_get_temp_dir(), '/\\') . '/qit-node/rate-limits';
+if (!is_dir($rate_limit_dir)) {
+    mkdir($rate_limit_dir, 0700, true);
+}
+$rate_limit_file = $rate_limit_dir . '/' . $rate_limit_key;
 
 if ( file_exists( $rate_limit_file ) ) {
 	$last_request    = filemtime( $rate_limit_file );
@@ -213,8 +223,12 @@ if ( $input ) {
 
 // Initialize NodeResponse for performance tracking
 use QIT_AI_Webserver\NodeResponse;
+use QIT_AI_Webserver\Persistence\TaskRepository;
 
 NodeResponse::init();
+
+// Initialize TaskRepository with database path
+$taskRepo = new TaskRepository(QIT_DB_PATH);
 
 // Boot LLPhant with provider config
 $provider       = '{{PROVIDER}}';
