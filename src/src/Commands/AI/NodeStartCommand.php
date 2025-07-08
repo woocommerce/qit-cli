@@ -14,6 +14,7 @@ use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Process\Process;
 use function QIT_CLI\get_manager_url;
 
 class NodeStartCommand extends QITCommand {
@@ -61,11 +62,15 @@ class NodeStartCommand extends QITCommand {
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		// Initialize logger with a file in the system's temporary directory
-		$log_file     = sys_get_temp_dir() . '/qit-node.log';
-		$this->logger = new Logger( $log_file, Logger::DEBUG );
-		ini_set( 'log_errors', 1 );
-		ini_set( 'error_log', sys_get_temp_dir() . '/qit-node.log' );
+		// Initialize logger with a file in a dedicated logs directory
+		$tmpBase  = rtrim(sys_get_temp_dir(), '/\\').'/qit-node';
+		$logDir   = $tmpBase.'/logs';
+		@mkdir($logDir, 0700, true);
+
+		$log_file = $logDir.'/node.log';
+		$this->logger = new Logger($log_file, Logger::DEBUG);
+		ini_set('log_errors', 1);
+		ini_set('error_log', $log_file);
 		ini_set( 'display_errors', 0 );
 
 		// Print the log file path
@@ -129,20 +134,21 @@ class NodeStartCommand extends QITCommand {
 		// Set runtime configuration
 		$runtimeCfg = [
 			'ai_dir'   => Config::get_qit_dir() . 'ai' . DIRECTORY_SEPARATOR,
-			'tmp_base' => rtrim(sys_get_temp_dir(), '/\\') . '/qit-node',   // parent temp folder
+			'tmp_base' => rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node',   // parent temp folder
 		];
 
 		// Configure both servers with the same provider/runtime configs
-		foreach ([$this->listener, $this->worker] as $srv) {
-			$srv->setProviderConfig($provider, $providerConfig);
-			$srv->setRuntimeConfig($runtimeCfg);
+		foreach ( [ $this->listener, $this->worker ] as $srv ) {
+			/** @var WebServer $srv */
+			$srv->setProviderConfig( $provider, $providerConfig );
+			$srv->setRuntimeConfig( $runtimeCfg );
 		}
 
 		// Configure listener to use router.listener.php
-		$this->listener->setRouterTemplate('router.listener.php');
+		$this->listener->setRouterTemplate( 'router.listener.php' );
 
 		// Configure worker to use router.worker.php and bind only to 127.0.0.1
-		$this->worker->setRouterTemplate('router.worker.php');
+		$this->worker->setRouterTemplate( 'router.worker.php' );
 		$this->worker->setBindLocalhostOnly();
 
 		// Check LM Studio availability if using LM Studio provider
@@ -215,18 +221,19 @@ class NodeStartCommand extends QITCommand {
 
 			// Start the listener (may be tunnelled)
 			$listenerUrl = $this->listener->start();
-			$node_token = $this->listener->get_node_token();
+			$node_token  = $this->listener->get_node_token();
 			$output->writeln( '<info>✓ Started listener server on ' . $listenerUrl . '</info>' );
 
 			// Spawn the poller
-			$this->poller = new Process([
-				'php', '-r',
-				'require ' . var_export(__DIR__ . "/../../AI/webserver/WorkerPoller.php", true) . ';' .
+			$this->poller = new Process( [
+				'php',
+				'-r',
+				'require ' . var_export( __DIR__ . "/../../AI/webserver/WorkerPoller.php", true ) . ';' .
 				'\QIT_AI_Webserver\WorkerPoller::run(' .
-					var_export($workerUrl, true) . ',' .
-					var_export($node_token, true) .
+				var_export( $workerUrl, true ) . ',' .
+				var_export( $node_token, true ) .
 				');'
-			]);
+			] );
 			$this->poller->start();
 			$output->writeln( '<info>✓ Started worker poller process</info>' );
 
@@ -550,7 +557,7 @@ class NodeStartCommand extends QITCommand {
 		}
 
 		// Stop poller
-		if ($this->poller && $this->poller->isRunning()) {
+		if ( $this->poller && $this->poller->isRunning() ) {
 			$this->logger->info( 'Stopping poller process' );
 			$this->poller->stop();
 			$this->logger->debug( 'Poller process stopped' );

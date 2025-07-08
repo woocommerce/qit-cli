@@ -113,21 +113,14 @@ class WebServer {
 		}
 
 		// Configure open_basedir restrictions for security
-		$allowed = [];
+		$allowed = [
+			// treat as *directories* by adding the trailing slash
+			( $this->runtimeConfig['tmp_base'] ?? rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node' ) . '/',  // /tmp/qit-node/ (parent, not child)
+			( $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai' ) . '/', // Fallback if ai_dir not provided
+		];
 
-		if ( ! $this->use_local_mode ) {
-			// In temp mode, restrict to the configured directories
-			$allowed = [
-				$this->runtimeConfig['tmp_base'] ?? rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node',  // /tmp/qit-node (parent, not child)
-				$this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai', // Fallback if ai_dir not provided
-			];
-		} else {
-			// In local mode, don't restrict
-			$allowed = [
-				dirname( __DIR__ ), // Allow access to the project directory
-				sys_get_temp_dir(), // Allow access to temp directory
-				getcwd(), // Allow access to the current working directory for relative includes
-			];
+		if ( $this->use_local_mode ) {
+			$allowed[] = rtrim( __DIR__, '/' ) . '/'; // Allow access to the project directory
 		}
 
 		$openBasedir = implode( PATH_SEPARATOR, $allowed );
@@ -245,7 +238,7 @@ class WebServer {
 		$this->copyWebserverFiles();
 
 		// Replace placeholders in router template
-		$this->replacePlaceholders($this->routerTemplate);
+		$this->replacePlaceholders( $this->routerTemplate );
 
 		if ( $this->logger ) {
 			$this->logger->debug( 'Webserver files prepared' );
