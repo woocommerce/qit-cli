@@ -1,26 +1,10 @@
 <?php
 /**
- * QIT Node Router
- *
- * This file is a template that will be copied to temp directory
- * Placeholders will be replaced during runtime:
- * {{NODE_TOKEN}} - The node authentication token
- * {{LOG_FILE}} - The log file path
- * {{PROVIDER}} - The LLM provider
- * {{PROVIDER_CONFIG}} - The provider configuration JSON
- * {{AI_DIR}} - The AI directory path
+ * QIT Node Router Bootstrap Core
+ * 
+ * This file contains the core functionality shared between listener and worker routers.
+ * It handles autoloading, logging, token validation, and rate limiting.
  */
-
-header( 'Content-Type: application/json' );
-
-// Configure PHP error logging
-ini_set( 'log_errors', 1 );
-ini_set( 'error_log', '{{LOG_FILE}}' );
-ini_set( 'display_errors', 0 );
-
-// Define constants for paths
-define('QIT_AI_DIR', '{{AI_DIR}}');      // e.g. /home/me/.config/woo-qit-cli/ai/
-define('QIT_DB_PATH', QIT_AI_DIR . 'node.db');
 
 // Simple SPL Autoloader for our classes
 spl_autoload_register( function ( $class ) {
@@ -98,8 +82,8 @@ function log_error( $message, $context = [] ) {
 	log_message( 'error', $message, $context );
 }
 
-
 // Route handling
+global $uri, $method;
 $uri = $_SERVER['REQUEST_URI'];
 
 // Convert "//extract-zip" to "/extract-zip" if it starts with double slashes
@@ -123,14 +107,6 @@ log_info( "Received $method request to $uri", [
 	'body_size'   => strlen( $request_body ),
 	'remote_addr' => $_SERVER['REMOTE_ADDR'] ?? 'unknown',
 ] );
-
-// Only accept POST requests
-if ( $method !== 'POST' ) {
-	log_warning( "Method not allowed: $method", [ 'uri' => $uri ] );
-	http_response_code( 405 );
-	echo json_encode( [ 'error' => 'Method not allowed' ] );
-	exit;
-}
 
 // Validate node token for all routes
 if ( ! isset( $headers['X-Node-Token'] ) ) {
@@ -227,9 +203,6 @@ use QIT_AI_Webserver\Persistence\TaskRepository;
 
 NodeResponse::init();
 
-// Initialize TaskRepository with database path
-$taskRepo = new TaskRepository(QIT_DB_PATH);
-
 // Boot LLPhant with provider config
 $provider       = '{{PROVIDER}}';
 $providerConfig = json_decode( '{{PROVIDER_CONFIG}}', true ) + [
@@ -255,50 +228,6 @@ if ( isset( $input['model'] ) ) {
 	}
 }
 
-// Route to appropriate endpoint
-log_info( "Routing request", [ 'uri' => $uri, 'method' => $method ] );
-
 // The autoloader will handle loading these classes automatically
 // Just need to require helpers.php as it contains functions, not classes
 require_once __DIR__ . '/Handlers/helpers.php';
-
-use QIT_AI_Webserver\Endpoints\BasicPromptEndpoint;
-use QIT_AI_Webserver\Endpoints\PromptWithToolsEndpoint;
-use QIT_AI_Webserver\Endpoints\ZipExtractionEndpoint;
-use QIT_AI_Webserver\Endpoints\FileReadingEndpoint;
-use QIT_AI_Webserver\Endpoints\VulnerabilityScanEndpoint;
-
-/* Endpoints no longer need provider/config arguments */
-$endpoints = [
-	new BasicPromptEndpoint(),
-	new ZipExtractionEndpoint(),
-	new PromptWithToolsEndpoint(),
-	new FileReadingEndpoint(),
-	new VulnerabilityScanEndpoint()
-];
-
-// Build route map from endpoints
-$routeMap = [];
-foreach ( $endpoints as $endpoint ) {
-	$route              = $endpoint->get_route();
-	$routeMap[ $route ] = $endpoint;
-}
-
-// Route to appropriate endpoint
-if ( isset( $routeMap[ $uri ] ) ) {
-	$endpoint      = $routeMap[ $uri ];
-	$endpointClass = get_class( $endpoint );
-	log_info( "Handling request with endpoint", [ 'endpoint' => $endpointClass, 'route' => $uri ] );
-	$endpoint->handle( $input );
-} else {
-	log_warning( "Route not found", [ 'uri' => $uri ] );
-	http_response_code( 404 );
-	echo json_encode( [ 'error' => "Route $uri not found on Node." ] );
-	exit;
-}
-
-// Cleanup old sessions periodically (1% chance)
-if ( mt_rand( 1, 100 ) === 1 ) {
-	log_info( "Running periodic cleanup of old sessions (1% chance)" );
-	cleanup_old_sessions();
-}

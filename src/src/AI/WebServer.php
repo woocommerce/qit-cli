@@ -15,6 +15,8 @@ class WebServer {
 	private string $provider = 'lmstudio';
 	private array $providerConfig = [];
 	private array $runtimeConfig = [];
+	private string $routerTemplate;
+	private bool $bindLocalhostOnly = false;
 
 	public function __construct( bool $use_local_mode = false ) {
 		$this->use_local_mode = $use_local_mode;
@@ -41,6 +43,22 @@ class WebServer {
 	 */
 	public function setRuntimeConfig( array $config ): void {
 		$this->runtimeConfig = $config;
+	}
+
+	/**
+	 * Set the router template to use.
+	 *
+	 * @param string $basename The basename of the router template file.
+	 */
+	public function setRouterTemplate( string $basename ): void {
+		$this->routerTemplate = $basename;
+	}
+
+	/**
+	 * Set whether to bind only to localhost.
+	 */
+	public function setBindLocalhostOnly(): void {
+		$this->bindLocalhostOnly = true;
 	}
 
 	public function start(): string {
@@ -85,49 +103,57 @@ class WebServer {
 		// For both modes, we need to handle placeholders
 		// In local mode: create temp router file
 		// In temp mode: modify the copied router file in place
+		$routerTemplate = $this->routerTemplate;
 		if ( $this->use_local_mode ) {
-			$router_path = $this->createTempRouterFile();
+			$router_path = $this->createTempRouterFile( $routerTemplate );
 		} else {
-			// In temp mode, replace placeholders in the copied router.php
-			$this->replacePlaceholders();
-			$router_path = $this->webroot . '/router.php';
+			// In temp mode, replace placeholders in the copied router file
+			$this->replacePlaceholders( $routerTemplate );
+			$router_path = $this->webroot . '/' . $routerTemplate;
 		}
 
 		// Configure open_basedir restrictions for security
 		$allowed = [];
 
-		if (!$this->use_local_mode) {
+		if ( ! $this->use_local_mode ) {
 			// In temp mode, restrict to the configured directories
 			$allowed = [
-				$this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node',  // /tmp/qit-node (parent, not child)
+				$this->runtimeConfig['tmp_base'] ?? rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node',  // /tmp/qit-node (parent, not child)
 				$this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai', // Fallback if ai_dir not provided
 			];
 		} else {
 			// In local mode, don't restrict
 			$allowed = [
-				dirname(__DIR__), // Allow access to the project directory
+				dirname( __DIR__ ), // Allow access to the project directory
 				sys_get_temp_dir(), // Allow access to temp directory
 				getcwd(), // Allow access to the current working directory for relative includes
 			];
 		}
 
-		$openBasedir = implode(PATH_SEPARATOR, $allowed);
+		$openBasedir = implode( PATH_SEPARATOR, $allowed );
+
+		// Determine host binding based on bindLocalhostOnly flag
+		$host = $this->bindLocalhostOnly ? "127.0.0.1:{$this->port}" : "0.0.0.0:{$this->port}";
 
 		if ( $this->logger ) {
 			$this->logger->info( 'Starting PHP built-in server', [
-				'host'         => "0.0.0.0:{$this->port}",
-				'webroot'      => $this->webroot,
-				'router'       => $router_path,
-				'mode'         => $this->use_local_mode ? 'local' : 'temp',
-				'open_basedir' => $openBasedir
+				'host'           => $host,
+				'webroot'        => $this->webroot,
+				'router'         => $router_path,
+				'mode'           => $this->use_local_mode ? 'local' : 'temp',
+				'open_basedir'   => $openBasedir,
+				'localhost_only' => $this->bindLocalhostOnly
 			] );
 		}
 
 		$this->process = new Process( [
 			'php',
-			'-d', 'open_basedir=' . $openBasedir,
+			'-d',
+			'open_basedir=' . $openBasedir,
+			'-d',
+			'variables_order=EGPCS',
 			'-S',
-			"0.0.0.0:{$this->port}",
+			$host,
 			'-t',
 			$this->webroot,
 			$router_path
@@ -166,7 +192,7 @@ class WebServer {
 	 */
 	private function setupTempWebroot(): void {
 		// Get base temp directory from runtime config or use default
-		$base = $this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node';
+		$base = $this->runtimeConfig['tmp_base'] ?? rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node';
 		if ( empty( $base ) || $base === '/' ) {
 			$error_msg = 'Invalid temp base directory';
 			if ( $this->logger ) {
@@ -176,7 +202,7 @@ class WebServer {
 		}
 
 		// Create the base directory if it doesn't exist
-		if ( !is_dir( $base ) ) {
+		if ( ! is_dir( $base ) ) {
 			mkdir( $base, 0700, true );
 			if ( $this->logger ) {
 				$this->logger->debug( 'Created base temp directory', [ 'base' => $base ] );
@@ -184,7 +210,7 @@ class WebServer {
 		}
 
 		// Create a unique run directory for this session
-		$this->webroot = $base . '/run-' . bin2hex(random_bytes(4));
+		$this->webroot = $base . '/run-' . bin2hex( random_bytes( 4 ) );
 		if ( $this->logger ) {
 			$this->logger->debug( 'Creating webroot directory', [ 'webroot' => $this->webroot ] );
 		}
@@ -218,8 +244,8 @@ class WebServer {
 		}
 		$this->copyWebserverFiles();
 
-		// Replace placeholders in router.php
-		$this->replacePlaceholders();
+		// Replace placeholders in router template
+		$this->replacePlaceholders($this->routerTemplate);
 
 		if ( $this->logger ) {
 			$this->logger->debug( 'Webserver files prepared' );
@@ -285,10 +311,12 @@ class WebServer {
 	}
 
 	/**
-	 * Replace placeholders in the router.php file (for temp mode)
+	 * Replace placeholders in the router file (for temp mode)
+	 *
+	 * @param string $template The router template file name
 	 */
-	private function replacePlaceholders(): void {
-		$router_file = $this->webroot . '/router.php';
+	private function replacePlaceholders( string $template ): void {
+		$router_file = $this->webroot . '/' . $template;
 
 		if ( ! file_exists( $router_file ) ) {
 			throw new \RuntimeException( 'Router file not found: ' . $router_file );
@@ -301,10 +329,10 @@ class WebServer {
 		$ai_dir = $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai';
 
 		// Ensure AI directory exists
-		if (!is_dir($ai_dir)) {
-			mkdir($ai_dir, 0700, true);
-			if ($this->logger) {
-				$this->logger->debug('Created AI directory', ['ai_dir' => $ai_dir]);
+		if ( ! is_dir( $ai_dir ) ) {
+			mkdir( $ai_dir, 0700, true );
+			if ( $this->logger ) {
+				$this->logger->debug( 'Created AI directory', [ 'ai_dir' => $ai_dir ] );
 			}
 		}
 
@@ -325,7 +353,7 @@ class WebServer {
 		file_put_contents( $router_file, $content );
 
 		if ( $this->logger ) {
-			$this->logger->debug( 'Replaced placeholders in router.php', [
+			$this->logger->debug( 'Replaced placeholders in ' . $template, [
 				'placeholders' => array_keys( $replacements )
 			] );
 		}
@@ -333,11 +361,14 @@ class WebServer {
 
 	/**
 	 * Create a temporary router file for local mode
+	 *
+	 * @param string $template The router template file name
+	 *
 	 * @return string Path to the temporary router file
 	 */
-	private function createTempRouterFile(): string {
-		$source_router = $this->webroot . '/router.php';
-		$temp_router   = $this->webroot . '/router.local.php'; // Save in same directory
+	private function createTempRouterFile( string $template ): string {
+		$source_router = $this->webroot . '/' . $template;
+		$temp_router   = $this->webroot . '/' . pathinfo( $template, PATHINFO_FILENAME ) . '.local.php'; // Save in same directory
 
 		if ( ! file_exists( $source_router ) ) {
 			throw new \RuntimeException( 'Router file not found: ' . $source_router );
@@ -350,10 +381,10 @@ class WebServer {
 		$ai_dir = $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai';
 
 		// Ensure AI directory exists
-		if (!is_dir($ai_dir)) {
-			mkdir($ai_dir, 0700, true);
-			if ($this->logger) {
-				$this->logger->debug('Created AI directory', ['ai_dir' => $ai_dir]);
+		if ( ! is_dir( $ai_dir ) ) {
+			mkdir( $ai_dir, 0700, true );
+			if ( $this->logger ) {
+				$this->logger->debug( 'Created AI directory', [ 'ai_dir' => $ai_dir ] );
 			}
 		}
 
@@ -422,7 +453,8 @@ class WebServer {
 
 		// Clean up temporary router file in local mode
 		if ( $this->use_local_mode ) {
-			$local_router = $this->webroot . '/router.local.php';
+			$template_base = pathinfo( $this->routerTemplate, PATHINFO_FILENAME );
+			$local_router  = $this->webroot . '/' . $template_base . '.local.php';
 			if ( file_exists( $local_router ) ) {
 				unlink( $local_router );
 				if ( $this->logger ) {
@@ -431,149 +463,15 @@ class WebServer {
 			}
 
 			if ( $this->logger ) {
-				$this->logger->info( 'Webserver stopped (local mode - cleaned up router.local.php)' );
+				$this->logger->info( 'Webserver stopped (local mode - cleaned up ' . $template_base . '.local.php)' );
 			}
 
 			return;
 		}
 
-		// Clean up webroot with safety checks (only for temp mode)
-		if ( isset( $this->webroot ) && is_dir( $this->webroot ) ) {
-			if ( $this->logger ) {
-				$this->logger->debug( 'Cleaning up webroot directory', [ 'path' => $this->webroot ] );
-			}
-
-			// Get the base temp directory
-			$base_dir = $this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node';
-			$webroot_normalized = rtrim( $this->webroot, '/' );
-
-			// Ensure we're only deleting our run directory
-			if ( strpos( $webroot_normalized, $base_dir ) !== 0 ) {
-				if ( $this->logger ) {
-					$this->logger->warning( 'Skipping webroot deletion - not in base dir', [
-						'webroot'  => $webroot_normalized,
-						'base_dir' => $base_dir
-					] );
-				}
-
-				return; // Don't delete if not in base dir
-			}
-
-			// Ensure it contains our marker file
-			if ( ! file_exists( $this->webroot . '/router.php' ) ) {
-				if ( $this->logger ) {
-					$this->logger->warning( 'Skipping webroot deletion - router.php not found' );
-				}
-
-				return; // Don't delete if our router isn't there
-			}
-
-			// Additional safety: ensure path contains 'run-'
-			if ( strpos( basename($this->webroot), 'run-' ) !== 0 ) {
-				if ( $this->logger ) {
-					$this->logger->warning( 'Skipping webroot deletion - missing run- prefix' );
-				}
-
-				return;
-			}
-
-			if ( $this->logger ) {
-				$this->logger->info( 'Removing webroot directory', [ 'path' => $this->webroot ] );
-			}
-			$this->recursiveRemove( $this->webroot );
-
-			if ( $this->logger ) {
-				$this->logger->debug( 'Webroot directory removed' );
-			}
-		} else if ( $this->logger ) {
-			$this->logger->debug( 'No webroot directory to clean up' );
-		}
-
 		if ( $this->logger ) {
-			$this->logger->info( 'Webserver stopped successfully' );
-		}
-	}
-
-	private function recursiveRemove( string $dir ): void {
-		// Normalize the path (remove trailing slashes)
-		$dir = rtrim( $dir, '/' );
-
-		if ( $this->logger ) {
-			$this->logger->debug( 'Recursively removing directory', [ 'dir' => $dir ] );
+			$this->logger->info( 'Skipping explicit tmp cleanup; relying on OS tmp purge' );
 		}
 
-		// Safety check: never delete root or home directories
-		if ( in_array( $dir, [ '/', '', $_SERVER['HOME'] ?? '', '/tmp', sys_get_temp_dir() ], true ) ) {
-			$error_msg = "Refusing to delete protected directory: $dir";
-			if ( $this->logger ) {
-				$this->logger->error( $error_msg );
-			}
-			throw new \RuntimeException( $error_msg );
-		}
-
-		// Must have at least 2 directory separators for paths like /tmp/qit-node/run-123
-		if ( substr_count( $dir, '/' ) < 3 ) {
-			$error_msg = "Directory path too shallow, refusing to delete: $dir";
-			if ( $this->logger ) {
-				$this->logger->error( $error_msg );
-			}
-			throw new \RuntimeException( $error_msg );
-		}
-
-		// Get the base temp directory
-		$base_dir = $this->runtimeConfig['tmp_base'] ?? rtrim(sys_get_temp_dir(), '/\\') . '/qit-node';
-
-		// Must be in base directory
-		if ( strpos( $dir, $base_dir ) !== 0 ) {
-			$error_msg = "Can only delete directories in base folder";
-			if ( $this->logger ) {
-				$this->logger->error( $error_msg, [
-					'dir'      => $dir,
-					'base_dir' => $base_dir
-				] );
-			}
-			throw new \RuntimeException( $error_msg );
-		}
-
-		// Must have run- prefix in the directory name
-		$dir_name = basename($dir);
-		if ( strpos( $dir_name, 'run-' ) !== 0 ) {
-			$error_msg = "Can only delete run directories";
-			if ( $this->logger ) {
-				$this->logger->error( $error_msg, [ 'dir' => $dir ] );
-			}
-			throw new \RuntimeException( $error_msg );
-		}
-
-		if ( is_dir( $dir ) ) {
-			$objects    = scandir( $dir );
-			$file_count = 0;
-			$dir_count  = 0;
-
-			foreach ( $objects as $object ) {
-				if ( $object != "." && $object != ".." ) {
-					$full_path = $dir . "/" . $object;
-					if ( is_dir( $full_path ) ) {
-						$dir_count ++;
-						$this->recursiveRemove( $full_path );
-					} else {
-						$file_count ++;
-						unlink( $full_path );
-					}
-				}
-			}
-
-			if ( $this->logger ) {
-				$this->logger->debug( 'Removing directory contents', [
-					'dir'             => $dir,
-					'files_removed'   => $file_count,
-					'subdirs_removed' => $dir_count
-				] );
-			}
-
-			rmdir( $dir );
-		} else if ( $this->logger ) {
-			$this->logger->warning( 'Attempted to remove non-directory', [ 'path' => $dir ] );
-		}
 	}
 }

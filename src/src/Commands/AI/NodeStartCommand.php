@@ -20,7 +20,9 @@ class NodeStartCommand extends QITCommand {
 	protected static $defaultName = 'node:start';
 
 	protected TunnelRunner $tunnel_runner;
-	protected WebServer $webserver;
+	protected WebServer $listener;
+	protected WebServer $worker;
+	protected ?Process $poller = null;
 	protected Cache $cache;
 	protected Auth $auth;
 
@@ -39,7 +41,8 @@ class NodeStartCommand extends QITCommand {
 	) {
 		parent::__construct( self::getDefaultName() );
 		$this->tunnel_runner = $tunnel_runner;
-		$this->webserver     = new WebServer( true );
+		$this->listener      = new WebServer( true );
+		$this->worker        = new WebServer( true );
 		$this->cache         = $cache;
 		$this->auth          = $auth;
 	}
@@ -74,8 +77,9 @@ class NodeStartCommand extends QITCommand {
 			'os'          => PHP_OS,
 		] );
 
-		// Pass logger to WebServer
-		$this->webserver->setLogger( $this->logger );
+		// Pass logger to both servers
+		$this->listener->setLogger( $this->logger );
+		$this->worker->setLogger( $this->logger );
 
 		// Get provider configuration
 		$provider       = $input->getOption( 'provider' );
@@ -122,15 +126,24 @@ class NodeStartCommand extends QITCommand {
 				return self::FAILURE;
 		}
 
-		// Pass provider config to webserver
-		$this->webserver->setProviderConfig( $provider, $providerConfig );
-
 		// Set runtime configuration
 		$runtimeCfg = [
 			'ai_dir'   => Config::get_qit_dir() . 'ai' . DIRECTORY_SEPARATOR,
 			'tmp_base' => rtrim(sys_get_temp_dir(), '/\\') . '/qit-node',   // parent temp folder
 		];
-		$this->webserver->setRuntimeConfig($runtimeCfg);
+
+		// Configure both servers with the same provider/runtime configs
+		foreach ([$this->listener, $this->worker] as $srv) {
+			$srv->setProviderConfig($provider, $providerConfig);
+			$srv->setRuntimeConfig($runtimeCfg);
+		}
+
+		// Configure listener to use router.listener.php
+		$this->listener->setRouterTemplate('router.listener.php');
+
+		// Configure worker to use router.worker.php and bind only to 127.0.0.1
+		$this->worker->setRouterTemplate('router.worker.php');
+		$this->worker->setBindLocalhostOnly();
 
 		// Check LM Studio availability if using LM Studio provider
 		if ( $provider === 'lmstudio' ) {
@@ -196,18 +209,34 @@ class NodeStartCommand extends QITCommand {
 		$node_name = $this->getNodeName( $input );
 
 		try {
-			// Start webserver
-			$webserver_url = $this->webserver->start();
-			$node_token    = $this->webserver->get_node_token();
-			$output->writeln( '<info>✓ Started local server on ' . $webserver_url . '</info>' );
+			// Start the worker first (no tunnel)
+			$workerUrl = $this->worker->start();
+			$output->writeln( '<info>✓ Started worker server on ' . $workerUrl . '</info>' );
 
-			// Create tunnel
+			// Start the listener (may be tunnelled)
+			$listenerUrl = $this->listener->start();
+			$node_token = $this->listener->get_node_token();
+			$output->writeln( '<info>✓ Started listener server on ' . $listenerUrl . '</info>' );
+
+			// Spawn the poller
+			$this->poller = new Process([
+				'php', '-r',
+				'require ' . var_export(__DIR__ . "/../../AI/webserver/WorkerPoller.php", true) . ';' .
+				'\QIT_AI_Webserver\WorkerPoller::run(' .
+					var_export($workerUrl, true) . ',' .
+					var_export($node_token, true) .
+				');'
+			]);
+			$this->poller->start();
+			$output->writeln( '<info>✓ Started worker poller process</info>' );
+
+			// Create tunnel for the listener
 			if ( $input->getOption( 'tunnel' ) === 'none' ) {
-				$this->tunnel_url = $webserver_url;
-				$output->writeln( '<info>✓ No tunnel created. Using local server URL: ' . $this->tunnel_url . '</info>' );
+				$this->tunnel_url = $listenerUrl;
+				$output->writeln( '<info>✓ No tunnel created. Using listener URL: ' . $this->tunnel_url . '</info>' );
 			} else {
 				$this->tunnel_runner->check_tunnel_support( $input->getOption( 'tunnel' ) );
-				$this->tunnel_url = $this->tunnel_runner->start_tunnel( $webserver_url, $this->env_id ); // Store as class property
+				$this->tunnel_url = $this->tunnel_runner->start_tunnel( $listenerUrl, $this->env_id ); // Store as class property
 				$output->writeln( '<info>✓ Created secure tunnel: ' . $this->tunnel_url . '</info>' );
 			}
 
@@ -520,10 +549,22 @@ class NodeStartCommand extends QITCommand {
 			$this->logger->warning( 'Skipping unregister - node_id or node_token not set' );
 		}
 
-		// Stop webserver
-		$this->logger->info( 'Stopping webserver' );
-		$this->webserver->stop();
-		$this->logger->debug( 'Webserver stopped' );
+		// Stop poller
+		if ($this->poller && $this->poller->isRunning()) {
+			$this->logger->info( 'Stopping poller process' );
+			$this->poller->stop();
+			$this->logger->debug( 'Poller process stopped' );
+		}
+
+		// Stop worker server
+		$this->logger->info( 'Stopping worker server' );
+		$this->worker->stop();
+		$this->logger->debug( 'Worker server stopped' );
+
+		// Stop listener server
+		$this->logger->info( 'Stopping listener server' );
+		$this->listener->stop();
+		$this->logger->debug( 'Listener server stopped' );
 
 		// Stop tunnel
 		if ( $this->env_id ) {
