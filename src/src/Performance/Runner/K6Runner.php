@@ -1,19 +1,16 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance\Runner;
+namespace QIT_CLI\Performance\Runner;
 
 use QIT_CLI\App;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
-use QIT_CLI\LocalTests\E2E\Runner\E2ERunner;
-use QIT_CLI\LocalTests\E2E\Runner\PlaywrightOrchestration;
-use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use QIT_CLI\Performance\Result\PerformanceTestResult;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class K6Runner extends E2ERunner {
+class K6Runner extends PerformanceRunner {
 
 	/** @var Docker */
 	private $docker;
@@ -21,12 +18,12 @@ class K6Runner extends E2ERunner {
 	/** @var PerformanceTestResult */
 	private $performance_test_result;
 
-	public function __construct( OutputInterface $output, PlaywrightOrchestration $orchestration, Docker $docker ) {
-		parent::__construct( $output, $orchestration );
+	public function __construct( OutputInterface $output, Docker $docker ) {
+		parent::__construct( $output );
 		$this->docker = $docker;
 	}
 
-	public function run_test( E2EEnvInfo $env_info, array $test_infos, TestResult $test_result, string $test_mode, ?string $shard = null ): int {
+	public function run_performance_test( E2EEnvInfo $env_info ): int {
 		// Create a performance test result internally
 		$this->performance_test_result = new PerformanceTestResult( $env_info );
 		
@@ -45,19 +42,16 @@ class K6Runner extends E2ERunner {
 		}
 
 		// Build k6 Docker arguments  
-		$k6_args = $this->build_k6_docker_args( $env_info, $test_infos, $results_dir, $k6_container_name );
+		$k6_args = $this->build_k6_docker_args( $env_info, $results_dir, $k6_container_name );
 
 		// Run k6 tests
-		$exit_code = $this->execute_k6_tests( $k6_args, $test_infos );
+		$exit_code = $this->execute_k6_tests( $k6_args );
 
 		// Collect results
 		$this->collect_results( $this->performance_test_result, $results_dir );
 
 		// Process performance test results
 		$this->performance_test_result->process_results();
-
-		// Update the E2E test result status based on performance test outcome
-		$test_result->set_status( $exit_code === 0 ? 'passed' : 'failed' );
 
 		return $exit_code;
 	}
@@ -75,7 +69,7 @@ class K6Runner extends E2ERunner {
 		}
 	}
 
-	private function build_k6_docker_args( E2EEnvInfo $env_info, array $test_infos, string $results_dir, string $container_name ): array {
+	private function build_k6_docker_args( E2EEnvInfo $env_info, string $results_dir, string $container_name ): array {
 		$k6_args = [
 			$this->docker->find_docker(),
 			'run',
@@ -142,11 +136,11 @@ class K6Runner extends E2ERunner {
 		return $k6_args;
 	}
 
-	private function execute_k6_tests( array $k6_args, array $test_infos ): int {
+	private function execute_k6_tests( array $k6_args ): int {
 		$overall_exit_code = 0;
 
 		// Create a default k6 performance test
-		$default_test = $this->create_default_k6_test( $test_infos );
+		$this->create_default_k6_test();
 
 		if ( $this->output ) {
 			$this->output->writeln( "<info>Running k6 performance test for WooCommerce extension</info>" );
@@ -196,56 +190,24 @@ class K6Runner extends E2ERunner {
 		return $overall_exit_code;
 	}
 
-	private function create_default_k6_test( array $test_infos ): string {
-		// Create a basic k6 performance test
-		$test_content = 'import { check, sleep } from "k6";
-import http from "k6/http";
+	public function create_default_k6_test( ?string $target_file = null ): string {
+		$default_test_source = __DIR__ . '/../tests/default-performance.k6.js';
+		
+		if ( ! file_exists( $default_test_source ) ) {
+			throw new \RuntimeException( 'Default performance test file not found: ' . $default_test_source );
+		}
 
-export let options = {
-    stages: [
-        { duration: "10s", target: 5 },
-        { duration: "20s", target: 10 },
-        { duration: "10s", target: 0 },
-    ],
-    thresholds: {
-        http_req_duration: ["p(95)<500"],
-        http_req_failed: ["rate<0.1"],
-    },
-};
-
-export default function() {
-    const baseUrl = __ENV.BASE_URL || "http://localhost";
-    
-    // Test homepage
-    let response = http.get(baseUrl);
-    check(response, {
-        "homepage status is 200": (r) => r.status === 200,
-        "homepage loads in < 500ms": (r) => r.timings.duration < 500,
-    });
-    
-    sleep(1);
-    
-    // Test WooCommerce shop page
-    response = http.get(`${baseUrl}/shop/`);
-    check(response, {
-        "shop page status is 200": (r) => r.status === 200,
-        "shop page loads in < 800ms": (r) => r.timings.duration < 800,
-    });
-    
-    sleep(1);
-    
-    // Test cart page
-    response = http.get(`${baseUrl}/cart/`);
-    check(response, {
-        "cart page accessible": (r) => r.status === 200 || r.status === 404,
-    });
-    
-    sleep(Math.random() * 2 + 1);
-}';
-
-		// Write the test to a temporary location that will be mounted in the container
-		$test_file = sys_get_temp_dir() . '/qit-k6-default-test.js';
-		file_put_contents( $test_file, $test_content );
+		// Use provided target file or default to temp location
+		$test_file = $target_file ?: sys_get_temp_dir() . '/qit-k6-default-test.js';
+		
+		// Create directory if it doesn't exist
+		if ( ! file_exists( dirname( $test_file ) ) ) {
+			mkdir( dirname( $test_file ), 0755, true );
+		}
+		
+		if ( ! copy( $default_test_source, $test_file ) ) {
+			throw new \RuntimeException( 'Could not copy default performance test to: ' . $test_file );
+		}
 		
 		return $test_file;
 	}

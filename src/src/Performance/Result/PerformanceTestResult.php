@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance\Result;
+namespace QIT_CLI\Performance\Result;
 
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;

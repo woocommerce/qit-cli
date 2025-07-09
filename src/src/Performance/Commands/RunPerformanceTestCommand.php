@@ -1,16 +1,14 @@
 <?php
 
-namespace QIT_CLI\Commands;
+namespace QIT_CLI\Performance\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\Environment\Extension;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
+use QIT_CLI\Performance\PerformanceTestManager;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\RequestBuilder;
@@ -51,14 +49,14 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	protected function configure() {
 		$schemas = $this->cache->get_manager_sync_data( 'schemas' );
 
-		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
-			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
+		if ( ! is_array( $schemas['performance']['properties'] ) ) {
+			throw new \RuntimeException( 'Performance schema not set or incomplete.' );
 		}
 
-		// Use E2E schema since performance tests use E2E environments
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
+		// Use dedicated performance schema
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['performance'], [
 			'php_version',
-		] );
+		], [] );
 
 		$this
 			->setDescription( 'Run Performance tests.' )
@@ -78,51 +76,10 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' )
-			->addOption( 'ui', null, InputOption::VALUE_NEGATABLE, 'Runs tests in UI mode.' )
-			->addOption( 'no_upload_report', null, InputOption::VALUE_NEGATABLE, 'Do not upload the report to QIT Manager.' )
-			->addOption( 'notify', null, InputOption::VALUE_OPTIONAL, 'If set, failures will be notified to the author of the SUT.' )
-			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins.', 'bootstrap' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register the test run into a group.' )
-			->addOption( 'no_group', null, InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.' );
-
-		// Deprecated options for backwards compatibility
-		$this->addOption(
-			'json',
-			'j',
-			InputOption::VALUE_NEGATABLE,
-			'(Deprecated) Whether to return the JSON object of the test that was created.',
-			false
-		);
-
-		$this->addOption(
-			'wait',
-			'w',
-			InputOption::VALUE_NEGATABLE,
-			'(Deprecated)',
-			false
-		);
-
-		$this->addOption(
-			'ignore-fail',
-			'i',
-			InputOption::VALUE_NEGATABLE,
-			'(Deprecated)',
-			false
-		);
-
-		$this->addOption(
-			'zip',
-			null,
-			InputOption::VALUE_OPTIONAL,
-			'Deprecated. Use --source instead.'
-		);
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		// Mark that we're running a performance test scenario.
-		App::setVar( 'QIT_PERFORMANCE_TEST', 'yes' );
-
 		$sut = $input->getArgument( 'woo_extension' );
 
 		try {
@@ -139,13 +96,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$plugins[] = $sut;
 		$env_up_options['--plugin'] = $plugins;
 
-		// Handle the deprecated --zip option.
-		if ( ! empty( $input->getOption( 'zip' ) ) ) {
-			if ( ! empty( $input->getOption( 'source' ) ) ) {
-				throw new \RuntimeException( 'Cannot use both --zip and --source options. Use only --source.' );
-			}
-			$env_up_options['--source'] = $input->getOption( 'zip' );
-		} elseif ( ! empty( $input->getOption( 'source' ) ) ) {
+		// Handle the --source option
+		if ( ! empty( $input->getOption( 'source' ) ) ) {
 			$env_up_options['--source'] = $input->getOption( 'source' );
 		}
 
@@ -163,9 +115,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
 			putenv( 'QIT_UP_AND_TEST=1' );
 
-			// Set test type to performance
-			App::setVar( 'QIT_TEST_TYPE', 'performance' );
-
 			// Create the E2E environment using EnvironmentRunner
 			/** @var E2EEnvInfo $env_info */
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
@@ -178,12 +127,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			// Set the output interface for the performance test manager
 			$this->performance_test_manager->set_output( $output );
 
-			// Set up test mode 
-			$test_mode = $input->getOption( 'ui' ) ? 'ui' : 'headless';
-			$bootstrap_only = false;
-
 			// Run performance tests using PerformanceTestManager
-			$exit_code = $this->performance_test_manager->run_tests( $env_info, $test_mode, $bootstrap_only );
+			$exit_code = $this->performance_test_manager->run_tests( $env_info );
 
 			// Handle JSON output if requested
 			if ( $input->getOption( 'json' ) ) {
@@ -201,11 +146,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 					->request();
 
 				$output->writeln( $json );
-			}
-
-			// Backwards compatibility: if user passed --ignore-fail, always return SUCCESS.
-			if ( $input->getOption( 'ignore-fail' ) ) {
-				return Command::SUCCESS;
 			}
 
 			return $exit_code;
