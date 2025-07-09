@@ -5,7 +5,7 @@
 require_once __DIR__ . '/bootstrap-node.php';
 require_once __DIR__ . '/Handlers/helpers.php';   // worker needs helpers
 
-use QIT_AI_Webserver\Persistence\TaskRepository;
+use QIT_AI_Webserver\Persistence\SleekTaskRepository;
 use QIT_AI_Webserver\Endpoints\{
 	BasicPromptEndpoint,
 	PromptWithToolsEndpoint,
@@ -15,7 +15,7 @@ use QIT_AI_Webserver\Endpoints\{
 };
 
 global $method, $uri;
-$repo      = new TaskRepository( QIT_DB_PATH );
+$repo      = new SleekTaskRepository( QIT_NODE_DIR );
 $endpoints = [
 	'basic-prompt'       => new BasicPromptEndpoint(),
 	'prompt-with-tools'  => new PromptWithToolsEndpoint(),
@@ -25,29 +25,16 @@ $endpoints = [
 ];
 
 if ( $method === 'POST' && $uri === '/run-one' ) {
-	$pdo = $repo->getConnection();
-	$pdo->beginTransaction();
-	$row = $pdo->query( "SELECT task_id,type,data
-                          FROM tasks
-                         WHERE status='pending'
-                      ORDER BY id ASC LIMIT 1" )
-	           ->fetch( \PDO::FETCH_ASSOC );
-
-	if ( ! $row ) {
-		$pdo->commit();
-		echo json_encode( [ 'did_run' => false ] );
-
+	$task = $repo->reserveNextPending();
+	if (!$task) {
+		echo json_encode(['did_run' => false]);
 		return;
 	}
-	$taskId = $row['task_id'];
-	$pdo->exec( "UPDATE tasks
-                   SET status='running',updated_at=strftime('%s','now')
-                 WHERE task_id=" . $pdo->quote( $taskId ) );
-	$pdo->commit();
+	$taskId = $task['task_id'];
 
 	try {
-		$payload = json_decode( $row['data'], true ) ?? [];
-		$type    = $row['type'];
+		$payload = $task['data'] ?? [];
+		$type    = $task['type'];
 		if ( ! isset( $endpoints[ $type ] ) ) {
 			throw new RuntimeException( "Unsupported task type: $type" );
 		}

@@ -244,7 +244,7 @@ log_info( "Received input for $uri", $log_input );
 
 // Initialize NodeResponse for performance tracking
 use QIT_AI_Webserver\NodeResponse;
-use QIT_AI_Webserver\Persistence\TaskRepository;
+use QIT_AI_Webserver\Persistence\SleekTaskRepository;
 
 NodeResponse::init();
 

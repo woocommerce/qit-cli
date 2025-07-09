@@ -68,16 +68,6 @@ class NodeStartCommand extends QITCommand {
 		$runId  = date( 'Ymd-His' ) . '-' . substr( bin2hex( random_bytes( 2 ) ), 0, 4 );
 		$runDir = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$runId/";
 		$logDir = $runDir;                    // keep logs in the same folder
-		$dbPath = $runDir . 'node.db';
-
-		if ( ! extension_loaded( 'pdo_sqlite' ) || ! in_array( 'sqlite', \PDO::getAvailableDrivers(), true ) ) {
-			$output->writeln( '<error>PHP SQLite (PDO) extension is required but not loaded.</error>' );
-
-			$output->writeln( "\n<comment>Please install the SQLite PHP extension</comment>" );
-			$output->writeln( "<comment>then re‑run:</comment>  qit node:start\n" );
-
-			return self::FAILURE;
-		}
 
 
 		mkdir( $runDir, 0700, true );
@@ -162,7 +152,6 @@ class NodeStartCommand extends QITCommand {
 		$runtimeCfg = [
 			'ai_dir'   => Config::get_qit_dir() . 'ai' . DIRECTORY_SEPARATOR,
 			'tmp_base' => $runDir,              // every copied router lives here
-			'db_path'  => $dbPath,
 		];
 
 		foreach ( [ $this->listener, $this->worker ] as $srv ) {

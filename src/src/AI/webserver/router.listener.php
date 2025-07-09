@@ -5,10 +5,10 @@
  */
 require_once __DIR__ . '/bootstrap-node.php';   // ← single include
 
-use QIT_AI_Webserver\Persistence\TaskRepository;
+use QIT_AI_Webserver\Persistence\SleekTaskRepository;
 
 global $method, $uri;
-$repo = new TaskRepository( QIT_DB_PATH );
+$repo = new SleekTaskRepository( QIT_NODE_DIR );
 
 switch ( "$method $uri" ) {
 

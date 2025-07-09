@@ -191,18 +191,43 @@ final class LLPhantBootstrap {
 	private array $config;
 	private $logger;
 
+	private function computeInstallDir( array $composerJson ): string {
+		// Stable hash of the **desired** dependency graph (ignore formatting)
+		$hash = substr( sha1( json_encode( $composerJson, JSON_UNESCAPED_SLASHES ) ), 0, 12 );
+
+		// e.g. /tmp/qit-llphant-a1b2c3d4e5f6
+		// Are we in Phar?
+		if ( \Phar::running() !== '' ) {
+			return sys_get_temp_dir() . '/qit-llphant-' . $hash;
+		} else {
+			return __DIR__ . '/../../dev/qit-llphant-' . $hash;
+		}
+	}
+
 	public function __construct( string $provider, array $config = [], $logger = null ) {
 		$this->provider = $provider;
 		$this->config   = $config;
 		$this->logger   = $logger;
-		// Are we in Phar?
-		if ( \Phar::running() !== '' ) {
-			$this->installDir = sys_get_temp_dir() . '/qit-llphant';
-		} else {
-			$this->installDir = __DIR__ . '/../../dev/qit-llphant';
-		}
 
-		$this->ensureLLPhantInstalled();
+		// 1️⃣ Build the composer.json array once
+		$composerJson = [
+			'require' => [
+				'theodo-group/llphant' => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
+				'nikic/php-parser'     => '^5',
+				'rakibtg/sleekdb'      => '^2',
+			],
+			'config'  => [
+				'optimize-autoloader'    => true,
+				'classmap-authoritative' => true,
+				'minimum-stability'      => 'dev',
+			],
+		];
+
+		// 2️⃣ Derive the directory from that content
+		$this->installDir = $this->computeInstallDir( $composerJson );
+
+		// 3️⃣ Perform installation (idempotent)
+		$this->ensureLLPhantInstalled( $composerJson );
 	}
 
 	public function getChat(): ChatInterface {
@@ -227,56 +252,57 @@ final class LLPhantBootstrap {
 		}
 	}
 
-	private function ensureLLPhantInstalled(): void {
+	private function ensureLLPhantInstalled( array $composerJson ): void {
 		// Check if composer is available
 		$composerCheck = shell_exec( 'which composer 2>&1' ) ?: shell_exec( 'where composer 2>&1' );
 		if ( empty( trim( $composerCheck ) ) ) {
 			throw new Exception( "Composer is not installed or not in PATH. Please install Composer first." );
 		}
 
+		// Use a lock file so parallel PHP workers do not race
+		$lock = fopen( $this->installDir . '.lock', 'c' );
+		flock( $lock, LOCK_EX );
+
 		if ( file_exists( $this->installDir . '/vendor/autoload.php' ) ) {
 			$this->log_info( "LLPhant already installed at: " . $this->installDir );
 			require_once $this->installDir . '/vendor/autoload.php';
+			flock( $lock, LOCK_UN );
 
 			return;
 		}
 
 		$this->log_info( "Installing LLPhant to: " . $this->installDir );
 
-		// Create directory
-		if ( ! is_dir( $this->installDir ) ) {
-			mkdir( $this->installDir, 0755, true );
-		}
-
-		// Create composer.json
-		$composerJson = [
-			'require' => [
-				'theodo-group/llphant'      => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
-				'nikic/php-parser'          => '^5',
-			],
-			'config'  => [
-				'optimize-autoloader'    => true,
-				'classmap-authoritative' => true,
-				'minimum-stability'      => 'dev',
-			],
-		];
-
+		// Directory does not exist ⇒ create & install
+		mkdir( $this->installDir, 0755, true );
 		file_put_contents(
 			$this->installDir . '/composer.json',
-			json_encode( $composerJson, JSON_PRETTY_PRINT )
+			json_encode( $composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
 		);
 
 		// Run composer install
-		$output     = [];
-		$returnCode = 0;
-		$cmd        = sprintf(
-			'cd %s && composer install --no-dev --no-interaction --no-progress --ignore-platform-req=ext-gd 2>&1',
+		$cmd = sprintf(
+			'cd %s && composer install --no-dev --no-interaction --no-progress --ansi --ignore-platform-req=ext-gd 2>&1',
 			escapeshellarg( $this->installDir )
 		);
 
+		$output     = [];
+		$returnCode = 0;
 		exec( $cmd, $output, $returnCode );
 
+		if ( $returnCode !== 0 ) {
+			throw new Exception( "Failed to install LLPhant: " . implode( "\n", $output ) );
+		}
+
 		// Patch file.
+		$this->patchLLPhant();
+
+		require_once $this->installDir . '/vendor/autoload.php';
+		$this->log_info( "LLPhant installed successfully" );
+		flock( $lock, LOCK_UN );
+	}
+
+	private function patchLLPhant(): void {
 		$llphantFile = "{$this->installDir}/vendor/theodo-group/llphant/src/Chat/OpenAIChat.php";
 		file_put_contents(
 			$llphantFile,
@@ -292,13 +318,6 @@ final class LLPhantBootstrap {
 				file_get_contents( $llphantFile )
 			)
 		);
-
-		if ( $returnCode !== 0 ) {
-			throw new Exception( "Failed to install LLPhant: " . implode( "\n", $output ) );
-		}
-
-		require_once $this->installDir . '/vendor/autoload.php';
-		$this->log_info( "LLPhant installed successfully" );
 	}
 
 	private function initializeProvider( array $runtimeOptions = [] ): void {
