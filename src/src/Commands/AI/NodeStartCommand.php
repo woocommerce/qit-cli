@@ -62,19 +62,41 @@ class NodeStartCommand extends QITCommand {
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		// Initialize logger with a file in a dedicated logs directory
-		$tmpBase  = rtrim(sys_get_temp_dir(), '/\\').'/qit-node';
-		$logDir   = $tmpBase.'/logs';
-		@mkdir($logDir, 0700, true);
+		// ---------------------------------------------------------------------
+		// 1. decide once where this run will live
+		// ---------------------------------------------------------------------
+		$runId  = date( 'Ymd-His' ) . '-' . substr( bin2hex( random_bytes( 2 ) ), 0, 4 );
+		$runDir = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$runId/";
+		$logDir = $runDir;                    // keep logs in the same folder
+		$dbPath = $runDir . 'node.db';
 
-		$log_file = $logDir.'/node.log';
-		$this->logger = new Logger($log_file, Logger::DEBUG);
-		ini_set('log_errors', 1);
-		ini_set('error_log', $log_file);
+		if ( ! extension_loaded( 'pdo_sqlite' ) || ! in_array( 'sqlite', \PDO::getAvailableDrivers(), true ) ) {
+			$output->writeln( '<error>PHP SQLite (PDO) extension is required but not loaded.</error>' );
+
+			$output->writeln( "\n<comment>Please install the SQLite PHP extension</comment>" );
+			$output->writeln( "<comment>then re‑run:</comment>  qit node:start\n" );
+
+			return self::FAILURE;
+		}
+
+
+		mkdir( $runDir, 0700, true );
+
+		// ---------------------------------------------------------------------
+		// 2. create log objects that point *inside* the run directory
+		// ---------------------------------------------------------------------
+		$this->logger   = new Logger( $logDir . 'node.log', Logger::DEBUG );
+		$listenerLogger = new Logger( $logDir . 'listener.log', Logger::DEBUG );
+		$workerLogger   = new Logger( $logDir . 'worker.log', Logger::DEBUG );
+
+		ini_set( 'log_errors', 1 );
+		ini_set( 'error_log', $logDir . 'node.log' );    // fatal errors → node.log
 		ini_set( 'display_errors', 0 );
 
-		// Print the log file path
-		$output->writeln( '<info>Log file: ' . $log_file . '</info>' );
+		// optional: show paths to the user
+		$output->writeln( "<info>Run directory : $runDir</info>" );
+		$output->writeln( "<info>Listener log  : {$listenerLogger->get_log_file()}</info>" );
+		$output->writeln( "<info>Worker log    : {$workerLogger->get_log_file()}</info>" );
 
 		// Log startup
 		$this->logger->info( 'Starting QIT Node', [
@@ -82,9 +104,14 @@ class NodeStartCommand extends QITCommand {
 			'os'          => PHP_OS,
 		] );
 
-		// Pass logger to both servers
-		$this->listener->setLogger( $this->logger );
-		$this->worker->setLogger( $this->logger );
+		// Generate a shared token for both servers
+		$nodeToken = bin2hex( random_bytes( 32 ) );
+
+		// Pass loggers to servers and set the shared token
+		$this->listener->setLogger( $listenerLogger );
+		$this->worker->setLogger( $workerLogger );
+		$this->listener->setNodeToken( $nodeToken );
+		$this->worker->setNodeToken( $nodeToken );
 
 		// Get provider configuration
 		$provider       = $input->getOption( 'provider' );
@@ -134,14 +161,14 @@ class NodeStartCommand extends QITCommand {
 		// Set runtime configuration
 		$runtimeCfg = [
 			'ai_dir'   => Config::get_qit_dir() . 'ai' . DIRECTORY_SEPARATOR,
-			'tmp_base' => rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node',   // parent temp folder
+			'tmp_base' => $runDir,              // every copied router lives here
+			'db_path'  => $dbPath,
 		];
 
-		// Configure both servers with the same provider/runtime configs
 		foreach ( [ $this->listener, $this->worker ] as $srv ) {
-			/** @var WebServer $srv */
-			$srv->setProviderConfig( $provider, $providerConfig );
 			$srv->setRuntimeConfig( $runtimeCfg );
+			$srv->setProviderConfig( $provider, $providerConfig );
+			$srv->setNodeToken( $nodeToken );             // NEW
 		}
 
 		// Configure listener to use router.listener.php
@@ -221,20 +248,30 @@ class NodeStartCommand extends QITCommand {
 
 			// Start the listener (may be tunnelled)
 			$listenerUrl = $this->listener->start();
-			$node_token  = $this->listener->get_node_token();
+			// We're using the shared token for both servers
+			$node_token = $nodeToken;
 			$output->writeln( '<info>✓ Started listener server on ' . $listenerUrl . '</info>' );
 
-			// Spawn the poller
-			$this->poller = new Process( [
-				'php',
-				'-r',
-				'require ' . var_export( __DIR__ . "/../../AI/webserver/WorkerPoller.php", true ) . ';' .
-				'\QIT_AI_Webserver\WorkerPoller::run(' .
-				var_export( $workerUrl, true ) . ',' .
-				var_export( $node_token, true ) .
-				');'
-			] );
+			// ----------------------------------------------------------------------------
+			// Launch poller.php as a detached process
+			// ----------------------------------------------------------------------------
+			$env = $_ENV + [
+					'QIT_NODE_TOKEN' => $nodeToken,   // pass token via env‑var
+				];
+
+			$pollerPath = __DIR__ . '/../../AI/webserver/poller.php';
+
+			$this->poller = new Process(
+				[
+					PHP_BINARY,      // current php executable
+					$pollerPath,
+					$workerUrl,      // argv[1]
+				],
+				null,               // working dir
+				$env                // environment variables
+			);
 			$this->poller->start();
+
 			$output->writeln( '<info>✓ Started worker poller process</info>' );
 
 			// Create tunnel for the listener

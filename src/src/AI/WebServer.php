@@ -11,14 +11,16 @@ class WebServer {
 	private string $webroot;
 	private string $node_token;
 	private ?\QIT_CLI\Logging\Logger $logger = null;
-	private bool $use_local_mode = false;
+	private bool $use_local_mode;
 	private string $provider = 'lmstudio';
 	private array $providerConfig = [];
 	private array $runtimeConfig = [];
 	private string $routerTemplate;
 	private bool $bindLocalhostOnly = false;
+	private ?string $nodeToken = null;
+	private ?string $customLogFile = null;
 
-	public function __construct( bool $use_local_mode = false ) {
+	public function __construct( bool $use_local_mode = true ) {
 		$this->use_local_mode = $use_local_mode;
 	}
 
@@ -28,7 +30,17 @@ class WebServer {
 	 * @param \QIT_CLI\Logging\Logger $logger The logger instance.
 	 */
 	public function setLogger( \QIT_CLI\Logging\Logger $logger ): void {
-		$this->logger = $logger;
+		$this->logger        = $logger;
+		$this->customLogFile = $logger->get_log_file();
+	}
+
+	/**
+	 * Set a node token to use instead of generating a random one.
+	 *
+	 * @param string $t The token to use.
+	 */
+	public function setNodeToken( string $t ): void {
+		$this->nodeToken = $t;
 	}
 
 	public function setProviderConfig( string $provider, array $config ): void {
@@ -62,6 +74,29 @@ class WebServer {
 	}
 
 	public function start(): string {
+		/* ───────────────────── 1. Validate caller contract ─────────────────── */
+		$required = [
+			'nodeToken'      => $this->nodeToken,
+			'routerTemplate' => $this->routerTemplate,
+			'ai_dir'         => $this->runtimeConfig['ai_dir'] ?? null,
+			'db_path'        => $this->runtimeConfig['db_path'] ?? null,
+			'tmp_base'       => $this->runtimeConfig['tmp_base'] ?? null,
+		];
+
+		$missing = array_keys(
+			array_filter( $required, static fn( $v ) => $v === null || $v === '' )
+		);
+
+		if ( $missing ) {
+			throw new \RuntimeException(
+				'WebServer mis‑configuration: missing ' . implode( ', ', $missing )
+			);
+		}
+
+		/* ───────────────────── 2. Set guaranteed values ────────────────────── */
+		// we *know* $this->nodeToken is present, so no silent fallback:
+		$this->node_token = $this->nodeToken;
+
 		if ( $this->logger ) {
 			$this->logger->info( 'Starting webserver', [
 				'mode' => $this->use_local_mode ? 'local' : 'temp'
@@ -73,11 +108,8 @@ class WebServer {
 		if ( $this->logger ) {
 			$this->logger->debug( 'Found available port', [ 'port' => $this->port ] );
 		}
-
-		// Generate node token
-		$this->node_token = bin2hex( random_bytes( 32 ) );
 		if ( $this->logger ) {
-			$this->logger->debug( 'Generated node token', [
+			$this->logger->debug( 'Using provided node token', [
 				'token_prefix' => substr( $this->node_token, 0, 8 ) . '...'
 			] );
 		}
@@ -100,23 +132,15 @@ class WebServer {
 			$this->setupTempWebroot();
 		}
 
-		// For both modes, we need to handle placeholders
-		// In local mode: create temp router file
-		// In temp mode: modify the copied router file in place
-		$routerTemplate = $this->routerTemplate;
-		if ( $this->use_local_mode ) {
-			$router_path = $this->createTempRouterFile( $routerTemplate );
-		} else {
-			// In temp mode, replace placeholders in the copied router file
-			$this->replacePlaceholders( $routerTemplate );
-			$router_path = $this->webroot . '/' . $routerTemplate;
-		}
+		// No placeholder replacement or temp router file creation needed anymore
+		// Just use the router template directly
+		$router_path = $this->webroot . '/' . $this->routerTemplate;
 
 		// Configure open_basedir restrictions for security
 		$allowed = [
 			// treat as *directories* by adding the trailing slash
-			( $this->runtimeConfig['tmp_base'] ?? rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node' ) . '/',  // /tmp/qit-node/ (parent, not child)
-			( $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai' ) . '/', // Fallback if ai_dir not provided
+			$this->runtimeConfig['tmp_base'] . '/',  // /tmp/qit-node/ (parent, not child)
+			$this->runtimeConfig['ai_dir'] . '/', // AI directory
 		];
 
 		if ( $this->use_local_mode ) {
@@ -139,18 +163,34 @@ class WebServer {
 			] );
 		}
 
-		$this->process = new Process( [
-			'php',
-			'-d',
-			'open_basedir=' . $openBasedir,
-			'-d',
-			'variables_order=EGPCS',
-			'-S',
-			$host,
-			'-t',
-			$this->webroot,
-			$router_path
-		] );
+		$env = [
+			// everything the routers must know
+			'QIT_NODE_TOKEN'   => $this->node_token,
+			'QIT_LOG_FILE'     => $this->logger->get_log_file(),
+			'QIT_NODE_DIR'     => $this->runtimeConfig['tmp_base'],
+			'QIT_AI_DIR'       => $this->runtimeConfig['ai_dir'],
+			'QIT_PROVIDER'     => $this->provider,
+			'QIT_PROVIDER_CFG' => json_encode( $this->providerConfig ),
+			'QIT_DB_PATH'      => $this->runtimeConfig['db_path'],
+		];
+
+		$this->process = new Process(
+			[
+				'php',
+				'-d',
+				'open_basedir=' . $openBasedir,
+				'-d',
+				'variables_order=EGPCS',
+				'-S',
+				$host,
+				'-t',
+				$this->webroot,
+				// router file (no placeholders any more)
+				$this->webroot . '/' . $this->routerTemplate
+			],
+			null,   // cwd
+			$env
+		);
 
 		$this->process->start();
 
@@ -184,8 +224,8 @@ class WebServer {
 	 * Setup temporary webroot directory (for temp mode)
 	 */
 	private function setupTempWebroot(): void {
-		// Get base temp directory from runtime config or use default
-		$base = $this->runtimeConfig['tmp_base'] ?? rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node';
+		// Get base temp directory from runtime config (already validated)
+		$base = $this->runtimeConfig['tmp_base'];
 		if ( empty( $base ) || $base === '/' ) {
 			$error_msg = 'Invalid temp base directory';
 			if ( $this->logger ) {
@@ -237,8 +277,7 @@ class WebServer {
 		}
 		$this->copyWebserverFiles();
 
-		// Replace placeholders in router template
-		$this->replacePlaceholders( $this->routerTemplate );
+		// No need to replace placeholders anymore, as we're using environment variables
 
 		if ( $this->logger ) {
 			$this->logger->debug( 'Webserver files prepared' );
@@ -303,110 +342,8 @@ class WebServer {
 		}
 	}
 
-	/**
-	 * Replace placeholders in the router file (for temp mode)
-	 *
-	 * @param string $template The router template file name
-	 */
-	private function replacePlaceholders( string $template ): void {
-		$router_file = $this->webroot . '/' . $template;
-
-		if ( ! file_exists( $router_file ) ) {
-			throw new \RuntimeException( 'Router file not found: ' . $router_file );
-		}
-
-		// Read the router content
-		$content = file_get_contents( $router_file );
-
-		// Get AI directory from runtime config or use default
-		$ai_dir = $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai';
-
-		// Ensure AI directory exists
-		if ( ! is_dir( $ai_dir ) ) {
-			mkdir( $ai_dir, 0700, true );
-			if ( $this->logger ) {
-				$this->logger->debug( 'Created AI directory', [ 'ai_dir' => $ai_dir ] );
-			}
-		}
-
-		// Replace placeholders
-		$replacements = [
-			'{{NODE_TOKEN}}'      => $this->node_token,
-			'{{LOG_FILE}}'        => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
-			'{{PROVIDER}}'        => $this->provider,
-			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig ),
-			'{{AI_DIR}}'          => $ai_dir
-		];
-
-		foreach ( $replacements as $placeholder => $value ) {
-			$content = str_replace( $placeholder, $value, $content );
-		}
-
-		// Write back the modified content
-		file_put_contents( $router_file, $content );
-
-		if ( $this->logger ) {
-			$this->logger->debug( 'Replaced placeholders in ' . $template, [
-				'placeholders' => array_keys( $replacements )
-			] );
-		}
-	}
-
-	/**
-	 * Create a temporary router file for local mode
-	 *
-	 * @param string $template The router template file name
-	 *
-	 * @return string Path to the temporary router file
-	 */
-	private function createTempRouterFile( string $template ): string {
-		$source_router = $this->webroot . '/' . $template;
-		$temp_router   = $this->webroot . '/' . pathinfo( $template, PATHINFO_FILENAME ) . '.local.php'; // Save in same directory
-
-		if ( ! file_exists( $source_router ) ) {
-			throw new \RuntimeException( 'Router file not found: ' . $source_router );
-		}
-
-		// Read the router content
-		$content = file_get_contents( $source_router );
-
-		// Get AI directory from runtime config or use default
-		$ai_dir = $this->runtimeConfig['ai_dir'] ?? sys_get_temp_dir() . '/qit-node-ai';
-
-		// Ensure AI directory exists
-		if ( ! is_dir( $ai_dir ) ) {
-			mkdir( $ai_dir, 0700, true );
-			if ( $this->logger ) {
-				$this->logger->debug( 'Created AI directory', [ 'ai_dir' => $ai_dir ] );
-			}
-		}
-
-		// Replace placeholders
-		$replacements = [
-			'{{NODE_TOKEN}}'      => $this->node_token,
-			'{{LOG_FILE}}'        => $this->logger ? $this->logger->get_log_file() : sys_get_temp_dir() . '/qit-node.log',
-			'{{PROVIDER}}'        => $this->provider,
-			'{{PROVIDER_CONFIG}}' => json_encode( $this->providerConfig ),
-			'{{AI_DIR}}'          => $ai_dir
-		];
-
-		foreach ( $replacements as $placeholder => $value ) {
-			$content = str_replace( $placeholder, $value, $content );
-		}
-
-		// Write the modified content to local temp file
-		file_put_contents( $temp_router, $content );
-		chmod( $temp_router, 0755 );
-
-		if ( $this->logger ) {
-			$this->logger->debug( 'Created local router file', [
-				'path'         => $temp_router,
-				'placeholders' => array_keys( $replacements )
-			] );
-		}
-
-		return $temp_router;
-	}
+	// Placeholder replacement and temp router file creation methods removed
+	// as they are no longer needed with environment variables
 
 	public function get_node_token(): string {
 		return $this->node_token;
@@ -444,19 +381,10 @@ class WebServer {
 			$this->logger->debug( 'No running process to stop' );
 		}
 
-		// Clean up temporary router file in local mode
+		// No need to clean up temporary router files anymore, as we're using environment variables
 		if ( $this->use_local_mode ) {
-			$template_base = pathinfo( $this->routerTemplate, PATHINFO_FILENAME );
-			$local_router  = $this->webroot . '/' . $template_base . '.local.php';
-			if ( file_exists( $local_router ) ) {
-				unlink( $local_router );
-				if ( $this->logger ) {
-					$this->logger->debug( 'Removed local router file', [ 'path' => $local_router ] );
-				}
-			}
-
 			if ( $this->logger ) {
-				$this->logger->info( 'Webserver stopped (local mode - cleaned up ' . $template_base . '.local.php)' );
+				$this->logger->info( 'Webserver stopped (local mode)' );
 			}
 
 			return;
