@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\Performance\Runner;
 
-use QIT_CLI\App;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
@@ -15,12 +14,16 @@ class K6Runner extends PerformanceRunner {
 	/** @var Docker */
 	private $docker;
 
+	/** @var K6DockerConfig */
+	private $docker_config;
+
 	/** @var PerformanceTestResult */
 	private $performance_test_result;
 
 	public function __construct( OutputInterface $output, Docker $docker ) {
 		parent::__construct( $output );
 		$this->docker = $docker;
+		$this->docker_config = new K6DockerConfig( $docker );
 	}
 
 	public function run_performance_test( E2EEnvInfo $env_info ): int {
@@ -29,6 +32,9 @@ class K6Runner extends PerformanceRunner {
 		
 		// Set up k6 cache directory
 		$this->setup_k6_cache();
+
+		// Set environment variables for Docker
+		$this->docker_config->set_environment_variables( $env_info );
 
 		// Create k6 container name
 		$k6_container_name = "qit_env_k6_{$env_info->env_id}";
@@ -42,7 +48,7 @@ class K6Runner extends PerformanceRunner {
 		}
 
 		// Build k6 Docker arguments  
-		$k6_args = $this->build_k6_docker_args( $env_info, $results_dir, $k6_container_name );
+		$k6_args = $this->docker_config->build_k6_docker_args( $env_info, $results_dir, $k6_container_name );
 
 		// Run k6 tests
 		$exit_code = $this->execute_k6_tests( $k6_args );
@@ -60,6 +66,136 @@ class K6Runner extends PerformanceRunner {
 		return $this->performance_test_result;
 	}
 
+	/**
+	 * Discover k6 test files in the SUT or create a default test.
+	 */
+	public function discover_tests( E2EEnvInfo $env_info ): array {
+		$tests = [];
+
+		// Look for k6 test files in the SUT
+		$test_paths = [
+			$env_info->sut_path . '/tests/performance',
+			$env_info->sut_path . '/tests/k6',
+			$env_info->sut_path . '/performance',
+			$env_info->sut_path . '/k6',
+		];
+
+		foreach ( $test_paths as $test_path ) {
+			if ( is_dir( $test_path ) ) {
+				$test_files = glob( $test_path . '/*.js' );
+				foreach ( $test_files as $test_file ) {
+					$test_info = [
+						'name' => basename( $test_file, '.js' ),
+						'path' => $test_file,
+						'path_in_host' => $test_file,
+						'path_in_container' => '/tests/' . basename( $test_file ),
+					];
+
+					$tests[] = $test_info;
+				}
+			}
+		}
+
+		// If no tests found, create a default performance test
+		if ( empty( $tests ) ) {
+			$default_test = $this->create_default_test_info( $env_info );
+			if ( $default_test ) {
+				$tests[] = $default_test;
+			}
+		}
+
+		return $tests;
+	}
+
+	/**
+	 * Create default test information for k6.
+	 */
+	private function create_default_test_info( E2EEnvInfo $env_info ): ?array {
+		$test_file = $env_info->temporary_env . '/k6/default-performance-test.js';
+		
+		// Use create_default_k6_test to create the test file
+		$created_test_file = $this->create_default_k6_test( $test_file );
+
+		return [
+			'name' => 'default-performance-test',
+			'path' => $created_test_file,
+			'path_in_host' => $created_test_file,
+			'path_in_container' => '/tests/default-performance-test.js',
+		];
+	}
+
+	/**
+	 * Set up the k6 test environment by creating configuration and test info files.
+	 */
+	public function setup_test_environment( E2EEnvInfo $env_info ): void {
+		// Create k6 configuration
+		$this->create_k6_config( $env_info );
+
+		// Set up test information
+		$this->update_test_info( $env_info );
+	}
+
+	/**
+	 * Create k6 configuration file.
+	 */
+	private function create_k6_config( E2EEnvInfo $env_info ): void {
+		$k6_config = [
+			'scenarios' => [
+				'default' => [
+					'executor' => 'ramping-vus',
+					'stages' => [
+						[ 'duration' => '10s', 'target' => 5 ],
+						[ 'duration' => '20s', 'target' => 10 ],
+						[ 'duration' => '10s', 'target' => 0 ],
+					],
+				],
+			],
+			'thresholds' => [
+				'http_req_duration' => [ 'p(95)<500' ],
+				'http_req_failed' => [ 'rate<0.1' ],
+			],
+		];
+
+		// Ensure k6 directory exists
+		$k6_dir = $env_info->temporary_env . '/k6';
+		if ( ! file_exists( $k6_dir ) ) {
+			mkdir( $k6_dir, 0755, true );
+		}
+
+		$config_file = $k6_dir . '/k6-config.json';
+		file_put_contents( $config_file, json_encode( $k6_config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+	}
+
+	/**
+	 * Update test information for k6 tests.
+	 */
+	private function update_test_info( E2EEnvInfo $env_info ): void {
+		$plugin_activation_stack = array_map( static function ( $plugin ) {
+			return $plugin['slug'];
+		}, array_reverse( $env_info->plugins ) );
+
+		$sut_qit_config = [];
+		if ( file_exists( "{$env_info->sut_path}/qit.json" ) ) {
+			$sut_qit_config = json_decode( file_get_contents( "{$env_info->sut_path}/qit.json" ), true );
+		}
+
+		$test_info = [
+			'SUT_SLUG' => $env_info->sut_slug,
+			'SUT_TYPE' => $env_info->sut_type,
+			'SUT_ENTRYPOINT' => $env_info->sut_entrypoint,
+			'SUT_QIT_CONFIG' => $sut_qit_config ?: [],
+			'PLUGIN_ACTIVATION_STACK' => $plugin_activation_stack,
+		];
+
+		// Ensure k6 directory exists
+		$k6_dir = $env_info->temporary_env . '/k6';
+		if ( ! file_exists( $k6_dir ) ) {
+			mkdir( $k6_dir, 0755, true );
+		}
+
+		file_put_contents( $k6_dir . '/test-info.json', json_encode( $test_info ) );
+	}
+
 	private function setup_k6_cache(): void {
 		$k6_cache_dir = Config::get_qit_dir() . 'cache/k6';
 		if ( ! file_exists( $k6_cache_dir ) ) {
@@ -69,76 +205,7 @@ class K6Runner extends PerformanceRunner {
 		}
 	}
 
-	private function build_k6_docker_args( E2EEnvInfo $env_info, string $results_dir, string $container_name ): array {
-		$k6_args = [
-			$this->docker->find_docker(),
-			'run',
-			"--name=$container_name",
-			"--network={$env_info->docker_network}",
-			'--rm',
-			'--init',
-			'-e',
-			sprintf( 'BASE_URL=%s', $env_info->site_url ),
-			'-e',
-			sprintf( 'QIT_DOMAIN=%s', $env_info->domain ),
-			'-e',
-			sprintf( 'QIT_INTERNAL_DOMAIN=%s', sprintf( 'host.docker.internal:%s', $env_info->nginx_port ) ),
-			'-e',
-			sprintf( 'QIT_INTERNAL_NGINX=%s', sprintf( 'qitenvnginx%s', $env_info->env_id ) ),
-			'-v',
-			Config::get_qit_dir() . 'cache/k6:/k6-cache',
-			'-v',
-			$env_info->temporary_env . '/k6:/tests',
-			'-v',
-			$results_dir . ':/results',
-			'-v',
-			$env_info->temporary_env . '/k6/qitHelpers.js:/qitHelpers/qitHelpers.js',
-			'-v',
-			$env_info->temporary_env . '/k6/test-info.json:/qitHelpers/test-info.json',
-			'--add-host=host.docker.internal:host-gateway',
-		];
-
-		// Add volume mount for default test file
-		$default_test_file = sys_get_temp_dir() . '/qit-k6-default-test.js';
-		$k6_args = array_merge( $k6_args, [
-			'-v',
-			"$default_test_file:/tests/default-performance-test.js",
-		] );
-
-		// Pass environment variables
-		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
-			$k6_args[] = '-e';
-			$k6_args[] = "$env_key=$env_value";
-		}
-
-		// Set Docker user if needed
-		if ( Docker::should_set_user() ) {
-			$k6_args[] = '--user';
-			$k6_args[] = implode( ':', Docker::get_user_and_group() );
-		}
-
-		// Add k6 Docker image
-		$k6_args[] = 'grafana/k6:latest';
-
-		// Add k6 command and options
-		$k6_args[] = 'run';
-
-		// Add default k6 options for performance testing
-		$k6_args[] = '--duration';
-		$k6_args[] = '30s';
-		$k6_args[] = '--vus';
-		$k6_args[] = '10';
-
-		// Add output options
-		$k6_args[] = '--out';
-		$k6_args[] = 'json=/results/k6-results.json';
-
-		return $k6_args;
-	}
-
 	private function execute_k6_tests( array $k6_args ): int {
-		$overall_exit_code = 0;
-
 		// Create a default k6 performance test
 		$this->create_default_k6_test();
 
@@ -170,7 +237,6 @@ class K6Runner extends PerformanceRunner {
 				$this->output->writeln( "<info>✓ k6 performance test passed</info>" );
 			} else {
 				$this->output->writeln( "<error>✗ k6 performance test failed with exit code: $exit_code</error>" );
-				$overall_exit_code = $exit_code;
 			}
 		}
 
@@ -187,7 +253,7 @@ class K6Runner extends PerformanceRunner {
 			}
 		}
 
-		return $overall_exit_code;
+		return $exit_code;
 	}
 
 	public function create_default_k6_test( ?string $target_file = null ): string {
@@ -227,55 +293,5 @@ class K6Runner extends PerformanceRunner {
 				$this->output->writeln( "<info>k6 results saved to: {$target_dir}/k6-results.json</info>" );
 			}
 		}
-	}
-
-	/**
-	 * Create a Dockerfile for k6 if the official image doesn't work
-	 */
-	public function create_k6_dockerfile( string $dockerfile_path ): void {
-		$dockerfile_content = 'FROM grafana/k6:latest
-
-# Install additional dependencies if needed
-# RUN apk add --no-cache curl
-
-# Copy custom scripts or extensions
-# COPY custom-scripts/ /usr/local/bin/
-
-# Set working directory
-WORKDIR /tests
-
-# Default command
-CMD ["run", "--help"]
-';
-
-		file_put_contents( $dockerfile_path, $dockerfile_content );
-	}
-
-	/**
-	 * Build custom k6 Docker image
-	 */
-	public function build_k6_image( string $dockerfile_path, string $tag = 'qit-k6:latest' ): bool {
-		$build_args = [
-			$this->docker->find_docker(),
-			'build',
-			'-t', $tag,
-			'-f', $dockerfile_path,
-			dirname( $dockerfile_path ),
-		];
-
-		$process = new Process( $build_args );
-		$process->setTimeout( 600 ); // 10 minutes timeout
-
-		if ( $this->output && $this->output->isVerbose() ) {
-			$this->output->writeln( 'Building k6 Docker image: ' . $process->getCommandLine() );
-		}
-
-		$process->run( function ( $type, $buffer ) {
-			if ( $this->output && $this->output->isVerbose() ) {
-				$this->output->write( $buffer );
-			}
-		} );
-
-		return $process->isSuccessful();
 	}
 }
