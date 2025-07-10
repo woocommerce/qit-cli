@@ -1,12 +1,12 @@
 <?php
 
-namespace QIT_CLI\Environment\Environments\E2E;
+namespace QIT_CLI\Environment\Environments\Performance;
 
 use QIT_CLI\Environment\Environments\EnvInfo;
 
-class E2EEnvInfo extends EnvInfo {
+class PerformanceEnvInfo extends EnvInfo {
 	/** @var string */
-	public $environment = 'e2e';
+	public $environment = 'performance';
 
 	/** @var string The site URL, if any. */
 	public $site_url;
@@ -41,6 +41,9 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string The domain being used. */
 	public $domain;
 
+	/** @var string The performance test tag to be executed */
+	public $test_tag = '';
+
 	/** @var array<int,array{
 	 *     slug:string,
 	 *     test_tag:string,
@@ -51,10 +54,4 @@ class E2EEnvInfo extends EnvInfo {
 	 * }> $tests
 	 */
 	public $tests = [];
-
-	/** @var array<mixed>> */
-	public $playwright_config = [];
-
-	/** @var string The playwright test tag to be executed*/
-	public $pw_test_tag = '';
 }

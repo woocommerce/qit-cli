@@ -4,6 +4,7 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\IO\Output;
 use function QIT_CLI\normalize_path;
@@ -108,6 +109,9 @@ abstract class EnvInfo implements \JsonSerializable {
 			case 'e2e':
 				$env_info = new E2EEnvInfo();
 				break;
+			case 'performance':
+				$env_info = new PerformanceEnvInfo();
+				break;
 			default:
 				throw new \RuntimeException( 'Invalid environment type.' );
 		}
@@ -122,7 +126,7 @@ abstract class EnvInfo implements \JsonSerializable {
 			$env_info->tunnel = true;
 		}
 
-		if ( $env_info instanceof E2EEnvInfo ) {
+		if ( $env_info instanceof E2EEnvInfo || $env_info instanceof PerformanceEnvInfo ) {
 			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
 				// Environment accessible from inside Docker containers.
 				$env_info->domain = "qitenvnginx{$env_info->env_id}";

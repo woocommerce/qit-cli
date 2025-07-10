@@ -5,7 +5,7 @@ namespace QIT_CLI\Performance\Runner;
 use QIT_CLI\App;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 
 class K6DockerConfig {
 
@@ -16,7 +16,7 @@ class K6DockerConfig {
 		$this->docker = $docker;
 	}
 
-	public function build_k6_docker_args( E2EEnvInfo $env_info, string $results_dir, string $container_name ): array {
+	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name ): array {
 		$k6_args = $this->get_base_docker_args( $env_info, $results_dir, $container_name );
 		$k6_args = array_merge( $k6_args, $this->get_volume_mounts( $env_info, $results_dir ) );
 		$k6_args = array_merge( $k6_args, $this->get_environment_variables() );
@@ -26,7 +26,7 @@ class K6DockerConfig {
 		return $k6_args;
 	}
 
-	private function get_base_docker_args( E2EEnvInfo $env_info, string $results_dir, string $container_name ): array {
+	private function get_base_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name ): array {
 		return [
 			$this->docker->find_docker(),
 			'run',
@@ -38,7 +38,7 @@ class K6DockerConfig {
 		];
 	}
 
-	private function get_volume_mounts( E2EEnvInfo $env_info, string $results_dir ): array {
+	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir ): array {
 		$default_test_file = sys_get_temp_dir() . '/qit-k6-default-test.js';
 
 		return [
@@ -108,7 +108,7 @@ class K6DockerConfig {
 		];
 	}
 
-	public function set_environment_variables( E2EEnvInfo $env_info ): void {
+	public function set_environment_variables( PerformanceEnvInfo $env_info ): void {
 		App::setVar( 'BASE_URL', $env_info->site_url );
 		App::setVar( 'QIT_DOMAIN', $env_info->domain );
 		App::setVar( 'QIT_INTERNAL_DOMAIN', sprintf( 'host.docker.internal:%s', $env_info->nginx_port ) );

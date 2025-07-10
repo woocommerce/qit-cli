@@ -4,14 +4,15 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * Handles theme auto-activation logic for QIT E2E environments,
+ * Handles theme auto-activation logic for QIT environments,
  * assuming each theme is an Extension object with a ->slug property.
  */
 class ThemeActivation {
-	/** @var E2EEnvInfo */
+	/** @var E2EEnvInfo|PerformanceEnvInfo */
 	protected $env_info;
 
 	/** @var Docker */
@@ -21,11 +22,11 @@ class ThemeActivation {
 	protected $output;
 
 	/**
-	 * @param E2EEnvInfo      $env_info
+	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
 	 * @param Docker          $docker
 	 * @param OutputInterface $output
 	 */
-	public function __construct( E2EEnvInfo $env_info, Docker $docker, OutputInterface $output ) {
+	public function __construct( E2EEnvInfo|PerformanceEnvInfo $env_info, Docker $docker, OutputInterface $output ) {
 		$this->env_info = $env_info;
 		$this->docker   = $docker;
 		$this->output   = $output;

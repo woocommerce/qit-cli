@@ -7,7 +7,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\Performance\PerformanceTestManager;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\OptionReuseTrait;
@@ -63,7 +63,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->setHelp( 'Run k6 performance tests against a given extension.' )
 			->addArgument( 'woo_extension', InputArgument::REQUIRED, 'A WooCommerce Extension Slug or Marketplace ID.' )
 			->addOption( 'source', 's', InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL.' )
-			->addOption( 'k6_test_tag', null, InputOption::VALUE_OPTIONAL, 'The k6 test tag to run.', '' )
+			->addOption( 'test_tag', null, InputOption::VALUE_OPTIONAL, 'The performance test tag to run.', '' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
@@ -114,15 +114,16 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			putenv( 'QIT_HIDE_SITE_INFO=1' );
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
 			putenv( 'QIT_UP_AND_TEST=1' );
+			putenv( 'QIT_ENVIRONMENT_TYPE=performance' );
 
-			// Create the E2E environment using EnvironmentRunner
-			/** @var E2EEnvInfo $env_info */
+			// Create the Performance environment using EnvironmentRunner
+			/** @var PerformanceEnvInfo $env_info */
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
 
 			// Set up SUT information
 			$env_info->sut_slug = $sut;
 			$env_info->sut_type = 'plugin'; // Default to plugin
-			$env_info->k6_test_tag = $input->getOption( 'k6_test_tag' ) ?? '';
+			$env_info->test_tag = $input->getOption( 'test_tag' ) ?? '';
 
 			// Set the output interface for the performance test manager
 			$this->performance_test_manager->set_output( $output );
@@ -158,6 +159,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			putenv( 'QIT_HIDE_SITE_INFO' );
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' );
 			putenv( 'QIT_UP_AND_TEST' );
+			putenv( 'QIT_ENVIRONMENT_TYPE' );
 		}
 	}
 

@@ -4,12 +4,23 @@ namespace QIT_CLI\Performance\Runner;
 
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\Performance\Result\PerformanceTestResult;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
-class K6Runner extends PerformanceRunner {
+/**
+ * K6 Performance Test Runner
+ * 
+ * This class handles K6-specific performance test execution and configuration.
+ * K6-specific settings like test duration, virtual users, and test scenarios
+ * are managed internally by this runner, keeping the PerformanceEnvInfo
+ * framework-agnostic.
+ */
+class K6Runner {
+
+	/** @var OutputInterface */
+	protected $output;
 
 	/** @var Docker */
 	private $docker;
@@ -20,15 +31,24 @@ class K6Runner extends PerformanceRunner {
 	/** @var PerformanceTestResult */
 	private $performance_test_result;
 
+	/** @var int Duration of performance test in seconds */
+	private $test_duration = 300; // 5 minutes default
+
+	/** @var int Number of virtual users */
+	private $virtual_users = 10;
+
+	/** @var string Performance test scenario (ramp-up, steady-state, spike, etc.) */
+	private $test_scenario = 'steady-state';
+
 	public function __construct( OutputInterface $output, Docker $docker ) {
-		parent::__construct( $output );
+		$this->output = $output;
 		$this->docker = $docker;
 		$this->docker_config = new K6DockerConfig( $docker );
 	}
 
-	public function run_performance_test( E2EEnvInfo $env_info ): int {
-		// Create a performance test result internally
-		$this->performance_test_result = new PerformanceTestResult( $env_info );
+	public function run_test( PerformanceEnvInfo $env_info, array $test_infos, PerformanceTestResult $test_result ): int {
+		// Store the test result object
+		$this->performance_test_result = $test_result;
 		
 		// Set up k6 cache directory
 		$this->setup_k6_cache();
@@ -62,92 +82,18 @@ class K6Runner extends PerformanceRunner {
 		return $exit_code;
 	}
 
-	public function get_performance_test_result(): PerformanceTestResult {
-		return $this->performance_test_result;
-	}
-
-	/**
-	 * Discover k6 test files in the SUT or create a default test.
-	 */
-	public function discover_tests( E2EEnvInfo $env_info ): array {
-		$tests = [];
-
-		// Look for k6 test files in the SUT
-		$test_paths = [
-			$env_info->sut_path . '/tests/performance',
-			$env_info->sut_path . '/tests/k6',
-			$env_info->sut_path . '/performance',
-			$env_info->sut_path . '/k6',
-		];
-
-		foreach ( $test_paths as $test_path ) {
-			if ( is_dir( $test_path ) ) {
-				$test_files = glob( $test_path . '/*.js' );
-				foreach ( $test_files as $test_file ) {
-					$test_info = [
-						'name' => basename( $test_file, '.js' ),
-						'path' => $test_file,
-						'path_in_host' => $test_file,
-						'path_in_container' => '/tests/' . basename( $test_file ),
-					];
-
-					$tests[] = $test_info;
-				}
-			}
-		}
-
-		// If no tests found, create a default performance test
-		if ( empty( $tests ) ) {
-			$default_test = $this->create_default_test_info( $env_info );
-			if ( $default_test ) {
-				$tests[] = $default_test;
-			}
-		}
-
-		return $tests;
-	}
-
-	/**
-	 * Create default test information for k6.
-	 */
-	private function create_default_test_info( E2EEnvInfo $env_info ): ?array {
-		$test_file = $env_info->temporary_env . '/k6/default-performance-test.js';
-		
-		// Use create_default_k6_test to create the test file
-		$created_test_file = $this->create_default_k6_test( $test_file );
-
-		return [
-			'name' => 'default-performance-test',
-			'path' => $created_test_file,
-			'path_in_host' => $created_test_file,
-			'path_in_container' => '/tests/default-performance-test.js',
-		];
-	}
-
-	/**
-	 * Set up the k6 test environment by creating configuration and test info files.
-	 */
-	public function setup_test_environment( E2EEnvInfo $env_info ): void {
-		// Create k6 configuration
-		$this->create_k6_config( $env_info );
-
-		// Set up test information
-		$this->update_test_info( $env_info );
-	}
-
 	/**
 	 * Create k6 configuration file.
 	 */
-	private function create_k6_config( E2EEnvInfo $env_info ): void {
+	private function create_k6_config( PerformanceEnvInfo $env_info ): void {
+		// Calculate stages based on test duration and scenario
+		$stages = $this->get_test_stages();
+
 		$k6_config = [
 			'scenarios' => [
 				'default' => [
 					'executor' => 'ramping-vus',
-					'stages' => [
-						[ 'duration' => '10s', 'target' => 5 ],
-						[ 'duration' => '20s', 'target' => 10 ],
-						[ 'duration' => '10s', 'target' => 0 ],
-					],
+					'stages' => $stages,
 				],
 			],
 			'thresholds' => [
@@ -169,7 +115,7 @@ class K6Runner extends PerformanceRunner {
 	/**
 	 * Update test information for k6 tests.
 	 */
-	private function update_test_info( E2EEnvInfo $env_info ): void {
+	private function update_test_info( PerformanceEnvInfo $env_info ): void {
 		$plugin_activation_stack = array_map( static function ( $plugin ) {
 			return $plugin['slug'];
 		}, array_reverse( $env_info->plugins ) );
@@ -292,6 +238,95 @@ class K6Runner extends PerformanceRunner {
 			if ( $this->output && $this->output->isVerbose() ) {
 				$this->output->writeln( "<info>k6 results saved to: {$target_dir}/k6-results.json</info>" );
 			}
+		}
+	}
+
+	/**
+	 * Set the test duration in seconds.
+	 */
+	public function set_test_duration( int $duration ): void {
+		$this->test_duration = $duration;
+	}
+
+	/**
+	 * Get the test duration in seconds.
+	 */
+	public function get_test_duration(): int {
+		return $this->test_duration;
+	}
+
+	/**
+	 * Set the number of virtual users.
+	 */
+	public function set_virtual_users( int $users ): void {
+		$this->virtual_users = $users;
+	}
+
+	/**
+	 * Get the number of virtual users.
+	 */
+	public function get_virtual_users(): int {
+		return $this->virtual_users;
+	}
+
+	/**
+	 * Set the test scenario.
+	 */
+	public function set_test_scenario( string $scenario ): void {
+		$this->test_scenario = $scenario;
+	}
+
+	/**
+	 * Get the test scenario.
+	 */
+	public function get_test_scenario(): string {
+		return $this->test_scenario;
+	}
+
+	/**
+	 * Configure K6 test parameters.
+	 */
+	public function configure_test( ?int $duration = null, ?int $virtual_users = null, ?string $scenario = null ): void {
+		if ( $duration !== null ) {
+			$this->test_duration = $duration;
+		}
+		if ( $virtual_users !== null ) {
+			$this->virtual_users = $virtual_users;
+		}
+		if ( $scenario !== null ) {
+			$this->test_scenario = $scenario;
+		}
+	}
+
+	/**
+	 * Generate K6 test stages based on configuration.
+	 */
+	private function get_test_stages(): array {
+		switch ( $this->test_scenario ) {
+			case 'ramp-up':
+				return [
+					[ 'duration' => '30s', 'target' => $this->virtual_users ],
+					[ 'duration' => ( $this->test_duration - 60 ) . 's', 'target' => $this->virtual_users ],
+					[ 'duration' => '30s', 'target' => 0 ],
+				];
+			
+			case 'spike':
+				$spike_users = $this->virtual_users * 2;
+				return [
+					[ 'duration' => '10s', 'target' => $this->virtual_users ],
+					[ 'duration' => '30s', 'target' => $spike_users ],
+					[ 'duration' => '10s', 'target' => $this->virtual_users ],
+					[ 'duration' => ( $this->test_duration - 60 ) . 's', 'target' => $this->virtual_users ],
+					[ 'duration' => '10s', 'target' => 0 ],
+				];
+			
+			case 'steady-state':
+			default:
+				return [
+					[ 'duration' => '10s', 'target' => $this->virtual_users ],
+					[ 'duration' => ( $this->test_duration - 20 ) . 's', 'target' => $this->virtual_users ],
+					[ 'duration' => '10s', 'target' => 0 ],
+				];
 		}
 	}
 }

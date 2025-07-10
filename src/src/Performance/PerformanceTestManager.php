@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\Performance;
 
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\Performance\Runner\K6Runner;
 use QIT_CLI\Performance\Result\PerformanceTestResult;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -22,30 +22,21 @@ class PerformanceTestManager {
 		$this->output = $output;
 	}
 
-	public function run_tests( E2EEnvInfo $env_info ): int {
-		// Discover tests to run using the k6 runner
-		$tests_to_run = $this->k6_runner->discover_tests( $env_info );
-
-		if ( empty( $tests_to_run ) ) {
-			if ( $this->output ) {
-				$this->output->writeln( '<error>No performance tests found to run.</error>' );
-			}
+	public function run_tests( PerformanceEnvInfo $env_info ): int {
+		if ( empty( $env_info->tests ) ) {
+			$this->output->writeln( '<error>No performance tests found to run.</error>' );
 			return 1;
 		}
 
-		// Set up test environment using the k6 runner
-		$this->k6_runner->setup_test_environment( $env_info );
+		$test_result = new PerformanceTestResult( $env_info );
 
-		// Run the performance tests
-		$exit_code = $this->k6_runner->run_performance_test( $env_info );
-
-		// Get the PerformanceTestResult from K6Runner that has the actual results
-		$performance_test_result = $this->k6_runner->get_performance_test_result();
+		// Run K6 performance tests
+		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
 
 		// Display artifact paths and report information
-		$this->display_results_summary( $performance_test_result );
+		$this->display_results_summary( $test_result );
 
-		return $exit_code;
+		return $exit_status_code;
 	}
 
 	private function display_results_summary( PerformanceTestResult $test_result ): void {

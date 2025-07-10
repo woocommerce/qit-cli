@@ -3,10 +3,10 @@
 namespace QIT_CLI\Performance\Result;
 
 use QIT_CLI\Config;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 
 class PerformanceTestResult {
-	/** @var E2EEnvInfo */
+	/** @var PerformanceEnvInfo */
 	private $env_info;
 
 	/** @var string */
@@ -27,7 +27,7 @@ class PerformanceTestResult {
 	/** @var string */
 	private $test_run_id;
 
-	public function __construct( E2EEnvInfo $env_info ) {
+	public function __construct( PerformanceEnvInfo $env_info ) {
 		$this->env_info = $env_info;
 		$this->start_time = time();
 		$this->test_run_id = uniqid( 'perf_test_' );
