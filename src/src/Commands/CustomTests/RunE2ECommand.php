@@ -175,6 +175,15 @@ class RunE2ECommand extends DynamicCommand {
 
 		App::setVar( 'TEST_MODE', $test_mode );
 
+		if ( 
+			$input->getArgument( 'woo_extension' ) === 'woocommerce' && 
+			$input->getArgument( 'test' ) === 'activation'
+		) {
+			$output->writeln( '<info>Running activation test scenario.</info>' );
+			// Mark that we're running an activation test scenario.
+			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
+		}
+
 		$result = $this->validate_input( $input, $output, $wait );
 		if ( $result !== Command::SUCCESS ) {
 			return $result;
