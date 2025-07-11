@@ -1,0 +1,64 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Basic Prompt Request",
+  "type": "object",
+  "required": ["job_id", "type", "messages", "model", "callback_url"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Unique identifier for the job"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["basic-prompt"],
+      "description": "Request type identifier"
+    },
+    "messages": {
+      "type": "array",
+      "description": "Array of chat messages",
+      "items": {
+        "type": "object",
+        "required": ["role", "content"],
+        "properties": {
+          "role": {
+            "type": "string",
+            "enum": ["system", "user", "assistant"],
+            "description": "Message role"
+          },
+          "content": {
+            "type": "string",
+            "description": "Message content"
+          }
+        }
+      }
+    },
+    "model": {
+      "type": "string",
+      "description": "AI model to use for processing"
+    },
+    "callback_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to send the response back to"
+    },
+    "response_format": {
+      "type": "object",
+      "description": "Optional response format specification",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["json_schema", "text"]
+        },
+        "schema": {
+          "type": "object",
+          "description": "JSON schema for structured responses"
+        }
+      }
+    },
+    "options": {
+      "type": "object",
+      "description": "Additional processing options"
+    }
+  },
+  "additionalProperties": false
+}

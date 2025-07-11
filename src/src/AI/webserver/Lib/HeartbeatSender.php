@@ -22,48 +22,17 @@ class HeartbeatSender {
         }
         $this->lastSent = time();
 
-        $payload = json_encode( [
-            'node_id'    => $this->nodeId,
+        $data = [
             'node_token' => $this->nodeToken,
-        ] );
+            'busy' => file_exists(getenv('QIT_NODE_DIR') . '/busy.lock') ? 1 : 0,
+            'last_error' => null, // Will be populated if there's an error file
+            'system_info' => [
+                'memory_usage' => memory_get_usage(true),
+                'cpu_load' => sys_getloadavg()[0] ?? null,
+            ]
+        ];
 
-		register_shutdown_function( function () use ( $payload ) {
-			$error = error_get_last();
-		});
-
-		try {
-			// Log outbound heartbeat request to the manager
-			log_info('Outbound heartbeat request to manager', [
-				'endpoint' => $this->heartbeatUrl,
-				'method' => 'POST',
-				'node_id' => $this->nodeId
-			]);
-		} catch (\Exception $e) {
-			throw $e;
-		}
-
-
-        $ch = curl_init( $this->heartbeatUrl );
-        curl_setopt_array( $ch, [
-            CURLOPT_RETURNTRANSFER => true,
-            CURLOPT_POST           => true,
-            CURLOPT_POSTFIELDS     => $payload,
-            CURLOPT_HTTPHEADER     => [ 'Content-Type: application/json' ],
-            CURLOPT_TIMEOUT        => 5,
-        ] );
-
-        $response = curl_exec( $ch );
-        $status_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $error = curl_error($ch);
-
-        curl_close( $ch );
-
-        // Log the response from the manager
-        log_info('Heartbeat response from manager', [
-            'endpoint' => $this->heartbeatUrl,
-            'status_code' => $status_code,
-            'response_size' => strlen($response ?? ''),
-            'error' => $error ?: null
-        ]);
+        $request = OutboundRequest::heartbeat($this->heartbeatUrl, $data, 'node-heartbeat');
+        $request->send(); // Fire-and-forget, don't check result
     }
 }

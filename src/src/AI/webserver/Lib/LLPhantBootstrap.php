@@ -212,8 +212,9 @@ final class LLPhantBootstrap {
 		// 1️⃣ Build the composer.json array once
 		$composerJson = [
 			'require' => [
-				'theodo-group/llphant' => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
-				'nikic/php-parser'     => '^5',
+				'theodo-group/llphant'      => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
+				'nikic/php-parser'          => '^5',
+				'justinrainbow/json-schema' => '^6',
 			],
 			'config'  => [
 				'optimize-autoloader'    => true,

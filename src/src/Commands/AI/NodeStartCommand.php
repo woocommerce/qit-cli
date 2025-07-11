@@ -235,10 +235,24 @@ class NodeStartCommand extends QITCommand {
 		$node_name = $this->getNodeName( $input );
 
 		try {
-			// Start the listener (may be tunnelled)
-			$listenerUrl = $this->listener->start();
+			// Get client ID
+			$this->client_id = $this->cache->get( 'client_id' ); // Store as class property
+			if ( ! $this->client_id ) {
+				throw new \Exception( 'Client ID not found. This should have been generated during bootstrap.' );
+			}
+
 			// We're using the shared token for both servers
 			$node_token = $nodeToken;
+
+			// 1. Start the internal worker first ― it tells us its random port
+			$this->workerUrl = $this->worker->start();
+			$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
+
+			// 2. Inject that URL into the listener's environment
+			$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->workerUrl );
+
+			// 3. Now launch the listener once
+			$listenerUrl = $this->listener->start();
 			$output->writeln( '<info>✓ Started listener server on ' . $listenerUrl . '</info>' );
 
 			// Create tunnel for the listener
@@ -251,25 +265,32 @@ class NodeStartCommand extends QITCommand {
 				$output->writeln( '<info>✓ Created secure tunnel: ' . $this->tunnel_url . '</info>' );
 			}
 
-			// Get client ID
-			$this->client_id = $this->cache->get( 'client_id' ); // Store as class property
-			if ( ! $this->client_id ) {
-				throw new \Exception( 'Client ID not found. This should have been generated during bootstrap.' );
-			}
-
-			// Register with Manager
+			// Register with Manager now that we have the final tunnel URL
 			$output->writeln( 'Registering with QIT network...' );
+
+			$registration_data = [
+				'tunnel_url'   => $this->tunnel_url,
+				'client_id'    => $this->client_id,
+				'endpoint'     => '/process',
+				'node_token'   => $node_token,
+				'capabilities' => [], // Empty for now
+				'node_name'    => $node_name,
+			];
+
+			// Validate outbound registration request against schema
+			$validator = \QIT_AI_Webserver\Lib\JsonSchemaValidator::getInstance();
+			$validation = $validator->validateOutbound($registration_data, 'node-registration');
+
+			if (!$validation['valid']) {
+				$this->logger->warning('Outbound node registration validation failed', [
+					'errors' => $validation['errors']
+				]);
+				// Continue anyway to maintain backward compatibility, but log the issue
+			}
 
 			$response_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/register' ) )
 				->with_method( 'POST' )
-				->with_post_body( [
-					'tunnel_url'   => $this->tunnel_url,
-					'client_id'    => $this->client_id,
-					'endpoint'     => '/process',
-					'node_token'   => $node_token,
-					'capabilities' => [], // Empty for now
-					'node_name'    => $node_name,
-				] )
+				->with_post_body( $registration_data )
 				->with_expected_status_codes( [ 200, 201 ] )
 				->with_retry( 3 )
 				->request();
@@ -293,25 +314,6 @@ class NodeStartCommand extends QITCommand {
 			$this->worker->setEnvironmentVariable( 'QIT_NODE_ID', $this->node_id );
 			$this->worker->setEnvironmentVariable( 'QIT_NODE_TOKEN', $this->node_token );
 			$this->worker->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
-
-			// Start the worker now that we have the node ID
-			$this->workerUrl = $this->worker->start();
-			$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
-
-			// Set the worker URL for the listener and restart it to pick up the new env var
-			$this->listener->stop();
-			$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->workerUrl );
-			$listenerUrl = $this->listener->start();
-			$output->writeln( '<info>✓ Restarted listener with worker URL</info>' );
-
-			// Update tunnel if needed
-			if ( $input->getOption( 'tunnel' ) !== 'none' ) {
-				$this->tunnel_runner->stop_tunnel( $this->env_id );
-				$this->tunnel_url = $this->tunnel_runner->start_tunnel( $listenerUrl, $this->env_id );
-				$output->writeln( '<info>✓ Updated tunnel: ' . $this->tunnel_url . '</info>' );
-			} else {
-				$this->tunnel_url = $listenerUrl;
-			}
 
  		// Clear any stale busy.lock file at startup
  		@unlink( $runDir . '/busy.lock' );
@@ -531,12 +533,25 @@ class NodeStartCommand extends QITCommand {
 			] );
 
 			try {
+				$unregistration_data = [
+					'node_token' => $this->node_token,
+				];
+
+				// Validate outbound unregistration request against schema
+				$validator = \QIT_AI_Webserver\Lib\JsonSchemaValidator::getInstance();
+				$validation = $validator->validateOutbound($unregistration_data, 'node-unregistration');
+
+				if (!$validation['valid']) {
+					$this->logger->warning('Outbound node unregistration validation failed', [
+						'errors' => $validation['errors']
+					]);
+					// Continue anyway to maintain backward compatibility, but log the issue
+				}
+
 				$start_time = microtime( true );
 				( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/unregister' ) )
 					->with_method( 'POST' )
-					->with_post_body( [
-						'node_token' => $this->node_token,
-					] )
+					->with_post_body( $unregistration_data )
 					->with_expected_status_codes( [ 200, 201 ] )
 					->request();
 				$request_time = microtime( true ) - $start_time;

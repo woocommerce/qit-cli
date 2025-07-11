@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Node Registration Request",
+  "type": "object",
+  "required": ["tunnel_url", "client_id", "endpoint", "node_token", "capabilities"],
+  "properties": {
+    "tunnel_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Public URL where the node can be reached (tunneled or direct)"
+    },
+    "client_id": {
+      "type": "string",
+      "description": "Unique client identifier for the node"
+    },
+    "endpoint": {
+      "type": "string",
+      "enum": ["/process"],
+      "description": "Processing endpoint path on the node"
+    },
+    "node_token": {
+      "type": "string",
+      "description": "Authentication token for the node (64-character hex string)"
+    },
+    "capabilities": {
+      "type": "array",
+      "description": "Node capabilities (currently empty array)",
+      "items": {
+        "type": "object"
+      }
+    },
+    "node_name": {
+      "type": ["string", "null"],
+      "maxLength": 50,
+      "description": "Optional friendly name for the node (e.g., 'Office PC', 'Gaming Rig')"
+    }
+  },
+  "additionalProperties": false
+}

@@ -4,6 +4,9 @@
  * Reads its configuration exclusively from environment variables.
  */
 require_once __DIR__ . '/bootstrap-node.php';
+require_once __DIR__ . '/Lib/JsonSchemaValidator.php';
+
+use QIT_AI_Webserver\Lib\JsonSchemaValidator;
 
 $result  = qit_http_request( true );
 $method  = $result['method'];
@@ -71,6 +74,19 @@ switch ( "$method $uri" ) {
 				echo json_encode( [ 'error' => "Missing required field for {$task['type']}: $key" ] );
 				break 2;
 			}
+		}
+
+		// JSON Schema validation
+		$validator = JsonSchemaValidator::getInstance();
+		$validation = $validator->validateInbound( $task, $task['type'] );
+
+		if ( ! $validation['valid'] ) {
+			http_response_code( 400 );
+			echo json_encode( [ 
+				'error' => 'JSON Schema validation failed',
+				'details' => $validation['errors']
+			] );
+			break;
 		}
 		// ──────────────────────────────────────────────────────────────
 

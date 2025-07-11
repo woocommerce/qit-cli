@@ -19,7 +19,8 @@ function qit_runtime_init(): void {
     $nodeDir = rtrim(getenv('QIT_NODE_DIR'), '/').'/';
     ini_set('log_errors', 1);
     ini_set('error_log', $nodeDir.'php-errors.log');
-    ini_set('display_errors', 0);
+	error_reporting(E_ALL);
+	ini_set('display_errors', '1');
 
     // PSR‑4 autoloader for QIT_AI_Webserver\*
     spl_autoload_register(function ($class) {

@@ -1,0 +1,32 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task Callback Success Request",
+  "type": "object",
+  "required": ["action_id", "response", "processing_time", "tool_calls", "metadata"],
+  "properties": {
+    "action_id": {
+      "type": "string",
+      "description": "ID of the completed action/task"
+    },
+    "response": {
+      "type": "string",
+      "description": "JSON-encoded response from the task processing"
+    },
+    "processing_time": {
+      "type": ["integer", "null"],
+      "description": "Processing time in milliseconds"
+    },
+    "tool_calls": {
+      "type": "array",
+      "description": "Array of tool calls made during processing",
+      "items": {
+        "type": "object"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata about the task execution"
+    }
+  },
+  "additionalProperties": false
+}
