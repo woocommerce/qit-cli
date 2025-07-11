@@ -29,16 +29,18 @@ abstract class AbstractEndpoint {
 	 * Handle the request
 	 *
 	 * @param array $input Request input data
+	 * @return string JSON response
 	 */
-	abstract public function handle( array $input ): void;
+	abstract public function handle( array $input ): string;
 
 	/**
 	 * Handle errors consistently across all endpoints
 	 *
 	 * @param Exception $e Exception to handle
 	 * @param array $context Additional context for error reporting
+	 * @return string JSON error response
 	 */
-	protected function handleError( Exception $e, array $context = [] ): void {
+	protected function handleError( Exception $e, array $context = [] ): string {
 		$trace = $e->getTraceAsString();
 
 		$errorContext = array_merge( [
@@ -73,7 +75,8 @@ abstract class AbstractEndpoint {
 		);
 
 		// Use NodeResponse::error for standardized error response
-		NodeResponse::error( $e->getMessage(), 500, $errorReport );
+		// Get JSON response as string and echo it
+		return NodeResponse::error( $e->getMessage(), 500, $errorReport );
 	}
 
 	// Logging methods - these would use the global logging functions

@@ -3,6 +3,7 @@
 namespace QIT_CLI\Commands\AI;
 
 use QIT_CLI\AI\WebServer;
+use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
@@ -34,6 +35,12 @@ class NodeStartCommand extends QITCommand {
 	private ?string $tunnel_url = null;
 	private bool $heartbeat_running = true;
 	private Logger $logger;
+
+	// Poller supervision properties
+	private int $pollerRestartCount = 0;
+	private int $pollerMaxRestarts = 3;
+	private string $workerUrl = '';
+	private array $pollerEnv = [];
 
 	public function __construct(
 		TunnelRunner $tunnel_runner,
@@ -231,37 +238,11 @@ class NodeStartCommand extends QITCommand {
 		$node_name = $this->getNodeName( $input );
 
 		try {
-			// Start the worker first (no tunnel)
-			$workerUrl = $this->worker->start();
-			$output->writeln( '<info>✓ Started worker server on ' . $workerUrl . '</info>' );
-
 			// Start the listener (may be tunnelled)
 			$listenerUrl = $this->listener->start();
 			// We're using the shared token for both servers
 			$node_token = $nodeToken;
 			$output->writeln( '<info>✓ Started listener server on ' . $listenerUrl . '</info>' );
-
-			// ----------------------------------------------------------------------------
-			// Launch poller.php as a detached process
-			// ----------------------------------------------------------------------------
-			$env = $_ENV + [
-					'QIT_NODE_TOKEN' => $nodeToken,   // pass token via env‑var
-				];
-
-			$pollerPath = __DIR__ . '/../../AI/webserver/poller.php';
-
-			$this->poller = new Process(
-				[
-					PHP_BINARY,      // current php executable
-					$pollerPath,
-					$workerUrl,      // argv[1]
-				],
-				null,               // working dir
-				$env                // environment variables
-			);
-			$this->poller->start();
-
-			$output->writeln( '<info>✓ Started worker poller process</info>' );
 
 			// Create tunnel for the listener
 			if ( $input->getOption( 'tunnel' ) === 'none' ) {
@@ -311,6 +292,68 @@ class NodeStartCommand extends QITCommand {
 
 			$output->writeln( '<info>✓ Registered with node ID: ' . $this->node_id . '</info>' );
 
+ 		// Set environment variables for the worker
+ 		$this->worker->setEnvironmentVariable( 'QIT_NODE_ID', $this->node_id );
+ 		$this->worker->setEnvironmentVariable( 'QIT_NODE_TOKEN', $this->node_token );
+ 		$this->worker->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
+
+			// Start the worker now that we have the node ID
+			$this->workerUrl = $this->worker->start();
+			$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
+
+			// ----------------------------------------------------------------------------
+			// Launch poller.php directly and monitor it from this process
+			// ----------------------------------------------------------------------------
+			$env = $_ENV + [
+					// already present
+					'QIT_NODE_TOKEN'   => $this->node_token,   // pass token via env‑var
+					'QIT_NODE_ID'      => $this->node_id,
+					'QIT_MANAGER_URL'  => get_manager_url(),
+
+					// NEW – required by bootstrap‑node.php
+					'QIT_LOG_FILE'     => $logDir . 'poller.log',
+					'QIT_NODE_DIR'     => $runDir,
+					'QIT_AI_DIR'       => $runtimeCfg['ai_dir'],
+					'QIT_PROVIDER'     => $provider,
+					'QIT_PROVIDER_CFG' => json_encode( $providerConfig, JSON_UNESCAPED_SLASHES ),
+					// optional but nice to have
+					'QIT_DB_PATH'      => $runDir . 'db',
+				];
+
+			// Store the response from the Manager
+			if ( isset( $response['heartbeat_url'] ) ) {
+				$this->logger->info( 'Received heartbeat URL from Manager', [
+					'heartbeat_url' => $response['heartbeat_url']
+				] );
+				$env['QIT_MANAGER_HEARTBEAT_URL'] = $response['heartbeat_url'];
+			} else {
+				$this->logger->warning( 'No heartbeat URL received from Manager' );
+			}
+
+			// Fail-fast environment validation
+			foreach (
+				[
+					'QIT_NODE_TOKEN',
+					'QIT_NODE_ID',
+					'QIT_MANAGER_URL',
+					'QIT_LOG_FILE',
+					'QIT_NODE_DIR',
+					'QIT_AI_DIR',
+					'QIT_PROVIDER',
+					'QIT_PROVIDER_CFG'
+				] as $v
+			) {
+				if ( empty( $env[ $v ] ) ) {
+					$output->writeln( "<error>Env var $v missing – aborting.</error>" );
+
+					return self::FAILURE;
+				}
+			}
+
+			// Start the poller process
+			$this->startPollerProcess( $env );
+			$output->writeln( '<info>✓ Started worker poller process</info>' );
+
 			if ( $node_name ) {
 				$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
 			}
@@ -323,8 +366,8 @@ class NodeStartCommand extends QITCommand {
 			$output->writeln( '' );
 			$output->writeln( '<info>Node started successfully!</info>' );
 
-			// Start heartbeat in background
-			$this->startHeartbeat( $output );
+			// Store environment variables for poller restarts
+			$this->pollerEnv = $env;
 
 			// Handle keeping the process running
 			if ( extension_loaded( 'pcntl' ) ) {
@@ -336,45 +379,44 @@ class NodeStartCommand extends QITCommand {
 					$this->cleanup( $output );
 					exit( 0 );
 				} );
-
-				// Keep the process running with heartbeat
-				while ( $this->heartbeat_running ) {
-					pcntl_signal_dispatch();
-					$this->sendHeartbeat( $output );
-					sleep( 60 ); // Sleep for 60 seconds between heartbeats
-				}
 			} else {
-				// Fallback for Windows or systems without pcntl
-				$output->writeln( '<comment>Press Enter to stop the node.</comment>' );
+				$output->writeln( '<comment>Press Ctrl+C to stop the node (or close the terminal window).</comment>' );
+			}
 
-				// Start a simple heartbeat loop in a separate process if possible
-				$heartbeat_pid = null;
-				if ( function_exists( 'pcntl_fork' ) ) {
-					$heartbeat_pid = pcntl_fork();
-					if ( $heartbeat_pid === 0 ) {
-						// Child process - run heartbeat loop
-						while ( true ) {
-							$this->sendHeartbeat( $output );
-							sleep( 60 );
-						}
-						exit( 0 );
-					}
+			// Keep the process running with heartbeat and monitor poller
+			// This loop works on all platforms (Windows and Unix)
+			while ( $this->heartbeat_running ) {
+				// Dispatch signals on platforms that support it
+				if ( extension_loaded( 'pcntl' ) ) {
+					pcntl_signal_dispatch();
 				}
 
-				fgets( STDIN );
+				// Check if poller is running and restart if needed
+				if ( $this->poller === null || ! $this->poller->isRunning() ) {
+					$exitCode = $this->poller ? $this->poller->getExitCode() : 'N/A';
+					$this->logger->warning( 'Poller died', [ 'exit_code' => $exitCode ] );
 
-				// Kill heartbeat process if it exists
-				if ( $heartbeat_pid > 0 ) {
-					if ( function_exists( 'posix_kill' ) ) {
-						posix_kill( $heartbeat_pid, SIGTERM );
-					} else {
-						// Fallback - the process will be killed when parent exits anyway
-						exec( "kill $heartbeat_pid 2>/dev/null" );
+					// Decide whether to restart
+					if ( ++ $this->pollerRestartCount > $this->pollerMaxRestarts ) {
+						$output->writeln(
+							"<error>Poller crashed {$this->pollerMaxRestarts}× – shutting node down.</error>"
+						);
+						$this->cleanup( $output );
+
+						return self::FAILURE;
 					}
+
+					// Add restart delay with back-off
+					$backoffDelay = min( $this->pollerRestartCount, 5 );
+					$this->logger->info( "Waiting {$backoffDelay}s before restart" );
+					sleep( $backoffDelay );
+
+					$output->writeln( "<comment>Restarting poller (attempt {$this->pollerRestartCount})…</comment>" );
+					$this->startPollerProcess( $this->pollerEnv );
 				}
 
-				$output->writeln( '<info>Shutting down node...</info>' );
-				$this->cleanup( $output );
+				$this->sendHeartbeat( $output );
+				sleep( 10 ); // Check more frequently than the heartbeat interval
 			}
 
 		} catch ( \Exception $e ) {
@@ -409,12 +451,6 @@ class NodeStartCommand extends QITCommand {
 		return null;
 	}
 
-	private function startHeartbeat( OutputInterface $output ): void {
-		// Initial heartbeat happens during the main loop
-		if ( $output->isVerbose() ) {
-			$output->writeln( 'Heartbeat scheduled every 60 seconds...' );
-		}
-	}
 
 	private function sendHeartbeat( OutputInterface $output ): void {
 		if ( ! $this->node_id || ! $this->node_token ) {
@@ -543,6 +579,51 @@ class NodeStartCommand extends QITCommand {
 				$output->writeln( '<warning>Heartbeat failed unexpectedly: ' . $e->getMessage() . '</warning>' );
 			}
 		}
+	}
+
+	/**
+	 * Start a new poller process
+	 *
+	 * @param array $env Environment variables to pass to the poller
+	 */
+	private function startPollerProcess( array $env ): void {
+		$pollerPath = __DIR__ . '/../../AI/webserver/poller.php';
+
+		$this->logger->info( 'Starting poller process', [
+			'worker_url'    => $this->workerUrl,
+			'restart_count' => $this->pollerRestartCount
+		] );
+
+		$this->poller = new Process(
+			[
+				PHP_BINARY,      // current php executable
+				$pollerPath,
+				$this->workerUrl, // argv[1]
+			],
+			null,               // working dir
+			$env                // environment variables
+		);
+
+		// Disable Symfony's default 60s timeout for the poller
+		$this->poller->setTimeout( null );   // long‑running job; never auto‑kill
+
+		$output = App::make( OutputInterface::class );
+
+		// Optional: capture output from the poller for debugging
+		$this->poller->start( function ( $type, $buffer ) use ( $output ) {
+			if ( $type === Process::ERR ) {
+				$output->writeln( "<error>[poller] $buffer</error>", OutputInterface::OUTPUT_PLAIN );
+				$this->logger->error( '[poller] ' . trim( $buffer ) );
+			} else {
+				$output->writeln( "[poller] $buffer", OutputInterface::OUTPUT_PLAIN );
+				$this->logger->debug( '[poller] ' . trim( $buffer ) );
+			}
+		} );
+
+
+		$this->logger->info( 'Poller process started', [
+			'pid' => $this->poller->getPid()
+		] );
 	}
 
 	private function cleanup( OutputInterface $output ): void {

@@ -19,6 +19,7 @@ class WebServer {
 	private bool $bindLocalhostOnly = false;
 	private ?string $nodeToken = null;
 	private ?string $customLogFile = null;
+	private array $environmentVariables = [];
 
 	public function __construct( bool $use_local_mode = true ) {
 		$this->use_local_mode = $use_local_mode;
@@ -73,13 +74,22 @@ class WebServer {
 		$this->bindLocalhostOnly = true;
 	}
 
+	/**
+	 * Set an environment variable for the web server process.
+	 *
+	 * @param string $name The name of the environment variable.
+	 * @param string $value The value of the environment variable.
+	 */
+	public function setEnvironmentVariable(string $name, string $value): void {
+		$this->environmentVariables[$name] = $value;
+	}
+
 	public function start(): string {
 		/* ───────────────────── 1. Validate caller contract ─────────────────── */
 		$required = [
 			'nodeToken'      => $this->nodeToken,
 			'routerTemplate' => $this->routerTemplate,
 			'ai_dir'         => $this->runtimeConfig['ai_dir'] ?? null,
-			'db_path'        => $this->runtimeConfig['db_path'] ?? null,
 			'tmp_base'       => $this->runtimeConfig['tmp_base'] ?? null,
 		];
 
@@ -171,8 +181,17 @@ class WebServer {
 			'QIT_AI_DIR'       => $this->runtimeConfig['ai_dir'],
 			'QIT_PROVIDER'     => $this->provider,
 			'QIT_PROVIDER_CFG' => json_encode( $this->providerConfig ),
-			'QIT_DB_PATH'      => $this->runtimeConfig['db_path'],
 		];
+
+		// Add custom environment variables
+		if (!empty($this->environmentVariables)) {
+			$env = array_merge($env, $this->environmentVariables);
+			if ($this->logger) {
+				$this->logger->debug('Added custom environment variables', [
+					'variables' => array_keys($this->environmentVariables)
+				]);
+			}
+		}
 
 		$this->process = new Process(
 			[

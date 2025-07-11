@@ -3,12 +3,18 @@
  * Listener router – exposed (and tunnelled) HTTP interface.
  * Reads its configuration exclusively from environment variables.
  */
-require_once __DIR__ . '/bootstrap-node.php';   // ← single include
+require_once __DIR__ . '/bootstrap-node.php';
+
+$result  = qit_http_request( true );
+$method  = $result['method'];
+$uri     = $result['uri'];
+$headers = $result['headers'];
+$input   = $result['input'];
+qit_llm_boot();                                     // listener sometimes proxies LLM
 
 use QIT_AI_Webserver\Persistence\SleekTaskRepository;
 
-global $method, $uri;
-$repo = new SleekTaskRepository( QIT_NODE_DIR );
+$repo = new SleekTaskRepository( getenv( 'QIT_NODE_DIR' ) );
 
 switch ( "$method $uri" ) {
 
@@ -31,13 +37,22 @@ switch ( "$method $uri" ) {
 			'vulnerability-scan' => [ 'job_id', 'type', 'vulnerability', 'model' ],
 		];
 
-		foreach ( [ 'job_id', 'type' ] as $key ) {
+		// Validate required fields including callback_url
+		foreach ( [ 'job_id', 'type', 'callback_url' ] as $key ) {
 			if ( ! isset( $task[ $key ] ) ) {
 				http_response_code( 400 );
 				echo json_encode( [ 'error' => "Missing required field: $key" ] );
 				break 2;
 			}
 		}
+
+		// Validate callback_url format
+		if ( ! filter_var( $task['callback_url'], FILTER_VALIDATE_URL ) ) {
+			http_response_code( 400 );
+			echo json_encode( [ 'error' => 'Invalid callback_url format' ] );
+			break;
+		}
+
 		if ( ! in_array( $task['type'], $allowed, true ) ) {
 			http_response_code( 400 );
 			echo json_encode( [ 'error' => "Unknown type: {$task['type']}" ] );
@@ -54,7 +69,7 @@ switch ( "$method $uri" ) {
 
 		$repo->create( $task['job_id'], $task['type'], $task );
 		http_response_code( 202 );
-		echo json_encode( [ 'accepted' => true, 'task_id' => $task['job_id'] ] );
+		echo json_encode( [ 'status' => 'accepted', 'task_id' => $task['job_id'] ] );
 		break;
 
 	default:

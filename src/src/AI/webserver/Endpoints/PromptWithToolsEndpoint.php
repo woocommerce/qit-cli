@@ -76,7 +76,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 	/* ------------------------------------------------------------------ */
 	/* 4.  Main handler                                                   */
 	/* ------------------------------------------------------------------ */
-	public function handle( array $input ): void {
+	public function handle( array $input ): string {
 
 		/* 4.0  logger ---------------------------------------------------- */
 		$dbg     = [];
@@ -100,7 +100,7 @@ class PromptWithToolsEndpoint extends AbstractEndpoint {
 		/* 4.1  validate -------------------------------------------------- */
 		foreach ( [ 'messages', 'model' ] as $k ) {
 			if ( ! isset( $input[ $k ] ) ) {
-				NodeResponse::error( "Missing required parameter: {$k}", 400 );
+				return NodeResponse::error( "Missing required parameter: {$k}", 400 );
 			}
 		}
 		$raw           = $input['messages'];
@@ -294,7 +294,7 @@ SCRIPT;
 
 		if ( $summary === '' ) {
 			$log( 'error', 'loop ended w/o summary' );
-			NodeResponse::error( 'Model never produced summary.', 500 );
+			return NodeResponse::error( 'Model never produced summary.', 500 );
 		}
 
 		/* 4.8  final JSON ------------------------------------------------ */
@@ -322,7 +322,7 @@ SCRIPT;
 			}
 
 			$log( 'done', [ 'iterations' => $iter, 'json_bytes' => strlen( $answer ) ] );
-			NodeResponse::toolPrompt(
+			return NodeResponse::toolPrompt(
 				$answer,
 				$calls,
 				\QIT_AI_Webserver\Lib\LLPhantBootstrap::getModel(),
@@ -333,12 +333,10 @@ SCRIPT;
 					'execution_time' => (int) ( ( microtime( true ) - $_SERVER['REQUEST_TIME_FLOAT'] ) * 1000 ),
 				]
 			);
-
-			return;
 		}
 
 		$log( 'error', 'final JSON invalid after retry' );
-		NodeResponse::error( 'Model failed to produce valid JSON.', 500 );
+		return NodeResponse::error( 'Model failed to produce valid JSON.', 500 );
 	}
 
 	/* ------------------------------------------------------------------

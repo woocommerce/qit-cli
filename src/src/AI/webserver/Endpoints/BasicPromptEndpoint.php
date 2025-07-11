@@ -26,9 +26,9 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 	 *
 	 * @param array $input Request input data
 	 *
-	 * @return void Outputs JSON response
+	 * @return string JSON response
 	 */
-	public function handle( array $input ): void {
+	public function handle( array $input ): string {
 		$this->log_info( "Processing basic AI request" );
 
 		try {
@@ -81,17 +81,35 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				'response_length' => strlen( $response['response'] ),
 			] );
 
+			// Log response structure before formatting
+			$this->log_info( "Response structure before formatting", [
+				'job_id'          => $input['job_id'] ?? 'unknown',
+				'response_type'   => gettype( $response['response'] ),
+				'response_starts' => substr( $response['response'], 0, 50 ) . '...',
+				'has_json_schema' => isset( $input['response_format'] ) && isset( $input['response_format']['type'] ) && $input['response_format']['type'] === 'json_schema',
+			] );
+
 			// Use NodeResponse::prompt for standardized response
-			NodeResponse::prompt(
+			// Get JSON response as string and echo it
+			$formatted_response = NodeResponse::prompt(
 				trim( $response['response'] ),
 				$response['model'],
 				$response, // Pass full response for stats
 				[ 'job_id' => $input['job_id'] ?? null ]
 			);
 
+			// Log the formatted response structure
+			$this->log_info( "Formatted response structure", [
+				'job_id'           => $input['job_id'] ?? 'unknown',
+				'response_length'  => strlen( $formatted_response ),
+				'response_starts'  => substr( $formatted_response, 0, 50 ) . '...',
+			] );
+
+			return $formatted_response;
+
 		} catch ( Exception $e ) {
 
-			$this->handleError( $e, [
+			return $this->handleError( $e, [
 				'job_id'   => $input['job_id'] ?? null,
 				'model'    => $input['model'] ?? 'unknown',
 				'job_type' => $input['type'] ?? 'unknown'

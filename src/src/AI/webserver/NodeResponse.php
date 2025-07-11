@@ -8,21 +8,19 @@
  * - ZIP Extraction (file extraction utility)
  * 
  * Complex orchestration is handled by the Manager service.
+ * Performance tracking is handled by the Benchmark class.
  */
 
 namespace QIT_AI_Webserver;
 
 class NodeResponse {
 
-    private static ?float $requestStartTime = null;
-    private static array $performanceMarkers = [];
-
     /**
      * Initialize response tracking (call at request start)
+     * @deprecated Use Benchmark::init() instead
      */
     public static function init(): void {
-        self::$requestStartTime = microtime(true);
-        self::$performanceMarkers = [];
+        Benchmark::init();
     }
 
     /**
@@ -30,102 +28,10 @@ class NodeResponse {
      * 
      * @param string $name Marker name
      * @param array $data Optional data to associate with marker
+     * @deprecated Use Benchmark::mark() instead
      */
     public static function mark(string $name, array $data = []): void {
-        self::$performanceMarkers[] = [
-            'name' => $name,
-            'time' => microtime(true),
-            'data' => $data
-        ];
-    }
-
-    /**
-     * Get performance statistics
-     * 
-     * @return array Performance data
-     */
-    private static function getPerformanceStats(): array {
-        $endTime = microtime(true);
-        $totalTime = self::$requestStartTime ? ($endTime - self::$requestStartTime) * 1000 : null;
-
-        $stats = [
-            'total_duration_ms' => $totalTime ? round($totalTime, 2) : null,
-            'timestamp' => time(),
-            'memory_peak_mb' => round(memory_get_peak_usage(true) / 1048576, 2),
-        ];
-
-        // Add markers if any
-        if (!empty(self::$performanceMarkers)) {
-            $markers = [];
-            $lastTime = self::$requestStartTime;
-
-            foreach (self::$performanceMarkers as $marker) {
-                $duration = ($marker['time'] - $lastTime) * 1000;
-                $markers[$marker['name']] = [
-                    'duration_ms' => round($duration, 2),
-                    'cumulative_ms' => round(($marker['time'] - self::$requestStartTime) * 1000, 2)
-                ];
-
-                if (!empty($marker['data'])) {
-                    $markers[$marker['name']]['data'] = $marker['data'];
-                }
-
-                $lastTime = $marker['time'];
-            }
-
-            $stats['markers'] = $markers;
-        }
-
-        return $stats;
-    }
-
-    /**
-     * Extract token statistics from provider response
-     * 
-     * @param array $providerResponse Raw provider response (Ollama, OpenAI, etc.)
-     * @return array Token statistics
-     */
-    private static function extractProviderStats(array $providerResponse): array {
-        $stats = [];
-
-        // Ollama-style response format
-        if (isset($providerResponse['eval_count'])) {
-            $stats['tokens_generated'] = $providerResponse['eval_count'];
-        }
-
-        if (isset($providerResponse['eval_duration']) && $providerResponse['eval_duration'] > 0 && isset($providerResponse['eval_count'])) {
-            $evalSeconds = $providerResponse['eval_duration'] / 1000000000;
-            $stats['tokens_per_second'] = round($providerResponse['eval_count'] / $evalSeconds, 2);
-            $stats['generation_duration_ms'] = round($providerResponse['eval_duration'] / 1000000, 2);
-        }
-
-        if (isset($providerResponse['prompt_eval_count'])) {
-            $stats['prompt_tokens'] = $providerResponse['prompt_eval_count'];
-        }
-
-        if (isset($providerResponse['prompt_eval_duration'])) {
-            $stats['prompt_eval_duration_ms'] = round($providerResponse['prompt_eval_duration'] / 1000000, 2);
-        }
-
-        if (isset($providerResponse['total_duration'])) {
-            $stats['total_duration_ms'] = round($providerResponse['total_duration'] / 1000000, 2);
-        }
-
-        // OpenAI-style response format (usage object)
-        if (isset($providerResponse['usage'])) {
-            $usage = $providerResponse['usage'];
-            if (isset($usage['prompt_tokens'])) {
-                $stats['prompt_tokens'] = $usage['prompt_tokens'];
-            }
-            if (isset($usage['completion_tokens'])) {
-                $stats['tokens_generated'] = $usage['completion_tokens'];
-            }
-            if (isset($usage['total_tokens'])) {
-                $stats['total_tokens'] = $usage['total_tokens'];
-            }
-        }
-
-        return $stats;
+        Benchmark::mark($name, $data);
     }
 
     /**
@@ -136,10 +42,10 @@ class NodeResponse {
      * @param string $model Model used
      * @param array $providerResponse Raw provider response for token stats
      * @param array $additional Additional data (job_id, etc.)
+     * 
+     * @return string JSON response string
      */
-    public static function prompt(string $response, string $model, array $providerResponse = [], array $additional = []): void {
-        header('Content-Type: application/json');
-
+    public static function prompt(string $response, string $model, array $providerResponse = [], array $additional = []): string {
         // Get current provider and suggested model from request
         $currentProvider = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getCurrentProvider();
         $suggestedModel = $_REQUEST['model'] ?? null;
@@ -158,7 +64,7 @@ class NodeResponse {
         ], $additional);
 
         // Add token statistics if available
-        $tokenStats = self::extractProviderStats($providerResponse);
+        $tokenStats = Benchmark::extractProviderStats($providerResponse);
         if (!empty($tokenStats)) {
             $data['token_stats'] = $tokenStats;
         }
@@ -167,14 +73,16 @@ class NodeResponse {
             'status' => 'success',
             'type' => 'prompt',
             'data' => $data,
-            'meta' => self::getPerformanceStats()
+            'meta' => []
         ];
+
+        // Add performance metrics
+        $response = Benchmark::enhanceResponse($response);
 
         // Log the FULL response
         log_info('NodeResponse - Sending prompt response', $response);
 
-        echo json_encode($response);
-        exit;
+        return json_encode($response);
     }
 
     /**
@@ -185,10 +93,10 @@ class NodeResponse {
      * @param array $toolCalls Tool execution records
      * @param string $model Model used
      * @param array $additional Additional data
+     * 
+     * @return string JSON response string
      */
-    public static function toolPrompt(string $response, array $toolCalls, string $model, array $additional = []): void {
-        header('Content-Type: application/json');
-
+    public static function toolPrompt(string $response, array $toolCalls, string $model, array $additional = []): string {
         // Get current provider and suggested model from request
         $currentProvider = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getCurrentProvider();
         $suggestedModel = $_REQUEST['model'] ?? null;
@@ -212,14 +120,16 @@ class NodeResponse {
             'status' => 'success',
             'type' => 'tool_prompt',
             'data' => $data,
-            'meta' => self::getPerformanceStats()
+            'meta' => []
         ];
+
+        // Add performance metrics
+        $response = Benchmark::enhanceResponse($response);
 
         // Log the FULL response
         log_info('NodeResponse - Sending tool prompt response', $response);
 
-        echo json_encode($response);
-        exit;
+        return json_encode($response);
     }
 
     /**
@@ -230,10 +140,10 @@ class NodeResponse {
      * @param array $stats Extraction statistics
      * @param string $sessionId Session identifier
      * @param array $additional Additional data
+     * 
+     * @return string JSON response string
      */
-    public static function extraction(string $extractPath, array $stats, string $sessionId, array $additional = []): void {
-        header('Content-Type: application/json');
-
+    public static function extraction(string $extractPath, array $stats, string $sessionId, array $additional = []): string {
         $data = array_merge([
             'extract_path' => $extractPath,
             'session_id' => $sessionId,
@@ -244,14 +154,16 @@ class NodeResponse {
             'status' => 'success',
             'type' => 'extraction',
             'data' => $data,
-            'meta' => self::getPerformanceStats()
+            'meta' => []
         ];
+
+        // Add performance metrics
+        $response = Benchmark::enhanceResponse($response);
 
         // Log the FULL response
         log_info('NodeResponse - Sending extraction response', $response);
 
-        echo json_encode($response);
-        exit;
+        return json_encode($response);
     }
 
     /**
@@ -260,22 +172,24 @@ class NodeResponse {
      * @param mixed $data Response data
      * @param string $type Response type identifier
      * @param array $meta Additional metadata
+     * 
+     * @return string JSON response string
      */
-    public static function success($data, string $type = 'generic', array $meta = []): void {
-        header('Content-Type: application/json');
-
+    public static function success($data, string $type = 'generic', array $meta = []): string {
         $response = [
             'status' => 'success',
             'type' => $type,
             'data' => $data,
-            'meta' => array_merge(self::getPerformanceStats(), $meta)
+            'meta' => $meta
         ];
+
+        // Add performance metrics
+        $response = Benchmark::enhanceResponse($response);
 
         // Log the FULL response
         log_info('NodeResponse - Sending success response', $response);
 
-        echo json_encode($response);
-        exit;
+        return json_encode($response);
     }
 
     /**
@@ -284,11 +198,10 @@ class NodeResponse {
      * @param string $message Error message
      * @param int $code HTTP status code
      * @param array $details Error details
+     * 
+     * @return string JSON response string
      */
-    public static function error(string $message, int $code = 500, array $details = []): void {
-        http_response_code($code);
-        header('Content-Type: application/json');
-
+    public static function error(string $message, int $code = 500, array $details = []): string {
         $errorData = [
             'message' => $message,
             'code' => $code
@@ -302,14 +215,16 @@ class NodeResponse {
             'status' => 'error',
             'type' => 'error',
             'error' => $errorData,
-            'meta' => self::getPerformanceStats()
+            'meta' => []
         ];
+
+        // Add performance metrics
+        $response = Benchmark::enhanceResponse($response);
 
         // Log the FULL response
         log_info('NodeResponse - Sending error response', $response);
 
-        echo json_encode($response);
-        exit;
+        return json_encode($response);
     }
 
     /**
@@ -318,17 +233,15 @@ class NodeResponse {
      * getting performance metrics added.
      * 
      * @param array $managerResponse Response structure from Manager
+     * 
+     * @return string JSON response string
      */
-    public static function fromManager(array $managerResponse): void {
-        header('Content-Type: application/json');
-
+    public static function fromManager(array $managerResponse): string {
         // Manager provides the response structure, we just add performance meta
-        $response = array_merge($managerResponse, [
-            'meta' => array_merge(
-                self::getPerformanceStats(),
-                $managerResponse['meta'] ?? []
-            )
-        ]);
+        $response = $managerResponse;
+
+        // Add performance metrics
+        $response = Benchmark::enhanceResponse($response);
 
         // Ensure we have required fields
         if (!isset($response['status'])) {
@@ -341,7 +254,6 @@ class NodeResponse {
         // Log the FULL response
         log_info('NodeResponse - Sending manager response', $response);
 
-        echo json_encode($response);
-        exit;
+        return json_encode($response);
     }
 }

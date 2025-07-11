@@ -1,97 +1,119 @@
 <?php
-// src/AI/webserver/Persistence/SleekTaskRepository.php
+
 namespace QIT_AI_Webserver\Persistence;
 
 use Exception;
-use SleekDB\SleekDB;
+use SleekDB\Store;
 
-class SleekTaskRepository {
+final class SleekTaskRepository {
 
-    private $store;          // SleekDB instance
-    private $lockHandle;     // resource for flock
+	private Store $store;          // SleekDB store for “tasks”
+	private string $storePath;      // …/sleekdb  (used by flock)
+	private $lockHandle;            // resource|false
 
-    public function __construct( string $basePath ) {
-        $this->store = SleekDB::store("tasks", $basePath . '/sleekdb'); // e.g. QIT_NODE_DIR . 'db'
-    }
+	public function __construct( string $basePath ) {
+		$this->storePath = rtrim( $basePath, '/' ) . '/sleekdb';
 
-    /* ---------- queue helpers ---------- */
+		$this->store = new Store(
+			'tasks',
+			$this->storePath,
+			[
+				'timeout'     => false,          // silence old warning
+				'auto_cache'  => false,
+				'primary_key' => 'task_id',      // → we can use findById / updateById
+			]
+		);
+	}
 
-    /** create new task in pending state */
-    public function create( string $taskId, string $type, array $payload ): void {
-        $this->store->insert([
-            "task_id" => $taskId,
-            "type"    => $type,
-            "status"  => "pending",
-            "data"    => $payload,
-            "created_at"  => time(),
-            "updated_at"  => time()
-        ]);
-    }
+	/* ---- queue helpers -------------------------------------------------- */
 
-    /** atomically reserve the oldest pending task (returns doc or null) */
-    public function reserveNextPending(): ?array {
-        $this->acquireLock();
-        try {
-            // oldest pending
-            $task = $this->store
-                ->where("status", "=", "pending")
-                ->orderBy("_id", "asc")
-                ->limit(1)
-                ->fetch()[0] ?? null;
+	public function create( string $taskId, string $type, array $payload ): void {
+		$this->store->insert( [
+			'qit_task_id' => $taskId,
+			'type'        => $type,
+			'status'      => 'pending',
+			'data'        => $payload,
+			'created_at'  => time(),
+			'updated_at'  => time(),
+		] );
+	}
 
-            if (!$task) {
-                return null;
-            }
+ /** Atomically fetch + mark the oldest pending task */
+	public function reserveNextPending(): ?array {
+		$this->acquireLock();
+		try {
+			// First, check for stuck tasks (running for more than 30 minutes)
+			$this->resetStuckTasks();
 
-            // mark running
-            $task["status"] = "running";
-            $task["updated_at"] = time();
-            $this->store->update($task);
+			$task = $this->store
+				->createQueryBuilder()
+				->where( [ 'status', '=', 'pending' ] )
+				->orderBy( [ 'created_at' => 'asc' ] )
+				->limit( 1 )
+				->getQuery()
+				->first();
 
-            return $task;
-        } finally {
-            $this->releaseLock();
-        }
-    }
+			if ( ! $task ) {
+				return null;
+			}
 
-    public function markFinished( string $taskId, $result = null ): void {
-        $this->updateById($taskId, [
-            "status"     => "finished",
-            "result"     => $result,
-            "updated_at" => time()
-        ]);
-    }
+			$task['status']     = 'running';
+			$task['updated_at'] = time();
+			$this->store->update( $task );
 
-    public function get( string $taskId ): ?array {
-        return $this->store->where("task_id", "=", $taskId)->fetch()[0] ?? null;
-    }
+			return $task;
+		} finally {
+			$this->releaseLock();
+		}
+	}
 
-    /* ---------- internal helpers ---------- */
+	public function markFinished( string $taskId, $result = null ): void {
+		$this->store->updateById( $taskId, [
+			'status'     => 'finished',
+			'result'     => $result,
+			'updated_at' => time(),
+		] );
+	}
 
-    private function updateById( string $taskId, array $patch ): void {
-        $docs = $this->store->where("task_id", "=", $taskId)->fetch();
-        if (!$docs) {
-            throw new Exception("Unknown task_id $taskId");
-        }
-        $doc = array_merge($docs[0], $patch);
-        $this->store->update($doc);
-    }
+	public function get( string $taskId ): ?array {
+		return $this->store->findById( $taskId );
+	}
 
-    /* ---------- flock‑based mutex ---------- */
+	/**
+	 * Reset tasks that have been in the "running" state for too long (30 minutes)
+	 */
+	private function resetStuckTasks(): void {
+		$thirtyMinutesAgo = time() - 1800; // 30 minutes in seconds
 
-    private function acquireLock(): void {
-        $lockFile = $this->store->getStorePath() . '/.tasks.lock';
-        $this->lockHandle = fopen($lockFile, 'c');
-        if (!flock($this->lockHandle, LOCK_EX)) {
-            throw new Exception("Could not acquire task lock");
-        }
-    }
+		$stuckTasks = $this->store
+			->createQueryBuilder()
+			->where( [ 'status', '=', 'running' ] )
+			->where( [ 'updated_at', '<', $thirtyMinutesAgo ] )
+			->getQuery()
+			->fetch();
 
-    private function releaseLock(): void {
-        if ($this->lockHandle) {
-            flock($this->lockHandle, LOCK_UN);
-            fclose($this->lockHandle);
-            $this->lockHandle = null;
-        }
-    }
+		foreach ( $stuckTasks as $task ) {
+			$task['status'] = 'pending';
+			$task['updated_at'] = time();
+			$this->store->update( $task );
+		}
+	}
+
+	/* ---- flock‑based mutex ---------------------------------------------- */
+
+	private function acquireLock(): void {
+		$lockFile         = $this->storePath . '/.tasks.lock';
+		$this->lockHandle = fopen( $lockFile, 'c' );
+		if ( ! flock( $this->lockHandle, LOCK_EX ) ) {
+			throw new Exception( 'Could not acquire task lock' );
+		}
+	}
+
+	private function releaseLock(): void {
+		if ( $this->lockHandle ) {
+			flock( $this->lockHandle, LOCK_UN );
+			fclose( $this->lockHandle );
+			$this->lockHandle = null;
+		}
+	}
 }
