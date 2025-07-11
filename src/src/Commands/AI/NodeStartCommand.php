@@ -68,10 +68,10 @@ class NodeStartCommand extends QITCommand {
 		// ---------------------------------------------------------------------
 		// 1. decide once where this run will live
 		// ---------------------------------------------------------------------
-		$runId        = date( 'Ymd-His' ) . '-' . substr( bin2hex( random_bytes( 2 ) ), 0, 4 );
-		$runDir       = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$runId/";
+		$runId  = date( 'Ymd-His' ) . '-' . substr( bin2hex( random_bytes( 2 ) ), 0, 4 );
+		$runDir = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$runId/";
 		$this->runDir = $runDir;  // Store for use in heartbeat
-		$logDir       = $runDir;                    // keep logs in the same folder
+		$logDir = $runDir;                    // keep logs in the same folder
 
 
 		mkdir( $runDir, 0700, true );
@@ -100,9 +100,6 @@ class NodeStartCommand extends QITCommand {
 
 		// Generate a shared token for both servers
 		$nodeToken = bin2hex( random_bytes( 32 ) );
-
-		// Generate a per-run secret for internal routes
-		$internalToken = bin2hex( random_bytes( 32 ) );
 
 		// Pass loggers to servers and set the shared token
 		$this->listener->setLogger( $listenerLogger );
@@ -253,8 +250,6 @@ class NodeStartCommand extends QITCommand {
 
 			// 2. Inject that URL into the listener's environment
 			$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->workerUrl );
-			$this->listener->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
-			$this->listener->setEnvironmentVariable( 'QIT_INTERNAL_TOKEN', $internalToken );
 
 			// 3. Now launch the listener once
 			$listenerUrl = $this->listener->start();
@@ -282,28 +277,23 @@ class NodeStartCommand extends QITCommand {
 				'node_name'    => $node_name,
 			];
 
-			$listenerRegisterUrl = $listenerUrl . '/internal/register';
-			$ch                  = curl_init( $listenerRegisterUrl );
-			curl_setopt_array( $ch, [
-				CURLOPT_POST           => true,
-				CURLOPT_POSTFIELDS     => json_encode( $registration_data ),
-				CURLOPT_HTTPHEADER     => [
-					'Content-Type: application/json',
-					'X-Internal-Token: ' . $internalToken,
-					'X-Node-Token: ' . $node_token,
-				],
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_TIMEOUT        => 30,
-			] );
-			$response_json = curl_exec( $ch );
-			if ( $response_json === false ) {
-				throw new \RuntimeException( 'Local /internal/register failed: ' . curl_error( $ch ) );
+			// Validate outbound registration request against schema
+			$validator = \QIT_AI_Webserver\Lib\JsonSchemaValidator::getInstance();
+			$validation = $validator->validateOutbound($registration_data, 'node-registration');
+
+			if (!$validation['valid']) {
+				$this->logger->warning('Outbound node registration validation failed', [
+					'errors' => $validation['errors']
+				]);
+				// Continue anyway to maintain backward compatibility, but log the issue
 			}
-			$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-			curl_close( $ch );
-			if ( ! in_array( $httpCode, [ 200, 201 ], true ) ) {
-				throw new \RuntimeException( "Registration failed, HTTP $httpCode: $response_json" );
-			}
+
+			$response_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/register' ) )
+				->with_method( 'POST' )
+				->with_post_body( $registration_data )
+				->with_expected_status_codes( [ 200, 201 ] )
+				->with_retry( 3 )
+				->request();
 
 			$response = json_decode( $response_json, true );
 
@@ -325,20 +315,20 @@ class NodeStartCommand extends QITCommand {
 			$this->worker->setEnvironmentVariable( 'QIT_NODE_TOKEN', $this->node_token );
 			$this->worker->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
 
-			// Clear any stale busy.lock file at startup
-			@unlink( $runDir . '/busy.lock' );
+ 		// Clear any stale busy.lock file at startup
+ 		@unlink( $runDir . '/busy.lock' );
 
-			if ( $node_name ) {
-				$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
-			}
+ 		if ( $node_name ) {
+ 			$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
+ 		}
 
-			// Note: Model preloading is not needed for supported providers
-			// - LM Studio loads models interactively through its UI
-			// - OpenAI and Anthropic are cloud-based (models always available)
-			// - Model availability is checked during actual inference calls
+ 		// Note: Model preloading is not needed for supported providers
+ 		// - LM Studio loads models interactively through its UI
+ 		// - OpenAI and Anthropic are cloud-based (models always available)
+ 		// - Model availability is checked during actual inference calls
 
-			$output->writeln( '' );
-			$output->writeln( '<info>Node started successfully!</info>' );
+ 		$output->writeln( '' );
+ 		$output->writeln( '<info>Node started successfully!</info>' );
 
 			// Handle keeping the process running
 			if ( extension_loaded( 'pcntl' ) ) {
@@ -354,17 +344,17 @@ class NodeStartCommand extends QITCommand {
 				$output->writeln( '<comment>Press Ctrl+C to stop the node (or close the terminal window).</comment>' );
 			}
 
-			// Keep the process running with heartbeat
-			// This loop works on all platforms (Windows and Unix)
-			while ( $this->heartbeat_running ) {
-				// Dispatch signals on platforms that support it
-				if ( extension_loaded( 'pcntl' ) ) {
-					pcntl_signal_dispatch();
-				}
+ 		// Keep the process running with heartbeat
+ 		// This loop works on all platforms (Windows and Unix)
+ 		while ( $this->heartbeat_running ) {
+ 			// Dispatch signals on platforms that support it
+ 			if ( extension_loaded( 'pcntl' ) ) {
+ 				pcntl_signal_dispatch();
+ 			}
 
-				$this->sendHeartbeat( $output );
-				sleep( 10 ); // Check every 10 seconds
-			}
+ 			$this->sendHeartbeat( $output );
+ 			sleep( 10 ); // Check every 10 seconds
+ 		}
 
 		} catch ( \Exception $e ) {
 			$output->writeln( '<error>Failed to start node: ' . $e->getMessage() . '</error>' );
@@ -548,13 +538,13 @@ class NodeStartCommand extends QITCommand {
 				];
 
 				// Validate outbound unregistration request against schema
-				$validator  = \QIT_AI_Webserver\Lib\JsonSchemaValidator::getInstance();
-				$validation = $validator->validateOutbound( $unregistration_data, 'node-unregistration' );
+				$validator = \QIT_AI_Webserver\Lib\JsonSchemaValidator::getInstance();
+				$validation = $validator->validateOutbound($unregistration_data, 'node-unregistration');
 
-				if ( ! $validation['valid'] ) {
-					$this->logger->warning( 'Outbound node unregistration validation failed', [
+				if (!$validation['valid']) {
+					$this->logger->warning('Outbound node unregistration validation failed', [
 						'errors' => $validation['errors']
-					] );
+					]);
 					// Continue anyway to maintain backward compatibility, but log the issue
 				}
 

@@ -115,50 +115,6 @@ switch ( "$method $uri" ) {
 		echo json_encode( [ 'status' => 'accepted' ] );
 		break;
 
-	/* ──────────────────────────────────────────
-	 * Internal: node registration
-	 * ──────────────────────────────────────────*/
-	case 'POST /internal/register':
-		// 0. Validate secret first
-		$expected = getenv('QIT_INTERNAL_TOKEN');
-		$provided = $headers['x-internal-token'] ?? ($headers['X-Internal-Token'] ?? null);
-
-		if (!is_string($expected) || !hash_equals($expected, (string) $provided)) {
-			http_response_code(403);
-			echo '{"error":"forbidden"}';
-			break;
-		}
-
-		$registration = $input;                    // raw JSON from CLI
-
-		$validator  = JsonSchemaValidator::getInstance();
-		$validation = $validator->validateOutbound($registration, 'node-registration');
-
-		if (!$validation['valid']) {
-			http_response_code(400);
-			echo json_encode([
-				'error'   => 'JSON‑schema validation failed',
-				'details' => $validation['errors'],
-			]);
-			break;
-		}
-
-		// Send to Manager using the same outbound helper the worker already uses
-		try {
-			$request  = QIT_AI_Webserver\Lib\OutboundRequest::nodeRegistration(
-				getenv('QIT_MANAGER_URL') . '/wp-json/cd/v1/ai-nodes/register',
-				$registration
-			);
-			$reply    = $request->send();          // { success, status, body }
-
-			http_response_code($reply['status_code']);
-			echo $reply['response'];                   // relay original JSON
-		} catch (\Throwable $e) {
-			http_response_code(500);
-			echo json_encode(['error' => $e->getMessage()]);
-		}
-		break;
-
 	default:
 		http_response_code( 404 );
 		echo json_encode( [ 'error' => 'Route not found on Listener. Method: ' . $method . ', URI: ' . $uri ] );
