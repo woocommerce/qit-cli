@@ -12,7 +12,7 @@ class PerformanceTestManager {
 	/** @var K6Runner */
 	private $k6_runner;
 
-	/** @var OutputInterface */
+	/** @var OutputInterface|null */
 	private $output;
 
 	/** @var LocalTestRunNotifier */

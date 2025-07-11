@@ -26,7 +26,7 @@ class ThemeActivation {
 	 * @param Docker                        $docker
 	 * @param OutputInterface               $output
 	 */
-	public function __construct( E2EEnvInfo|PerformanceEnvInfo $env_info, Docker $docker, OutputInterface $output ) {
+	public function __construct( $env_info, Docker $docker, OutputInterface $output ) {
 		$this->env_info = $env_info;
 		$this->docker   = $docker;
 		$this->output   = $output;

@@ -61,7 +61,7 @@ class LocalTestRunNotifier {
 	 * @param bool                          $is_development
 	 * @param bool                          $notify
 	 */
-	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo|PerformanceEnvInfo $env_info, bool $is_development, bool $notify ): void {
+	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, $env_info, bool $is_development, bool $notify ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
@@ -145,7 +145,7 @@ class LocalTestRunNotifier {
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
-	public function notify_test_finished( TestResult|PerformanceTestResult $test_result ): array {
+	public function notify_test_finished( $test_result ): array {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {

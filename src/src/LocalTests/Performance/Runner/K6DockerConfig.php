@@ -16,6 +16,9 @@ class K6DockerConfig {
 		$this->docker = $docker;
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name ): array {
 		return array_merge(
 			$this->get_base_docker_args( $env_info, $container_name ),
@@ -26,6 +29,9 @@ class K6DockerConfig {
 		);
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	private function get_base_docker_args( PerformanceEnvInfo $env_info, string $container_name ): array {
 		return [
 			$this->docker->find_docker(),
@@ -38,6 +44,9 @@ class K6DockerConfig {
 		];
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir ): array {
 		$volumes = [
 			Config::get_qit_dir() . 'cache/k6'             => '/k6-cache',
@@ -57,6 +66,9 @@ class K6DockerConfig {
 		return $args;
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	private function get_environment_variables(): array {
 		$env_vars = array_merge(
 			[
@@ -79,6 +91,9 @@ class K6DockerConfig {
 		return $args;
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	private function get_user_args(): array {
 		if ( Docker::should_set_user() ) {
 			return [
@@ -90,6 +105,9 @@ class K6DockerConfig {
 		return [];
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	private function get_k6_command(): array {
 		return [
 			'grafana/k6:latest',

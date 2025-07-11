@@ -12,10 +12,10 @@ class PerformanceTestResult {
 	/** @var string */
 	private $results_dir;
 
-	/** @var array */
+	/** @var array<string, string> */
 	private $result_files = [];
 
-	/** @var array */
+	/** @var array<string, mixed> */
 	private $metrics = [];
 
 	/** @var int */
@@ -30,7 +30,7 @@ class PerformanceTestResult {
 	/** @var string */
 	public $status = 'pending';
 
-	/** @var array */
+	/** @var array<mixed> */
 	public $bootstrap = [];
 
 	/** @var bool */
@@ -55,6 +55,9 @@ class PerformanceTestResult {
 		$this->result_files[ $filename ] = $file_path;
 	}
 
+	/**
+	 * @param mixed $value
+	 */
 	public function add_metric( string $name, $value ): void {
 		$this->metrics[ $name ] = $value;
 	}
@@ -122,6 +125,9 @@ class PerformanceTestResult {
 		$this->calculate_summary_statistics( $points );
 	}
 
+	/**
+	 * @param array<mixed> $points
+	 */
 	private function calculate_summary_statistics( array $points ): void {
 		$http_req_durations = [];
 		$http_req_failed    = 0;
@@ -158,6 +164,9 @@ class PerformanceTestResult {
 		$this->add_metric( 'summary_http_req_failed', $http_req_failed );
 	}
 
+	/**
+	 * @param array<float> $values
+	 */
 	private function calculate_percentile( array $values, float $percentile ): float {
 		$count = count( $values );
 		$index = ( $percentile / 100 ) * ( $count - 1 );
@@ -317,18 +326,24 @@ class PerformanceTestResult {
 	}
 
 	private function get_status_html(): string {
-		$status_class = match ( $this->status ) {
-			'success' => 'status-pass',
-			'warning' => 'status-warn',
-			default => 'status-fail'
-		};
-
-		$status_text = match ( $this->status ) {
-			'success' => '✓ PASSED',
-			'warning' => '⚠ WARNING',
-			'failed' => '✗ FAILED',
-			default => strtoupper( $this->status )
-		};
+		switch ( $this->status ) {
+			case 'success':
+				$status_class = 'status-pass';
+				$status_text = '✓ PASSED';
+				break;
+			case 'warning':
+				$status_class = 'status-warn';
+				$status_text = '⚠ WARNING';
+				break;
+			case 'failed':
+				$status_class = 'status-fail';
+				$status_text = '✗ FAILED';
+				break;
+			default:
+				$status_class = 'status-fail';
+				$status_text = strtoupper( $this->status );
+				break;
+		}
 
 		return sprintf(
 			'<h2>Test Results</h2>
@@ -351,10 +366,16 @@ class PerformanceTestResult {
 		return $files_html . '</ul>';
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function get_metrics(): array {
 		return $this->metrics;
 	}
 
+	/**
+	 * @return array<string, string>
+	 */
 	public function get_result_files(): array {
 		return $this->result_files;
 	}
@@ -384,6 +405,8 @@ class PerformanceTestResult {
 
 	/**
 	 * Get basic failure information.
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function get_failure_details(): array {
 		$details = [

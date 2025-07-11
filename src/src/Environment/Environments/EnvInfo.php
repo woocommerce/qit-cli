@@ -126,14 +126,12 @@ abstract class EnvInfo implements \JsonSerializable {
 			$env_info->tunnel = true;
 		}
 
-		if ( $env_info instanceof E2EEnvInfo || $env_info instanceof PerformanceEnvInfo ) {
-			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
-				// Environment accessible from inside Docker containers.
-				$env_info->domain = "qitenvnginx{$env_info->env_id}";
-			} else {
-				// Environment accessible from host.
-				$env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
-			}
+		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+			// Environment accessible from inside Docker containers.
+			$env_info->domain = "qitenvnginx{$env_info->env_id}";
+		} else {
+			// Environment accessible from host.
+			$env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
 		}
 
 		foreach ( $env_info_array as $key => $value ) {

@@ -140,6 +140,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 	/**
 	 * Prepare environment options for the test.
+	 *
+	 * @return array<string, mixed>
 	 */
 	private function prepare_environment_options( InputInterface $input, string $sut ): array {
 		$options        = $this->parse_options( $input );
@@ -189,6 +191,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 	/**
 	 * Setup environment and run tests.
+	 *
+	 * @param array<string, mixed> $env_up_options
 	 */
 	private function setup_environment_and_run_tests( array $env_up_options, string $sut, InputInterface $input, OutputInterface $output ): int {
 		// Create environment.
@@ -250,7 +254,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		try {
 			return $this->woo_extensions_list->get_woo_extension_id_by_slug( $woo_extension_raw );
-		} catch ( \Exception ) {
+		} catch ( \Exception $e ) {
 			$error_message = sprintf( 'Extension "%s" not found in WooCommerce extensions list.', $woo_extension_raw );
 			$output->writeln( sprintf( '<error>%s</error>', $error_message ) );
 			throw new \RuntimeException( $error_message );

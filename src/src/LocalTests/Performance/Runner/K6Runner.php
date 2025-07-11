@@ -22,9 +22,6 @@ class K6Runner {
 	/** @var OutputInterface */
 	protected $output;
 
-	/** @var Docker */
-	private $docker;
-
 	/** @var K6DockerConfig */
 	private $docker_config;
 
@@ -34,10 +31,12 @@ class K6Runner {
 
 	public function __construct( OutputInterface $output, Docker $docker ) {
 		$this->output        = $output;
-		$this->docker        = $docker;
 		$this->docker_config = new K6DockerConfig( $docker );
 	}
 
+	/**
+	 * @param array<mixed> $test_infos
+	 */
 	public function run_test( PerformanceEnvInfo $env_info, array $test_infos, PerformanceTestResult $test_result ): int {
 		$this->performance_test_result = $test_result;
 
@@ -80,22 +79,25 @@ class K6Runner {
 		}
 	}
 
+	/**
+	 * @param array<string> $k6_args
+	 */
 	private function execute_k6_tests( array $k6_args ): int {
 		$this->create_default_k6_test();
 
-		$this->output?->writeln( '<info>Running k6 performance test for WooCommerce extension</info>' );
+		$this->output->writeln( '<info>Running k6 performance test for WooCommerce extension</info>' );
 
 		// Execute K6 test.
 		$test_args = array_merge( $k6_args, [ '/tests/default-performance-test.js' ] );
 		$process   = new Process( $test_args );
 		$process->setTimeout( 3600 ); // 1 hour timeout
 
-		if ( $this->output?->isVeryVerbose() ) {
+		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( 'Running: ' . $process->getCommandLine() );
 		}
 
 		$process->run( function ( $type, $buffer ) {
-			if ( $this->output && ( $this->output->isVerbose() || $type === Process::ERR ) ) {
+			if ( $this->output->isVerbose() || $type === Process::ERR ) {
 				$this->output->write( $buffer );
 			}
 		} );
@@ -103,12 +105,10 @@ class K6Runner {
 		$exit_code = $process->getExitCode();
 
 		// Show test result.
-		if ( $this->output ) {
-			$status = $exit_code === 0 ? 'passed' : "failed with exit code: $exit_code";
-			$icon   = $exit_code === 0 ? '✓' : '✗';
-			$style  = $exit_code === 0 ? 'info' : 'error';
-			$this->output->writeln( "<$style>$icon k6 performance test $status</$style>" );
-		}
+		$status = $exit_code === 0 ? 'passed' : "failed with exit code: $exit_code";
+		$icon   = $exit_code === 0 ? '✓' : '✗';
+		$style  = $exit_code === 0 ? 'info' : 'error';
+		$this->output->writeln( "<$style>$icon k6 performance test $status</$style>" );
 
 		return $exit_code;
 	}
@@ -133,8 +133,8 @@ class K6Runner {
 	private function collect_results( PerformanceTestResult $test_result ): void {
 		$source_results = $test_result->get_results_dir() . '/k6-results.json';
 
-		if ( file_exists( $source_results ) ) {
-			$this->output?->isVerbose() && $this->output->writeln(
+		if ( file_exists( $source_results ) && $this->output->isVerbose() ) {
+			$this->output->writeln(
 				"<info>k6 results saved to: {$test_result->get_results_dir()}/k6-results.json</info>"
 			);
 		}
