@@ -59,7 +59,7 @@ class TaskEventPusher {
             ]);
         }
 
-        $request = OutboundRequest::taskEvent($endpoint, $data, 'task-event-push-request', $this->node_token);
+        $request = OutboundRequest::taskEvent($endpoint, $data, 'task-event-push-request');
         $result = $request->send();
 
         return $result['success'];
