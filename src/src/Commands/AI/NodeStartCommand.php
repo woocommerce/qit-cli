@@ -24,7 +24,6 @@ class NodeStartCommand extends QITCommand {
 	protected TunnelRunner $tunnel_runner;
 	protected WebServer $listener;
 	protected WebServer $worker;
-	protected ?Process $poller = null;
 	protected Cache $cache;
 	protected Auth $auth;
 
@@ -36,11 +35,7 @@ class NodeStartCommand extends QITCommand {
 	private bool $heartbeat_running = true;
 	private Logger $logger;
 
-	// Poller supervision properties
-	private int $pollerRestartCount = 0;
-	private int $pollerMaxRestarts = 3;
 	private string $workerUrl = '';
-	private array $pollerEnv = [];
 
 	public function __construct(
 		TunnelRunner $tunnel_runner,
@@ -297,77 +292,27 @@ class NodeStartCommand extends QITCommand {
  		$this->worker->setEnvironmentVariable( 'QIT_NODE_TOKEN', $this->node_token );
  		$this->worker->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
 
-			// Start the worker now that we have the node ID
-			$this->workerUrl = $this->worker->start();
-			$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
+ 		// Start the worker now that we have the node ID
+ 		$this->workerUrl = $this->worker->start();
+ 		$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
 
-			// ----------------------------------------------------------------------------
-			// Launch poller.php directly and monitor it from this process
-			// ----------------------------------------------------------------------------
-			$env = $_ENV + [
-					// already present
-					'QIT_NODE_TOKEN'   => $this->node_token,   // pass token via env‑var
-					'QIT_NODE_ID'      => $this->node_id,
-					'QIT_MANAGER_URL'  => get_manager_url(),
+ 		// NEW – hand the worker URL to the listener via env-var
+ 		$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->workerUrl );
 
-					// NEW – required by bootstrap‑node.php
-					'QIT_LOG_FILE'     => $logDir . 'poller.log',
-					'QIT_NODE_DIR'     => $runDir,
-					'QIT_AI_DIR'       => $runtimeCfg['ai_dir'],
-					'QIT_PROVIDER'     => $provider,
-					'QIT_PROVIDER_CFG' => json_encode( $providerConfig, JSON_UNESCAPED_SLASHES ),
-					// optional but nice to have
-					'QIT_DB_PATH'      => $runDir . 'db',
-				];
+ 		// Clear any stale busy.lock file at startup
+ 		@unlink( $runDir . '/busy.lock' );
 
-			// Store the response from the Manager
-			if ( isset( $response['heartbeat_url'] ) ) {
-				$this->logger->info( 'Received heartbeat URL from Manager', [
-					'heartbeat_url' => $response['heartbeat_url']
-				] );
-				$env['QIT_MANAGER_HEARTBEAT_URL'] = $response['heartbeat_url'];
-			} else {
-				$this->logger->warning( 'No heartbeat URL received from Manager' );
-			}
+ 		if ( $node_name ) {
+ 			$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
+ 		}
 
-			// Fail-fast environment validation
-			foreach (
-				[
-					'QIT_NODE_TOKEN',
-					'QIT_NODE_ID',
-					'QIT_MANAGER_URL',
-					'QIT_LOG_FILE',
-					'QIT_NODE_DIR',
-					'QIT_AI_DIR',
-					'QIT_PROVIDER',
-					'QIT_PROVIDER_CFG'
-				] as $v
-			) {
-				if ( empty( $env[ $v ] ) ) {
-					$output->writeln( "<error>Env var $v missing – aborting.</error>" );
+ 		// Note: Model preloading is not needed for supported providers
+ 		// - LM Studio loads models interactively through its UI
+ 		// - OpenAI and Anthropic are cloud-based (models always available)
+ 		// - Model availability is checked during actual inference calls
 
-					return self::FAILURE;
-				}
-			}
-
-			// Start the poller process
-			$this->startPollerProcess( $env );
-			$output->writeln( '<info>✓ Started worker poller process</info>' );
-
-			if ( $node_name ) {
-				$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
-			}
-
-			// Note: Model preloading is not needed for supported providers
-			// - LM Studio loads models interactively through its UI
-			// - OpenAI and Anthropic are cloud-based (models always available)
-			// - Model availability is checked during actual inference calls
-
-			$output->writeln( '' );
-			$output->writeln( '<info>Node started successfully!</info>' );
-
-			// Store environment variables for poller restarts
-			$this->pollerEnv = $env;
+ 		$output->writeln( '' );
+ 		$output->writeln( '<info>Node started successfully!</info>' );
 
 			// Handle keeping the process running
 			if ( extension_loaded( 'pcntl' ) ) {
@@ -383,41 +328,17 @@ class NodeStartCommand extends QITCommand {
 				$output->writeln( '<comment>Press Ctrl+C to stop the node (or close the terminal window).</comment>' );
 			}
 
-			// Keep the process running with heartbeat and monitor poller
-			// This loop works on all platforms (Windows and Unix)
-			while ( $this->heartbeat_running ) {
-				// Dispatch signals on platforms that support it
-				if ( extension_loaded( 'pcntl' ) ) {
-					pcntl_signal_dispatch();
-				}
+ 		// Keep the process running with heartbeat
+ 		// This loop works on all platforms (Windows and Unix)
+ 		while ( $this->heartbeat_running ) {
+ 			// Dispatch signals on platforms that support it
+ 			if ( extension_loaded( 'pcntl' ) ) {
+ 				pcntl_signal_dispatch();
+ 			}
 
-				// Check if poller is running and restart if needed
-				if ( $this->poller === null || ! $this->poller->isRunning() ) {
-					$exitCode = $this->poller ? $this->poller->getExitCode() : 'N/A';
-					$this->logger->warning( 'Poller died', [ 'exit_code' => $exitCode ] );
-
-					// Decide whether to restart
-					if ( ++ $this->pollerRestartCount > $this->pollerMaxRestarts ) {
-						$output->writeln(
-							"<error>Poller crashed {$this->pollerMaxRestarts}× – shutting node down.</error>"
-						);
-						$this->cleanup( $output );
-
-						return self::FAILURE;
-					}
-
-					// Add restart delay with back-off
-					$backoffDelay = min( $this->pollerRestartCount, 5 );
-					$this->logger->info( "Waiting {$backoffDelay}s before restart" );
-					sleep( $backoffDelay );
-
-					$output->writeln( "<comment>Restarting poller (attempt {$this->pollerRestartCount})…</comment>" );
-					$this->startPollerProcess( $this->pollerEnv );
-				}
-
-				$this->sendHeartbeat( $output );
-				sleep( 10 ); // Check more frequently than the heartbeat interval
-			}
+ 			$this->sendHeartbeat( $output );
+ 			sleep( 10 ); // Check every 10 seconds
+ 		}
 
 		} catch ( \Exception $e ) {
 			$output->writeln( '<error>Failed to start node: ' . $e->getMessage() . '</error>' );
@@ -581,50 +502,6 @@ class NodeStartCommand extends QITCommand {
 		}
 	}
 
-	/**
-	 * Start a new poller process
-	 *
-	 * @param array $env Environment variables to pass to the poller
-	 */
-	private function startPollerProcess( array $env ): void {
-		$pollerPath = __DIR__ . '/../../AI/webserver/poller.php';
-
-		$this->logger->info( 'Starting poller process', [
-			'worker_url'    => $this->workerUrl,
-			'restart_count' => $this->pollerRestartCount
-		] );
-
-		$this->poller = new Process(
-			[
-				PHP_BINARY,      // current php executable
-				$pollerPath,
-				$this->workerUrl, // argv[1]
-			],
-			null,               // working dir
-			$env                // environment variables
-		);
-
-		// Disable Symfony's default 60s timeout for the poller
-		$this->poller->setTimeout( null );   // long‑running job; never auto‑kill
-
-		$output = App::make( OutputInterface::class );
-
-		// Optional: capture output from the poller for debugging
-		$this->poller->start( function ( $type, $buffer ) use ( $output ) {
-			if ( $type === Process::ERR ) {
-				$output->writeln( "<error>[poller] $buffer</error>", OutputInterface::OUTPUT_PLAIN );
-				$this->logger->error( '[poller] ' . trim( $buffer ) );
-			} else {
-				$output->writeln( "[poller] $buffer", OutputInterface::OUTPUT_PLAIN );
-				$this->logger->debug( '[poller] ' . trim( $buffer ) );
-			}
-		} );
-
-
-		$this->logger->info( 'Poller process started', [
-			'pid' => $this->poller->getPid()
-		] );
-	}
 
 	private function cleanup( OutputInterface $output ): void {
 		$this->logger->info( 'Starting node cleanup process' );
