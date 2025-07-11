@@ -23,9 +23,21 @@ class PerformanceTestManager {
 	}
 
 	public function run_tests( PerformanceEnvInfo $env_info ): int {
+		// If no specific performance tests are configured, create a default test
 		if ( empty( $env_info->tests ) ) {
-			$this->output->writeln( '<error>No performance tests found to run.</error>' );
-			return 1;
+			$this->output->writeln( '<info>No specific performance tests configured. Running default performance test.</info>' );
+			
+			// Create a default test entry
+			$env_info->tests = [
+				[
+					'slug' => $env_info->sut_slug,
+					'test_tag' => $env_info->test_tag ?: 'default',
+					'type' => $env_info->sut_type,
+					'action' => 'activate',
+					'path_in_php_container' => '',
+					'path_in_host' => '',
+				],
+			];
 		}
 
 		$test_result = new PerformanceTestResult( $env_info );
