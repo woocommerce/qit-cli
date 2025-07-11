@@ -20,7 +20,7 @@ class PerformanceTestManager {
 
 	public function __construct( K6Runner $k6_runner, LocalTestRunNotifier $notifier ) {
 		$this->k6_runner = $k6_runner;
-		$this->notifier = $notifier;
+		$this->notifier  = $notifier;
 	}
 
 	public function set_output( OutputInterface $output ): void {
@@ -32,20 +32,20 @@ class PerformanceTestManager {
 
 		$test_result = new PerformanceTestResult( $env_info );
 
-		// Run K6 performance tests
+		// Run K6 performance tests.
 		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
 
-		// Store exit code and mark as completed (like E2E tests do)
+		// Store exit code and mark as completed (like E2E tests do).
 		$test_result->add_metric( 'k6_exit_code', $exit_status_code );
 		$test_result->set_status( 'completed' );
 
-		// Notify test finished and get final status
+		// Notify test finished and get final status.
 		[ $report_url, $exit_status_code_override ] = $this->notifier->notify_test_finished( $test_result );
 
-		// Display results summary with final status
+		// Display results summary with final status.
 		$this->display_results_summary( $test_result );
 
-		// Use override exit code if provided
+		// Use override exit code if provided.
 		return $exit_status_code_override ?? $exit_status_code;
 	}
 
@@ -58,15 +58,15 @@ class PerformanceTestManager {
 		}
 
 		$this->output->writeln( '<info>No specific performance tests configured. Running default performance test.</info>' );
-		
+
 		$env_info->tests = [
 			[
-				'slug' => $env_info->sut_slug,
-				'test_tag' => $env_info->test_tag ?: 'default',
-				'type' => $env_info->sut_type,
-				'action' => 'activate',
+				'slug'                  => $env_info->sut_slug,
+				'test_tag'              => $env_info->test_tag ?: 'default',
+				'type'                  => $env_info->sut_type,
+				'action'                => 'activate',
 				'path_in_php_container' => '',
-				'path_in_host' => '',
+				'path_in_host'          => '',
 			],
 		];
 	}
@@ -80,26 +80,26 @@ class PerformanceTestManager {
 		}
 
 		$this->output->writeln( '' );
-		
-		// Show artifacts location
+
+		// Show artifacts location.
 		$artifacts_path = $test_result->get_artifacts_path();
 		$this->output->writeln( sprintf( 'Artifacts saved to: <comment>%s</comment>', $artifacts_path ) );
-		
-		// Show HTML report if available
+
+		// Show HTML report if available.
 		$report_url = $test_result->get_report_url();
 		if ( $report_url ) {
 			$this->output->writeln( sprintf( 'HTML report: <comment>%s</comment>', $report_url ) );
 		}
-		
-		// Show metrics summary
+
+		// Show metrics summary.
 		$metrics = $test_result->get_metrics();
 		if ( ! empty( $metrics['summary_http_req_duration_avg'] ) ) {
-			$this->output->writeln( sprintf( 
+			$this->output->writeln( sprintf(
 				'Average response time: <comment>%.2fms</comment>',
 				$metrics['summary_http_req_duration_avg']
 			) );
 		}
-		
+
 		$this->output->writeln( '' );
 	}
 }

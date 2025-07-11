@@ -23,8 +23,8 @@ class ThemeActivation {
 
 	/**
 	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
-	 * @param Docker          $docker
-	 * @param OutputInterface $output
+	 * @param Docker                        $docker
+	 * @param OutputInterface               $output
 	 */
 	public function __construct( E2EEnvInfo|PerformanceEnvInfo $env_info, Docker $docker, OutputInterface $output ) {
 		$this->env_info = $env_info;

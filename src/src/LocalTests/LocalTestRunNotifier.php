@@ -55,11 +55,11 @@ class LocalTestRunNotifier {
 	/**
 	 * @suppress PhanTypeArraySuspicious
 	 *
-	 * @param int                                     $woo_extension_id
-	 * @param string                                  $woocommerce_version
-	 * @param E2EEnvInfo|PerformanceEnvInfo           $env_info
-	 * @param bool                                    $is_development
-	 * @param bool                                    $notify
+	 * @param int                           $woo_extension_id
+	 * @param string                        $woocommerce_version
+	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
+	 * @param bool                          $is_development
+	 * @param bool                          $notify
 	 */
 	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo|PerformanceEnvInfo $env_info, bool $is_development, bool $notify ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
@@ -68,7 +68,7 @@ class LocalTestRunNotifier {
 
 		$test_type = 'e2e';
 
-		// Check if we're running a performance test
+		// Check if we're running a performance test.
 		if ( getenv( 'QIT_ENVIRONMENT_TYPE' ) === 'performance' ) {
 			$test_type = 'performance';
 		}
@@ -232,18 +232,16 @@ class LocalTestRunNotifier {
 			$status = 'cancelled';
 		}
 
-
-
-		// Check for E2E test failures
+		// Check for E2E test failures.
 		if ( is_null( $status ) && $test_result instanceof TestResult && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
 			$status = 'failed';
 		}
 
-		// Check for Performance test failures
+		// Check for Performance test failures.
 		if ( is_null( $status ) && $test_result instanceof PerformanceTestResult ) {
-			$metrics = $test_result->get_metrics();
+			$metrics      = $test_result->get_metrics();
 			$k6_exit_code = $metrics['k6_exit_code'] ?? null;
-			
+
 			if ( $k6_exit_code !== null && $k6_exit_code !== 0 ) {
 				$status = 'failed';
 			}

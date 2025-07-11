@@ -54,4 +54,4 @@ class PerformanceEnvInfo extends EnvInfo {
 	 * }> $tests
 	 */
 	public $tests = [];
-} 
+}

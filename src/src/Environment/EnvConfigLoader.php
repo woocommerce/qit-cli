@@ -205,7 +205,7 @@ class EnvConfigLoader {
 
 		$this->normalize_singular_to_plural( $env_config );
 
-		// Set the environment type (this bypasses the not_user_configurable validation)
+		// Set the environment type (this bypasses the not_user_configurable validation).
 		$env_config['environment'] = getenv( 'QIT_ENVIRONMENT_TYPE' ) ?: 'e2e';
 
 		$env_info = EnvInfo::from_array( $env_config );

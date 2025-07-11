@@ -49,11 +49,11 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		LocalTestRunNotifier $test_run_notifier,
 		WooExtensionsList $woo_extensions_list
 	) {
-		$this->cache = $cache;
+		$this->cache                    = $cache;
 		$this->performance_test_manager = $performance_test_manager;
-		$this->environment_runner = $environment_runner;
-		$this->test_run_notifier = $test_run_notifier;
-		$this->woo_extensions_list = $woo_extensions_list;
+		$this->environment_runner       = $environment_runner;
+		$this->test_run_notifier        = $test_run_notifier;
+		$this->woo_extensions_list      = $woo_extensions_list;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
@@ -65,7 +65,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			throw new \RuntimeException( 'Performance schema not set or incomplete.' );
 		}
 
-		// Use dedicated performance schema
+		// Use dedicated performance schema.
 		DynamicCommandCreator::add_schema_to_command( $this, $schemas['performance'], [
 			'php_version',
 		], [] );
@@ -95,16 +95,16 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$sut = $input->getArgument( 'woo_extension' );
 
 		try {
-			// Prepare environment options
+			// Prepare environment options.
 			$env_up_options = $this->prepare_environment_options( $input, $sut );
-			
-			// Set performance-specific environment variables
+
+			// Set performance-specific environment variables.
 			$this->set_performance_environment_variables();
 
-			// Create environment and run tests
+			// Create environment and run tests.
 			$env_info = $this->setup_environment_and_run_tests( $env_up_options, $sut, $input, $output );
 
-			// Handle JSON output if requested
+			// Handle JSON output if requested.
 			return $this->handle_json_output( $input, $output, $env_info );
 
 		} catch ( \Exception $e ) {
@@ -139,68 +139,68 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	}
 
 	/**
-	 * Prepare environment options for the test
+	 * Prepare environment options for the test.
 	 */
 	private function prepare_environment_options( InputInterface $input, string $sut ): array {
-		$options = $this->parse_options( $input );
+		$options        = $this->parse_options( $input );
 		$env_up_options = $options['env_up'];
-		
-		// Add SUT as a plugin
-		$plugins = $input->getOption( 'plugin' ) ?: [];
-		$plugins[] = $sut;
+
+		// Add SUT as a plugin.
+		$plugins                    = $input->getOption( 'plugin' ) ?: [];
+		$plugins[]                  = $sut;
 		$env_up_options['--plugin'] = $plugins;
 
-		// Add source if provided
+		// Add source if provided.
 		if ( $input->getOption( 'source' ) ) {
 			$env_up_options['--source'] = $input->getOption( 'source' );
 		}
 
-		// Common options
-		$env_up_options['--json'] = true;
+		// Common options.
+		$env_up_options['--json']   = true;
 		$env_up_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
 
-		// Verbosity
+		// Verbosity.
 		if ( $input->getOption( 'verbose' ) ) {
 			$env_up_options['--verbose'] = true;
 		}
-		
+
 		return $env_up_options;
 	}
 
 	/**
-	 * Set performance-specific environment variables
+	 * Set performance-specific environment variables.
 	 */
 	private function set_performance_environment_variables(): void {
-		putenv( 'QIT_HIDE_SITE_INFO=1' );
-		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
-		putenv( 'QIT_UP_AND_TEST=1' );
-		putenv( 'QIT_ENVIRONMENT_TYPE=performance' );
+		putenv( 'QIT_HIDE_SITE_INFO=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_ENVIRONMENT_TYPE=performance' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 	}
 
 	/**
-	 * Clean up environment variables
+	 * Clean up environment variables.
 	 */
 	private function cleanup_environment_variables(): void {
-		putenv( 'QIT_HIDE_SITE_INFO' );
-		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' );
-		putenv( 'QIT_UP_AND_TEST' );
-		putenv( 'QIT_ENVIRONMENT_TYPE' );
+		putenv( 'QIT_HIDE_SITE_INFO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_UP_AND_TEST' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_ENVIRONMENT_TYPE' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 	}
 
 	/**
-	 * Setup environment and run tests
+	 * Setup environment and run tests.
 	 */
 	private function setup_environment_and_run_tests( array $env_up_options, string $sut, InputInterface $input, OutputInterface $output ): int {
-		// Create environment
+		// Create environment.
 		/** @var PerformanceEnvInfo $env_info */
 		$env_info = $this->environment_runner->run_environment( $env_up_options );
 
-		// Configure SUT information
+		// Configure SUT information.
 		$env_info->sut_slug = $sut;
 		$env_info->sut_type = 'plugin';
 		$env_info->test_tag = $input->getOption( 'test_tag' ) ?? '';
 
-		// Notify test started
+		// Notify test started.
 		$woo_extension_id = $this->resolve_woo_extension_id( $sut, $output );
 		$this->test_run_notifier->notify_test_started(
 			$woo_extension_id,
@@ -210,13 +210,13 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			false
 		);
 
-		// Run tests
+		// Run tests.
 		$this->performance_test_manager->set_output( $output );
 		return $this->performance_test_manager->run_tests( $env_info );
 	}
 
 	/**
-	 * Handle JSON output if requested
+	 * Handle JSON output if requested.
 	 */
 	private function handle_json_output( InputInterface $input, OutputInterface $output, int $exit_code ): int {
 		if ( ! $input->getOption( 'json' ) ) {

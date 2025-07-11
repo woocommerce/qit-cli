@@ -37,8 +37,8 @@ class PerformanceTestResult {
 	private $results_processed = false;
 
 	public function __construct( PerformanceEnvInfo $env_info ) {
-		$this->env_info = $env_info;
-		$this->start_time = time();
+		$this->env_info    = $env_info;
+		$this->start_time  = time();
 		$this->test_run_id = uniqid( 'perf_test_' );
 		$this->results_dir = $this->create_results_directory();
 	}
@@ -60,24 +60,24 @@ class PerformanceTestResult {
 	}
 
 	public function process_results(): void {
-		// Only process results once
+		// Only process results once.
 		if ( $this->results_processed ) {
 			return;
 		}
 
 		$this->end_time = time();
 
-		// Process k6 JSON results
+		// Process k6 JSON results.
 		$this->process_k6_results();
 
-		// Generate reports
+		// Generate reports.
 		$this->generate_reports();
 
 		$this->results_processed = true;
 	}
 
 	private function create_results_directory(): string {
-		$timestamp = date( 'Y-m-d_H-i-s' );
+		$timestamp   = gmdate( 'Y-m-d_H-i-s' );
 		$results_dir = Config::get_qit_dir() . "results/performance/{$this->env_info->sut_slug}_{$timestamp}_{$this->test_run_id}";
 
 		if ( ! file_exists( $results_dir ) ) {
@@ -91,13 +91,13 @@ class PerformanceTestResult {
 
 	private function process_k6_results(): void {
 		$k6_results_file = $this->results_dir . '/k6-results.json';
-		
+
 		if ( ! file_exists( $k6_results_file ) ) {
 			return;
 		}
 
 		$results_content = file_get_contents( $k6_results_file );
-		$results_lines = explode( "\n", trim( $results_content ) );
+		$results_lines   = explode( "\n", trim( $results_content ) );
 
 		$points = [];
 
@@ -118,14 +118,14 @@ class PerformanceTestResult {
 			}
 		}
 
-		// Calculate summary statistics from points
+		// Calculate summary statistics from points.
 		$this->calculate_summary_statistics( $points );
 	}
 
 	private function calculate_summary_statistics( array $points ): void {
 		$http_req_durations = [];
-		$http_req_failed = 0;
-		$http_req_total = 0;
+		$http_req_failed    = 0;
+		$http_req_total     = 0;
 
 		foreach ( $points as $point ) {
 			if ( isset( $point['metric'] ) && $point['metric'] === 'http_req_duration' && isset( $point['data']['value'] ) ) {
@@ -133,7 +133,7 @@ class PerformanceTestResult {
 			} elseif ( isset( $point['metric'] ) && $point['metric'] === 'http_req_failed' && isset( $point['data']['value'] ) ) {
 				$http_req_failed += $point['data']['value'];
 			} elseif ( isset( $point['metric'] ) && $point['metric'] === 'http_reqs' && isset( $point['data']['value'] ) ) {
-				// Count actual HTTP requests, not all data points
+				// Count actual HTTP requests, not all data points.
 				$http_req_total += $point['data']['value'];
 			}
 		}
@@ -172,7 +172,7 @@ class PerformanceTestResult {
 	}
 
 	/**
-	 * Generate both JSON summary and HTML reports
+	 * Generate both JSON summary and HTML reports.
 	 */
 	private function generate_reports(): void {
 		$this->generate_summary_report();
@@ -180,29 +180,29 @@ class PerformanceTestResult {
 	}
 
 	/**
-	 * Generate JSON summary report
+	 * Generate JSON summary report.
 	 */
 	private function generate_summary_report(): void {
 		$duration = $this->end_time - $this->start_time;
-		
+
 		$summary = [
-			'test_run_id' => $this->test_run_id,
-			'sut_slug' => $this->env_info->sut_slug,
-			'sut_type' => $this->env_info->sut_type,
-			'start_time' => date( 'c', $this->start_time ),
-			'end_time' => date( 'c', $this->end_time ),
+			'test_run_id'      => $this->test_run_id,
+			'sut_slug'         => $this->env_info->sut_slug,
+			'sut_type'         => $this->env_info->sut_type,
+			'start_time'       => gmdate( 'c', $this->start_time ),
+			'end_time'         => gmdate( 'c', $this->end_time ),
 			'duration_seconds' => $duration,
-			'site_url' => $this->env_info->site_url,
-			'status' => $this->status,
-			'metrics' => $this->metrics,
-			'result_files' => array_keys( $this->result_files ),
+			'site_url'         => $this->env_info->site_url,
+			'status'           => $this->status,
+			'metrics'          => $this->metrics,
+			'result_files'     => array_keys( $this->result_files ),
 		];
 
 		file_put_contents( $this->results_dir . '/summary.json', json_encode( $summary, JSON_PRETTY_PRINT ) );
 	}
 
 	/**
-	 * Generate HTML report
+	 * Generate HTML report.
 	 */
 	private function generate_html_report(): void {
 		$html = $this->build_html_report();
@@ -210,10 +210,10 @@ class PerformanceTestResult {
 	}
 
 	private function build_html_report(): string {
-		$duration = $this->end_time - $this->start_time;
-		$avg_duration = $this->metrics['summary_http_req_duration_avg'] ?? 0;
-		$p95_duration = $this->metrics['summary_http_req_duration_p95'] ?? 0;
-		$failed_rate = $this->metrics['summary_http_req_failed_rate'] ?? 0;
+		$duration       = $this->end_time - $this->start_time;
+		$avg_duration   = $this->metrics['summary_http_req_duration_avg'] ?? 0;
+		$p95_duration   = $this->metrics['summary_http_req_duration_p95'] ?? 0;
+		$failed_rate    = $this->metrics['summary_http_req_failed_rate'] ?? 0;
 		$total_requests = $this->metrics['summary_http_req_total'] ?? 0;
 
 		return sprintf(
@@ -281,7 +281,7 @@ class PerformanceTestResult {
         </div>',
 			htmlspecialchars( $this->env_info->sut_slug ),
 			htmlspecialchars( $this->test_run_id ),
-			date( 'Y-m-d H:i:s', $this->start_time ),
+			gmdate( 'Y-m-d H:i:s', $this->start_time ),
 			$duration,
 			htmlspecialchars( $this->env_info->site_url ),
 			strtoupper( $this->status )
@@ -317,13 +317,13 @@ class PerformanceTestResult {
 	}
 
 	private function get_status_html(): string {
-		$status_class = match( $this->status ) {
+		$status_class = match ( $this->status ) {
 			'success' => 'status-pass',
 			'warning' => 'status-warn',
 			default => 'status-fail'
 		};
 
-		$status_text = match( $this->status ) {
+		$status_text = match ( $this->status ) {
 			'success' => '✓ PASSED',
 			'warning' => '⚠ WARNING',
 			'failed' => '✗ FAILED',
@@ -343,11 +343,11 @@ class PerformanceTestResult {
 
 	private function get_files_html(): string {
 		$files_html = '<h2>Result Files</h2><ul class="file-list">';
-		
+
 		foreach ( array_keys( $this->result_files ) as $filename ) {
 			$files_html .= '<li>' . htmlspecialchars( $filename ) . '</li>';
 		}
-		
+
 		return $files_html . '</ul>';
 	}
 
@@ -369,44 +369,44 @@ class PerformanceTestResult {
 	}
 
 	/**
-	 * Get environment info - required for LocalTestRunNotifier compatibility
+	 * Get environment info - required for LocalTestRunNotifier compatibility.
 	 */
 	public function get_env_info(): PerformanceEnvInfo {
 		return $this->env_info;
 	}
 
 	/**
-	 * Set test status - required for LocalTestRunNotifier compatibility
+	 * Set test status - required for LocalTestRunNotifier compatibility.
 	 */
 	public function set_status( string $status ): void {
 		$this->status = $status;
 	}
 
 	/**
-	 * Get basic failure information
+	 * Get basic failure information.
 	 */
 	public function get_failure_details(): array {
 		$details = [
 			'failed_thresholds' => [],
-			'failed_checks' => [],
-			'summary' => '',
+			'failed_checks'     => [],
+			'summary'           => '',
 		];
 
-		// For failed tests, provide basic failure information
+		// For failed tests, provide basic failure information.
 		if ( $this->status === 'failed' ) {
-			$failed_rate = $this->metrics['summary_http_req_failed_rate'] ?? 0;
+			$failed_rate  = $this->metrics['summary_http_req_failed_rate'] ?? 0;
 			$p95_duration = $this->metrics['summary_http_req_duration_p95'] ?? 0;
-			
+
 			$issues = [];
-			
-			if ( $failed_rate > 0.1 ) { // >10% failure rate
+
+			if ( $failed_rate > 0.1 ) { // >10% failure rate.
 				$issues[] = sprintf( 'High failure rate: %.1f%%', $failed_rate * 100 );
 			}
-			
-			if ( $p95_duration > 5000 ) { // >5 second response time
+
+			if ( $p95_duration > 5000 ) { // >5 second response time.
 				$issues[] = sprintf( 'Slow response time: %.0fms (p95)', $p95_duration );
 			}
-			
+
 			$details['summary'] = ! empty( $issues ) ? implode( ', ', $issues ) : 'Performance test failed (check K6 output for details)';
 		} else {
 			$details['summary'] = 'Test completed successfully';

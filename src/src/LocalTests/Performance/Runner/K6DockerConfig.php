@@ -40,9 +40,9 @@ class K6DockerConfig {
 
 	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir ): array {
 		$volumes = [
-			Config::get_qit_dir() . 'cache/k6' => '/k6-cache',
-			$env_info->temporary_env . '/k6' => '/tests',
-			$results_dir => '/results',
+			Config::get_qit_dir() . 'cache/k6'             => '/k6-cache',
+			$env_info->temporary_env . '/k6'               => '/tests',
+			$results_dir                                   => '/results',
 			$env_info->temporary_env . '/k6/qitHelpers.js' => '/qitHelpers/qitHelpers.js',
 			$env_info->temporary_env . '/k6/test-info.json' => '/qitHelpers/test-info.json',
 			sys_get_temp_dir() . '/qit-k6-default-test.js' => '/tests/default-performance-test.js',
@@ -60,10 +60,10 @@ class K6DockerConfig {
 	private function get_environment_variables(): array {
 		$env_vars = array_merge(
 			[
-				'BASE_URL' => App::getVar( 'BASE_URL' ),
-				'QIT_DOMAIN' => App::getVar( 'QIT_DOMAIN' ),
+				'BASE_URL'            => App::getVar( 'BASE_URL' ),
+				'QIT_DOMAIN'          => App::getVar( 'QIT_DOMAIN' ),
 				'QIT_INTERNAL_DOMAIN' => App::getVar( 'QIT_INTERNAL_DOMAIN' ),
-				'QIT_INTERNAL_NGINX' => App::getVar( 'QIT_INTERNAL_NGINX' ),
+				'QIT_INTERNAL_NGINX'  => App::getVar( 'QIT_INTERNAL_NGINX' ),
 			],
 			App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? []
 		);
@@ -94,22 +94,25 @@ class K6DockerConfig {
 		return [
 			'grafana/k6:latest',
 			'run',
-			'--duration', '30s',
-			'--vus', '10',
-			'--out', 'json=/results/k6-results.json',
+			'--duration',
+			'30s',
+			'--vus',
+			'10',
+			'--out',
+			'json=/results/k6-results.json',
 		];
 	}
 
 	public function set_environment_variables( PerformanceEnvInfo $env_info ): void {
 		$env_vars = [
-			'BASE_URL' => $env_info->site_url,
-			'QIT_DOMAIN' => $env_info->domain,
+			'BASE_URL'            => $env_info->site_url,
+			'QIT_DOMAIN'          => $env_info->domain,
 			'QIT_INTERNAL_DOMAIN' => "host.docker.internal:{$env_info->nginx_port}",
-			'QIT_INTERNAL_NGINX' => "qitenvnginx{$env_info->env_id}",
+			'QIT_INTERNAL_NGINX'  => "qitenvnginx{$env_info->env_id}",
 		];
 
 		foreach ( $env_vars as $key => $value ) {
 			App::setVar( $key, $value );
 		}
 	}
-} 
+}
