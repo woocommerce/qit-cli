@@ -7,7 +7,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\Performance\PerformanceTestManager;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\OptionReuseTrait;

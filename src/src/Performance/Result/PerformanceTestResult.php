@@ -3,7 +3,7 @@
 namespace QIT_CLI\Performance\Result;
 
 use QIT_CLI\Config;
-use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Performance\Environment\PerformanceEnvInfo;
 
 class PerformanceTestResult {
 	/** @var PerformanceEnvInfo */

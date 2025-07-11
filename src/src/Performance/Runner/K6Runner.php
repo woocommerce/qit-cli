@@ -4,7 +4,7 @@ namespace QIT_CLI\Performance\Runner;
 
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\Performance\Result\PerformanceTestResult;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;

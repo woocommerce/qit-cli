@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Environment\Environments\Performance;
+namespace QIT_CLI\Performance\Environment;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
@@ -258,4 +258,4 @@ class PerformanceEnvironment extends Environment {
 
 		$io->writeln( '' );
 	}
-}
+} 

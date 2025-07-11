@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Environment\Environments\Performance;
+namespace QIT_CLI\Performance\Environment;
 
 use QIT_CLI\Environment\Environments\EnvInfo;
 
@@ -54,4 +54,4 @@ class PerformanceEnvInfo extends EnvInfo {
 	 * }> $tests
 	 */
 	public $tests = [];
-}
+} 
