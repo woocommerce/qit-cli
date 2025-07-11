@@ -56,7 +56,8 @@ class PerformanceTestResult {
 	}
 
 	/**
-	 * @param mixed $value
+	 * @param string $name
+	 * @param mixed  $value
 	 */
 	public function add_metric( string $name, $value ): void {
 		$this->metrics[ $name ] = $value;
@@ -329,19 +330,19 @@ class PerformanceTestResult {
 		switch ( $this->status ) {
 			case 'success':
 				$status_class = 'status-pass';
-				$status_text = '✓ PASSED';
+				$status_text  = '✓ PASSED';
 				break;
 			case 'warning':
 				$status_class = 'status-warn';
-				$status_text = '⚠ WARNING';
+				$status_text  = '⚠ WARNING';
 				break;
 			case 'failed':
 				$status_class = 'status-fail';
-				$status_text = '✗ FAILED';
+				$status_text  = '✗ FAILED';
 				break;
 			default:
 				$status_class = 'status-fail';
-				$status_text = strtoupper( $this->status );
+				$status_text  = strtoupper( $this->status );
 				break;
 		}
 

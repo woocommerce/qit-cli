@@ -35,7 +35,9 @@ class K6Runner {
 	}
 
 	/**
-	 * @param array<mixed> $test_infos
+	 * @param PerformanceEnvInfo    $env_info
+	 * @param array<mixed>          $test_infos
+	 * @param PerformanceTestResult $test_result
 	 */
 	public function run_test( PerformanceEnvInfo $env_info, array $test_infos, PerformanceTestResult $test_result ): int {
 		$this->performance_test_result = $test_result;
