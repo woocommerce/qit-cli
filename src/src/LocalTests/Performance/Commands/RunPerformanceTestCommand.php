@@ -196,8 +196,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	 */
 	private function setup_environment_and_run_tests( array $env_up_options, string $sut, InputInterface $input, OutputInterface $output ): int {
 		// Create environment.
-		/** @var PerformanceEnvInfo $env_info */
 		$env_info = $this->environment_runner->run_environment( $env_up_options );
+
+		// Satisfy Phan check.
+		if ( ! $env_info instanceof PerformanceEnvInfo ) {
+			throw new \RuntimeException( 'Expected PerformanceEnvInfo, got ' . get_class( $env_info ) );
+		}
 
 		// Configure SUT information.
 		$env_info->sut_slug = $sut;
