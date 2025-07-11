@@ -4,7 +4,7 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**

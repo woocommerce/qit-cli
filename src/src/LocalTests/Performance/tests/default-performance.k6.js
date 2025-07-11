@@ -8,8 +8,11 @@ export let options = {
         { duration: "10s", target: 0 },
     ],
     thresholds: {
-        //http_req_duration: ["p(95)<500"],
-        //http_req_failed: ["rate<0.1"],
+        // Performance thresholds - K6 will exit with non-zero if these fail
+        'http_req_duration': ['p(95)<5000'], // 95th percentile under 5 seconds (increased)
+        'http_req_duration{expected_response:true}': ['avg<2000'], // Average response time under 2 seconds (increased)
+        'http_req_failed': ['rate<0.2'], // Error rate under 20% (increased from 10%)
+        'checks': ['rate>0.8'], // At least 80% of checks should pass (decreased from 90%)
     },
 };
 

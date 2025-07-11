@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Performance\Environment;
+namespace QIT_CLI\LocalTests\Performance\Environment;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
@@ -47,94 +47,114 @@ class PerformanceEnvironment extends Environment {
 			throw new \RuntimeException( 'Could not find qit.conf' );
 		}
 
-		// Replace "##QIT_PHP_CONTAINER_PLACEHOLDER##" with the PHP Container.
+		// Replace placeholders and add performance optimizations
 		$qit_conf_contents = file_get_contents( $qit_conf );
-		$qit_conf_contents = str_replace( '##QIT_PHP_CONTAINER_PLACEHOLDER##', sprintf( 'qit_env_php_%s', $this->env_info->env_id ), $qit_conf_contents );
-		$qit_conf_contents = str_replace( '##QIT_DOMAIN_PLACEHOLDER##', $this->env_info->domain, $qit_conf_contents );
+		$qit_conf_contents = str_replace( 
+			[ '##QIT_PHP_CONTAINER_PLACEHOLDER##', '##QIT_DOMAIN_PLACEHOLDER##' ],
+			[ sprintf( 'qit_env_php_%s', $this->env_info->env_id ), $this->env_info->domain ],
+			$qit_conf_contents 
+		);
 		
 		// Add performance-specific nginx optimizations
-		$performance_config = "\n\n# Performance test optimizations\n";
-		$performance_config .= "keepalive_timeout 65;\n";
-		$performance_config .= "keepalive_requests 1000;\n";
-		$performance_config .= "client_max_body_size 64M;\n";
-		$performance_config .= "fastcgi_read_timeout 300s;\n";
-		$performance_config .= "fastcgi_send_timeout 300s;\n";
-		
-		$qit_conf_contents .= $performance_config;
+		$qit_conf_contents .= $this->get_performance_nginx_config();
 		file_put_contents( $qit_conf, $qit_conf_contents );
 	}
 
+	/**
+	 * Get performance-specific nginx configuration
+	 */
+	private function get_performance_nginx_config(): string {
+		return "\n\n# Performance test optimizations\n" .
+			"keepalive_timeout 65;\n" .
+			"keepalive_requests 1000;\n" .
+			"client_max_body_size 64M;\n" .
+			"fastcgi_read_timeout 300s;\n" .
+			"fastcgi_send_timeout 300s;\n";
+	}
+
 	protected function post_up(): void {
+		$this->setup_site_url_and_ports();
+		$this->environment_monitor->environment_added_or_updated( $this->env_info );
+		
+		$this->install_php_extensions();
+		$this->setup_wordpress();
+		$this->activate_plugins_and_themes();
+	}
+
+	/**
+	 * Setup site URL and ports based on tunnel and environment configuration
+	 */
+	private function setup_site_url_and_ports(): void {
 		if ( $this->env_info->tunnel ) {
-			// Host port.
 			$this->env_info->nginx_port = (string) $this->get_nginx_port();
+			$site_url = App::make( TunnelRunner::class )->start_tunnel( 
+				"http://localhost:{$this->env_info->nginx_port}/", 
+				$this->env_info->env_id 
+			);
 
-			$site_url = App::make( TunnelRunner::class )->start_tunnel( "http://localhost:{$this->env_info->nginx_port}/", $this->env_info->env_id );
-
-			$this->env_info->domain     = parse_url( $site_url, PHP_URL_HOST );
+			$this->env_info->domain = parse_url( $site_url, PHP_URL_HOST );
 			$this->env_info->nginx_port = (string) parse_url( $site_url, PHP_URL_PORT );
-
-			// Site URL with explicit port.
-			$this->env_info->site_url = sprintf( $site_url );
+			$this->env_info->site_url = $site_url;
 		} else {
 			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
-				// Inside docker, the port is always 80 (that's what Nginx is listening to).
 				$this->env_info->nginx_port = '80';
-
-				// Site URL without explicit port.
 				$this->env_info->site_url = sprintf( 'http://%s', $this->env_info->domain );
 			} else {
-				// Host port.
 				$this->env_info->nginx_port = (string) $this->get_nginx_port();
-
-				// Site URL with explicit port.
 				$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
 			}
 		}
+	}
 
-		$this->environment_monitor->environment_added_or_updated( $this->env_info );
-
-		/**
-		 * @phpstan-ignore-next-line
-		 */
-		if ( ! empty( $this->env_info->php_extensions ) ) {
-			$this->output->writeln( '<info>Installing PHP extensions...</info>' );
-			// Install PHP extensions, if needed.
-			$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/php-extensions.sh' ], [
-				'PHP_EXTENSIONS' => implode( ' ', $this->env_info->php_extensions ), // Space-separated list of PHP extensions.
-			], '0:0' );
+	/**
+	 * Install PHP extensions if needed
+	 */
+	private function install_php_extensions(): void {
+		if ( empty( $this->env_info->php_extensions ) ) {
+			return;
 		}
 
-		// Copy mu-plugins.
+		$this->output->writeln( '<info>Installing PHP extensions...</info>' );
+		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/php-extensions.sh' ], [
+			'PHP_EXTENSIONS' => implode( ' ', $this->env_info->php_extensions ),
+		], '0:0' );
+	}
+
+	/**
+	 * Setup WordPress installation
+	 */
+	private function setup_wordpress(): void {
+		// Copy mu-plugins
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
 
-		// Setup WordPress.
+		// Install WordPress
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
-			'TUNNEL'            => $this->env_info->tunnel ? 'yes' : 'no',
+			'TUNNEL' => $this->env_info->tunnel ? 'yes' : 'no',
 			'WORDPRESS_VERSION' => $this->env_info->wp,
-			'SITE_URL'          => $this->env_info->site_url,
-			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
+			'SITE_URL' => $this->env_info->site_url,
+			'QIT_DOCKER_REDIS' => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
+	}
 
-		// Activate plugins.
+	/**
+	 * Activate plugins and themes
+	 */
+	private function activate_plugins_and_themes(): void {
+		// Activate plugins
 		if ( ! $this->skip_activating_plugins ) {
 			$this->output->writeln( '<info>Activating plugins...</info>' );
 			$activation_output = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
 			App::make( PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
 		}
 
-		$theme_activation = new ThemeActivation(
-			$this->env_info,
-			$this->docker,
-			$this->output
-		);
-
-		// Activate theme.
+		// Handle themes
+		$theme_activation = new ThemeActivation( $this->env_info, $this->docker, $this->output );
+		
 		if ( ! $this->skip_activating_themes ) {
 			$theme_activation->auto_activate_themes();
 		}
-
+		
 		$theme_activation->maybe_activate_theme_that_is_dependency_of_sut();
 	}
 
