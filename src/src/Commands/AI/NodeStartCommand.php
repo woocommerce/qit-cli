@@ -282,8 +282,9 @@ class NodeStartCommand extends QITCommand {
 				'node_name'    => $node_name,
 			];
 
-			$listenerRegisterUrl = $listenerUrl . '/internal/register';
-			$ch                  = curl_init( $listenerRegisterUrl );
+			// First, validate the payload using the internal validation endpoint
+			$listenerValidateUrl = $listenerUrl . '/internal/register';
+			$ch                  = curl_init( $listenerValidateUrl );
 			curl_setopt_array( $ch, [
 				CURLOPT_POST           => true,
 				CURLOPT_POSTFIELDS     => json_encode( $registration_data ),
@@ -293,17 +294,32 @@ class NodeStartCommand extends QITCommand {
 					'X-Node-Token: ' . $node_token,
 				],
 				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_TIMEOUT        => 30,
+				CURLOPT_TIMEOUT        => 100,
 			] );
-			$response_json = curl_exec( $ch );
-			if ( $response_json === false ) {
-				throw new \RuntimeException( 'Local /internal/register failed: ' . curl_error( $ch ) );
+			$validation_response_json = curl_exec( $ch );
+			if ( $validation_response_json === false ) {
+				throw new \RuntimeException( 'Local validation failed: ' . curl_error( $ch ) );
 			}
-			$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+			$validation_http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 			curl_close( $ch );
-			if ( ! in_array( $httpCode, [ 200, 201 ], true ) ) {
-				throw new \RuntimeException( "Registration failed, HTTP $httpCode: $response_json" );
+
+			if ( $validation_http_code !== 200 ) {
+				throw new \RuntimeException( "Validation failed, HTTP $validation_http_code: $validation_response_json" );
 			}
+
+			$validation_response = json_decode( $validation_response_json, true );
+			if ( ! $validation_response['valid'] ) {
+				$errors = implode( ', ', $validation_response['errors'] ?? [] );
+				throw new \RuntimeException( "Registration data validation failed: $errors" );
+			}
+
+			// Validation passed, now dispatch directly to Manager
+			$response_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/ai-nodes/register' ) )
+				->with_method( 'POST' )
+				->with_post_body( $registration_data )
+				->with_expected_status_codes( [ 200, 201 ] )
+				->with_retry( 3 )
+				->request();
 
 			$response = json_decode( $response_json, true );
 

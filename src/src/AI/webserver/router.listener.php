@@ -116,7 +116,7 @@ switch ( "$method $uri" ) {
 		break;
 
 	/* ──────────────────────────────────────────
-	 * Internal: node registration
+	 * Internal: payload validation
 	 * ──────────────────────────────────────────*/
 	case 'POST /internal/register':
 		// 0. Validate secret first
@@ -134,29 +134,12 @@ switch ( "$method $uri" ) {
 		$validator  = JsonSchemaValidator::getInstance();
 		$validation = $validator->validateOutbound($registration, 'node-registration');
 
-		if (!$validation['valid']) {
-			http_response_code(400);
-			echo json_encode([
-				'error'   => 'JSON‑schema validation failed',
-				'details' => $validation['errors'],
-			]);
-			break;
-		}
-
-		// Send to Manager using the same outbound helper the worker already uses
-		try {
-			$request  = QIT_AI_Webserver\Lib\OutboundRequest::nodeRegistration(
-				getenv('QIT_MANAGER_URL') . '/wp-json/cd/v1/ai-nodes/register',
-				$registration
-			);
-			$reply    = $request->send();          // { success, status, body }
-
-			http_response_code($reply['status_code']);
-			echo $reply['response'];                   // relay original JSON
-		} catch (\Throwable $e) {
-			http_response_code(500);
-			echo json_encode(['error' => $e->getMessage()]);
-		}
+		// Return validation result only
+		http_response_code(200);
+		echo json_encode([
+			'valid'   => $validation['valid'],
+			'errors'  => $validation['errors'] ?? [],
+		]);
 		break;
 
 	default:
