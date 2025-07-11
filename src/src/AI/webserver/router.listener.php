@@ -17,13 +17,16 @@ switch ( "$method $uri" ) {
 	case 'POST /process':
 		$task = $input ?? [];
 
-		// Check if node is busy
+		// Check if node is busy using atomic flock to prevent race conditions
 		$busyFile = getenv( 'QIT_NODE_DIR' ) . '/busy.lock';
-		if ( file_exists( $busyFile ) ) {
-			http_response_code( 409 );                  // Node-Busy
+		$fp = fopen($busyFile, 'w');
+		if (!flock($fp, LOCK_EX | LOCK_NB)) {  // Atomic check+lock
+			fclose($fp);
+			http_response_code(503);  // Better than 409; Service Unavailable
 			echo json_encode( [ 'error' => 'busy' ] );
 			break;
 		}
+		// Hold lock briefly (release after forward attempt)
 
 		// ── strict validation ─────────────────────────────────────────
 		$allowed  = [
@@ -71,9 +74,6 @@ switch ( "$method $uri" ) {
 		}
 		// ──────────────────────────────────────────────────────────────
 
-		// Mark busy *before* forking
-		file_put_contents( $busyFile, '1' );
-
 		// Fire-and-forget call to worker
 		$workerUrl = getenv( 'QIT_WORKER_URL' );
 		$ch = curl_init( "$workerUrl/run-job" );
@@ -86,10 +86,14 @@ switch ( "$method $uri" ) {
 			],
 			// detach – we don't care about the reply
 			CURLOPT_RETURNTRANSFER => false,
-			CURLOPT_TIMEOUT_MS     => 1,
+			CURLOPT_TIMEOUT_MS     => 100,  // Increased from 1ms to 100ms for reliability
 		] );
 		curl_exec( $ch );
 		curl_close( $ch );
+
+		// Release the lock after forward attempt
+		flock($fp, LOCK_UN); 
+		fclose($fp);
 
 		http_response_code( 202 );
 		echo json_encode( [ 'status' => 'accepted' ] );

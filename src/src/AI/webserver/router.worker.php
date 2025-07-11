@@ -41,24 +41,51 @@ $callback_sender = new CallbackSender();
 
 if ( $method === 'POST' && $uri === '/run-job' ) {
 	$task = $input;                    // already validated by listener
+	$taskId = $task['job_id'];
+	$callback_url = $task['callback_url'];
 	$type = $task['type'];
+
+	log_info('Starting job', ['job_id' => $taskId, 'type' => $type]);  // Add logging
 
 	$start = microtime( true );
 	try {
 		$result = $endpoints[ $type ]->handle( $task );      // ← same endpoint map you already have
-		$ok     = $callback_sender->sendCallback(
-			$task['callback_url'],
-			$task['action_id'] ?? $task['job_id'],
-			json_decode( $result, true ),
-			(int) ( ( microtime( true ) - $start ) * 1000 )
+
+		$processing_time = round((microtime(true) - $start) * 1000);
+
+		// Restore original parse/log
+		log_info( 'Endpoint handler result', [
+			'task_id'       => $taskId,
+			'type'          => $type,
+			'result_length' => strlen( $result ),
+			'result_starts' => substr( $result, 0, 50 ) . '...',
+			'processing_time_ms' => $processing_time
+		] );
+
+		$decoded_result = json_decode( $result, true );
+		if (json_last_error() !== JSON_ERROR_NONE) {
+			throw new RuntimeException("Invalid JSON response from endpoint: " . json_last_error_msg());
+		}
+
+		$tool_calls = $decoded_result['_tool_calls'] ?? [];
+		$metadata = $decoded_result['_metadata'] ?? [];
+		unset($decoded_result['_processing_time'], $decoded_result['_tool_calls'], $decoded_result['_metadata']);
+
+		$ok = $callback_sender->sendCallback(
+			$callback_url,
+			$task['action_id'] ?? $taskId,
+			$decoded_result,
+			$processing_time,
+			$tool_calls,
+			$metadata
 		);
 		if ( ! $ok ) throw new RuntimeException( 'callback failed' );
 		http_response_code( 200 );
 		echo '{"status":"done"}';
 	} catch ( \Throwable $e ) {
 		$callback_sender->sendErrorCallback(
-			$task['callback_url'],
-			$task['action_id'] ?? $task['job_id'],
+			$callback_url,
+			$task['action_id'] ?? $taskId,
 			$e->getMessage()
 		);
 		http_response_code( 500 );
@@ -67,6 +94,8 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 		// clear busy flag so the next /process can succeed
 		@unlink( getenv( 'QIT_NODE_DIR' ) . '/busy.lock' );
 	}
+
+	log_info('Finished job', ['job_id' => $taskId]);  // Add logging
 	return;
 }
 

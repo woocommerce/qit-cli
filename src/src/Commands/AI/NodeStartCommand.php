@@ -36,6 +36,7 @@ class NodeStartCommand extends QITCommand {
 	private Logger $logger;
 
 	private string $workerUrl = '';
+	private string $runDir = '';
 
 	public function __construct(
 		TunnelRunner $tunnel_runner,
@@ -69,6 +70,7 @@ class NodeStartCommand extends QITCommand {
 		// ---------------------------------------------------------------------
 		$runId  = date( 'Ymd-His' ) . '-' . substr( bin2hex( random_bytes( 2 ) ), 0, 4 );
 		$runDir = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$runId/";
+		$this->runDir = $runDir;  // Store for use in heartbeat
 		$logDir = $runDir;                    // keep logs in the same folder
 
 
@@ -287,17 +289,29 @@ class NodeStartCommand extends QITCommand {
 
 			$output->writeln( '<info>✓ Registered with node ID: ' . $this->node_id . '</info>' );
 
- 		// Set environment variables for the worker
- 		$this->worker->setEnvironmentVariable( 'QIT_NODE_ID', $this->node_id );
- 		$this->worker->setEnvironmentVariable( 'QIT_NODE_TOKEN', $this->node_token );
- 		$this->worker->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
+			// Set environment variables for the worker now that we have node credentials
+			$this->worker->setEnvironmentVariable( 'QIT_NODE_ID', $this->node_id );
+			$this->worker->setEnvironmentVariable( 'QIT_NODE_TOKEN', $this->node_token );
+			$this->worker->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
 
- 		// Start the worker now that we have the node ID
- 		$this->workerUrl = $this->worker->start();
- 		$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
+			// Start the worker now that we have the node ID
+			$this->workerUrl = $this->worker->start();
+			$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
 
- 		// NEW – hand the worker URL to the listener via env-var
- 		$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->workerUrl );
+			// Set the worker URL for the listener and restart it to pick up the new env var
+			$this->listener->stop();
+			$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->workerUrl );
+			$listenerUrl = $this->listener->start();
+			$output->writeln( '<info>✓ Restarted listener with worker URL</info>' );
+
+			// Update tunnel if needed
+			if ( $input->getOption( 'tunnel' ) !== 'none' ) {
+				$this->tunnel_runner->stop_tunnel( $this->env_id );
+				$this->tunnel_url = $this->tunnel_runner->start_tunnel( $listenerUrl, $this->env_id );
+				$output->writeln( '<info>✓ Updated tunnel: ' . $this->tunnel_url . '</info>' );
+			} else {
+				$this->tunnel_url = $listenerUrl;
+			}
 
  		// Clear any stale busy.lock file at startup
  		@unlink( $runDir . '/busy.lock' );
@@ -434,8 +448,12 @@ class NodeStartCommand extends QITCommand {
 				$this->logger->debug( 'No error file found for heartbeat' );
 			}
 
+			// Check busy status for heartbeat
+			$busy = file_exists( $this->runDir . '/busy.lock' ) ? 1 : 0;
+
 			$heartbeat_data = [
 				'node_token'  => $this->node_token,
+				'busy'        => $busy,
 				'last_error'  => $last_error,
 				'system_info' => [
 					'memory_usage' => $memory_usage,
@@ -540,11 +558,10 @@ class NodeStartCommand extends QITCommand {
 			$this->logger->warning( 'Skipping unregister - node_id or node_token not set' );
 		}
 
-		// Stop poller
-		if ( $this->poller && $this->poller->isRunning() ) {
-			$this->logger->info( 'Stopping poller process' );
-			$this->poller->stop();
-			$this->logger->debug( 'Poller process stopped' );
+		// Clear busy.lock file on shutdown
+		if ( ! empty( $this->runDir ) ) {
+			@unlink( $this->runDir . '/busy.lock' );
+			$this->logger->debug( 'Cleared busy.lock file on shutdown' );
 		}
 
 		// Stop worker server
