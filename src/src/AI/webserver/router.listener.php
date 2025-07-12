@@ -82,8 +82,9 @@ switch ( "$method $uri" ) {
 
 		if ( ! $validation['valid'] ) {
 			http_response_code( 400 );
+			$errorDetails = implode('; ', $validation['errors']);
 			echo json_encode( [
-				'error'   => 'JSON Schema validation failed',
+				'error'   => 'JSON Schema validation failed: ' . $errorDetails,
 				'details' => $validation['errors']
 			] );
 			break;
@@ -156,7 +157,8 @@ switch ( "$method $uri" ) {
 			$inbound   = $validator->validateInbound($input ?? [], 'collect-logs');
 			if (!$inbound['valid']) {
 				http_response_code(400);
-				echo json_encode(['error'=>'schema_error','details'=>$inbound['errors']]); break;
+				$errorDetails = implode('; ', $inbound['errors']);
+				echo json_encode(['error'=>'schema_error: ' . $errorDetails,'details'=>$inbound['errors']]); break;
 			}
 
 			$params = $input ?? [];
