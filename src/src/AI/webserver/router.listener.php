@@ -22,10 +22,10 @@ switch ( "$method $uri" ) {
 
 		// Check if node is busy using atomic flock to prevent race conditions
 		$busyFile = getenv( 'QIT_NODE_DIR' ) . '/busy.lock';
-		$fp = fopen($busyFile, 'w');
-		if (!flock($fp, LOCK_EX | LOCK_NB)) {  // Atomic check+lock
-			fclose($fp);
-			http_response_code(503);  // Better than 409; Service Unavailable
+		$fp       = fopen( $busyFile, 'w' );
+		if ( ! flock( $fp, LOCK_EX | LOCK_NB ) ) {  // Atomic check+lock
+			fclose( $fp );
+			http_response_code( 503 );  // Better than 409; Service Unavailable
 			echo json_encode( [ 'error' => 'busy' ] );
 			break;
 		}
@@ -77,13 +77,13 @@ switch ( "$method $uri" ) {
 		}
 
 		// JSON Schema validation
-		$validator = JsonSchemaValidator::getInstance();
+		$validator  = JsonSchemaValidator::getInstance();
 		$validation = $validator->validateInbound( $task, $task['type'] );
 
 		if ( ! $validation['valid'] ) {
 			http_response_code( 400 );
-			echo json_encode( [ 
-				'error' => 'JSON Schema validation failed',
+			echo json_encode( [
+				'error'   => 'JSON Schema validation failed',
 				'details' => $validation['errors']
 			] );
 			break;
@@ -92,7 +92,7 @@ switch ( "$method $uri" ) {
 
 		// Fire-and-forget call to worker
 		$workerUrl = getenv( 'QIT_WORKER_URL' );
-		$ch = curl_init( "$workerUrl/run-job" );
+		$ch        = curl_init( "$workerUrl/run-job" );
 		curl_setopt_array( $ch, [
 			CURLOPT_POST           => true,
 			CURLOPT_POSTFIELDS     => json_encode( $task ),
@@ -108,8 +108,8 @@ switch ( "$method $uri" ) {
 		curl_close( $ch );
 
 		// Release the lock after forward attempt
-		flock($fp, LOCK_UN); 
-		fclose($fp);
+		flock( $fp, LOCK_UN );
+		fclose( $fp );
 
 		http_response_code( 202 );
 		echo json_encode( [ 'status' => 'accepted' ] );
@@ -120,11 +120,11 @@ switch ( "$method $uri" ) {
 	 * ──────────────────────────────────────────*/
 	case 'POST /internal/register':
 		// 0. Validate secret first
-		$expected = getenv('QIT_INTERNAL_TOKEN');
-		$provided = $headers['x-internal-token'] ?? ($headers['X-Internal-Token'] ?? null);
+		$expected = getenv( 'QIT_INTERNAL_TOKEN' );
+		$provided = $headers['x-internal-token'] ?? ( $headers['X-Internal-Token'] ?? null );
 
-		if (!is_string($expected) || !hash_equals($expected, (string) $provided)) {
-			http_response_code(403);
+		if ( ! is_string( $expected ) || ! hash_equals( $expected, (string) $provided ) ) {
+			http_response_code( 403 );
 			echo '{"error":"forbidden"}';
 			break;
 		}
@@ -132,14 +132,75 @@ switch ( "$method $uri" ) {
 		$registration = $input;                    // raw JSON from CLI
 
 		$validator  = JsonSchemaValidator::getInstance();
-		$validation = $validator->validateOutbound($registration, 'node-registration');
+		$validation = $validator->validateOutbound( $registration, 'node-registration' );
 
 		// Return validation result only
-		http_response_code(200);
-		echo json_encode([
-			'valid'   => $validation['valid'],
-			'errors'  => $validation['errors'] ?? [],
-		]);
+		http_response_code( 200 );
+		echo json_encode( [
+			'valid'  => $validation['valid'],
+			'errors' => $validation['errors'] ?? [],
+		] );
+		break;
+
+	/* ──────────────────────────────────────────
+	 *  NEW: Log bundle for remote debugging
+	 *  Route:  POST /collect-logs
+	 *  Auth:   X-Node-Token (already enforced by qit_http_request)
+	 *  Body:   { "since": "2025-07-12T00:00:00Z", "glob": "*.log" }
+	 *  Resp:   { "archive": "<base64(gzip(tar))>" }
+	 *  Note:   Zero DB writes – temp files live inside QIT_NODE_DIR.
+	 * ──────────────────────────────────────────*/
+	case 'POST /collect-logs':
+		try {
+			$validator = JsonSchemaValidator::getInstance();
+			$inbound   = $validator->validateInbound($input ?? [], 'collect-logs');
+			if (!$inbound['valid']) {
+				http_response_code(400);
+				echo json_encode(['error'=>'schema_error','details'=>$inbound['errors']]); break;
+			}
+
+			$params = $input ?? [];
+			$since  = isset($params['since']) ? strtotime($params['since']) : null;
+			$glob   = $params['glob']  ?? '*.log';
+
+			$logDir = dirname(getenv('QIT_LOG_FILE'));
+			$iter   = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator($logDir, RecursiveDirectoryIterator::SKIP_DOTS)
+			);
+
+			$files = [];
+			foreach ($iter as $f) {
+				if (!$f->isFile()) continue;
+				if (!fnmatch($glob, $f->getFilename())) continue;
+				if ($since && $f->getMTime() < $since) continue;
+				$files[] = $f->getPathname();
+			}
+
+			if ($files === []) {
+				$payload = ['status'=>'no_logs','archive'=>null];
+				$validator->validateOutbound($payload,'collect-logs-response'); // assert
+				echo json_encode($payload); break;
+			}
+
+			$tmpBase = rtrim(getenv('QIT_NODE_DIR'),'/');
+			$tarPath = tempnam($tmpBase,'qit-logs-').'.tar';
+			$tar     = new PharData($tarPath);
+			foreach ($files as $p) $tar->addFile($p, basename($p));
+			$tar->compress(Phar::GZ);
+			unset($tar); unlink($tarPath);
+
+			$gzPath = $tarPath.'.gz';
+			$b64    = base64_encode(file_get_contents($gzPath));
+			unlink($gzPath);
+
+			$payload = ['status'=>'ok','archive'=>$b64];
+			$validator->validateOutbound($payload,'collect-logs-response');
+
+			echo json_encode($payload);
+		} catch (Throwable $e) {
+			http_response_code(500);
+			echo json_encode(['error'=>'collect_logs_failed','detail'=>$e->getMessage()]);
+		}
 		break;
 
 	default:

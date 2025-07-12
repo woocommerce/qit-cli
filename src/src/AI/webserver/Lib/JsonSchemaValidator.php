@@ -3,6 +3,7 @@
 namespace QIT_AI_Webserver\Lib;
 
 use JsonSchema\Validator;
+use JsonSchema\Constraints\Constraint;
 
 /**
  * JSON Schema Validator for QIT AI Webserver
@@ -81,7 +82,7 @@ class JsonSchemaValidator {
 
         $validator = new Validator;
         $payloadObject = json_decode(json_encode($payload)); // Convert array to object
-        $validator->validate($payloadObject, $schema);
+        $validator->validate($payloadObject, $schema, Constraint::CHECK_MODE_TYPE_CAST);
 
         if ($validator->isValid()) {
             return [
