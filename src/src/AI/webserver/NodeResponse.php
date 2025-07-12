@@ -87,7 +87,6 @@ class NodeResponse {
 
     /**
      * Tool execution response (AI with tools)
-     * Used by PromptWithToolsEndpoint
      * 
      * @param string $response Final AI response
      * @param array $toolCalls Tool execution records

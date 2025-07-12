@@ -18,7 +18,6 @@ qit_llm_boot( [
 use QIT_AI_Webserver\Lib\CallbackSender;
 use QIT_AI_Webserver\Endpoints\{
 	BasicPromptEndpoint,
-	PromptWithToolsEndpoint,
 	ZipExtractionEndpoint,
 	FileReadingEndpoint,
 	VulnerabilityScanEndpoint
@@ -26,7 +25,6 @@ use QIT_AI_Webserver\Endpoints\{
 
 $endpoints = [
 	'basic-prompt'       => new BasicPromptEndpoint(),
-	'prompt-with-tools'  => new PromptWithToolsEndpoint(),
 	'extract-zip'        => new ZipExtractionEndpoint(),
 	'read-file'          => new FileReadingEndpoint(),
 	'vulnerability-scan' => new VulnerabilityScanEndpoint(),

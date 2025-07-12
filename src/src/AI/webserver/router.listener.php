@@ -34,14 +34,12 @@ switch ( "$method $uri" ) {
 		// ── strict validation ─────────────────────────────────────────
 		$allowed  = [
 			'basic-prompt',
-			'prompt-with-tools',
 			'read-file',
 			'extract-zip',
 			'vulnerability-scan'
 		];
 		$required = [
 			'basic-prompt'       => [ 'job_id', 'type', 'messages', 'model' ],
-			'prompt-with-tools'  => [ 'job_id', 'type', 'messages', 'model' ],
 			'read-file'          => [ 'job_id', 'type', 'file', 'extract_path', 'session_id' ],
 			'extract-zip'        => [ 'job_id', 'type', 'zip_url', 'session_id' ],
 			'vulnerability-scan' => [ 'job_id', 'type', 'vulnerability', 'model' ],
