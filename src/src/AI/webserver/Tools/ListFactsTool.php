@@ -20,7 +20,7 @@ class ListFactsTool extends BaseTool {
 		$params = [
 			new Parameter( 'step', 'integer', 'Filter by step index (optional)' ),
 			new Parameter( 'kind', 'string', 'Filter by fact kind   (optional)' ),
-			new Parameter( 'limit', 'integer', 'Max items to return (default 20)' )
+			new Parameter( 'limit', 'integer', 'Max items to return (default 20)' ),
 		];
 
 		return new FunctionInfo(
@@ -47,8 +47,8 @@ class ListFactsTool extends BaseTool {
 		return [
 			'results'   => FactStore::list( $p['step'] ?? null,
 				$p['kind'] ?? null,
-				$p['limit'] ?? 20 ),
-			'truncated' => false
+			$p['limit'] ?? 20 ),
+			'truncated' => false,
 		];
 	}
 }

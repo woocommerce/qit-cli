@@ -8,20 +8,20 @@ require_once __DIR__ . '/Lib/JsonSchemaValidator.php';
 
 use QIT_AI_Webserver\Lib\JsonSchemaValidator;
 
-$result  = qit_http_request( true );
-$method  = $result['method'];
-$uri     = $result['uri'];
+$result = qit_http_request( true );
+$method = $result['method'];
+$uri    = $result['uri'];
 // Normalise URI – PHP built-in server may append a trailing semicolon
 // (e.g. "/process;"). Strip it so switch cases match consistently.
-$uri = rtrim($uri, ';');
+$uri     = rtrim( $uri, ';' );
 $headers = $result['headers'];
 $input   = $result['input'];
 
 // Log every inbound HTTP request (excluding potentially large bodies)
 log_info('Inbound request', [
-    'method' => $method,
-    'uri'    => $uri,
-    'remote' => $_SERVER['REMOTE_ADDR'] ?? 'cli'
+	'method' => $method,
+	'uri'    => $uri,
+	'remote' => $_SERVER['REMOTE_ADDR'] ?? 'cli',
 ]);
 
 qit_llm_boot();                                     // listener sometimes proxies LLM
@@ -47,7 +47,7 @@ switch ( "$method $uri" ) {
 			'basic-prompt',
 			'read-file',
 			'extract-zip',
-			'vulnerability-scan'
+			'vulnerability-scan',
 		];
 		$required = [
 			'basic-prompt'       => [ 'job_id', 'type', 'messages', 'model' ],
@@ -60,7 +60,7 @@ switch ( "$method $uri" ) {
 		foreach ( [ 'job_id', 'type', 'callback_url' ] as $key ) {
 			if ( ! isset( $task[ $key ] ) ) {
 				log_warning( 'Rejecting /process – missing field', [
-					'field' => $key,
+					'field'  => $key,
 					'job_id' => $task['job_id'] ?? 'unknown',
 					'type'   => $task['type'] ?? 'unknown',
 					'remote' => $_SERVER['REMOTE_ADDR'] ?? 'cli',
@@ -75,7 +75,7 @@ switch ( "$method $uri" ) {
 		if ( ! filter_var( $task['callback_url'], FILTER_VALIDATE_URL ) ) {
 			log_warning( 'Rejecting /process – invalid callback_url', [
 				'callback_url' => $task['callback_url'],
-				'job_id' => $task['job_id'] ?? 'unknown',
+				'job_id'       => $task['job_id'] ?? 'unknown',
 			] );
 			http_response_code( 400 );
 			echo json_encode( [ 'error' => 'Invalid callback_url format' ] );
@@ -94,9 +94,9 @@ switch ( "$method $uri" ) {
 		foreach ( $required[ $task['type'] ] as $key ) {
 			if ( ! array_key_exists( $key, $task ) ) {
 				log_warning( 'Rejecting /process – missing field for type', [
-					'type' => $task['type'],
-					'field'=> $key,
-					'job_id'=> $task['job_id'] ?? 'unknown',
+					'type'   => $task['type'],
+					'field'  => $key,
+					'job_id' => $task['job_id'] ?? 'unknown',
 				] );
 				http_response_code( 400 );
 				echo json_encode( [ 'error' => "Missing required field for {$task['type']}: $key" ] );
@@ -114,16 +114,16 @@ switch ( "$method $uri" ) {
 				'job_id' => $task['job_id'] ?? 'unknown',
 			] );
 			http_response_code( 400 );
-			$errorDetails = implode('; ', $validation['errors']);
+			$errorDetails = implode( '; ', $validation['errors'] );
 			echo json_encode( [
 				'error'   => 'JSON Schema validation failed: ' . $errorDetails,
-				'details' => $validation['errors']
+				'details' => $validation['errors'],
 			] );
 			break;
 		} else {
 			log_debug('Inbound validation passed', [
 				'job_id' => $task['job_id'] ?? 'unknown',
-				'type'   => $task['type']
+				'type'   => $task['type'],
 			]);
 		}
 		// ──────────────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ switch ( "$method $uri" ) {
 			CURLOPT_POSTFIELDS     => json_encode( $task ),
 			CURLOPT_HTTPHEADER     => [
 				'Content-Type: application/json',
-				'X-Node-Token: ' . getenv( 'QIT_NODE_TOKEN' )
+				'X-Node-Token: ' . getenv( 'QIT_NODE_TOKEN' ),
 			],
 			// detach – we don't care about the reply
 			CURLOPT_RETURNTRANSFER => false,
@@ -163,7 +163,8 @@ switch ( "$method $uri" ) {
 		echo json_encode( [ 'status' => 'accepted' ] );
 		break;
 
-	/* ──────────────────────────────────────────
+	/*
+	──────────────────────────────────────────
 	 * Internal: payload validation
 	 * ──────────────────────────────────────────*/
 	case 'POST /internal/register':
@@ -190,7 +191,8 @@ switch ( "$method $uri" ) {
 		] );
 		break;
 
-	/* ──────────────────────────────────────────
+	/*
+	──────────────────────────────────────────
 	 *  NEW: Log bundle for remote debugging
 	 *  Route:  POST /collect-logs
 	 *  Auth:   X-Node-Token (already enforced by qit_http_request)
@@ -201,59 +203,82 @@ switch ( "$method $uri" ) {
 	case 'POST /collect-logs':
 		try {
 			$validator = JsonSchemaValidator::getInstance();
-			$inbound   = $validator->validateInbound($input ?? [], 'collect-logs');
-			if (!$inbound['valid']) {
+			$inbound   = $validator->validateInbound( $input ?? [], 'collect-logs' );
+			if ( ! $inbound['valid'] ) {
 				log_warning('collect-logs validation failed', [
-					'errors' => $inbound['errors']
+					'errors' => $inbound['errors'],
 				]);
-				http_response_code(400);
-				$errorDetails = implode('; ', $inbound['errors']);
-				echo json_encode(['error'=>'schema_error: ' . $errorDetails,'details'=>$inbound['errors']]); break;
+				http_response_code( 400 );
+				$errorDetails = implode( '; ', $inbound['errors'] );
+				echo json_encode( [
+					'error'   => 'schema_error: ' . $errorDetails,
+					'details' => $inbound['errors'],
+				] );
+				break;
 			} else {
-				log_debug('collect-logs validation passed');
+				log_debug( 'collect-logs validation passed' );
 			}
 
 			$params = $input ?? [];
-			$since  = isset($params['since']) ? strtotime($params['since']) : null;
-			$glob   = $params['glob']  ?? '*.log';
+			$since  = isset( $params['since'] ) ? strtotime( $params['since'] ) : null;
+			$glob   = $params['glob'] ?? '*.log';
 
-			$logDir = dirname(getenv('QIT_LOG_FILE'));
+			$logDir = dirname( getenv( 'QIT_LOG_FILE' ) );
 			$iter   = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator($logDir, RecursiveDirectoryIterator::SKIP_DOTS)
+				new RecursiveDirectoryIterator( $logDir, RecursiveDirectoryIterator::SKIP_DOTS )
 			);
 
 			$files = [];
-			foreach ($iter as $f) {
-				if (!$f->isFile()) continue;
-				if (!fnmatch($glob, $f->getFilename())) continue;
-				if ($since && $f->getMTime() < $since) continue;
+			foreach ( $iter as $f ) {
+				if ( ! $f->isFile() ) {
+					continue;
+				}
+				if ( ! fnmatch( $glob, $f->getFilename() ) ) {
+					continue;
+				}
+				if ( $since && $f->getMTime() < $since ) {
+					continue;
+				}
 				$files[] = $f->getPathname();
 			}
 
-			if ($files === []) {
-				$payload = ['status'=>'no_logs','archive'=>null];
-				$validator->validateOutbound($payload,'collect-logs-response'); // assert
-				echo json_encode($payload); break;
+			if ( $files === [] ) {
+				$payload = [
+					'status'  => 'no_logs',
+					'archive' => null,
+				];
+				$validator->validateOutbound( $payload, 'collect-logs-response' ); // assert
+				echo json_encode( $payload );
+				break;
 			}
 
-			$tmpBase = rtrim(getenv('QIT_NODE_DIR'),'/');
-			$tarPath = tempnam($tmpBase,'qit-logs-').'.tar';
-			$tar     = new PharData($tarPath);
-			foreach ($files as $p) $tar->addFile($p, basename($p));
-			$tar->compress(Phar::GZ);
-			unset($tar); unlink($tarPath);
+			$tmpBase = rtrim( getenv( 'QIT_NODE_DIR' ), '/' );
+			$tarPath = tempnam( $tmpBase, 'qit-logs-' ) . '.tar';
+			$tar     = new PharData( $tarPath );
+			foreach ( $files as $p ) {
+				$tar->addFile( $p, basename( $p ) );
+			}
+			$tar->compress( Phar::GZ );
+			unset( $tar );
+			unlink( $tarPath );
 
-			$gzPath = $tarPath.'.gz';
-			$b64    = base64_encode(file_get_contents($gzPath));
-			unlink($gzPath);
+			$gzPath = $tarPath . '.gz';
+			$b64    = base64_encode( file_get_contents( $gzPath ) );
+			unlink( $gzPath );
 
-			$payload = ['status'=>'ok','archive'=>$b64];
-			$validator->validateOutbound($payload,'collect-logs-response');
+			$payload = [
+				'status'  => 'ok',
+				'archive' => $b64,
+			];
+			$validator->validateOutbound( $payload, 'collect-logs-response' );
 
-			echo json_encode($payload);
-		} catch (Throwable $e) {
-			http_response_code(500);
-			echo json_encode(['error'=>'collect_logs_failed','detail'=>$e->getMessage()]);
+			echo json_encode( $payload );
+		} catch ( Throwable $e ) {
+			http_response_code( 500 );
+			echo json_encode( [
+				'error'  => 'collect_logs_failed',
+				'detail' => $e->getMessage(),
+			] );
 		}
 		break;
 

@@ -50,7 +50,7 @@ define execPhpAlpine
 		--workdir "$(2:=/)" \
 		--add-host=host.docker.internal:host-gateway \
 		qit-cli-tests:$(PHP_VERSION) \
-		bash -c "php $(XDEBUG_FLAGS) $(1)"
+		bash -c "php -d memory_limit=2G $(XDEBUG_FLAGS) $(1)"
 endef
 
 watch:

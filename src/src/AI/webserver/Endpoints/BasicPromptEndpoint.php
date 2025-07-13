@@ -29,7 +29,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 	 * @return string JSON response
 	 */
 	public function handle( array $input ): string {
-		$this->log_info( "Processing basic AI request" );
+		$this->log_info( 'Processing basic AI request' );
 
 		try {
 			// Get model and provider info from bootstrapped LLPhant integration
@@ -46,11 +46,11 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				$this->chat->setModelOption( 'response_format', $input['response_format'] );
 			}
 
-			$this->log_info( "Starting AI processing", [
+			$this->log_info( 'Starting AI processing', [
 				'job_id'        => $input['job_id'] ?? 'unknown',
 				'message_count' => count( $messages ),
 				'has_schema'    => isset( $input['response_format'] ) ? 'yes' : 'no',
-				'has_options'   => isset( $input['options'] ) ? 'yes' : 'no'
+				'has_options'   => isset( $input['options'] ) ? 'yes' : 'no',
 			] );
 
 			// Make the API call using chat with additional error handling
@@ -70,11 +70,11 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 				'response' => trim( (string) $result ),
 				'duration' => $elapsed,
 				'model'    => $model,
-				'provider' => $provider
+				'provider' => $provider,
 			];
 
 			// Log performance metrics
-			$this->log_info( "AI processing completed successfully", [
+			$this->log_info( 'AI processing completed successfully', [
 				'job_id'          => $input['job_id'] ?? 'unknown',
 				'model'           => $response['model'],
 				'provider'        => $response['provider'],
@@ -83,7 +83,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			] );
 
 			// Log response structure before formatting
-			$this->log_info( "Response structure before formatting", [
+			$this->log_info( 'Response structure before formatting', [
 				'job_id'          => $input['job_id'] ?? 'unknown',
 				'response_type'   => gettype( $response['response'] ),
 				'response_starts' => substr( $response['response'], 0, 50 ) . '...',
@@ -100,10 +100,10 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			);
 
 			// Log the formatted response structure
-			$this->log_info( "Formatted response structure", [
-				'job_id'           => $input['job_id'] ?? 'unknown',
-				'response_length'  => strlen( $formatted_response ),
-				'response_starts'  => substr( $formatted_response, 0, 50 ) . '...',
+			$this->log_info( 'Formatted response structure', [
+				'job_id'          => $input['job_id'] ?? 'unknown',
+				'response_length' => strlen( $formatted_response ),
+				'response_starts' => substr( $formatted_response, 0, 50 ) . '...',
 			] );
 
 			return $formatted_response;
@@ -113,7 +113,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			return $this->handleError( $e, [
 				'job_id'   => $input['job_id'] ?? null,
 				'model'    => $input['model'] ?? 'unknown',
-				'job_type' => $input['type'] ?? 'unknown'
+				'job_type' => $input['type'] ?? 'unknown',
 			] );
 		}
 	}

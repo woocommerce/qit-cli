@@ -58,7 +58,7 @@ class ToolRegistry {
 		$this->registerTool( new ListFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
 		$this->registerTool( new TreeDirectoryTool( $this->workDirectory, $this->sutDirectory, $context ) );
 		// Deep investigation only, disabled.
-		//$this->registerTool( new SearchFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
+		// $this->registerTool( new SearchFactsTool( $this->workDirectory, $this->sutDirectory, $context ) );
 	}
 
 	public function registerTool( BaseTool $tool ): void {

@@ -7,18 +7,18 @@ use Symfony\Component\Process\Process;
 
 class WebServer {
 	private ?Process $process = null;
-	private int $port = 8000;
+	private int $port         = 8000;
 	private string $webroot;
 	private string $node_token;
 	private ?\QIT_CLI\Logging\Logger $logger = null;
 	private bool $use_local_mode;
-	private string $provider = 'lmstudio';
+	private string $provider      = 'lmstudio';
 	private array $providerConfig = [];
-	private array $runtimeConfig = [];
+	private array $runtimeConfig  = [];
 	private string $routerTemplate;
-	private bool $bindLocalhostOnly = false;
-	private ?string $nodeToken = null;
-	private ?string $customLogFile = null;
+	private bool $bindLocalhostOnly     = false;
+	private ?string $nodeToken          = null;
+	private ?string $customLogFile      = null;
 	private array $environmentVariables = [];
 
 	public function __construct( bool $use_local_mode = true ) {
@@ -80,8 +80,8 @@ class WebServer {
 	 * @param string $name The name of the environment variable.
 	 * @param string $value The value of the environment variable.
 	 */
-	public function setEnvironmentVariable(string $name, string $value): void {
-		$this->environmentVariables[$name] = $value;
+	public function setEnvironmentVariable( string $name, string $value ): void {
+		$this->environmentVariables[ $name ] = $value;
 	}
 
 	public function start(): string {
@@ -103,13 +103,14 @@ class WebServer {
 			);
 		}
 
-		/* ───────────────────── 2. Set guaranteed values ────────────────────── */
+		/*
+		───────────────────── 2. Set guaranteed values ────────────────────── */
 		// we *know* $this->nodeToken is present, so no silent fallback:
 		$this->node_token = $this->nodeToken;
 
 		if ( $this->logger ) {
 			$this->logger->info( 'Starting webserver', [
-				'mode' => $this->use_local_mode ? 'local' : 'temp'
+				'mode' => $this->use_local_mode ? 'local' : 'temp',
 			] );
 		}
 
@@ -120,7 +121,7 @@ class WebServer {
 		}
 		if ( $this->logger ) {
 			$this->logger->debug( 'Using provided node token', [
-				'token_prefix' => substr( $this->node_token, 0, 8 ) . '...'
+				'token_prefix' => substr( $this->node_token, 0, 8 ) . '...',
 			] );
 		}
 
@@ -169,7 +170,7 @@ class WebServer {
 				'router'         => $router_path,
 				'mode'           => $this->use_local_mode ? 'local' : 'temp',
 				'open_basedir'   => $openBasedir,
-				'localhost_only' => $this->bindLocalhostOnly
+				'localhost_only' => $this->bindLocalhostOnly,
 			] );
 		}
 
@@ -184,11 +185,11 @@ class WebServer {
 		];
 
 		// Add custom environment variables
-		if (!empty($this->environmentVariables)) {
-			$env = array_merge($env, $this->environmentVariables);
-			if ($this->logger) {
+		if ( ! empty( $this->environmentVariables ) ) {
+			$env = array_merge( $env, $this->environmentVariables );
+			if ( $this->logger ) {
 				$this->logger->debug('Added custom environment variables', [
-					'variables' => array_keys($this->environmentVariables)
+					'variables' => array_keys( $this->environmentVariables ),
 				]);
 			}
 		}
@@ -205,7 +206,7 @@ class WebServer {
 				'-t',
 				$this->webroot,
 				// router file (no placeholders any more)
-				$this->webroot . '/' . $this->routerTemplate
+				$this->webroot . '/' . $this->routerTemplate,
 			],
 			null,   // cwd
 			$env
@@ -225,7 +226,7 @@ class WebServer {
 			$error_msg    = 'Failed to start web server: ' . $error_output;
 			if ( $this->logger ) {
 				$this->logger->error( $error_msg, [
-					'error_output' => $error_output
+					'error_output' => $error_output,
 				] );
 			}
 			throw new \RuntimeException( $error_msg );
@@ -273,7 +274,7 @@ class WebServer {
 			if ( $this->logger ) {
 				$this->logger->error( $error_msg, [
 					'webroot' => $this->webroot,
-					'base'    => $base
+					'base'    => $base,
 				] );
 			}
 			throw new \RuntimeException( $error_msg );
@@ -324,7 +325,7 @@ class WebServer {
 		if ( $this->logger ) {
 			$this->logger->debug( 'Webserver files copied successfully', [
 				'source'      => $source_dir,
-				'destination' => $this->webroot
+				'destination' => $this->webroot,
 			] );
 		}
 	}
@@ -387,7 +388,7 @@ class WebServer {
 	public function stop(): void {
 		if ( $this->logger ) {
 			$this->logger->info( 'Stopping webserver', [
-				'mode' => $this->use_local_mode ? 'local' : 'temp'
+				'mode' => $this->use_local_mode ? 'local' : 'temp',
 			] );
 		}
 
@@ -396,7 +397,7 @@ class WebServer {
 				$this->logger->debug( 'Terminating webserver process' );
 			}
 			$this->process->stop();
-		} else if ( $this->logger ) {
+		} elseif ( $this->logger ) {
 			$this->logger->debug( 'No running process to stop' );
 		}
 
@@ -412,6 +413,5 @@ class WebServer {
 		if ( $this->logger ) {
 			$this->logger->info( 'Skipping explicit tmp cleanup; relying on OS tmp purge' );
 		}
-
 	}
 }

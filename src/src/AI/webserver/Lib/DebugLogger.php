@@ -5,9 +5,9 @@ namespace QIT_AI_Webserver\Lib;
 final class DebugLogger {
 	/** Append a structured message to debug log */
 	public static function log( string $stage, array $payload ): void {
-		$debugDir = rtrim(sys_get_temp_dir(), '/\\') . '/qit-node/debug';
-		if (!is_dir($debugDir)) {
-			mkdir($debugDir, 0700, true);
+		$debugDir = rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node/debug';
+		if ( ! is_dir( $debugDir ) ) {
+			mkdir( $debugDir, 0700, true );
 		}
 		$logFile = $debugDir . '/debug-prompt.log';
 
@@ -48,7 +48,7 @@ final class DebugLogger {
 		$lines = [];
 		$iter  = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator( $dir,
-				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS ),
+			\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS ),
 			\RecursiveIteratorIterator::SELF_FIRST
 		);
 		$iter->setMaxDepth( $depth );

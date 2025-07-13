@@ -27,16 +27,16 @@ class NodeStartCommand extends QITCommand {
 	protected Cache $cache;
 	protected Auth $auth;
 
-	private ?string $node_id = null;
-	private ?string $node_token = null;
-	private ?string $env_id = null;
-	private ?string $client_id = null;
-	private ?string $tunnel_url = null;
+	private ?string $node_id        = null;
+	private ?string $node_token     = null;
+	private ?string $env_id         = null;
+	private ?string $client_id      = null;
+	private ?string $tunnel_url     = null;
 	private bool $heartbeat_running = true;
 	private Logger $logger;
 
 	private string $workerUrl = '';
-	private string $runDir = '';
+	private string $runDir    = '';
 
 	public function __construct(
 		TunnelRunner $tunnel_runner,
@@ -55,13 +55,13 @@ class NodeStartCommand extends QITCommand {
 		parent::configure();
 
 		$this->setDescription( 'Start an AI processing node' )
-		     ->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
-		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: cloudflared-docker, cloudflared-binary, cloudflared-persistent, jurassictube', 'cloudflared-docker' )
-		     ->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' )
-		     ->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (openai, lmstudio, anthropic)', 'openai' )
-		     ->addOption( 'api-key', null, InputOption::VALUE_OPTIONAL, 'API key for cloud providers' )
-		     ->addOption( 'model', null, InputOption::VALUE_OPTIONAL, 'Default model to use (e.g., o4-mini-2025-04-16, gpt-4-turbo, claude-3-opus-20240229)' )
-		     ->addOption( 'base-url', null, InputOption::VALUE_OPTIONAL, 'Base URL for OpenAI-compatible providers (e.g., LM Studio)' );
+			->setHelp( 'This command starts a local AI processing node that contributes to the QIT network.' )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: cloudflared-docker, cloudflared-binary, cloudflared-persistent, jurassictube', 'cloudflared-docker' )
+			->addOption( 'name', null, InputOption::VALUE_OPTIONAL, 'A friendly name for this node (e.g., "Office PC", "Gaming Rig")' )
+			->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'LLM provider (openai, lmstudio, anthropic)', 'openai' )
+			->addOption( 'api-key', null, InputOption::VALUE_OPTIONAL, 'API key for cloud providers' )
+			->addOption( 'model', null, InputOption::VALUE_OPTIONAL, 'Default model to use (e.g., o4-mini-2025-04-16, gpt-4-turbo, claude-3-opus-20240229)' )
+			->addOption( 'base-url', null, InputOption::VALUE_OPTIONAL, 'Base URL for OpenAI-compatible providers (e.g., LM Studio)' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -72,7 +72,6 @@ class NodeStartCommand extends QITCommand {
 		$runDir       = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$runId/";
 		$this->runDir = $runDir;  // Store for use in heartbeat
 		$logDir       = $runDir;                    // keep logs in the same folder
-
 
 		mkdir( $runDir, 0700, true );
 
@@ -201,7 +200,7 @@ class NodeStartCommand extends QITCommand {
 				curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
 				curl_setopt( $ch, CURLOPT_HTTPHEADER, [
 					'Content-Type: application/json',
-					'Authorization: Bearer ' . ( $providerConfig['api_key'] ?? 'dummy' )
+					'Authorization: Bearer ' . ( $providerConfig['api_key'] ?? 'dummy' ),
 				] );
 
 				$response = curl_exec( $ch );
@@ -395,7 +394,6 @@ class NodeStartCommand extends QITCommand {
 				$this->sendHeartbeat( $output );
 				sleep( 10 ); // Check every 10 seconds
 			}
-
 		} catch ( \Exception $e ) {
 			$output->writeln( '<error>Failed to start node: ' . $e->getMessage() . '</error>' );
 			$this->cleanup( $output );
@@ -439,7 +437,7 @@ class NodeStartCommand extends QITCommand {
 		try {
 			$this->logger->info( 'Preparing to send heartbeat', [
 				'node_id' => $this->node_id,
-				'time'    => date( 'Y-m-d H:i:s' )
+				'time'    => date( 'Y-m-d H:i:s' ),
 			] );
 
 			// Collect health metrics
@@ -453,7 +451,7 @@ class NodeStartCommand extends QITCommand {
 			$this->logger->debug( 'Collected system metrics', [
 				'memory_usage'    => $memory_usage,
 				'memory_usage_mb' => round( $memory_usage / 1024 / 1024, 2 ) . ' MB',
-				'cpu_load'        => $cpu_load
+				'cpu_load'        => $cpu_load,
 			] );
 
 			if ( file_exists( $error_file ) ) {
@@ -464,14 +462,14 @@ class NodeStartCommand extends QITCommand {
 					$this->logger->warning( 'Failed to parse error file JSON', [
 						'error'   => json_last_error_msg(),
 						'file'    => $error_file,
-						'content' => substr( $error_content, 0, 200 ) . '...'
+						'content' => substr( $error_content, 0, 200 ) . '...',
 					] );
 				} else {
 					$this->logger->info( 'Found error to report in heartbeat', [
 						'error_type'    => $last_error['error_type'] ?? 'unknown',
 						'error_message' => $last_error['error_message'] ?? 'unknown',
 						'job_id'        => $last_error['job_id'] ?? 'not provided',
-						'job_type'      => $last_error['job_type'] ?? 'unknown'
+						'job_type'      => $last_error['job_type'] ?? 'unknown',
 					] );
 				}
 
@@ -506,7 +504,7 @@ class NodeStartCommand extends QITCommand {
 			$this->logger->debug( 'Sending heartbeat request', [
 				'endpoint'   => get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat',
 				'has_error'  => $last_error !== null ? 'yes' : 'no',
-				'has_job_id' => ! empty( $last_error['job_id'] ) ? 'yes' : 'no'
+				'has_job_id' => ! empty( $last_error['job_id'] ) ? 'yes' : 'no',
 			] );
 
 			$start_time = microtime( true );
@@ -524,7 +522,7 @@ class NodeStartCommand extends QITCommand {
 				$this->logger->info( 'Heartbeat sent successfully', [
 					'response_time_ms' => round( $request_time * 1000, 2 ),
 					'next_heartbeat'   => $response['next_heartbeat'] ?? 60,
-					'status'           => $response['status'] ?? 'unknown'
+					'status'           => $response['status'] ?? 'unknown',
 				] );
 
 				if ( $output->isVeryVerbose() ) {
@@ -541,19 +539,18 @@ class NodeStartCommand extends QITCommand {
 				$this->logger->error( 'Heartbeat request failed', [
 					'error'    => $e->getMessage(),
 					'code'     => $e->getCode(),
-					'endpoint' => get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat'
+					'endpoint' => get_manager_url() . '/wp-json/cd/v1/ai-nodes/' . $this->node_id . '/heartbeat',
 				] );
 
 				if ( $output->isVerbose() ) {
 					$output->writeln( '<warning>Heartbeat failed: ' . $e->getMessage() . '</warning>' );
 				}
 			}
-
 		} catch ( \Exception $e ) {
 			$this->logger->error( 'Unexpected heartbeat error', [
 				'error' => $e->getMessage(),
 				'class' => get_class( $e ),
-				'trace' => $e->getTraceAsString()
+				'trace' => $e->getTraceAsString(),
 			] );
 
 			if ( $output->isVerbose() ) {
@@ -569,7 +566,7 @@ class NodeStartCommand extends QITCommand {
 		// Unregister from Manager
 		if ( $this->node_id && $this->node_token ) {
 			$this->logger->info( 'Unregistering node from QIT network', [
-				'node_id' => $this->node_id
+				'node_id' => $this->node_id,
 			] );
 
 			try {
@@ -583,7 +580,7 @@ class NodeStartCommand extends QITCommand {
 
 				if ( ! $validation['valid'] ) {
 					$this->logger->warning( 'Outbound node unregistration validation failed', [
-						'errors' => $validation['errors']
+						'errors' => $validation['errors'],
 					] );
 					// Continue anyway to maintain backward compatibility, but log the issue
 				}
@@ -597,14 +594,14 @@ class NodeStartCommand extends QITCommand {
 				$request_time = microtime( true ) - $start_time;
 
 				$this->logger->info( 'Node unregistered successfully', [
-					'response_time_ms' => round( $request_time * 1000, 2 )
+					'response_time_ms' => round( $request_time * 1000, 2 ),
 				] );
 
 				$output->writeln( '<info>✓ Unregistered from QIT network</info>' );
 			} catch ( \Exception $e ) {
 				$this->logger->error( 'Failed to unregister node', [
 					'error' => $e->getMessage(),
-					'trace' => $e->getTraceAsString()
+					'trace' => $e->getTraceAsString(),
 				] );
 
 				$output->writeln( '<warning>Failed to unregister: ' . $e->getMessage() . '</warning>' );

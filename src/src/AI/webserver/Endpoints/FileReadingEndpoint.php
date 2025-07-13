@@ -31,9 +31,9 @@ class FileReadingEndpoint extends AbstractEndpoint {
 	 */
 	public function handle( array $input ): string {
 		$this->log_info( 'Starting file reading endpoint', [
-			'input_keys'    => array_keys( $input ),
-			'has_file'      => isset( $input['file'] ),
-			'has_extract_path' => isset( $input['extract_path'] )
+			'input_keys'       => array_keys( $input ),
+			'has_file'         => isset( $input['file'] ),
+			'has_extract_path' => isset( $input['extract_path'] ),
 		] );
 
 		// Access parameters directly from input (consistent with Actions)
@@ -53,7 +53,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 			$this->log_error( 'Path resolution failed for file reading', [
 				'error'       => $e->getMessage(),
 				'file'        => $filePath,
-				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input )
+				'diagnostics' => ExtractPathResolver::getDiagnosticMessage( $input ),
 			] );
 			http_response_code( 400 );
 			return NodeResponse::error( $e->getMessage() );
@@ -62,7 +62,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 		// SECURITY: Prevent directory traversal attacks
 		if ( strpos( $filePath, '..' ) !== false ) {
 			$this->log_error( 'Directory traversal attempt detected in file', [
-				'file' => $filePath
+				'file' => $filePath,
 			] );
 			http_response_code( 400 );
 			return NodeResponse::error( 'Directory traversal sequences (..) are not allowed in file.' );
@@ -71,7 +71,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 		// SECURITY: Reject any path containing null bytes
 		if ( strpos( $filePath, "\0" ) !== false ) {
 			$this->log_error( 'Null byte injection attempt detected in file', [
-				'file' => $filePath
+				'file' => $filePath,
 			] );
 			http_response_code( 400 );
 			return NodeResponse::error( 'Null bytes are not allowed in file.' );
@@ -80,7 +80,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 		try {
 			$this->log_info( 'Reading file content', [
 				'file'         => $filePath,
-				'extract_path' => $extractPath
+				'extract_path' => $extractPath,
 			] );
 
 			// Initialize ToolRegistry with the extract path as work directory
@@ -88,13 +88,13 @@ class FileReadingEndpoint extends AbstractEndpoint {
 
 			// Use the read_file tool to read the file content
 			$result = $registry->execute_tool( 'read_file', [
-				'file' => $filePath
+				'file' => $filePath,
 			] );
 
-			if ( !$result['success'] ) {
+			if ( ! $result['success'] ) {
 				$this->log_error( 'Failed to read file', [
 					'file'  => $filePath,
-					'error' => $result['error']
+					'error' => $result['error'],
 				] );
 
 				http_response_code( 404 );
@@ -102,19 +102,19 @@ class FileReadingEndpoint extends AbstractEndpoint {
 			}
 
 			// FileReadingEndpoint::handle()  – right before NodeResponse::success()
-			$content = $result['data']['content'] ?? '';
-			$lines   = $result['data']['total_lines'] ?? 0;
+			$content  = $result['data']['content'] ?? '';
+			$lines    = $result['data']['total_lines'] ?? 0;
 			$rawLines = explode( "\n", $content );
 			$numbered = [];
 			foreach ( $rawLines as $idx => $l ) {
 				// human-friendly 1-based index, 6-char wide
-				$numbered[] = str_pad( $idx + 1, 6, ' ', STR_PAD_LEFT ) . "│ " . $l;
+				$numbered[] = str_pad( $idx + 1, 6, ' ', STR_PAD_LEFT ) . '│ ' . $l;
 			}
 
 			$this->log_info( 'File read successfully', [
 				'file'         => $filePath,
 				'content_size' => strlen( $content ),
-				'total_lines'  => $lines
+				'total_lines'  => $lines,
 			] );
 
 			// Return clean response
@@ -124,13 +124,13 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				'file_size'                 => strlen( $content ),
 				'content_with_line_numbers' => implode( "\n", $numbered ),
 				'file'                      => $filePath,
-				'extract_path'              => $extractPath
+				'extract_path'              => $extractPath,
 			], 'file_reading' );
 
 		} catch ( Exception $e ) {
 			$this->log_error( 'File reading failed: ' . $e->getMessage(), [
 				'file'         => $filePath,
-				'extract_path' => $extractPath
+				'extract_path' => $extractPath,
 			] );
 
 			return NodeResponse::error( 'File reading failed', 500, [ 'message' => $e->getMessage() ] );

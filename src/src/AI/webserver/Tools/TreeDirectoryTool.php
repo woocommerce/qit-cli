@@ -35,7 +35,7 @@ class TreeDirectoryTool extends BaseTool {
 				'tree_directory("__WP_ROOT__/wp-content/plugins")',
 				'tree_directory("__SUT_DIR__", 3)',
 				'tree_directory("__SUT_DIR__/includes")',
-				'tree_directory("__DEP_[woocommerce]__/includes", 4)'
+				'tree_directory("__DEP_[woocommerce]__/includes", 4)',
 			]
 		);
 	}
@@ -62,7 +62,7 @@ class TreeDirectoryTool extends BaseTool {
 
 	/* ─────────────── core ─────────────── */
 	protected function do( array $p ) {
-		$path = $this->safePath( $p['path'] ?? '' );
+		$path  = $this->safePath( $p['path'] ?? '' );
 		$depth = max( 1, min( (int) ( $p['depth'] ?? 2 ), 5 ) );   // clamp to 1‑5
 
 		$abs = $this->file_path_resolver->toAbsolute( $path );
@@ -72,7 +72,7 @@ class TreeDirectoryTool extends BaseTool {
 
 		$iter = new RecursiveIteratorIterator(
 			new RecursiveDirectoryIterator( $abs,
-				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS ),
+			\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS ),
 			RecursiveIteratorIterator::SELF_FIRST
 		);
 		$iter->setMaxDepth( $depth );

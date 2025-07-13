@@ -24,7 +24,7 @@ function log_message( $level, $message, $context = [] ) {
 
 	// Add context if available
 	if ( ! empty( $context ) ) {
-		$formatted_message .= " " . json_encode( $context, JSON_UNESCAPED_SLASHES );
+		$formatted_message .= ' ' . json_encode( $context, JSON_UNESCAPED_SLASHES );
 	}
 
 	// Write to log file only (removed duplication to error_log)

@@ -31,9 +31,9 @@ class OutboundRequest {
 	 * Constructor
 	 *
 	 * @param string $url Target URL
-	 * @param array $data Request data
+	 * @param array  $data Request data
 	 * @param string $schema_type Schema type for validation
-	 * @param array $config Configuration overrides
+	 * @param array  $config Configuration overrides
 	 */
 	public function __construct( string $url, array $data, string $schema_type, array $config = [] ) {
 		$this->url                  = $url;
@@ -41,7 +41,7 @@ class OutboundRequest {
 		$this->schema_type          = $schema_type;
 		$this->config               = array_merge( $this->default_config, $config );
 		$this->config['auth_token'] = getenv( 'QIT_NODE_TOKEN' );
-		$this->config['node_id']   = getenv( 'QIT_NODE_ID' );
+		$this->config['node_id']    = getenv( 'QIT_NODE_ID' );
 	}
 
 	/**
@@ -118,7 +118,7 @@ class OutboundRequest {
 					log_info( 'Outbound request schema validation failed', [
 						'url'         => $this->url,
 						'schema_type' => $this->schema_type,
-						'errors'      => $validation_result['errors']
+						'errors'      => $validation_result['errors'],
 					] );
 				}
 				// Continue anyway for backward compatibility, but log the issue
@@ -171,15 +171,15 @@ class OutboundRequest {
 
 			// Don't retry client errors (except 429 Too Many Requests)
 			if ( ! $this->config['retry_on_client_errors'] &&
-			     $result['status_code'] >= 400 &&
-			     $result['status_code'] < 500 &&
-			     $result['status_code'] !== 429 ) {
+				$result['status_code'] >= 400 &&
+				$result['status_code'] < 500 &&
+				$result['status_code'] !== 429 ) {
 
 				if ( $this->config['log_requests'] ) {
 					log_info( 'Outbound request failed with client error, not retrying', [
 						'url'         => $this->url,
 						'status_code' => $result['status_code'],
-						'response'    => $result['response']
+						'response'    => $result['response'],
 					] );
 				}
 				break;
@@ -187,7 +187,7 @@ class OutboundRequest {
 
 			// Apply backoff strategy
 			$this->applyBackoff( $attempt );
-			$attempt ++;
+			++$attempt;
 		}
 
 		// Log final failure
@@ -196,7 +196,7 @@ class OutboundRequest {
 				'url'               => $this->url,
 				'max_retries'       => $max_retries,
 				'final_status_code' => $result['status_code'] ?? null,
-				'final_error'       => $result['error'] ?? null
+				'final_error'       => $result['error'] ?? null,
 			] );
 		}
 
@@ -251,7 +251,7 @@ class OutboundRequest {
 				log_info( 'Outbound request payload', [
 					'url'     => $this->url,
 					'headers' => $headers,
-					'body'    => substr( $payload_preview, 0, 1000 ) // avoid huge spam
+					'body'    => substr( $payload_preview, 0, 1000 ), // avoid huge spam
 				] );
 			}
 
@@ -270,7 +270,7 @@ class OutboundRequest {
 					'attempt'       => $attempt,
 					'status_code'   => $status_code,
 					'response_size' => strlen( $response ?? '' ),
-					'error'         => $error ?: null
+					'error'         => $error ?: null,
 				] );
 			}
 
@@ -282,7 +282,7 @@ class OutboundRequest {
 				'status_code' => $status_code,
 				'response'    => $response,
 				'error'       => $error ?: null,
-				'attempt'     => $attempt
+				'attempt'     => $attempt,
 			];
 
 		} catch ( \Throwable $e ) {
@@ -290,7 +290,7 @@ class OutboundRequest {
 				log_info( 'Outbound request exception', [
 					'url'       => $this->url,
 					'attempt'   => $attempt,
-					'exception' => $e->getMessage()
+					'exception' => $e->getMessage(),
 				] );
 			}
 
@@ -299,7 +299,7 @@ class OutboundRequest {
 				'status_code' => 0,
 				'response'    => null,
 				'error'       => $e->getMessage(),
-				'attempt'     => $attempt
+				'attempt'     => $attempt,
 			];
 		}
 	}

@@ -20,7 +20,7 @@ class SearchStringsTool extends BaseTool {
 				'search_strings(["wp_ajax"], "__WP_ROOT__/wp-admin")',
 				'search_strings(["add_action", "add_filter"], "__SUT_DIR__")',
 				'search_strings(["nonce"], "__SUT_DIR__/includes", ["php"], false, 100)',
-				'search_strings(["woocommerce"], "__DEP_[woocommerce]__", ["php", "js"])'
+				'search_strings(["woocommerce"], "__DEP_[woocommerce]__", ["php", "js"])',
 			]
 		);
 	}
@@ -111,14 +111,20 @@ class SearchStringsTool extends BaseTool {
 				$hits     = array_merge( $hits, $fileHits );
 
 				if ( count( $hits ) >= $maxResults ) {
-					return [ 'results' => $hits, 'truncated' => true ];
+					return [
+						'results'   => $hits,
+						'truncated' => true,
+					];
 				}
 			}
 		} else {
 			throw new \InvalidArgumentException( "Path does not exist: {$directoryOrFile}" );
 		}
 
-		return [ 'results' => $hits, 'truncated' => false ];
+		return [
+			'results'   => $hits,
+			'truncated' => false,
+		];
 	}
 
 	/**

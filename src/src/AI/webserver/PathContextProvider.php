@@ -4,7 +4,7 @@ namespace QIT_AI_Webserver;
 
 /**
  * PathContextProvider - Non-tool class that provides workspace context information
- * 
+ *
  * This class extracts the functionality previously in PathContextTool but as a regular
  * utility class that doesn't extend BaseTool, preventing it from being called by LLMs.
  */
@@ -14,12 +14,12 @@ class PathContextProvider {
 
 	public function __construct( string $workDirectory, string $sutDirectory = '' ) {
 		$this->workDir = rtrim( $workDirectory, '/\\' );
-		$this->sutDir = ltrim( $sutDirectory, '/' );
+		$this->sutDir  = ltrim( $sutDirectory, '/' );
 	}
 
 	/**
 	 * Get path context data - same functionality as PathContextTool::do()
-	 * 
+	 *
 	 * @return array Context data with wp_root, sut, deps, dep_count, truncated
 	 * @throws \RuntimeException if directories don't exist
 	 */
@@ -74,7 +74,7 @@ class PathContextProvider {
 					continue;
 				}
 
-				$totalDeps ++;
+				++$totalDeps;
 				if ( count( $deps ) >= 20 ) {   // hard cap to keep JSON small
 					$truncated = true;
 					continue;

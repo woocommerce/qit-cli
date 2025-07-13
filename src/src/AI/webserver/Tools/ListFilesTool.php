@@ -24,12 +24,12 @@ class ListFilesTool extends BaseTool {
 
 	public function getFunctionInfo(): FunctionInfo {
 		$params = [
-			new Parameter( 'directory', 'string', 'Directory to list (default: root)' )
+			new Parameter( 'directory', 'string', 'Directory to list (default: root)' ),
 		];
 
 		return new FunctionInfo(
 			$this->getName(),
-			[$this, 'list_files'],
+			[ $this, 'list_files' ],
 			$this->getDescription(),
 			$params,
 			[]           // no required parameters
@@ -105,7 +105,7 @@ class ListFilesTool extends BaseTool {
 				$files[] = [
 					'path'      => $relativePath,
 					'size'      => filesize( $itemPath ),
-					'extension' => pathinfo( $item, PATHINFO_EXTENSION )
+					'extension' => pathinfo( $item, PATHINFO_EXTENSION ),
 				];
 			}
 		}
@@ -115,7 +115,7 @@ class ListFilesTool extends BaseTool {
 			'files'             => $files,
 			'directories'       => $dirs,
 			'total_files'       => count( $files ),
-			'total_directories' => count( $dirs )
+			'total_directories' => count( $dirs ),
 		];
 	}
 

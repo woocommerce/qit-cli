@@ -11,10 +11,10 @@ use QIT_AI_Webserver\Chat\SafeToolsOpenAIChat;
 final class LLPhantBootstrap {
 	/* ───────── 1. STATIC SINGLETON – BOOT ONLY ONCE ───────── */
 
-	private static ?ChatInterface $chat = null;
+	private static ?ChatInterface $chat     = null;
 	private static ?string $currentProvider = null;
-	private static ?string $currentModel = null;
-	private static array $allowed_models = [];
+	private static ?string $currentModel    = null;
+	private static array $allowed_models    = [];
 
 	/** Initialise exactly once per PHP process (router‑level). */
 	public static function boot( string $provider, array $conf ): void {
@@ -29,7 +29,7 @@ final class LLPhantBootstrap {
 		$self->ensureInitialized();           // still installs composer etc.
 		self::$chat = $self->getChat();
 
-		static::$allowed_models = explode( ',', $conf['model'] );
+		self::$allowed_models = explode( ',', $conf['model'] );
 
 		// Apply options once during boot()
 		foreach ( [ 'model', 'temperature', 'max_tokens' ] as $opt ) {
@@ -51,7 +51,7 @@ final class LLPhantBootstrap {
 	/**
 	 * Resolve model input to a string based on current provider
 	 *
-	 * @param mixed $modelInput - Can be a string or an array with provider keys
+	 * @param mixed  $modelInput - Can be a string or an array with provider keys
 	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
 	 *
 	 * @return string - Resolved model name
@@ -85,9 +85,9 @@ final class LLPhantBootstrap {
 				);
 			}
 
-			if ( ! empty( static::$allowed_models ) ) {
-				if ( ! in_array( $resolvedModel, static::$allowed_models ) ) {
-					$available = implode( ', ', static::$allowed_models );
+			if ( ! empty( self::$allowed_models ) ) {
+				if ( ! in_array( $resolvedModel, self::$allowed_models ) ) {
+					$available = implode( ', ', self::$allowed_models );
 					throw new \InvalidArgumentException(
 						"Model '{$resolvedModel}' is not allowed. Available models: {$available}"
 					);
@@ -106,7 +106,7 @@ final class LLPhantBootstrap {
 	/**
 	 * Set model - handles validation, resolution, downloading, and configuration
 	 *
-	 * @param mixed $modelInput - Can be a string or an array with provider keys
+	 * @param mixed  $modelInput - Can be a string or an array with provider keys
 	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
 	 *
 	 * @return bool - True if model was set successfully
@@ -182,7 +182,8 @@ final class LLPhantBootstrap {
 		return self::$currentModel ?? 'unknown';
 	}
 
-	/* ───────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ─────── */
+	/*
+	───────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ─────── */
 	// (constructor, ensureInitialized, initializeProvider, generate* …)
 
 	private string $installDir;
@@ -256,7 +257,7 @@ final class LLPhantBootstrap {
 		// Check if composer is available
 		$composerCheck = shell_exec( 'which composer 2>&1' ) ?: shell_exec( 'where composer 2>&1' );
 		if ( empty( trim( $composerCheck ) ) ) {
-			throw new Exception( "Composer is not installed or not in PATH. Please install Composer first." );
+			throw new Exception( 'Composer is not installed or not in PATH. Please install Composer first.' );
 		}
 
 		// Use a lock file so parallel PHP workers do not race
@@ -264,14 +265,14 @@ final class LLPhantBootstrap {
 		flock( $lock, LOCK_EX );
 
 		if ( file_exists( $this->installDir . '/vendor/autoload.php' ) ) {
-			$this->log_info( "LLPhant already installed at: " . $this->installDir );
+			$this->log_info( 'LLPhant already installed at: ' . $this->installDir );
 			require_once $this->installDir . '/vendor/autoload.php';
 			flock( $lock, LOCK_UN );
 
 			return;
 		}
 
-		$this->log_info( "Installing LLPhant to: " . $this->installDir );
+		$this->log_info( 'Installing LLPhant to: ' . $this->installDir );
 
 		// Directory does not exist ⇒ create & install
 		mkdir( $this->installDir, 0755, true );
@@ -291,14 +292,14 @@ final class LLPhantBootstrap {
 		exec( $cmd, $output, $returnCode );
 
 		if ( $returnCode !== 0 ) {
-			throw new Exception( "Failed to install LLPhant: " . implode( "\n", $output ) );
+			throw new Exception( 'Failed to install LLPhant: ' . implode( "\n", $output ) );
 		}
 
 		// Patch file.
 		$this->patchLLPhant();
 
 		require_once $this->installDir . '/vendor/autoload.php';
-		$this->log_info( "LLPhant installed successfully" );
+		$this->log_info( 'LLPhant installed successfully' );
 		flock( $lock, LOCK_UN );
 	}
 
@@ -333,17 +334,17 @@ final class LLPhantBootstrap {
 				$this->initializeAnthropic( $config );
 				break;
 			default:
-				throw new Exception( "Unsupported provider: " . $this->provider );
+				throw new Exception( 'Unsupported provider: ' . $this->provider );
 		}
 	}
 
 	private function initializeOpenAI( array $config ): void {
 		if ( ! isset( $config['api_key'] ) ) {
-			throw new Exception( "OpenAI requires an API key" );
+			throw new Exception( 'OpenAI requires an API key' );
 		}
 
 		$config = array_merge( [
-			'model' => 'o4-mini-2025-04-16' // Default to o4-mini-2025-04-16, but can be overridden
+			'model' => 'o4-mini-2025-04-16', // Default to o4-mini-2025-04-16, but can be overridden
 		], $config );
 
 		// Create OpenAIConfig object
@@ -361,11 +362,11 @@ final class LLPhantBootstrap {
 
 	private function initializeAnthropic( array $config ): void {
 		if ( ! isset( $config['api_key'] ) ) {
-			throw new Exception( "Anthropic requires an API key" );
+			throw new Exception( 'Anthropic requires an API key' );
 		}
 
 		$config = array_merge( [
-			'model' => 'claude-3-opus-20240229'
+			'model' => 'claude-3-opus-20240229',
 		], $config );
 
 		$this->chat_instance = new AnthropicChat(
@@ -397,9 +398,9 @@ final class LLPhantBootstrap {
 		$baseUrl        = $this->config['base_url'] ?? 'http://localhost:1234/v1';
 		$modelsEndpoint = rtrim( $baseUrl, '/' ) . '/models';
 
-		$this->log_info( "Checking LM Studio model availability", [
+		$this->log_info( 'Checking LM Studio model availability', [
 			'model'    => $model,
-			'endpoint' => $modelsEndpoint
+			'endpoint' => $modelsEndpoint,
 		] );
 
 		// Make API call to check available models
@@ -408,7 +409,7 @@ final class LLPhantBootstrap {
 		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, [
 			'Content-Type: application/json',
-			'Authorization: Bearer ' . ( $this->config['api_key'] ?? 'dummy' )
+			'Authorization: Bearer ' . ( $this->config['api_key'] ?? 'dummy' ),
 		] );
 
 		$response = curl_exec( $ch );
@@ -417,10 +418,10 @@ final class LLPhantBootstrap {
 		curl_close( $ch );
 
 		if ( $httpCode !== 200 ) {
-			$this->log_error( "Failed to check LM Studio models", [
+			$this->log_error( 'Failed to check LM Studio models', [
 				'http_code' => $httpCode,
 				'error'     => $error,
-				'response'  => substr( $response, 0, 500 )
+				'response'  => substr( $response, 0, 500 ),
 			] );
 
 			// If we can't check, assume model is available (LM Studio might be starting up)
@@ -429,8 +430,8 @@ final class LLPhantBootstrap {
 
 		$data = json_decode( $response, true );
 		if ( ! isset( $data['data'] ) || ! is_array( $data['data'] ) ) {
-			$this->log_error( "Invalid response format from LM Studio models endpoint", [
-				'response' => substr( $response, 0, 500 )
+			$this->log_error( 'Invalid response format from LM Studio models endpoint', [
+				'response' => substr( $response, 0, 500 ),
 			] );
 
 			// If response format is unexpected, assume model is available
@@ -440,15 +441,15 @@ final class LLPhantBootstrap {
 		// Check if the requested model is in the list of available models
 		foreach ( $data['data'] as $availableModel ) {
 			if ( isset( $availableModel['id'] ) && $availableModel['id'] === $model ) {
-				$this->log_info( "Model found in LM Studio", [ 'model' => $model ] );
+				$this->log_info( 'Model found in LM Studio', [ 'model' => $model ] );
 
 				return true;
 			}
 		}
 
-		$this->log_info( "Model not found in LM Studio", [
+		$this->log_info( 'Model not found in LM Studio', [
 			'model'            => $model,
-			'available_models' => array_column( $data['data'], 'id' )
+			'available_models' => array_column( $data['data'], 'id' ),
 		] );
 
 		// Model not found, but for LM Studio this might mean:

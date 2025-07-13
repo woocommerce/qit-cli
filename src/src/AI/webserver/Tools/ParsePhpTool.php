@@ -28,7 +28,7 @@ class ParsePhpTool extends BaseTool {
 
 		return new FunctionInfo(
 			$this->getName(),
-			[$this, 'parse_php'],
+			[ $this, 'parse_php' ],
 			$this->getDescription(),
 			$params,
 			[ $params[0] ]              // pass a reference to the required parameters

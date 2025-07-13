@@ -138,8 +138,7 @@ class FilePathResolver {
 			'absolute_path' => $absolutePath,
 			'size'          => filesize( $absolutePath ),
 			'lines'         => substr_count( $content, "\n" ) + 1,
-			'extension'     => pathinfo( $relativePath, PATHINFO_EXTENSION )
+			'extension'     => pathinfo( $relativePath, PATHINFO_EXTENSION ),
 		];
 	}
-
 }

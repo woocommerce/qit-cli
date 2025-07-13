@@ -37,7 +37,7 @@ abstract class AbstractEndpoint {
 	 * Handle errors consistently across all endpoints
 	 *
 	 * @param Exception $e Exception to handle
-	 * @param array $context Additional context for error reporting
+	 * @param array     $context Additional context for error reporting
 	 * @return string JSON error response
 	 */
 	protected function handleError( Exception $e, array $context = [] ): string {
@@ -45,7 +45,7 @@ abstract class AbstractEndpoint {
 
 		$errorContext = array_merge( [
 			'exception' => get_class( $e ),
-			'trace'     => $trace
+			'trace'     => $trace,
 		], $context );
 
 		$this->log_error( 'Processing error: ' . $e->getMessage(), $errorContext );
@@ -56,18 +56,18 @@ abstract class AbstractEndpoint {
 			'error_type'    => get_class( $e ),
 			'error_message' => $e->getMessage(),
 			'error_time'    => date( 'Y-m-d H:i:s' ),
-			'job_type'      => $context['job_type'] ?? 'unknown'
+			'job_type'      => $context['job_type'] ?? 'unknown',
 		];
 
-		$this->log_info( "Storing error for next heartbeat", [
+		$this->log_info( 'Storing error for next heartbeat', [
 			'job_id'     => $context['job_id'] ?? 'unknown',
-			'error_type' => get_class( $e )
+			'error_type' => get_class( $e ),
 		] );
 
 		// Store error for next heartbeat
-		$errorDir = rtrim(sys_get_temp_dir(), '/\\') . '/qit-node/errors';
-		if (!is_dir($errorDir)) {
-			mkdir($errorDir, 0700, true);
+		$errorDir = rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node/errors';
+		if ( ! is_dir( $errorDir ) ) {
+			mkdir( $errorDir, 0700, true );
 		}
 		file_put_contents(
 			$errorDir . '/qit-node-last-error.json',
@@ -95,5 +95,4 @@ abstract class AbstractEndpoint {
 	public function log_warning( string $message, array $context = [] ): void {
 		log_warning( $message, $context );
 	}
-
 }

@@ -154,12 +154,18 @@ class FindHooksTool extends BaseTool {
 				];
 
 				if ( count( $hits ) >= $maxResults ) {
-					return [ 'results' => $hits, 'truncated' => true ];
+					return [
+						'results'   => $hits,
+						'truncated' => true,
+					];
 				}
 			}
 		}
 
-		return [ 'results' => $hits, 'truncated' => false ];
+		return [
+			'results'   => $hits,
+			'truncated' => false,
+		];
 	}
 
 	/**
@@ -190,7 +196,7 @@ class FindHooksTool extends BaseTool {
 		}
 
 		// Fallback – try to pretty‑print
-		return ( new Standard )->prettyPrintExpr( $expr );
+		return ( new Standard() )->prettyPrintExpr( $expr );
 	}
 
 	/** Read a single specific line from a file (used for snippet) */
