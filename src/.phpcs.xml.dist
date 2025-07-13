@@ -6,6 +6,9 @@
     <arg name="colors"/>
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="16"/>
+    
+    <exclude-pattern>dev/*</exclude-pattern>
+    <exclude-pattern>src/src/AI/dev/*</exclude-pattern>
 
     <config name="testVersion" value="7.4-"/>
     <rule ref="PHPCompatibility"/>
