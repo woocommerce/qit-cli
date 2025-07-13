@@ -15,7 +15,8 @@ class CallbackSender {
         array $response,
         ?int $processing_time = null,
         array $tool_calls = [],
-        array $metadata = []
+        array $metadata = [],
+        ?string $task_id = null
     ): bool {
         $data = [
             'action_id' => $action_id,
@@ -24,6 +25,10 @@ class CallbackSender {
             'tool_calls' => $tool_calls,
             'metadata' => $metadata
         ];
+
+        if ($task_id !== null) {
+            $data['task_id'] = $task_id;
+        }
 
         $request = OutboundRequest::callback($callback_url, $data, 'task-callback-request-success');
         $result = $request->send();
@@ -37,7 +42,8 @@ class CallbackSender {
     public function sendErrorCallback(
         string $callback_url,
         string $action_id,
-        string $error_message
+        string $error_message,
+        ?string $task_id = null
     ): bool {
         $data = [
             'action_id' => $action_id,
@@ -46,6 +52,10 @@ class CallbackSender {
             'tool_calls' => [],
             'metadata' => ['error' => true]
         ];
+
+        if ($task_id !== null) {
+            $data['task_id'] = $task_id;
+        }
 
         $request = OutboundRequest::callback($callback_url, $data, 'task-callback-request-error');
         $result = $request->send();

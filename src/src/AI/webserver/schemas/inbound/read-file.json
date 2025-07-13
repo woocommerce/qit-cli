@@ -33,6 +33,14 @@
       "type": "string",
       "format": "uri",
       "description": "URL to send the response back to"
+    },
+    "action_id": {
+      "type": "string",
+      "description": "Unique identifier for the action"
+    },
+    "task_id": {
+      "type": ["string","null"],
+      "description": "Unique task identifier"
     }
   },
   "additionalProperties": false

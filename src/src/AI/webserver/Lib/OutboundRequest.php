@@ -41,6 +41,7 @@ class OutboundRequest {
 		$this->schema_type          = $schema_type;
 		$this->config               = array_merge( $this->default_config, $config );
 		$this->config['auth_token'] = getenv( 'QIT_NODE_TOKEN' );
+		$this->config['node_id']   = getenv( 'QIT_NODE_ID' );
 	}
 
 	/**
@@ -228,11 +229,30 @@ class OutboundRequest {
 			$headers = [ 'Content-Type: ' . $this->config['content_type'] ];
 
 			// Authentication
-			$headers[] = 'X-Node-Token: ' . $this->config['auth_token'];
+			if ( ! empty( $this->config['auth_token'] ) ) {
+				$headers[] = 'X-Node-Token: ' . $this->config['auth_token'];
+			}
+
+			if ( ! empty( $this->config['node_id'] ) ) {
+				$headers[] = 'X-Node-ID: ' . $this->config['node_id'];
+			}
 
 			// Additional headers
 			foreach ( $this->config['additional_headers'] as $key => $value ) {
 				$headers[] = $key . ': ' . $value;
+			}
+
+			// Verbose logging of the exact request being sent (headers + body).
+			if ( $this->config['log_requests'] ) {
+				$payload_preview = $this->config['content_type'] === 'application/json'
+					? json_encode( $this->data )
+					: http_build_query( $this->data );
+
+				log_info( 'Outbound request payload', [
+					'url'     => $this->url,
+					'headers' => $headers,
+					'body'    => substr( $payload_preview, 0, 1000 ) // avoid huge spam
+				] );
 			}
 
 			curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );

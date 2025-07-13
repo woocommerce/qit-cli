@@ -8,6 +8,10 @@
       "type": "string",
       "description": "ID of the completed action/task"
     },
+    "task_id": {
+      "type": "string",
+      "description": "Unique identifier of the task (deterministic)"
+    },
     "response": {
       "type": "string",
       "description": "JSON-encoded response from the task processing"

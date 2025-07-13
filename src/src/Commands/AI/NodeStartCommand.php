@@ -92,7 +92,21 @@ class NodeStartCommand extends QITCommand {
 		$output->writeln( "<info>Listener log  : {$listenerLogger->get_log_file()}</info>" );
 		$output->writeln( "<info>Worker log    : {$workerLogger->get_log_file()}</info>" );
 
-		// Log startup
+		// Write initial marker & sanity-check log files
+		$startupMarker = '=== QIT Node boot sequence initiated at ' . date( 'Y-m-d H:i:s' ) . ' ===';
+
+		foreach ( [ $this->logger, $listenerLogger, $workerLogger ] as $lg ) {
+			/* @var Logger $lg */
+			$ok = @file_put_contents( $lg->get_log_file(), $startupMarker . PHP_EOL, FILE_APPEND );
+			if ( $ok === false ) {
+				$output->writeln( '<error>Failed to write to log file: ' . $lg->get_log_file() . '</error>' );
+				$output->writeln( '<error>Aborting node startup – unable to create log files. Check filesystem permissions.</error>' );
+
+				return self::FAILURE;
+			}
+		}
+
+		// Log startup (after confirming log files work)
 		$this->logger->info( 'Starting QIT Node', [
 			'php_version' => PHP_VERSION,
 			'os'          => PHP_OS,

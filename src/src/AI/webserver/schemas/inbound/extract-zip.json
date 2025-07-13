@@ -31,6 +31,14 @@
       "type": "string",
       "enum": ["new_extraction_dir", "wordpress_on_extraction_dir"],
       "description": "Precondition requirements for extraction"
+    },
+    "action_id": {
+      "type": "string",
+      "description": "Unique identifier for the action"
+    },
+    "task_id": {
+      "type": ["string","null"],
+      "description": "Unique task identifier"
     }
   },
   "additionalProperties": false

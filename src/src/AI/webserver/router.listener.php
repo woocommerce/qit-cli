@@ -11,8 +11,19 @@ use QIT_AI_Webserver\Lib\JsonSchemaValidator;
 $result  = qit_http_request( true );
 $method  = $result['method'];
 $uri     = $result['uri'];
+// Normalise URI – PHP built-in server may append a trailing semicolon
+// (e.g. "/process;"). Strip it so switch cases match consistently.
+$uri = rtrim($uri, ';');
 $headers = $result['headers'];
 $input   = $result['input'];
+
+// Log every inbound HTTP request (excluding potentially large bodies)
+log_info('Inbound request', [
+    'method' => $method,
+    'uri'    => $uri,
+    'remote' => $_SERVER['REMOTE_ADDR'] ?? 'cli'
+]);
+
 qit_llm_boot();                                     // listener sometimes proxies LLM
 
 switch ( "$method $uri" ) {
@@ -48,6 +59,12 @@ switch ( "$method $uri" ) {
 		// Validate required fields including callback_url
 		foreach ( [ 'job_id', 'type', 'callback_url' ] as $key ) {
 			if ( ! isset( $task[ $key ] ) ) {
+				log_warning( 'Rejecting /process – missing field', [
+					'field' => $key,
+					'job_id' => $task['job_id'] ?? 'unknown',
+					'type'   => $task['type'] ?? 'unknown',
+					'remote' => $_SERVER['REMOTE_ADDR'] ?? 'cli',
+				] );
 				http_response_code( 400 );
 				echo json_encode( [ 'error' => "Missing required field: $key" ] );
 				break 2;
@@ -56,18 +73,31 @@ switch ( "$method $uri" ) {
 
 		// Validate callback_url format
 		if ( ! filter_var( $task['callback_url'], FILTER_VALIDATE_URL ) ) {
+			log_warning( 'Rejecting /process – invalid callback_url', [
+				'callback_url' => $task['callback_url'],
+				'job_id' => $task['job_id'] ?? 'unknown',
+			] );
 			http_response_code( 400 );
 			echo json_encode( [ 'error' => 'Invalid callback_url format' ] );
 			break;
 		}
 
 		if ( ! in_array( $task['type'], $allowed, true ) ) {
+			log_warning( 'Rejecting /process – unknown type', [
+				'type'   => $task['type'],
+				'job_id' => $task['job_id'] ?? 'unknown',
+			] );
 			http_response_code( 400 );
 			echo json_encode( [ 'error' => "Unknown type: {$task['type']}" ] );
 			break;
 		}
 		foreach ( $required[ $task['type'] ] as $key ) {
 			if ( ! array_key_exists( $key, $task ) ) {
+				log_warning( 'Rejecting /process – missing field for type', [
+					'type' => $task['type'],
+					'field'=> $key,
+					'job_id'=> $task['job_id'] ?? 'unknown',
+				] );
 				http_response_code( 400 );
 				echo json_encode( [ 'error' => "Missing required field for {$task['type']}: $key" ] );
 				break 2;
@@ -79,6 +109,10 @@ switch ( "$method $uri" ) {
 		$validation = $validator->validateInbound( $task, $task['type'] );
 
 		if ( ! $validation['valid'] ) {
+			log_warning( 'JSON Schema validation failed', [
+				'errors' => $validation['errors'],
+				'job_id' => $task['job_id'] ?? 'unknown',
+			] );
 			http_response_code( 400 );
 			$errorDetails = implode('; ', $validation['errors']);
 			echo json_encode( [
@@ -86,6 +120,11 @@ switch ( "$method $uri" ) {
 				'details' => $validation['errors']
 			] );
 			break;
+		} else {
+			log_debug('Inbound validation passed', [
+				'job_id' => $task['job_id'] ?? 'unknown',
+				'type'   => $task['type']
+			]);
 		}
 		// ──────────────────────────────────────────────────────────────
 
@@ -104,6 +143,12 @@ switch ( "$method $uri" ) {
 			CURLOPT_TIMEOUT_MS     => 100,  // Increased from 1ms to 100ms for reliability
 		] );
 		curl_exec( $ch );
+		if ( curl_errno( $ch ) ) {
+			log_error( 'Forward to worker failed', [
+				'curl_error' => curl_error( $ch ),
+				'job_id'     => $task['job_id'] ?? 'unknown',
+			] );
+		}
 		curl_close( $ch );
 
 		// Release the lock after forward attempt
@@ -111,6 +156,10 @@ switch ( "$method $uri" ) {
 		fclose( $fp );
 
 		http_response_code( 202 );
+		log_info( 'Accepted task for async processing', [
+			'job_id' => $task['job_id'],
+			'type'   => $task['type'],
+		] );
 		echo json_encode( [ 'status' => 'accepted' ] );
 		break;
 
@@ -154,9 +203,14 @@ switch ( "$method $uri" ) {
 			$validator = JsonSchemaValidator::getInstance();
 			$inbound   = $validator->validateInbound($input ?? [], 'collect-logs');
 			if (!$inbound['valid']) {
+				log_warning('collect-logs validation failed', [
+					'errors' => $inbound['errors']
+				]);
 				http_response_code(400);
 				$errorDetails = implode('; ', $inbound['errors']);
 				echo json_encode(['error'=>'schema_error: ' . $errorDetails,'details'=>$inbound['errors']]); break;
+			} else {
+				log_debug('collect-logs validation passed');
 			}
 
 			$params = $input ?? [];

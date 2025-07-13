@@ -64,6 +64,10 @@
       "type": "string",
       "description": "Unique identifier for the action"
     },
+    "task_id": {
+      "type": ["string", "null"],
+      "description": "Unique identifier for the task (manager-generated)"
+    },
     "callback_url": {
       "type": "string",
       "format": "uri",

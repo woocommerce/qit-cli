@@ -8,6 +8,10 @@
       "type": "string",
       "description": "ID of the failed action/task"
     },
+    "task_id": {
+      "type": "string",
+      "description": "Task identifier"
+    },
     "response": {
       "type": "string",
       "description": "JSON-encoded error response containing error details"

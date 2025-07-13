@@ -57,10 +57,22 @@ class JsonSchemaValidator {
      * @return array Validation result with 'valid' boolean and 'errors' array
      */
     private function validateAgainstSchema(array $payload, string $schemaPath): array {
+        // Log which schema we are about to use
+        if (function_exists('\\log_debug')) {
+            \log_debug('Schema validation started', [
+                'schema'  => basename($schemaPath),
+                'payload_keys' => array_keys($payload),
+            ]);
+        }
+
         if (!file_exists($schemaPath)) {
+            $msg = "Schema file not found: {$schemaPath}";
+            if (function_exists('\\log_error')) {
+                \log_error('Schema validation failed – missing schema', ['schema' => $schemaPath]);
+            }
             return [
                 'valid' => false,
-                'errors' => ["Schema file not found: {$schemaPath}"]
+                'errors' => [$msg]
             ];
         }
 
@@ -74,9 +86,13 @@ class JsonSchemaValidator {
 
         $schema = json_decode($schemaContent);
         if (json_last_error() !== JSON_ERROR_NONE) {
+            $err = "Invalid JSON in schema file {$schemaPath}: " . json_last_error_msg();
+            if (function_exists('\\log_error')) {
+                \log_error('Schema validation failed – invalid schema JSON', ['error' => $err]);
+            }
             return [
                 'valid' => false,
-                'errors' => ["Invalid JSON in schema file {$schemaPath}: " . json_last_error_msg()]
+                'errors' => [$err]
             ];
         }
 
@@ -85,6 +101,9 @@ class JsonSchemaValidator {
         $validator->validate($payloadObject, $schema, Constraint::CHECK_MODE_TYPE_CAST);
 
         if ($validator->isValid()) {
+            if (function_exists('\\log_debug')) {
+                \log_debug('Schema validation passed', ['schema' => basename($schemaPath)]);
+            }
             return [
                 'valid' => true,
                 'errors' => []
@@ -95,6 +114,13 @@ class JsonSchemaValidator {
             fn($e) => "{$e['property']}: {$e['message']}",
             $validator->getErrors()
         );
+
+        if (function_exists('\\log_warning')) {
+            \log_warning('Schema validation failed', [
+                'schema' => basename($schemaPath),
+                'errors' => $errors
+            ]);
+        }
 
         return [
             'valid' => false,

@@ -42,6 +42,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 			}
 
 			if ( ! empty( $input['response_format'] ) ) {
+				// Forward the desired response format directly to the AI provider.
 				$this->chat->setModelOption( 'response_format', $input['response_format'] );
 			}
 

@@ -10,6 +10,14 @@ $method  = $result['method'];
 $uri     = $result['uri'];
 $headers = $result['headers'];
 $input   = $result['input'];
+
+// Log inbound request to worker
+log_info('Inbound request', [
+    'method' => $method,
+    'uri'    => $uri,
+    'remote' => $_SERVER['REMOTE_ADDR'] ?? 'cli'
+]);
+
 qit_llm_boot( [
 	'temperature' => $input['temperature'] ?? null,
 	'max_tokens'  => $input['max_tokens'] ?? null,
@@ -39,7 +47,10 @@ $callback_sender = new CallbackSender();
 
 if ( $method === 'POST' && $uri === '/run-job' ) {
 	$task = $input;                    // already validated by listener
-	$taskId = $task['job_id'];
+	if (!isset($task['task_id'])) {
+        throw new RuntimeException('Missing task_id in job payload');
+    }
+    $taskId = $task['task_id'];
 	$callback_url = $task['callback_url'];
 	$type = $task['type'];
 
@@ -75,7 +86,8 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 			$decoded_result,
 			$processing_time,
 			$tool_calls,
-			$metadata
+			$metadata,
+			$taskId
 		);
 		if ( ! $ok ) throw new RuntimeException( 'callback failed' );
 		http_response_code( 200 );
@@ -84,7 +96,8 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 		$callback_sender->sendErrorCallback(
 			$callback_url,
 			$task['action_id'] ?? $taskId,
-			$e->getMessage()
+			$e->getMessage(),
+			$taskId
 		);
 		http_response_code( 500 );
 		echo '{"error":"' . $e->getMessage() . '"}';

@@ -161,6 +161,16 @@ class Logger {
      * @param string $message The message to write.
      */
     private function write_to_log(string $message): void {
-        file_put_contents($this->log_file, $message, FILE_APPEND);
+        // Ensure directory exists in case it was deleted while the node is running
+        $dir = dirname($this->log_file);
+        if (!is_dir($dir)) {
+            // Suppress race-condition warnings: if another process creates it between the check and mkdir()
+            @mkdir($dir, 0700, true);
+        }
+
+        // Silently ignore write errors, but emit to PHP error_log so that they are visible to operators
+        if (@file_put_contents($this->log_file, $message, FILE_APPEND) === false) {
+            error_log('[QIT Logger] Failed to write to log file: ' . $this->log_file);
+        }
     }
 }

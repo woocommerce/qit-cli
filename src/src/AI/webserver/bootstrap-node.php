@@ -45,15 +45,35 @@ function qit_http_request(bool $checkToken = true): array {
 
     // ---- token guard --------------------------------------------------
     if ($checkToken) {
-        if (($headers['X-Node-Token'] ?? '') !== getenv('QIT_NODE_TOKEN')) {
+        $providedToken = $headers['X-Node-Token'] ?? '';
+        if ($providedToken !== getenv('QIT_NODE_TOKEN')) {
+            // Log **before** responding so we can correlate in Manager logs.
+            if (function_exists('log_error')) {
+                \log_error('Request rejected – node token mismatch', [
+                    'expected_prefix' => substr(getenv('QIT_NODE_TOKEN'), 0, 8) . '...',
+                    'provided_prefix' => substr($providedToken, 0, 8) . '...',
+                    'method'         => $method,
+                    'uri'            => $uri,
+                    'remote_addr'    => $remoteAddr,
+                ]);
+            }
             http_response_code(403);
-            echo json_encode(['error'=>'Unauthorized']); exit;
+            echo json_encode(['error' => 'Unauthorized – token mismatch']);
+            exit;
         }
     } else {
         // For worker router, check that it's being requested from localhost (by the poller)
         if ($remoteAddr !== '127.0.0.1' && $remoteAddr !== 'localhost') {
+            if (function_exists('log_warning')) {
+                \log_warning('Request rejected – worker router not local', [
+                    'remote_addr' => $remoteAddr,
+                    'method'      => $method,
+                    'uri'         => $uri,
+                ]);
+            }
             http_response_code(403);
-            echo json_encode(['error'=>'Worker can only be accessed from localhost']); exit;
+            echo json_encode(['error' => 'Worker can only be accessed from localhost']);
+            exit;
         }
     }
 
@@ -62,7 +82,17 @@ function qit_http_request(bool $checkToken = true): array {
     $file = getenv('QIT_NODE_DIR')."/rate-limit/$key";
     if (!is_dir(dirname($file))) mkdir(dirname($file), 0700, true);
     if (file_exists($file) && microtime(true)-filemtime($file) < 0.005) {
-        http_response_code(429); echo json_encode(['error'=>'Rate limited']); exit;
+        if (function_exists('log_warning')) {
+            \log_warning('Request rate-limited', [
+                'key'         => $key,
+                'remote_addr' => $remoteAddr,
+                'method'      => $method,
+                'uri'         => $uri,
+            ]);
+        }
+        http_response_code(429);
+        echo json_encode(['error' => 'Rate limited']);
+        exit;
     }
     touch($file);
 
@@ -70,8 +100,18 @@ function qit_http_request(bool $checkToken = true): array {
     $body  = file_get_contents('php://input') ?: '';
     $input = $body === '' ? [] : json_decode($body, true);
     if ($body !== '' && json_last_error() !== JSON_ERROR_NONE) {
+        if (function_exists('log_error')) {
+            \log_error('Malformed JSON received', [
+                'json_error'   => json_last_error_msg(),
+                'method'       => $method,
+                'uri'          => $uri,
+                'remote_addr'  => $remoteAddr,
+                'truncated_body' => substr($body, 0, 200) . (strlen($body) > 200 ? '…' : ''),
+            ]);
+        }
         http_response_code(400);
-        echo json_encode(['error'=>'Malformed JSON: '.json_last_error_msg()]); exit;
+        echo json_encode(['error' => 'Malformed JSON: '.json_last_error_msg()]);
+        exit;
     }
 
     return compact('method','uri','headers','input');
