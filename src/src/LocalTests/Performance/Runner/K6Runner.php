@@ -120,7 +120,7 @@ class K6Runner {
 		$target = $target_file ?: sys_get_temp_dir() . '/qit-k6-default-test.js';
 
 		if ( ! file_exists( $source ) ) {
-			// If the source file doesn't exist (e.g., running from phar), use embedded content
+			// If the source file doesn't exist (e.g., running from phar), use embedded content.
 			$default_k6_content = 'import { check, sleep } from "k6";
 import http from "k6/http";
 
