@@ -25,6 +25,10 @@ class WebServer {
 		$this->use_local_mode = $use_local_mode;
 	}
 
+	public static function is_ai_enabled(): bool {
+		return false;
+	}
+
 	/**
 	 * Set the logger instance.
 	 *

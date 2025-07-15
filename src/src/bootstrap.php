@@ -1,5 +1,6 @@
 <?php
 
+use QIT_CLI\AI\WebServer;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\AI\NodeStartCommand;
@@ -221,7 +222,9 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( RunActivationTestCommand::class ) );
 
 	// AI commands.
-	$application->add( $container->make( NodeStartCommand::class ) );
+	if ( WebServer::is_ai_enabled() ) {
+		$application->add( $container->make( NodeStartCommand::class ) );
+	}
 
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );
