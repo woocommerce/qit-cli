@@ -98,6 +98,17 @@ class K6Runner {
 			$this->output->writeln( 'Running: ' . $process->getCommandLine() );
 		}
 
+		// Add signal handlers for graceful termination.
+		if ( function_exists( 'pcntl_signal' ) ) {
+			$signal_handler = static function () use ( $process ): void {
+				// Stop the process gracefully.
+				$process->signal( SIGTERM );
+			};
+
+			pcntl_signal( SIGINT, $signal_handler );
+			pcntl_signal( SIGTERM, $signal_handler );
+		}
+
 		$process->run( function ( $type, $buffer ) {
 			if ( $this->output->isVerbose() || $type === Process::ERR ) {
 				$this->output->write( $buffer );

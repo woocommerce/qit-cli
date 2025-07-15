@@ -2,7 +2,6 @@
 
 namespace QIT_CLI\LocalTests\Performance\Result;
 
-use QIT_CLI\Config;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 
 class PerformanceTestResult {
@@ -81,8 +80,11 @@ class PerformanceTestResult {
 	}
 
 	private function create_results_directory(): string {
-		$timestamp   = gmdate( 'Y-m-d_H-i-s' );
-		$results_dir = Config::get_qit_dir() . "results/performance/{$this->env_info->sut_slug}_{$timestamp}_{$this->test_run_id}";
+		if ( ! empty( getenv( 'QIT_RESULTS_DIR' ) ) ) {
+			$results_dir = \QIT_CLI\normalize_path( getenv( 'QIT_RESULTS_DIR' ) );
+		} else {
+			$results_dir = \QIT_CLI\normalize_path( sys_get_temp_dir() ) . "qit-results-{$this->env_info->env_id}";
+		}
 
 		if ( ! file_exists( $results_dir ) ) {
 			if ( ! mkdir( $results_dir, 0755, true ) ) {

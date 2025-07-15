@@ -35,15 +35,25 @@ class PerformanceTestManager {
 		// Run K6 performance tests.
 		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
 
-		// Store exit code and mark as completed (like E2E tests do).
+		// Store exit code and set status based on how test finished.
 		$test_result->add_metric( 'k6_exit_code', $exit_status_code );
-		$test_result->set_status( 'completed' );
+
+		if ( $exit_status_code === 143 ) {
+			// Test was cancelled (SIGTERM received).
+			$test_result->set_status( 'cancelled' );
+		} else {
+			$test_result->set_status( 'completed' );
+		}
 
 		// Notify test finished and get final status.
 		[ $report_url, $exit_status_code_override ] = $this->notifier->notify_test_finished( $test_result );
 
 		// Display results summary with final status.
 		$this->display_results_summary( $test_result );
+
+		if ( $this->output && $this->output->isVeryVerbose() ) {
+			$this->output->writeln( sprintf( '[Verbose] Test artifacts directory: %s', $test_result->get_results_dir() ) );
+		}
 
 		// Use override exit code if provided.
 		return $exit_status_code_override ?? $exit_status_code;
