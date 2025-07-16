@@ -47,7 +47,7 @@ abstract class BaseTool {
 		if ( $this->context === null ) {
 			return $core;
 		}
-		$deps      = array_map( fn( $d ) => $d['slug'], $this->context->deps );
+		$deps       = array_map( fn( $d ) => $d['slug'], $this->context->deps );
 		$macro_note = sprintf(
 			"\n\nPath placeholders:\n• __WP_ROOT__ = %s\n• __SUT_DIR__ = %s\n• __DEP_[slug]__ where slug ∈ {%s}",
 			$this->context->wpRoot,
@@ -78,7 +78,7 @@ abstract class BaseTool {
 		try {
 			// Resolve placeholders
 			$resolved_params = $this->resolve_macros_in_params( $params );
-			$data           = $this->do( $resolved_params );
+			$data            = $this->do( $resolved_params );
 
 			return [
 				'success'   => true,
@@ -139,7 +139,7 @@ abstract class BaseTool {
 
 		// Handle __SUT_DIR__
 		if ( strpos( $user_path, '__SUT_DIR__' ) === 0 ) {
-			$remainder   = substr( $user_path, 11 ); // length of '__SUT_DIR__'
+			$remainder    = substr( $user_path, 11 ); // length of '__SUT_DIR__'
 			$sut_relative = $this->file_path_resolver->to_relative( $this->context->sutDir );
 
 			if ( empty( $remainder ) || $remainder === '/' ) {

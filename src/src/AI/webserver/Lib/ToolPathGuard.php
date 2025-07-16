@@ -8,10 +8,14 @@ namespace QIT_AI_Webserver\Lib;
 class ToolPathGuard {
 	/**
 	 * Canonical absolute path (no trailing "/")
+	 *
+	 * @var string
 	 */
 	private string $work_dir;
 	/**
 	 * SUT directory relative to work_dir
+	 *
+	 * @var string
 	 */
 	private string $sut_dir;
 

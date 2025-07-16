@@ -23,7 +23,7 @@ class SafeToolsOpenAIChat extends OpenAIChat {
 
 			foreach ( $this->tools as $fn ) {
 				if ( $fn->name === $name ) {
-					$fi           = $fn->cloneWithId( $tc->id );
+					$fi = $fn->cloneWithId( $tc->id );
 					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					$fi->jsonArgs = $tc->function->arguments;
 					$valid[]      = $fi;

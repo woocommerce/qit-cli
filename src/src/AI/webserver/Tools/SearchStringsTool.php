@@ -134,7 +134,7 @@ class SearchStringsTool extends BaseTool {
 	/**
 	 * Search for needles in a single file
 	 */
-	private function searchInFile( \SplFileInfo $file, array $needles, bool $case, int $maxResults ): array {
+	private function searchInFile( \SplFileInfo $file, array $needles, bool $case_sensitive, int $max_results ): array {
 		$hits    = [];
 		$content = file_get_contents( $file->getPathname() );
 		if ( $content === false ) {
@@ -143,13 +143,13 @@ class SearchStringsTool extends BaseTool {
 
 		$lines = explode( "\n", str_replace( "\r\n", "\n", $content ) );
 		foreach ( $lines as $ln => $text ) {
-			$haystack = $case ? $text : mb_strtolower( $text );
+			$haystack = $case_sensitive ? $text : mb_strtolower( $text );
 			foreach ( $needles as $needle ) {
 				if ( strpos( $haystack, $needle ) !== false ) {
 					$hits[] = [
-						'file'    => $this->file_path_resolver->toRelative( $file->getPathname() ),
+						'file'    => $this->file_path_resolver->to_relative( $file->getPathname() ),
 						'line'    => $ln + 1,
-						'needle'  => $case ? $needle : $needle, // already LC if !case
+						'needle'  => $needle,
 						'snippet' => trim( $text ),
 					];
 					if ( count( $hits ) >= $max_results ) {

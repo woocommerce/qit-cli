@@ -7,9 +7,9 @@ namespace QIT_AI_Webserver;
  * Handles detailed performance tracking separate from response formatting
  */
 class Benchmark {
-	private static ?float $request_start_time  = null;
+	private static ?float $request_start_time = null;
 	private static array $performance_markers = [];
-	private static ?self $instance             = null;
+	private static ?self $instance            = null;
 
 	/**
 	 * Get singleton instance
@@ -25,7 +25,7 @@ class Benchmark {
 	 * Initialize benchmark tracking (call at request start)
 	 */
 	public static function init(): void {
-		self::$request_start_time   = microtime( true );
+		self::$request_start_time  = microtime( true );
 		self::$performance_markers = [];
 	}
 
@@ -60,7 +60,7 @@ class Benchmark {
 
 		// Add markers if any
 		if ( ! empty( self::$performance_markers ) ) {
-			$markers  = [];
+			$markers   = [];
 			$last_time = self::$request_start_time;
 
 			foreach ( self::$performance_markers as $marker ) {

@@ -24,19 +24,19 @@ function qit_runtime_init(): void {
 
 	$node_dir = rtrim( getenv( 'QIT_NODE_DIR' ), '/' ) . '/';
 	// Configure error logging
-	error_reporting( E_ALL );
+	error_reporting( E_ALL ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.prevent_path_disclosure_error_reporting
 	// Note: Using ini_set for node configuration - WordPress norms don't apply here
 	ini_set( 'log_errors', '1' );
 	ini_set( 'error_log', $node_dir . 'php-errors.log' );
 	ini_set( 'display_errors', '1' );
 
 	// PSR‑4 autoloader for QIT_AI_Webserver\*
-	spl_autoload_register(function ( $class ) {
+	spl_autoload_register(function ( $class_to_load ) {
 		$prefix = 'QIT_AI_Webserver\\';
-		if ( strncmp( $class, $prefix, strlen( $prefix ) ) !== 0 ) {
+		if ( strncmp( $class_to_load, $prefix, strlen( $prefix ) ) !== 0 ) {
 			return;
 		}
-		$path = __DIR__ . '/' . str_replace( '\\', '/', substr( $class, strlen( $prefix ) ) ) . '.php';
+		$path = __DIR__ . '/' . str_replace( '\\', '/', substr( $class_to_load, strlen( $prefix ) ) ) . '.php';
 		if ( is_file( $path ) ) {
 			require $path;
 		}

@@ -31,14 +31,14 @@ final class DebugLogger {
 
 		// -- 1) Try native `tree`
 		$cmd = 'command -v tree';
-		if ( trim( shell_exec( $cmd ) ?? '' ) !== '' ) {
+		if ( trim( shell_exec( $cmd ) ?? '' ) !== '' ) { // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec,WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec - This call is safe as-is.
 			$tree_cmd = sprintf(
 				'tree -a -L %d --dirsfirst %s 2>/dev/null | head -n %d',
 				$depth,
 				escapeshellarg( $dir ),
 				$max_lines
 			);
-			$out      = shell_exec( $tree_cmd );
+			$out      = shell_exec( $tree_cmd );  // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec,WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec - This call is safe as-is.
 			if ( $out !== null ) {
 				return $out;
 			}

@@ -145,9 +145,6 @@ class Logger {
 
 		// Write to log file
 		$this->write_to_log( $formatted_message . PHP_EOL );
-
-		// Also write to error_log for system logging
-		error_log( "[QIT Node] $formatted_message" );
 	}
 
 	/**
@@ -182,7 +179,7 @@ class Logger {
 
 		// Silently ignore write errors, but emit to PHP error_log so that they are visible to operators
 		if ( @file_put_contents( $this->log_file, $message, FILE_APPEND ) === false ) {
-			error_log( '[QIT Logger] Failed to write to log file: ' . $this->log_file );
+			error_log( '[QIT Logger] Failed to write to log file: ' . $this->log_file ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 		}
 	}
 }

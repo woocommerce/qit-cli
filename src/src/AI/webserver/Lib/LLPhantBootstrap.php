@@ -179,7 +179,7 @@ final class LLPhantBootstrap {
 		// TODO: Implement actual model downloading
 		// For now, we'll log that the model needs to be downloaded
 		// and return true to allow the process to continue
-		error_log( "Model '{$model}' not found in LM Studio. Please load it manually through LM Studio UI." );
+		error_log( "Model '{$model}' not found in LM Studio. Please load it manually through LM Studio UI." ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
 
 		// In a future implementation, this could:
 		// 1. Call LM Studio's model management API
@@ -308,7 +308,7 @@ final class LLPhantBootstrap {
 
 	private function ensure_ll_phant_installed( array $composer_json ): void {
 		// Check if composer is available
-		$composer_check = shell_exec( 'which composer 2>&1' ) ?: shell_exec( 'where composer 2>&1' );
+		$composer_check = shell_exec( 'which composer 2>&1' ) ?: shell_exec( 'where composer 2>&1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 		if ( empty( trim( $composer_check ) ) ) {
 			throw new Exception( 'Composer is not installed or not in PATH. Please install Composer first.' );
 		}
@@ -465,9 +465,9 @@ final class LLPhantBootstrap {
 			'Authorization: Bearer ' . ( $this->config['api_key'] ?? 'dummy' ),
 		] );
 
-		$response = curl_exec( $ch );
+		$response  = curl_exec( $ch );
 		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		$error    = curl_error( $ch );
+		$error     = curl_error( $ch );
 		curl_close( $ch );
 
 		if ( $http_code !== 200 ) {

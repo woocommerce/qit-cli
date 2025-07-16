@@ -12,12 +12,12 @@ class WebServer {
 	private ?string $node_token;
 	private ?\QIT_CLI\Logging\Logger $logger = null;
 	private bool $use_local_mode;
-	private string $provider      = 'lmstudio';
+	private string $provider       = 'lmstudio';
 	private array $provider_config = [];
 	private array $runtime_config  = [];
 	private string $router_template;
-	private bool $bind_localhost_only     = false;
-	private ?string $custom_log_file      = null;
+	private bool $bind_localhost_only    = false;
+	private ?string $custom_log_file     = null;
 	private array $environment_variables = [];
 
 	public function __construct( bool $use_local_mode = true ) {
@@ -34,7 +34,7 @@ class WebServer {
 	 * @param \QIT_CLI\Logging\Logger $logger The logger instance.
 	 */
 	public function set_logger( \QIT_CLI\Logging\Logger $logger ): void {
-		$this->logger        = $logger;
+		$this->logger          = $logger;
 		$this->custom_log_file = $logger->get_log_file();
 	}
 
@@ -48,7 +48,7 @@ class WebServer {
 	}
 
 	public function set_provider_config( string $provider, array $config ): void {
-		$this->provider       = $provider;
+		$this->provider        = $provider;
 		$this->provider_config = $config;
 	}
 
