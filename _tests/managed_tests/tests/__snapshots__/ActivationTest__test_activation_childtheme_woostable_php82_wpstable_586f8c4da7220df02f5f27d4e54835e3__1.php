@@ -7,7 +7,7 @@
             "test_type_display": "Activation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "8.2",
+            "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
@@ -21,10 +21,10 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 1822936,
+                "id": 18619,
                 "host": "wccom",
-                "name": "Bistro",
-                "type": "theme"
+                "name": "Google Product Feed",
+                "type": "plugin"
             },
             "client": "qit_cli",
             "event": "local_or_ci_run_normalized",
@@ -182,22 +182,7 @@
                                 "Success: Activated 1 of 1 plugins.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
-                            "stderr": [
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Finder::getIterator() should either be compatible with IteratorAggregate::getIterator(): Traversable, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Finder.php on line 566\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Finder::count() should either be compatible with Countable::count(): int, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Finder.php on line 637\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\FilterIterator::rewind() should either be compatible with FilterIterator::rewind(): void, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/FilterIterator.php on line 32\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\FileTypeFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/FileTypeFilterIterator.php on line 42\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\RecursiveDirectoryIterator::getChildren() should either be compatible with RecursiveDirectoryIterator::getChildren(): RecursiveDirectoryIterator, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/RecursiveDirectoryIterator.php on line 89\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\RecursiveDirectoryIterator::rewind() should either be compatible with FilesystemIterator::rewind(): void, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/RecursiveDirectoryIterator.php on line 117\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\RecursiveDirectoryIterator::current() should either be compatible with FilesystemIterator::current(): SplFileInfo|FilesystemIterator|string, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/RecursiveDirectoryIterator.php on line 65\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\ExcludeDirectoryFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/ExcludeDirectoryFilterIterator.php on line 55\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\ExcludeDirectoryFilterIterator::hasChildren() should either be compatible with RecursiveIterator::hasChildren(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/ExcludeDirectoryFilterIterator.php on line 71\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\ExcludeDirectoryFilterIterator::getChildren() should either be compatible with RecursiveIterator::getChildren(): ?RecursiveIterator, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/ExcludeDirectoryFilterIterator.php on line 76\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\FilterIterator::rewind() should either be compatible with Iterator::rewind(): void, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/FilterIterator.php on line 32\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\DateRangeFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/DateRangeFilterIterator.php on line 41\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\PathFilterIterator::accept() should either be compatible with FilterIterator::accept(): bool, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/PathFilterIterator.php on line 27\\u001b[0m\\n",
-                                "\\u001b[33mDeprecated: Return type of Symfony\\\\Component\\\\Finder\\\\Iterator\\\\SortableIterator::getIterator() should either be compatible with IteratorAggregate::getIterator(): Traversable, or the #[\\\\ReturnTypeWillChange] attribute should be used to temporarily suppress the notice in phar:\\/\\/\\/usr\\/local\\/bin\\/wp\\/vendor\\/symfony\\/finder\\/Iterator\\/SortableIterator.php on line 73\\u001b[0m\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
@@ -224,15 +209,18 @@
                             "attachments": [],
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
-                                "[0.00s] Starting plugin activation test\\n",
+                                "[TIMING NORMALIZED] Starting plugin activation test\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
-                                "[8.24s] Found 2 plugins to process\\n",
-                                "[8.24s] Starting activation loop\\n",
-                                "[8.24s] Plugin activation test completed. Total activated: 0\\n"
+                                " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
+                                "[TIMING NORMALIZED] Found 3 plugins to process\\n",
+                                "[TIMING NORMALIZED] Starting activation loop\\n",
+                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
+                                "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -275,11 +263,7 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [
-                                "Parent theme installation required. Installing now.\\n",
-                                "Activated the theme: bistro\\n",
-                                "Confirmation: bistro is now the active theme.\\n"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -489,34 +473,34 @@
                     {
                         "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
                         "type": "PHP Fatal",
-                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:10",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:9",
                         "count": "1"
                     },
                     {
-                        "message": "Notice on all requests - Child theme",
+                        "message": "Notice on all requests",
                         "type": "notice",
-                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:17",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
                         "count": "Between 10 and 149, normalized to 75"
                     },
                     {
-                        "message": "Warning on all requests - Child theme",
+                        "message": "Warning on all requests",
                         "type": "warning",
-                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:13",
-                        "count": "6"
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
+                        "count": "4"
                     }
                 ],
                 "debug_log": [
                     {
                         "count": "1",
-                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php:10\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(Object(WP))\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(835): do_action_ref_array(\'wp\', Array)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1342): WP->main(\'\')\\n#5 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#6 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#7 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 10\\n"
+                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:9\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(Object(WP))\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(835): do_action_ref_array(\'wp\', Array)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1342): WP->main(\'\')\\n#5 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#6 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#7 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 9\\n"
                     },
                     {
                         "count": "Between 10 and 149, normalized to 75",
-                        "message": "PHP Notice: Notice on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 17"
+                        "message": "PHP Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
                     },
                     {
-                        "count": "6",
-                        "message": "PHP Warning: Warning on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 13"
+                        "count": "4",
+                        "message": "PHP Warning: Warning on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
                 ]
             }
