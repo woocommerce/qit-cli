@@ -619,6 +619,12 @@ class QITE2ETestCase extends TestCase {
 
 		foreach ( $json as &$j ) {
 			foreach ( $j as $k => &$v ) {
+				// Remove unwanted keys
+				if ( $k === 'ai_suggestion_status' ) {
+					unset( $j[$k] );
+					continue;
+				}
+
 				// Check if the current key is in the processing rules.
 				if ( array_key_exists( $k, $rules ) ) {
 					// Validate the existing value.

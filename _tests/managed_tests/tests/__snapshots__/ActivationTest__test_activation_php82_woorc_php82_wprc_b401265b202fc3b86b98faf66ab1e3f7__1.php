@@ -204,7 +204,12 @@
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Expect \\"The plugin \\"Activation - Plugin A\\" never appeared active in the UI.\\"",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -356,7 +361,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "slow"
+                                        "type": "slow",
+                                        "location": {
+                                            "file": "\\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js",
+                                            "line": 674,
+                                            "column": 10
+                                        }
                                     }
                                 ]
                             }
