@@ -105,7 +105,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	 * @param array<string,scalar|array<scalar>> $env_info_array
 	 */
 	public static function from_array( array $env_info_array ): EnvInfo {
-		switch ( $env_info_array['environment'] ?? 'e2e' ) {
+		$environment_type = $env_info_array['environment'] ?? 'e2e';
+		
+		switch ( $environment_type ) {
 			case 'e2e':
 				$env_info = new E2EEnvInfo();
 				break;
@@ -113,7 +115,12 @@ abstract class EnvInfo implements \JsonSerializable {
 				$env_info = new PerformanceEnvInfo();
 				break;
 			default:
-				throw new \RuntimeException( 'Invalid environment type.' );
+				// Fallback to e2e for unknown environment types
+				App::make( Output::class )->writeln( sprintf( '<warning>Warning: Unknown environment type "%s" found in cache. Falling back to "e2e" environment type.</warning>', $environment_type ) );
+				$env_info = new E2EEnvInfo();
+				// Override the environment type to e2e to prevent future issues
+				$env_info_array['environment'] = 'e2e';
+				break;
 		}
 
 		$env_info->environment   = $env_info_array['environment'] ?? 'e2e';
