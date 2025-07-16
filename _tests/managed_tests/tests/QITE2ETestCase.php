@@ -302,6 +302,11 @@ class QITE2ETestCase extends TestCase {
 										continue;
 									}
 
+									// Normalize timings in lines like these: "[8.45s] Found 3 plugins to process\\n",
+									if ( preg_match( '/\[\d+(\.\d+)?s\]/', $line ) ) {
+										$line = preg_replace( '/\[\d+(\.\d+)?s\]/', '[TIMING NORMALIZED]', $line );
+									}
+
 									// 2) If this line starts with "Console ", ensure we show it only once, as they can cause flakiness.
 									if ( strpos( $line, 'Console ' ) === 0 ) {
 										if ( ! in_array( $line, $processes_console, true ) ) {

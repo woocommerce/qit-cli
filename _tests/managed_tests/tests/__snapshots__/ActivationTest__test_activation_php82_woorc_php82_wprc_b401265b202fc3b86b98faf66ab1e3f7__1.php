@@ -37,7 +37,6 @@
             "test_summary": "Test Suites: 0 skipped, 0 failed, 2 passed, 2 total | Tests: 0 skipped, 0 failed, 12 passed, 12 total.",
             "version": "",
             "update_complete": true,
-            "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "",
             "runner": "",
@@ -210,13 +209,18 @@
                             "attachments": [],
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
+                                "[0.00s] Starting plugin activation test\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
                                 " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
-                                "Activated \\"Activation - Plugin A\\" successfully.\\n"
+                                "[9.58s] Found 3 plugins to process\\n",
+                                "[9.58s] Starting activation loop\\n",
+                                "[9.65s] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
+                                "[13.33s] Activated \\"Activation - Plugin A\\" successfully.\\n",
+                                "[14.52s] Plugin activation test completed. Total activated: 1\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -301,7 +305,11 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "isAlreadyChecked: false\\n",
+                                "Setting up Cash on Delivery\\n",
+                                "Cash on Delivery setup complete\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
