@@ -37,7 +37,6 @@
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
-            "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "1234567890",
             "runner": "normalized",
@@ -76,6 +75,7 @@
                         "email_improvements",
                         "blueprint",
                         "block_email_editor",
+                        "point_of_sale",
                         "custom_order_tables",
                         "cost_of_goods_sold"
                     ]
