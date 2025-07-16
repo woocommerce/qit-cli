@@ -48,3 +48,7 @@ _tests/managed_tests/last-self-test.log
 
 src/tests/data/sync.json
 
+
+src/tests/integration/
+
+src/tests/unit/data/sync.json

@@ -35,7 +35,6 @@
             "test_summary": "266 total, 261 passed, 0 failed, 5 skipped.",
             "version": "1.0.15",
             "update_complete": true,
-            "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "1234567890",
             "runner": "normalized",
