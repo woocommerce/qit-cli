@@ -106,7 +106,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public static function from_array( array $env_info_array ): EnvInfo {
 		$environment_type = $env_info_array['environment'] ?? 'e2e';
-		
+
 		switch ( $environment_type ) {
 			case 'e2e':
 				$env_info = new E2EEnvInfo();
