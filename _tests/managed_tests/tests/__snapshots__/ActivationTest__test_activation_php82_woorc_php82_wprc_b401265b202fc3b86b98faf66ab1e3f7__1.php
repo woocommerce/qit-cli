@@ -209,18 +209,18 @@
                             "attachments": [],
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
-                                "[0.00s] Starting plugin activation test\\n",
+                                "[TIMING NORMALIZED] Starting plugin activation test\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
                                 " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
-                                "[9.58s] Found 3 plugins to process\\n",
-                                "[9.58s] Starting activation loop\\n",
-                                "[9.65s] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
-                                "[13.33s] Activated \\"Activation - Plugin A\\" successfully.\\n",
-                                "[14.52s] Plugin activation test completed. Total activated: 1\\n"
+                                "[TIMING NORMALIZED] Found 3 plugins to process\\n",
+                                "[TIMING NORMALIZED] Starting activation loop\\n",
+                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
+                                "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
                             ],
                             "stderr": [],
                             "extra": {

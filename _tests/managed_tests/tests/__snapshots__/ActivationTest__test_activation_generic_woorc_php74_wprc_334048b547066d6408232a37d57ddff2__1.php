@@ -173,7 +173,7 @@
                                 "Plugin \'query-monitor\' activated.\\n",
                                 "Success: Installed 1 of 1 plugins.\\n",
                                 "Installing Twenty Twenty-Four (1.3)\\n",
-                                "Downloading installation package from http:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
+                                "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
                                 "Theme installed successfully.\\n",
@@ -209,18 +209,18 @@
                             "attachments": [],
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
-                                "[0.00s] Starting plugin activation test\\n",
+                                "[TIMING NORMALIZED] Starting plugin activation test\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
                                 " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
-                                "[8.45s] Found 3 plugins to process\\n",
-                                "[8.45s] Starting activation loop\\n",
-                                "[8.52s] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
-                                "[11.74s] Activated \\"Activation - Plugin A\\" successfully.\\n",
-                                "[12.70s] Plugin activation test completed. Total activated: 1\\n"
+                                "[TIMING NORMALIZED] Found 3 plugins to process\\n",
+                                "[TIMING NORMALIZED] Starting activation loop\\n",
+                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
+                                "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
                             ],
                             "stderr": [],
                             "extra": {

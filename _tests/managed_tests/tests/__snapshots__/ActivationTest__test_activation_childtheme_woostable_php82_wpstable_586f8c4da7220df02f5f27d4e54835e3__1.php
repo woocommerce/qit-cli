@@ -7,7 +7,7 @@
             "test_type_display": "Activation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "7.4",
+            "php_version": "8.2",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
@@ -21,10 +21,10 @@
             "is_development": true,
             "send_notifications": false,
             "woo_extension": {
-                "id": 18619,
+                "id": 1822936,
                 "host": "wccom",
-                "name": "Google Product Feed",
-                "type": "plugin"
+                "name": "Bistro",
+                "type": "theme"
             },
             "client": "qit_cli",
             "event": "local_or_ci_run_normalized",
@@ -215,12 +215,9 @@
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
-                                " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
-                                "[TIMING NORMALIZED] Found 3 plugins to process\\n",
+                                "[TIMING NORMALIZED] Found 2 plugins to process\\n",
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 0\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -263,7 +260,11 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Parent theme installation required. Installing now.\\n",
+                                "Activated the theme: bistro\\n",
+                                "Confirmation: bistro is now the active theme.\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -473,34 +474,34 @@
                     {
                         "message": " Uncaught Error: Call to undefined function call_to_undefined_function()",
                         "type": "PHP Fatal",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:9",
+                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:10",
                         "count": "1"
                     },
                     {
-                        "message": "Notice on all requests",
+                        "message": "Notice on all requests - Child theme",
                         "type": "notice",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
+                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:17",
                         "count": "Between 10 and 149, normalized to 75"
                     },
                     {
-                        "message": "Warning on all requests",
+                        "message": "Warning on all requests - Child theme",
                         "type": "warning",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
-                        "count": "4"
+                        "file_line": "wp-content\\/themes\\/bistro\\/functions.php:13",
+                        "count": "6"
                     }
                 ],
                 "debug_log": [
                     {
                         "count": "1",
-                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:9\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(Object(WP))\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(835): do_action_ref_array(\'wp\', Array)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1342): WP->main(\'\')\\n#5 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#6 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#7 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 9\\n"
+                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php:10\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(Object(WP))\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(835): do_action_ref_array(\'wp\', Array)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1342): WP->main(\'\')\\n#5 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#6 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#7 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 10\\n"
                     },
                     {
                         "count": "Between 10 and 149, normalized to 75",
-                        "message": "PHP Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
+                        "message": "PHP Notice: Notice on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 17"
                     },
                     {
-                        "count": "4",
-                        "message": "PHP Warning: Warning on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                        "count": "6",
+                        "message": "PHP Warning: Warning on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 13"
                     }
                 ]
             }

@@ -7,7 +7,7 @@
             "test_type_display": "Activation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "8.2",
+            "php_version": "7.4",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
@@ -15,7 +15,7 @@
                 "woocommerce"
             ],
             "test_log": "",
-            "status": "warning",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -34,13 +34,70 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test Suites: 0 skipped, 0 failed, 2 passed, 2 total | Tests: 0 skipped, 0 failed, 12 passed, 12 total.",
+            "test_summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 9 skipped, 1 failed, 2 passed, 12 total.",
             "version": "",
             "update_complete": true,
             "malware_whitelist_paths": [],
             "workflow_id": "",
             "runner": "",
-            "test_media": [],
+            "test_media": [
+                {
+                    "type": "jpg",
+                    "path": "normalized.jpg",
+                    "data": {
+                        "Title": [
+                            "Plugin A"
+                        ],
+                        "URL": [
+                            "\\/wp-admin\\/admin.php?page=plugin-a"
+                        ],
+                        "Timings": [
+                            "Time to page load: NORMALIZED",
+                            "Time to network idle: NORMALIZED"
+                        ],
+                        "PHP Debug Log": [
+                            "[Notice] Notice in custom page. (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 11)",
+                            "[Notice] Undefined index: bar (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 16)",
+                            "[Warning] Warning in custom page. (on file wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php line 13)"
+                        ],
+                        "JavaScript Console Log": [
+                            "Console warning: Console Warning in custom page.",
+                            "Console error: Console Error in custom page.",
+                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:209:223\\""
+                        ]
+                    }
+                },
+                {
+                    "type": "jpg",
+                    "path": "normalized.jpg",
+                    "data": {
+                        "Title": [
+                            "Plugin B"
+                        ],
+                        "URL": [
+                            "\\/wp-admin\\/admin.php?page=plugin-b"
+                        ],
+                        "Timings": [
+                            "Time to page load: NORMALIZED",
+                            "Time to network idle: NORMALIZED"
+                        ],
+                        "PHP Debug Log": [
+                            "[TIMESTAMP] PHP Fatal error:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
+                            "Stack trace:",
+                            "#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')",
+                            "#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)",
+                            "#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)",
+                            "#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')",
+                            "#4 {main}",
+                            "  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29"
+                        ],
+                        "JavaScript Console Log": [
+                            "Console error: Failed to load resource: the server responded with a status of 500 (Internal Server Error)",
+                            "Console error: PHP Fatal Error: Uncaught Error: Call to undefined function call_to_an_undefined_function()"
+                        ]
+                    }
+                }
+            ],
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
@@ -51,13 +108,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 2,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 1,
                 "numPendingTestSuites": 0,
                 "numTotalTestSuites": 2,
-                "numFailedTests": 0,
-                "numPassedTests": 12,
-                "numPendingTests": 0,
+                "numFailedTests": 1,
+                "numPassedTests": 2,
+                "numPendingTests": 9,
                 "numTotalTests": 12,
                 "testResults": [
                     {
@@ -75,8 +132,8 @@
                     },
                     {
                         "file": "woocommerce\\/activation\\/activation.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
+                        "status": "failed",
+                        "has_pending": true,
                         "tests": {
                             "woocommerce\\/activation\\/activation.spec.js": [
                                 {
@@ -85,49 +142,49 @@
                                 },
                                 {
                                     "title": "Visit wp-admin pages added by the plugin",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Activate Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Setup Local Pickup",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Set up Cash On Delivery Payment Method",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Create a Product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Create a Simple Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Add Product Cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can Place Order",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Deactivate Plugin",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Activate Other Theme",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     }
                 ],
-                "summary": "Test Suites: 0 skipped, 0 failed, 2 passed, 2 total | Tests: 0 skipped, 0 failed, 12 passed, 12 total."
+                "summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 9 skipped, 1 failed, 2 passed, 12 total."
             }
         },
         {
@@ -138,10 +195,10 @@
                     },
                     "summary": {
                         "tests": 12,
-                        "passed": 12,
-                        "failed": 0,
+                        "passed": 2,
+                        "failed": 1,
                         "pending": 0,
-                        "skipped": 0,
+                        "skipped": 9,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -229,20 +286,61 @@
                         },
                         {
                             "name": "Visit wp-admin pages added by the plugin",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m",
+                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:503:89\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:439:9",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Visit Plugin A",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Visit Plugin B",
+                                    "status": "failed"
+                                }
+                            ],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
-                            "attachments": [],
-                            "stdout": [],
+                            "attachments": [
+                                {
+                                    "name": "00_Plugin_A",
+                                    "contentType": "image\\/jpeg",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/00-Plugin-A-HASHNORMALIZED.jpg"
+                                },
+                                {
+                                    "name": "01_Plugin_B",
+                                    "contentType": "image\\/jpeg",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/attachments\\/01-Plugin-B-HASHNORMALIZED.jpg"
+                                },
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/video.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/qit\\/results\\/playwright\\/activation-Visit-wp-admin-pages-added-by-the-plugin--test-Woocommerce-Run-\\/trace.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a:209:223\\"\\n",
+                                "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-b\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -250,11 +348,11 @@
                         },
                         {
                             "name": "Activate Theme",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -271,11 +369,11 @@
                         },
                         {
                             "name": "Setup Local Pickup",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -292,11 +390,11 @@
                         },
                         {
                             "name": "Set up Cash On Delivery Payment Method",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -305,11 +403,7 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [
-                                "isAlreadyChecked: false\\n",
-                                "Setting up Cash on Delivery\\n",
-                                "Cash on Delivery setup complete\\n"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
@@ -317,11 +411,11 @@
                         },
                         {
                             "name": "Create a Product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -338,11 +432,11 @@
                         },
                         {
                             "name": "Create a Simple Order",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -354,20 +448,16 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "slow"
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
                             "name": "Add Product Cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -384,11 +474,11 @@
                         },
                         {
                             "name": "Can Place Order",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -405,11 +495,11 @@
                         },
                         {
                             "name": "Deactivate Plugin",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -426,11 +516,11 @@
                         },
                         {
                             "name": "Activate Other Theme",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -453,26 +543,46 @@
             "debug_log": {
                 "qm_logs": [
                     {
-                        "message": "Creation of dynamic property SUT\\\\BarUser::$bar is deprecated",
-                        "type": "deprecated",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:28",
-                        "count": "Between 10 and 149, normalized to 75"
+                        "message": " Uncaught Error: Call to undefined function call_to_an_undefined_function()",
+                        "type": "PHP Fatal",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29",
+                        "count": "1"
                     },
                     {
-                        "message": "Function utf8_encode() is deprecated",
-                        "type": "deprecated",
-                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:37",
-                        "count": "Between 10 and 149, normalized to 75"
+                        "message": "Notice in custom page.",
+                        "type": "notice",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:11",
+                        "count": "1"
+                    },
+                    {
+                        "message": "Undefined index: bar",
+                        "type": "notice",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:16",
+                        "count": "1"
+                    },
+                    {
+                        "message": "Warning in custom page.",
+                        "type": "warning",
+                        "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:13",
+                        "count": "1"
                     }
                 ],
                 "debug_log": [
                     {
-                        "count": "Between 10 and 149, normalized to 75",
-                        "message": "PHP Deprecated: Creation of dynamic property SUT\\\\BarUser::$bar is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 28"
+                        "count": "1",
+                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')\\n#4 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\n"
                     },
                     {
-                        "count": "Between 10 and 149, normalized to 75",
-                        "message": "PHP Deprecated: Function utf8_encode() is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 37"
+                        "count": "1",
+                        "message": "PHP Notice: Notice in custom page. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 11"
+                    },
+                    {
+                        "count": "1",
+                        "message": "PHP Notice: Undefined index: bar in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
+                    },
+                    {
+                        "count": "1",
+                        "message": "PHP Warning: Warning in custom page. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 13"
                     }
                 ]
             }
