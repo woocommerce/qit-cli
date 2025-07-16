@@ -115,10 +115,10 @@ abstract class EnvInfo implements \JsonSerializable {
 				$env_info = new PerformanceEnvInfo();
 				break;
 			default:
-				// Fallback to e2e for unknown environment types
+				// Fallback to e2e for unknown environment types.
 				App::make( Output::class )->writeln( sprintf( '<warning>Warning: Unknown environment type "%s" found in cache. Falling back to "e2e" environment type.</warning>', $environment_type ) );
 				$env_info = new E2EEnvInfo();
-				// Override the environment type to e2e to prevent future issues
+				// Override the environment type to e2e to prevent future issues.
 				$env_info_array['environment'] = 'e2e';
 				break;
 		}
