@@ -36,7 +36,7 @@ abstract class AbstractEndpoint {
 	/**
 	 * Handle errors consistently across all endpoints
 	 *
-	 * @param Exception $e Exception to handle.
+	 * @param Exception            $e Exception to handle.
 	 * @param array<string, mixed> $context Additional context for error reporting.
 	 * @return string JSON error response
 	 */
@@ -87,7 +87,7 @@ abstract class AbstractEndpoint {
 	}
 
 	/**
-	 * @param string $message
+	 * @param string               $message
 	 * @param array<string, mixed> $context
 	 */
 	public function log_debug( string $message, array $context = [] ): void {
@@ -95,7 +95,7 @@ abstract class AbstractEndpoint {
 	}
 
 	/**
-	 * @param string $message
+	 * @param string               $message
 	 * @param array<string, mixed> $context
 	 */
 	public function log_error( string $message, array $context = [] ): void {
@@ -103,7 +103,7 @@ abstract class AbstractEndpoint {
 	}
 
 	/**
-	 * @param string $message
+	 * @param string               $message
 	 * @param array<string, mixed> $context
 	 */
 	public function log_warning( string $message, array $context = [] ): void {

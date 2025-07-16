@@ -32,7 +32,7 @@ class Logger {
 	/**
 	 * Log level priorities (lower number = higher priority)
 	 *
-	 * @var array
+	 * @var array<string, int>
 	 */
 	private array $log_level_priorities = [
 		self::DEBUG    => 0,
@@ -75,8 +75,8 @@ class Logger {
 	/**
 	 * Log a debug message.
 	 *
-	 * @param string $message The message to log.
-	 * @param array  $context Optional. Additional context data to include in the log.
+	 * @param string               $message The message to log.
+	 * @param array<string, mixed> $context Optional. Additional context data to include in the log.
 	 */
 	public function debug( string $message, array $context = [] ): void {
 		$this->log( self::DEBUG, $message, $context );
@@ -85,8 +85,8 @@ class Logger {
 	/**
 	 * Log an info message.
 	 *
-	 * @param string $message The message to log.
-	 * @param array  $context Optional. Additional context data to include in the log.
+	 * @param string               $message The message to log.
+	 * @param array<string, mixed> $context Optional. Additional context data to include in the log.
 	 */
 	public function info( string $message, array $context = [] ): void {
 		$this->log( self::INFO, $message, $context );
@@ -95,8 +95,8 @@ class Logger {
 	/**
 	 * Log a warning message.
 	 *
-	 * @param string $message The message to log.
-	 * @param array  $context Optional. Additional context data to include in the log.
+	 * @param string               $message The message to log.
+	 * @param array<string, mixed> $context Optional. Additional context data to include in the log.
 	 */
 	public function warning( string $message, array $context = [] ): void {
 		$this->log( self::WARNING, $message, $context );
@@ -105,8 +105,8 @@ class Logger {
 	/**
 	 * Log an error message.
 	 *
-	 * @param string $message The message to log.
-	 * @param array  $context Optional. Additional context data to include in the log.
+	 * @param string               $message The message to log.
+	 * @param array<string, mixed> $context Optional. Additional context data to include in the log.
 	 */
 	public function error( string $message, array $context = [] ): void {
 		$this->log( self::ERROR, $message, $context );
@@ -115,8 +115,8 @@ class Logger {
 	/**
 	 * Log a critical message.
 	 *
-	 * @param string $message The message to log.
-	 * @param array  $context Optional. Additional context data to include in the log.
+	 * @param string               $message The message to log.
+	 * @param array<string, mixed> $context Optional. Additional context data to include in the log.
 	 */
 	public function critical( string $message, array $context = [] ): void {
 		$this->log( self::CRITICAL, $message, $context );
@@ -125,9 +125,9 @@ class Logger {
 	/**
 	 * Log a message with the specified level.
 	 *
-	 * @param string $level   The log level.
-	 * @param string $message The message to log.
-	 * @param array  $context Optional. Additional context data to include in the log.
+	 * @param string               $level   The log level.
+	 * @param string               $message The message to log.
+	 * @param array<string, mixed> $context Optional. Additional context data to include in the log.
 	 */
 	public function log( string $level, string $message, array $context = [] ): void {
 		// Check if this log level should be recorded

@@ -33,7 +33,7 @@ class Benchmark {
 	/**
 	 * Mark a performance checkpoint
 	 *
-	 * @param string $name Marker name.
+	 * @param string               $name Marker name.
 	 * @param array<string, mixed> $data Optional data to associate with marker.
 	 */
 	public static function mark( string $name, array $data = [] ): void {
@@ -174,7 +174,7 @@ class Benchmark {
 
 	/**
 	 * Alias for tool_prompt method
-	 * 
+	 *
 	 * @param array<string, mixed> $response
 	 * @return array<string, mixed>
 	 */

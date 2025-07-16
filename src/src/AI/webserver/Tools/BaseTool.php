@@ -122,6 +122,7 @@ abstract class BaseTool {
 
 	/**
 	 * Resolve macros in path-related parameters
+	 *
 	 * @param array<string, mixed> $params
 	 * @return array<string, mixed>
 	 */

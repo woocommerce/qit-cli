@@ -138,7 +138,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Validate precondition
 	 *
-	 * @param string $extract_to Extraction directory.
+	 * @param string               $extract_to Extraction directory.
 	 * @param array<string, mixed> $config Configuration array.
 	 * @return void
 	 */
@@ -176,9 +176,9 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Perform extraction
 	 *
-	 * @param string $zip_url URL of ZIP file.
-	 * @param string $extract_to Extraction directory.
-	 * @param array<string, mixed>  $params Parameters array.
+	 * @param string               $zip_url URL of ZIP file.
+	 * @param string               $extract_to Extraction directory.
+	 * @param array<string, mixed> $params Parameters array.
 	 * @return string|array<string, mixed> Response string or error array.
 	 */
 	private function performExtraction( string $zip_url, string $extract_to, array $params ) {
@@ -318,8 +318,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Extract ZIP file
 	 *
-	 * @param string $zip_path Path to ZIP file.
-	 * @param string $extract_to Extraction directory.
+	 * @param string               $zip_path Path to ZIP file.
+	 * @param string               $extract_to Extraction directory.
 	 * @param array<string, mixed> $params Parameters array.
 	 * @return array<string, mixed> Extraction statistics.
 	 */
@@ -335,8 +335,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Secure extraction with per‑entry validation.
 	 *
-	 * @param string $zip_path Path to ZIP file.
-	 * @param string $extract_root Root extraction directory.
+	 * @param string               $zip_path Path to ZIP file.
+	 * @param string               $extract_root Root extraction directory.
 	 * @param array<string, mixed> $params Parameters array.
 	 * @return array{file_count:int,extract_time:float}
 	 * @throws Exception If ZIP file cannot be opened or extraction fails.
@@ -497,10 +497,10 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Send unified extraction response with both stats and file list
 	 *
-	 * @param string $actual_extract_path Actual extraction path.
-	 * @param int    $file_count Number of files extracted.
-	 * @param array<string, mixed>  $params Request parameters.
-	 * @param array<string, mixed>  $manifest Optional component manifest.
+	 * @param string               $actual_extract_path Actual extraction path.
+	 * @param int                  $file_count Number of files extracted.
+	 * @param array<string, mixed> $params Request parameters.
+	 * @param array<string, mixed> $manifest Optional component manifest.
 	 * @return array<string, mixed> Response array.
 	 */
 	private function sendUnifiedExtractionResponse( string $actual_extract_path, int $file_count, array $params, array $manifest = [] ) {
@@ -694,7 +694,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 	/**
 	 * Return every top‑level directory in the workspace (one level deep).
-	 * 
+	 *
 	 * @param string $base Base directory to scan.
 	 * @return array<string, mixed> Array of workspace roots.
 	 */
@@ -715,7 +715,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Write a small JSON file the prompt‑builder can read later.
 	 *
-	 * @param string $base Base directory.
+	 * @param string               $base Base directory.
 	 * @param array<string, mixed> $roots Directory roots.
 	 * @return void
 	 */

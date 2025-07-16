@@ -9,8 +9,8 @@ use LLPhant\OpenAIConfig;
 use QIT_AI_Webserver\Chat\SafeToolsOpenAIChat;
 
 class LLPhantBootstrap {
-	private const PROVIDERS = [ 'openai', 'anthropic', 'lm_studio' ];
-	public const DEFAULT_OPENAI_MODEL = 'gpt-4o-mini';
+	private const PROVIDERS              = [ 'openai', 'anthropic', 'lm_studio' ];
+	public const DEFAULT_OPENAI_MODEL    = 'gpt-4o-mini';
 	public const DEFAULT_ANTHROPIC_MODEL = 'claude-3-5-sonnet-20241022';
 
 	private ChatInterface $chat_instance;
@@ -65,6 +65,7 @@ class LLPhantBootstrap {
 
 	/**
 	 * Create chat instance based on provider
+	 *
 	 * @param array<string, mixed> $config
 	 * @return ChatInterface
 	 */
@@ -218,19 +219,21 @@ class LLPhantBootstrap {
 
 	/**
 	 * Configuration array.
+	 *
 	 * @var array<string, mixed>
 	 */
 	private array $config = [];
 
 	/**
 	 * Logger instance.
+	 *
 	 * @var mixed
 	 */
 	private $logger = null;
 
 	/**
 	 * @param array<string, mixed> $config
-	 * @param mixed $logger
+	 * @param mixed                $logger
 	 */
 	public function __construct( array $config, $logger = null ) {
 		$this->config = $config;
@@ -479,7 +482,7 @@ class LLPhantBootstrap {
 	}
 
 	/**
-	 * @param string $message
+	 * @param string               $message
 	 * @param array<string, mixed> $context
 	 */
 	private function log_info( string $message, array $context = [] ): void {
@@ -489,7 +492,7 @@ class LLPhantBootstrap {
 	}
 
 	/**
-	 * @param string $message
+	 * @param string               $message
 	 * @param array<string, mixed> $context
 	 */
 	private function log_error( string $message, array $context = [] ): void {

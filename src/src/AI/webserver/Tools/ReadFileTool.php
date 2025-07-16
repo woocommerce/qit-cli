@@ -73,7 +73,7 @@ class ReadFileTool extends BaseTool {
 
 		// If line range is specified, filter the content
 		if ( $start_line !== null || $end_line !== null ) {
-			$lines = explode( "\n", $content );
+			$lines       = explode( "\n", $content );
 			$total_lines = count( $lines );
 
 			$start = max( 1, $start_line ?? 1 ) - 1; // Convert to 0-based
@@ -84,23 +84,23 @@ class ReadFileTool extends BaseTool {
 			}
 
 			$filtered_lines = array_slice( $lines, $start, $end - $start + 1 );
-			$content = implode( "\n", $filtered_lines );
+			$content        = implode( "\n", $filtered_lines );
 
 			return [
-				'file'         => $file,
-				'content'      => $content,
-				'start_line'   => $start + 1,
-				'end_line'     => $end + 1,
-				'total_lines'  => $total_lines,
-				'truncated'    => false,
+				'file'        => $file,
+				'content'     => $content,
+				'start_line'  => $start + 1,
+				'end_line'    => $end + 1,
+				'total_lines' => $total_lines,
+				'truncated'   => false,
 			];
 		}
 
 		return [
-			'file'       => $file,
-			'content'    => $content,
+			'file'        => $file,
+			'content'     => $content,
 			'total_lines' => substr_count( $content, "\n" ) + 1,
-			'truncated'  => false,
+			'truncated'   => false,
 		];
 	}
 }

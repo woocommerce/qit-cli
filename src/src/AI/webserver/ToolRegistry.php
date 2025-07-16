@@ -50,7 +50,7 @@ class ToolRegistry {
 		foreach ( $tool_classes as $class_name ) {
 			$full_class = "\\QIT_AI_Webserver\\Tools\\{$class_name}";
 			if ( class_exists( $full_class ) ) {
-				$tool = new $full_class( $work_dir, $sut_dir, $this->context );
+				$tool                             = new $full_class( $work_dir, $sut_dir, $this->context );
 				$this->tools[ $tool->get_name() ] = $tool;
 			}
 		}
@@ -58,7 +58,7 @@ class ToolRegistry {
 		// Add path context to the registry (not as a tool, but for context)
 		$path_provider = new PathContextProvider( $work_dir, $sut_dir );
 		$path_context  = $path_provider->get_path_context();
-		
+
 		// Store path context for use by tools if needed
 		$this->context->path_context = $path_context;
 	}
@@ -73,6 +73,7 @@ class ToolRegistry {
 
 	/**
 	 * Get all available tools
+	 *
 	 * @return array<string, \QIT_AI_Webserver\Tools\BaseTool>
 	 */
 	public function get_tools(): array {
@@ -81,6 +82,7 @@ class ToolRegistry {
 
 	/**
 	 * Get all available tools (camelCase alias)
+	 *
 	 * @return array<string, \QIT_AI_Webserver\Tools\BaseTool>
 	 */
 	public function getTools(): array {
@@ -96,6 +98,7 @@ class ToolRegistry {
 
 	/**
 	 * Execute a tool by name
+	 *
 	 * @param array<string, mixed> $params
 	 * @return array<string, mixed>
 	 */

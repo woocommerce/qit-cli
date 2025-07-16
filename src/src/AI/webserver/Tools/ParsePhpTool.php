@@ -63,7 +63,7 @@ class ParsePhpTool extends BaseTool {
 			}
 
 			// Extract useful information from AST
-			$visitor = new \PhpParser\NodeVisitor\NameResolver();
+			$visitor   = new \PhpParser\NodeVisitor\NameResolver();
 			$traverser = new \PhpParser\NodeTraverser();
 			$traverser->addVisitor( $visitor );
 			$ast = $traverser->traverse( $ast );

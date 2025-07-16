@@ -95,7 +95,7 @@ class SearchStringsTool extends BaseTool {
 
 			$matches = $this->searchInFile( $file_path, $needles, $case_sensitive );
 			if ( ! empty( $matches ) ) {
-				$rel_path = $this->file_path_resolver->to_relative( $file_path );
+				$rel_path  = $this->file_path_resolver->to_relative( $file_path );
 				$results[] = [
 					'file'    => $rel_path,
 					'matches' => $matches,

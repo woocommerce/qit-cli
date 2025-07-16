@@ -126,6 +126,7 @@ class FilePathResolver {
 
 	/**
 	 * Get file info (using relative path)
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function get_file_info( string $relative_path ): array {

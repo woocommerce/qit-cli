@@ -3,8 +3,9 @@
 namespace QIT_AI_Webserver\Lib;
 
 final class DebugLogger {
-	/** 
-	 * Append a structured message to debug log 
+	/**
+	 * Append a structured message to debug log
+	 *
 	 * @param array<string, mixed> $payload
 	 */
 	public static function log( string $stage, array $payload ): void {

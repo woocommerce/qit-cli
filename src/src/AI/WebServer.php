@@ -12,14 +12,14 @@ class WebServer {
 	private ?string $node_token;
 	private ?\QIT_CLI\Logging\Logger $logger = null;
 	private bool $use_local_mode;
-	private string $provider       = 'lmstudio';
+	private string $provider = 'lmstudio';
 	/** @var array<string, mixed> */
 	private array $provider_config = [];
 	/** @var array<string, mixed> */
-	private array $runtime_config  = [];
+	private array $runtime_config = [];
 	private string $router_template;
-	private bool $bind_localhost_only    = false;
-	private ?string $custom_log_file     = null;
+	private bool $bind_localhost_only = false;
+	private ?string $custom_log_file  = null;
 	/** @var array<string, mixed> */
 	private array $environment_variables = [];
 

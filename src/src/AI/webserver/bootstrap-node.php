@@ -45,6 +45,7 @@ function qit_runtime_init(): void {
 
 /**
  * 2. HTTP – parse request & (optionally) enforce token / rate limit
+ *
  * @return array<string, mixed>
  */
 function qit_http_request( bool $check_token = true ): array {
@@ -134,15 +135,16 @@ function qit_http_request( bool $check_token = true ): array {
 
 /**
  * 3. LLM – boot LLPhant once per request / CLI invocation
+ *
  * @param array<string, mixed> $overrides
  */
 function qit_llm_boot( array $overrides = [] ): void {
 	qit_runtime_init();
 
-	$provider = getenv( 'QIT_PROVIDER' );
-	$cfg      = json_decode( getenv( 'QIT_PROVIDER_CFG' ), true ) + $overrides;
+	$provider        = getenv( 'QIT_PROVIDER' );
+	$cfg             = json_decode( getenv( 'QIT_PROVIDER_CFG' ), true ) + $overrides;
 	$cfg['provider'] = $provider;
 
-	$bootstrap = new \QIT_AI_Webserver\Lib\LLPhantBootstrap($cfg);
+	$bootstrap = new \QIT_AI_Webserver\Lib\LLPhantBootstrap( $cfg );
 	$bootstrap->boot( $cfg );
 }

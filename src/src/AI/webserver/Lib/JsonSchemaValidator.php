@@ -36,7 +36,7 @@ class JsonSchemaValidator {
 	 * Validate inbound request data (camelCase alias)
 	 *
 	 * @param array<string, mixed> $data Request data to validate.
-	 * @param string $request_type Request type (basic-prompt, vulnerability-scan, etc.).
+	 * @param string               $request_type Request type (basic-prompt, vulnerability-scan, etc.).
 	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	public function validateInbound( array $data, string $request_type ): array {
@@ -47,7 +47,7 @@ class JsonSchemaValidator {
 	 * Validate outbound request data (camelCase alias)
 	 *
 	 * @param array<string, mixed> $data Request data to validate.
-	 * @param string $request_type Request type (node-registration, task-callback-request-success, etc.).
+	 * @param string               $request_type Request type (node-registration, task-callback-request-success, etc.).
 	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	public function validateOutbound( array $data, string $request_type ): array {
@@ -58,7 +58,7 @@ class JsonSchemaValidator {
 	 * Validate inbound request data
 	 *
 	 * @param array<string, mixed> $data Request data to validate.
-	 * @param string $request_type Request type (basic-prompt, vulnerability-scan, etc.).
+	 * @param string               $request_type Request type (basic-prompt, vulnerability-scan, etc.).
 	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	public function validate_inbound( array $data, string $request_type ): array {
@@ -70,7 +70,7 @@ class JsonSchemaValidator {
 	 * Validate outbound request data
 	 *
 	 * @param array<string, mixed> $data Request data to validate.
-	 * @param string $request_type Request type (node-registration, task-callback-request-success, etc.).
+	 * @param string               $request_type Request type (node-registration, task-callback-request-success, etc.).
 	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	public function validate_outbound( array $data, string $request_type ): array {
@@ -82,7 +82,7 @@ class JsonSchemaValidator {
 	 * Validate data against a JSON schema using justinrainbow/json-schema
 	 *
 	 * @param array<string, mixed> $payload Data to validate.
-	 * @param string $schema_path Path to the JSON schema file.
+	 * @param string               $schema_path Path to the JSON schema file.
 	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	private function validate_against_schema( array $payload, string $schema_path ): array {

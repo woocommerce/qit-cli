@@ -59,10 +59,10 @@ class NodeResponse {
 			'status' => 'completed',
 			'result' => $result,
 			'meta'   => [
-				'timestamp'        => time(),
-				'provider'         => $current_provider,
+				'timestamp'         => time(),
+				'provider'          => $current_provider,
 				'provider_response' => $provider_response,
-				'node_id'          => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+				'node_id'           => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
 			],
 		];
 
@@ -94,10 +94,10 @@ class NodeResponse {
 			'result'     => $result,
 			'tool_calls' => $tool_calls,
 			'meta'       => [
-				'timestamp'    => time(),
-				'provider'     => $current_provider,
-				'tool_count'   => count( $tool_calls ),
-				'node_id'      => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+				'timestamp'  => time(),
+				'provider'   => $current_provider,
+				'tool_count' => count( $tool_calls ),
+				'node_id'    => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
 			],
 		];
 
@@ -120,9 +120,9 @@ class NodeResponse {
 			'status' => 'completed',
 			'result' => $result,
 			'meta'   => [
-				'timestamp'         => time(),
-				'extraction_stats'  => $stats,
-				'node_id'           => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+				'timestamp'        => time(),
+				'extraction_stats' => $stats,
+				'node_id'          => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
 			],
 		];
 
@@ -219,7 +219,7 @@ class Benchmark {
 		$response['meta']['benchmark'] = [
 			'memory_usage'      => memory_get_usage( true ),
 			'peak_memory_usage' => memory_get_peak_usage( true ),
-			'execution_time'    => microtime( true ) - ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true )),
+			'execution_time'    => microtime( true ) - ( $_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true ) ),
 		];
 
 		return $response;
@@ -227,13 +227,15 @@ class Benchmark {
 
 	/**
 	 * CamelCase alias for tool_prompt method
-	 * @param string $result
+	 *
+	 * @param string               $result
 	 * @param array<string, mixed> $tool_calls
 	 * @param array<string, mixed> $model
 	 * @param array<string, mixed> $additional
 	 * @return array<string, mixed>
 	 */
 	public static function toolPrompt( string $result, array $tool_calls = [], array $model = [], array $additional = [] ): array {
-		return self::tool_prompt( $result, $tool_calls, array_merge( $model, $additional ) );
+		$response = \QIT_AI_Webserver\NodeResponse::tool_prompt( $result, $tool_calls, array_merge( $model, $additional ) );
+		return $response;
 	}
 }

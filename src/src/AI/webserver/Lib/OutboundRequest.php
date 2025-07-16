@@ -17,10 +17,10 @@ class OutboundRequest {
 
 	/** @var array<string, mixed> */
 	private array $default_config = [
-		'timeout'         => 30,
-		'max_retries'     => 3,
-		'retry_delay'     => 1,
-		'validate_ssl'    => true,
+		'timeout'          => 30,
+		'max_retries'      => 3,
+		'retry_delay'      => 1,
+		'validate_ssl'     => true,
 		'follow_redirects' => true,
 	];
 
@@ -91,6 +91,7 @@ class OutboundRequest {
 
 	/**
 	 * Send the request
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function send(): array {
@@ -174,14 +175,14 @@ class OutboundRequest {
 				'content' => json_encode( $this->data ),
 				'timeout' => $this->config['timeout'],
 			],
-			'ssl' => [
-				'verify_peer' => $this->config['validate_ssl'],
+			'ssl'  => [
+				'verify_peer'      => $this->config['validate_ssl'],
 				'verify_peer_name' => $this->config['validate_ssl'],
 			],
 		];
 
 		$context = stream_context_create( $context_options );
-		$result = file_get_contents( $this->url, false, $context );
+		$result  = file_get_contents( $this->url, false, $context );
 
 		if ( $result === false ) {
 			throw new Exception( 'Failed to send request' );

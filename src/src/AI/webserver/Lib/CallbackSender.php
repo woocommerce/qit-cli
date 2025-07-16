@@ -8,6 +8,7 @@ namespace QIT_AI_Webserver\Lib;
 class CallbackSender {
 	/**
 	 * Send successful result to callback URL
+	 *
 	 * @param array<string, mixed> $response
 	 * @param array<string, mixed> $tool_calls
 	 * @param array<string, mixed> $metadata

@@ -23,8 +23,9 @@ class FactStore {
 		self::$facts[] = $fact;
 	}
 
-	/** 
-	 * Browse by step/kind with newest‑first order 
+	/**
+	 * Browse by step/kind with newest‑first order
+	 *
 	 * @return array<array<string, mixed>>
 	 */
 	public static function list(
@@ -47,8 +48,9 @@ class FactStore {
 		return array_slice( $matches, 0, $limit );
 	}
 
-	/** 
-	 * Naive substring search – replace with embedding search when ready 
+	/**
+	 * Naive substring search – replace with embedding search when ready
+	 *
 	 * @return array<array<string, mixed>>
 	 */
 	public static function search( string $query, int $k = 5 ): array {
@@ -72,30 +74,31 @@ class FactStore {
 
 	/**
 	 * Get all facts
+	 *
 	 * @param array<string, mixed> $filters Optional filters to apply
-	 * @param int|null $limit Optional limit on number of results  
+	 * @param int|null             $limit Optional limit on number of results
 	 * @return array<array<string, mixed>>
 	 */
-	public static function list_all(array $filters = [], ?int $limit = null): array {
+	public static function list_all( array $filters = [], ?int $limit = null ): array {
 		$facts = self::$facts;
-		
+
 		// Apply filters
-		if (!empty($filters)) {
-			$facts = array_filter($facts, function($fact) use ($filters) {
-				foreach ($filters as $key => $value) {
-					if (!isset($fact[$key]) || $fact[$key] !== $value) {
+		if ( ! empty( $filters ) ) {
+			$facts = array_filter($facts, function ( $fact ) use ( $filters ) {
+				foreach ( $filters as $key => $value ) {
+					if ( ! isset( $fact[ $key ] ) || $fact[ $key ] !== $value ) {
 						return false;
 					}
 				}
 				return true;
 			});
 		}
-		
+
 		// Apply limit
-		if ($limit !== null) {
-			$facts = array_slice($facts, 0, $limit);
+		if ( $limit !== null ) {
+			$facts = array_slice( $facts, 0, $limit );
 		}
-		
+
 		return $facts;
 	}
 }

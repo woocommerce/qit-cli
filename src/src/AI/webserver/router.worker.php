@@ -98,7 +98,7 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 			$callback_url,
 			$task['action_id'] ?? $task_id,
 			$decoded_result,
-			(int) round($processing_time),
+			(int) round( $processing_time ),
 			$tool_calls,
 			$metadata,
 			$task_id

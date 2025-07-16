@@ -1,14 +1,15 @@
 parameters:
   level: 6
   paths:
-    - /app/src/src/AI
+    - /app/src/src
     - /app/src/qit-cli.php
   scanDirectories:
-    - /app/src/src
     - /app/src/vendor
+    - /app/src/src/AI/dev
   excludePaths:
     analyse:
-      - /app/src/AI/dev
+      - /app/src/src/Commands/AI
+      - /app/src/src/AI
     analyseAndScan:
       - /app/src/*/dev/*
   tmpDir: /app/.cache

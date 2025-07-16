@@ -9,7 +9,7 @@ use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use LLPhant\Chat\FunctionInfo\Parameter;
 
 class FindHooksTool extends BaseTool {
-	
+
 	public function get_name(): string {
 		return 'find_hooks';
 	}
@@ -136,7 +136,7 @@ class FindHooksTool extends BaseTool {
 
 					// Extract callback
 					if ( $args[1] ) {
-						$printer = new PrettyPrinter\Standard();
+						$printer  = new PrettyPrinter\Standard();
 						$callback = $printer->prettyPrintExpr( $args[1]->value );
 					}
 
