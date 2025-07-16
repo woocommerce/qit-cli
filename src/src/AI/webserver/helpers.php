@@ -8,6 +8,9 @@ if ( empty( getenv( 'QIT_NODE_DIR' ) ) ) {
 }
 
 if ( ! function_exists( 'array_is_list' ) ) {
+	/**
+	 * @param array<mixed> $a
+	 */
 	function array_is_list( array $a ): bool {
 		return $a === [] || ( array_keys( $a ) === range( 0, count( $a ) - 1 ) );
 	}
@@ -25,7 +28,10 @@ $router_log_file = $log_file;
 /**
  * Enhanced logging functions
  */
-function log_message( $level, $message, $context = [] ) {
+/**
+ * @param array<string, mixed> $context
+ */
+function log_message( string $level, string $message, array $context = [] ): void {
 	$timestamp         = gmdate( 'Y-m-d H:i:s' );
 	$formatted_message = "[$timestamp] [$level] [Router] $message";
 
@@ -39,18 +45,30 @@ function log_message( $level, $message, $context = [] ) {
 	file_put_contents( $router_log_file, $formatted_message . PHP_EOL, FILE_APPEND );
 }
 
-function log_debug( $message, $context = [] ) {
+/**
+ * @param array<string, mixed> $context
+ */
+function log_debug( string $message, array $context = [] ): void {
 	log_message( 'debug', $message, $context );
 }
 
-function log_info( $message, $context = [] ) {
+/**
+ * @param array<string, mixed> $context
+ */
+function log_info( string $message, array $context = [] ): void {
 	log_message( 'info', $message, $context );
 }
 
-function log_warning( $message, $context = [] ) {
+/**
+ * @param array<string, mixed> $context
+ */
+function log_warning( string $message, array $context = [] ): void {
 	log_message( 'warning', $message, $context );
 }
 
-function log_error( $message, $context = [] ) {
+/**
+ * @param array<string, mixed> $context
+ */
+function log_error( string $message, array $context = [] ): void {
 	log_message( 'error', $message, $context );
 }

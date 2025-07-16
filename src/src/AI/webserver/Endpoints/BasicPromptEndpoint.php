@@ -24,7 +24,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 	/**
 	 * Handle AI process request
 	 *
-	 * @param array $input Request input data.
+	 * @param array<string, mixed> $input Request input data.
 	 *
 	 * @return string JSON response
 	 */
@@ -92,12 +92,12 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 
 			// Use NodeResponse::prompt for standardized response
 			// Get JSON response as string and echo it
-			$formatted_response = NodeResponse::prompt(
+			$formatted_response = json_encode( NodeResponse::prompt(
 				trim( $response['response'] ),
 				$response['model'],
 				$response, // Pass full response for stats
 				[ 'job_id' => $input['job_id'] ?? null ]
-			);
+			) );
 
 			// Log the formatted response structure
 			$this->log_info( 'Formatted response structure', [
@@ -110,7 +110,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 
 		} catch ( Exception $e ) {
 
-			return $this->handleError( $e, [
+			return $this->handle_error( $e, [
 				'job_id'   => $input['job_id'] ?? null,
 				'model'    => $input['model'] ?? 'unknown',
 				'job_type' => $input['type'] ?? 'unknown',

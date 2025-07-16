@@ -12,6 +12,7 @@ class SafeToolsOpenAIChat extends OpenAIChat {
 	/**
 	 * Overridden; now tolerant.
 	 * (Signature matches the parent – visibility already made protected by the patch.)
+	 * @return array<mixed>
 	 */
 	protected function getToolsToCall( CreateResponse $answer ): array {
 		$valid               = [];
@@ -40,6 +41,9 @@ class SafeToolsOpenAIChat extends OpenAIChat {
 		return $valid;
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	public function getUnknownTools(): array {
 		return $this->unknown_tools;
 	}

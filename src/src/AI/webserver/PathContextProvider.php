@@ -20,7 +20,7 @@ class PathContextProvider {
 	/**
 	 * Get path context data - same functionality as PathContextTool::do()
 	 *
-	 * @return array Context data with wp_root, sut, deps, dep_count, truncated.
+	 * @return array<string, mixed> Context data with wp_root, sut, deps, dep_count, truncated.
 	 * @throws \RuntimeException If directories don't exist.
 	 */
 	public function get_path_context(): array {

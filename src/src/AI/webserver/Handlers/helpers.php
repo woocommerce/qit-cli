@@ -8,7 +8,7 @@
 /**
  * Safely remove a directory and its contents
  */
-function remove_directory_safely( $dir ) {
+function remove_directory_safely( string $dir ): void {
 	if ( ! is_dir( $dir ) ) {
 		log_debug( 'Not a directory, skipping removal', [ 'path' => $dir ] );
 
@@ -44,7 +44,7 @@ function remove_directory_safely( $dir ) {
 /**
  * Cleanup old sessions periodically
  */
-function cleanup_old_sessions() {
+function cleanup_old_sessions(): void {
 	$cache_dir = sys_get_temp_dir() . '/qit-code-analysis';
 
 	if ( ! is_dir( $cache_dir ) ) {

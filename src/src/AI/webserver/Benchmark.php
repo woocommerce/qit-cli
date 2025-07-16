@@ -8,6 +8,7 @@ namespace QIT_AI_Webserver;
  */
 class Benchmark {
 	private static ?float $request_start_time = null;
+	/** @var array<array{name: string, time: float, data: array<string, mixed>}> */
 	private static array $performance_markers = [];
 	private static ?self $instance            = null;
 
@@ -33,7 +34,7 @@ class Benchmark {
 	 * Mark a performance checkpoint
 	 *
 	 * @param string $name Marker name.
-	 * @param array  $data Optional data to associate with marker.
+	 * @param array<string, mixed> $data Optional data to associate with marker.
 	 */
 	public static function mark( string $name, array $data = [] ): void {
 		self::$performance_markers[] = [
@@ -46,7 +47,7 @@ class Benchmark {
 	/**
 	 * Get performance statistics
 	 *
-	 * @return array Performance data
+	 * @return array<string, mixed> Performance data
 	 */
 	public static function get_stats(): array {
 		$end_time   = microtime( true );
@@ -86,8 +87,8 @@ class Benchmark {
 	/**
 	 * Extract token statistics from provider response
 	 *
-	 * @param array $provider_response Raw provider response (Ollama, OpenAI, etc.).
-	 * @return array Token statistics
+	 * @param array<string, mixed> $provider_response Raw provider response (Ollama, OpenAI, etc.).
+	 * @return array<string, mixed> Token statistics
 	 */
 	public static function extract_provider_stats( array $provider_response ): array {
 		$stats = [];
@@ -135,8 +136,8 @@ class Benchmark {
 	/**
 	 * Add performance metrics to a response
 	 *
-	 * @param array $response Response array to enhance with metrics.
-	 * @return array Enhanced response
+	 * @param array<string, mixed> $response Response array to enhance with metrics.
+	 * @return array<string, mixed> Enhanced response
 	 */
 	public static function enhance_response( array $response ): array {
 		if ( ! isset( $response['meta'] ) ) {
@@ -149,5 +150,35 @@ class Benchmark {
 		);
 
 		return $response;
+	}
+
+	/**
+	 * Add performance metrics to a response (camelCase alias)
+	 *
+	 * @param array<string, mixed> $response Response array to enhance with metrics.
+	 * @return array<string, mixed> Enhanced response
+	 */
+	public static function enhanceResponse( array $response ): array {
+		return self::enhance_response( $response );
+	}
+
+	/**
+	 * Extract token statistics from provider response (camelCase alias)
+	 *
+	 * @param array<string, mixed> $provider_response Raw provider response (Ollama, OpenAI, etc.).
+	 * @return array<string, mixed> Token statistics
+	 */
+	public static function extractProviderStats( array $provider_response ): array {
+		return self::extract_provider_stats( $provider_response );
+	}
+
+	/**
+	 * Alias for tool_prompt method
+	 * 
+	 * @param array<string, mixed> $response
+	 * @return array<string, mixed>
+	 */
+	public static function tool_prompt( array $response ): array {
+		return self::enhance_response( $response );
 	}
 }

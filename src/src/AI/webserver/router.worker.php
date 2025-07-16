@@ -5,6 +5,17 @@
 require_once __DIR__ . '/bootstrap-node.php';
 require_once __DIR__ . '/Handlers/helpers.php';   // worker needs helpers
 
+// Simple esc_js function for escaping JavaScript strings
+if ( ! function_exists( 'esc_js' ) ) {
+	/**
+	 * @param string $text
+	 * @return string
+	 */
+	function esc_js( string $text ): string {
+		return addcslashes( $text, "\0..\37\"\\'" );
+	}
+}
+
 $result  = qit_http_request( false );
 $method  = $result['method'];
 $uri     = $result['uri'];
@@ -87,7 +98,7 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 			$callback_url,
 			$task['action_id'] ?? $task_id,
 			$decoded_result,
-			$processing_time,
+			(int) round($processing_time),
 			$tool_calls,
 			$metadata,
 			$task_id

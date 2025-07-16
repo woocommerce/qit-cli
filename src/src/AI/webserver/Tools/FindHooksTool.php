@@ -2,24 +2,23 @@
 
 namespace QIT_AI_Webserver\Tools;
 
-use LLPhant\Chat\FunctionInfo\FunctionInfo;
-use LLPhant\Chat\FunctionInfo\Parameter;
-use PhpParser\PrettyPrinter\Standard;
-use PhpParser\Node;
 use PhpParser\NodeFinder;
 use PhpParser\ParserFactory;
-use PhpParser\Error as PhpParserError;
+use PhpParser\PrettyPrinter;
+use LLPhant\Chat\FunctionInfo\FunctionInfo;
+use LLPhant\Chat\FunctionInfo\Parameter;
 
 class FindHooksTool extends BaseTool {
-	public function getName(): string {
+	
+	public function get_name(): string {
 		return 'find_hooks';
 	}
 
-	public function getDescription(): string {
+	public function get_description(): string {
 		return 'Locate add_action / add_filter calls';
 	}
 
-	public function getFunctionInfo(): FunctionInfo {
+	public function get_function_info(): FunctionInfo {
 		$params = [
 			new Parameter( 'type', 'string', 'action | filter | both', [ 'action', 'filter', 'both' ] ),
 			new Parameter( 'hook_names', 'array', 'Exact hook names to match (optional)', [], null, 'string' ),
@@ -30,14 +29,18 @@ class FindHooksTool extends BaseTool {
 		];
 
 		return new FunctionInfo(
-			$this->getName(),
+			$this->get_name(),
 			[ $this, 'find_hooks' ],
-			$this->getDescription(),
+			$this->get_description(),
 			$params,
 			[]              // no required parameters
 		);
 	}
 
+	/**
+	 * @param array<string>|null $hook_names
+	 * @param array<string>|null $callbacks
+	 */
 	public function find_hooks(
 		?string $type = null,
 		?array $hook_names = null,
@@ -53,157 +56,158 @@ class FindHooksTool extends BaseTool {
 		return json_encode( $res, JSON_UNESCAPED_SLASHES );
 	}
 
+	/**
+	 * @param array<string, mixed> $p
+	 * @return array<string, mixed>
+	 */
 	protected function do( array $p ) {
 		$type_filter  = $p['type'] ?? null;   // action|filter|both|null
 		$hooks_filter = $p['hook_names'] ?? null;   // array|null
 		$cb_filter    = $p['callbacks'] ?? null;   // array|null
 		$directory    = $p['directory'] ?? '.';
-		$max_results  = (int) ( $p['max_results'] ?? 100 );
-		$max_depth    = (int) ( $p['max_depth'] ?? 10 );
+		$max_results  = $p['max_results'] ?? 100;
+		$max_depth    = $p['max_depth'] ?? 10;
 
-		if ( ! file_exists( $directory ) ) {
-			throw new \InvalidArgumentException( "Directory does not exist: {$directory}" );
-		}
+		$directory = $this->safe_path( $directory );
 
-		if ( ! is_dir( $directory ) ) {
-			throw new \InvalidArgumentException( "Path is not a directory: {$directory}" );
-		}
+		$abs_dir = $this->file_path_resolver->to_absolute( $directory );
 
-		$abs_dir = $this->file_path_resolver->toAbsolute( $directory );
-		$it      = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator(
-				$abs_dir,
-				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
-			),
-			\RecursiveIteratorIterator::SELF_FIRST
-		);
-		$it->setMaxDepth( $max_depth );
+		$files   = [];
+		$results = [];
 
-		$parser    = ( new ParserFactory() )->createForNewestSupportedVersion();
-		$node_find = new NodeFinder();
+		// Recursively collect PHP files
+		$this->collect_php_files( $abs_dir, $files, 0, $max_depth );
 
-		$hits = [];
+		$parser = ( new ParserFactory() )->create( ParserFactory::PREFER_PHP7 );
+		$finder = new NodeFinder();
 
-		foreach ( $it as $file ) {
-			if ( ! $file->isFile() || $file->getExtension() !== 'php' ) {
-				continue;
+		foreach ( $files as $filepath ) {
+			if ( count( $results ) >= $max_results ) {
+				break;
 			}
 
 			try {
-				$code = file_get_contents( $file->getPathname() );
-				// quick micro‑filter so we don’t waste time parsing files that clearly have no hooks
-				if ( stripos( $code, 'add_action' ) === false && stripos( $code, 'add_filter' ) === false ) {
-					continue;
-				}
-				$stmts = $parser->parse( $code );
-			} catch ( PhpParserError $e ) {
-				// Skip un‑parseable files; you can log $e->getMessage() if needed
-				continue;
-			}
+				$code = file_get_contents( $filepath );
+				$ast  = $parser->parse( $code );
 
-			// Find all function calls whose name is add_action / add_filter
-			$calls = $node_find->findInstanceOf( $stmts, Node\Expr\FuncCall::class );
-
-			foreach ( $calls as $call ) {
-				$name = $call->name instanceof Node\Name ? $call->name->toString() : '';
-				if ( ! in_array( $name, [ 'add_action', 'add_filter' ], true ) ) {
+				if ( ! $ast ) {
 					continue;
 				}
 
-				$kind = $name === 'add_action' ? 'action' : 'filter';
-				if ( $type_filter && $type_filter !== 'both' && $kind !== $type_filter ) {
-					continue;
-				}
+				// Find function calls
+				$func_calls = $finder->findInstanceOf( $ast, 'PhpParser\Node\Expr\FuncCall' );
 
-				// Expect at least “hook” & “callback” args
-				$args = $call->getArgs();
-				if ( count( $args ) < 2 ) {
-					continue; // malformed call
-				}
+				foreach ( $func_calls as $call ) {
+					if ( count( $results ) >= $max_results ) {
+						break 2;
+					}
 
-				// Resolve Arg #0 (hook name) – constant string only; otherwise '<dynamic>'
-				$hook = ( $args[0]->value instanceof Node\Scalar\String_ )
-					? $args[0]->value->value
-					: '<dynamic>';
-				if ( $hooks_filter && ! in_array( $hook, $hooks_filter, true ) ) {
-					continue;
-				}
+					if ( ! isset( $call->name->name ) ) {
+						continue;
+					}
 
-				// Resolve Arg #1 (callback) – handles strings & array callables
-				$callback = $this->renderCallback( $args[1]->value );
-				if ( $cb_filter && ! in_array( $callback, $cb_filter, true ) ) {
-					continue;
-				}
+					$func_name = $call->name->name;
 
-				$priority      = isset( $args[2] ) && $args[2]->value instanceof Node\Scalar\LNumber
-					? (int) $args[2]->value->value
-					: 10;
-				$accepted_args = isset( $args[3] ) && $args[3]->value instanceof Node\Scalar\LNumber
-					? (int) $args[3]->value->value
-					: 1;
+					// Filter by type
+					if ( $type_filter && $type_filter !== 'both' ) {
+						if ( $type_filter === 'action' && $func_name !== 'add_action' ) {
+							continue;
+						}
+						if ( $type_filter === 'filter' && $func_name !== 'add_filter' ) {
+							continue;
+						}
+					} elseif ( ! in_array( $func_name, [ 'add_action', 'add_filter' ], true ) ) {
+						continue;
+					}
 
-				$hits[] = [
-					'file'          => $this->file_path_resolver->toRelative( $file->getPathname() ),
-					'line'          => $call->getLine(),
-					'type'          => $kind,
-					'hook'          => $hook,
-					'callback'      => $callback,
-					'priority'      => $priority,
-					'accepted_args' => $accepted_args,
-					'snippet'       => trim( $this->lineFromFile( $file->getPathname(), $call->getLine() ) ),
-				];
+					$args = $call->getArgs();
 
-				if ( count( $hits ) >= $max_results ) {
-					return [
-						'results'   => $hits,
-						'truncated' => true,
+					if ( count( $args ) < 2 ) {
+						continue;
+					}
+
+					// Extract hook name
+					$hook_name = null;
+					$callback  = null;
+
+					if ( $args[0] && $args[0]->value instanceof \PhpParser\Node\Scalar\String_ ) {
+						$hook_name = $args[0]->value->value;
+					}
+
+					// Extract callback
+					if ( $args[1] ) {
+						$printer = new PrettyPrinter\Standard();
+						$callback = $printer->prettyPrintExpr( $args[1]->value );
+					}
+
+					// Apply filters
+					if ( $hooks_filter && ! in_array( $hook_name, $hooks_filter, true ) ) {
+						continue;
+					}
+
+					if ( $cb_filter && ! $this->callback_matches( $callback, $cb_filter ) ) {
+						continue;
+					}
+
+					$rel_path = $this->file_path_resolver->to_relative( $filepath );
+
+					$results[] = [
+						'file'      => $rel_path,
+						'function'  => $func_name,
+						'hook_name' => $hook_name,
+						'callback'  => $callback,
+						'line'      => $call->getLine(),
 					];
 				}
+			} catch ( \Exception $e ) {
+				// Skip files that can't be parsed
+				continue;
 			}
 		}
 
 		return [
-			'results'   => $hits,
-			'truncated' => false,
+			'matches'   => $results,
+			'truncated' => count( $results ) >= $max_results,
 		];
 	}
 
-	/**
-	 * Render a callback expression into a readable string
-	 * Examples:
-	 *   - 'MyClass::method'
-	 *   - [$obj, 'method']
-	 *   - function() { … }  ->  '<anonymous>'
-	 */
-	private function renderCallback( Node $expr ): string {
-		if ( $expr instanceof Node\Scalar\String_ ) {
-			return $expr->value;
+	private function collect_php_files( string $dir, array &$files, int $current_depth, int $max_depth ): void {
+		if ( $current_depth >= $max_depth ) {
+			return;
 		}
-		if ( $expr instanceof Node\Expr\Array_ ) {
-			// [$obj, 'method'] or ['Class', 'method']
-			$parts = [];
-			foreach ( $expr->items as $item ) {
-				$parts[] = $this->renderCallback( $item->value );
+
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+
+		$items = glob( $dir . '/*' );
+		if ( ! $items ) {
+			return;
+		}
+
+		foreach ( $items as $item ) {
+			if ( is_file( $item ) && str_ends_with( $item, '.php' ) ) {
+				$files[] = $item;
+			} elseif ( is_dir( $item ) ) {
+				$this->collect_php_files( $item, $files, $current_depth + 1, $max_depth );
 			}
-
-			return implode( '::', $parts );
 		}
-		if ( $expr instanceof Node\Expr\ClassConstFetch ) {
-			return $expr->class->toString() . '::' . $expr->name->toString();
-		}
-		if ( $expr instanceof Node\Expr\Closure ) {
-			return '<anonymous>';
-		}
-
-		// Fallback – try to pretty‑print
-		return ( new Standard() )->prettyPrintExpr( $expr );
 	}
 
-	/** Read a single specific line from a file (used for snippet) */
-	private function lineFromFile( string $path, int $line_no ): string {
-		$f = new \SplFileObject( $path );
-		$f->seek( $line_no - 1 );          // SplFileObject is 0‑based
+	/**
+	 * @param array<string> $cb_filter
+	 */
+	private function callback_matches( ?string $callback, array $cb_filter ): bool {
+		if ( ! $callback ) {
+			return false;
+		}
 
-		return rtrim( $f->current(), "\r\n" );
+		foreach ( $cb_filter as $filter ) {
+			if ( strpos( $callback, $filter ) !== false ) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 }

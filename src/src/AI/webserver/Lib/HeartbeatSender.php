@@ -32,7 +32,6 @@ class HeartbeatSender {
 			],
 		];
 
-		$request = OutboundRequest::heartbeat( $this->heartbeat_url, $data, 'node-heartbeat' );
-		$request->send(); // Fire-and-forget, don't check result
+		OutboundRequest::heartbeat( $this->heartbeat_url, $data ); // Fire-and-forget, don't check result
 	}
 }

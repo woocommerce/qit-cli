@@ -13,247 +13,227 @@
 
 namespace QIT_AI_Webserver;
 
+use QIT_AI_Webserver\Lib\LLPhantBootstrap;
+
 class NodeResponse {
+	private string $status;
+	/** @var array<string, mixed> */
+	private array $data;
+	/** @var array<string, mixed> */
+	private array $meta;
 
 	/**
-	 * Initialize response tracking (call at request start)
-	 *
-	 * @deprecated Use Benchmark::init() instead
+	 * @param array<string, mixed> $data
+	 * @param array<string, mixed> $meta
 	 */
-	public static function init(): void {
-		Benchmark::init();
+	public function __construct( string $status, array $data = [], array $meta = [] ) {
+		$this->status = $status;
+		$this->data   = $data;
+		$this->meta   = $meta;
 	}
 
 	/**
-	 * Mark a performance checkpoint
-	 *
-	 * @param string $name Marker name.
-	 * @param array  $data Optional data to associate with marker.
-	 * @deprecated Use Benchmark::mark() instead
+	 * @param array<string, mixed> $data
+	 * @return array<string, mixed>
 	 */
-	public static function mark( string $name, array $data = [] ): void {
-		Benchmark::mark( $name, $data );
-	}
-
-	/**
-	 * Basic prompt response (single AI inference)
-	 * Used by BasicPromptEndpoint
-	 *
-	 * @param string $response AI response text.
-	 * @param string $model Model used.
-	 * @param array  $provider_response Raw provider response for token stats.
-	 * @param array  $additional Additional data (job_id, etc.).
-	 *
-	 * @return string JSON response string
-	 */
-	public static function prompt( string $response, string $model, array $provider_response = [], array $additional = [] ): string {
-		// Get current provider and suggested model from request
-		$current_provider = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getCurrentProvider();
-		$suggested_model  = $_REQUEST['model'] ?? null;
-
-		$data = array_merge([
-			'response'         => $response,
-			'model'            => $model,  // Actual model used by the node
-			'provider'         => $current_provider,  // Actual provider used by the node
-			'suggested_model'  => $suggested_model,  // Model suggested by Manager
-			'model_resolution' => [
-				'suggested'        => $suggested_model,
-				'actual'           => $model,
-				'provider'         => $current_provider,
-				'resolved_by_node' => true,
+	public static function mark( string $status, array $data = [] ): array {
+		return [
+			'status' => $status,
+			'data'   => $data,
+			'meta'   => [
+				'timestamp' => time(),
+				'node_id'   => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
 			],
-		], $additional);
+		];
+	}
 
-		// Add token statistics if available
-		$token_stats = Benchmark::extractProviderStats( $provider_response );
-		if ( ! empty( $token_stats ) ) {
-			$data['token_stats'] = $token_stats;
+	/**
+	 * @param array<string, mixed> $provider_response
+	 * @param array<string, mixed> $additional
+	 * @return array<string, mixed>
+	 */
+	public static function prompt( string $result, array $provider_response = [], array $additional = [] ): array {
+		$current_provider = LLPhantBootstrap::getCurrentProvider() ?? 'unknown';
+
+		$response = [
+			'status' => 'completed',
+			'result' => $result,
+			'meta'   => [
+				'timestamp'        => time(),
+				'provider'         => $current_provider,
+				'provider_response' => $provider_response,
+				'node_id'          => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+			],
+		];
+
+		// Add provider stats if available
+		$provider_stats = Benchmark::extractProviderStats( $provider_response );
+		if ( ! empty( $provider_stats ) ) {
+			$response['meta']['provider_stats'] = $provider_stats;
 		}
 
-		$response = [
-			'status' => 'success',
-			'type'   => 'prompt',
-			'data'   => $data,
-			'meta'   => [],
-		];
+		// Merge additional data
+		if ( ! empty( $additional ) ) {
+			$response = array_merge_recursive( $response, $additional );
+		}
 
-		// Add performance metrics
-		$response = Benchmark::enhanceResponse( $response );
-
-		// Log the FULL response
-		log_info( 'NodeResponse - Sending prompt response', $response );
-
-		return json_encode( $response );
+		// Enhance with benchmark data
+		return Benchmark::enhanceResponse( $response );
 	}
 
 	/**
-	 * Tool execution response (AI with tools)
-	 *
-	 * @param string $response Final AI response.
-	 * @param array  $tool_calls Tool execution records.
-	 * @param string $model Model used.
-	 * @param array  $additional Additional data.
-	 *
-	 * @return string JSON response string
+	 * @param array<string, mixed> $tool_calls
+	 * @param array<string, mixed> $additional
+	 * @return array<string, mixed>
 	 */
-	public static function tool_prompt( string $response, array $tool_calls, string $model, array $additional = [] ): string {
-		// Get current provider and suggested model from request
-		$current_provider = \QIT_AI_Webserver\Lib\LLPhantBootstrap::getCurrentProvider();
-		$suggested_model  = $_REQUEST['model'] ?? null;
+	public static function tool_prompt( string $result, array $tool_calls = [], array $additional = [] ): array {
+		$current_provider = LLPhantBootstrap::getCurrentProvider() ?? 'unknown';
 
-		$data = array_merge([
-			'response'         => $response,
-			'model'            => $model,  // Actual model used by the node
-			'provider'         => $current_provider,  // Actual provider used by the node
-			'suggested_model'  => $suggested_model,  // Model suggested by Manager
-			'tool_calls'       => $tool_calls,
-			'tool_count'       => count( $tool_calls ),
-			'model_resolution' => [
-				'suggested'        => $suggested_model,
-				'actual'           => $model,
-				'provider'         => $current_provider,
-				'resolved_by_node' => true,
+		$response = [
+			'status'     => 'completed',
+			'result'     => $result,
+			'tool_calls' => $tool_calls,
+			'meta'       => [
+				'timestamp'    => time(),
+				'provider'     => $current_provider,
+				'tool_count'   => count( $tool_calls ),
+				'node_id'      => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
 			],
-		], $additional);
-
-		$response = [
-			'status' => 'success',
-			'type'   => 'tool_prompt',
-			'data'   => $data,
-			'meta'   => [],
 		];
 
-		// Add performance metrics
-		$response = Benchmark::enhanceResponse( $response );
+		// Merge additional data
+		if ( ! empty( $additional ) ) {
+			$response = array_merge_recursive( $response, $additional );
+		}
 
-		// Log the FULL response
-		log_info( 'NodeResponse - Sending tool prompt response', $response );
-
-		return json_encode( $response );
+		// Enhance with benchmark data
+		return Benchmark::enhanceResponse( $response );
 	}
 
 	/**
-	 * ZIP extraction response
-	 * Used by ZipExtractionEndpoint
-	 *
-	 * @param string $extract_path Extraction directory path.
-	 * @param array  $stats Extraction statistics.
-	 * @param string $session_id Session identifier.
-	 * @param array  $additional Additional data.
-	 *
-	 * @return string JSON response string
+	 * @param array<string, mixed> $stats
+	 * @param array<string, mixed> $additional
+	 * @return array<string, mixed>
 	 */
-	public static function extraction( string $extract_path, array $stats, string $session_id, array $additional = [] ): string {
-		$data = array_merge([
-			'extract_path' => $extract_path,
-			'session_id'   => $session_id,
-			'stats'        => $stats,
-		], $additional);
-
+	public static function extraction( string $result, array $stats = [], array $additional = [] ): array {
 		$response = [
-			'status' => 'success',
-			'type'   => 'extraction',
-			'data'   => $data,
-			'meta'   => [],
+			'status' => 'completed',
+			'result' => $result,
+			'meta'   => [
+				'timestamp'         => time(),
+				'extraction_stats'  => $stats,
+				'node_id'           => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+			],
 		];
 
-		// Add performance metrics
-		$response = Benchmark::enhanceResponse( $response );
+		// Merge additional data
+		if ( ! empty( $additional ) ) {
+			$response = array_merge_recursive( $response, $additional );
+		}
 
-		// Log the FULL response
-		log_info( 'NodeResponse - Sending extraction response', $response );
-
-		return json_encode( $response );
+		// Enhance with benchmark data
+		return Benchmark::enhanceResponse( $response );
 	}
 
 	/**
-	 * Generic success response (for future extensions)
-	 *
-	 * @param mixed  $data Response data.
-	 * @param string $type Response type identifier.
-	 * @param array  $meta Additional metadata.
-	 *
-	 * @return string JSON response string
+	 * @param array<string, mixed> $meta
+	 * @return array<string, mixed>
 	 */
-	public static function success( $data, string $type = 'generic', array $meta = [] ): string {
+	public static function success( string $message = 'Operation completed successfully', array $meta = [] ): array {
 		$response = [
-			'status' => 'success',
-			'type'   => $type,
-			'data'   => $data,
-			'meta'   => $meta,
+			'status'  => 'success',
+			'message' => $message,
+			'meta'    => array_merge( [
+				'timestamp' => time(),
+				'node_id'   => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+			], $meta ),
 		];
 
-		// Add performance metrics
-		$response = Benchmark::enhanceResponse( $response );
-
-		// Log the FULL response
-		log_info( 'NodeResponse - Sending success response', $response );
-
-		return json_encode( $response );
+		// Enhance with benchmark data
+		return Benchmark::enhanceResponse( $response );
 	}
 
 	/**
-	 * Error response
-	 *
-	 * @param string $message Error message.
-	 * @param int    $code HTTP status code.
-	 * @param array  $details Error details.
-	 *
-	 * @return string JSON response string
+	 * @param array<string, mixed> $details
+	 * @return array<string, mixed>
 	 */
-	public static function error( string $message, int $code = 500, array $details = [] ): string {
-		$error_data = [
+	public static function error( string $message, int $code = 500, array $details = [] ): array {
+		$response = [
+			'status'  => 'error',
 			'message' => $message,
 			'code'    => $code,
+			'meta'    => [
+				'timestamp' => time(),
+				'node_id'   => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+			],
 		];
 
 		if ( ! empty( $details ) ) {
-			$error_data['details'] = $details;
+			$response['details'] = $details;
 		}
 
-		$response = [
-			'status' => 'error',
-			'type'   => 'error',
-			'error'  => $error_data,
-			'meta'   => [],
-		];
-
-		// Add performance metrics
-		$response = Benchmark::enhanceResponse( $response );
-
-		// Log the FULL response
-		log_info( 'NodeResponse - Sending error response', $response );
-
-		return json_encode( $response );
+		// Enhance with benchmark data
+		return Benchmark::enhanceResponse( $response );
 	}
 
 	/**
-	 * Raw response for Manager-orchestrated responses
-	 * The Manager can use this to return pre-structured responses while still
-	 * getting performance metrics added.
-	 *
-	 * @param array $manager_response Response structure from Manager.
-	 *
-	 * @return string JSON response string
+	 * @param array<string, mixed> $manager_response
+	 * @return array<string, mixed>
 	 */
-	public static function from_manager( array $manager_response ): string {
-		// Manager provides the response structure, we just add performance meta
-		$response = $manager_response;
+	public static function from_manager( array $manager_response ): array {
+		$response = [
+			'status'           => 'completed',
+			'manager_response' => $manager_response,
+			'meta'             => [
+				'timestamp' => time(),
+				'node_id'   => getenv( 'QIT_NODE_ID' ) ?: 'unknown',
+			],
+		];
 
-		// Add performance metrics
-		$response = Benchmark::enhanceResponse( $response );
+		// Enhance with benchmark data
+		return Benchmark::enhanceResponse( $response );
+	}
+}
 
-		// Ensure we have required fields
-		if ( ! isset( $response['status'] ) ) {
-			$response['status'] = 'success';
-		}
-		if ( ! isset( $response['type'] ) ) {
-			$response['type'] = 'manager_orchestrated';
-		}
+// Add the missing Benchmark class for static method calls
+class Benchmark {
+	/**
+	 * @param array<string, mixed> $provider_response
+	 * @return array<string, mixed>
+	 */
+	public static function extractProviderStats( array $provider_response ): array {
+		// Extract provider statistics from response
+		return [
+			'tokens_used'   => $provider_response['tokens_used'] ?? 0,
+			'model'         => $provider_response['model'] ?? 'unknown',
+			'response_time' => $provider_response['response_time'] ?? 0,
+		];
+	}
 
-		// Log the FULL response
-		log_info( 'NodeResponse - Sending manager response', $response );
+	/**
+	 * @param array<string, mixed> $response
+	 * @return array<string, mixed>
+	 */
+	public static function enhanceResponse( array $response ): array {
+		// Add benchmark/performance data to response
+		$response['meta']['benchmark'] = [
+			'memory_usage'      => memory_get_usage( true ),
+			'peak_memory_usage' => memory_get_peak_usage( true ),
+			'execution_time'    => microtime( true ) - ($_SERVER['REQUEST_TIME_FLOAT'] ?? microtime( true )),
+		];
 
-		return json_encode( $response );
+		return $response;
+	}
+
+	/**
+	 * CamelCase alias for tool_prompt method
+	 * @param string $result
+	 * @param array<string, mixed> $tool_calls
+	 * @param array<string, mixed> $model
+	 * @param array<string, mixed> $additional
+	 * @return array<string, mixed>
+	 */
+	public static function toolPrompt( string $result, array $tool_calls = [], array $model = [], array $additional = [] ): array {
+		return self::tool_prompt( $result, $tool_calls, array_merge( $model, $additional ) );
 	}
 }

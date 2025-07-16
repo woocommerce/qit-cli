@@ -38,11 +38,21 @@ abstract class BaseTool {
 	 */
 	abstract public function get_function_info(): FunctionInfo;
 
+	/**
+	 * Get the FunctionInfo object for LLPhant (camelCase alias)
+	 */
+	public function getFunctionInfo(): FunctionInfo {
+		return $this->get_function_info();
+	}
+
 	/** Canonical, safe, *relative* path – throws if invalid */
 	protected function safe_path( string $user_path ): string {
 		return $this->file_path_resolver->canon_relative( $user_path );
 	}
 
+	/**
+	 * @param array<string> $examples
+	 */
 	protected function base_description( string $core, array $examples = [] ): string {
 		if ( $this->context === null ) {
 			return $core;
@@ -70,10 +80,16 @@ abstract class BaseTool {
 	 * Child classes must implement the "real" work here.
 	 * On success return ANY serialisable value.
 	 *
+	 * @param array<string, mixed> $params
+	 * @return mixed
 	 * @throws \Throwable To trigger error envelope.
 	 */
 	abstract protected function do( array $params );
 
+	/**
+	 * @param array<string, mixed> $params
+	 * @return array<string, mixed>
+	 */
 	public function execute( array $params ): array {
 		try {
 			// Resolve placeholders
@@ -106,6 +122,8 @@ abstract class BaseTool {
 
 	/**
 	 * Resolve macros in path-related parameters
+	 * @param array<string, mixed> $params
+	 * @return array<string, mixed>
 	 */
 	protected function resolve_macros_in_params( array $params ): array {
 		// Common path parameters that might contain macros

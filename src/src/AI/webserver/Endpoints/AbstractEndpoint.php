@@ -28,16 +28,16 @@ abstract class AbstractEndpoint {
 	/**
 	 * Handle the request
 	 *
-	 * @param array $input Request input data.
+	 * @param array<string, mixed> $input Request input data.
 	 * @return string JSON response
 	 */
-	abstract public function handle( array $input ): string;
+	abstract public function handle( array $input );
 
 	/**
 	 * Handle errors consistently across all endpoints
 	 *
 	 * @param Exception $e Exception to handle.
-	 * @param array     $context Additional context for error reporting.
+	 * @param array<string, mixed> $context Additional context for error reporting.
 	 * @return string JSON error response
 	 */
 	protected function handle_error( Exception $e, array $context = [] ): string {
@@ -76,7 +76,7 @@ abstract class AbstractEndpoint {
 
 		// Use NodeResponse::error for standardized error response
 		// Get JSON response as string and echo it
-		return NodeResponse::error( $e->getMessage(), 500, $error_report );
+		return json_encode( NodeResponse::error( $e->getMessage(), 500, $error_report ) );
 	}
 
 	/**
@@ -86,14 +86,26 @@ abstract class AbstractEndpoint {
 		log_info( $message, $context );
 	}
 
+	/**
+	 * @param string $message
+	 * @param array<string, mixed> $context
+	 */
 	public function log_debug( string $message, array $context = [] ): void {
 		log_debug( $message, $context );
 	}
 
+	/**
+	 * @param string $message
+	 * @param array<string, mixed> $context
+	 */
 	public function log_error( string $message, array $context = [] ): void {
 		log_error( $message, $context );
 	}
 
+	/**
+	 * @param string $message
+	 * @param array<string, mixed> $context
+	 */
 	public function log_warning( string $message, array $context = [] ): void {
 		log_warning( $message, $context );
 	}

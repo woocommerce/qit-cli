@@ -8,6 +8,9 @@ namespace QIT_AI_Webserver\Lib;
 class CallbackSender {
 	/**
 	 * Send successful result to callback URL
+	 * @param array<string, mixed> $response
+	 * @param array<string, mixed> $tool_calls
+	 * @param array<string, mixed> $metadata
 	 */
 	public function send_callback(
 		string $callback_url,
@@ -30,8 +33,7 @@ class CallbackSender {
 			$data['task_id'] = $task_id;
 		}
 
-		$request = OutboundRequest::callback( $callback_url, $data, 'task-callback-request-success' );
-		$result  = $request->send();
+		$result = OutboundRequest::callback( $callback_url, $data );
 
 		return $result['success'];
 	}
@@ -57,8 +59,7 @@ class CallbackSender {
 			$data['task_id'] = $task_id;
 		}
 
-		$request = OutboundRequest::callback( $callback_url, $data, 'task-callback-request-error' );
-		$result  = $request->send();
+		$result = OutboundRequest::callback( $callback_url, $data );
 
 		return $result['success'];
 	}

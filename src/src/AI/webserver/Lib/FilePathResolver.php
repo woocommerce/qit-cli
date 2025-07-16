@@ -23,10 +23,12 @@ namespace QIT_AI_Webserver\Lib;
  */
 class FilePathResolver {
 	private string $extract_path;
+	private string $root_dir;
 	private ToolPathGuard $g;
 
 	public function __construct( string $extract_path, string $sut_dir = '' ) {
 		$this->extract_path = rtrim( $extract_path, '/\\' );
+		$this->root_dir     = $this->extract_path;
 		$this->g            = new ToolPathGuard( $this->extract_path, $sut_dir );
 	}
 
@@ -124,6 +126,7 @@ class FilePathResolver {
 
 	/**
 	 * Get file info (using relative path)
+	 * @return array<string, mixed>
 	 */
 	public function get_file_info( string $relative_path ): array {
 		$absolute_path = $this->to_absolute( $relative_path );
@@ -140,5 +143,15 @@ class FilePathResolver {
 			'lines'         => substr_count( $content, "\n" ) + 1,
 			'extension'     => pathinfo( $relative_path, PATHINFO_EXTENSION ),
 		];
+	}
+
+	/**
+	 * Convert absolute path to relative path
+	 */
+	public function toRelative( string $absolute_path ): string {
+		// Remove the root directory from the absolute path
+		$relative = str_replace( $this->root_dir, '', $absolute_path );
+		// Remove leading slash
+		return ltrim( $relative, '/' );
 	}
 }

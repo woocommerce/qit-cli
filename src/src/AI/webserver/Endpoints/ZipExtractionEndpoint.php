@@ -38,7 +38,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		return '/extract-zip';
 	}
 
-	public function handle( array $input ): string {
+	public function handle( array $input ) {
 
 		$this->log_info( 'Starting ZIP extraction endpoint', [
 			'input_keys' => array_keys( $input ),
@@ -81,7 +81,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Validate required parameters
 	 *
-	 * @param array $input Input parameters.
+	 * @param array<string, mixed> $input Input parameters.
 	 * @return mixed Error response string or true if valid
 	 */
 	private function validateParameters( array $input ) {
@@ -90,7 +90,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 				$this->log_error( "Missing $k parameter" );
 				// Note: NodeResponse::error will set the HTTP status code in the JSON response
 				// The router.worker.php will handle setting the actual HTTP status code
-				return NodeResponse::error( "Missing $k parameter", 400 );
+				return json_encode( NodeResponse::error( "Missing $k parameter", 400 ) );
 			}
 		}
 
@@ -114,17 +114,17 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		if ( $real_temp_base === false ) {
 			// Note: NodeResponse::error will set the HTTP status code in the JSON response
 			// The router.worker.php will handle setting the actual HTTP status code
-			return NodeResponse::error( 'Failed to resolve temp directory path', 500 );
+			return json_encode( NodeResponse::error( 'Failed to resolve temp directory path', 500 ) );
 		}
 
 		$extract_parent = dirname( $extract_to );
 		if ( ! is_dir( $extract_parent ) && ! mkdir( $extract_parent, 0777, true ) ) {
-			return NodeResponse::error( 'Failed to create parent directory', 500 );
+			return json_encode( NodeResponse::error( 'Failed to create parent directory', 500 ) );
 		}
 
 		$real_extract_parent = realpath( $extract_parent );
 		if ( $real_extract_parent === false || str_starts_with( $real_extract_parent, $real_temp_base ) === false ) {
-			return NodeResponse::error( 'Directory traversal attempt detected', 400 );
+			return json_encode( NodeResponse::error( 'Directory traversal attempt detected', 400 ) );
 		}
 
 		return true;
@@ -139,7 +139,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 * Validate precondition
 	 *
 	 * @param string $extract_to Extraction directory.
-	 * @param array  $config Configuration array.
+	 * @param array<string, mixed> $config Configuration array.
 	 * @return void
 	 */
 	private function validatePrecondition( string $extract_to, array $config ): void {
@@ -178,10 +178,10 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 *
 	 * @param string $zip_url URL of ZIP file.
 	 * @param string $extract_to Extraction directory.
-	 * @param array  $params Parameters array.
-	 * @return string Response string.
+	 * @param array<string, mixed>  $params Parameters array.
+	 * @return string|array<string, mixed> Response string or error array.
 	 */
-	private function performExtraction( string $zip_url, string $extract_to, array $params ): string {
+	private function performExtraction( string $zip_url, string $extract_to, array $params ) {
 
 		$session_id    = $params['session_id'] ?? md5( $extract_to );
 		$target_subdir = $params['config']['target_subdir'] ?? null;
@@ -209,7 +209,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		if ( $extraction_result['file_count'] === 0 ) {
 			// Note: NodeResponse::error will set the HTTP status code in the JSON response
 			// The router.worker.php will handle setting the actual HTTP status code
-			return NodeResponse::error( 'ZIP extraction failed – no files extracted', 422, [ 'files_extracted' => 0 ] );
+			return json_encode( NodeResponse::error( 'ZIP extraction failed – no files extracted', 422, [ 'files_extracted' => 0 ] ) );
 		}
 
 		touch( $workspace_root . '/.analyzed' );
@@ -320,8 +320,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 *
 	 * @param string $zip_path Path to ZIP file.
 	 * @param string $extract_to Extraction directory.
-	 * @param array  $params Parameters array.
-	 * @return array Extraction statistics.
+	 * @param array<string, mixed> $params Parameters array.
+	 * @return array<string, mixed> Extraction statistics.
 	 */
 	private function extractZipFile( string $zip_path, string $extract_to, array $params = [] ): array {
 
@@ -337,7 +337,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 *
 	 * @param string $zip_path Path to ZIP file.
 	 * @param string $extract_root Root extraction directory.
-	 * @param array  $params Parameters array.
+	 * @param array<string, mixed> $params Parameters array.
 	 * @return array{file_count:int,extract_time:float}
 	 * @throws Exception If ZIP file cannot be opened or extraction fails.
 	 */
@@ -499,11 +499,11 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 *
 	 * @param string $actual_extract_path Actual extraction path.
 	 * @param int    $file_count Number of files extracted.
-	 * @param array  $params Request parameters.
-	 * @param array  $manifest Optional component manifest.
-	 * @return string Response string.
+	 * @param array<string, mixed>  $params Request parameters.
+	 * @param array<string, mixed>  $manifest Optional component manifest.
+	 * @return array<string, mixed> Response array.
 	 */
-	private function sendUnifiedExtractionResponse( string $actual_extract_path, int $file_count, array $params, array $manifest = [] ): string {
+	private function sendUnifiedExtractionResponse( string $actual_extract_path, int $file_count, array $params, array $manifest = [] ) {
 		$list_files       = $params['config']['list_files'] ?? true;   // ★ new flag
 		$file_pattern     = $params['config']['file_pattern'] ?? '*.php';
 		$resolver         = new FilePathResolver( $actual_extract_path );
@@ -589,7 +589,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			$response['component'] = $manifest;
 		}
 
-		return NodeResponse::success( $response );
+		return json_encode( NodeResponse::success( $response ) );
 	}
 
 
@@ -604,7 +604,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 		// Note: NodeResponse::error will set the HTTP status code in the JSON response
 		// The router.worker.php will handle setting the actual HTTP status code
-		return NodeResponse::error( 'Extraction failed', 500, [ 'message' => $e->getMessage() ] );
+		return json_encode( NodeResponse::error( 'Extraction failed', 500, [ 'message' => $e->getMessage() ] ) );
 	}
 
 
@@ -613,7 +613,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 *
 	 * @param string $directory Directory to check.
 	 *
-	 * @return array Structure information.
+	 * @return array<string, mixed> Structure information.
 	 */
 	private function detectWordPressStructure( string $directory ): array {
 		$result = [
@@ -692,7 +692,12 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 	/* ------------------------------------------------------ New helpers --- */
 
-	/** Return every top‑level directory in the workspace (one level deep). */
+	/**
+	 * Return every top‑level directory in the workspace (one level deep).
+	 * 
+	 * @param string $base Base directory to scan.
+	 * @return array<string, mixed> Array of workspace roots.
+	 */
 	private function getWorkspaceRoots( string $base ): array {
 		$roots = [];
 		foreach ( scandir( $base ) as $item ) {
@@ -711,7 +716,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	 * Write a small JSON file the prompt‑builder can read later.
 	 *
 	 * @param string $base Base directory.
-	 * @param array  $roots Directory roots.
+	 * @param array<string, mixed> $roots Directory roots.
 	 * @return void
 	 */
 	private function writeContextFile( string $base, array $roots ): void {

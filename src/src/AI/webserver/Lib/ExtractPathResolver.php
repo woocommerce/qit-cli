@@ -16,7 +16,7 @@ class ExtractPathResolver {
 	/**
 	 * Resolve the extract path from input data
 	 *
-	 * @param array $input Input data that should contain extract_path.
+	 * @param array<string, mixed> $input Input data that should contain extract_path.
 	 * @return string Validated extract path
 	 * @throws \RuntimeException If path resolution fails.
 	 */
@@ -62,7 +62,7 @@ class ExtractPathResolver {
 	/**
 	 * Get helpful error message for debugging path resolution issues
 	 *
-	 * @param array $input Input data to analyze.
+	 * @param array<string, mixed> $input Input data to analyze.
 	 * @return string Diagnostic message
 	 */
 	public static function get_diagnostic_message( array $input ): string {

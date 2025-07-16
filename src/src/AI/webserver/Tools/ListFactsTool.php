@@ -2,55 +2,80 @@
 
 namespace QIT_AI_Webserver\Tools;
 
-use QIT_AI_Webserver\Lib\FactStore;
 use LLPhant\Chat\FunctionInfo\FunctionInfo;
 use LLPhant\Chat\FunctionInfo\Parameter;
 
 class ListFactsTool extends BaseTool {
-	public function getName(): string {
+
+	public function get_name(): string {
 		return 'list_facts';
 	}
 
-	public function getDescription(): string {
-		return 'Browse previous investigation facts';
+	public function get_description(): string {
+		return 'List all available facts';
 	}
 
-	/**
-	 * LLPhant metadata
-	 */
 	public function getFunctionInfo(): FunctionInfo {
 		$params = [
-			new Parameter( 'step', 'integer', 'Filter by step index (optional)' ),
-			new Parameter( 'kind', 'string', 'Filter by fact kind   (optional)' ),
-			new Parameter( 'limit', 'integer', 'Max items to return (default 20)' ),
+			new Parameter( 'limit', 'integer', 'Maximum number of facts to return (default: 50)' ),
+			new Parameter( 'category', 'string', 'Filter by category (optional)' ),
+			new Parameter( 'type', 'string', 'Filter by type (optional)' ),
 		];
 
 		return new FunctionInfo(
-			$this->getName(),
-			[ $this, 'list_facts' ],
-			$this->getDescription(),
+			$this->get_name(),
+			[ $this, 'list_all_facts' ],
+			$this->get_description(),
 			$params,
-			[]  // no required params
+			[]           // no required parameters
 		);
 	}
 
-	public function list_facts(
-		?int $step = null,
-		?string $kind = null,
-		int $limit = 20
+	public function get_function_info(): FunctionInfo {
+		return $this->getFunctionInfo();
+	}
+
+	public function list_all_facts(
+		int $limit = 50,
+		?string $category = null,
+		?string $type = null
 	): string {
-		return json_encode(
-			$this->execute( compact( 'step', 'kind', 'limit' ) ),
-			JSON_UNESCAPED_SLASHES
-		);
+		$result = $this->execute( compact( 'limit', 'category', 'type' ) );
+
+		return json_encode( $result, JSON_UNESCAPED_SLASHES );
 	}
 
+	/**
+	 * @param array<string, mixed> $p
+	 * @return array<string, mixed>
+	 */
 	protected function do( array $p ) {
+		$limit    = $p['limit'] ?? 50;
+		$category = $p['category'] ?? null;
+		$type     = $p['type'] ?? null;
+
+		$fact_store = $this->context ? $this->context->fact_store : null;
+		if ( ! $fact_store ) {
+			return [
+				'facts' => [],
+				'total' => 0,
+				'error' => 'No fact store available',
+			];
+		}
+
+		$filters = [];
+		if ( $category ) {
+			$filters['category'] = $category;
+		}
+		if ( $type ) {
+			$filters['type'] = $type;
+		}
+
+		$facts = $fact_store->list_all( $filters, $limit );
+
 		return [
-			'results'   => FactStore::list( $p['step'] ?? null,
-				$p['kind'] ?? null,
-			$p['limit'] ?? 20 ),
-			'truncated' => false,
+			'facts' => $facts,
+			'total' => count( $facts ),
 		];
 	}
 }

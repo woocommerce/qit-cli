@@ -25,7 +25,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 	/**
 	 * Handle file reading request
 	 *
-	 * @param array $input Request input data.
+	 * @param array<string, mixed> $input Request input data.
 	 *
 	 * @return string JSON response
 	 */
@@ -40,7 +40,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 		if ( ! isset( $input['file'] ) || empty( $input['file'] ) ) {
 			$this->log_error( 'No file provided for reading' );
 			http_response_code( 400 );
-			return NodeResponse::error( 'Missing file parameter' );
+			return json_encode( NodeResponse::error( 'Missing file parameter' ) );
 		}
 
 		$file_path = $input['file'];
@@ -56,7 +56,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				'diagnostics' => ExtractPathResolver::get_diagnostic_message( $input ),
 			] );
 			http_response_code( 400 );
-			return NodeResponse::error( $e->getMessage() );
+			return json_encode( NodeResponse::error( $e->getMessage() ) );
 		}
 
 		// SECURITY: Prevent directory traversal attacks
@@ -65,7 +65,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				'file' => $file_path,
 			] );
 			http_response_code( 400 );
-			return NodeResponse::error( 'Directory traversal sequences (..) are not allowed in file.' );
+			return json_encode( NodeResponse::error( 'Directory traversal sequences (..) are not allowed in file.' ) );
 		}
 
 		// SECURITY: Reject any path containing null bytes
@@ -74,7 +74,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				'file' => $file_path,
 			] );
 			http_response_code( 400 );
-			return NodeResponse::error( 'Null bytes are not allowed in file.' );
+			return json_encode( NodeResponse::error( 'Null bytes are not allowed in file.' ) );
 		}
 
 		try {
@@ -98,7 +98,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				] );
 
 				http_response_code( 404 );
-				return NodeResponse::error( 'File reading failed: ' . $result['error'] );
+				return json_encode( NodeResponse::error( 'File reading failed: ' . $result['error'] ) );
 			}
 
 			// FileReadingEndpoint::handle()  – right before NodeResponse::success()
@@ -118,14 +118,14 @@ class FileReadingEndpoint extends AbstractEndpoint {
 			] );
 
 			// Return clean response
-			return NodeResponse::success( [
+			return json_encode( NodeResponse::success( [
 				'file_content'              => $content,
 				'file_lines'                => $lines,
 				'file_size'                 => strlen( $content ),
 				'content_with_line_numbers' => implode( "\n", $numbered ),
 				'file'                      => $file_path,
 				'extract_path'              => $extract_path,
-			], 'file_reading' );
+			], 'file_reading' ) );
 
 		} catch ( Exception $e ) {
 			$this->log_error( 'File reading failed: ' . $e->getMessage(), [
@@ -133,7 +133,7 @@ class FileReadingEndpoint extends AbstractEndpoint {
 				'extract_path' => $extract_path,
 			] );
 
-			return NodeResponse::error( 'File reading failed', 500, [ 'message' => $e->getMessage() ] );
+			return json_encode( NodeResponse::error( 'File reading failed', 500, [ 'message' => $e->getMessage() ] ) );
 		}
 	}
 }

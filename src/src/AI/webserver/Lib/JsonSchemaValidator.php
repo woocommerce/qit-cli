@@ -26,11 +26,40 @@ class JsonSchemaValidator {
 	}
 
 	/**
+	 * Get singleton instance (camelCase alias)
+	 */
+	public static function getInstance(): self {
+		return self::get_instance();
+	}
+
+	/**
+	 * Validate inbound request data (camelCase alias)
+	 *
+	 * @param array<string, mixed> $data Request data to validate.
+	 * @param string $request_type Request type (basic-prompt, vulnerability-scan, etc.).
+	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
+	 */
+	public function validateInbound( array $data, string $request_type ): array {
+		return $this->validate_inbound( $data, $request_type );
+	}
+
+	/**
+	 * Validate outbound request data (camelCase alias)
+	 *
+	 * @param array<string, mixed> $data Request data to validate.
+	 * @param string $request_type Request type (node-registration, task-callback-request-success, etc.).
+	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
+	 */
+	public function validateOutbound( array $data, string $request_type ): array {
+		return $this->validate_outbound( $data, $request_type );
+	}
+
+	/**
 	 * Validate inbound request data
 	 *
-	 * @param array  $data Request data to validate.
+	 * @param array<string, mixed> $data Request data to validate.
 	 * @param string $request_type Request type (basic-prompt, vulnerability-scan, etc.).
-	 * @return array Validation result with 'valid' boolean and 'errors' array
+	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	public function validate_inbound( array $data, string $request_type ): array {
 		$schema_path = $this->schemas_path . 'inbound/' . $request_type . '.json';
@@ -40,9 +69,9 @@ class JsonSchemaValidator {
 	/**
 	 * Validate outbound request data
 	 *
-	 * @param array  $data Request data to validate.
+	 * @param array<string, mixed> $data Request data to validate.
 	 * @param string $request_type Request type (node-registration, task-callback-request-success, etc.).
-	 * @return array Validation result with 'valid' boolean and 'errors' array
+	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	public function validate_outbound( array $data, string $request_type ): array {
 		$schema_path = $this->schemas_path . 'outbound/' . $request_type . '.json';
@@ -52,9 +81,9 @@ class JsonSchemaValidator {
 	/**
 	 * Validate data against a JSON schema using justinrainbow/json-schema
 	 *
-	 * @param array  $payload Data to validate.
+	 * @param array<string, mixed> $payload Data to validate.
 	 * @param string $schema_path Path to the JSON schema file.
-	 * @return array Validation result with 'valid' boolean and 'errors' array
+	 * @return array<string, mixed> Validation result with 'valid' boolean and 'errors' array
 	 */
 	private function validate_against_schema( array $payload, string $schema_path ): array {
 		// Log which schema we are about to use
@@ -131,7 +160,7 @@ class JsonSchemaValidator {
 	/**
 	 * Get list of available inbound schema types
 	 *
-	 * @return array
+	 * @return array<string>
 	 */
 	public function get_inbound_schema_types(): array {
 		return $this->get_schema_types( 'inbound' );
@@ -140,7 +169,7 @@ class JsonSchemaValidator {
 	/**
 	 * Get list of available outbound schema types
 	 *
-	 * @return array
+	 * @return array<string>
 	 */
 	public function get_outbound_schema_types(): array {
 		return $this->get_schema_types( 'outbound' );
@@ -150,7 +179,7 @@ class JsonSchemaValidator {
 	 * Get schema types for a given direction
 	 *
 	 * @param string $type
-	 * @return array
+	 * @return array<string>
 	 */
 	private function get_schema_types( string $type ): array {
 		$schema_dir = $this->schemas_path . $type . '/';

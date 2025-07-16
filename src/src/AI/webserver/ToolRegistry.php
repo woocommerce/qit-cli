@@ -17,48 +17,50 @@ use QIT_AI_Webserver\Tools\TreeDirectoryTool;
 use QIT_AI_Webserver\ToolContext;
 use QIT_AI_Webserver\PathContextProvider;
 
+/**
+ * Registry for all AI tools
+ */
 class ToolRegistry {
+	private ToolContext $context;
+	/** @var array<string, \QIT_AI_Webserver\Tools\BaseTool> */
 	private array $tools = [];
-	private string $work_directory;
-	private string $sut_directory;
 
-	public function __construct( string $work_directory = '', string $sut_directory = '' ) {
-		if ( empty( $work_directory ) ) {
-			throw new Exception( 'Work directory must be specified' );
-		}
-
-		$this->work_directory = rtrim( $work_directory, '/\\' );
-		$this->sut_directory  = rtrim( $sut_directory, '/\\' );
-
-		if ( ! is_dir( $this->work_directory ) ) {
-			throw new Exception( "Work directory does not exist: {$this->work_directory}" );
-		}
-
-		$this->register_default_tools();
+	public function __construct( ToolContext $context ) {
+		$this->context = $context;
+		$this->register_tools();
 	}
 
-	private function register_default_tools(): void {
-		// ❶ Get path context using PathContextProvider (not registered as a tool)
-		$path_context_provider = new PathContextProvider( $this->work_directory, $this->sut_directory );
+	private function register_tools(): void {
+		$base_path = dirname( __DIR__ ) . '/Tools';
+		$work_dir  = $this->context->wpRoot;
+		$sut_dir   = $this->context->sutDir;
 
-		try {
-			$ctx_data = $path_context_provider->getPathContext();
-			$context  = new ToolContext( $ctx_data['wp_root'], $ctx_data['sut'], $ctx_data['deps'] );
-		} catch ( \RuntimeException $e ) {
-			// If path context fails, continue without context
-			$context = null;
+		// Register all available tools
+		$tool_classes = [
+			'ListFilesTool',
+			'ReadFileTool',
+			'SearchStringsTool',
+			'TreeDirectoryTool',
+			'ParsePhpTool',
+			'FindHooksTool',
+			'ListFactsTool',
+			'SearchFactsTool',
+		];
+
+		foreach ( $tool_classes as $class_name ) {
+			$full_class = "\\QIT_AI_Webserver\\Tools\\{$class_name}";
+			if ( class_exists( $full_class ) ) {
+				$tool = new $full_class( $work_dir, $sut_dir, $this->context );
+				$this->tools[ $tool->get_name() ] = $tool;
+			}
 		}
 
-		// ❂ Register tools – now **context‑aware** but PathContextTool is NOT registered
-		$this->register_tool( new ReadFileTool( $this->work_directory, $this->sut_directory, $context ) );
-		$this->register_tool( new ListFilesTool( $this->work_directory, $this->sut_directory, $context ) );
-		$this->register_tool( new SearchStringsTool( $this->work_directory, $this->sut_directory, $context ) );
-		$this->register_tool( new FindHooksTool( $this->work_directory, $this->sut_directory, $context ) );
-		$this->register_tool( new ParsePhpTool( $this->work_directory, $this->sut_directory, $context ) );
-		$this->register_tool( new ListFactsTool( $this->work_directory, $this->sut_directory, $context ) );
-		$this->register_tool( new TreeDirectoryTool( $this->work_directory, $this->sut_directory, $context ) );
-		// Deep investigation only, disabled.
-		// $this->register_tool( new SearchFactsTool( $this->work_directory, $this->sut_directory, $context ) );
+		// Add path context to the registry (not as a tool, but for context)
+		$path_provider = new PathContextProvider( $work_dir, $sut_dir );
+		$path_context  = $path_provider->get_path_context();
+		
+		// Store path context for use by tools if needed
+		$this->context->path_context = $path_context;
 	}
 
 	public function register_tool( BaseTool $tool ): void {
@@ -69,20 +71,39 @@ class ToolRegistry {
 		return $this->tools[ $name ] ?? null;
 	}
 
+	/**
+	 * Get all available tools
+	 * @return array<string, \QIT_AI_Webserver\Tools\BaseTool>
+	 */
 	public function get_tools(): array {
 		return $this->tools;
 	}
 
-	public function execute_tool( string $name, array $params ): array {
-		$tool = $this->get_tool( $name );
-		if ( ! $tool ) {
-			return [ 'error' => "Unknown tool: $name" ];
+	/**
+	 * Get all available tools (camelCase alias)
+	 * @return array<string, \QIT_AI_Webserver\Tools\BaseTool>
+	 */
+	public function getTools(): array {
+		return $this->get_tools();
+	}
+
+	/**
+	 * Get tool by name (camelCase alias)
+	 */
+	public function getTool( string $name ): ?BaseTool {
+		return $this->get_tool( $name );
+	}
+
+	/**
+	 * Execute a tool by name
+	 * @param array<string, mixed> $params
+	 * @return array<string, mixed>
+	 */
+	public function execute_tool( string $tool_name, array $params ): array {
+		if ( ! isset( $this->tools[ $tool_name ] ) ) {
+			throw new \InvalidArgumentException( "Tool not found: {$tool_name}" );
 		}
 
-		try {
-			return $tool->execute( $params );
-		} catch ( Exception $e ) {
-			return [ 'error' => $e->getMessage() ];
-		}
+		return $this->tools[ $tool_name ]->execute( $params );
 	}
 }

@@ -1,9 +1,10 @@
 parameters:
   level: 6
   paths:
-    - /app/src/src
+    - /app/src/src/AI
     - /app/src/qit-cli.php
   scanDirectories:
+    - /app/src/src
     - /app/src/vendor
   excludePaths:
     analyse:

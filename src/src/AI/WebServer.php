@@ -13,11 +13,14 @@ class WebServer {
 	private ?\QIT_CLI\Logging\Logger $logger = null;
 	private bool $use_local_mode;
 	private string $provider       = 'lmstudio';
+	/** @var array<string, mixed> */
 	private array $provider_config = [];
+	/** @var array<string, mixed> */
 	private array $runtime_config  = [];
 	private string $router_template;
 	private bool $bind_localhost_only    = false;
 	private ?string $custom_log_file     = null;
+	/** @var array<string, mixed> */
 	private array $environment_variables = [];
 
 	public function __construct( bool $use_local_mode = true ) {
@@ -47,6 +50,9 @@ class WebServer {
 		$this->node_token = $t;
 	}
 
+	/**
+	 * @param array<string, mixed> $config
+	 */
 	public function set_provider_config( string $provider, array $config ): void {
 		$this->provider        = $provider;
 		$this->provider_config = $config;
@@ -55,7 +61,7 @@ class WebServer {
 	/**
 	 * Set the runtime configuration.
 	 *
-	 * @param array $config The runtime configuration.
+	 * @param array<string, mixed> $config The runtime configuration.
 	 */
 	public function set_runtime_config( array $config ): void {
 		$this->runtime_config = $config;

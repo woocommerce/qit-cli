@@ -8,67 +8,73 @@ use LLPhant\Chat\ChatInterface;
 use LLPhant\OpenAIConfig;
 use QIT_AI_Webserver\Chat\SafeToolsOpenAIChat;
 
-final class LLPhantBootstrap {
-	/* ───────── 1. STATIC SINGLETON – BOOT ONLY ONCE ───────── */
+class LLPhantBootstrap {
+	private const PROVIDERS = [ 'openai', 'anthropic', 'lm_studio' ];
+	public const DEFAULT_OPENAI_MODEL = 'gpt-4o-mini';
+	public const DEFAULT_ANTHROPIC_MODEL = 'claude-3-5-sonnet-20241022';
+
+	private ChatInterface $chat_instance;
+
+	private string $provider;
+	private string $install_dir;
+	private string $composer_require_command;
+
+	/** @var array<string> */
+	private array $allowed_models = [
+		'gpt-4o',
+		'gpt-4o-mini',
+		'gpt-4-turbo',
+		'claude-3-5-sonnet-20241022',
+	];
 
 	/**
-	 * Chat interface instance.
-	 *
-	 * @var ?ChatInterface
+	 * @var string|null
 	 */
-	private static ?ChatInterface $chat = null;
+	protected static $current_provider = null;
 
 	/**
-	 * Current provider name.
-	 *
-	 * @var ?string
+	 * @var string|null
 	 */
-	private static ?string $current_provider = null;
+	protected static $current_model = null;
 
 	/**
-	 * Current model name.
-	 *
-	 * @var ?string
+	 * @var mixed|null
 	 */
-	private static ?string $current_model = null;
+	protected static $chat = null;
 
 	/**
-	 * Allowed models array.
-	 *
-	 * @var array
+	 * @param array<string, mixed> $conf
 	 */
-	private static array $allowed_models = [];
+	public function boot( array $conf ): void {
+		$this->provider = $conf['provider'] ?? 'openai';
 
-	/** Initialise exactly once per PHP process (router‑level). */
-	public static function boot( string $provider, array $conf ): void {
-		if ( self::$chat ) {            // already initialised
-			return;
+		if ( ! in_array( $this->provider, self::PROVIDERS, true ) ) {
+			throw new Exception( "Unsupported provider: {$this->provider}" );
 		}
 
-		// Track current provider
-		self::$current_provider = $provider;
+		if ( isset( $conf['model'] ) && ! in_array( $conf['model'], $this->allowed_models, true ) ) {
+			throw new Exception( "Model '{$conf['model']}' is not in the allowed list." );
+		}
 
-		$self = new self( $provider, $conf );   // reuse existing ctor logic
-		$self->ensure_initialized();           // still installs composer etc.
-		self::$chat = $self->get_chat();
+		$this->chat_instance = $this->create_chat_instance( $conf );
 
-		self::$allowed_models = explode( ',', $conf['model'] );
-
-		// Apply options once during boot()
-		foreach ( [ 'model', 'temperature', 'max_tokens' ] as $opt ) {
-			if ( isset( $conf[ $opt ] ) ) {
-				self::$chat->setModelOption( $opt, $conf[ $opt ] );
-			}
+		if ( isset( $conf['model'] ) ) {
+			$this->chat_instance->setModelOption( 'model', $conf['model'] );
 		}
 	}
 
-	/** Retrieve the ready‑to‑use ChatInterface for endpoints. */
-	public static function chat(): ChatInterface {
-		if ( ! self::$chat ) {
-			throw new \RuntimeException( 'LLPhantBootstrap::boot() not called' );
-		}
+	/**
+	 * Create chat instance based on provider
+	 * @param array<string, mixed> $config
+	 * @return ChatInterface
+	 */
+	private function create_chat_instance( array $config ): ChatInterface {
+		$this->initialize_provider( $config );
+		return $this->chat_instance;
+	}
 
-		return self::$chat;
+	public function chat(): ChatInterface {
+		return $this->chat_instance;
 	}
 
 	/**
@@ -205,45 +211,31 @@ final class LLPhantBootstrap {
 		return self::$current_model ?? 'unknown';
 	}
 
-	/*
-	───────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ───────
-	*/
+	/**
+	 * ────────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ───────
+	 */
 	// (constructor, ensureInitialized, initializeProvider, generate* …)
 
 	/**
-	 * Installation directory for dependencies.
-	 *
-	 * @var string
-	 */
-	private string $install_dir;
-
-	/**
-	 * Chat interface instance.
-	 *
-	 * @var ?ChatInterface
-	 */
-	private ?ChatInterface $chat_instance = null;
-
-	/**
-	 * Provider name.
-	 *
-	 * @var string
-	 */
-	private string $provider;
-
-	/**
 	 * Configuration array.
-	 *
-	 * @var array
+	 * @var array<string, mixed>
 	 */
-	private array $config;
+	private array $config = [];
 
 	/**
 	 * Logger instance.
-	 *
 	 * @var mixed
 	 */
-	private $logger;
+	private $logger = null;
+
+	/**
+	 * @param array<string, mixed> $config
+	 * @param mixed $logger
+	 */
+	public function __construct( array $config, $logger = null ) {
+		$this->config = $config;
+		$this->logger = $logger;
+	}
 
 	private function compute_install_dir( array $composer_json ): string {
 		// Stable hash of the **desired** dependency graph (ignore formatting)
@@ -256,32 +248,6 @@ final class LLPhantBootstrap {
 		} else {
 			return __DIR__ . '/../../dev/qit-llphant-' . $hash;
 		}
-	}
-
-	public function __construct( string $provider, array $config = [], $logger = null ) {
-		$this->provider = $provider;
-		$this->config   = $config;
-		$this->logger   = $logger;
-
-		// 1️⃣ Build the composer.json array once
-		$composer_json = [
-			'require' => [
-				'theodo-group/llphant'      => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
-				'nikic/php-parser'          => '^5',
-				'justinrainbow/json-schema' => '^6',
-			],
-			'config'  => [
-				'optimize-autoloader'    => true,
-				'classmap-authoritative' => true,
-				'minimum-stability'      => 'dev',
-			],
-		];
-
-		// 2️⃣ Derive the directory from that content
-		$this->install_dir = $this->compute_install_dir( $composer_json );
-
-		// 3️⃣ Perform installation (idempotent)
-		$this->ensure_ll_phant_installed( $composer_json );
 	}
 
 	public function get_chat(): ChatInterface {
@@ -512,12 +478,20 @@ final class LLPhantBootstrap {
 		return true;
 	}
 
+	/**
+	 * @param string $message
+	 * @param array<string, mixed> $context
+	 */
 	private function log_info( string $message, array $context = [] ): void {
 		if ( $this->logger ) {
 			$this->logger->log_info( $message, $context );
 		}
 	}
 
+	/**
+	 * @param string $message
+	 * @param array<string, mixed> $context
+	 */
 	private function log_error( string $message, array $context = [] ): void {
 		if ( $this->logger ) {
 			$this->logger->log_error( $message, $context );
@@ -526,5 +500,35 @@ final class LLPhantBootstrap {
 
 	public function get_provider(): string {
 		return $this->provider;
+	}
+
+	// Static instance management for global access
+	private static ?LLPhantBootstrap $instance = null;
+
+	public static function setInstance( LLPhantBootstrap $instance ): void {
+		self::$instance = $instance;
+	}
+
+	public static function getInstance(): ?LLPhantBootstrap {
+		return self::$instance;
+	}
+
+	public static function getCurrentProvider(): ?string {
+		return self::$instance ? self::$instance->get_provider() : null;
+	}
+
+	public static function getProvider(): ?string {
+		return self::$current_provider;
+	}
+
+	public static function getModel(): ?string {
+		return self::$current_model;
+	}
+
+	/**
+	 * @return mixed Chat instance.
+	 */
+	public static function getChat() {
+		return self::$chat;
 	}
 }

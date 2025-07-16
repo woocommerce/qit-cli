@@ -2,363 +2,242 @@
 
 namespace QIT_AI_Webserver\Lib;
 
-/**
- * Centralized outbound request handler with built-in JSON schema validation
- *
- * Acts as an "exit point" for all outbound HTTP requests from the AI webserver,
- * ensuring consistent validation, logging, and error handling.
- */
+use Exception;
+
 class OutboundRequest {
-	private string $url;
+	/** @var array<string, mixed> */
 	private array $data;
-	private string $schema_type;
+
+	/** @var array<string, mixed> */
 	private array $config;
 
-	/**
-	 * Default configuration
-	 *
-	 * @var array
-	 */
+	private string $url;
+	private string $method;
+	private string $type;
+
+	/** @var array<string, mixed> */
 	private array $default_config = [
-		'method'                 => 'POST',
-		'content_type'           => 'application/json', // or 'application/x-www-form-urlencoded'
-		'max_retries'            => 1,
-		'retry_strategy'         => 'exponential', // 'exponential' or 'exponential_jitter'
-		'additional_headers'     => [],
-		'validate_schema'        => true,
-		'log_requests'           => true,
-		'retry_on_client_errors' => false, // Don't retry 4xx except 429
-		'success_codes'          => [ 200, 201, 202 ],
+		'timeout'         => 30,
+		'max_retries'     => 3,
+		'retry_delay'     => 1,
+		'validate_ssl'    => true,
+		'follow_redirects' => true,
 	];
 
+	private JsonSchemaValidator $validator;
+
 	/**
-	 * Constructor
-	 *
-	 * @param string $url Target URL.
-	 * @param array  $data Request data.
-	 * @param string $schema_type Schema type for validation.
-	 * @param array  $config Configuration overrides.
+	 * @param array<string, mixed> $data
+	 * @param array<string, mixed> $config
 	 */
-	public function __construct( string $url, array $data, string $schema_type, array $config = [] ) {
-		$this->url                  = $url;
-		$this->data                 = $data;
-		$this->schema_type          = $schema_type;
-		$this->config               = array_merge( $this->default_config, $config );
-		$this->config['auth_token'] = getenv( 'QIT_NODE_TOKEN' );
-		$this->config['node_id']    = getenv( 'QIT_NODE_ID' );
+	public function __construct( string $url, string $method, array $data = [], array $config = [], string $type = 'request' ) {
+		$this->url       = $url;
+		$this->method    = strtoupper( $method );
+		$this->data      = $data;
+		$this->config    = array_merge( $this->default_config, $config );
+		$this->type      = $type;
+		$this->validator = JsonSchemaValidator::getInstance();
 	}
 
 	/**
-	 * Create a callback request (form-encoded, X-Node-Token auth)
+	 * @param array<string, mixed> $data
+	 * @return array<string, mixed>
 	 */
-	public static function callback( string $url, array $data, string $schema_type ): self {
-		return new self( $url, $data, $schema_type, [
-			'content_type' => 'application/x-www-form-urlencoded',
-			'max_retries'  => 3,
-		] );
+	public static function callback( string $url, array $data = [] ): array {
+		$request = new self( $url, 'POST', $data, [], 'callback' );
+
+		return $request->send();
 	}
 
 	/**
-	 * Create a task event request (JSON, Bearer auth, idempotency)
+	 * @param array<string, mixed> $data
+	 * @return array<string, mixed>
 	 */
-	public static function task_event( string $url, array $data, string $schema_type ): self {
-		return new self( $url, $data, $schema_type, [
-			'content_type'       => 'application/json',
-			'max_retries'        => 5,
-			'retry_strategy'     => 'exponential_jitter',
-			'additional_headers' => [
-				'Idempotency-Key' => self::generate_idempotency_key(),
-			],
-		] );
+	public static function task_event( string $url, array $data = [] ): array {
+		$request = new self( $url, 'POST', $data, [], 'task_event' );
+
+		return $request->send();
 	}
 
 	/**
-	 * Create a heartbeat request (JSON, no auth, no retries)
+	 * @param array<string, mixed> $data
+	 * @return array<string, mixed>
 	 */
-	public static function heartbeat( string $url, array $data, string $schema_type ): self {
-		return new self( $url, $data, $schema_type, [
-			'content_type' => 'application/json',
-			'max_retries'  => 0, // Fire-and-forget
-		] );
+	public static function heartbeat( string $url, array $data = [] ): array {
+		$request = new self( $url, 'POST', $data, [], 'heartbeat' );
+
+		return $request->send();
 	}
 
 	/**
-	 * Create a node registration/unregistration request (JSON, no retries by default)
+	 * @param array<string, mixed> $data
+	 * @return array<string, mixed>
 	 */
-	public static function node_management( string $url, array $data, string $schema_type ): self {
-		return new self( $url, $data, $schema_type, [
-			'content_type' => 'application/json',
-			'max_retries'  => 3,
-		] );
+	public static function node_management( string $url, array $data = [] ): array {
+		$request = new self( $url, 'POST', $data );
+
+		return $request->send();
 	}
 
 	/**
-	 * Create a node registration request (JSON, with retries)
+	 * @param array<string, mixed> $payload
+	 * @return array<string, mixed>
 	 */
-	public static function node_registration( string $url, array $payload ): self {
-		return new self(
-			$url,
-			$payload,
-			'node-registration',   // schema alias
-			[
-				'content_type' => 'application/json',
-				'max_retries'  => 3,
-				'method'       => 'POST',
-			]
-		);
+	public static function node_registration( string $url, array $payload = [] ): array {
+		$request = new self( $url, 'POST', $payload );
+
+		return $request->send();
 	}
 
 	/**
 	 * Send the request
-	 *
-	 * @return array Result with 'success' boolean, 'status_code', 'response', 'error'
+	 * @return array<string, mixed>
 	 */
 	public function send(): array {
-		// Validate against schema if enabled
-		if ( $this->config['validate_schema'] ) {
-			$validation_result = $this->validate_schema();
+		try {
+			// Validate outbound data
+			$validation_result = $this->validate_schema( 'outbound' );
 			if ( ! $validation_result['valid'] ) {
-				if ( $this->config['log_requests'] ) {
-					log_info( 'Outbound request schema validation failed', [
-						'url'         => $this->url,
-						'schema_type' => $this->schema_type,
-						'errors'      => $validation_result['errors'],
-					] );
-				}
-				// Continue anyway for backward compatibility, but log the issue
+				return [
+					'success' => false,
+					'error'   => 'Validation failed: ' . implode( ', ', $validation_result['errors'] ),
+				];
 			}
-		}
 
-		// Log outbound request
-		if ( $this->config['log_requests'] ) {
-			log_info( 'Outbound request', [
-				'url'          => $this->url,
-				'method'       => $this->config['method'],
-				'schema_type'  => $this->schema_type,
-				'content_type' => $this->config['content_type'],
-				'max_retries'  => $this->config['max_retries'],
-			] );
+			// Send with retry logic
+			return $this->send_with_retry();
+		} catch ( Exception $e ) {
+			return [
+				'success' => false,
+				'error'   => $e->getMessage(),
+			];
 		}
-
-		// Send with retry logic
-		return $this->send_with_retry();
 	}
 
 	/**
-	 * Validate data against schema
+	 * @return array<string, mixed>
 	 */
-	private function validate_schema(): array {
-		$validator = JsonSchemaValidator::get_instance();
-
-		return $validator->validate_outbound( $this->data, $this->schema_type );
+	private function validate_schema( string $direction ): array {
+		if ( $direction === 'outbound' ) {
+			return $this->validator->validate_outbound( $this->data, $this->type );
+		} else {
+			return $this->validator->validate_inbound( $this->data, $this->type );
+		}
 	}
 
 	/**
-	 * Send request with retry logic
+	 * @return array<string, mixed>
 	 */
 	private function send_with_retry(): array {
-		$attempt     = 0;
 		$max_retries = $this->config['max_retries'];
+		$retry_delay = $this->config['retry_delay'];
+		$last_error  = null;
 
-		while ( $attempt <= $max_retries ) {
-			$result = $this->send_single_request( $attempt + 1 );
+		for ( $attempt = 0; $attempt <= $max_retries; $attempt++ ) {
+			try {
+				$result = $this->send_single_request();
 
-			// Success
-			if ( $result['success'] ) {
-				return $result;
-			}
-
-			// Don't retry if we've reached max attempts
-			if ( $attempt >= $max_retries ) {
-				break;
-			}
-
-			// Don't retry client errors (except 429 Too Many Requests)
-			if ( ! $this->config['retry_on_client_errors'] &&
-				$result['status_code'] >= 400 &&
-				$result['status_code'] < 500 &&
-				$result['status_code'] !== 429 ) {
-
-				if ( $this->config['log_requests'] ) {
-					log_info( 'Outbound request failed with client error, not retrying', [
-						'url'         => $this->url,
-						'status_code' => $result['status_code'],
-						'response'    => $result['response'],
-					] );
+				if ( $result['success'] ) {
+					return $result;
 				}
-				break;
+
+				$last_error = $result['error'] ?? 'Unknown error';
+			} catch ( Exception $e ) {
+				$last_error = $e->getMessage();
 			}
 
-			// Apply backoff strategy
-							$this->apply_backoff( $attempt );
-			++$attempt;
+			// Don't sleep after the last attempt
+			if ( $attempt < $max_retries ) {
+				sleep( $retry_delay );
+			}
 		}
 
-		// Log final failure
-		if ( $this->config['log_requests'] ) {
-			log_info( 'Outbound request failed after all retries', [
-				'url'               => $this->url,
-				'max_retries'       => $max_retries,
-				'final_status_code' => $result['status_code'] ?? null,
-				'final_error'       => $result['error'] ?? null,
-			] );
-		}
+		$result = [
+			'success' => false,
+			'error'   => $last_error,
+		];
 
 		return $result;
 	}
 
 	/**
-	 * Send a single HTTP request
+	 * @return array<string, mixed>
 	 */
-	private function send_single_request( int $attempt ): array {
-		try {
-			$ch = curl_init( $this->url );
+	private function send_single_request(): array {
+		$context_options = [
+			'http' => [
+				'method'  => $this->method,
+				'header'  => [
+					'Content-Type: application/json',
+					'Accept: application/json',
+				],
+				'content' => json_encode( $this->data ),
+				'timeout' => $this->config['timeout'],
+			],
+			'ssl' => [
+				'verify_peer' => $this->config['validate_ssl'],
+				'verify_peer_name' => $this->config['validate_ssl'],
+			],
+		];
 
-			// Basic curl options
-			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-			curl_setopt( $ch, CURLOPT_TIMEOUT, 30 );
+		$context = stream_context_create( $context_options );
+		$result = file_get_contents( $this->url, false, $context );
 
-			// Method and data
-			if ( $this->config['method'] === 'POST' ) {
-				curl_setopt( $ch, CURLOPT_POST, true );
-
-				if ( $this->config['content_type'] === 'application/json' ) {
-					curl_setopt( $ch, CURLOPT_POSTFIELDS, json_encode( $this->data ) );
-				} else {
-					curl_setopt( $ch, CURLOPT_POSTFIELDS, http_build_query( $this->data ) );
-				}
-			}
-
-			// Headers
-			$headers = [ 'Content-Type: ' . $this->config['content_type'] ];
-
-			// Authentication
-			if ( ! empty( $this->config['auth_token'] ) ) {
-				$headers[] = 'X-Node-Token: ' . $this->config['auth_token'];
-			}
-
-			if ( ! empty( $this->config['node_id'] ) ) {
-				$headers[] = 'X-Node-ID: ' . $this->config['node_id'];
-			}
-
-			// Additional headers
-			foreach ( $this->config['additional_headers'] as $key => $value ) {
-				$headers[] = $key . ': ' . $value;
-			}
-
-			// Verbose logging of the exact request being sent (headers + body).
-			if ( $this->config['log_requests'] ) {
-				$payload_preview = $this->config['content_type'] === 'application/json'
-					? json_encode( $this->data )
-					: http_build_query( $this->data );
-
-				log_info( 'Outbound request payload', [
-					'url'     => $this->url,
-					'headers' => $headers,
-					'body'    => substr( $payload_preview, 0, 1000 ), // avoid huge spam
-				] );
-			}
-
-			curl_setopt( $ch, CURLOPT_HTTPHEADER, $headers );
-
-			// Execute request
-			$response    = curl_exec( $ch );
-			$status_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-			$error       = curl_error( $ch );
-			curl_close( $ch );
-
-			// Log individual attempt
-			if ( $this->config['log_requests'] ) {
-				log_info( 'Outbound request attempt', [
-					'url'           => $this->url,
-					'attempt'       => $attempt,
-					'status_code'   => $status_code,
-					'response_size' => strlen( $response ?? '' ),
-					'error'         => $error ?: null,
-				] );
-			}
-
-			// Check if successful
-			$success = in_array( $status_code, $this->config['success_codes'], true );
-
-			return [
-				'success'     => $success,
-				'status_code' => $status_code,
-				'response'    => $response,
-				'error'       => $error ?: null,
-				'attempt'     => $attempt,
-			];
-
-		} catch ( \Throwable $e ) {
-			if ( $this->config['log_requests'] ) {
-				log_info( 'Outbound request exception', [
-					'url'       => $this->url,
-					'attempt'   => $attempt,
-					'exception' => $e->getMessage(),
-				] );
-			}
-
-			return [
-				'success'     => false,
-				'status_code' => 0,
-				'response'    => null,
-				'error'       => $e->getMessage(),
-				'attempt'     => $attempt,
-			];
+		if ( $result === false ) {
+			throw new Exception( 'Failed to send request' );
 		}
-	}
 
-	/**
-	 * Apply backoff strategy between retries
-	 */
-	private function apply_backoff( int $attempt ): void {
-		if ( $this->config['retry_strategy'] === 'exponential_jitter' ) {
-			// Exponential backoff with jitter (used by TaskEventPusher)
-			$backoff = pow( 2, $attempt ) + rand( 0, 1000 ) / 1000;
-			usleep( $backoff * 1000000 ); // Convert to microseconds
-		} else {
-			// Simple exponential backoff (used by CallbackSender)
-			$backoff = pow( 2, $attempt );
-			sleep( $backoff );
+		$response_data = json_decode( $result, true );
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new Exception( 'Invalid JSON response: ' . json_last_error_msg() );
 		}
+
+		// Validate response if it's an array
+		if ( is_array( $response_data ) ) {
+			$validation_result = $this->validator->validate_inbound( $response_data, $this->type );
+			if ( ! $validation_result['valid'] ) {
+				return [
+					'success' => false,
+					'error'   => 'Response validation failed: ' . implode( ', ', $validation_result['errors'] ),
+				];
+			}
+		}
+
+		$response = $response_data ?? $result;
+
+		return [
+			'success'  => true,
+			'response' => $response,
+			'url'      => $this->url,
+			'method'   => $this->method,
+		];
 	}
 
 	/**
-	 * Generate UUID v4 for idempotency keys
-	 */
-	private static function generate_idempotency_key(): string {
-		$data    = random_bytes( 16 );
-		$data[6] = chr( ord( $data[6] ) & 0x0f | 0x40 );
-		$data[8] = chr( ord( $data[8] ) & 0x3f | 0x80 );
-
-		return vsprintf( '%s%s-%s-%s-%s-%s%s%s', str_split( bin2hex( $data ), 4 ) );
-	}
-
-	/**
-	 * Get the URL for this request
-	 */
-	public function get_url(): string {
-		return $this->url;
-	}
-
-	/**
-	 * Get the data for this request
+	 * @return array<string, mixed>
 	 */
 	public function get_data(): array {
 		return $this->data;
 	}
 
 	/**
-	 * Get the schema type for this request
+	 * @param array<string, mixed> $data
 	 */
-	public function get_schema_type(): string {
-		return $this->schema_type;
+	public function set_data( array $data ): void {
+		$this->data = $data;
 	}
 
 	/**
-	 * Get the configuration for this request
+	 * @return array<string, mixed>
 	 */
 	public function get_config(): array {
 		return $this->config;
+	}
+
+	/**
+	 * @param array<string, mixed> $config
+	 */
+	public function set_config( array $config ): void {
+		$this->config = array_merge( $this->config, $config );
 	}
 }
