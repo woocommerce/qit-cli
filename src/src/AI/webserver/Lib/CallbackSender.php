@@ -9,7 +9,7 @@ class CallbackSender {
 	/**
 	 * Send successful result to callback URL
 	 */
-	public function sendCallback(
+	public function send_callback(
 		string $callback_url,
 		string $action_id,
 		array $response,
@@ -39,7 +39,7 @@ class CallbackSender {
 	/**
 	 * Send error to callback URL
 	 */
-	public function sendErrorCallback(
+	public function send_error_callback(
 		string $callback_url,
 		string $action_id,
 		string $error_message,

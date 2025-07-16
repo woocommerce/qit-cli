@@ -16,9 +16,9 @@ class ExtractPathResolver {
 	/**
 	 * Resolve the extract path from input data
 	 *
-	 * @param array $input Input data that should contain extract_path
+	 * @param array $input Input data that should contain extract_path.
 	 * @return string Validated extract path
-	 * @throws \RuntimeException If path resolution fails
+	 * @throws \RuntimeException If path resolution fails.
 	 */
 	public static function resolve( array $input ): string {
 		// Require extract_path from input (no fallback for deterministic behavior)
@@ -52,20 +52,20 @@ class ExtractPathResolver {
 	/**
 	 * Validate that an extract path is properly formatted and accessible
 	 *
-	 * @param string $path Path to validate
+	 * @param string $path Path to validate.
 	 * @return bool True if valid
 	 */
-	public static function isValidExtractPath( string $path ): bool {
+	public static function is_valid_extract_path( string $path ): bool {
 		return ! empty( $path ) && is_dir( $path ) && is_readable( $path );
 	}
 
 	/**
 	 * Get helpful error message for debugging path resolution issues
 	 *
-	 * @param array $input Input data to analyze
+	 * @param array $input Input data to analyze.
 	 * @return string Diagnostic message
 	 */
-	public static function getDiagnosticMessage( array $input ): string {
+	public static function get_diagnostic_message( array $input ): string {
 		$diagnostics = [
 			'has_extract_path'    => isset( $input['extract_path'] ),
 			'extract_path_value'  => $input['extract_path'] ?? 'not_set',

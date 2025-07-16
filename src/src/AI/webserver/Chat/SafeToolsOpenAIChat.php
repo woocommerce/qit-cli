@@ -7,15 +7,15 @@ use OpenAI\Responses\Chat\CreateResponse;
 
 class SafeToolsOpenAIChat extends OpenAIChat {
 	/** @var string[] */
-	private array $unknownTools = [];
+	private array $unknown_tools = [];
 
 	/**
 	 * Overridden; now tolerant.
 	 * (Signature matches the parent – visibility already made protected by the patch.)
 	 */
 	protected function getToolsToCall( CreateResponse $answer ): array {
-		$valid              = [];
-		$this->unknownTools = [];
+		$valid               = [];
+		$this->unknown_tools = [];
 
 		foreach ( $answer->choices[0]->message->toolCalls as $tc ) {
 			$name  = $tc->function->name;
@@ -24,6 +24,7 @@ class SafeToolsOpenAIChat extends OpenAIChat {
 			foreach ( $this->tools as $fn ) {
 				if ( $fn->name === $name ) {
 					$fi           = $fn->cloneWithId( $tc->id );
+					// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 					$fi->jsonArgs = $tc->function->arguments;
 					$valid[]      = $fi;
 					$found        = true;
@@ -32,7 +33,7 @@ class SafeToolsOpenAIChat extends OpenAIChat {
 			}
 
 			if ( ! $found ) {
-				$this->unknownTools[] = $name;
+				$this->unknown_tools[] = $name;
 			}
 		}
 
@@ -40,6 +41,6 @@ class SafeToolsOpenAIChat extends OpenAIChat {
 	}
 
 	public function getUnknownTools(): array {
-		return $this->unknownTools;
+		return $this->unknown_tools;
 	}
 }

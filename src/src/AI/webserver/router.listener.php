@@ -32,8 +32,8 @@ switch ( "$method $uri" ) {
 		$task = $input ?? [];
 
 		// Check if node is busy using atomic flock to prevent race conditions
-		$busyFile = getenv( 'QIT_NODE_DIR' ) . '/busy.lock';
-		$fp       = fopen( $busyFile, 'w' );
+		$busy_file = getenv( 'QIT_NODE_DIR' ) . '/busy.lock';
+		$fp        = fopen( $busy_file, 'w' );
 		if ( ! flock( $fp, LOCK_EX | LOCK_NB ) ) {  // Atomic check+lock
 			fclose( $fp );
 			http_response_code( 503 );  // Better than 409; Service Unavailable
@@ -114,9 +114,9 @@ switch ( "$method $uri" ) {
 				'job_id' => $task['job_id'] ?? 'unknown',
 			] );
 			http_response_code( 400 );
-			$errorDetails = implode( '; ', $validation['errors'] );
+			$error_details = implode( '; ', $validation['errors'] );
 			echo json_encode( [
-				'error'   => 'JSON Schema validation failed: ' . $errorDetails,
+				'error'   => 'JSON Schema validation failed: ' . $error_details,
 				'details' => $validation['errors'],
 			] );
 			break;
@@ -129,8 +129,8 @@ switch ( "$method $uri" ) {
 		// ──────────────────────────────────────────────────────────────
 
 		// Fire-and-forget call to worker
-		$workerUrl = getenv( 'QIT_WORKER_URL' );
-		$ch        = curl_init( "$workerUrl/run-job" );
+		$worker_url = getenv( 'QIT_WORKER_URL' );
+		$ch         = curl_init( "$worker_url/run-job" );
 		curl_setopt_array( $ch, [
 			CURLOPT_POST           => true,
 			CURLOPT_POSTFIELDS     => json_encode( $task ),
@@ -166,7 +166,8 @@ switch ( "$method $uri" ) {
 	/*
 	──────────────────────────────────────────
 	 * Internal: payload validation
-	 * ──────────────────────────────────────────*/
+	 * ──────────────────────────────────────────
+	 */
 	case 'POST /internal/register':
 		// 0. Validate secret first
 		$expected = getenv( 'QIT_INTERNAL_TOKEN' );
@@ -199,7 +200,8 @@ switch ( "$method $uri" ) {
 	 *  Body:   { "since": "2025-07-12T00:00:00Z", "glob": "*.log" }
 	 *  Resp:   { "archive": "<base64(gzip(tar))>" }
 	 *  Note:   Zero DB writes – temp files live inside QIT_NODE_DIR.
-	 * ──────────────────────────────────────────*/
+	 * ──────────────────────────────────────────
+	 */
 	case 'POST /collect-logs':
 		try {
 			$validator = JsonSchemaValidator::getInstance();
@@ -209,9 +211,9 @@ switch ( "$method $uri" ) {
 					'errors' => $inbound['errors'],
 				]);
 				http_response_code( 400 );
-				$errorDetails = implode( '; ', $inbound['errors'] );
+				$error_details = implode( '; ', $inbound['errors'] );
 				echo json_encode( [
-					'error'   => 'schema_error: ' . $errorDetails,
+					'error'   => 'schema_error: ' . $error_details,
 					'details' => $inbound['errors'],
 				] );
 				break;
@@ -223,9 +225,9 @@ switch ( "$method $uri" ) {
 			$since  = isset( $params['since'] ) ? strtotime( $params['since'] ) : null;
 			$glob   = $params['glob'] ?? '*.log';
 
-			$logDir = dirname( getenv( 'QIT_LOG_FILE' ) );
-			$iter   = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator( $logDir, RecursiveDirectoryIterator::SKIP_DOTS )
+			$log_dir = dirname( getenv( 'QIT_LOG_FILE' ) );
+			$iter    = new RecursiveIteratorIterator(
+				new RecursiveDirectoryIterator( $log_dir, RecursiveDirectoryIterator::SKIP_DOTS )
 			);
 
 			$files = [];
@@ -252,19 +254,19 @@ switch ( "$method $uri" ) {
 				break;
 			}
 
-			$tmpBase = rtrim( getenv( 'QIT_NODE_DIR' ), '/' );
-			$tarPath = tempnam( $tmpBase, 'qit-logs-' ) . '.tar';
-			$tar     = new PharData( $tarPath );
+			$tmp_base = rtrim( getenv( 'QIT_NODE_DIR' ), '/' );
+			$tar_path = tempnam( $tmp_base, 'qit-logs-' ) . '.tar';
+			$tar      = new PharData( $tar_path );
 			foreach ( $files as $p ) {
 				$tar->addFile( $p, basename( $p ) );
 			}
 			$tar->compress( Phar::GZ );
 			unset( $tar );
-			unlink( $tarPath );
+			unlink( $tar_path );
 
-			$gzPath = $tarPath . '.gz';
-			$b64    = base64_encode( file_get_contents( $gzPath ) );
-			unlink( $gzPath );
+			$gz_path = $tar_path . '.gz';
+			$b64     = base64_encode( file_get_contents( $gz_path ) );
+			unlink( $gz_path );
 
 			$payload = [
 				'status'  => 'ok',

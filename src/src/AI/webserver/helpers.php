@@ -1,25 +1,32 @@
 <?php
-
 /**
- * helpers.php
+ * Helpers.php
  */
 
 if ( empty( getenv( 'QIT_NODE_DIR' ) ) ) {
 	throw new RuntimeException( 'QIT_NODE_DIR environment variable is not set.' );
 }
 
+if ( ! function_exists( 'array_is_list' ) ) {
+	function array_is_list( array $a ): bool {
+		return $a === [] || ( array_keys( $a ) === range( 0, count( $a ) - 1 ) );
+	}
+}
+
 if ( ! empty( getenv( 'QIT_LOG_FILE' ) ) ) {
-	$LOG_FILE = getenv( 'QIT_LOG_FILE' );
+	$log_file = getenv( 'QIT_LOG_FILE' );
 } else {
-	$LOG_FILE = getenv( 'QIT_NODE_DIR' ) . '/qit.log';
+	$log_file = getenv( 'QIT_NODE_DIR' ) . '/qit.log';
 }
 
 // Configure logging
-$router_log_file = $LOG_FILE;
+$router_log_file = $log_file;
 
-// Enhanced logging functions
+/**
+ * Enhanced logging functions
+ */
 function log_message( $level, $message, $context = [] ) {
-	$timestamp         = date( 'Y-m-d H:i:s' );
+	$timestamp         = gmdate( 'Y-m-d H:i:s' );
 	$formatted_message = "[$timestamp] [$level] [Router] $message";
 
 	// Add context if available

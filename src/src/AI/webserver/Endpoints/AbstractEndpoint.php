@@ -28,7 +28,7 @@ abstract class AbstractEndpoint {
 	/**
 	 * Handle the request
 	 *
-	 * @param array $input Request input data
+	 * @param array $input Request input data.
 	 * @return string JSON response
 	 */
 	abstract public function handle( array $input ): string;
@@ -36,26 +36,26 @@ abstract class AbstractEndpoint {
 	/**
 	 * Handle errors consistently across all endpoints
 	 *
-	 * @param Exception $e Exception to handle
-	 * @param array     $context Additional context for error reporting
+	 * @param Exception $e Exception to handle.
+	 * @param array     $context Additional context for error reporting.
 	 * @return string JSON error response
 	 */
-	protected function handleError( Exception $e, array $context = [] ): string {
+	protected function handle_error( Exception $e, array $context = [] ): string {
 		$trace = $e->getTraceAsString();
 
-		$errorContext = array_merge( [
+		$error_context = array_merge( [
 			'exception' => get_class( $e ),
 			'trace'     => $trace,
 		], $context );
 
-		$this->log_error( 'Processing error: ' . $e->getMessage(), $errorContext );
+		$this->log_error( 'Processing error: ' . $e->getMessage(), $error_context );
 
 		// Report error back to manager
-		$errorReport = [
+		$error_report = [
 			'job_id'        => $context['job_id'] ?? null,
 			'error_type'    => get_class( $e ),
 			'error_message' => $e->getMessage(),
-			'error_time'    => date( 'Y-m-d H:i:s' ),
+			'error_time'    => gmdate( 'Y-m-d H:i:s' ),
 			'job_type'      => $context['job_type'] ?? 'unknown',
 		];
 
@@ -65,21 +65,23 @@ abstract class AbstractEndpoint {
 		] );
 
 		// Store error for next heartbeat
-		$errorDir = rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node/errors';
-		if ( ! is_dir( $errorDir ) ) {
-			mkdir( $errorDir, 0700, true );
+		$error_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node/errors';
+		if ( ! is_dir( $error_dir ) ) {
+			mkdir( $error_dir, 0700, true );
 		}
 		file_put_contents(
-			$errorDir . '/qit-node-last-error.json',
-			json_encode( $errorReport )
+			$error_dir . '/qit-node-last-error.json',
+			json_encode( $error_report )
 		);
 
 		// Use NodeResponse::error for standardized error response
 		// Get JSON response as string and echo it
-		return NodeResponse::error( $e->getMessage(), 500, $errorReport );
+		return NodeResponse::error( $e->getMessage(), 500, $error_report );
 	}
 
-	// Logging methods - these would use the global logging functions
+	/**
+	 * Logging methods - these would use the global logging functions
+	 */
 	public function log_info( string $message, array $context = [] ): void {
 		log_info( $message, $context );
 	}

@@ -25,7 +25,9 @@ class SearchStringsTool extends BaseTool {
 		);
 	}
 
-	/* ---------- LLPhant function meta ---------- */
+	/**
+	 * LLPhant function meta
+	 */
 	public function getFunctionInfo(): FunctionInfo {
 		$params = [
 			new Parameter( 'needles', 'array', 'Array of substrings to match (required)', [], null, 'string' ),
@@ -60,14 +62,16 @@ class SearchStringsTool extends BaseTool {
 		return json_encode( $res, JSON_UNESCAPED_SLASHES );
 	}
 
-	/* ---------- core implementation ---------- */
+	/**
+	 * Core implementation
+	 */
 	protected function do( array $p ) {
-		$needles         = $p['needles'] ?? [];
-		$directoryOrFile = $p['directory_or_file'] ?? '.';
-		$fileTypes       = $p['file_types'] ?? [ 'php' ];
-		$case            = (bool) ( $p['case_sensitive'] ?? false );
-		$maxResults      = (int) ( $p['max_results'] ?? 50 );
-		$maxDepth        = (int) ( $p['max_depth'] ?? 10 );
+		$needles           = $p['needles'] ?? [];
+		$directory_or_file = $p['directory_or_file'] ?? '.';
+		$file_types        = $p['file_types'] ?? [ 'php' ];
+		$case              = (bool) ( $p['case_sensitive'] ?? false );
+		$max_results       = (int) ( $p['max_results'] ?? 50 );
+		$max_depth         = (int) ( $p['max_depth'] ?? 10 );
 
 		if ( $needles === [] || ! is_array( $needles ) ) {
 			throw new \InvalidArgumentException( '`needles` must be a non‑empty array of strings.' );
@@ -78,39 +82,39 @@ class SearchStringsTool extends BaseTool {
 			$needles = array_map( 'mb_strtolower', $needles );
 		}
 
-		$absPath = $this->file_path_resolver->toAbsolute( $directoryOrFile );
-		$hits    = [];
+		$abs_path = $this->file_path_resolver->toAbsolute( $directory_or_file );
+		$hits     = [];
 
 		// Check if the path is a file or directory
-		if ( is_file( $absPath ) ) {
+		if ( is_file( $abs_path ) ) {
 			// Handle single file
-			$file = new \SplFileInfo( $absPath );
-			if ( in_array( $file->getExtension(), $fileTypes, true ) ) {
-				$hits = $this->searchInFile( $file, $needles, $case, $maxResults );
+			$file = new \SplFileInfo( $abs_path );
+			if ( in_array( $file->getExtension(), $file_types, true ) ) {
+				$hits = $this->searchInFile( $file, $needles, $case, $max_results );
 			}
-		} elseif ( is_dir( $absPath ) ) {
+		} elseif ( is_dir( $abs_path ) ) {
 			// Handle directory - use existing recursive logic
 			$it = new RecursiveIteratorIterator(
 				new RecursiveDirectoryIterator(
-					$absPath,
+					$abs_path,
 					\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
 				),
 				RecursiveIteratorIterator::SELF_FIRST
 			);
-			$it->setMaxDepth( $maxDepth );
+			$it->setMaxDepth( $max_depth );
 
 			foreach ( $it as $file ) {
 				if ( ! $file->isFile() ) {
 					continue;
 				}
-				if ( ! in_array( $file->getExtension(), $fileTypes, true ) ) {
+				if ( ! in_array( $file->getExtension(), $file_types, true ) ) {
 					continue;
 				}
 
-				$fileHits = $this->searchInFile( $file, $needles, $case, $maxResults - count( $hits ) );
-				$hits     = array_merge( $hits, $fileHits );
+				$file_hits = $this->searchInFile( $file, $needles, $case, $max_results - count( $hits ) );
+				$hits      = array_merge( $hits, $file_hits );
 
-				if ( count( $hits ) >= $maxResults ) {
+				if ( count( $hits ) >= $max_results ) {
 					return [
 						'results'   => $hits,
 						'truncated' => true,
@@ -118,7 +122,7 @@ class SearchStringsTool extends BaseTool {
 				}
 			}
 		} else {
-			throw new \InvalidArgumentException( "Path does not exist: {$directoryOrFile}" );
+			throw new \InvalidArgumentException( "Path does not exist: {$directory_or_file}" );
 		}
 
 		return [
@@ -148,7 +152,7 @@ class SearchStringsTool extends BaseTool {
 						'needle'  => $case ? $needle : $needle, // already LC if !case
 						'snippet' => trim( $text ),
 					];
-					if ( count( $hits ) >= $maxResults ) {
+					if ( count( $hits ) >= $max_results ) {
 						return $hits;
 					}
 					break; // no need to check remaining needles for this line

@@ -18,11 +18,11 @@ use QIT_AI_Webserver\Lib\FilePathResolver;
  *  • Validates MIME & size of downloaded archive
  */
 class ZipExtractionEndpoint extends AbstractEndpoint {
-
 	/*
 	--------------------------------------------------------------------
 	 *  Configuration ‑ adjust to your policy
-	 * ------------------------------------------------------------------*/
+	 * ------------------------------------------------------------------
+	 */
 	private const MAX_ARCHIVE_SIZE_BYTES       = 250 * 1024 * 1024;   // 250 MB
 	private const MAX_UNCOMPRESSED_TOTAL_BYTES = 2_000_000_000;       // 2 GB
 	private const MAX_COMPRESSION_RATIO        = 50;                  // 50×
@@ -45,29 +45,29 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		] );
 
 		NodeResponse::mark( 'parameter_validation' );
-		$validationResult = $this->validateParameters( $input );
-		if ( $validationResult !== true ) {
+		$validation_result = $this->validateParameters( $input );
+		if ( $validation_result !== true ) {
 			// validateParameters returns error response string if validation fails
-			return $validationResult;
+			return $validation_result;
 		}
 
-		$zipUrl    = $input['zip_url'];
-		$sessionId = $input['session_id'] ?? md5( uniqid() );
+		$zip_url    = $input['zip_url'];
+		$session_id = $input['session_id'] ?? md5( uniqid() );
 
 		NodeResponse::mark( 'path_preparation' );
-		$tempBase  = sys_get_temp_dir();
-		$extractTo = $tempBase . '/qit-code-analysis-' . $sessionId;
+		$temp_base  = sys_get_temp_dir();
+		$extract_to = $temp_base . '/qit-code-analysis-' . $session_id;
 
 		NodeResponse::mark( 'security_validation' );
-		$securityResult = $this->validateExtractionSecurity( $tempBase, $extractTo );
-		if ( $securityResult !== true ) {
+		$security_result = $this->validateExtractionSecurity( $temp_base, $extract_to );
+		if ( $security_result !== true ) {
 			// validateExtractionSecurity returns error response string if validation fails
-			return $securityResult;
+			return $security_result;
 		}
 
 		try {
 			NodeResponse::mark( 'extraction_start' );
-			return $this->performExtraction( $zipUrl, $extractTo, $input );
+			return $this->performExtraction( $zip_url, $extract_to, $input );
 		} catch ( Exception $e ) {
 			return $this->handleExtractionError( $e );
 		}
@@ -76,11 +76,12 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/*
 	=====================================================================
 	 *  Parameter & path validation helpers (unchanged)
-	 * ===================================================================*/
+	 * ===================================================================
+	 */
 	/**
 	 * Validate required parameters
 	 *
-	 * @param array $input Input parameters
+	 * @param array $input Input parameters.
 	 * @return mixed Error response string or true if valid
 	 */
 	private function validateParameters( array $input ) {
@@ -100,29 +101,29 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Validate extraction security
 	 *
-	 * @param string $tempBase Temporary base directory
-	 * @param string $extractTo Extraction target directory
-	 * @return mixed Error response string or true if valid
+	 * @param string $temp_base Temporary base directory.
+	 * @param string $extract_to Extraction target directory.
+	 * @return mixed Error response string or true if valid.
 	 */
 	private function validateExtractionSecurity(
-		string $tempBase,
-		string $extractTo
+		string $temp_base,
+		string $extract_to
 	) {
 
-		$realTempBase = realpath( $tempBase );
-		if ( $realTempBase === false ) {
+		$real_temp_base = realpath( $temp_base );
+		if ( $real_temp_base === false ) {
 			// Note: NodeResponse::error will set the HTTP status code in the JSON response
 			// The router.worker.php will handle setting the actual HTTP status code
 			return NodeResponse::error( 'Failed to resolve temp directory path', 500 );
 		}
 
-		$extractParent = dirname( $extractTo );
-		if ( ! is_dir( $extractParent ) && ! mkdir( $extractParent, 0777, true ) ) {
+		$extract_parent = dirname( $extract_to );
+		if ( ! is_dir( $extract_parent ) && ! mkdir( $extract_parent, 0777, true ) ) {
 			return NodeResponse::error( 'Failed to create parent directory', 500 );
 		}
 
-		$realExtractParent = realpath( $extractParent );
-		if ( $realExtractParent === false || str_starts_with( $realExtractParent, $realTempBase ) === false ) {
+		$real_extract_parent = realpath( $extract_parent );
+		if ( $real_extract_parent === false || str_starts_with( $real_extract_parent, $real_temp_base ) === false ) {
 			return NodeResponse::error( 'Directory traversal attempt detected', 400 );
 		}
 
@@ -132,16 +133,24 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/*
 	=====================================================================
 	 *  Precondition validation
-	 * ===================================================================*/
-	private function validatePrecondition( string $extractTo, array $config ): void {
+	 * ===================================================================
+	 */
+	/**
+	 * Validate precondition
+	 *
+	 * @param string $extract_to Extraction directory.
+	 * @param array  $config Configuration array.
+	 * @return void
+	 */
+	private function validatePrecondition( string $extract_to, array $config ): void {
 		$requires = $config['requires'] ?? null;
 
 		// 1. new_extraction_dir  ─────────────────────────────────────────────
 		if ( $requires === 'new_extraction_dir' ) {
-			if ( is_dir( $extractTo ) ) {
+			if ( is_dir( $extract_to ) ) {
 				throw new Exception(
 					'Pre‑condition failed (new_extraction_dir): '
-					. "$extractTo already exists"
+					. "$extract_to already exists"
 				);
 			}
 			return;                         // nothing else to check
@@ -149,11 +158,11 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 		// 2. wordpress_on_extraction_dir  ────────────────────────────────────
 		if ( $requires === 'wordpress_on_extraction_dir' ) {
-			if ( ! is_file( $extractTo . '/wp-includes/version.php' ) ||
-				! is_file( $extractTo . '/wp-admin/admin.php' ) ) {
+			if ( ! is_file( $extract_to . '/wp-includes/version.php' ) ||
+				! is_file( $extract_to . '/wp-admin/admin.php' ) ) {
 				throw new Exception(
 					'Pre‑condition failed (wordpress_on_extraction_dir): '
-					. "WordPress core not found in $extractTo"
+					. "WordPress core not found in $extract_to"
 				);
 			}
 		}
@@ -163,132 +172,157 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	=====================================================================
 	 *  Main flow
 	 * ===================================================================*/
-	private function performExtraction( string $zipUrl, string $extractTo, array $params ): string {
+	/**
+	 * Perform extraction
+	 *
+	 * @param string $zip_url URL of ZIP file.
+	 * @param string $extract_to Extraction directory.
+	 * @param array  $params Parameters array.
+	 * @return string Response string.
+	 */
+	private function performExtraction( string $zip_url, string $extract_to, array $params ): string {
 
-		$sessionId    = $params['session_id'] ?? md5( $extractTo );
-		$targetSubdir = $params['config']['target_subdir'] ?? null;
+		$session_id    = $params['session_id'] ?? md5( $extract_to );
+		$target_subdir = $params['config']['target_subdir'] ?? null;
 
 		/* Workspace root is decided here, not by the Manager */
-		$workspaceRoot = $extractTo;
+		$workspace_root = $extract_to;
 
-		$extractRoot = $targetSubdir
-			? rtrim( $workspaceRoot, '/' ) . '/' . trim( $targetSubdir, '/' )
-			: $workspaceRoot;
+		$extract_root = $target_subdir
+			? rtrim( $workspace_root, '/' ) . '/' . trim( $target_subdir, '/' )
+			: $workspace_root;
 
-		$this->validatePrecondition( $workspaceRoot, $params['config'] ?? [] );
+		$this->validatePrecondition( $workspace_root, $params['config'] ?? [] );
 
 		/* ensure the directory exists */
-		if ( ! is_dir( $extractRoot ) && ! mkdir( $extractRoot, 0777, true ) ) {
-			throw new Exception( "Failed to create extraction directory: $extractRoot" );
+		if ( ! is_dir( $extract_root ) && ! mkdir( $extract_root, 0777, true ) ) {
+			throw new Exception( "Failed to create extraction directory: $extract_root" );
 		}
 
-		$zipPath = $this->downloadZipFile( $zipUrl, $workspaceRoot );
+		$zip_path = $this->downloadZipFile( $zip_url, $workspace_root );
 
-		$extractionResult = $this->extractZipFile( $zipPath, $extractRoot, $params );
+		$extraction_result = $this->extractZipFile( $zip_path, $extract_root, $params );
 
-		unlink( $zipPath );
+		unlink( $zip_path );
 
-		if ( $extractionResult['file_count'] === 0 ) {
+		if ( $extraction_result['file_count'] === 0 ) {
 			// Note: NodeResponse::error will set the HTTP status code in the JSON response
 			// The router.worker.php will handle setting the actual HTTP status code
 			return NodeResponse::error( 'ZIP extraction failed – no files extracted', 422, [ 'files_extracted' => 0 ] );
 		}
 
-		touch( $workspaceRoot . '/.analyzed' );
+		touch( $workspace_root . '/.analyzed' );
 
 		// Create component manifest
-		$componentType = $params['config']['type'] ?? 'unknown';
-		$structure     = $this->detectWordPressStructure( $extractRoot );
+		$component_type = $params['config']['type'] ?? 'unknown';
+		$structure      = $this->detectWordPressStructure( $extract_root );
 
 		// Determine component details
-		$depType = 'unknown';
-		$depSlug = basename( $extractRoot );
+		$dep_type = 'unknown';
+		$dep_slug = basename( $extract_root );
 
 		if ( $structure['is_plugin'] ) {
-			$depType = 'plugin';
+			$dep_type = 'plugin';
 		} elseif ( $structure['is_theme'] ) {
-			$depType = 'theme';
-		} elseif ( $componentType === 'wordpress_core' ) {
-			$depType = 'wordpress_core';
-		} elseif ( strpos( $depSlug, 'dependency' ) !== false ) {
-			$depType = strpos( $depSlug, 'premium' ) !== false ? 'dependency_premium' : 'dependency_free';
+			$dep_type = 'theme';
+		} elseif ( $component_type === 'wordpress_core' ) {
+			$dep_type = 'wordpress_core';
+		} elseif ( strpos( $dep_slug, 'dependency' ) !== false ) {
+			$dep_type = strpos( $dep_slug, 'premium' ) !== false ? 'dependency_premium' : 'dependency_free';
 		}
 
 		$manifest = [
-			'type'   => $depType,
-			'slug'   => $depSlug,
-			'is_sut' => $componentType === 'sut',
+			'type'   => $dep_type,
+			'slug'   => $dep_slug,
+			'is_sut' => $component_type === 'sut',
 		];
 
 		// Return the workspace root as extract_path, with proper prefix filtering
-		return $this->sendUnifiedExtractionResponse( $workspaceRoot, $extractionResult['file_count'], $params, $manifest );
+		return $this->sendUnifiedExtractionResponse( $workspace_root, $extraction_result['file_count'], $params, $manifest );
 	}
 
 	/*
 	--------------------------------------------------------------------
 	 *  Directory preparation
 	 * ------------------------------------------------------------------*/
-	private function prepareExtractionDirectory( string $extractTo ): void {
+	/**
+	 * Prepare extraction directory
+	 *
+	 * @param string $extract_to Extraction directory path.
+	 * @return void
+	 */
+	private function prepareExtractionDirectory( string $extract_to ): void {
 
-		if ( is_dir( $extractTo ) ) {
+		if ( is_dir( $extract_to ) ) {
 			$iterator = new RecursiveIteratorIterator(
-				new RecursiveDirectoryIterator( $extractTo, RecursiveDirectoryIterator::SKIP_DOTS ),
+				new RecursiveDirectoryIterator( $extract_to, RecursiveDirectoryIterator::SKIP_DOTS ),
 				RecursiveIteratorIterator::CHILD_FIRST
 			);
 			foreach ( $iterator as $file ) {
 				$file->isDir() ? rmdir( $file->getRealPath() ) : unlink( $file->getRealPath() );
 			}
 		}
-		if ( ! is_dir( $extractTo ) && ! mkdir( $extractTo, 0777, true ) ) {
+		if ( ! is_dir( $extract_to ) && ! mkdir( $extract_to, 0777, true ) ) {
 			throw new Exception( 'Failed to create extraction directory' );
 		}
 	}
 
-	/*
-	--------------------------------------------------------------------
-	 *  Download + upfront validation
-	 * ------------------------------------------------------------------*/
-	private function downloadZipFile( string $zipUrl, string $extractTo ): string {
+	/**
+	 * Download ZIP file
+	 *
+	 * @param string $zip_url URL of ZIP file.
+	 * @param string $extract_to Extraction directory.
+	 * @return string Path to downloaded ZIP file.
+	 */
+	private function downloadZipFile( string $zip_url, string $extract_to ): string {
 
-		$zipPath = $extractTo . '/archive.zip';
+		$zip_path = $extract_to . '/archive.zip';
 
-		$ch = curl_init( $zipUrl );
-		$fp = fopen( $zipPath, 'wb' );
+		$ch = curl_init( $zip_url );
+		$fp = fopen( $zip_path, 'wb' );
 		curl_setopt_array( $ch, [
 			CURLOPT_FILE           => $fp,
 			CURLOPT_FOLLOWLOCATION => true,
 			CURLOPT_TIMEOUT        => 300,
 		] );
 		curl_exec( $ch );
-		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 		curl_close( $ch );
 		fclose( $fp );
 
-		if ( $httpCode !== 200 ) {
-			throw new Exception( "Failed to download ZIP (HTTP $httpCode)" );
+		if ( $http_code !== 200 ) {
+			throw new Exception( "Failed to download ZIP (HTTP $http_code)" );
 		}
 
-		$stat = stat( $zipPath );
+		$stat = stat( $zip_path );
 		if ( $stat['size'] > self::MAX_ARCHIVE_SIZE_BYTES ) {
 			throw new Exception( 'Archive exceeds maximum allowed size' );
 		}
 
 		$finfo = new finfo( FILEINFO_MIME_TYPE );
-		$mime  = $finfo->file( $zipPath );
+		$mime  = $finfo->file( $zip_path );
 		if ( $mime !== 'application/zip' && $mime !== 'application/x-zip' && $mime !== 'application/octet-stream' ) {
 			throw new Exception( "Invalid MIME type for ZIP: $mime" );
 		}
 
-		return $zipPath;
+		return $zip_path;
 	}
 
 	/*
 	--------------------------------------------------------------------
 	 *  Extraction (SECURE)
 	 * ------------------------------------------------------------------*/
-	private function extractZipFile( string $zipPath, string $extractTo, array $params = [] ): array {
+	/**
+	 * Extract ZIP file
+	 *
+	 * @param string $zip_path Path to ZIP file.
+	 * @param string $extract_to Extraction directory.
+	 * @param array  $params Parameters array.
+	 * @return array Extraction statistics.
+	 */
+	private function extractZipFile( string $zip_path, string $extract_to, array $params = [] ): array {
 
-		$stats = $this->secureExtractZip( $zipPath, $extractTo, $params );
+		$stats = $this->secureExtractZip( $zip_path, $extract_to, $params );
 
 		$this->log_info( 'ZIP extracted securely', $stats );
 
@@ -298,34 +332,39 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Secure extraction with per‑entry validation.
 	 *
+	 * @param string $zip_path Path to ZIP file.
+	 * @param string $extract_root Root extraction directory.
+	 * @param array  $params Parameters array.
 	 * @return array{file_count:int,extract_time:float}
-	 * @throws Exception
+	 * @throws Exception If ZIP file cannot be opened or extraction fails.
 	 */
-	private function secureExtractZip( string $zipPath, string $extractRoot, array $params = [] ): array {
+	private function secureExtractZip( string $zip_path, string $extract_root, array $params = [] ): array {
 
 		$zip = new ZipArchive();
-		if ( $zip->open( $zipPath ) !== true ) {
+		if ( $zip->open( $zip_path ) !== true ) {
 			throw new Exception( 'Failed to open ZIP file' );
 		}
 
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- External library property
 		if ( $zip->numFiles > self::MAX_ENTRIES ) {
 			$zip->close();
 			throw new Exception( 'Archive contains too many entries' );
 		}
 
-		$totalUncompressed  = 0;
-		$extractedFileCount = 0; // Track actual extracted files, not directories
-		$start              = microtime( true );
+		$total_uncompressed   = 0;
+		$extracted_file_count = 0; // Track actual extracted files, not directories
+		$start                = microtime( true );
 
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- External library property
 		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
 
-			$stat         = $zip->statIndex( $i );
-			$originalName = $stat['name'];
-			$name         = $originalName;
+			$stat          = $zip->statIndex( $i );
+			$original_name = $stat['name'];
+			$name          = $original_name;
 
 			// Strip "wordpress/" prefix for WordPress core extraction
-			$isWordPressCore = ( $params['config']['type'] ?? '' ) === 'wordpress_core';
-			if ( $isWordPressCore && str_starts_with( $name, 'wordpress/' ) ) {
+			$is_word_press_core = ( $params['config']['type'] ?? '' ) === 'wordpress_core';
+			if ( $is_word_press_core && str_starts_with( $name, 'wordpress/' ) ) {
 				$name = substr( $name, 10 ); // Remove "wordpress/" (10 characters)
 				// Skip if the entry becomes empty after stripping the prefix
 				if ( empty( $name ) ) {
@@ -334,17 +373,17 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			}
 
 			// Strip extra nested directory for plugins/themes with redundant parent directories
-			$isPlugin = in_array( $params['config']['type'] ?? '', [ 'sut', 'plugin', 'theme', 'premium_dependency', 'free_dependency' ] );
-			if ( $isPlugin && ! $isWordPressCore ) {
+			$is_plugin = in_array( $params['config']['type'] ?? '', [ 'sut', 'plugin', 'theme', 'premium_dependency', 'free_dependency' ], true );
+			if ( $is_plugin && ! $is_word_press_core ) {
 				// Get the expected plugin/theme name from target_subdir
-				$targetSubdir = $params['config']['target_subdir'] ?? '';
-				if ( ! empty( $targetSubdir ) ) {
+				$target_subdir = $params['config']['target_subdir'] ?? '';
+				if ( ! empty( $target_subdir ) ) {
 					// Extract the plugin/theme name from target_subdir (e.g., "wp-content/plugins/fortis-for-woocommerce" -> "fortis-for-woocommerce")
-					$expectedName = basename( $targetSubdir );
+					$expected_name = basename( $target_subdir );
 
 					// Check if the entry starts with the expected plugin name followed by a slash
-					if ( str_starts_with( $name, $expectedName . '/' ) ) {
-						$name = substr( $name, strlen( $expectedName ) + 1 ); // Remove "plugin-name/" prefix
+					if ( str_starts_with( $name, $expected_name . '/' ) ) {
+						$name = substr( $name, strlen( $expected_name ) + 1 ); // Remove "plugin-name/" prefix
 						// Skip if the entry becomes empty after stripping the prefix
 						if ( empty( $name ) ) {
 							continue;
@@ -354,10 +393,10 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			}
 
 			// Normalise & validate path
-			$targetPath = $this->canonicalisePath( $extractRoot, $name );
+			$target_path = $this->canonicalisePath( $extract_root, $name );
 
 			// Reject directory traversal
-			if ( str_starts_with( $targetPath, $extractRoot ) === false ) {
+			if ( str_starts_with( $target_path, $extract_root ) === false ) {
 				$zip->close();
 				throw new Exception( "Zip entry attempts path traversal: {$name}" );
 			}
@@ -377,14 +416,14 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 				}
 			}
 
-			$totalUncompressed += $stat['size'];
-			if ( $totalUncompressed > self::MAX_UNCOMPRESSED_TOTAL_BYTES ) {
+			$total_uncompressed += $stat['size'];
+			if ( $total_uncompressed > self::MAX_UNCOMPRESSED_TOTAL_BYTES ) {
 				$zip->close();
 				throw new Exception( 'Total uncompressed size limit exceeded' );
 			}
 
 			// Ensure directory exists
-			$dir = dirname( $targetPath );
+			$dir = dirname( $target_path );
 			if ( ! is_dir( $dir ) && ! mkdir( $dir, 0777, true ) ) {
 				$zip->close();
 				throw new Exception( "Failed to create directory: $dir" );
@@ -392,49 +431,53 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 			if ( substr( $name, -1 ) === '/' ) {
 				// Directory entry
-				if ( ! is_dir( $targetPath ) && ! mkdir( $targetPath, 0777, true ) ) {
+				if ( ! is_dir( $target_path ) && ! mkdir( $target_path, 0777, true ) ) {
 					$zip->close();
-					throw new Exception( "Failed to create directory: $targetPath" );
+					throw new Exception( "Failed to create directory: $target_path" );
 				}
 				continue; // Don't count directories as extracted files
 			}
 
-			$stream = $zip->getStream( $originalName );
+			$stream = $zip->getStream( $original_name );
 			if ( ! $stream ) {
 				$zip->close();
-				throw new Exception( "Failed to read entry: {$originalName}" );
+				throw new Exception( "Failed to read entry: {$original_name}" );
 			}
 
-			$out = fopen( $targetPath, 'wb' );
+			$out = fopen( $target_path, 'wb' );
 			if ( ! $out ) {
 				$zip->close();
-				throw new Exception( "Cannot write file: {$targetPath}" );
+				throw new Exception( "Cannot write file: {$target_path}" );
 			}
 
 			stream_copy_to_stream( $stream, $out );
 			fclose( $stream );
 			fclose( $out );
-			chmod( $targetPath, 0644 );
+			chmod( $target_path, 0644 );
 
-			++$extractedFileCount; // Only count actual files that were extracted
+			++$extracted_file_count; // Only count actual files that were extracted
 		}
 
 		$zip->close();
 
 		return [
-			'file_count'   => $extractedFileCount, // Return actual extracted file count
+			'file_count'   => $extracted_file_count, // Return actual extracted file count
 			'extract_time' => microtime( true ) - $start,
 		];
 	}
 
 	/**
-	 * Resolve $entryPath against $root securely (no "..", no back‑slashes).
+	 * Resolve $entry_path against $root securely (no "..", no back‑slashes).
+	 *
+	 * @param string $root Root directory.
+	 * @param string $entry_path Entry path to canonicalize.
+	 * @return string Canonicalized path.
 	 */
-	private function canonicalisePath( string $root, string $entryPath ): string {
-		$entryPath = str_replace( [ '\\', "\0" ], '/', $entryPath );
-		$entryPath = preg_replace( '#/+#', '/', $entryPath );
-		$parts     = [];
-		foreach ( explode( '/', $entryPath ) as $part ) {
+	private function canonicalisePath( string $root, string $entry_path ): string {
+		$entry_path = str_replace( [ '\\', "\0" ], '/', $entry_path );
+		$entry_path = preg_replace( '#/+#', '/', $entry_path );
+		$parts      = [];
+		foreach ( explode( '/', $entry_path ) as $part ) {
 			if ( $part === '' || $part === '.' ) {
 				continue;
 			}
@@ -451,55 +494,56 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Send unified extraction response with both stats and file list
 	 *
-	 * @param string $actualExtractPath Actual extraction path
-	 * @param int    $fileCount Number of files extracted
-	 * @param array  $params Request parameters
-	 * @param array  $manifest Optional component manifest
+	 * @param string $actual_extract_path Actual extraction path.
+	 * @param int    $file_count Number of files extracted.
+	 * @param array  $params Request parameters.
+	 * @param array  $manifest Optional component manifest.
+	 * @return string Response string.
 	 */
-	private function sendUnifiedExtractionResponse( string $actualExtractPath, int $fileCount, array $params, array $manifest = [] ): string {
-		$listFiles       = $params['config']['list_files'] ?? true;   // ★ new flag
-		$filePattern     = $params['config']['file_pattern'] ?? '*.php';
-		$resolver        = new FilePathResolver( $actualExtractPath );
-		$discoveredFiles = [];
-		$phpFiles        = [];
-		$totalFiles      = 0;
+	private function sendUnifiedExtractionResponse( string $actual_extract_path, int $file_count, array $params, array $manifest = [] ): string {
+		$list_files       = $params['config']['list_files'] ?? true;   // ★ new flag
+		$file_pattern     = $params['config']['file_pattern'] ?? '*.php';
+		$resolver         = new FilePathResolver( $actual_extract_path );
+		$discovered_files = [];
+		$php_files        = [];
+		$total_files      = 0;
 
 		$iterator = new RecursiveIteratorIterator(
-			new RecursiveDirectoryIterator( $actualExtractPath, RecursiveDirectoryIterator::SKIP_DOTS )
+			new RecursiveDirectoryIterator( $actual_extract_path, RecursiveDirectoryIterator::SKIP_DOTS )
 		);
 
 		// Pre-calculate SUT directory prefix for filtering if this is a SUT component
-		$sutPrefix = null;
+		$sut_prefix = null;
 		if ( ( $params['config']['type'] ?? '' ) === 'sut' ) {
-			$targetSubdir = $params['config']['target_subdir'] ?? null;
-			$sutPrefix    = $targetSubdir ? trim( $targetSubdir, '/' ) . '/' : null;
+			$target_subdir = $params['config']['target_subdir'] ?? null;
+			$sut_prefix    = $target_subdir ? trim( $target_subdir, '/' ) . '/' : null;
 		}
 
 		foreach ( $iterator as $file ) {
 			if ( $file->isFile() ) {
-				$relativePath = $resolver->toRelative( $file->getPathname() );
+				$relative_path = $resolver->toRelative( $file->getPathname() );
 
 				// Filter files for SUT components - only include files under the SUT directory
-				if ( $sutPrefix !== null && ! str_starts_with( $relativePath, $sutPrefix ) ) {
+				if ( $sut_prefix !== null && ! str_starts_with( $relative_path, $sut_prefix ) ) {
 					continue; // Skip files not under the SUT directory
 				}
 
-				++$totalFiles;
+				++$total_files;
 
 				// Check if it's a PHP file for basic stats
 				if ( pathinfo( $file, PATHINFO_EXTENSION ) === 'php' ) {
-					$phpFiles[] = str_replace( $actualExtractPath . '/', '', $file->getPathname() );
+					$php_files[] = str_replace( $actual_extract_path . '/', '', $file->getPathname() );
 				}
 
 				// Always collect stats, but only build the heavy list if requested
-				if ( $listFiles && fnmatch( $filePattern, $file->getFilename() ) ) {
-					$priority = $this->calculateSecurityPriority( $relativePath );
+				if ( $list_files && fnmatch( $file_pattern, $file->getFilename() ) ) {
+					$priority = $this->calculateSecurityPriority( $relative_path );
 
 					// Calculate SHA-1 for the file
 					$sha1 = sha1_file( $file->getPathname() );
 
-					$discoveredFiles[] = [
-						'path'     => $relativePath,
+					$discovered_files[] = [
+						'path'     => $relative_path,
 						'size'     => $file->getSize(),
 						'lines'    => substr_count( file_get_contents( $file ), "\n" ) + 1,
 						'priority' => $priority,
@@ -510,30 +554,30 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		}
 
 		// Sort discovered files by priority (security-sensitive files first)
-		usort( $discoveredFiles, fn( $a, $b ) => $b['priority'] - $a['priority'] );
+		usort( $discovered_files, fn( $a, $b ) => $b['priority'] - $a['priority'] );
 
-		if ( empty( $phpFiles ) ) {
+		if ( empty( $php_files ) ) {
 			$this->log_warning( 'ZIP extracted successfully but no PHP files found', [
-				'files_extracted' => $fileCount,
-				'actual_path'     => $actualExtractPath,
+				'files_extracted' => $file_count,
+				'actual_path'     => $actual_extract_path,
 			] );
 		}
 
 		$this->log_info( 'PHP files detected', [
-			'php_files' => array_slice( $phpFiles, 0, 10 ),
-			'count'     => count( $phpFiles ),
+			'php_files' => array_slice( $php_files, 0, 10 ),
+			'count'     => count( $php_files ),
 		] );
 
 		// Send unified response with both stats and file discovery data
 		$response = [
-			'extract_path'     => $actualExtractPath,
-			'session_id'       => $params['session_id'] ?? md5( $actualExtractPath ),
-			'files_discovered' => $listFiles ? $discoveredFiles : [],
+			'extract_path'     => $actual_extract_path,
+			'session_id'       => $params['session_id'] ?? md5( $actual_extract_path ),
+			'files_discovered' => $list_files ? $discovered_files : [],
 			'stats'            => [
-				'files_extracted'        => $fileCount,
-				'php_files_found'        => count( $phpFiles ),
-				'total_files'            => $totalFiles,
-				'files_matching_pattern' => count( $discoveredFiles ),
+				'files_extracted'        => $file_count,
+				'php_files_found'        => count( $php_files ),
+				'total_files'            => $total_files,
+				'files_matching_pattern' => count( $discovered_files ),
 			],
 		];
 
@@ -549,7 +593,7 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Handle extraction error
 	 *
-	 * @param Exception $e Exception that occurred
+	 * @param Exception $e Exception that occurred.
 	 * @return string JSON error response
 	 */
 	private function handleExtractionError( Exception $e ): string {
@@ -564,9 +608,9 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Detect WordPress plugin or theme structure
 	 *
-	 * @param string $directory Directory to check
+	 * @param string $directory Directory to check.
 	 *
-	 * @return array Structure information
+	 * @return array Structure information.
 	 */
 	private function detectWordPressStructure( string $directory ): array {
 		$result = [
@@ -577,8 +621,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		];
 
 		// Check for WordPress plugin
-		$phpFiles = glob( $directory . '/*.php' );
-		foreach ( $phpFiles as $file ) {
+		$php_files = glob( $directory . '/*.php' );
+		foreach ( $php_files as $file ) {
 			$content = file_get_contents( $file );
 			if ( strpos( $content, 'Plugin Name:' ) !== false ) {
 				$result['is_plugin'] = true;
@@ -591,8 +635,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 
 		// Check for WordPress theme
 		if ( file_exists( $directory . '/style.css' ) ) {
-			$styleContent = file_get_contents( $directory . '/style.css' );
-			if ( strpos( $styleContent, 'Theme Name:' ) !== false ) {
+			$style_content = file_get_contents( $directory . '/style.css' );
+			if ( strpos( $style_content, 'Theme Name:' ) !== false ) {
 				$result['is_theme']  = true;
 				$result['type']      = 'theme';
 				$result['main_file'] = 'style.css';
@@ -616,12 +660,12 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 	/**
 	 * Calculate security priority for a file path
 	 *
-	 * @param string $filePath File path
+	 * @param string $file_path File path.
 	 *
-	 * @return int Priority score
+	 * @return int Priority score.
 	 */
-	private function calculateSecurityPriority( string $filePath ): int {
-		$priorityPatterns = [
+	private function calculateSecurityPriority( string $file_path ): int {
+		$priority_patterns = [
 			'/ajax|admin-ajax/i'     => 100,
 			'/admin\//i'             => 90,
 			'/api|rest/i'            => 85,
@@ -634,8 +678,8 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 			'/assets|css|js/i'       => 10,
 		];
 
-		foreach ( $priorityPatterns as $pattern => $score ) {
-			if ( preg_match( $pattern, $filePath ) ) {
+		foreach ( $priority_patterns as $pattern => $score ) {
+			if ( preg_match( $pattern, $file_path ) ) {
 				return $score;
 			}
 		}
@@ -660,34 +704,40 @@ class ZipExtractionEndpoint extends AbstractEndpoint {
 		return $roots;
 	}
 
-	/** Write a small JSON file the prompt‑builder can read later. */
+	/**
+	 * Write a small JSON file the prompt‑builder can read later.
+	 *
+	 * @param string $base Base directory.
+	 * @param array  $roots Directory roots.
+	 * @return void
+	 */
 	private function writeContextFile( string $base, array $roots ): void {
-		$ctx      = [
+		$ctx       = [
 			'contract_version' => 3,
 			'roots'            => $roots,
-			'generated_at'     => date( DATE_ATOM ),
+			'generated_at'     => gmdate( DATE_ATOM ),
 		];
-		$filePath = $base . '/.ctx.json';
+		$file_path = $base . '/.ctx.json';
 		$this->log_info('Attempting to write .ctx.json file', [
-			'file_path'          => $filePath,
+			'file_path'          => $file_path,
 			'base_directory'     => $base,
 			'roots'              => $roots,
 			'directory_exists'   => is_dir( $base ),
 			'directory_writable' => is_writable( $base ),
 		]);
 
-		$result = file_put_contents( $filePath, json_encode( $ctx, JSON_PRETTY_PRINT ) );
+		$result = file_put_contents( $file_path, json_encode( $ctx, JSON_PRETTY_PRINT ) );
 
 		if ( $result === false ) {
 			$this->log_error('Failed to write .ctx.json file', [
-				'file_path' => $filePath,
+				'file_path' => $file_path,
 				'error'     => error_get_last(),
 			]);
 		} else {
 			$this->log_info('.ctx.json file written successfully', [
-				'file_path'     => $filePath,
+				'file_path'     => $file_path,
 				'bytes_written' => $result,
-				'file_exists'   => file_exists( $filePath ),
+				'file_exists'   => file_exists( $file_path ),
 			]);
 		}
 	}

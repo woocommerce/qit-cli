@@ -15,13 +15,25 @@ class Logger {
 	const ERROR    = 'error';
 	const CRITICAL = 'critical';
 
-	// Log file path
+	/**
+	 * Log file path
+	 *
+	 * @var string
+	 */
 	private string $log_file;
 
-	// Log level threshold
+	/**
+	 * Log level threshold
+	 *
+	 * @var string
+	 */
 	private string $log_level;
 
-	// Log level priorities (lower number = higher priority)
+	/**
+	 * Log level priorities (lower number = higher priority)
+	 *
+	 * @var array
+	 */
 	private array $log_level_priorities = [
 		self::DEBUG    => 0,
 		self::INFO     => 1,
@@ -47,7 +59,7 @@ class Logger {
 
 		// Create log file if it doesn't exist and write header
 		if ( ! file_exists( $log_file ) ) {
-			$this->write_to_log( '=== QIT Node Log Started at ' . date( 'Y-m-d H:i:s' ) . " ===\n" );
+			$this->write_to_log( '=== QIT Node Log Started at ' . gmdate( 'Y-m-d H:i:s' ) . " ===\n" );
 		}
 	}
 
@@ -123,7 +135,7 @@ class Logger {
 			return;
 		}
 
-		$timestamp         = date( 'Y-m-d H:i:s' );
+		$timestamp         = gmdate( 'Y-m-d H:i:s' );
 		$formatted_message = "[$timestamp] [$level] $message";
 
 		// Add context if available

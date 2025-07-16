@@ -10,45 +10,45 @@ use QIT_AI_Webserver\ToolContext;
 
 abstract class BaseTool {
 	protected FilePathResolver $file_path_resolver;
-	protected string $workDir;
+	protected string $work_dir;
 	protected ?ToolContext $context = null;
 
 	public function __construct(
-		string $workDirectory,
-		string $sutDirectory = '',
+		string $work_directory,
+		string $sut_directory = '',
 		?ToolContext $context = null
 	) {
-		$this->workDir            = rtrim( $workDirectory, '/\\' );
-		$this->file_path_resolver = new FilePathResolver( $this->workDir, $sutDirectory );
+		$this->work_dir           = rtrim( $work_directory, '/\\' );
+		$this->file_path_resolver = new FilePathResolver( $this->work_dir, $sut_directory );
 		$this->context            = $context;
 	}
 
 	/**
 	 * Get the tool name
 	 */
-	abstract public function getName(): string;
+	abstract public function get_name(): string;
 
 	/**
 	 * Get the tool description
 	 */
-	abstract public function getDescription(): string;
+	abstract public function get_description(): string;
 
 	/**
 	 * Get the FunctionInfo object for LLPhant
 	 */
-	abstract public function getFunctionInfo(): FunctionInfo;
+	abstract public function get_function_info(): FunctionInfo;
 
 	/** Canonical, safe, *relative* path – throws if invalid */
-	protected function safePath( string $userPath ): string {
-		return $this->file_path_resolver->canonRelative( $userPath );
+	protected function safe_path( string $user_path ): string {
+		return $this->file_path_resolver->canon_relative( $user_path );
 	}
 
-	protected function baseDescription( string $core, array $examples = [] ): string {
+	protected function base_description( string $core, array $examples = [] ): string {
 		if ( $this->context === null ) {
 			return $core;
 		}
 		$deps      = array_map( fn( $d ) => $d['slug'], $this->context->deps );
-		$macroNote = sprintf(
+		$macro_note = sprintf(
 			"\n\nPath placeholders:\n• __WP_ROOT__ = %s\n• __SUT_DIR__ = %s\n• __DEP_[slug]__ where slug ∈ {%s}",
 			$this->context->wpRoot,
 			$this->context->sutDir,
@@ -57,28 +57,28 @@ abstract class BaseTool {
 
 		// Add examples if provided
 		if ( ! empty( $examples ) ) {
-			$macroNote .= "\n\nExamples:";
+			$macro_note .= "\n\nExamples:";
 			foreach ( $examples as $example ) {
-				$macroNote .= "\n• " . $example;
+				$macro_note .= "\n• " . $example;
 			}
 		}
 
-		return $core . $macroNote;
+		return $core . $macro_note;
 	}
 
-	/** ----------------------------------------------------------------
-	 *  Child classes must implement the "real" work here.
-	 *  On success return ANY serialisable value.
+	/**
+	 * Child classes must implement the "real" work here.
+	 * On success return ANY serialisable value.
 	 *
-	 * @throws \Throwable to trigger error envelope
-	 * -----------------------------------------------------------------*/
+	 * @throws \Throwable To trigger error envelope.
+	 */
 	abstract protected function do( array $params );
 
 	public function execute( array $params ): array {
 		try {
 			// Resolve placeholders
-			$resolvedParams = $this->resolveMacrosInParams( $params );
-			$data           = $this->do( $resolvedParams );
+			$resolved_params = $this->resolve_macros_in_params( $params );
+			$data           = $this->do( $resolved_params );
 
 			return [
 				'success'   => true,
@@ -91,7 +91,7 @@ abstract class BaseTool {
 			DebugLogger::log( static::class . '_error', [
 				'args'  => $params,
 				'error' => $e->getMessage(),
-				'tree'  => DebugLogger::dirTree( $this->workDir, 2, 150 ),
+				'tree'  => DebugLogger::dir_tree( $this->work_dir, 2, 150 ),
 			] );
 
 			return [
@@ -107,13 +107,13 @@ abstract class BaseTool {
 	/**
 	 * Resolve macros in path-related parameters
 	 */
-	protected function resolveMacrosInParams( array $params ): array {
+	protected function resolve_macros_in_params( array $params ): array {
 		// Common path parameters that might contain macros
-		$pathParams = [ 'file', 'directory_or_file', 'path', 'directory' ];
+		$path_params = [ 'file', 'directory_or_file', 'path', 'directory' ];
 
-		foreach ( $pathParams as $paramName ) {
-			if ( isset( $params[ $paramName ] ) && is_string( $params[ $paramName ] ) ) {
-				$params[ $paramName ] = $this->resolveMacroPath( $params[ $paramName ] );
+		foreach ( $path_params as $param_name ) {
+			if ( isset( $params[ $param_name ] ) && is_string( $params[ $param_name ] ) ) {
+				$params[ $param_name ] = $this->resolve_macro_path( $params[ $param_name ] );
 			}
 		}
 
@@ -123,54 +123,54 @@ abstract class BaseTool {
 	/**
 	 * Resolve macro path to regular relative path
 	 */
-	protected function resolveMacroPath( string $userPath ): string {
+	protected function resolve_macro_path( string $user_path ): string {
 		if ( $this->context === null ) {
-			return $userPath;
+			return $user_path;
 		}
 
 		// Much simpler pattern matching with underscores
-		$userPath = trim( $userPath );
+		$user_path = trim( $user_path );
 
 		// Handle __WP_ROOT__
-		if ( strpos( $userPath, '__WP_ROOT__' ) === 0 ) {
-			$remainder = substr( $userPath, 11 ); // length of '__WP_ROOT__'
+		if ( strpos( $user_path, '__WP_ROOT__' ) === 0 ) {
+			$remainder = substr( $user_path, 11 ); // length of '__WP_ROOT__'
 			return ltrim( $remainder, '/' );
 		}
 
 		// Handle __SUT_DIR__
-		if ( strpos( $userPath, '__SUT_DIR__' ) === 0 ) {
-			$remainder   = substr( $userPath, 11 ); // length of '__SUT_DIR__'
-			$sutRelative = $this->file_path_resolver->toRelative( $this->context->sutDir );
+		if ( strpos( $user_path, '__SUT_DIR__' ) === 0 ) {
+			$remainder   = substr( $user_path, 11 ); // length of '__SUT_DIR__'
+			$sut_relative = $this->file_path_resolver->to_relative( $this->context->sutDir );
 
 			if ( empty( $remainder ) || $remainder === '/' ) {
-				return $sutRelative;
+				return $sut_relative;
 			} else {
-				return $sutRelative . '/' . ltrim( $remainder, '/' );
+				return $sut_relative . '/' . ltrim( $remainder, '/' );
 			}
 		}
 
 		// Handle __DEP_[slug]__
-		if ( preg_match( '/^__DEP_\[([^\]]+)\]__(.*)$/', $userPath, $matches ) ) {
-			$depSlug = $matches[1];
-			$depPath = $matches[2];
+		if ( preg_match( '/^__DEP_\[([^\]]+)\]__(.*)$/', $user_path, $matches ) ) {
+			$dep_slug = $matches[1];
+			$dep_path = $matches[2];
 
 			foreach ( $this->context->deps as $dep ) {
-				if ( $dep['slug'] === $depSlug ) {
-					$basePath = $dep['type'] === 'plugin'
-						? "wp-content/plugins/{$depSlug}"
-						: "wp-content/themes/{$depSlug}";
+				if ( $dep['slug'] === $dep_slug ) {
+					$base_path = $dep['type'] === 'plugin'
+						? "wp-content/plugins/{$dep_slug}"
+						: "wp-content/themes/{$dep_slug}";
 
-					if ( empty( $depPath ) || $depPath === '/' ) {
-						return $basePath;
+					if ( empty( $dep_path ) || $dep_path === '/' ) {
+						return $base_path;
 					} else {
-						return $basePath . '/' . ltrim( $depPath, '/' );
+						return $base_path . '/' . ltrim( $dep_path, '/' );
 					}
 				}
 			}
-			throw new \InvalidArgumentException( "Unknown dependency: {$depSlug}" );
+			throw new \InvalidArgumentException( "Unknown dependency: {$dep_slug}" );
 		}
 
 		// No placeholder found, return as-is
-		return $userPath;
+		return $user_path;
 	}
 }

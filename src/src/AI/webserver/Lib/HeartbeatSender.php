@@ -2,28 +2,28 @@
 namespace QIT_AI_Webserver\Lib;
 
 class HeartbeatSender {
-	private string $nodeId;
-	private string $nodeToken;
-	private string $heartbeatUrl;
+	private string $node_id;
+	private string $node_token;
+	private string $heartbeat_url;
 	private int $interval;
-	private int $lastSent = 0;
+	private int $last_sent = 0;
 
-	public function __construct( string $nodeId, string $nodeToken, string $heartbeatUrl, int $interval = 60 ) {
-		$this->nodeId       = $nodeId;
-		$this->nodeToken    = $nodeToken;
-		$this->heartbeatUrl = rtrim( $heartbeatUrl, '/' );
-		$this->interval     = $interval;
+	public function __construct( string $node_id, string $node_token, string $heartbeat_url, int $interval = 60 ) {
+		$this->node_id       = $node_id;
+		$this->node_token    = $node_token;
+		$this->heartbeat_url = rtrim( $heartbeat_url, '/' );
+		$this->interval      = $interval;
 	}
 
 	/** Call on every poll‑loop iteration */
-	public function maybeSend(): void {
-		if ( time() - $this->lastSent < $this->interval ) {
+	public function maybe_send(): void {
+		if ( time() - $this->last_sent < $this->interval ) {
 			return;
 		}
-		$this->lastSent = time();
+		$this->last_sent = time();
 
 		$data = [
-			'node_token'  => $this->nodeToken,
+			'node_token'  => $this->node_token,
 			'busy'        => file_exists( getenv( 'QIT_NODE_DIR' ) . '/busy.lock' ) ? 1 : 0,
 			'last_error'  => null, // Will be populated if there's an error file
 			'system_info' => [
@@ -32,7 +32,7 @@ class HeartbeatSender {
 			],
 		];
 
-		$request = OutboundRequest::heartbeat( $this->heartbeatUrl, $data, 'node-heartbeat' );
+		$request = OutboundRequest::heartbeat( $this->heartbeat_url, $data, 'node-heartbeat' );
 		$request->send(); // Fire-and-forget, don't check result
 	}
 }

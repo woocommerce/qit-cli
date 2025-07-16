@@ -50,25 +50,25 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 	if ( ! isset( $task['task_id'] ) ) {
 		throw new RuntimeException( 'Missing task_id in job payload' );
 	}
-	$taskId       = $task['task_id'];
+	$task_id      = $task['task_id'];
 	$callback_url = $task['callback_url'];
-	$type         = $task['type'];
+	$task_type    = $task['type'];
 
 	log_info( 'Starting job', [
-		'job_id' => $taskId,
-		'type'   => $type,
+		'job_id' => $task_id,
+		'type'   => $task_type,
 	] );  // Add logging
 
 	$start = microtime( true );
 	try {
-		$result = $endpoints[ $type ]->handle( $task );      // ← same endpoint map you already have
+		$result = $endpoints[ $task_type ]->handle( $task );      // ← same endpoint map you already have
 
 		$processing_time = round( ( microtime( true ) - $start ) * 1000 );
 
 		// Restore original parse/log
 		log_info( 'Endpoint handler result', [
-			'task_id'            => $taskId,
-			'type'               => $type,
+			'task_id'            => $task_id,
+			'type'               => $task_type,
 			'result_length'      => strlen( $result ),
 			'result_starts'      => substr( $result, 0, 50 ) . '...',
 			'processing_time_ms' => $processing_time,
@@ -83,14 +83,14 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 		$metadata   = $decoded_result['_metadata'] ?? [];
 		unset( $decoded_result['_processing_time'], $decoded_result['_tool_calls'], $decoded_result['_metadata'] );
 
-		$ok = $callback_sender->sendCallback(
+		$ok = $callback_sender->send_callback(
 			$callback_url,
-			$task['action_id'] ?? $taskId,
+			$task['action_id'] ?? $task_id,
 			$decoded_result,
 			$processing_time,
 			$tool_calls,
 			$metadata,
-			$taskId
+			$task_id
 		);
 		if ( ! $ok ) {
 			throw new RuntimeException( 'callback failed' );
@@ -98,20 +98,20 @@ if ( $method === 'POST' && $uri === '/run-job' ) {
 		http_response_code( 200 );
 		echo '{"status":"done"}';
 	} catch ( \Throwable $e ) {
-		$callback_sender->sendErrorCallback(
+		$callback_sender->send_error_callback(
 			$callback_url,
-			$task['action_id'] ?? $taskId,
+			$task['action_id'] ?? $task_id,
 			$e->getMessage(),
-			$taskId
+			$task_id
 		);
 		http_response_code( 500 );
-		echo '{"error":"' . $e->getMessage() . '"}';
+		echo '{"error":"' . esc_js( $e->getMessage() ) . '"}';
 	} finally {
 		// clear busy flag so the next /process can succeed
 		@unlink( getenv( 'QIT_NODE_DIR' ) . '/busy.lock' );
 	}
 
-	log_info( 'Finished job', [ 'job_id' => $taskId ] );  // Add logging
+	log_info( 'Finished job', [ 'job_id' => $task_id ] );  // Add logging
 	return;
 }
 

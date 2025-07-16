@@ -15,7 +15,9 @@ class ListFactsTool extends BaseTool {
 		return 'Browse previous investigation facts';
 	}
 
-	/* ---- LLPhant metadata ---- */
+	/**
+	 * LLPhant metadata
+	 */
 	public function getFunctionInfo(): FunctionInfo {
 		$params = [
 			new Parameter( 'step', 'integer', 'Filter by step index (optional)' ),

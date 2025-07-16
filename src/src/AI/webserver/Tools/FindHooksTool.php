@@ -54,12 +54,12 @@ class FindHooksTool extends BaseTool {
 	}
 
 	protected function do( array $p ) {
-		$typeFilter  = $p['type'] ?? null;   // action|filter|both|null
-		$hooksFilter = $p['hook_names'] ?? null;   // array|null
-		$cbFilter    = $p['callbacks'] ?? null;   // array|null
-		$directory   = $p['directory'] ?? '.';
-		$maxResults  = (int) ( $p['max_results'] ?? 100 );
-		$maxDepth    = (int) ( $p['max_depth'] ?? 10 );
+		$type_filter  = $p['type'] ?? null;   // action|filter|both|null
+		$hooks_filter = $p['hook_names'] ?? null;   // array|null
+		$cb_filter    = $p['callbacks'] ?? null;   // array|null
+		$directory    = $p['directory'] ?? '.';
+		$max_results  = (int) ( $p['max_results'] ?? 100 );
+		$max_depth    = (int) ( $p['max_depth'] ?? 10 );
 
 		if ( ! file_exists( $directory ) ) {
 			throw new \InvalidArgumentException( "Directory does not exist: {$directory}" );
@@ -69,18 +69,18 @@ class FindHooksTool extends BaseTool {
 			throw new \InvalidArgumentException( "Path is not a directory: {$directory}" );
 		}
 
-		$absDir = $this->file_path_resolver->toAbsolute( $directory );
-		$it     = new \RecursiveIteratorIterator(
+		$abs_dir = $this->file_path_resolver->toAbsolute( $directory );
+		$it      = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator(
-				$absDir,
+				$abs_dir,
 				\FilesystemIterator::SKIP_DOTS | \FilesystemIterator::FOLLOW_SYMLINKS
 			),
 			\RecursiveIteratorIterator::SELF_FIRST
 		);
-		$it->setMaxDepth( $maxDepth );
+		$it->setMaxDepth( $max_depth );
 
-		$parser   = ( new ParserFactory() )->createForNewestSupportedVersion();
-		$nodeFind = new NodeFinder();
+		$parser    = ( new ParserFactory() )->createForNewestSupportedVersion();
+		$node_find = new NodeFinder();
 
 		$hits = [];
 
@@ -102,7 +102,7 @@ class FindHooksTool extends BaseTool {
 			}
 
 			// Find all function calls whose name is add_action / add_filter
-			$calls = $nodeFind->findInstanceOf( $stmts, Node\Expr\FuncCall::class );
+			$calls = $node_find->findInstanceOf( $stmts, Node\Expr\FuncCall::class );
 
 			foreach ( $calls as $call ) {
 				$name = $call->name instanceof Node\Name ? $call->name->toString() : '';
@@ -111,7 +111,7 @@ class FindHooksTool extends BaseTool {
 				}
 
 				$kind = $name === 'add_action' ? 'action' : 'filter';
-				if ( $typeFilter && $typeFilter !== 'both' && $kind !== $typeFilter ) {
+				if ( $type_filter && $type_filter !== 'both' && $kind !== $type_filter ) {
 					continue;
 				}
 
@@ -125,20 +125,20 @@ class FindHooksTool extends BaseTool {
 				$hook = ( $args[0]->value instanceof Node\Scalar\String_ )
 					? $args[0]->value->value
 					: '<dynamic>';
-				if ( $hooksFilter && ! in_array( $hook, $hooksFilter, true ) ) {
+				if ( $hooks_filter && ! in_array( $hook, $hooks_filter, true ) ) {
 					continue;
 				}
 
 				// Resolve Arg #1 (callback) – handles strings & array callables
 				$callback = $this->renderCallback( $args[1]->value );
-				if ( $cbFilter && ! in_array( $callback, $cbFilter, true ) ) {
+				if ( $cb_filter && ! in_array( $callback, $cb_filter, true ) ) {
 					continue;
 				}
 
-				$priority     = isset( $args[2] ) && $args[2]->value instanceof Node\Scalar\LNumber
+				$priority      = isset( $args[2] ) && $args[2]->value instanceof Node\Scalar\LNumber
 					? (int) $args[2]->value->value
 					: 10;
-				$acceptedArgs = isset( $args[3] ) && $args[3]->value instanceof Node\Scalar\LNumber
+				$accepted_args = isset( $args[3] ) && $args[3]->value instanceof Node\Scalar\LNumber
 					? (int) $args[3]->value->value
 					: 1;
 
@@ -149,11 +149,11 @@ class FindHooksTool extends BaseTool {
 					'hook'          => $hook,
 					'callback'      => $callback,
 					'priority'      => $priority,
-					'accepted_args' => $acceptedArgs,
+					'accepted_args' => $accepted_args,
 					'snippet'       => trim( $this->lineFromFile( $file->getPathname(), $call->getLine() ) ),
 				];
 
-				if ( count( $hits ) >= $maxResults ) {
+				if ( count( $hits ) >= $max_results ) {
 					return [
 						'results'   => $hits,
 						'truncated' => true,
@@ -200,9 +200,9 @@ class FindHooksTool extends BaseTool {
 	}
 
 	/** Read a single specific line from a file (used for snippet) */
-	private function lineFromFile( string $path, int $lineNo ): string {
+	private function lineFromFile( string $path, int $line_no ): string {
 		$f = new \SplFileObject( $path );
-		$f->seek( $lineNo - 1 );          // SplFileObject is 0‑based
+		$f->seek( $line_no - 1 );          // SplFileObject is 0‑based
 
 		return rtrim( $f->current(), "\r\n" );
 	}

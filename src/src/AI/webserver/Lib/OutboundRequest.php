@@ -14,7 +14,11 @@ class OutboundRequest {
 	private string $schema_type;
 	private array $config;
 
-	// Default configuration
+	/**
+	 * Default configuration
+	 *
+	 * @var array
+	 */
 	private array $default_config = [
 		'method'                 => 'POST',
 		'content_type'           => 'application/json', // or 'application/x-www-form-urlencoded'
@@ -30,10 +34,10 @@ class OutboundRequest {
 	/**
 	 * Constructor
 	 *
-	 * @param string $url Target URL
-	 * @param array  $data Request data
-	 * @param string $schema_type Schema type for validation
-	 * @param array  $config Configuration overrides
+	 * @param string $url Target URL.
+	 * @param array  $data Request data.
+	 * @param string $schema_type Schema type for validation.
+	 * @param array  $config Configuration overrides.
 	 */
 	public function __construct( string $url, array $data, string $schema_type, array $config = [] ) {
 		$this->url                  = $url;
@@ -57,13 +61,13 @@ class OutboundRequest {
 	/**
 	 * Create a task event request (JSON, Bearer auth, idempotency)
 	 */
-	public static function taskEvent( string $url, array $data, string $schema_type ): self {
+	public static function task_event( string $url, array $data, string $schema_type ): self {
 		return new self( $url, $data, $schema_type, [
 			'content_type'       => 'application/json',
 			'max_retries'        => 5,
 			'retry_strategy'     => 'exponential_jitter',
 			'additional_headers' => [
-				'Idempotency-Key' => self::generateIdempotencyKey(),
+				'Idempotency-Key' => self::generate_idempotency_key(),
 			],
 		] );
 	}
@@ -81,7 +85,7 @@ class OutboundRequest {
 	/**
 	 * Create a node registration/unregistration request (JSON, no retries by default)
 	 */
-	public static function nodeManagement( string $url, array $data, string $schema_type ): self {
+	public static function node_management( string $url, array $data, string $schema_type ): self {
 		return new self( $url, $data, $schema_type, [
 			'content_type' => 'application/json',
 			'max_retries'  => 3,
@@ -91,7 +95,7 @@ class OutboundRequest {
 	/**
 	 * Create a node registration request (JSON, with retries)
 	 */
-	public static function nodeRegistration( string $url, array $payload ): self {
+	public static function node_registration( string $url, array $payload ): self {
 		return new self(
 			$url,
 			$payload,
@@ -112,7 +116,7 @@ class OutboundRequest {
 	public function send(): array {
 		// Validate against schema if enabled
 		if ( $this->config['validate_schema'] ) {
-			$validation_result = $this->validateSchema();
+			$validation_result = $this->validate_schema();
 			if ( ! $validation_result['valid'] ) {
 				if ( $this->config['log_requests'] ) {
 					log_info( 'Outbound request schema validation failed', [
@@ -137,27 +141,27 @@ class OutboundRequest {
 		}
 
 		// Send with retry logic
-		return $this->sendWithRetry();
+		return $this->send_with_retry();
 	}
 
 	/**
 	 * Validate data against schema
 	 */
-	private function validateSchema(): array {
-		$validator = JsonSchemaValidator::getInstance();
+	private function validate_schema(): array {
+		$validator = JsonSchemaValidator::get_instance();
 
-		return $validator->validateOutbound( $this->data, $this->schema_type );
+		return $validator->validate_outbound( $this->data, $this->schema_type );
 	}
 
 	/**
 	 * Send request with retry logic
 	 */
-	private function sendWithRetry(): array {
+	private function send_with_retry(): array {
 		$attempt     = 0;
 		$max_retries = $this->config['max_retries'];
 
 		while ( $attempt <= $max_retries ) {
-			$result = $this->sendSingleRequest( $attempt + 1 );
+			$result = $this->send_single_request( $attempt + 1 );
 
 			// Success
 			if ( $result['success'] ) {
@@ -186,7 +190,7 @@ class OutboundRequest {
 			}
 
 			// Apply backoff strategy
-			$this->applyBackoff( $attempt );
+							$this->apply_backoff( $attempt );
 			++$attempt;
 		}
 
@@ -206,7 +210,7 @@ class OutboundRequest {
 	/**
 	 * Send a single HTTP request
 	 */
-	private function sendSingleRequest( int $attempt ): array {
+	private function send_single_request( int $attempt ): array {
 		try {
 			$ch = curl_init( $this->url );
 
@@ -307,7 +311,7 @@ class OutboundRequest {
 	/**
 	 * Apply backoff strategy between retries
 	 */
-	private function applyBackoff( int $attempt ): void {
+	private function apply_backoff( int $attempt ): void {
 		if ( $this->config['retry_strategy'] === 'exponential_jitter' ) {
 			// Exponential backoff with jitter (used by TaskEventPusher)
 			$backoff = pow( 2, $attempt ) + rand( 0, 1000 ) / 1000;
@@ -322,7 +326,7 @@ class OutboundRequest {
 	/**
 	 * Generate UUID v4 for idempotency keys
 	 */
-	private static function generateIdempotencyKey(): string {
+	private static function generate_idempotency_key(): string {
 		$data    = random_bytes( 16 );
 		$data[6] = chr( ord( $data[6] ) & 0x0f | 0x40 );
 		$data[8] = chr( ord( $data[8] ) & 0x3f | 0x80 );
@@ -333,28 +337,28 @@ class OutboundRequest {
 	/**
 	 * Get the URL for this request
 	 */
-	public function getUrl(): string {
+	public function get_url(): string {
 		return $this->url;
 	}
 
 	/**
 	 * Get the data for this request
 	 */
-	public function getData(): array {
+	public function get_data(): array {
 		return $this->data;
 	}
 
 	/**
 	 * Get the schema type for this request
 	 */
-	public function getSchemaType(): string {
+	public function get_schema_type(): string {
 		return $this->schema_type;
 	}
 
 	/**
 	 * Get the configuration for this request
 	 */
-	public function getConfig(): array {
+	public function get_config(): array {
 		return $this->config;
 	}
 }

@@ -10,7 +10,8 @@ namespace QIT_AI_Webserver\Lib;
 class FactStore {
 	public const KIND_STEP_SUMMARY = 'step_summary';   // <-- NEW
 
-	public static array $facts = [];  // cleared per request
+	/** @var array Facts cleared per request */
+	public static array $facts = [];
 
 	public static function add( array $fact ): void {
 		if ( ! isset( $fact['id'] ) ) {
@@ -46,7 +47,8 @@ class FactStore {
 		$scored = [];
 		foreach ( self::$facts as $f ) {
 			$text = mb_strtolower( $f['summary'] ?? json_encode( $f ) );
-			if ( ( $pos = mb_strpos( $text, $q ) ) !== false ) {
+			$pos  = mb_strpos( $text, $q );
+			if ( $pos !== false ) {
 				// lower position == better score
 				$scored[] = [
 					'score' => 1_000 - $pos,

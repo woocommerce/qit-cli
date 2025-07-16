@@ -6,6 +6,9 @@ require_once __DIR__ . '/helpers.php';                    // log_*()
 // ───────────────────────────────────────────────────────────────────────
 // 1. RUNTIME – validate env‑vars, set INI, register autoloader
 // ───────────────────────────────────────────────────────────────────────
+/**
+ * Runtime initialization
+ */
 function qit_runtime_init(): void {
 	static $once = false;
 	if ( $once ) {
@@ -19,10 +22,12 @@ function qit_runtime_init(): void {
 		}
 	}
 
-	$nodeDir = rtrim( getenv( 'QIT_NODE_DIR' ), '/' ) . '/';
-	ini_set( 'log_errors', 1 );
-	ini_set( 'error_log', $nodeDir . 'php-errors.log' );
+	$node_dir = rtrim( getenv( 'QIT_NODE_DIR' ), '/' ) . '/';
+	// Configure error logging
 	error_reporting( E_ALL );
+	// Note: Using ini_set for node configuration - WordPress norms don't apply here
+	ini_set( 'log_errors', '1' );
+	ini_set( 'error_log', $node_dir . 'php-errors.log' );
 	ini_set( 'display_errors', '1' );
 
 	// PSR‑4 autoloader for QIT_AI_Webserver\*
@@ -38,31 +43,30 @@ function qit_runtime_init(): void {
 	});
 }
 
-/*
--------------------------------------------------------------------- *
- * 2. HTTP – parse request & (optionally) enforce token / rate limit    *
- * -------------------------------------------------------------------- */
-function qit_http_request( bool $checkToken = true ): array {
+/**
+ * 2. HTTP – parse request & (optionally) enforce token / rate limit
+ */
+function qit_http_request( bool $check_token = true ): array {
 	qit_runtime_init();
 
-	$method     = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-	$rawUri     = $_SERVER['REQUEST_URI'] ?? '/';
-	$uri        = parse_url( $rawUri, PHP_URL_PATH ) ?? '/';
-	$headers    = getallheaders();
-	$remoteAddr = $_SERVER['REMOTE_ADDR'] ?? '';
+	$method      = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+	$raw_uri     = $_SERVER['REQUEST_URI'] ?? '/';
+	$uri         = parse_url( $raw_uri, PHP_URL_PATH ) ?? '/';
+	$headers     = getallheaders();
+	$remote_addr = $_SERVER['REMOTE_ADDR'] ?? '';
 
 	// ---- token guard --------------------------------------------------
-	if ( $checkToken ) {
-		$providedToken = $headers['X-Node-Token'] ?? '';
-		if ( $providedToken !== getenv( 'QIT_NODE_TOKEN' ) ) {
+	if ( $check_token ) {
+		$provided_token = $headers['X-Node-Token'] ?? '';
+		if ( $provided_token !== getenv( 'QIT_NODE_TOKEN' ) ) {
 			// Log **before** responding so we can correlate in Manager logs.
 			if ( function_exists( 'log_error' ) ) {
 				\log_error('Request rejected – node token mismatch', [
 					'expected_prefix' => substr( getenv( 'QIT_NODE_TOKEN' ), 0, 8 ) . '...',
-					'provided_prefix' => substr( $providedToken, 0, 8 ) . '...',
+					'provided_prefix' => substr( $provided_token, 0, 8 ) . '...',
 					'method'          => $method,
 					'uri'             => $uri,
-					'remote_addr'     => $remoteAddr,
+					'remote_addr'     => $remote_addr,
 				]);
 			}
 			http_response_code( 403 );
@@ -71,10 +75,10 @@ function qit_http_request( bool $checkToken = true ): array {
 		}
 	} else {
 		// For worker router, check that it's being requested from localhost (by the poller)
-		if ( $remoteAddr !== '127.0.0.1' && $remoteAddr !== 'localhost' ) {
+		if ( $remote_addr !== '127.0.0.1' && $remote_addr !== 'localhost' ) {
 			if ( function_exists( 'log_warning' ) ) {
 				\log_warning('Request rejected – worker router not local', [
-					'remote_addr' => $remoteAddr,
+					'remote_addr' => $remote_addr,
 					'method'      => $method,
 					'uri'         => $uri,
 				]);
@@ -95,7 +99,7 @@ function qit_http_request( bool $checkToken = true ): array {
 		if ( function_exists( 'log_warning' ) ) {
 			\log_warning('Request rate-limited', [
 				'key'         => $key,
-				'remote_addr' => $remoteAddr,
+				'remote_addr' => $remote_addr,
 				'method'      => $method,
 				'uri'         => $uri,
 			]);
@@ -115,7 +119,7 @@ function qit_http_request( bool $checkToken = true ): array {
 				'json_error'     => json_last_error_msg(),
 				'method'         => $method,
 				'uri'            => $uri,
-				'remote_addr'    => $remoteAddr,
+				'remote_addr'    => $remote_addr,
 				'truncated_body' => substr( $body, 0, 200 ) . ( strlen( $body ) > 200 ? '…' : '' ),
 			]);
 		}
@@ -127,10 +131,9 @@ function qit_http_request( bool $checkToken = true ): array {
 	return compact( 'method', 'uri', 'headers', 'input' );
 }
 
-/*
--------------------------------------------------------------------- *
- * 3. LLM – boot LLPhant once per request / CLI invocation              *
- * -------------------------------------------------------------------- */
+/**
+ * 3. LLM – boot LLPhant once per request / CLI invocation
+ */
 function qit_llm_boot( array $overrides = [] ): void {
 	qit_runtime_init();
 

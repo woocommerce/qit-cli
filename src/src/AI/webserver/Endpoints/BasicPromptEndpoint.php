@@ -24,7 +24,7 @@ class BasicPromptEndpoint extends AbstractEndpoint {
 	/**
 	 * Handle AI process request
 	 *
-	 * @param array $input Request input data
+	 * @param array $input Request input data.
 	 *
 	 * @return string JSON response
 	 */

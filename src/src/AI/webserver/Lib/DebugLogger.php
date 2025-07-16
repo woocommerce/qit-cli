@@ -5,14 +5,14 @@ namespace QIT_AI_Webserver\Lib;
 final class DebugLogger {
 	/** Append a structured message to debug log */
 	public static function log( string $stage, array $payload ): void {
-		$debugDir = rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node/debug';
-		if ( ! is_dir( $debugDir ) ) {
-			mkdir( $debugDir, 0700, true );
+		$debug_dir = rtrim( sys_get_temp_dir(), '/\\' ) . '/qit-node/debug';
+		if ( ! is_dir( $debug_dir ) ) {
+			mkdir( $debug_dir, 0700, true );
 		}
-		$logFile = $debugDir . '/debug-prompt.log';
+		$log_file = $debug_dir . '/debug-prompt.log';
 
-		$dbg = is_file( $logFile )
-			? json_decode( file_get_contents( $logFile ), true ) ?? []
+		$dbg = is_file( $log_file )
+			? json_decode( file_get_contents( $log_file ), true ) ?? []
 			: [];
 
 		$dbg[] = [
@@ -21,24 +21,24 @@ final class DebugLogger {
 			'data'  => $payload,
 		];
 
-		file_put_contents( $logFile,
+		file_put_contents( $log_file,
 			json_encode( $dbg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
 		);
 	}
 
-	public static function dirTree( string $dir, int $depth = 2, int $maxLines = 400 ): string {
+	public static function dir_tree( string $dir, int $depth = 2, int $max_lines = 400 ): string {
 		$dir = rtrim( $dir, '/\\' );
 
 		// -- 1) Try native `tree`
 		$cmd = 'command -v tree';
 		if ( trim( shell_exec( $cmd ) ?? '' ) !== '' ) {
-			$treeCmd = sprintf(
+			$tree_cmd = sprintf(
 				'tree -a -L %d --dirsfirst %s 2>/dev/null | head -n %d',
 				$depth,
 				escapeshellarg( $dir ),
-				$maxLines
+				$max_lines
 			);
-			$out     = shell_exec( $treeCmd );
+			$out      = shell_exec( $tree_cmd );
 			if ( $out !== null ) {
 				return $out;
 			}
@@ -56,7 +56,7 @@ final class DebugLogger {
 			$rel     = substr( $path, strlen( $dir ) + 1 );
 			$pad     = str_repeat( '│   ', $iter->getDepth() );
 			$lines[] = $pad . ( $info->isDir() ? '├── ' : '└── ' ) . $rel;
-			if ( count( $lines ) >= $maxLines ) {
+			if ( count( $lines ) >= $max_lines ) {
 				break;
 			}
 		}

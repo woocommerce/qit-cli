@@ -15,7 +15,7 @@ class ParsePhpTool extends BaseTool {
 		return 'Return a AST of a PHP file using nikic/PHP-Parser.';
 	}
 
-	function parse_php( string $file ): string {
+	public function parse_php( string $file ): string {
 		$result = $this->execute( [ 'file' => $file ] );
 
 		return json_encode( $result, JSON_UNESCAPED_SLASHES );

@@ -35,7 +35,8 @@ class ReadFileTool extends BaseTool {
 
 		/*
 		LLPhant is happiest when the tool returns a JSON-serialised
-			string, so keep the encoding here. */
+			string, so keep the encoding here.
+		*/
 
 		return json_encode( $result, JSON_UNESCAPED_SLASHES );
 	}

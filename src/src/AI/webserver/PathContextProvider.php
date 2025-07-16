@@ -9,38 +9,38 @@ namespace QIT_AI_Webserver;
  * utility class that doesn't extend BaseTool, preventing it from being called by LLMs.
  */
 class PathContextProvider {
-	private string $workDir;
-	private string $sutDir;
+	private string $work_dir;
+	private string $sut_dir;
 
-	public function __construct( string $workDirectory, string $sutDirectory = '' ) {
-		$this->workDir = rtrim( $workDirectory, '/\\' );
-		$this->sutDir  = ltrim( $sutDirectory, '/' );
+	public function __construct( string $work_directory, string $sut_directory = '' ) {
+		$this->work_dir = rtrim( $work_directory, '/\\' );
+		$this->sut_dir  = ltrim( $sut_directory, '/' );
 	}
 
 	/**
 	 * Get path context data - same functionality as PathContextTool::do()
 	 *
-	 * @return array Context data with wp_root, sut, deps, dep_count, truncated
-	 * @throws \RuntimeException if directories don't exist
+	 * @return array Context data with wp_root, sut, deps, dep_count, truncated.
+	 * @throws \RuntimeException If directories don't exist.
 	 */
-	public function getPathContext(): array {
-		$wpRoot  = $this->workDir;
-		$sutPath = rtrim( $wpRoot . '/' . $this->sutDir, '/' );
-		$sutSlug = basename( $this->sutDir );
+	public function get_path_context(): array {
+		$wp_root  = $this->work_dir;
+		$sut_path = rtrim( $wp_root . '/' . $this->sut_dir, '/' );
+		$sut_slug = basename( $this->sut_dir );
 
-		if ( ! file_exists( $wpRoot ) ) {
-			throw new \RuntimeException( "WP_ROOT directory does not exist: $wpRoot" );
+		if ( ! file_exists( $wp_root ) ) {
+			throw new \RuntimeException( "WP_ROOT directory does not exist: $wp_root" );
 		}
 
-		if ( ! file_exists( $sutPath ) || ! is_dir( $sutPath ) ) {
-			throw new \RuntimeException( "SUT directory does not exist: $sutPath" );
+		if ( ! file_exists( $sut_path ) || ! is_dir( $sut_path ) ) {
+			throw new \RuntimeException( "SUT directory does not exist: $sut_path" );
 		}
 
-		$deps      = [];
-		$totalDeps = 0;
-		$truncated = false;
+		$deps       = [];
+		$total_deps = 0;
+		$truncated  = false;
 
-		/** helper: shallow listing */
+		/** Helper: shallow listing */
 		$ls1 = static function ( string $dir ): array {
 			$items = @scandir( $dir );
 			if ( $items === false ) {
@@ -61,20 +61,20 @@ class PathContextProvider {
 			return $entries;
 		};
 
-		/** scan wp-content/(plugins|themes) */
-		foreach ( [ 'plugins', 'themes' ] as $typeDir ) {
-			$base = $wpRoot . '/wp-content/' . $typeDir;
+		/** Scan wp-content/(plugins|themes) */
+		foreach ( [ 'plugins', 'themes' ] as $type_dir ) {
+			$base = $wp_root . '/wp-content/' . $type_dir;
 
 			if ( ! file_exists( $base ) ) {
 				throw new \RuntimeException( "Base directory does not exist: $base" );
 			}
 
 			foreach ( scandir( $base ) ?: [] as $slug ) {
-				if ( $slug === '.' || $slug === '..' || $slug === $sutSlug ) {
+				if ( $slug === '.' || $slug === '..' || $slug === $sut_slug ) {
 					continue;
 				}
 
-				++$totalDeps;
+				++$total_deps;
 				if ( count( $deps ) >= 20 ) {   // hard cap to keep JSON small
 					$truncated = true;
 					continue;
@@ -87,7 +87,7 @@ class PathContextProvider {
 
 				$deps[] = [
 					'slug' => $slug,
-					'type' => $typeDir === 'plugins' ? 'plugin' : 'theme',
+					'type' => $type_dir === 'plugins' ? 'plugin' : 'theme',
 					'path' => $path,
 					'ls'   => $ls1( $path ),
 				];
@@ -95,10 +95,10 @@ class PathContextProvider {
 		}
 
 		return [
-			'wp_root'   => $wpRoot,
-			'sut'       => $sutPath,
+			'wp_root'   => $wp_root,
+			'sut'       => $sut_path,
 			'deps'      => $deps,
-			'dep_count' => $totalDeps,
+			'dep_count' => $total_deps,
 			'truncated' => $truncated,
 		];
 	}

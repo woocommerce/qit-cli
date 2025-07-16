@@ -16,11 +16,11 @@ use RecursiveIteratorIterator;
 class TreeDirectoryTool extends BaseTool {
 
 	/** @var string relative path such as wp-content/plugins/foo-bar */
-	private string $sutDir;
+	private string $sut_dir;
 
-	public function __construct( string $workDirectory, string $sutDirectory = '', ?\QIT_AI_Webserver\ToolContext $context = null ) {
-		parent::__construct( $workDirectory, $sutDirectory, $context );
-		$this->sutDir = ltrim( $sutDirectory, '/' );
+	public function __construct( string $work_directory, string $sut_directory = '', ?\QIT_AI_Webserver\ToolContext $context = null ) {
+		parent::__construct( $work_directory, $sut_directory, $context );
+		$this->sut_dir = ltrim( $sut_directory, '/' );
 	}
 
 	public function getName(): string {
@@ -60,7 +60,9 @@ class TreeDirectoryTool extends BaseTool {
 	}
 
 
-	/* ─────────────── core ─────────────── */
+	/**
+	 * Core directory tree functionality.
+	 */
 	protected function do( array $p ) {
 		$path  = $this->safePath( $p['path'] ?? '' );
 		$depth = max( 1, min( (int) ( $p['depth'] ?? 2 ), 5 ) );   // clamp to 1‑5
@@ -78,7 +80,7 @@ class TreeDirectoryTool extends BaseTool {
 		$iter->setMaxDepth( $depth );
 
 		$entries   = [];
-		$maxLines  = 500;
+		$max_lines = 500;
 		$truncated = false;
 
 		foreach ( $iter as $file ) {
@@ -87,7 +89,7 @@ class TreeDirectoryTool extends BaseTool {
 				continue;
 			}
 			$entries[] = $rel . ( $file->isDir() ? '/' : '' );
-			if ( count( $entries ) >= $maxLines ) {
+			if ( count( $entries ) >= $max_lines ) {
 				$truncated = true;
 				break;
 			}

@@ -19,7 +19,7 @@ use Symfony\Component\Process\Process;
 use function QIT_CLI\get_manager_url;
 
 class NodeStartCommand extends QITCommand {
-	protected static $defaultName = 'node:start';
+	protected static $default_name = 'node:start';
 
 	protected TunnelRunner $tunnel_runner;
 	protected WebServer $listener;
@@ -35,8 +35,8 @@ class NodeStartCommand extends QITCommand {
 	private bool $heartbeat_running = true;
 	private Logger $logger;
 
-	private string $workerUrl = '';
-	private string $runDir    = '';
+	private string $worker_url = '';
+	private string $run_dir    = '';
 
 	public function __construct(
 		TunnelRunner $tunnel_runner,
@@ -68,35 +68,35 @@ class NodeStartCommand extends QITCommand {
 		// ---------------------------------------------------------------------
 		// 1. decide once where this run will live
 		// ---------------------------------------------------------------------
-		$runId        = date( 'Ymd-His' ) . '-' . substr( bin2hex( random_bytes( 2 ) ), 0, 4 );
-		$runDir       = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$runId/";
-		$this->runDir = $runDir;  // Store for use in heartbeat
-		$logDir       = $runDir;                    // keep logs in the same folder
+		$run_id        = gmdate( 'Ymd-His' ) . '-' . substr( bin2hex( random_bytes( 2 ) ), 0, 4 );
+		$run_dir       = rtrim( sys_get_temp_dir(), '/\\' ) . "/qit-node/run-$run_id/";
+		$this->run_dir = $run_dir;  // Store for use in heartbeat
+		$log_dir       = $run_dir;                    // keep logs in the same folder
 
-		mkdir( $runDir, 0700, true );
+		mkdir( $run_dir, 0700, true );
 
 		// ---------------------------------------------------------------------
 		// 2. create log objects that point *inside* the run directory
 		// ---------------------------------------------------------------------
-		$this->logger   = new Logger( $logDir . 'node.log', Logger::DEBUG );
-		$listenerLogger = new Logger( $logDir . 'listener.log', Logger::DEBUG );
-		$workerLogger   = new Logger( $logDir . 'worker.log', Logger::DEBUG );
+		$this->logger    = new Logger( $log_dir . 'node.log', Logger::DEBUG );
+		$listener_logger = new Logger( $log_dir . 'listener.log', Logger::DEBUG );
+		$worker_logger   = new Logger( $log_dir . 'worker.log', Logger::DEBUG );
 
 		ini_set( 'log_errors', 1 );
-		ini_set( 'error_log', $logDir . 'node.log' );    // fatal errors → node.log
+		ini_set( 'error_log', $log_dir . 'node.log' );    // fatal errors → node.log
 		ini_set( 'display_errors', 0 );
 
 		// optional: show paths to the user
-		$output->writeln( "<info>Run directory : $runDir</info>" );
-		$output->writeln( "<info>Listener log  : {$listenerLogger->get_log_file()}</info>" );
-		$output->writeln( "<info>Worker log    : {$workerLogger->get_log_file()}</info>" );
+		$output->writeln( "<info>Run directory : $run_dir</info>" );
+		$output->writeln( "<info>Listener log  : {$listener_logger->get_log_file()}</info>" );
+		$output->writeln( "<info>Worker log    : {$worker_logger->get_log_file()}</info>" );
 
 		// Write initial marker & sanity-check log files
-		$startupMarker = '=== QIT Node boot sequence initiated at ' . date( 'Y-m-d H:i:s' ) . ' ===';
+		$startup_marker = '=== QIT Node boot sequence initiated at ' . gmdate( 'Y-m-d H:i:s' ) . ' ===';
 
-		foreach ( [ $this->logger, $listenerLogger, $workerLogger ] as $lg ) {
+		foreach ( [ $this->logger, $listener_logger, $worker_logger ] as $lg ) {
 			/* @var Logger $lg */
-			$ok = @file_put_contents( $lg->get_log_file(), $startupMarker . PHP_EOL, FILE_APPEND );
+			$ok = @file_put_contents( $lg->get_log_file(), $startup_marker . PHP_EOL, FILE_APPEND );
 			if ( $ok === false ) {
 				$output->writeln( '<error>Failed to write to log file: ' . $lg->get_log_file() . '</error>' );
 				$output->writeln( '<error>Aborting node startup – unable to create log files. Check filesystem permissions.</error>' );
@@ -112,27 +112,27 @@ class NodeStartCommand extends QITCommand {
 		] );
 
 		// Generate a shared token for both servers
-		$nodeToken = bin2hex( random_bytes( 32 ) );
+		$node_token = bin2hex( random_bytes( 32 ) );
 
 		// Generate a per-run secret for internal routes
-		$internalToken = bin2hex( random_bytes( 32 ) );
+		$internal_token = bin2hex( random_bytes( 32 ) );
 
 		// Pass loggers to servers and set the shared token
-		$this->listener->setLogger( $listenerLogger );
-		$this->worker->setLogger( $workerLogger );
-		$this->listener->setNodeToken( $nodeToken );
-		$this->worker->setNodeToken( $nodeToken );
+		$this->listener->setLogger( $listener_logger );
+		$this->worker->setLogger( $worker_logger );
+		$this->listener->setNodeToken( $node_token );
+		$this->worker->setNodeToken( $node_token );
 
 		// Get provider configuration
-		$provider       = $input->getOption( 'provider' );
-		$providerConfig = [];
+		$provider        = $input->getOption( 'provider' );
+		$provider_config = [];
 
 		switch ( $provider ) {
 			case 'lmstudio':
 				// LM Studio uses OpenAI-compatible API but doesn't require API key
-				$providerConfig['api_key']  = $input->getOption( 'api-key' ) ?: 'dummy'; // LM Studio ignores this
-				$providerConfig['base_url'] = $input->getOption( 'base-url' ) ?: 'http://localhost:1234/v1';
-				$providerConfig['model']    = $input->getOption( 'model' ) ?: 'deepseek/deepseek-r1-0528-qwen3-8b';
+				$provider_config['api_key']  = $input->getOption( 'api-key' ) ?: 'dummy'; // LM Studio ignores this
+				$provider_config['base_url'] = $input->getOption( 'base-url' ) ?: 'http://localhost:1234/v1';
+				$provider_config['model']    = $input->getOption( 'model' ) ?: 'deepseek/deepseek-r1-0528-qwen3-8b';
 				break;
 
 			case 'openai':
@@ -141,12 +141,12 @@ class NodeStartCommand extends QITCommand {
 
 					return self::FAILURE;
 				}
-				$providerConfig['api_key'] = $input->getOption( 'api-key' );
+				$provider_config['api_key'] = $input->getOption( 'api-key' );
 				// Set default model to o4-mini-2025-04-16 if not specified
-				$providerConfig['model'] = $input->getOption( 'model' ) ?: 'o4-mini-2025-04-16';
+				$provider_config['model'] = $input->getOption( 'model' ) ?: 'o4-mini-2025-04-16';
 				// Support custom base URL for OpenAI-compatible providers
 				if ( $input->getOption( 'base-url' ) ) {
-					$providerConfig['base_url'] = $input->getOption( 'base-url' );
+					$provider_config['base_url'] = $input->getOption( 'base-url' );
 				}
 				break;
 
@@ -156,9 +156,9 @@ class NodeStartCommand extends QITCommand {
 
 					return self::FAILURE;
 				}
-				$providerConfig['api_key'] = $input->getOption( 'api-key' );
+				$provider_config['api_key'] = $input->getOption( 'api-key' );
 				if ( $input->getOption( 'model' ) ) {
-					$providerConfig['model'] = $input->getOption( 'model' );
+					$provider_config['model'] = $input->getOption( 'model' );
 				}
 				break;
 
@@ -169,15 +169,15 @@ class NodeStartCommand extends QITCommand {
 		}
 
 		// Set runtime configuration
-		$runtimeCfg = [
+		$runtime_cfg = [
 			'ai_dir'   => Config::get_qit_dir() . 'ai' . DIRECTORY_SEPARATOR,
-			'tmp_base' => $runDir,              // every copied router lives here
+			'tmp_base' => $run_dir,              // every copied router lives here
 		];
 
 		foreach ( [ $this->listener, $this->worker ] as $srv ) {
-			$srv->setRuntimeConfig( $runtimeCfg );
-			$srv->setProviderConfig( $provider, $providerConfig );
-			$srv->setNodeToken( $nodeToken );             // NEW
+			$srv->setRuntimeConfig( $runtime_cfg );
+			$srv->setProviderConfig( $provider, $provider_config );
+			$srv->setNodeToken( $node_token );             // NEW
 		}
 
 		// Configure listener to use router.listener.php
@@ -192,36 +192,36 @@ class NodeStartCommand extends QITCommand {
 			$output->write( 'Checking LM Studio API... ' );
 			try {
 				// Test LM Studio connection by checking models endpoint
-				$baseUrl        = $providerConfig['base_url'] ?? 'http://localhost:1234/v1';
-				$modelsEndpoint = rtrim( $baseUrl, '/' ) . '/models';
+				$base_url        = $provider_config['base_url'] ?? 'http://localhost:1234/v1';
+				$models_endpoint = rtrim( $base_url, '/' ) . '/models';
 
-				$ch = curl_init( $modelsEndpoint );
+				$ch = curl_init( $models_endpoint );
 				curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 				curl_setopt( $ch, CURLOPT_TIMEOUT, 5 );
 				curl_setopt( $ch, CURLOPT_HTTPHEADER, [
 					'Content-Type: application/json',
-					'Authorization: Bearer ' . ( $providerConfig['api_key'] ?? 'dummy' ),
+					'Authorization: Bearer ' . ( $provider_config['api_key'] ?? 'dummy' ),
 				] );
 
-				$response = curl_exec( $ch );
-				$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-				$error    = curl_error( $ch );
+				$response  = curl_exec( $ch );
+				$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+				$error     = curl_error( $ch );
 				curl_close( $ch );
 
-				if ( $httpCode === 200 ) {
+				if ( $http_code === 200 ) {
 					$output->writeln( '<info>✓</info>' );
 
 					// Check if any models are loaded
 					$data = json_decode( $response, true );
 					if ( isset( $data['data'] ) && is_array( $data['data'] ) && count( $data['data'] ) > 0 ) {
-						$modelCount = count( $data['data'] );
-						$output->writeln( "<info>Found {$modelCount} model(s) loaded in LM Studio</info>" );
+						$model_count = count( $data['data'] );
+						$output->writeln( "<info>Found {$model_count} model(s) loaded in LM Studio</info>" );
 					} else {
 						$output->writeln( '<comment>No models currently loaded in LM Studio. You may need to load a model through the LM Studio UI.</comment>' );
 					}
 				} else {
 					$output->writeln( '<error>✗</error>' );
-					$output->writeln( '<error>Cannot connect to LM Studio API at ' . $baseUrl . '</error>' );
+					$output->writeln( '<error>Cannot connect to LM Studio API at ' . $base_url . '</error>' );
 					$output->writeln( '<error>Please ensure LM Studio is running and the API server is started.</error>' );
 					$output->writeln( '<comment>You can start LM Studio and enable the API server in the settings.</comment>' );
 
@@ -257,29 +257,28 @@ class NodeStartCommand extends QITCommand {
 				throw new \Exception( 'Client ID not found. This should have been generated during bootstrap.' );
 			}
 
-			// We're using the shared token for both servers
-			$node_token = $nodeToken;
+					// We're using the shared token for both servers
 
 			// 1. Start the internal worker first ― it tells us its random port
-			$this->workerUrl = $this->worker->start();
-			$output->writeln( '<info>✓ Started worker server on ' . $this->workerUrl . '</info>' );
+			$this->worker_url = $this->worker->start();
+			$output->writeln( '<info>✓ Started worker server on ' . $this->worker_url . '</info>' );
 
 			// 2. Inject that URL into the listener's environment
-			$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->workerUrl );
+			$this->listener->setEnvironmentVariable( 'QIT_WORKER_URL', $this->worker_url );
 			$this->listener->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
-			$this->listener->setEnvironmentVariable( 'QIT_INTERNAL_TOKEN', $internalToken );
+			$this->listener->setEnvironmentVariable( 'QIT_INTERNAL_TOKEN', $internal_token );
 
 			// 3. Now launch the listener once
-			$listenerUrl = $this->listener->start();
-			$output->writeln( '<info>✓ Started listener server on ' . $listenerUrl . '</info>' );
+			$listener_url = $this->listener->start();
+			$output->writeln( '<info>✓ Started listener server on ' . $listener_url . '</info>' );
 
 			// Create tunnel for the listener
 			if ( $input->getOption( 'tunnel' ) === 'none' ) {
-				$this->tunnel_url = $listenerUrl;
+				$this->tunnel_url = $listener_url;
 				$output->writeln( '<info>✓ No tunnel created. Using listener URL: ' . $this->tunnel_url . '</info>' );
 			} else {
 				$this->tunnel_runner->check_tunnel_support( $input->getOption( 'tunnel' ) );
-				$this->tunnel_url = $this->tunnel_runner->start_tunnel( $listenerUrl, $this->env_id ); // Store as class property
+				$this->tunnel_url = $this->tunnel_runner->start_tunnel( $listener_url, $this->env_id ); // Store as class property
 				$output->writeln( '<info>✓ Created secure tunnel: ' . $this->tunnel_url . '</info>' );
 			}
 
@@ -296,14 +295,14 @@ class NodeStartCommand extends QITCommand {
 			];
 
 			// First, validate the payload using the internal validation endpoint
-			$listenerValidateUrl = $listenerUrl . '/internal/register';
-			$ch                  = curl_init( $listenerValidateUrl );
+			$listener_validate_url = $listener_url . '/internal/register';
+			$ch                    = curl_init( $listener_validate_url );
 			curl_setopt_array( $ch, [
 				CURLOPT_POST           => true,
 				CURLOPT_POSTFIELDS     => json_encode( $registration_data ),
 				CURLOPT_HTTPHEADER     => [
 					'Content-Type: application/json',
-					'X-Internal-Token: ' . $internalToken,
+					'X-Internal-Token: ' . $internal_token,
 					'X-Node-Token: ' . $node_token,
 				],
 				CURLOPT_RETURNTRANSFER => true,
@@ -355,7 +354,7 @@ class NodeStartCommand extends QITCommand {
 			$this->worker->setEnvironmentVariable( 'QIT_MANAGER_URL', get_manager_url() );
 
 			// Clear any stale busy.lock file at startup
-			@unlink( $runDir . '/busy.lock' );
+			@unlink( $run_dir . '/busy.lock' );
 
 			if ( $node_name ) {
 				$output->writeln( '<info>✓ Node name: ' . $node_name . '</info>' );
@@ -435,10 +434,10 @@ class NodeStartCommand extends QITCommand {
 		}
 
 		try {
-			$this->logger->info( 'Preparing to send heartbeat', [
-				'node_id' => $this->node_id,
-				'time'    => date( 'Y-m-d H:i:s' ),
-			] );
+					$this->logger->info( 'Preparing to send heartbeat', [
+						'node_id' => $this->node_id,
+						'time'    => gmdate( 'Y-m-d H:i:s' ),
+					] );
 
 			// Collect health metrics
 			$error_file = sys_get_temp_dir() . '/qit-node-last-error.json';
@@ -489,7 +488,7 @@ class NodeStartCommand extends QITCommand {
 			}
 
 			// Check busy status for heartbeat
-			$busy = file_exists( $this->runDir . '/busy.lock' ) ? 1 : 0;
+			$busy = file_exists( $this->run_dir . '/busy.lock' ) ? 1 : 0;
 
 			$heartbeat_data = [
 				'node_token'  => $this->node_token,
@@ -526,7 +525,7 @@ class NodeStartCommand extends QITCommand {
 				] );
 
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( '[' . date( 'H:i:s' ) . '] Heartbeat sent successfully' );
+					$output->writeln( '[' . gmdate( 'H:i:s' ) . '] Heartbeat sent successfully' );
 					if ( $last_error ) {
 						$output->writeln( '  - Reported error: ' . ( $last_error['error_message'] ?? 'Unknown' ) );
 						if ( ! empty( $last_error['job_id'] ) ) {
@@ -611,8 +610,8 @@ class NodeStartCommand extends QITCommand {
 		}
 
 		// Clear busy.lock file on shutdown
-		if ( ! empty( $this->runDir ) ) {
-			@unlink( $this->runDir . '/busy.lock' );
+		if ( ! empty( $this->run_dir ) ) {
+			@unlink( $this->run_dir . '/busy.lock' );
 			$this->logger->debug( 'Cleared busy.lock file on shutdown' );
 		}
 

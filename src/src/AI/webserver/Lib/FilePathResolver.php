@@ -22,53 +22,53 @@ namespace QIT_AI_Webserver\Lib;
  * Standalone copy for the node to avoid manager dependencies
  */
 class FilePathResolver {
-	private string $extractPath;
+	private string $extract_path;
 	private ToolPathGuard $g;
 
-	public function __construct( string $extractPath, string $sutDir = '' ) {
-		$this->extractPath = rtrim( $extractPath, '/\\' );
-		$this->g           = new ToolPathGuard( $this->extractPath, $sutDir );
+	public function __construct( string $extract_path, string $sut_dir = '' ) {
+		$this->extract_path = rtrim( $extract_path, '/\\' );
+		$this->g            = new ToolPathGuard( $this->extract_path, $sut_dir );
 	}
 
 	/**  Convert *user* path → absolute canon path or throw  */
-	public function toAbsolute( string $userPath ): string {
+	public function to_absolute( string $user_path ): string {
 		// For file operations, try to resolve using both WP-relative and SUT-relative paths
 		try {
-			return $this->g->resolve( $userPath );
+			return $this->g->resolve( $user_path );
 		} catch ( \RuntimeException $e ) {
 			// Fallback to the old method for non-file paths or when resolve fails
-			$rel = $this->canonRelative( $userPath );     // throws if illegal
+			$rel = $this->canon_relative( $user_path );     // throws if illegal
 
-			// Always use the project root (extractPath) as the base
+			// Always use the project root (extract_path) as the base
 			if ( $rel === '.' || $rel === '' ) {
-				return $this->extractPath;
+				return $this->extract_path;
 			}
 
-			return $this->extractPath . '/' . $rel;
+			return $this->extract_path . '/' . $rel;
 		}
 	}
 
 	/**  Return *relative*, canonical path inside workspace  */
-	public function canonRelative( string $userPath ): string {
-		return $this->g->normalise( $userPath );      // may throw
+	public function canon_relative( string $user_path ): string {
+		return $this->g->normalise( $user_path );      // may throw
 	}
 
 	/**
 	 * Convert an absolute path to relative
 	 */
-	public function toRelative( string $absolutePath ): string {
-		$absolutePath = $this->normalize( $absolutePath );
-		$extractPath  = $this->normalize( $this->extractPath );
+	public function to_relative( string $absolute_path ): string {
+		$absolute_path = $this->normalize( $absolute_path );
+		$extract_path  = $this->normalize( $this->extract_path );
 
 		// Remove extract path prefix
-		if ( strpos( $absolutePath, $extractPath ) === 0 ) {
-			$relative = substr( $absolutePath, strlen( $extractPath ) );
+		if ( strpos( $absolute_path, $extract_path ) === 0 ) {
+			$relative = substr( $absolute_path, strlen( $extract_path ) );
 
 			return ltrim( $relative, '/' );
 		}
 
 		// Path is already relative
-		return ltrim( $absolutePath, '/' );
+		return ltrim( $absolute_path, '/' );
 	}
 
 	/**
@@ -88,34 +88,34 @@ class FilePathResolver {
 	/**
 	 * Check if a file exists (using relative path)
 	 */
-	public function fileExists( string $relativePath ): bool {
-		return file_exists( $this->toAbsolute( $relativePath ) );
+	public function file_exists( string $relative_path ): bool {
+		return file_exists( $this->to_absolute( $relative_path ) );
 	}
 
 	/**
 	 * Read file contents (using relative path)
 	 */
-	public function readFile( string $relativePath ): string {
-		$absolutePath = $this->toAbsolute( $relativePath );
-		if ( ! file_exists( $absolutePath ) ) {
+	public function read_file( string $relative_path ): string {
+		$absolute_path = $this->to_absolute( $relative_path );
+		if ( ! file_exists( $absolute_path ) ) {
 			DebugLogger::log( 'read_file_error', [
 				'reason'        => 'file_not_found',
-				'relative_path' => $relativePath,
-				'absolute_path' => $absolutePath,
-				'work_dir'      => $this->extractPath,
-				'work_dir_tree' => DebugLogger::dirTree( $this->extractPath ),
+				'relative_path' => $relative_path,
+				'absolute_path' => $absolute_path,
+				'work_dir'      => $this->extract_path,
+				'work_dir_tree' => DebugLogger::dir_tree( $this->extract_path ),
 			] );
-			throw new \RuntimeException( "File not found: $relativePath" );
+			throw new \RuntimeException( "File not found: $relative_path" );
 		}
 
-		$content = file_get_contents( $absolutePath );
-		if ( $content === '' || filesize( $absolutePath ) === 0 ) {
+		$content = file_get_contents( $absolute_path );
+		if ( $content === '' || filesize( $absolute_path ) === 0 ) {
 			DebugLogger::log( 'read_file_error', [
 				'reason'        => 'empty_file',
-				'relative_path' => $relativePath,
-				'absolute_path' => $absolutePath,
-				'work_dir'      => $this->extractPath,
-				'dir_tree'      => DebugLogger::dirTree( dirname( $absolutePath ) ),
+				'relative_path' => $relative_path,
+				'absolute_path' => $absolute_path,
+				'work_dir'      => $this->extract_path,
+				'dir_tree'      => DebugLogger::dir_tree( dirname( $absolute_path ) ),
 			] );
 		}
 
@@ -125,20 +125,20 @@ class FilePathResolver {
 	/**
 	 * Get file info (using relative path)
 	 */
-	public function getFileInfo( string $relativePath ): array {
-		$absolutePath = $this->toAbsolute( $relativePath );
-		if ( ! file_exists( $absolutePath ) ) {
-			throw new \RuntimeException( "File not found: $relativePath" );
+	public function get_file_info( string $relative_path ): array {
+		$absolute_path = $this->to_absolute( $relative_path );
+		if ( ! file_exists( $absolute_path ) ) {
+			throw new \RuntimeException( "File not found: $relative_path" );
 		}
 
-		$content = file_get_contents( $absolutePath );
+		$content = file_get_contents( $absolute_path );
 
 		return [
-			'path'          => $relativePath,
-			'absolute_path' => $absolutePath,
-			'size'          => filesize( $absolutePath ),
+			'path'          => $relative_path,
+			'absolute_path' => $absolute_path,
+			'size'          => filesize( $absolute_path ),
 			'lines'         => substr_count( $content, "\n" ) + 1,
-			'extension'     => pathinfo( $relativePath, PATHINFO_EXTENSION ),
+			'extension'     => pathinfo( $relative_path, PATHINFO_EXTENSION ),
 		];
 	}
 }

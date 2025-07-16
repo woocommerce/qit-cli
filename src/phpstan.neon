@@ -5,6 +5,11 @@ parameters:
     - /app/src/qit-cli.php
   scanDirectories:
     - /app/src/vendor
+  excludePaths:
+    analyse:
+      - /app/src/AI/dev
+    analyseAndScan:
+      - /app/src/*/dev/*
   tmpDir: /app/.cache
   parallel:
     jobSize: 10

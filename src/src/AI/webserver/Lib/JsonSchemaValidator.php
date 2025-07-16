@@ -12,13 +12,13 @@ use JsonSchema\Constraints\Constraint;
  */
 class JsonSchemaValidator {
 	private static ?self $instance = null;
-	private string $schemasPath;
+	private string $schemas_path;
 
 	private function __construct() {
-		$this->schemasPath = __DIR__ . '/../schemas/';
+		$this->schemas_path = __DIR__ . '/../schemas/';
 	}
 
-	public static function getInstance(): self {
+	public static function get_instance(): self {
 		if ( self::$instance === null ) {
 			self::$instance = new self();
 		}
@@ -28,47 +28,47 @@ class JsonSchemaValidator {
 	/**
 	 * Validate inbound request data
 	 *
-	 * @param array  $data Request data to validate
-	 * @param string $requestType Request type (basic-prompt, vulnerability-scan, etc.)
+	 * @param array  $data Request data to validate.
+	 * @param string $request_type Request type (basic-prompt, vulnerability-scan, etc.).
 	 * @return array Validation result with 'valid' boolean and 'errors' array
 	 */
-	public function validateInbound( array $data, string $requestType ): array {
-		$schemaPath = $this->schemasPath . 'inbound/' . $requestType . '.json';
-		return $this->validateAgainstSchema( $data, $schemaPath );
+	public function validate_inbound( array $data, string $request_type ): array {
+		$schema_path = $this->schemas_path . 'inbound/' . $request_type . '.json';
+		return $this->validate_against_schema( $data, $schema_path );
 	}
 
 	/**
 	 * Validate outbound request data
 	 *
-	 * @param array  $data Request data to validate
-	 * @param string $requestType Request type (node-registration, task-callback-request-success, etc.)
+	 * @param array  $data Request data to validate.
+	 * @param string $request_type Request type (node-registration, task-callback-request-success, etc.).
 	 * @return array Validation result with 'valid' boolean and 'errors' array
 	 */
-	public function validateOutbound( array $data, string $requestType ): array {
-		$schemaPath = $this->schemasPath . 'outbound/' . $requestType . '.json';
-		return $this->validateAgainstSchema( $data, $schemaPath );
+	public function validate_outbound( array $data, string $request_type ): array {
+		$schema_path = $this->schemas_path . 'outbound/' . $request_type . '.json';
+		return $this->validate_against_schema( $data, $schema_path );
 	}
 
 	/**
 	 * Validate data against a JSON schema using justinrainbow/json-schema
 	 *
-	 * @param array  $payload Data to validate
-	 * @param string $schemaPath Path to the JSON schema file
+	 * @param array  $payload Data to validate.
+	 * @param string $schema_path Path to the JSON schema file.
 	 * @return array Validation result with 'valid' boolean and 'errors' array
 	 */
-	private function validateAgainstSchema( array $payload, string $schemaPath ): array {
+	private function validate_against_schema( array $payload, string $schema_path ): array {
 		// Log which schema we are about to use
 		if ( function_exists( '\\log_debug' ) ) {
 			\log_debug('Schema validation started', [
-				'schema'       => basename( $schemaPath ),
+				'schema'       => basename( $schema_path ),
 				'payload_keys' => array_keys( $payload ),
 			]);
 		}
 
-		if ( ! file_exists( $schemaPath ) ) {
-			$msg = "Schema file not found: {$schemaPath}";
+		if ( ! file_exists( $schema_path ) ) {
+			$msg = "Schema file not found: {$schema_path}";
 			if ( function_exists( '\\log_error' ) ) {
-				\log_error( 'Schema validation failed – missing schema', [ 'schema' => $schemaPath ] );
+				\log_error( 'Schema validation failed – missing schema', [ 'schema' => $schema_path ] );
 			}
 			return [
 				'valid'  => false,
@@ -76,17 +76,17 @@ class JsonSchemaValidator {
 			];
 		}
 
-		$schemaContent = file_get_contents( $schemaPath );
-		if ( $schemaContent === false ) {
+		$schema_content = file_get_contents( $schema_path );
+		if ( $schema_content === false ) {
 			return [
 				'valid'  => false,
-				'errors' => [ "Failed to read schema file: {$schemaPath}" ],
+				'errors' => [ "Failed to read schema file: {$schema_path}" ],
 			];
 		}
 
-		$schema = json_decode( $schemaContent );
+		$schema = json_decode( $schema_content );
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			$err = "Invalid JSON in schema file {$schemaPath}: " . json_last_error_msg();
+			$err = "Invalid JSON in schema file {$schema_path}: " . json_last_error_msg();
 			if ( function_exists( '\\log_error' ) ) {
 				\log_error( 'Schema validation failed – invalid schema JSON', [ 'error' => $err ] );
 			}
@@ -96,13 +96,13 @@ class JsonSchemaValidator {
 			];
 		}
 
-		$validator     = new Validator();
-		$payloadObject = json_decode( json_encode( $payload ) ); // Convert array to object
-		$validator->validate( $payloadObject, $schema, Constraint::CHECK_MODE_TYPE_CAST );
+		$validator      = new Validator();
+		$payload_object = json_decode( json_encode( $payload ) ); // Convert array to object
+		$validator->validate( $payload_object, $schema, Constraint::CHECK_MODE_TYPE_CAST );
 
 		if ( $validator->isValid() ) {
 			if ( function_exists( '\\log_debug' ) ) {
-				\log_debug( 'Schema validation passed', [ 'schema' => basename( $schemaPath ) ] );
+				\log_debug( 'Schema validation passed', [ 'schema' => basename( $schema_path ) ] );
 			}
 			return [
 				'valid'  => true,
@@ -117,7 +117,7 @@ class JsonSchemaValidator {
 
 		if ( function_exists( '\\log_warning' ) ) {
 			\log_warning('Schema validation failed', [
-				'schema' => basename( $schemaPath ),
+				'schema' => basename( $schema_path ),
 				'errors' => $errors,
 			]);
 		}
@@ -133,8 +133,8 @@ class JsonSchemaValidator {
 	 *
 	 * @return array
 	 */
-	public function getInboundSchemaTypes(): array {
-		return $this->getSchemaTypes( 'inbound' );
+	public function get_inbound_schema_types(): array {
+		return $this->get_schema_types( 'inbound' );
 	}
 
 	/**
@@ -142,8 +142,8 @@ class JsonSchemaValidator {
 	 *
 	 * @return array
 	 */
-	public function getOutboundSchemaTypes(): array {
-		return $this->getSchemaTypes( 'outbound' );
+	public function get_outbound_schema_types(): array {
+		return $this->get_schema_types( 'outbound' );
 	}
 
 	/**
@@ -152,14 +152,14 @@ class JsonSchemaValidator {
 	 * @param string $type
 	 * @return array
 	 */
-	private function getSchemaTypes( string $type ): array {
-		$schemaDir = $this->schemasPath . $type . '/';
+	private function get_schema_types( string $type ): array {
+		$schema_dir = $this->schemas_path . $type . '/';
 
-		if ( ! is_dir( $schemaDir ) ) {
+		if ( ! is_dir( $schema_dir ) ) {
 			return [];
 		}
 
-		$files = glob( $schemaDir . '*.json' );
+		$files = glob( $schema_dir . '*.json' );
 		$types = [];
 
 		foreach ( $files as $file ) {

@@ -11,10 +11,33 @@ use QIT_AI_Webserver\Chat\SafeToolsOpenAIChat;
 final class LLPhantBootstrap {
 	/* ───────── 1. STATIC SINGLETON – BOOT ONLY ONCE ───────── */
 
-	private static ?ChatInterface $chat     = null;
-	private static ?string $currentProvider = null;
-	private static ?string $currentModel    = null;
-	private static array $allowed_models    = [];
+	/**
+	 * Chat interface instance.
+	 *
+	 * @var ?ChatInterface
+	 */
+	private static ?ChatInterface $chat = null;
+
+	/**
+	 * Current provider name.
+	 *
+	 * @var ?string
+	 */
+	private static ?string $current_provider = null;
+
+	/**
+	 * Current model name.
+	 *
+	 * @var ?string
+	 */
+	private static ?string $current_model = null;
+
+	/**
+	 * Allowed models array.
+	 *
+	 * @var array
+	 */
+	private static array $allowed_models = [];
 
 	/** Initialise exactly once per PHP process (router‑level). */
 	public static function boot( string $provider, array $conf ): void {
@@ -23,11 +46,11 @@ final class LLPhantBootstrap {
 		}
 
 		// Track current provider
-		self::$currentProvider = $provider;
+		self::$current_provider = $provider;
 
 		$self = new self( $provider, $conf );   // reuse existing ctor logic
-		$self->ensureInitialized();           // still installs composer etc.
-		self::$chat = $self->getChat();
+		$self->ensure_initialized();           // still installs composer etc.
+		self::$chat = $self->get_chat();
 
 		self::$allowed_models = explode( ',', $conf['model'] );
 
@@ -51,50 +74,50 @@ final class LLPhantBootstrap {
 	/**
 	 * Resolve model input to a string based on current provider
 	 *
-	 * @param mixed  $modelInput - Can be a string or an array with provider keys
-	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
+	 * @param mixed  $model_input - Can be a string or an array with provider keys.
+	 * @param string $provider - Current provider (openai, anthropic, lmstudio).
 	 *
 	 * @return string - Resolved model name
-	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentException When model parameter is invalid.
 	 */
-	public static function resolveModel( $modelInput, string $provider ): string {
+	public static function resolve_model( $model_input, string $provider ): string {
 		// Validate input
-		if ( empty( $modelInput ) ) {
+		if ( empty( $model_input ) ) {
 			throw new \InvalidArgumentException( 'Model parameter is required' );
 		}
 
 		// Handle string input directly (for backward compatibility and simpler usage)
-		if ( is_string( $modelInput ) ) {
-			return $modelInput;
+		if ( is_string( $model_input ) ) {
+			return $model_input;
 		}
 
 		// Handle array format with provider keys
-		if ( is_array( $modelInput ) ) {
+		if ( is_array( $model_input ) ) {
 			// Multi-provider format
-			if ( ! isset( $modelInput[ $provider ] ) ) {
-				$available = implode( ', ', array_keys( $modelInput ) );
+			if ( ! isset( $model_input[ $provider ] ) ) {
+				$available = implode( ', ', array_keys( $model_input ) );
 				throw new \InvalidArgumentException(
 					"Model not specified for provider '{$provider}'. Available: {$available}"
 				);
 			}
-			$resolvedModel = $modelInput[ $provider ];
+			$resolved_model = $model_input[ $provider ];
 
-			if ( empty( $resolvedModel ) ) {
+			if ( empty( $resolved_model ) ) {
 				throw new \InvalidArgumentException(
 					"Empty model specified for provider '{$provider}'"
 				);
 			}
 
 			if ( ! empty( self::$allowed_models ) ) {
-				if ( ! in_array( $resolvedModel, self::$allowed_models ) ) {
+				if ( ! in_array( $resolved_model, self::$allowed_models, true ) ) {
 					$available = implode( ', ', self::$allowed_models );
 					throw new \InvalidArgumentException(
-						"Model '{$resolvedModel}' is not allowed. Available models: {$available}"
+						"Model '{$resolved_model}' is not allowed. Available models: {$available}"
 					);
 				}
 			}
 
-			return $resolvedModel;
+			return $resolved_model;
 		}
 
 		// Invalid input type
@@ -106,34 +129,34 @@ final class LLPhantBootstrap {
 	/**
 	 * Set model - handles validation, resolution, downloading, and configuration
 	 *
-	 * @param mixed  $modelInput - Can be a string or an array with provider keys
-	 * @param string $provider - Current provider (openai, anthropic, lmstudio)
+	 * @param mixed  $model_input - Can be a string or an array with provider keys.
+	 * @param string $provider - Current provider (openai, anthropic, lmstudio).
 	 *
 	 * @return bool - True if model was set successfully
-	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentException When model parameter is invalid.
 	 */
-	public static function setModel( $modelInput, string $provider ): bool {
+	public static function set_model( $model_input, string $provider ): bool {
 		// Store current provider
-		self::$currentProvider = $provider;
+		self::$current_provider = $provider;
 
 		// 1. Resolve model
-		$resolvedModel = self::resolveModel( $modelInput, $provider );
+		$resolved_model = self::resolve_model( $model_input, $provider );
 
 		// Store resolved model
-		self::$currentModel = $resolvedModel;
+		self::$current_model = $resolved_model;
 
 		// 2. Download model if needed (LM Studio only)
 		if ( $provider === 'lmstudio' ) {
-			if ( ! self::downloadModelIfNeeded( $resolvedModel ) ) {
+			if ( ! self::download_model_if_needed( $resolved_model ) ) {
 				throw new \InvalidArgumentException(
-					"Failed to ensure model '{$resolvedModel}' is available in LM Studio"
+					"Failed to ensure model '{$resolved_model}' is available in LM Studio"
 				);
 			}
 		}
 
 		// 3. Set model on chat instance
 		if ( self::$chat ) {
-			self::$chat->setModelOption( 'model', $resolvedModel );
+			self::$chat->setModelOption( 'model', $resolved_model );
 		}
 
 		return true;
@@ -146,10 +169,10 @@ final class LLPhantBootstrap {
 	 *
 	 * @return bool
 	 */
-	private static function downloadModelIfNeeded( string $model ): bool {
+	private static function download_model_if_needed( string $model ): bool {
 		// First check if model is already available
 		$instance = new self( 'lmstudio', [] );
-		if ( $instance->checkLMStudioModelAvailability( $model ) ) {
+		if ( $instance->check_lm_studio_model_availability( $model ) ) {
 			return true; // Model already available
 		}
 
@@ -169,8 +192,8 @@ final class LLPhantBootstrap {
 	/**
 	 * Get current provider
 	 */
-	public static function getCurrentProvider(): string {
-		return self::$currentProvider ?? 'unknown';
+	public static function get_current_provider(): string {
+		return self::$current_provider ?? 'unknown';
 	}
 
 	/**
@@ -178,23 +201,53 @@ final class LLPhantBootstrap {
 	 *
 	 * @return string
 	 */
-	public static function getModel(): string {
-		return self::$currentModel ?? 'unknown';
+	public static function get_model(): string {
+		return self::$current_model ?? 'unknown';
 	}
 
 	/*
-	───────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ─────── */
+	───────── 2.  KEEP THE REST OF THE ORIGINAL CLASS ───────
+	*/
 	// (constructor, ensureInitialized, initializeProvider, generate* …)
 
-	private string $installDir;
+	/**
+	 * Installation directory for dependencies.
+	 *
+	 * @var string
+	 */
+	private string $install_dir;
+
+	/**
+	 * Chat interface instance.
+	 *
+	 * @var ?ChatInterface
+	 */
 	private ?ChatInterface $chat_instance = null;
+
+	/**
+	 * Provider name.
+	 *
+	 * @var string
+	 */
 	private string $provider;
+
+	/**
+	 * Configuration array.
+	 *
+	 * @var array
+	 */
 	private array $config;
+
+	/**
+	 * Logger instance.
+	 *
+	 * @var mixed
+	 */
 	private $logger;
 
-	private function computeInstallDir( array $composerJson ): string {
+	private function compute_install_dir( array $composer_json ): string {
 		// Stable hash of the **desired** dependency graph (ignore formatting)
-		$hash = substr( sha1( json_encode( $composerJson, JSON_UNESCAPED_SLASHES ) ), 0, 12 );
+		$hash = substr( sha1( json_encode( $composer_json, JSON_UNESCAPED_SLASHES ) ), 0, 12 );
 
 		// e.g. /tmp/qit-llphant-a1b2c3d4e5f6
 		// Are we in Phar?
@@ -211,7 +264,7 @@ final class LLPhantBootstrap {
 		$this->logger   = $logger;
 
 		// 1️⃣ Build the composer.json array once
-		$composerJson = [
+		$composer_json = [
 			'require' => [
 				'theodo-group/llphant'      => 'dev-main#e0e01fbb696a56acc5652c573f155f538dc9936e',
 				'nikic/php-parser'          => '^5',
@@ -225,88 +278,88 @@ final class LLPhantBootstrap {
 		];
 
 		// 2️⃣ Derive the directory from that content
-		$this->installDir = $this->computeInstallDir( $composerJson );
+		$this->install_dir = $this->compute_install_dir( $composer_json );
 
 		// 3️⃣ Perform installation (idempotent)
-		$this->ensureLLPhantInstalled( $composerJson );
+		$this->ensure_ll_phant_installed( $composer_json );
 	}
 
-	public function getChat(): ChatInterface {
+	public function get_chat(): ChatInterface {
 		return $this->chat_instance;
 	}
 
-	public function reinitialize( array $runtimeConfig = [] ): void {
+	public function reinitialize( array $runtime_config = [] ): void {
 		// invalidate old chat
 		$this->chat_instance = null;
-		$this->config        = array_merge( $this->config, $runtimeConfig );
-		$this->initializeProvider( $runtimeConfig );
+		$this->config        = array_merge( $this->config, $runtime_config );
+		$this->initialize_provider( $runtime_config );
 	}
 
 	/**
 	 * Ensure the provider is initialized
 	 *
-	 * @param array $options Runtime options for initialization
+	 * @param array $options Runtime options for initialization.
 	 */
-	public function ensureInitialized( array $options = [] ): void {
+	public function ensure_initialized( array $options = [] ): void {
 		if ( ! $this->chat_instance ) {
-			$this->initializeProvider( $options );
+			$this->initialize_provider( $options );
 		}
 	}
 
-	private function ensureLLPhantInstalled( array $composerJson ): void {
+	private function ensure_ll_phant_installed( array $composer_json ): void {
 		// Check if composer is available
-		$composerCheck = shell_exec( 'which composer 2>&1' ) ?: shell_exec( 'where composer 2>&1' );
-		if ( empty( trim( $composerCheck ) ) ) {
+		$composer_check = shell_exec( 'which composer 2>&1' ) ?: shell_exec( 'where composer 2>&1' );
+		if ( empty( trim( $composer_check ) ) ) {
 			throw new Exception( 'Composer is not installed or not in PATH. Please install Composer first.' );
 		}
 
 		// Use a lock file so parallel PHP workers do not race
-		$lock = fopen( $this->installDir . '.lock', 'c' );
+		$lock = fopen( $this->install_dir . '.lock', 'c' );
 		flock( $lock, LOCK_EX );
 
-		if ( file_exists( $this->installDir . '/vendor/autoload.php' ) ) {
-			$this->log_info( 'LLPhant already installed at: ' . $this->installDir );
-			require_once $this->installDir . '/vendor/autoload.php';
+		if ( file_exists( $this->install_dir . '/vendor/autoload.php' ) ) {
+			$this->log_info( 'LLPhant already installed at: ' . $this->install_dir );
+			require_once $this->install_dir . '/vendor/autoload.php';
 			flock( $lock, LOCK_UN );
 
 			return;
 		}
 
-		$this->log_info( 'Installing LLPhant to: ' . $this->installDir );
+		$this->log_info( 'Installing LLPhant to: ' . $this->install_dir );
 
 		// Directory does not exist ⇒ create & install
-		mkdir( $this->installDir, 0755, true );
+		mkdir( $this->install_dir, 0755, true );
 		file_put_contents(
-			$this->installDir . '/composer.json',
-			json_encode( $composerJson, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
+			$this->install_dir . '/composer.json',
+			json_encode( $composer_json, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
 		);
 
 		// Run composer install
 		$cmd = sprintf(
 			'cd %s && composer install --no-dev --no-interaction --no-progress --ansi --ignore-platform-req=ext-gd 2>&1',
-			escapeshellarg( $this->installDir )
+			escapeshellarg( $this->install_dir )
 		);
 
-		$output     = [];
-		$returnCode = 0;
-		exec( $cmd, $output, $returnCode );
+		$output      = [];
+		$return_code = 0;
+		exec( $cmd, $output, $return_code );
 
-		if ( $returnCode !== 0 ) {
+		if ( $return_code !== 0 ) {
 			throw new Exception( 'Failed to install LLPhant: ' . implode( "\n", $output ) );
 		}
 
 		// Patch file.
-		$this->patchLLPhant();
+		$this->patch_ll_phant();
 
-		require_once $this->installDir . '/vendor/autoload.php';
+		require_once $this->install_dir . '/vendor/autoload.php';
 		$this->log_info( 'LLPhant installed successfully' );
 		flock( $lock, LOCK_UN );
 	}
 
-	private function patchLLPhant(): void {
-		$llphantFile = "{$this->installDir}/vendor/theodo-group/llphant/src/Chat/OpenAIChat.php";
+	private function patch_ll_phant(): void {
+		$llphant_file = "{$this->install_dir}/vendor/theodo-group/llphant/src/Chat/OpenAIChat.php";
 		file_put_contents(
-			$llphantFile,
+			$llphant_file,
 			str_replace(
 				[
 					'private function getToolsToCall(',
@@ -316,29 +369,29 @@ final class LLPhantBootstrap {
 					'protected function getToolsToCall(',
 					'protected array $tools',
 				],
-				file_get_contents( $llphantFile )
+				file_get_contents( $llphant_file )
 			)
 		);
 	}
 
-	private function initializeProvider( array $runtimeOptions = [] ): void {
+	private function initialize_provider( array $runtime_options = [] ): void {
 		// Merge runtime options with constructor config
-		$config = array_merge( $this->config, $runtimeOptions );
+		$config = array_merge( $this->config, $runtime_options );
 
 		switch ( $this->provider ) {
 			case 'lmstudio': // fall through
 			case 'openai':
-				$this->initializeOpenAI( $config );
+				$this->initialize_openai( $config );
 				break;
 			case 'anthropic':
-				$this->initializeAnthropic( $config );
+				$this->initialize_anthropic( $config );
 				break;
 			default:
 				throw new Exception( 'Unsupported provider: ' . $this->provider );
 		}
 	}
 
-	private function initializeOpenAI( array $config ): void {
+	private function initialize_openai( array $config ): void {
 		if ( ! isset( $config['api_key'] ) ) {
 			throw new Exception( 'OpenAI requires an API key' );
 		}
@@ -348,19 +401,19 @@ final class LLPhantBootstrap {
 		], $config );
 
 		// Create OpenAIConfig object
-		$openaiConfig         = new OpenAIConfig();
-		$openaiConfig->apiKey = $config['api_key'];
-		$openaiConfig->model  = $config['model'];
+		$openai_config          = new OpenAIConfig();
+		$openai_config->api_key = $config['api_key'];
+		$openai_config->model   = $config['model'];
 
 		// Set custom base URL if provided (for LM Studio compatibility)
 		if ( ! empty( $config['base_url'] ) ) {
-			$openaiConfig->url = $config['base_url'];
+			$openai_config->url = $config['base_url'];
 		}
 
-		$this->chat_instance = new SafeToolsOpenAIChat( $openaiConfig );
+		$this->chat_instance = new SafeToolsOpenAIChat( $openai_config );
 	}
 
-	private function initializeAnthropic( array $config ): void {
+	private function initialize_anthropic( array $config ): void {
 		if ( ! isset( $config['api_key'] ) ) {
 			throw new Exception( 'Anthropic requires an API key' );
 		}
@@ -376,10 +429,10 @@ final class LLPhantBootstrap {
 	}
 
 
-	public function ensureModel( string $model ): bool {
+	public function ensure_model( string $model ): bool {
 		if ( $this->provider === 'lmstudio' ) {
 			// For LM Studio, check if model is available via OpenAI-compatible API
-			return $this->checkLMStudioModelAvailability( $model );
+			return $this->check_lm_studio_model_availability( $model );
 		}
 
 		// For cloud providers (OpenAI, Anthropic), models are always available
@@ -389,22 +442,22 @@ final class LLPhantBootstrap {
 	/**
 	 * Check if a model is available in LM Studio via OpenAI-compatible API
 	 *
-	 * @param string $model Model name to check
+	 * @param string $model Model name to check.
 	 *
 	 * @return bool True if model is available, false otherwise
 	 */
-	private function checkLMStudioModelAvailability( string $model ): bool {
+	private function check_lm_studio_model_availability( string $model ): bool {
 		// Get base URL from config, default to LM Studio default
-		$baseUrl        = $this->config['base_url'] ?? 'http://localhost:1234/v1';
-		$modelsEndpoint = rtrim( $baseUrl, '/' ) . '/models';
+		$base_url        = $this->config['base_url'] ?? 'http://localhost:1234/v1';
+		$models_endpoint = rtrim( $base_url, '/' ) . '/models';
 
 		$this->log_info( 'Checking LM Studio model availability', [
 			'model'    => $model,
-			'endpoint' => $modelsEndpoint,
+			'endpoint' => $models_endpoint,
 		] );
 
 		// Make API call to check available models
-		$ch = curl_init( $modelsEndpoint );
+		$ch = curl_init( $models_endpoint );
 		curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
 		curl_setopt( $ch, CURLOPT_TIMEOUT, 10 );
 		curl_setopt( $ch, CURLOPT_HTTPHEADER, [
@@ -413,13 +466,13 @@ final class LLPhantBootstrap {
 		] );
 
 		$response = curl_exec( $ch );
-		$httpCode = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
+		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
 		$error    = curl_error( $ch );
 		curl_close( $ch );
 
-		if ( $httpCode !== 200 ) {
+		if ( $http_code !== 200 ) {
 			$this->log_error( 'Failed to check LM Studio models', [
-				'http_code' => $httpCode,
+				'http_code' => $http_code,
 				'error'     => $error,
 				'response'  => substr( $response, 0, 500 ),
 			] );
@@ -439,8 +492,8 @@ final class LLPhantBootstrap {
 		}
 
 		// Check if the requested model is in the list of available models
-		foreach ( $data['data'] as $availableModel ) {
-			if ( isset( $availableModel['id'] ) && $availableModel['id'] === $model ) {
+		foreach ( $data['data'] as $available_model ) {
+			if ( isset( $available_model['id'] ) && $available_model['id'] === $model ) {
 				$this->log_info( 'Model found in LM Studio', [ 'model' => $model ] );
 
 				return true;
@@ -471,7 +524,7 @@ final class LLPhantBootstrap {
 		}
 	}
 
-	public function getProvider(): string {
+	public function get_provider(): string {
 		return $this->provider;
 	}
 }
