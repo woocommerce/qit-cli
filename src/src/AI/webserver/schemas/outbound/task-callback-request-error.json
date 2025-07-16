@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Task Callback Error Request",
+  "type": "object",
+  "required": ["action_id", "response", "processing_time", "tool_calls", "metadata"],
+  "properties": {
+    "action_id": {
+      "type": "string",
+      "description": "ID of the failed action/task"
+    },
+    "task_id": {
+      "type": "string",
+      "description": "Task identifier"
+    },
+    "response": {
+      "type": "string",
+      "description": "JSON-encoded error response containing error details"
+    },
+    "processing_time": {
+      "type": "integer",
+      "enum": [0],
+      "description": "Processing time (always 0 for errors)"
+    },
+    "tool_calls": {
+      "type": "array",
+      "maxItems": 0,
+      "description": "Empty array for error callbacks",
+      "items": {
+        "type": "object"
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "required": ["error"],
+      "properties": {
+        "error": {
+          "type": "boolean",
+          "enum": [true],
+          "description": "Flag indicating this is an error callback"
+        }
+      },
+      "description": "Metadata indicating error status"
+    }
+  },
+  "additionalProperties": false
+}

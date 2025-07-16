@@ -42,3 +42,9 @@ src/tests/unit/data/sync.json
 
 
 src/tests/integration/cache/
+
+src/src/AI/webserver/router.local.php
+
+src/src/AI/webserver/router.worker.local.php
+
+src/src/AI/webserver/router.listener.local.php

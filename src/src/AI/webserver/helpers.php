@@ -1,0 +1,74 @@
+<?php
+/**
+ * Helpers.php
+ */
+
+if ( empty( getenv( 'QIT_NODE_DIR' ) ) ) {
+	throw new RuntimeException( 'QIT_NODE_DIR environment variable is not set.' );
+}
+
+if ( ! function_exists( 'array_is_list' ) ) {
+	/**
+	 * @param array<mixed> $a
+	 */
+	function array_is_list( array $a ): bool {
+		return $a === [] || ( array_keys( $a ) === range( 0, count( $a ) - 1 ) );
+	}
+}
+
+if ( ! empty( getenv( 'QIT_LOG_FILE' ) ) ) {
+	$log_file = getenv( 'QIT_LOG_FILE' );
+} else {
+	$log_file = getenv( 'QIT_NODE_DIR' ) . '/qit.log';
+}
+
+// Configure logging
+$router_log_file = $log_file;
+
+/**
+ * Enhanced logging functions
+ */
+/**
+ * @param array<string, mixed> $context
+ */
+function log_message( string $level, string $message, array $context = [] ): void {
+	$timestamp         = gmdate( 'Y-m-d H:i:s' );
+	$formatted_message = "[$timestamp] [$level] [Router] $message";
+
+	// Add context if available
+	if ( ! empty( $context ) ) {
+		$formatted_message .= ' ' . json_encode( $context, JSON_UNESCAPED_SLASHES );
+	}
+
+	// Write to log file only (removed duplication to error_log)
+	global $router_log_file;
+	file_put_contents( $router_log_file, $formatted_message . PHP_EOL, FILE_APPEND );
+}
+
+/**
+ * @param array<string, mixed> $context
+ */
+function log_debug( string $message, array $context = [] ): void {
+	log_message( 'debug', $message, $context );
+}
+
+/**
+ * @param array<string, mixed> $context
+ */
+function log_info( string $message, array $context = [] ): void {
+	log_message( 'info', $message, $context );
+}
+
+/**
+ * @param array<string, mixed> $context
+ */
+function log_warning( string $message, array $context = [] ): void {
+	log_message( 'warning', $message, $context );
+}
+
+/**
+ * @param array<string, mixed> $context
+ */
+function log_error( string $message, array $context = [] ): void {
+	log_message( 'error', $message, $context );
+}

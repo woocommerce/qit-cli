@@ -1,0 +1,17 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Collect Logs Response",
+  "type": "object",
+  "required": ["status", "archive"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["ok", "no_logs"]
+    },
+    "archive": {
+      "type": ["string", "null"],
+      "description": "Base‑64(gzip(tar)) or null when status=no_logs"
+    }
+  },
+  "additionalProperties": false
+}

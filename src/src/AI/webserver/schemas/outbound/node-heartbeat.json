@@ -1,0 +1,54 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Node Heartbeat Request",
+  "type": "object",
+  "required": ["node_token", "busy"],
+  "properties": {
+    "node_token": {
+      "type": "string",
+      "description": "Authentication token for the node"
+    },
+    "busy": {
+      "type": "integer",
+      "enum": [0, 1],
+      "description": "Whether the node is currently processing a task (0=idle, 1=busy)"
+    },
+    "last_error": {
+      "type": ["object", "null"],
+      "description": "Last error encountered by the node",
+      "properties": {
+        "error_type": {
+          "type": "string",
+          "description": "Type of error that occurred"
+        },
+        "error_message": {
+          "type": "string",
+          "description": "Human-readable error message"
+        },
+        "job_id": {
+          "type": "string",
+          "description": "ID of the job that encountered the error"
+        },
+        "job_type": {
+          "type": "string",
+          "description": "Type of job that encountered the error"
+        }
+      }
+    },
+    "system_info": {
+      "type": "object",
+      "description": "System health metrics",
+      "properties": {
+        "memory_usage": {
+          "type": "integer",
+          "description": "Current memory usage in bytes"
+        },
+        "cpu_load": {
+          "type": ["number", "null"],
+          "description": "Current CPU load average"
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

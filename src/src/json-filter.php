@@ -9,9 +9,9 @@ if ( ! stream_filter_register( 'qit_json', \QIT_JSON_Filter::class ) ) {
  * Stream filter that only passes valid JSON, collecting non-JSON for error reporting.
  */
 class QIT_JSON_Filter extends \php_user_filter {
-	private static $non_json_buffer = '';
-	private static $has_json_output = false;
-	private static $initialized = false;
+	private static string $non_json_buffer = '';
+	private static bool $has_json_output   = false;
+	private static bool $initialized       = false;
 
 	public function onCreate(): bool {
 		if ( ! self::$initialized ) {
@@ -53,9 +53,9 @@ class QIT_JSON_Filter extends \php_user_filter {
 		if ( ! empty( trim( self::$non_json_buffer ) ) && ! self::$has_json_output ) {
 			// No JSON output but have non-JSON - this is likely an error
 			echo json_encode( [
-					'error'  => 'Command failed with non-JSON output',
-					'output' => trim( self::$non_json_buffer )
-				] ) . "\n";
+				'error'  => 'Command failed with non-JSON output',
+				'output' => trim( self::$non_json_buffer ),
+			] ) . "\n";
 		}
 
 		// Reset for next use

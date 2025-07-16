@@ -32,7 +32,8 @@
     "composer/ca-bundle": "^1.4",
     "symfony/serializer": "^5",
     "symfony/yaml": "^5",
-    "vlucas/phpdotenv": "^5"
+    "vlucas/phpdotenv": "^5",
+    "psr/container": "^1.1"
   },
   "require-dev": {
     "phpunit/phpunit": "^8",

@@ -1,0 +1,47 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "File Reading Request",
+  "type": "object",
+  "required": ["job_id", "type", "file", "extract_path", "session_id", "callback_url"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Unique identifier for the job"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["read-file"],
+      "description": "Request type identifier"
+    },
+    "file": {
+      "type": "string",
+      "description": "Relative path to the file to read",
+      "pattern": "^[^\\0]*$",
+      "not": {
+        "pattern": "\\.\\."
+      }
+    },
+    "extract_path": {
+      "type": "string",
+      "description": "Base path where files are extracted"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Session identifier for workspace context"
+    },
+    "callback_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to send the response back to"
+    },
+    "action_id": {
+      "type": "string",
+      "description": "Unique identifier for the action"
+    },
+    "task_id": {
+      "type": ["string","null"],
+      "description": "Unique task identifier"
+    }
+  },
+  "additionalProperties": false
+}

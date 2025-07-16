@@ -1,0 +1,45 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "ZIP Extraction Request",
+  "type": "object",
+  "required": ["job_id", "type", "zip_url", "session_id", "callback_url"],
+  "properties": {
+    "job_id": {
+      "type": "string",
+      "description": "Unique identifier for the job"
+    },
+    "type": {
+      "type": "string",
+      "enum": ["extract-zip"],
+      "description": "Request type identifier"
+    },
+    "zip_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL of the ZIP file to extract"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Session identifier for extraction workspace"
+    },
+    "callback_url": {
+      "type": "string",
+      "format": "uri",
+      "description": "URL to send the response back to"
+    },
+    "requires": {
+      "type": "string",
+      "enum": ["new_extraction_dir", "wordpress_on_extraction_dir"],
+      "description": "Precondition requirements for extraction"
+    },
+    "action_id": {
+      "type": "string",
+      "description": "Unique identifier for the action"
+    },
+    "task_id": {
+      "type": ["string","null"],
+      "description": "Unique task identifier"
+    }
+  },
+  "additionalProperties": false
+}

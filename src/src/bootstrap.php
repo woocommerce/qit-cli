@@ -1,7 +1,9 @@
 <?php
 
+use QIT_CLI\AI\WebServer;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\AI\NodeStartCommand;
 use QIT_CLI\Commands\Backend\AddBackend;
 use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
@@ -219,6 +221,11 @@ if ( $is_connected_to_backend ) {
 
 	$application->add( $container->make( RunActivationTestCommand::class ) );
 
+	// AI commands.
+	if ( WebServer::is_ai_enabled() ) {
+		$application->add( $container->make( NodeStartCommand::class ) );
+	}
+
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );
 
@@ -262,5 +269,9 @@ if ( $container->make( Output::class )->isVerbose() ) {
 }
 
 App::make( EnvironmentDanglingCleanup::class )->cleanup_dangling();
+
+if ( empty( App::make( Cache::class )->get( 'client_id' ) ) ) {
+	App::make( Cache::class )->set( 'client_id', \QIT_CLI\generate_uuid4(), - 1 );
+}
 
 return $application;

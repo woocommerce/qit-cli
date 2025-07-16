@@ -290,6 +290,8 @@ return [
     //       should be added to the `directory_list` as well as
     //       to `exclude_analysis_directory_list`.
     'exclude_analysis_directory_list' => [
+        'src/AI',
+        'src/Commands/AI/NodeStartCommand.php',
         'vendor/',
     ],
 

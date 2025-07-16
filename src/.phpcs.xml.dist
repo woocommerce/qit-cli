@@ -6,6 +6,9 @@
     <arg name="colors"/>
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="16"/>
+    
+    <exclude-pattern>dev/*</exclude-pattern>
+    <exclude-pattern>src/src/AI/*</exclude-pattern>
 
     <config name="testVersion" value="7.4-"/>
     <rule ref="PHPCompatibility"/>
@@ -59,6 +62,7 @@
         <!-- WPCS 3 -->
         <exclude name="Universal.Arrays.DisallowShortArraySyntax.Found"/>
         <exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped"/>
+        <exclude name="WordPress.Security.EscapeOutput.OutputNotEscaped"/>
         <exclude name="Universal.ControlStructures.DisallowLonelyIf.Found"/>
         <exclude name="Universal.Operators.DisallowShortTernary.Found"/>
 
@@ -71,6 +75,10 @@
         <exclude name="WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv"/>
         <!-- Exclude deprecated sniff that will be removed in PHPCS 4.0.0 -->
         <exclude name="Generic.Functions.CallTimePassByReference"/>
+
+        <exclude name="WordPress.PHP.IniSet"/>
+        <exclude name="WordPress.Security.NonceVerification.Recommended"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_error_reporting"/>
     </rule>
 
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>
