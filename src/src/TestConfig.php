@@ -9,9 +9,9 @@ abstract class TestConfig {
 		$this->config = $config;
 	}
 
-	abstract public function getTestType(): string;
+	abstract public function get_test_type(): string;
 
-	public function getConfig(): array {
+	public function get_config(): array {
 		return $this->config;
 	}
 }

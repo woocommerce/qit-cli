@@ -26,7 +26,7 @@ class ExtensionCacheManager {
 	/** @var OutputInterface */
 	protected $output;
 
-	protected EntrypointDetector $entrypointDetector;
+	protected EntrypointDetector $entrypoint_detector;
 
 	/** @var string[] */
 	protected $download_handlers = [
@@ -38,10 +38,10 @@ class ExtensionCacheManager {
 	];
 
 	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output, EntrypointDetector $entrypoint_detector ) {
-		$this->cache              = $cache;
-		$this->zipper             = $zipper;
-		$this->output             = $output;
-		$this->entrypointDetector = $entrypoint_detector;
+		$this->cache               = $cache;
+		$this->zipper              = $zipper;
+		$this->output              = $output;
+		$this->entrypoint_detector = $entrypoint_detector;
 	}
 
 	/**
@@ -50,7 +50,7 @@ class ExtensionCacheManager {
 	 * @param Extension $extension
 	 * @param string    $cache_dir
 	 *
-	 * @throws \RuntimeException
+	 * @throws \RuntimeException If caching fails or file operations fail.
 	 */
 	public function ensure_cached( Extension $extension, string $cache_dir ): void {
 		debug_log( "ExtensionCacheManager: Ensuring cached for '{$extension->slug}' from '{$extension->from}'" );
@@ -103,8 +103,8 @@ class ExtensionCacheManager {
 			debug_log( '  Source is a directory' );
 			$extension->downloaded_source = $source_path;
 
-			// Detect entrypoint
-			$this->entrypointDetector->detect( $extension );
+					// Detect entrypoint
+			$this->entrypoint_detector->detect( $extension );
 
 			return;
 		}
@@ -140,8 +140,8 @@ class ExtensionCacheManager {
 				}
 				$extension->downloaded_source = $cache_file;
 
-				// Detect entrypoint
-				$this->entrypointDetector->detect( $extension );
+							// Detect entrypoint
+				$this->entrypoint_detector->detect( $extension );
 
 				return;
 			} else {
@@ -167,8 +167,8 @@ class ExtensionCacheManager {
 
 		$extension->downloaded_source = $cache_file;
 
-		// Detect entrypoint
-		$this->entrypointDetector->detect( $extension );
+			// Detect entrypoint
+		$this->entrypoint_detector->detect( $extension );
 	}
 
 	/**
@@ -206,8 +206,8 @@ class ExtensionCacheManager {
 
 		$extension->downloaded_source = $cache_file;
 
-		// Detect entrypoint
-		$this->entrypointDetector->detect( $extension );
+			// Detect entrypoint
+		$this->entrypoint_detector->detect( $extension );
 	}
 
 	/**

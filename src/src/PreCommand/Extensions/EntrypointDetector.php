@@ -12,7 +12,7 @@ class EntrypointDetector {
 	/**
 	 * Detect the entrypoint for an extension
 	 *
-	 * @param Extension $extension The extension to detect entrypoint for
+	 * @param Extension $extension The extension to detect entrypoint for.
 	 *
 	 * @return void
 	 */
@@ -171,7 +171,7 @@ class EntrypointDetector {
 		$slug_prefix     = $extension->slug . '/';
 		$slug_prefix_len = strlen( $slug_prefix );
 
-		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			$filename = $zip->getNameIndex( $i );
 
 			// Skip if not in plugin root directory

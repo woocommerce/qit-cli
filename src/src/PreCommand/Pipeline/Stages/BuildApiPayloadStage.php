@@ -26,14 +26,14 @@ class BuildApiPayloadStage implements PipelineStage {
 			return $context; // not applicable
 		}
 
-		$resolved = $context->get( 'resolved_config' );
+		$resolved  = $context->get( 'resolved_config' );
 		$test_type = $cmd->get_test_type();
-		$profile  = $cmd->get_test_profile();
+		$profile   = $cmd->get_test_profile();
 
 		$test_config = $resolved->get_test_config( $test_type, $profile );
 
 		// merge CLI overrides
-		$overrides  = $this->extract_explicit_options( $cmd, $context->input, $this->option_mapping() );
+		$overrides   = $this->extract_explicit_options( $cmd, $context->input, $this->option_mapping() );
 		$test_config = array_merge( $test_config, $overrides );
 
 		$result = new ConfigurationResult( $resolved, $test_config );

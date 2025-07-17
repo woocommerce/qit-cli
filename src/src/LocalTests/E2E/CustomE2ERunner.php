@@ -66,7 +66,7 @@ class CustomE2ERunner {
 	 *
 	 * @param E2EEnvInfo   $env_info
 	 * @param SymfonyStyle $io
-	 * @param bool         $up_only Whether to just bring up the environment without running tests
+	 * @param bool         $up_only Whether to just bring up the environment without running tests.
 	 *
 	 * @return int
 	 */
@@ -102,12 +102,12 @@ class CustomE2ERunner {
 			$test_item['config'] = $config;
 
 			if ( ! empty( $config['muPlugins'] ) && is_array( $config['muPlugins'] ) ) {
-				foreach ( $config['muPlugins'] as $relativePath ) {
-					$host_path = rtrim( $plugin_dir, '/' ) . '/' . $relativePath;
+				foreach ( $config['muPlugins'] as $relative_path ) {
+					$host_path = rtrim( $plugin_dir, '/' ) . '/' . $relative_path;
 					$this->docker->copy_into_docker(
 						$env_info,
 						$host_path,
-						'/var/www/html/wp-content/mu-plugins/' . basename( $relativePath )
+						'/var/www/html/wp-content/mu-plugins/' . basename( $relative_path )
 					);
 				}
 			}

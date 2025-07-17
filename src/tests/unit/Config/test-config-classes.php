@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class FooTestConfig extends TestConfig {
-	public function getTestType(): string {
+	public function get_test_type(): string {
 		return 'foo';
 	}
 }
@@ -37,14 +37,14 @@ class FooTestCommand extends QITCommand {
 		$testConfig = new \QIT_CLI_Tests\FooTestConfig( $testConfigData );
 		$param      = $input->getOption( 'param' );
 		$output->writeln( "Running foo test profile: $profile with param: $param" );
-		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
+		$output->writeln( 'Test config: ' . json_encode( $testConfig->get_config() ) );
 
 		return Command::SUCCESS;
 	}
 }
 
 class BarTestConfig extends TestConfig {
-	public function getTestType(): string {
+	public function get_test_type(): string {
 		return 'bar';
 	}
 }
@@ -70,14 +70,14 @@ class BarTestCommand extends QITCommand {
 		$testConfig = new \QIT_CLI_Tests\BarTestConfig( $testConfigData );
 		$param      = $input->getOption( 'param' );
 		$output->writeln( "Running bar test profile: $profile with param: $param" );
-		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
+		$output->writeln( 'Test config: ' . json_encode( $testConfig->get_config() ) );
 
 		return Command::SUCCESS;
 	}
 }
 
 class BazTestConfig extends TestConfig {
-	public function getTestType(): string {
+	public function get_test_type(): string {
 		return 'baz';
 	}
 }
@@ -103,7 +103,7 @@ class BazTestCommand extends QITCommand {
 		$testConfig = new \QIT_CLI_Tests\BazTestConfig( $testConfigData );
 		$param      = $input->getOption( 'param' );
 		$output->writeln( "Running baz test profile: $profile with param: $param" );
-		$output->writeln( 'Test config: ' . json_encode( $testConfig->getConfig() ) );
+		$output->writeln( 'Test config: ' . json_encode( $testConfig->get_config() ) );
 
 		return Command::SUCCESS;
 	}

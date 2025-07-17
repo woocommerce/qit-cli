@@ -28,7 +28,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	protected CustomE2ERunner $spec_custom_test_orchestrator;
 	protected WooExtensionsList $woo_extensions_list;
 
-	protected static $defaultName = 'run:e2e';
+	protected static $default_name = 'run:e2e';
 
 	/**
 	 * 0 is success.
@@ -49,7 +49,9 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		parent::__construct();
 	}
 
-	// LocalTestCommand interface implementation
+	/**
+	 * LocalTestCommand interface implementation.
+	 */
 	public function get_environment_name(): string {
 		return $this->input->getOption( 'environment' ) ?? 'default';
 	}
@@ -129,7 +131,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		$test_packages = $result->test_packages;
 
 		// Validate shard format
-		if ( $shard = $input->getOption( 'shard' ) ) {
+		$shard = $input->getOption( 'shard' );
+		if ( $shard ) {
 			if ( ! $this->validateShard( $shard, $output ) ) {
 				return self::INVALID;
 			}
@@ -215,7 +218,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			try {
 				Environment::down( $GLOBALS['env_to_shutdown'] );
 			} catch ( \Exception $e ) {
-				// Silent fail
+				// Silent fail - environment cleanup errors are non-critical
+				debug_log( 'Failed to shutdown environment: ' . $e->getMessage(), 'comment' );
 			}
 		}
 	}

@@ -40,8 +40,8 @@ class TestPackageDownloader {
 	/**
 	 * Download multiple test packages
 	 *
-	 * @param array<string, array> $packages Map of reference => package info
-	 * @param string               $cache_dir Cache directory
+	 * @param array<string, array> $packages Map of reference => package info.
+	 * @param string               $cache_dir Cache directory.
 	 *
 	 * @return array<string, array> Map of reference => manifest content
 	 */

@@ -46,7 +46,7 @@ class ExtensionMetadataFetcher {
 	 *
 	 * @param Extension[] $extensions
 	 *
-	 * @throws \RuntimeException
+	 * @throws \RuntimeException If metadata fetching fails.
 	 */
 	public function fetch_metadata( array $extensions ): void {
 		// Group extensions by source type

@@ -20,8 +20,8 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 	/** @var TunnelRunner */
 	protected $tunnel_runner;
 
-	protected static $defaultName        = 'env:up';
-	protected static $defaultDescription = 'Creates a temporary local test environment';
+	protected static $default_name        = 'env:up';
+	protected static $default_description = 'Start an environment';
 
 	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner ) {
 		$this->e2e_environment = $e2e_environment;

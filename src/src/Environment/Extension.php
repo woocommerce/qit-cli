@@ -12,9 +12,9 @@ class Extension implements \JsonSerializable {
 		'theme'  => 'theme',
 	];
 
-	const PRIORITY_LOW = 10;
+	const PRIORITY_LOW    = 10;
 	const PRIORITY_MEDIUM = 50;
-	const PRIORITY_HIGH = 100;
+	const PRIORITY_HIGH   = 100;
 
 	/** @var string The unique identifier (slug) of the extension. */
 	public $slug;
@@ -68,8 +68,8 @@ class Extension implements \JsonSerializable {
 	}
 
 	/**
-	 * @param string $slug The extension slug.
-	 * @param string $type The extension type ('plugin' or 'theme').
+	 * @param string          $slug The extension slug.
+	 * @param string          $type The extension type ('plugin' or 'theme').
 	 * @param string|int|null $source Optional source (slug, URL, directory, or zip file).
 	 */
 	public function __construct( string $slug, string $type, $source = null ) {
@@ -96,6 +96,7 @@ class Extension implements \JsonSerializable {
 			'priority'            => $this->priority,
 			'wccom_id'            => $this->wccom_id,
 			'added_automatically' => $this->added_automatically,
+			// phpcs:ignore PEAR.Functions.FunctionCallSignature.Indent -- WordPress standards conflict with PEAR on multi-line function indentation
 		], function ( $value ) {
 			return $value !== null;
 		} );

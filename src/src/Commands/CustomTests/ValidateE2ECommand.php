@@ -26,103 +26,103 @@ class ValidateE2ECommand extends QITCommand {
 		$checks = [];
 
 		// 1. Must check: package.json
-		$packageJsonPath = $directory . '/package.json';
-		$hasPackageJson  = is_file( $packageJsonPath );
-		$checks[]        = $this->makeCheck(
+		$package_json_path = $directory . '/package.json';
+		$has_package_json  = is_file( $package_json_path );
+		$checks[]          = $this->makeCheck(
 			label: 'Has package.json (MUST)',
-			pass: $hasPackageJson,
-			info: $hasPackageJson
+			pass: $has_package_json,
+			info: $has_package_json
 				? 'Found package.json'
 				: 'No package.json found',
 			severity: 'must'
 		);
 
 		// 2. Must check: "scripts.qit-e2e" in package.json
-		$hasQitE2EScript = false;
-		if ( $hasPackageJson ) {
-			$packageJsonContent = file_get_contents( $packageJsonPath );
-			$pkg                = json_decode( $packageJsonContent, true );
+		$has_qit_e2_e_script = false;
+		if ( $has_package_json ) {
+			$package_json_content = file_get_contents( $package_json_path );
+			$pkg                  = json_decode( $package_json_content, true );
 			if ( json_last_error() === JSON_ERROR_NONE && is_array( $pkg ) ) {
-				$qitE2EScript = $pkg['scripts']['qit-e2e'] ?? null;
-				if ( ! empty( $qitE2EScript ) && is_string( $qitE2EScript ) ) {
-					$hasQitE2EScript = true;
+				$qit_e2_e_script = $pkg['scripts']['qit-e2e'] ?? null;
+				if ( ! empty( $qit_e2_e_script ) && is_string( $qit_e2_e_script ) ) {
+					$has_qit_e2_e_script = true;
 				}
 			}
 		}
 		$checks[] = $this->makeCheck(
 			label: 'package.json has "qit-e2e" script (MUST)',
-			pass: $hasQitE2EScript,
-			info: $hasQitE2EScript
+			pass: $has_qit_e2_e_script,
+			info: $has_qit_e2_e_script
 				? 'Found scripts.qit-e2e in package.json'
 				: 'No "qit-e2e" script found',
 			severity: 'must'
 		);
 
 		// 3. Optional check: qit-e2e.(json|yml)
-		$qitJsonPath     = $directory . '/qit-e2e.json';
-		$qitYamlPath     = $directory . '/qit-e2e.yml';
-		$hasQitE2EConfig = false;
-		$configIsValid   = false;
-		$configData      = null;
-		$configFileUsed  = '';
+		$qit_json_path       = $directory . '/qit-e2e.json';
+		$qit_yaml_path       = $directory . '/qit-e2e.yml';
+		$has_qit_e2_e_config = false;
+		$config_is_valid     = false;
+		$config_data         = null;
+		$config_file_used    = '';
 
-		if ( is_file( $qitJsonPath ) ) {
-			$hasQitE2EConfig = true;
-			$configFileUsed  = 'qit-e2e.json';
-			$content         = file_get_contents( $qitJsonPath );
-			$parsed          = json_decode( $content, true );
+		if ( is_file( $qit_json_path ) ) {
+			$has_qit_e2_e_config = true;
+			$config_file_used    = 'qit-e2e.json';
+			$content             = file_get_contents( $qit_json_path );
+			$parsed              = json_decode( $content, true );
 			if ( json_last_error() === JSON_ERROR_NONE && is_array( $parsed ) ) {
-				$configIsValid = true;
-				$configData    = $parsed;
+				$config_is_valid = true;
+				$config_data     = $parsed;
 			}
-		} elseif ( is_file( $qitYamlPath ) ) {
-			$hasQitE2EConfig = true;
-			$configFileUsed  = 'qit-e2e.yml';
-			$content         = file_get_contents( $qitYamlPath );
+		} elseif ( is_file( $qit_yaml_path ) ) {
+			$has_qit_e2_e_config = true;
+			$config_file_used    = 'qit-e2e.yml';
+			$content             = file_get_contents( $qit_yaml_path );
 			try {
 				$parsed = Yaml::parse( $content );
 				if ( is_array( $parsed ) ) {
-					$configIsValid = true;
-					$configData    = $parsed;
+					$config_is_valid = true;
+					$config_data     = $parsed;
 				}
 			} catch ( \Exception $e ) {
-				$configIsValid = false;
+				$config_is_valid = false;
 			}
 		}
 
 		$checks[] = $this->makeCheck(
 			label: 'Has optional qit-e2e.(json|yml)',
-			pass: $hasQitE2EConfig,
-			info: $hasQitE2EConfig
-				? "Found $configFileUsed"
+			pass: $has_qit_e2_e_config,
+			info: $has_qit_e2_e_config
+				? "Found $config_file_used"
 				: 'Neither qit-e2e.json nor qit-e2e.yml found (defaults used)',
 			severity: 'optional'
 		);
 
-		if ( $hasQitE2EConfig ) {
+		if ( $has_qit_e2_e_config ) {
 			$checks[] = $this->makeCheck(
 				label: 'qit-e2e config parses correctly (MUST if present)',
-				pass: $configIsValid,
-				info: $configIsValid
-					? "Successfully parsed $configFileUsed"
-					: "Error parsing $configFileUsed",
+				pass: $config_is_valid,
+				info: $config_is_valid
+					? "Successfully parsed $config_file_used"
+					: "Error parsing $config_file_used",
 				severity: 'must'
 			);
 		}
 
 		// 4. If NO config file, check for default bootstrap scripts (optional, but recommended).
 		// The spec says it *falls back* to these if no config is present, so let's check for existence:
-		if ( ! $hasQitE2EConfig ) {
-			$bootstrapDir = $directory . '/bootstrap';
-			$defaultFiles = [
+		if ( ! $has_qit_e2_e_config ) {
+			$bootstrap_dir = $directory . '/bootstrap';
+			$default_files = [
 				'shared-setup.sh',
 				'setup.sh',
 				'teardown.sh',
 				'shared-teardown.sh',
 				'mu-plugin.php',
 			];
-			foreach ( $defaultFiles as $f ) {
-				$path     = $bootstrapDir . '/' . $f;
+			foreach ( $default_files as $f ) {
+				$path     = $bootstrap_dir . '/' . $f;
 				$checks[] = $this->makeCheck(
 					label: "Default fallback file '$f' (optional but recommended)",
 					pass: is_file( $path ),
@@ -136,16 +136,16 @@ class ValidateE2ECommand extends QITCommand {
 
 		// 5. If config file is present, check that listed script/plugin files actually exist
 		// (We won't parse outside references, just check existence.)
-		if ( $hasQitE2EConfig && $configIsValid && is_array( $configData ) ) {
-			$keysToCheck = [ 'sharedSetup', 'setup', 'teardown', 'sharedTeardown', 'muPlugins' ];
-			foreach ( $keysToCheck as $key ) {
-				if ( isset( $configData[ $key ] ) && is_array( $configData[ $key ] ) ) {
-					foreach ( $configData[ $key ] as $file ) {
-						$fullPath = $directory . '/' . $file;
-						$checks[] = $this->makeCheck(
-							label: "$configFileUsed [$key] references '$file' (MUST exist)",
-							pass: is_file( $fullPath ),
-							info: is_file( $fullPath )
+		if ( $has_qit_e2_e_config && $config_is_valid && is_array( $config_data ) ) {
+			$keys_to_check = [ 'sharedSetup', 'setup', 'teardown', 'sharedTeardown', 'muPlugins' ];
+			foreach ( $keys_to_check as $key ) {
+				if ( isset( $config_data[ $key ] ) && is_array( $config_data[ $key ] ) ) {
+					foreach ( $config_data[ $key ] as $file ) {
+						$full_path = $directory . '/' . $file;
+						$checks[]  = $this->makeCheck(
+							label: "$config_file_used [$key] references '$file' (MUST exist)",
+							pass: is_file( $full_path ),
+							info: is_file( $full_path )
 								? "Found $file"
 								: "$file not found in $directory",
 							severity: 'must'
@@ -156,22 +156,22 @@ class ValidateE2ECommand extends QITCommand {
 		}
 
 		// 6. Directory size < 128 MB (must)
-		$dirSize    = $this->getDirectorySize( $directory );
-		$under128mb = ( $dirSize < 128 * 1024 * 1024 );
+		$dir_size   = $this->getDirectorySize( $directory );
+		$under128mb = ( $dir_size < 128 * 1024 * 1024 );
 		$checks[]   = $this->makeCheck(
 			label: 'Test directory size < 128MB (MUST)',
 			pass: $under128mb,
 			info: $under128mb
-				? 'Directory size: ' . $this->humanFileSize( $dirSize )
-				: 'Directory too large: ' . $this->humanFileSize( $dirSize ),
+				? 'Directory size: ' . $this->humanFileSize( $dir_size )
+				: 'Directory too large: ' . $this->humanFileSize( $dir_size ),
 			severity: 'must'
 		);
 
 		// -----------------------------
 		// Output results (checklist)
 		// -----------------------------
-		$errorCount   = 0;
-		$warningCount = 0;
+		$error_count   = 0;
+		$warning_count = 0;
 		foreach ( $checks as $check ) {
 
 			if ( $check['severity'] === 'must' ) {
@@ -185,21 +185,21 @@ class ValidateE2ECommand extends QITCommand {
 			$output->writeln( "{$mark} {$check['label']} - {$check['info']}" );
 			if ( ! $check['pass'] ) {
 				if ( $check['severity'] === 'must' ) {
-					++$errorCount;
+					++$error_count;
 				} else {
-					++$warningCount;
+					++$warning_count;
 				}
 			}
 		}
 
-		if ( $errorCount > 0 ) {
-			$output->writeln( "<error>{$errorCount} required checks failed.</error>" );
+		if ( $error_count > 0 ) {
+			$output->writeln( "<error>{$error_count} required checks failed.</error>" );
 
 			return Command::FAILURE;
 		}
 
-		if ( $warningCount > 0 ) {
-			$output->writeln( "<comment>All required checks passed, but there are {$warningCount} optional warnings.</comment>" );
+		if ( $warning_count > 0 ) {
+			$output->writeln( "<comment>All required checks passed, but there are {$warning_count} optional warnings.</comment>" );
 
 			return Command::SUCCESS;
 		}

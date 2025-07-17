@@ -8,9 +8,12 @@ namespace QIT_CLI\PreCommand\Configuration\Parser;
 class QitJsonParser extends BaseJsonParser {
 	private array $parsed_config = [];
 	private TestPackageManifestParser $package_parser;
-	private array $loaded_packages = []; // Cache for loaded test packages
-	private string $current_file_path; // Track the current file being parsed
-	private array $path_contexts        = []; // Track which directory each path came from
+	/** @var array Cache for loaded test packages. */
+	private array $loaded_packages = [];
+	/** @var string Track the current file being parsed. */
+	private string $current_file_path;
+	/** @var array Track which directory each path came from. */
+	private array $path_contexts        = [];
 	private ?string $url_extend_context = null; // Track context for URL extends
 
 	public function __construct() {
@@ -447,7 +450,7 @@ class QitJsonParser extends BaseJsonParser {
 			}
 
 			$log_file  = $log_dir . '/qit_debug.log';
-			$timestamp = date( 'Y-m-d H:i:s' );
+			$timestamp = gmdate( 'Y-m-d H:i:s' );
 			file_put_contents( $log_file, "[$timestamp] $message\n", FILE_APPEND );
 		}
 	}
@@ -683,7 +686,9 @@ class QitJsonParser extends BaseJsonParser {
 		return $path;
 	}
 
-	// Public accessors
+	/**
+	 * Public accessors.
+	 */
 	public function get_config(): array {
 		return $this->parsed_config;
 	}

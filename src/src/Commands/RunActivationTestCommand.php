@@ -14,9 +14,11 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
 class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
-	protected static $defaultName = 'run:activation';
+	protected static $default_name = 'run:activation';
 
-	// LocalTestCommand interface implementation
+	/**
+	 * LocalTestCommand interface implementation.
+	 */
 	public function get_environment_name(): string {
 		return $this->input->getOption( 'environment' ) ?? 'default';
 	}
@@ -81,27 +83,33 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 		];
 
 		// Handle deprecated --zip option
-		if ( $zip = $input->getOption( 'zip' ) ) {
+		$zip = $input->getOption( 'zip' );
+		if ( $zip ) {
 			if ( $input->getOption( 'source' ) ) {
 				$output->writeln( '<error>Cannot use both --zip and --source options. Use only --source.</error>' );
 
 				return Command::FAILURE;
 			}
 			$run_e2e_options['--source'] = $zip;
-		} elseif ( $source = $input->getOption( 'source' ) ) {
-			$run_e2e_options['--source'] = $source;
+		} else {
+			$source = $input->getOption( 'source' );
+			if ( $source ) {
+				$run_e2e_options['--source'] = $source;
+			}
 		}
 
 		// Pass through other options
 		foreach ( [ 'wp', 'woo', 'php_version', 'object_cache', 'dependencies_mode' ] as $option ) {
-			if ( $value = $input->getOption( $option ) ) {
+			$value = $input->getOption( $option );
+			if ( $value ) {
 				$run_e2e_options[ "--{$option}" ] = $value;
 			}
 		}
 
 		// Pass through array options
 		foreach ( [ 'plugin', 'theme', 'php_extension' ] as $option ) {
-			if ( $values = $input->getOption( $option ) ) {
+			$values = $input->getOption( $option );
+			if ( $values ) {
 				$run_e2e_options[ "--{$option}" ] = $values;
 			}
 		}

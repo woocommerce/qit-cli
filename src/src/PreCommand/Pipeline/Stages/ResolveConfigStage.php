@@ -20,11 +20,11 @@ class ResolveConfigStage implements PipelineStage {
 	}
 
 	public function process( PipelineContext $context ): PipelineContext {
-		$cfgFile = $context->get( 'config_file' );
-		$slug    = $context->get( 'sut_slug' );
-		$type    = $context->get( 'sut_type' );
+		$cfg_file = $context->get( 'config_file' );
+		$slug     = $context->get( 'sut_slug' );
+		$type     = $context->get( 'sut_type' );
 
-		$resolved = $this->resolver->resolve( $cfgFile, $slug, $type );
+		$resolved = $this->resolver->resolve( $cfg_file, $slug, $type );
 
 		$context->set( 'resolved_config', $resolved );
 		return $context;

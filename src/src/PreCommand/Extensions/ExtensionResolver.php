@@ -52,12 +52,12 @@ class ExtensionResolver {
 	/**
 	 * Main entry point for resolving extensions.
 	 *
-	 * @param Extension[] $extensions Initial list of extensions to resolve
-	 * @param EnvInfo     $env_info Environment information
-	 * @param string      $cache_dir Cache directory path
+	 * @param Extension[] $extensions Initial list of extensions to resolve.
+	 * @param EnvInfo     $env_info Environment information.
+	 * @param string      $cache_dir Cache directory path.
 	 *
 	 * @return ResolvedExtensions
-	 * @throws \RuntimeException If resolution fails
+	 * @throws \RuntimeException If resolution fails.
 	 */
 	public function resolve( array $extensions, EnvInfo $env_info, string $cache_dir ): ResolvedExtensions {
 		debug_log( 'ExtensionResolver: Starting resolution for ' . count( $extensions ) . ' extensions' );
@@ -262,6 +262,7 @@ class ExtensionResolver {
 /**
  * Container for resolved extensions.
  */
+// phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound
 class ResolvedExtensions {
 	/** @var Extension[] */
 	protected $plugins = [];

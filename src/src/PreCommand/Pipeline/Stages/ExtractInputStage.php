@@ -10,13 +10,13 @@ class ExtractInputStage implements PipelineStage {
 	public function process( PipelineContext $context ): PipelineContext {
 		$in = $context->input;
 
-		$sutSlug = $in->hasArgument( 'sut' ) ? $in->getArgument( 'sut' ) : null;
-		$sutType = $in->hasOption( 'type' ) ? $in->getOption( 'type' ) : null;
-		$cfgFile = $in->hasOption( 'config' ) ? $in->getOption( 'config' ) : null;
+		$sut_slug = $in->hasArgument( 'sut' ) ? $in->getArgument( 'sut' ) : null;
+		$sut_type = $in->hasOption( 'type' ) ? $in->getOption( 'type' ) : null;
+		$cfg_file = $in->hasOption( 'config' ) ? $in->getOption( 'config' ) : null;
 
-		$context->set( 'sut_slug', $sutSlug )
-				->set( 'sut_type', $sutType )
-				->set( 'config_file', $cfgFile );
+		$context->set( 'sut_slug', $sut_slug )
+				->set( 'sut_type', $sut_type )
+				->set( 'config_file', $cfg_file );
 
 		return $context;
 	}

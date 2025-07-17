@@ -9,7 +9,7 @@ use QIT_CLI\Environment\Extension;
  * dependencies resolved, and test packages loaded.
  */
 class ResolvedConfiguration {
-	// Existing properties
+	/** @var array|null Existing properties. */
 	public ?array $sut               = null;
 	public ?Extension $sut_extension = null;
 	public array $environments       = [];
