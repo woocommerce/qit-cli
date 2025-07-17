@@ -302,6 +302,11 @@ class QITE2ETestCase extends TestCase {
 										continue;
 									}
 
+									// Normalize timings in lines like these: "[8.45s] Found 3 plugins to process\\n",
+									if ( preg_match( '/\[\d+(\.\d+)?s\]/', $line ) ) {
+										$line = preg_replace( '/\[\d+(\.\d+)?s\]/', '[TIMING NORMALIZED]', $line );
+									}
+
 									// 2) If this line starts with "Console ", ensure we show it only once, as they can cause flakiness.
 									if ( strpos( $line, 'Console ' ) === 0 ) {
 										if ( ! in_array( $line, $processes_console, true ) ) {
@@ -614,6 +619,12 @@ class QITE2ETestCase extends TestCase {
 
 		foreach ( $json as &$j ) {
 			foreach ( $j as $k => &$v ) {
+				// Remove unwanted keys
+				if ( $k === 'ai_suggestion_status' ) {
+					unset( $j[$k] );
+					continue;
+				}
+
 				// Check if the current key is in the processing rules.
 				if ( array_key_exists( $k, $rules ) ) {
 					// Validate the existing value.
