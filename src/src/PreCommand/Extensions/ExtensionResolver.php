@@ -146,8 +146,11 @@ class ExtensionResolver {
 
 		// For remote sources, check if we have the necessary info
 		if ( $extension->from === 'wporg' ) {
-			// For WPORG, we just need the version - we'll get the URL during metadata fetch
-			return ! empty( $extension->version );
+			// For WPORG, we just need the version - but special tags like nightly/rc require further resolution.
+			$version_lower = strtolower( (string) $extension->version );
+			$special_tag   = in_array( $version_lower, [ 'nightly', 'rc' ], true ) || str_contains( $version_lower, '-rc' );
+
+			return ! empty( $extension->version ) && ! $special_tag;
 		}
 
 		if ( $extension->from === 'wccom' ) {

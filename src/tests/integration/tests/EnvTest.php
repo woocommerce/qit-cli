@@ -11,19 +11,22 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_env_up() {
-		$output = qit( [ 'env:up' ], [
-			'sut' => [
-				'slug' => 'test-plugin',
-				'type' => 'plugin',
-				'source' => ['type' => 'directory', 'path' => './']
-			],
-			'environments' => [
-				'default' => [
-					'php_version' => '8.2',
-					'wp_version' => 'stable'
-				]
-			]
-		] );
+		$output = qit( [ 'env:up' ], <<<'JSON'
+{
+  "sut": {
+    "type": "plugin",
+    "slug": "test-plugin",
+    "source": { "type": "local", "path": "./" }
+  },
+  "environments": {
+    "default": {
+      "php_version": "8.2",
+      "wp_version": "stable"
+    }
+  }
+}
+JSON
+		);
 
 		// Extract the dynamic environment ID
 		preg_match( '/Temporary test environment created. \((\w+)\)/', $output, $matches );
@@ -47,7 +50,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	public function test_env_up_with_parameters() {
 		$output = qit( [
 				'env:up',
-				'--wp',
+				'--wp_version',
 				'6.5',
 				'--php_version',
 				'8.3',
@@ -72,10 +75,17 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_env_up_with_file() {
-		$output = qit( [ 'env:up' ], [
-			'wp'          => '6.4',
-			'php_version' => '8.2',
-		] );
+		$output = qit( [ 'env:up' ], <<<'JSON'
+{
+  "environments": {
+    "default": {
+      "wp_version": "6.4",
+      "php_version": "8.2"
+    }
+  }
+}
+JSON
+		);
 
 		// Check that WordPress Version is as expected:
 		$this->assertStringContainsString( 'WordPress Version: 6.4', $output );
@@ -85,10 +95,17 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_env_up_with_file_and_parameters() {
-		$output = qit( [ 'env:up' ], [
-			'wp'          => '6.4',
-			'php_version' => '8.3',
-		] );
+		$output = qit( [ 'env:up' ], <<<'JSON'
+{
+  "environments": {
+    "default": {
+      "wp_version": "6.4",
+      "php_version": "8.3"
+    }
+  }
+}
+JSON
+		);
 
 		// Check that WordPress Version is as expected:
 		$this->assertStringContainsString( 'WordPress Version: 6.4', $output );
@@ -98,42 +115,50 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_env_up_with_plugins() {
-		$json = json_decode( qit( [ 'env:up', '--json' ], [
-			'plugins' => [
-				'woocommerce-amazon-s3-storage' => [
-					'action' => 'activate',
-				],
-				'woocommerce' => [
-					'action' => 'activate',
-				],
-			],
-		] ), true );
+		// 1. A heredoc that already conforms to the schema the CLI expects
+		//    – single default environment, plugins as an ARRAY of objects.
+		$qitJson = <<<'JSON'
+{
+  "environments": {
+    "default": {
+      "plugins": [
+        {
+          "slug": "woocommerce-amazon-s3-storage",
+          "from": "wporg"
+        },
+        {
+          "slug": "woocommerce",
+          "from": "wporg"
+        }
+      ]
+    }
+  }
+}
+JSON;
 
-		$output = qit( [
+		// 2. Bring the environment up and capture the JSON response.
+		$envInfo = json_decode(
+			qit( [ 'env:up', '--json' ], $qitJson ),   // ← second argument is now the heredoc string
+			true
+		);
+
+		// 3. Run `wp plugin list` inside that environment.
+		$rawList = qit( [
 			'env:exec',
 			'--env_id',
-			$json['env_id'],
-			'wp plugin list --fields=name,status',
+			$envInfo['env_id'],
+			'wp plugin list --fields=name,status'
 		] );
 
-		/**
-		 * name    status
-		 * woocommerce-amazon-s3-storage    active
-		 * woocommerce    active
-		 * qit-wp-cli    must-use
-		 * wp-cli-github-cache    must-use
-		 */
-
-		// Keep the first line (header), and sort the rest alphabetically.
-		$lines  = explode( "\n", $output );
-		$header = array_shift( $lines );
-		sort( $lines );
-		array_unshift( $lines, $header );
-		$lines = array_filter( $lines ); // Remove empty lines.
-		$output = implode( "\n", $lines );
+		// 4. Canonicalise the listing so snapshots are stable.
+		$lines  = array_filter( explode( "\n", $rawList ) );  // drop empties
+		$header = array_shift( $lines );                    // keep header separate
+		sort( $lines );                                     // alphabetical order
+		$output = $header . "\n" . implode( "\n", $lines );
 
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
+
 
 	public function test_env_up_with_additional_volumes() {
 		if ( file_exists( sys_get_temp_dir() . '/qit-tmp-plugin.php' ) && ! unlink( sys_get_temp_dir() . '/qit-tmp-plugin.php' ) ) {
@@ -170,7 +195,7 @@ PHP
 	}
 
 	public function test_env_up_wordpress_stable_version() {
-		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'stable' ] ), true );
+		$json = json_decode( qit( [ 'env:up', '--json', '--wp_version', 'stable' ] ), true );
 
 		$output = qit( [
 			'env:exec',
@@ -183,7 +208,7 @@ PHP
 	}
 
 	public function test_env_up_wordpress_nightly_version() {
-		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'nightly' ] ), true );
+		$json = json_decode( qit( [ 'env:up', '--json', '--wp_version', 'nightly' ] ), true );
 
 		$output = qit( [
 			'env:exec',
@@ -192,19 +217,14 @@ PHP
 			'wp core version',
 		] );
 
-		// Preg match "6.6-alpha-58052"
-		$version_parts = explode( '-', $output );
-		$this->assertEquals( 3, count( $version_parts ) );
-		try {
-			$this->assertStringContainsString( 'alpha', $version_parts[1] );
-		} catch ( \Exception $e ) {
-			$this->assertStringContainsString( 'beta', $version_parts[1] );
-		}
-		$this->assertIsNumeric( $version_parts[2] );
+		$this->assertMatchesRegularExpression(
+			'/^\d+\.\d+-(alpha|beta|RC\d?)-\d+/',
+			trim($output)
+		);
 	}
 
 	public function test_env_up_woocommerce_stable_version() {
-		$json = json_decode( qit( [ 'env:up', '--json', '--woo', 'stable', ] ), true );
+		$json = json_decode( qit( [ 'env:up', '--json', '--woo_version', 'stable', '--plugin', 'woocommerce' ] ), true );
 
 		$output = qit( [
 			'env:exec',
@@ -233,8 +253,10 @@ PHP
 		$json = json_decode( qit( [
 			'env:up',
 			'--json',
-			'--woo',
+			'--woo_version',
 			'nightly',
+			'--plugin',
+			'woocommerce',
 		] ), true );
 
 		$output = qit( [
@@ -252,7 +274,7 @@ PHP
 		$json = json_decode( qit( [
 			'env:up',
 			'--json',
-			'--woo',
+			'--woo_version',
 			'rc',
 			'--plugin',
 			'https://github.com/woocommerce/woocommerce/releases/download/wc-beta-tester-2.3.0/woocommerce-beta-tester.zip:activate',

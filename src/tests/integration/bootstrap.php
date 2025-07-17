@@ -2,10 +2,17 @@
 
 use Symfony\Component\Process\Process;
 
-function qit( array $command, array $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ): string {
+if (!is_dir('/tmp/qit')) {
+	mkdir('/tmp/qit', 0755, true);
+}
+
+function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ): string {
 	if ( ! empty( $qit_env_json ) ) {
+		if ( is_array( $qit_env_json ) ) {
+			$qit_env_json = json_encode( $qit_env_json );
+		}
 		$qit_config_filename = sprintf( '%s/qit-env-%s.json', sys_get_temp_dir(), md5( $GLOBALS['QIT_HOME'] ) );
-		if ( ! file_put_contents( $qit_config_filename, json_encode( $qit_env_json ) ) ) {
+		if ( ! file_put_contents( $qit_config_filename, $qit_env_json ) ) {
 			throw new \RuntimeException( 'Failed to write to file.' );
 		}
 	}

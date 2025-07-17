@@ -180,6 +180,30 @@ class EnvironmentResolver {
 			$extensions[] = $this->create_extension_from_config( $theme_config, 'theme' );
 		}
 
+		// Inject WooCommerce plugin if a special woo_version is requested but the plugin isn't configured.
+		$woo_version = $env_config['woo_version'] ?? '';
+		if ( ! empty( $woo_version ) && strtolower( $woo_version ) !== 'stable' ) {
+			$found_wc = null;
+			foreach ( $extensions as $ext ) {
+				if ( $ext->type === 'plugin' && $ext->slug === 'woocommerce' ) {
+					$found_wc = $ext;
+					break;
+				}
+			}
+
+			if ( $found_wc ) {
+				// Ensure the version matches the requested one if missing or set to default.
+				if ( empty( $found_wc->version ) || strtolower( $found_wc->version ) === 'stable' ) {
+					$found_wc->version = $woo_version;
+				}
+			} else {
+				$wc_extension          = new Extension( 'woocommerce', 'plugin' );
+				$wc_extension->from    = 'wporg';
+				$wc_extension->version = $woo_version;
+				$extensions[]          = $wc_extension;
+			}
+		}
+
 		return $extensions;
 	}
 
