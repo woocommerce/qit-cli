@@ -99,6 +99,7 @@ abstract class BaseJsonParser {
 	/**
 	 * Format validation errors for output
 	 */
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Parameter may be used by subclasses
 	protected function format_validation_errors( $errors, string $context ): string {
 		$output = '';
 
@@ -126,7 +127,7 @@ abstract class BaseJsonParser {
 				// Keys that should replace rather than merge
 				$replace_keys = [ 'plugins', 'themes', 'volumes', 'env_vars', 'envs', 'secrets', 'test_packages' ];
 
-				if ( in_array( $key, $replace_keys ) ) {
+				if ( in_array( $key, $replace_keys, true ) ) {
 					$merged[ $key ] = $value;
 				} else {
 					$merged[ $key ] = $this->deep_merge( $merged[ $key ], $value );

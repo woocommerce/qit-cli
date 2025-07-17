@@ -94,9 +94,43 @@ phpcs:
 	$(MAKE) phpcbf || true
 	$(call execPhpAlpine,/app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
-# Added --memory-limit=1G here
-phpstan:
+# Generate PHPStan baseline - creates a baseline file with current errors
+# Usage: make phpstan-baseline
+# This will create src/phpstan-baseline.neon with all current PHPStan errors
+# The baseline allows you to focus on new errors while ignoring existing ones
+phpstan-baseline:
+	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan-baseline-gen.neon --memory-limit=1G --generate-baseline=/app/src/phpstan-baseline.neon --allow-empty-baseline)
+
+# Clean PHPStan baseline - removes the baseline file
+# Usage: make phpstan-clean-baseline
+# After cleaning, 'make phpstan' will show all errors again
+phpstan-clean-baseline:
+	rm -f src/phpstan-baseline.neon
+
+# Internal target: PHPStan with baseline
+phpstan-with-baseline:
+	@if [ ! -f src/phpstan-baseline.neon ]; then \
+		echo "Error: PHPStan baseline file (src/phpstan-baseline.neon) does not exist."; \
+		echo "Please run 'make phpstan-baseline' to generate a baseline first,"; \
+		echo "or use 'make phpstan' which will automatically detect if a baseline exists."; \
+		exit 1; \
+	fi
+	@echo "Using PHPStan baseline..."
+	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan-with-baseline.neon --memory-limit=1G)
+
+# Internal target: PHPStan without baseline
+phpstan-without-baseline:
+	@echo "Running PHPStan without baseline..."
 	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon --memory-limit=1G)
+
+# Added --memory-limit=1G here
+# Uses baseline if it exists, otherwise runs without baseline
+phpstan:
+	@if [ -f src/phpstan-baseline.neon ]; then \
+		$(MAKE) phpstan-with-baseline; \
+	else \
+		$(MAKE) phpstan-without-baseline; \
+	fi
 
 phpunit:
 	$(call execPhpAlpine,/app/src/vendor/bin/phpunit -c /app/src/phpunit.xml.dist $(ARGS),/app/src)

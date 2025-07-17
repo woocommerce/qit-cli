@@ -345,6 +345,7 @@ class ConfigurationResolver {
 		return $extension;
 	}
 
+	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- Parameter required for interface consistency
 	protected function create_temp_env_info( ResolvedConfiguration $config ): \QIT_CLI\Environment\Environments\EnvInfo {
 		$env_info                = new \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo();
 		$env_info->env_id        = uniqid();

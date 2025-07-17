@@ -20,8 +20,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 	/** @var TunnelRunner */
 	protected $tunnel_runner;
 
-	protected static $default_name        = 'env:up';
-	protected static $default_description = 'Start an environment';
+	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner ) {
 		$this->e2e_environment = $e2e_environment;

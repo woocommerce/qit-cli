@@ -14,7 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
 class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
-	protected static $default_name = 'run:activation';
+	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
 	 * LocalTestCommand interface implementation.

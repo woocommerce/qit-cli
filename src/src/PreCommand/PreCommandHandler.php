@@ -14,6 +14,10 @@ use QIT_CLI\PreCommand\Pipeline\Stages\ExtractInputStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ResolveConfigStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ValidateSUTStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildApiPayloadStage;
+use QIT_CLI\PreCommand\Pipeline\Stages\ResolveEnvironmentStage;
+use QIT_CLI\PreCommand\Pipeline\Stages\BuildEnvironmentResultStage;
+use QIT_CLI\PreCommand\Pipeline\Stages\ResolveTestPackagesStage;
+use QIT_CLI\PreCommand\Pipeline\Stages\BuildLocalTestResultStage;
 use QIT_CLI\PreCommand\Results\ConfigurationResult;
 use QIT_CLI\PreCommand\Results\EnvironmentResult;
 use QIT_CLI\PreCommand\Results\LocalTestResult;
@@ -58,97 +62,27 @@ class PreCommandHandler {
 		if ( $command instanceof ConfigurableTestCommand ) {
 			$context = ( new ValidateSUTStage() )->process( $context );
 			$context = ( new BuildApiPayloadStage() )->process( $context );
+
 			return $context->get_result();
 		}
 
-		// Validate SUT for local test commands
 		if ( $command instanceof LocalTestCommand ) {
-			if ( ! $resolved_config->sut ) {
-				throw new \RuntimeException( 'System Under Test (SUT) is required for test commands. Specify via CLI argument or qit.json.' );
-			}
-			$output->writeln( '<comment>DEBUG: Handling as Local Test Command</comment>' );
+			$context = ( new ValidateSUTStage() )->process( $context );
+			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
+			$context = ( new ResolveTestPackagesStage( $this->test_package_resolver ) )->process( $context );
+			$context = ( new BuildLocalTestResultStage() )->process( $context );
 
-			return $this->handle_local_test( $command, $input, $output, $resolved_config );
+			return $context->get_result();
 		}
 
 		if ( $command instanceof EnvironmentCommand ) {
-			$output->writeln( '<comment>DEBUG: Handling as EnvironmentCommand</comment>' );
+			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
+			$context = ( new BuildEnvironmentResultStage() )->process( $context );
 
-			return $this->handle_environment( $command, $input, $output, $resolved_config );
+			return $context->get_result();
 		}
 
 		throw new \RuntimeException( 'Command does not implement any PreCommand interface' );
-	}
-
-	protected function handle_environment(
-		EnvironmentCommand $command,
-		InputInterface $input,
-		OutputInterface $output,
-		ResolvedConfiguration $resolved_config
-	): EnvironmentResult {
-		$output->writeln( '<info>Resolving environment configuration...</info>', OutputInterface::VERBOSITY_VERBOSE );
-
-		$env_name = $command->get_environment_name();
-
-		// Extract explicit CLI overrides
-		$option_mapping = $this->get_environment_option_mapping();
-		$cli_overrides  = $this->extract_explicit_options( $command, $input, $option_mapping );
-
-		$env_result = $this->env_resolver->resolve(
-			$resolved_config,
-			$env_name,
-			$command->should_prepare_environment(),
-			$cli_overrides,
-			$input
-		);
-
-		return $env_result;
-	}
-
-	protected function handle_local_test(
-		LocalTestCommand $command,
-		InputInterface $input,
-		OutputInterface $output,
-		ResolvedConfiguration $resolved_config
-	): LocalTestResult {
-		$output->writeln( '<info>Resolving test configuration...</info>', OutputInterface::VERBOSITY_VERBOSE );
-
-		$test_type   = $command->get_test_type();
-		$profile     = $command->get_test_profile();
-		$test_config = $resolved_config->get_test_config( $test_type, $profile );
-
-		$env_name = $command->get_environment_name();
-
-		// Extract explicit CLI overrides for environment and test options
-		$env_mapping  = $this->get_environment_option_mapping();
-		$test_mapping = $this->get_test_option_mapping();
-
-		$env_overrides  = $this->extract_explicit_options( $command, $input, $env_mapping );
-		$test_overrides = $this->extract_explicit_options( $command, $input, $test_mapping );
-
-		$env_result = $this->env_resolver->resolve(
-			$resolved_config,
-			$env_name,
-			$command->should_prepare_environment(),
-			$env_overrides,
-			$input
-		);
-
-		// Merge test overrides into test config
-		$test_config = array_merge( $test_config, $test_overrides );
-
-		$test_packages = $this->test_package_resolver->resolve(
-			$resolved_config,
-			$test_type,
-			$profile
-		);
-
-		return new LocalTestResult(
-			$resolved_config,
-			$env_result->env_info,
-			$test_packages,
-			$test_config
-		);
 	}
 
 	/**

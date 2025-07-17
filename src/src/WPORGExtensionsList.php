@@ -62,12 +62,13 @@ class WPORGExtensionsList {
 		$cached    = $this->cache->get( $cache_key );
 
 		if ( $cached ) {
+			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Debug logging in CLI tool
 			file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Using cached info for $slug: " . print_r( $cached, true ) . "\n", FILE_APPEND );
 			return $cached;
 		}
 
 		// Example: https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}
-		$url = sprintf( $this->plugin_api_url, urlencode( $slug ) );
+		$url = sprintf( $this->plugin_api_url, rawurlencode( $slug ) );
 		file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Fetching info for $slug from $url\n", FILE_APPEND );
 
 		try {
@@ -93,6 +94,7 @@ class WPORGExtensionsList {
 			'url'     => $json['download_link'],
 		];
 
+		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Debug logging in CLI tool
 		file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Info for $slug: " . print_r( $info, true ) . "\n", FILE_APPEND );
 		$this->cache->set( $cache_key, $info, 300 );
 
@@ -114,7 +116,7 @@ class WPORGExtensionsList {
 		}
 
 		// Example: https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]={$slug}
-		$url = sprintf( $this->theme_api_url, urlencode( $slug ) );
+		$url = sprintf( $this->theme_api_url, rawurlencode( $slug ) );
 
 		try {
 			$response_body = ( new RequestBuilder( $url ) )

@@ -19,7 +19,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ReloadEnvironmentCommand extends QITCommand {
 	use EnvironmentSelectorTrait;
 
-	protected static $default_name = 'env:reload';
+	protected static $defaultName = 'env:reload'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected EnvironmentMonitor $environment_monitor;
 	protected Docker $docker;
@@ -30,7 +30,7 @@ class ReloadEnvironmentCommand extends QITCommand {
 	) {
 		$this->environment_monitor = $environment_monitor;
 		$this->docker              = $docker;
-		parent::__construct( static::$default_name );
+		parent::__construct( static::$defaultName );
 	}
 
 	protected function configure(): void {

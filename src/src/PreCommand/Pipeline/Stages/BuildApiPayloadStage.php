@@ -30,7 +30,12 @@ class BuildApiPayloadStage implements PipelineStage {
 		$test_type = $cmd->get_test_type();
 		$profile   = $cmd->get_test_profile();
 
-		$test_config = $resolved->get_test_config( $test_type, $profile );
+		try {
+			$test_config = $resolved->get_test_config( $test_type, $profile );
+		} catch ( \RuntimeException $e ) {
+			// No config provided in qit.json – default to empty array
+			$test_config = [];
+		}
 
 		// merge CLI overrides
 		$overrides   = $this->extract_explicit_options( $cmd, $context->input, $this->option_mapping() );

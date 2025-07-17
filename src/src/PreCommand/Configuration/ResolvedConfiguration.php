@@ -186,12 +186,15 @@ class ResolvedConfiguration {
 	public function export(): array {
 		return [
 			'sut'               => $this->sut,
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
 			'sut_extension'     => serialize( $this->sut_extension ),
 			'environments'      => $this->environments,
 			'test_types'        => $this->test_types,
 			'groups'            => $this->groups,
 			'test_packages'     => $this->test_packages,
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
 			'resolved_plugins'  => array_map( 'serialize', $this->resolved_plugins ),
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
 			'resolved_themes'   => array_map( 'serialize', $this->resolved_themes ),
 			'required_secrets'  => $this->required_secrets,
 			'required_services' => $this->required_services,
@@ -207,13 +210,16 @@ class ResolvedConfiguration {
 	public static function import( array $data ): self {
 		$config = new self( $data );
 
-		$config->sut               = $data['sut'];
-		$config->sut_extension     = unserialize( $data['sut_extension'] );
-		$config->environments      = $data['environments'];
-		$config->test_types        = $data['test_types'];
-		$config->groups            = $data['groups'];
-		$config->test_packages     = $data['test_packages'];
-		$config->resolved_plugins  = array_map( 'unserialize', $data['resolved_plugins'] );
+		$config->sut = $data['sut'];
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Used for object caching
+		$config->sut_extension = unserialize( $data['sut_extension'] );
+		$config->environments  = $data['environments'];
+		$config->test_types    = $data['test_types'];
+		$config->groups        = $data['groups'];
+		$config->test_packages = $data['test_packages'];
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Used for object caching
+		$config->resolved_plugins = array_map( 'unserialize', $data['resolved_plugins'] );
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Used for object caching
 		$config->resolved_themes   = array_map( 'unserialize', $data['resolved_themes'] );
 		$config->required_secrets  = $data['required_secrets'];
 		$config->required_services = $data['required_services'];

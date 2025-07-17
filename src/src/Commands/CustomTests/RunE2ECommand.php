@@ -28,7 +28,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	protected CustomE2ERunner $spec_custom_test_orchestrator;
 	protected WooExtensionsList $woo_extensions_list;
 
-	protected static $default_name = 'run:e2e';
+	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	/**
 	 * 0 is success.

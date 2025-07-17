@@ -45,7 +45,14 @@ class PipelineContext {
 		return $this;
 	}
 
-	public function get( string $key, $default = null ) {
-		return $this->data[ $key ] ?? $default;
+	/**
+	 * Get a value from the context data.
+	 *
+	 * @param string $key The key to retrieve.
+	 * @param mixed  $default_value The default value if key doesn't exist.
+	 * @return mixed The value from context or default.
+	 */
+	public function get( string $key, $default_value = null ) {
+		return $this->data[ $key ] ?? $default_value;
 	}
 }

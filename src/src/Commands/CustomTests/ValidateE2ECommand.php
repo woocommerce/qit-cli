@@ -29,12 +29,10 @@ class ValidateE2ECommand extends QITCommand {
 		$package_json_path = $directory . '/package.json';
 		$has_package_json  = is_file( $package_json_path );
 		$checks[]          = $this->makeCheck(
-			label: 'Has package.json (MUST)',
-			pass: $has_package_json,
-			info: $has_package_json
-				? 'Found package.json'
-				: 'No package.json found',
-			severity: 'must'
+			'Has package.json (MUST)',
+			$has_package_json,
+			$has_package_json ? 'Found package.json' : 'No package.json found',
+			'must'
 		);
 
 		// 2. Must check: "scripts.qit-e2e" in package.json
@@ -50,12 +48,12 @@ class ValidateE2ECommand extends QITCommand {
 			}
 		}
 		$checks[] = $this->makeCheck(
-			label: 'package.json has "qit-e2e" script (MUST)',
-			pass: $has_qit_e2_e_script,
-			info: $has_qit_e2_e_script
+			'package.json has "qit-e2e" script (MUST)',
+			$has_qit_e2_e_script,
+			$has_qit_e2_e_script
 				? 'Found scripts.qit-e2e in package.json'
 				: 'No "qit-e2e" script found',
-			severity: 'must'
+			'must'
 		);
 
 		// 3. Optional check: qit-e2e.(json|yml)
@@ -91,22 +89,22 @@ class ValidateE2ECommand extends QITCommand {
 		}
 
 		$checks[] = $this->makeCheck(
-			label: 'Has optional qit-e2e.(json|yml)',
-			pass: $has_qit_e2_e_config,
-			info: $has_qit_e2_e_config
+			'Has optional qit-e2e.(json|yml)',
+			$has_qit_e2_e_config,
+			$has_qit_e2_e_config
 				? "Found $config_file_used"
 				: 'Neither qit-e2e.json nor qit-e2e.yml found (defaults used)',
-			severity: 'optional'
+			'optional'
 		);
 
 		if ( $has_qit_e2_e_config ) {
 			$checks[] = $this->makeCheck(
-				label: 'qit-e2e config parses correctly (MUST if present)',
-				pass: $config_is_valid,
-				info: $config_is_valid
+				'qit-e2e config parses correctly (MUST if present)',
+				$config_is_valid,
+				$config_is_valid
 					? "Successfully parsed $config_file_used"
 					: "Error parsing $config_file_used",
-				severity: 'must'
+				'must'
 			);
 		}
 
@@ -124,12 +122,12 @@ class ValidateE2ECommand extends QITCommand {
 			foreach ( $default_files as $f ) {
 				$path     = $bootstrap_dir . '/' . $f;
 				$checks[] = $this->makeCheck(
-					label: "Default fallback file '$f' (optional but recommended)",
-					pass: is_file( $path ),
-					info: is_file( $path )
+					"Default fallback file '$f' (optional but recommended)",
+					is_file( $path ),
+					is_file( $path )
 						? "Found $f in bootstrap/ directory"
 						: "Not found: $f",
-					severity: 'optional'
+					'optional'
 				);
 			}
 		}
@@ -143,12 +141,12 @@ class ValidateE2ECommand extends QITCommand {
 					foreach ( $config_data[ $key ] as $file ) {
 						$full_path = $directory . '/' . $file;
 						$checks[]  = $this->makeCheck(
-							label: "$config_file_used [$key] references '$file' (MUST exist)",
-							pass: is_file( $full_path ),
-							info: is_file( $full_path )
+							"$config_file_used [$key] references '$file' (MUST exist)",
+							is_file( $full_path ),
+							is_file( $full_path )
 								? "Found $file"
 								: "$file not found in $directory",
-							severity: 'must'
+							'must'
 						);
 					}
 				}
@@ -159,12 +157,12 @@ class ValidateE2ECommand extends QITCommand {
 		$dir_size   = $this->getDirectorySize( $directory );
 		$under128mb = ( $dir_size < 128 * 1024 * 1024 );
 		$checks[]   = $this->makeCheck(
-			label: 'Test directory size < 128MB (MUST)',
-			pass: $under128mb,
-			info: $under128mb
+			'Test directory size < 128MB (MUST)',
+			$under128mb,
+			$under128mb
 				? 'Directory size: ' . $this->humanFileSize( $dir_size )
 				: 'Directory too large: ' . $this->humanFileSize( $dir_size ),
-			severity: 'must'
+			'must'
 		);
 
 		// -----------------------------

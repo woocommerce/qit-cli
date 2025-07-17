@@ -291,18 +291,19 @@ function debug_log_verbose( $messages, string $type = 'comment' ): void {
 /**
  * Dump a variable for debugging (only in verbose mode)
  *
- * @param mixed  $var The variable to dump.
+ * @param mixed  $variable The variable to dump.
  * @param string $label Optional label for the dump.
  * @return void
  */
-function debug_dump( $var, string $label = '' ): void {
+function debug_dump( $variable, string $label = '' ): void {
 	$output = App::make( Output::class );
 
 	if ( ! $output->isVerbose() ) {
 		return;
 	}
 
-	$dump = var_export( $var, true );
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Debug function in CLI tool
+	$dump = var_export( $variable, true );
 	if ( $label ) {
 		$output->writeln( "<comment>[DEBUG] $label:</comment>" );
 	}

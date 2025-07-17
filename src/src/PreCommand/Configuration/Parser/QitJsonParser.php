@@ -258,7 +258,7 @@ class QitJsonParser extends BaseJsonParser {
 		// Check for circular dependencies - normalize paths for comparison
 		if ( $current_file !== null ) {
 			$normalized_current = $this->normalize_path( $current_file );
-			if ( in_array( $normalized_current, $visited ) ) {
+			if ( in_array( $normalized_current, $visited, true ) ) {
 				$this->debug_log( "ERROR: Circular dependency detected for file: $normalized_current" );
 				throw new \RuntimeException( 'Circular dependency detected in extends' );
 			}
@@ -271,7 +271,7 @@ class QitJsonParser extends BaseJsonParser {
 
 		// Check if we're about to load a file we've already visited
 		$normalized_base = $this->normalize_path( $base_path );
-		if ( in_array( $normalized_base, $visited ) ) {
+		if ( in_array( $normalized_base, $visited, true ) ) {
 			$this->debug_log( "ERROR: About to load already visited file: $normalized_base" );
 			throw new \RuntimeException( 'Circular dependency detected in extends' );
 		}
@@ -359,13 +359,13 @@ class QitJsonParser extends BaseJsonParser {
 		return $resolved;
 	}
 
-	private function resolve_extends_path( string $extends ): string {
-		$this->debug_log( "Resolving extends path: $extends" );
+	private function resolve_extends_path( string $extends_path ): string {
+		$this->debug_log( "Resolving extends path: $extends_path" );
 
 		// Special test flag to simulate URL extends
-		if ( strpos( $extends, './mimick-url-for-tests/' ) === 0 ) {
+		if ( strpos( $extends_path, './mimick-url-for-tests/' ) === 0 ) {
 			// Extract the actual file path after the test prefix
-			$actual_path   = str_replace( './mimick-url-for-tests/', './', $extends );
+			$actual_path   = str_replace( './mimick-url-for-tests/', './', $extends_path );
 			$resolved_path = $this->resolve_path( $actual_path );
 
 			if ( ! file_exists( $resolved_path ) ) {
@@ -384,9 +384,9 @@ class QitJsonParser extends BaseJsonParser {
 			return $temp_file;
 		}
 
-		if ( filter_var( $extends, FILTER_VALIDATE_URL ) ) {
+		if ( filter_var( $extends_path, FILTER_VALIDATE_URL ) ) {
 			$temp_file = tempnam( sys_get_temp_dir(), 'qit_extends_' );
-			$contents  = file_get_contents( $extends );
+			$contents  = file_get_contents( $extends_path );
 			file_put_contents( $temp_file, $contents );
 
 			// Mark that this is a URL-based extend
@@ -400,18 +400,18 @@ class QitJsonParser extends BaseJsonParser {
 		$this->url_extend_context = null;
 
 		// Check if extends is just the filename without path
-		if ( basename( $extends ) === $extends ) {
+		if ( basename( $extends_path ) === $extends_path ) {
 			// It's just a filename, resolve from current directory
-			$path = $this->root_path . '/' . $extends;
+			$path = $this->root_path . '/' . $extends_path;
 		} else {
 			// For relative paths, resolve from current root
-			$path = $this->resolve_path( $extends );
+			$path = $this->resolve_path( $extends_path );
 		}
 
 		$this->debug_log( "Resolved path: $path" );
 
 		if ( ! file_exists( $path ) ) {
-			throw new \RuntimeException( "Extended config file not found: $extends" );
+			throw new \RuntimeException( "Extended config file not found: $extends_path" );
 		}
 
 		return $path;
@@ -460,7 +460,7 @@ class QitJsonParser extends BaseJsonParser {
 	 */
 	private function process_sut( array $sut ): array {
 		// Validate required fields
-		if ( ! isset( $sut['type'] ) || ! in_array( $sut['type'], [ 'plugin', 'theme' ] ) ) {
+		if ( ! isset( $sut['type'] ) || ! in_array( $sut['type'], [ 'plugin', 'theme' ], true ) ) {
 			throw new \RuntimeException( "SUT type must be 'plugin' or 'theme'" );
 		}
 
