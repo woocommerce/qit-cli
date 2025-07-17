@@ -2844,7 +2844,12 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found."
+                                        "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found.",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/fixtures\\/install-wc.setup.js",
+                                            "line": 22,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
@@ -6210,7 +6215,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customer\\/customer-list.spec.js",
+                                            "line": 94,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             }
@@ -6464,7 +6474,12 @@
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Expect \\"poll toEqual\\"",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
                             "stdout": [
@@ -6890,7 +6905,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
+                                            "line": 50,
+                                            "column": 10
+                                        }
                                     }
                                 ]
                             }
@@ -6917,7 +6937,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
+                                            "line": 50,
+                                            "column": 10
+                                        }
                                     }
                                 ]
                             }
@@ -6944,7 +6969,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
+                                            "line": 50,
+                                            "column": 10
+                                        }
                                     }
                                 ]
                             }
@@ -7661,7 +7691,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/create-woocommerce-blocks.spec.js",
+                                            "line": 249,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
@@ -8113,7 +8148,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email.spec.js",
+                                            "line": 175,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             }
@@ -8278,7 +8318,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 11,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -8305,7 +8350,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 11,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -8332,7 +8382,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 11,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -8359,7 +8414,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 11,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -8386,7 +8446,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 11,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -9053,7 +9118,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.js",
+                                            "line": 204,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
@@ -9163,7 +9233,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js",
+                                            "line": 110,
+                                            "column": 6
+                                        }
                                     }
                                 ]
                             }
@@ -9825,7 +9900,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js",
+                                            "line": 117,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
@@ -10244,7 +10324,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
+                                            "line": 40,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -10271,7 +10356,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
+                                            "line": 40,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -10298,7 +10388,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
+                                            "line": 40,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -10325,7 +10420,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
+                                            "line": 40,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -10352,7 +10452,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
+                                            "line": 40,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -11205,7 +11310,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js",
+                                            "line": 143,
+                                            "column": 6
+                                        }
                                     }
                                 ]
                             }
@@ -12374,7 +12484,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
+                                            "line": 104,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -12401,7 +12516,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
+                                            "line": 104,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -12428,7 +12548,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
+                                            "line": 104,
+                                            "column": 15
+                                        }
                                     }
                                 ]
                             }
@@ -12797,7 +12922,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.js",
+                                            "line": 262,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
