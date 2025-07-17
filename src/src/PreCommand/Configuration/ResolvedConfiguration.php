@@ -10,19 +10,19 @@ use QIT_CLI\Environment\Extension;
  */
 class ResolvedConfiguration {
 	// Existing properties
-	public ?array $sut = null;
+	public ?array $sut               = null;
 	public ?Extension $sut_extension = null;
-	public array $environments = [];
-	public array $test_types = [];
-	public array $groups = [];
-	public array $test_packages = [];
-	public array $resolved_plugins = [];
-	public array $resolved_themes = [];
-	public array $php_extensions = [];
-	public array $required_secrets = [];
-	public array $required_services = [];
-	public array $metadata = [];
-	public string $cache_dir = '';
+	public array $environments       = [];
+	public array $test_types         = [];
+	public array $groups             = [];
+	public array $test_packages      = [];
+	public array $resolved_plugins   = [];
+	public array $resolved_themes    = [];
+	public array $php_extensions     = [];
+	public array $required_secrets   = [];
+	public array $required_services  = [];
+	public array $metadata           = [];
+	public string $cache_dir         = '';
 
 	protected array $raw_config;
 
@@ -151,7 +151,7 @@ class ResolvedConfiguration {
 
 		// SUT is only required if test types are defined
 		if ( ! empty( $this->test_types ) && empty( $this->sut ) ) {
-			$errors[] = "System Under Test (SUT) is required when test types are defined";
+			$errors[] = 'System Under Test (SUT) is required when test types are defined';
 		}
 
 		// Validate environments exist for test configs that reference them

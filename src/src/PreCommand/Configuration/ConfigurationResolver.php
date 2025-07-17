@@ -29,17 +29,17 @@ class ConfigurationResolver {
 		Cache $cache,
 		OutputInterface $output
 	) {
-		$this->parser                 = $parser;
-		$this->extension_resolver     = $extension_resolver;
-		$this->package_downloader     = $package_downloader;
-		$this->cache                  = $cache;
-		$this->output                 = $output;
-		$this->cache_dir              = normalize_path( Config::get_qit_dir() . 'cache' );
+		$this->parser             = $parser;
+		$this->extension_resolver = $extension_resolver;
+		$this->package_downloader = $package_downloader;
+		$this->cache              = $cache;
+		$this->output             = $output;
+		$this->cache_dir          = normalize_path( Config::get_qit_dir() . 'cache' );
 	}
 
 	public function resolve( ?string $config_file, ?string $sut_slug = null, ?string $sut_type = null ): ResolvedConfiguration {
 		$this->output->writeln( '<info>Resolving configuration...</info>' );
-		debug_log( "Starting resolution of config file: " . ( $config_file ?? 'none' ), 'info' );
+		debug_log( 'Starting resolution of config file: ' . ( $config_file ?? 'none' ), 'info' );
 
 		// Validate explicit config file
 		if ( $config_file !== null && ! file_exists( $config_file ) ) {
@@ -52,7 +52,7 @@ class ConfigurationResolver {
 			'environments'  => [],
 			'test_types'    => [],
 			'groups'        => [],
-			'test_packages' => []
+			'test_packages' => [],
 		];
 
 		// Parse qit.json if provided
@@ -76,7 +76,7 @@ class ConfigurationResolver {
 			$resolved->sut           = [
 				'slug'   => $sut_slug,
 				'type'   => $sut_type ?? 'plugin',
-				'source' => [ 'type' => 'wporg' ]
+				'source' => [ 'type' => 'wporg' ],
 			];
 			$resolved->sut_extension = $this->create_sut_extension( $resolved->sut );
 		} elseif ( isset( $parsed_config['sut'] ) ) {
@@ -189,7 +189,7 @@ class ConfigurationResolver {
 			$extensions[] = $config->sut_extension;
 			debug_log( "Added SUT extension: {$config->sut_extension->slug}" );
 		} else {
-			debug_log( "No SUT extension to add" );
+			debug_log( 'No SUT extension to add' );
 		}
 
 		foreach ( $config->environments as $env_name => $env ) {
@@ -293,7 +293,7 @@ class ConfigurationResolver {
 					$extension->source = [
 						'type'    => 'build',
 						'command' => $config['command'],
-						'output'  => $config['output']
+						'output'  => $config['output'],
 					];
 					debug_log( "Extension source: build, command: {$config['command']}" );
 					break;

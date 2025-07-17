@@ -11,13 +11,13 @@ trait SmartOptionExtraction {
 	/**
 	 * Extract all explicitly provided options from input, excluding framework options.
 	 *
-	 * @param Command $command The command to get option definitions from.
-	 * @param InputInterface $input The input to extract from.
+	 * @param Command               $command The command to get option definitions from.
+	 * @param InputInterface        $input The input to extract from.
 	 * @param array<string, string> $option_mapping Optional mapping of option names to config keys.
 	 *
 	 * @return array<string, mixed> Extracted options with proper key names.
 	 */
-	protected function extractExplicitOptions(
+	protected function extract_explicit_options(
 		Command $command,
 		InputInterface $input,
 		array $option_mapping = []
@@ -38,7 +38,7 @@ trait SmartOptionExtraction {
 			'profile',
 			'environment',
 			'json',
-			'tunnel'
+			'tunnel',
 		];
 
 		foreach ( $definition->getOptions() as $option ) {
@@ -71,12 +71,12 @@ trait SmartOptionExtraction {
 	/**
 	 * Get all option defaults from a command.
 	 *
-	 * @param Command $command The command to get defaults from.
+	 * @param Command               $command The command to get defaults from.
 	 * @param array<string, string> $option_mapping Optional mapping of option names to config keys.
 	 *
 	 * @return array<string, mixed> Default values with proper key names.
 	 */
-	protected function extractOptionDefaults(
+	protected function extract_option_defaults(
 		Command $command,
 		array $option_mapping = []
 	): array {
@@ -96,7 +96,7 @@ trait SmartOptionExtraction {
 			'profile',
 			'environment',
 			'json',
-			'tunnel'
+			'tunnel',
 		];
 
 		foreach ( $definition->getOptions() as $option ) {

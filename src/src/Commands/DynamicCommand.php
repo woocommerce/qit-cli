@@ -18,11 +18,11 @@ abstract class DynamicCommand extends QITCommand implements ConfigurableTestComm
 	}
 
 	// ConfigurableTestCommand interface implementation
-	public function getTestType(): string {
+	public function get_test_type(): string {
 		return $this->test_type;
 	}
 
-	public function getTestProfile(): string {
+	public function get_test_profile(): string {
 		return $this->input->getOption( 'profile' ) ?? 'default';
 	}
 

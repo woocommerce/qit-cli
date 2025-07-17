@@ -28,13 +28,13 @@ class EnvironmentResult {
 		);
 
 		// Extract downloaded paths
-		$this->downloaded_paths = $this->extractDownloadedPaths();
+		$this->downloaded_paths = $this->extract_downloaded_paths();
 	}
 
 	/**
 	 * Extract downloaded paths from resolved extensions
 	 */
-	protected function extractDownloadedPaths(): array {
+	protected function extract_downloaded_paths(): array {
 		$paths = [];
 
 		foreach ( $this->resolved_extensions as $extension ) {

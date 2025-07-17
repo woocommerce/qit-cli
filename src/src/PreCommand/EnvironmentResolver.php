@@ -49,13 +49,13 @@ class EnvironmentResolver {
 		}
 
 		// Apply CLI overrides (CLI > JSON)
-		$env_config = $this->applyOverrides( $env_config, $cli_overrides, $input );
+		$env_config = $this->apply_overrides( $env_config, $cli_overrides, $input );
 
 		// Create EnvInfo with merged configuration
-		$env_info = $this->createEnvInfo( $env_config );
+		$env_info = $this->create_env_info( $env_config );
 
 		// Collect all extensions from environment
-		$extensions = $this->collectExtensions( $env_config, $config );
+		$extensions = $this->collect_extensions( $env_config, $config );
 
 		if ( $should_prepare ) {
 			// Resolve and download all extensions
@@ -83,12 +83,12 @@ class EnvironmentResolver {
 		$env_info->volumes = $this->volume_parser->parse_volumes( $env_config['volumes'] ?? [] );
 
 		// Set other environment properties
-		$this->setEnvironmentProperties( $env_info, $env_config );
+		$this->set_environment_properties( $env_info, $env_config );
 
 		return new EnvironmentResult( $config, $env_info );
 	}
 
-	protected function applyOverrides( array $env_config, array $overrides, InputInterface $input ): array {
+	protected function apply_overrides( array $env_config, array $overrides, InputInterface $input ): array {
 		// Start with defaults from InputInterface
 		$defaults = [
 			'php_version'    => $input->getOption( 'php_version' ),
@@ -115,7 +115,7 @@ class EnvironmentResolver {
 
 		// Use VersionResolver for WordPress RC versions only
 		if ( isset( $env_config['wp_version'] ) && strtolower( $env_config['wp_version'] ) === 'rc' ) {
-			$env_config['wp_version'] = $this->version_resolver->resolveWordPressVersion( $env_config['wp_version'] );
+			$env_config['wp_version'] = $this->version_resolver->resolve_wordpress_version( $env_config['wp_version'] );
 		}
 
 		// No conversion for WooCommerce - keep everything as is
@@ -146,7 +146,7 @@ class EnvironmentResolver {
 		return $env_config;
 	}
 
-	protected function createEnvInfo( array $env_config ): E2EEnvInfo {
+	protected function create_env_info( array $env_config ): E2EEnvInfo {
 		$env_info                = new E2EEnvInfo();
 		$env_info->env_id        = uniqid();
 		$env_info->environment   = 'e2e';
@@ -157,12 +157,12 @@ class EnvironmentResolver {
 		$env_info->status        = 'pending';
 
 		// Set properties based on merged configuration
-		$this->setEnvironmentProperties( $env_info, $env_config );
+		$this->set_environment_properties( $env_info, $env_config );
 
 		return $env_info;
 	}
 
-	protected function collectExtensions( array $env_config, ResolvedConfiguration $config ): array {
+	protected function collect_extensions( array $env_config, ResolvedConfiguration $config ): array {
 		$extensions = [];
 
 		// Add SUT if present
@@ -172,18 +172,18 @@ class EnvironmentResolver {
 
 		// Add plugins from environment
 		foreach ( $env_config['plugins'] ?? [] as $plugin_config ) {
-			$extensions[] = $this->createExtensionFromConfig( $plugin_config, 'plugin' );
+			$extensions[] = $this->create_extension_from_config( $plugin_config, 'plugin' );
 		}
 
 		// Add themes from environment
 		foreach ( $env_config['themes'] ?? [] as $theme_config ) {
-			$extensions[] = $this->createExtensionFromConfig( $theme_config, 'theme' );
+			$extensions[] = $this->create_extension_from_config( $theme_config, 'theme' );
 		}
 
 		return $extensions;
 	}
 
-	protected function createExtensionFromConfig( $config, string $type ): Extension {
+	protected function create_extension_from_config( $config, string $type ): Extension {
 		if ( is_string( $config ) ) {
 			// Simple string format - defaults to wporg
 			$extension          = new Extension( $config, $type );
@@ -232,7 +232,7 @@ class EnvironmentResolver {
 		return $extension;
 	}
 
-	protected function setEnvironmentProperties( E2EEnvInfo $env_info, array $env_config ): void {
+	protected function set_environment_properties( E2EEnvInfo $env_info, array $env_config ): void {
 		// Keep versions as-is - no conversion
 		$env_info->wp_version   = $env_config['wp_version'] ?? 'stable';
 		$env_info->php_version  = $env_config['php_version'] ?? '8.2';

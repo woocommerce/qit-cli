@@ -48,7 +48,7 @@ class ExtensionCacheManager {
 	 * Ensure extension is cached and set downloaded_source.
 	 *
 	 * @param Extension $extension
-	 * @param string $cache_dir
+	 * @param string    $cache_dir
 	 *
 	 * @throws \RuntimeException
 	 */
@@ -100,7 +100,7 @@ class ExtensionCacheManager {
 
 		// Check if it's a directory
 		if ( is_dir( $source_path ) ) {
-			debug_log( "  Source is a directory" );
+			debug_log( '  Source is a directory' );
 			$extension->downloaded_source = $source_path;
 
 			// Detect entrypoint
@@ -111,7 +111,7 @@ class ExtensionCacheManager {
 
 		// Check if it's a zip file
 		if ( is_file( $source_path ) && pathinfo( $source_path, PATHINFO_EXTENSION ) === 'zip' ) {
-			debug_log( "  Source is a zip file" );
+			debug_log( '  Source is a zip file' );
 			$this->copy_local_file( $extension, $cache_dir );
 
 			return;

@@ -50,20 +50,20 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	}
 
 	// LocalTestCommand interface implementation
-	public function getEnvironmentName(): string {
+	public function get_environment_name(): string {
 		return $this->input->getOption( 'environment' ) ?? 'default';
 	}
 
-	public function shouldPrepareEnvironment(): bool {
+	public function should_prepare_environment(): bool {
 		// Don't prepare if just checking config or in up_only mode
 		return ! $this->input->getOption( 'up_only' );
 	}
 
-	public function getTestType(): string {
+	public function get_test_type(): string {
 		return 'e2e';
 	}
 
-	public function getTestProfile(): string {
+	public function get_test_profile(): string {
 		return $this->input->getOption( 'profile' ) ?? 'default';
 	}
 
@@ -71,42 +71,42 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		parent::configure();
 
 		$this->setDescription( 'Run E2E tests' )
-		     ->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'Extension slug or ID' )
-		     ->addArgument( 'test', InputArgument::OPTIONAL, 'Test tags or directory', 'default' )
-		     ->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
+			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'Extension slug or ID' )
+			->addArgument( 'test', InputArgument::OPTIONAL, 'Test tags or directory', 'default' )
+			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
 
 			// SUT options
-			 ->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Source of the extension' )
+			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Source of the extension' )
 
 			// Environment overrides
-			 ->addOption( 'wp_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
-		     ->addOption( 'woo_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
-		     ->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
-		     ->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
-		     ->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
-		     ->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )
-		     ->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
-		     ->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
-		     ->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
-		     ->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
-		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling', 'no_tunnel' )
-		     ->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
-		     ->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment files', [] )
+			->addOption( 'wp_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
+			->addOption( 'woo_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
+			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
+			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
+			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
+			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling', 'no_tunnel' )
+			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment files', [] )
 
 			// Test options
-			 ->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'Playwright test tag', '' )
-		     ->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright sharding' )
-		     ->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots' )
-		     ->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional Playwright options' )
+			->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'Playwright test tag', '' )
+			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright sharding' )
+			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots' )
+			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional Playwright options' )
 
 			// Execution options
-			 ->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'Just start environment' )
-		     ->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
-		     ->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
-		     ->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
-		     ->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
-		     ->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
-		     ->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false );
+			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'Just start environment' )
+			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
+			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
+			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
+			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {

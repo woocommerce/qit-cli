@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
  * Example implementation of a test command that uses the resolved configuration
  */
 class TestE2ECommand extends QITCommand {
-	protected static $defaultName = 'test:e2e';
+	protected static $defaultName        = 'test:e2e';
 	protected static $defaultDescription = 'Run end-to-end tests';
 
 	protected function configure(): void {

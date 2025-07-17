@@ -10,10 +10,10 @@ interface ConfigurableTestCommand {
 	/**
 	 * Get the test type (e.g., 'security', 'phpstan', 'compatibility')
 	 */
-	public function getTestType(): string;
+	public function get_test_type(): string;
 
 	/**
 	 * Get the test profile name
 	 */
-	public function getTestProfile(): string;
+	public function get_test_profile(): string;
 }

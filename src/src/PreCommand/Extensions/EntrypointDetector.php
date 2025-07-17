@@ -63,7 +63,7 @@ class EntrypointDetector {
 			$extension->entrypoint = "{$extension->slug}/style.css";
 			debug_log( "  Found theme entrypoint: {$extension->entrypoint}" );
 		} else {
-			debug_log( "  No style.css found in theme directory", 'error' );
+			debug_log( '  No style.css found in theme directory', 'error' );
 		}
 	}
 
@@ -106,7 +106,7 @@ class EntrypointDetector {
 			}
 		}
 
-		debug_log( "  No plugin header found in any PHP file", 'error' );
+		debug_log( '  No plugin header found in any PHP file', 'error' );
 	}
 
 	/**
@@ -171,7 +171,7 @@ class EntrypointDetector {
 		$slug_prefix     = $extension->slug . '/';
 		$slug_prefix_len = strlen( $slug_prefix );
 
-		for ( $i = 0; $i < $zip->numFiles; $i ++ ) {
+		for ( $i = 0; $i < $zip->numFiles; $i++ ) {
 			$filename = $zip->getNameIndex( $i );
 
 			// Skip if not in plugin root directory
@@ -207,7 +207,7 @@ class EntrypointDetector {
 			}
 		}
 
-		debug_log( "  No plugin header found in ZIP", 'error' );
+		debug_log( '  No plugin header found in ZIP', 'error' );
 	}
 
 	/**

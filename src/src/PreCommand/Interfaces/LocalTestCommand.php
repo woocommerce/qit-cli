@@ -10,10 +10,10 @@ interface LocalTestCommand extends EnvironmentCommand {
 	/**
 	 * Get the test type for loading test packages
 	 */
-	public function getTestType(): string;
+	public function get_test_type(): string;
 
 	/**
 	 * Get the test profile for loading test packages
 	 */
-	public function getTestProfile(): string;
+	public function get_test_profile(): string;
 }

@@ -27,14 +27,14 @@ class LocalTestResult extends EnvironmentResult {
 	/**
 	 * Get test packages organized by reference
 	 */
-	public function getTestPackagesByReference(): array {
+	public function get_test_packages_by_reference(): array {
 		return $this->test_packages;
 	}
 
 	/**
 	 * Get all test package paths
 	 */
-	public function getTestPackagePaths(): array {
+	public function get_test_package_paths(): array {
 		$paths = [];
 
 		foreach ( $this->test_packages as $ref => $package ) {
@@ -51,7 +51,7 @@ class LocalTestResult extends EnvironmentResult {
 	/**
 	 * Check if all required test packages are available
 	 */
-	public function hasAllTestPackages(): bool {
+	public function has_all_test_packages(): bool {
 		if ( empty( $this->test_config['test_packages'] ) ) {
 			return true; // No packages required
 		}

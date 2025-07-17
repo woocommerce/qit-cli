@@ -53,8 +53,8 @@ class ExtensionResolver {
 	 * Main entry point for resolving extensions.
 	 *
 	 * @param Extension[] $extensions Initial list of extensions to resolve
-	 * @param EnvInfo $env_info Environment information
-	 * @param string $cache_dir Cache directory path
+	 * @param EnvInfo     $env_info Environment information
+	 * @param string      $cache_dir Cache directory path
 	 *
 	 * @return ResolvedExtensions
 	 * @throws \RuntimeException If resolution fails
@@ -82,14 +82,14 @@ class ExtensionResolver {
 
 				// Step 1: Resolve source if not fully resolved
 				if ( ! $this->is_source_resolved( $extension ) ) {
-					debug_log( "  Extension source not fully resolved, resolving..." );
+					debug_log( '  Extension source not fully resolved, resolving...' );
 					$this->resolve_extension_source( $extension );
 				}
 
 				// Step 2: Fetch metadata (version, download URL, etc.)
 				try {
 					if ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) ) {
-						debug_log( "  Fetching metadata for remote extension" );
+						debug_log( '  Fetching metadata for remote extension' );
 						$this->metadata_fetcher->fetch_metadata( [ $extension ] );
 					}
 				} catch ( \RuntimeException $e ) {
@@ -105,16 +105,16 @@ class ExtensionResolver {
 				}
 
 				// Step 3: Check cache and download if needed
-				debug_log( "  Ensuring extension is cached" );
+				debug_log( '  Ensuring extension is cached' );
 				$this->cache_manager->ensure_cached( $extension, $cache_dir );
 
 				// Step 4: Add to resolved collection
 				$resolved->add_extension( $extension );
-				debug_log( "  Added extension to resolved collection" );
+				debug_log( '  Added extension to resolved collection' );
 
 				// Step 5: Parse dependencies
 				if ( ! empty( $extension->downloaded_source ) ) {
-					debug_log( "  Checking for dependencies" );
+					debug_log( '  Checking for dependencies' );
 					$dependencies = $this->dependency_resolver->resolve_dependencies( $extension );
 					foreach ( $dependencies as $dep ) {
 						if ( ! in_array( $dep->slug, $seen, true ) ) {
@@ -172,7 +172,7 @@ class ExtensionResolver {
 				return; // Local sources are resolved
 			}
 			if ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) && ! empty( $extension->source ) && ! empty( $extension->version ) ) {
-				debug_log( "  Extension has complete remote source information" );
+				debug_log( '  Extension has complete remote source information' );
 
 				return; // Remote sources with metadata are resolved
 			}
@@ -188,7 +188,7 @@ class ExtensionResolver {
 		}
 
 		// Infer source for unspecified or incomplete sources (e.g., SUT without source)
-		debug_log( "  Attempting to infer source from marketplaces" );
+		debug_log( '  Attempting to infer source from marketplaces' );
 
 		try {
 			if ( $extension->type === 'plugin' && $this->wporg_extensions_list->is_wporg_plugin( $extension->slug ) ) {
@@ -219,7 +219,7 @@ class ExtensionResolver {
 
 		// Check local sources
 		if ( ! empty( $extension->directory ) || ! empty( $extension->source ) ) {
-			debug_log( "  Checking local sources" );
+			debug_log( '  Checking local sources' );
 
 			// Check if it's a directory
 			if ( ! empty( $extension->directory ) && is_dir( $extension->directory ) ) {

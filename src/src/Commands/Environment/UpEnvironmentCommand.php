@@ -20,7 +20,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 	/** @var TunnelRunner */
 	protected $tunnel_runner;
 
-	protected static $defaultName = 'env:up';
+	protected static $defaultName        = 'env:up';
 	protected static $defaultDescription = 'Creates a temporary local test environment';
 
 	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner ) {
@@ -51,11 +51,11 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 		$this->setHelp( $this->getHelpText() );
 	}
 
-	public function getEnvironmentName(): string {
+	public function get_environment_name(): string {
 		return $this->input->getOption( 'environment' ) ?? 'default';
 	}
 
-	public function shouldPrepareEnvironment(): bool {
+	public function should_prepare_environment(): bool {
 		return true; // We need to download extensions
 	}
 

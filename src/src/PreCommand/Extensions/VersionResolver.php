@@ -60,16 +60,16 @@ class VersionResolver {
 			throw new \RuntimeException( "No resolver for $plugin:$version" );
 		}
 
-		return $this->resolvers[ $plugin ][$version]();
+		return $this->resolvers[ $plugin ][ $version ]();
 	}
 
 	/**
 	 * Resolve WordPress core version (only handles RC)
 	 */
-	public function resolveWordPressVersion( string $version ): string {
+	public function resolve_wordpress_version( string $version ): string {
 		// Use the resolver if available
-		if ( $this->can_resolve( 'wordpress', $version ) ) {
-			return $this->resolve( 'wordpress', $version );
+		if ( $this->can_resolve( 'WordPress', $version ) ) {
+			return $this->resolve( 'WordPress', $version );
 		}
 
 		// Pass through other versions unchanged

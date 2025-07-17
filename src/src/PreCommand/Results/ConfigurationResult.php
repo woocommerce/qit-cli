@@ -17,13 +17,13 @@ class ConfigurationResult {
 		$this->test_config   = $test_config;
 
 		// Prepare API payload from configuration
-		$this->api_payload = $this->prepareAPIPayload();
+		$this->api_payload = $this->prepare_api_payload();
 	}
 
 	/**
 	 * Prepare the base API payload from configuration
 	 */
-	protected function prepareAPIPayload(): array {
+	protected function prepare_api_payload(): array {
 		$payload = [];
 
 		// Add test configuration parameters

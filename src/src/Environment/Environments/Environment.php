@@ -162,7 +162,7 @@ abstract class Environment {
 				// Local directory - create volume mapping
 				$mapping = $target_dir;
 				if ( ! getenv( 'QIT_ALLOW_WRITE' ) ) {
-					$mapping .= ":ro,cached";
+					$mapping .= ':ro,cached';
 					if ( $this->output->isVerbose() ) {
 						$this->output->writeln( "Info: Mapping '{$extension->type}s/{$extension->slug}' as read-only to protect your local copy." );
 					}

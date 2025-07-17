@@ -41,7 +41,7 @@ class TestPackageDownloader {
 	 * Download multiple test packages
 	 *
 	 * @param array<string, array> $packages Map of reference => package info
-	 * @param string $cache_dir Cache directory
+	 * @param string               $cache_dir Cache directory
 	 *
 	 * @return array<string, array> Map of reference => manifest content
 	 */
@@ -101,7 +101,7 @@ class TestPackageDownloader {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'packages' => implode( ',', $references )
+				'packages' => implode( ',', $references ),
 			] )
 			->request();
 
@@ -240,7 +240,7 @@ class TestPackageDownloader {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/package-info' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'package' => $reference
+				'package' => $reference,
 			] )
 			->request();
 

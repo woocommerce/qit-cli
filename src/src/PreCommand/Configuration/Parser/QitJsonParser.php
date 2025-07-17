@@ -10,7 +10,7 @@ class QitJsonParser extends BaseJsonParser {
 	private TestPackageManifestParser $package_parser;
 	private array $loaded_packages = []; // Cache for loaded test packages
 	private string $current_file_path; // Track the current file being parsed
-	private array $path_contexts = []; // Track which directory each path came from
+	private array $path_contexts        = []; // Track which directory each path came from
 	private ?string $url_extend_context = null; // Track context for URL extends
 
 	public function __construct() {
@@ -217,7 +217,7 @@ class QitJsonParser extends BaseJsonParser {
 				'version'   => $parts[1] ?? 'latest',
 				'remote'    => false,
 				'local'     => true,
-				'reference' => $reference
+				'reference' => $reference,
 			];
 		}
 
@@ -228,7 +228,7 @@ class QitJsonParser extends BaseJsonParser {
 				'package'   => $matches[2],
 				'version'   => $matches[3],
 				'remote'    => true,
-				'reference' => $reference
+				'reference' => $reference,
 			];
 		}
 
@@ -462,11 +462,11 @@ class QitJsonParser extends BaseJsonParser {
 		}
 
 		if ( ! isset( $sut['slug'] ) ) {
-			throw new \RuntimeException( "SUT slug is required" );
+			throw new \RuntimeException( 'SUT slug is required' );
 		}
 
 		if ( ! isset( $sut['source'] ) || ! isset( $sut['source']['type'] ) ) {
-			throw new \RuntimeException( "SUT source configuration is required" );
+			throw new \RuntimeException( 'SUT source configuration is required' );
 		}
 
 		// Validate source based on type
@@ -524,7 +524,7 @@ class QitJsonParser extends BaseJsonParser {
 
 			case 'url':
 				if ( ! isset( $source['url'] ) || ! filter_var( $source['url'], FILTER_VALIDATE_URL ) ) {
-					throw new \RuntimeException( "Invalid URL in SUT source" );
+					throw new \RuntimeException( 'Invalid URL in SUT source' );
 				}
 				break;
 
@@ -725,8 +725,8 @@ class QitJsonParser extends BaseJsonParser {
 					'type'   => $type,
 					'source' => [
 						'type'    => 'wporg',
-						'version' => 'stable'
-					]
+						'version' => 'stable',
+					],
 				];
 			} elseif ( is_array( $extension ) ) {
 				// Already in array format
@@ -738,7 +738,7 @@ class QitJsonParser extends BaseJsonParser {
 					if ( isset( $extension['from'] ) ) {
 						$extension['source'] = [
 							'type'    => $extension['from'],
-							'version' => $extension['version'] ?? 'stable'
+							'version' => $extension['version'] ?? 'stable',
 						];
 
 						if ( isset( $extension['path'] ) ) {
@@ -748,7 +748,7 @@ class QitJsonParser extends BaseJsonParser {
 						// Default to wporg
 						$extension['source'] = [
 							'type'    => 'wporg',
-							'version' => 'stable'
+							'version' => 'stable',
 						];
 					}
 				}

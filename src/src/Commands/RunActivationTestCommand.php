@@ -17,19 +17,19 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 	protected static $defaultName = 'run:activation';
 
 	// LocalTestCommand interface implementation
-	public function getEnvironmentName(): string {
+	public function get_environment_name(): string {
 		return $this->input->getOption( 'environment' ) ?? 'default';
 	}
 
-	public function shouldPrepareEnvironment(): bool {
+	public function should_prepare_environment(): bool {
 		return true;
 	}
 
-	public function getTestType(): string {
+	public function get_test_type(): string {
 		return 'activation';
 	}
 
-	public function getTestProfile(): string {
+	public function get_test_profile(): string {
 		return $this->input->getOption( 'profile' ) ?? 'default';
 	}
 
@@ -37,20 +37,20 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 		parent::configure();
 
 		$this->setDescription( 'Run activation tests' )
-		     ->addArgument( 'woo_extension', InputArgument::REQUIRED, 'Extension slug or ID' )
-		     ->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Local source path' )
-		     ->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, 'Local ZIP file (deprecated, use --source)' )
-		     ->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
-		     ->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
-		     ->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
-		     ->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
-		     ->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
-		     ->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
-		     ->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
-		     ->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'Dependencies mode', 'activate' )
-		     ->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false )
-		     ->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated)', false )
-		     ->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Deprecated)', false );
+			->addArgument( 'woo_extension', InputArgument::REQUIRED, 'Extension slug or ID' )
+			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Local source path' )
+			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, 'Local ZIP file (deprecated, use --source)' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
+			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
+			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'Dependencies mode', 'activate' )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false )
+			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated)', false )
+			->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Deprecated)', false );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -71,8 +71,8 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 			// The activation test is a test package from WooCommerce
 			'test'                      => 'woocommerce/activation:stable', // Or could be determined by woo version
 			// Pass through options
-			'--profile'                 => $this->getTestProfile(),
-			'--environment'             => $this->getEnvironmentName(),
+			'--profile'                 => $this->get_test_profile(),
+			'--environment'             => $this->get_environment_name(),
 			// Skip automatic activation for activation tests
 			'--skip_activating_plugins' => true,
 			'--skip_activating_themes'  => true,
@@ -95,14 +95,14 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 		// Pass through other options
 		foreach ( [ 'wp', 'woo', 'php_version', 'object_cache', 'dependencies_mode' ] as $option ) {
 			if ( $value = $input->getOption( $option ) ) {
-				$run_e2e_options["--{$option}"] = $value;
+				$run_e2e_options[ "--{$option}" ] = $value;
 			}
 		}
 
 		// Pass through array options
 		foreach ( [ 'plugin', 'theme', 'php_extension' ] as $option ) {
 			if ( $values = $input->getOption( $option ) ) {
-				$run_e2e_options["--{$option}"] = $values;
+				$run_e2e_options[ "--{$option}" ] = $values;
 			}
 		}
 
