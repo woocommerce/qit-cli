@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 300 Warnings: 42",
+            "test_summary": "Errors: 301 Warnings: 42",
             "debug_log": "",
             "version": "0.1-test-version",
             "update_complete": true,
@@ -53,13 +53,13 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 300,
+                            "errors": 301,
                             "warnings": 40,
                             "fixable": 0
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 300,
+                                "errors": 301,
                                 "warnings": 40,
                                 "messages": [
                                     {
@@ -461,6 +461,16 @@
                                         "codeFragment": "echo $wpdb::CONSTANT_NAME;\\n",
                                         "line": 151,
                                         "column": 6
+                                    },
+                                    {
+                                        "message": "Dynamic wpdb method call detected: $wpdb->{$methodName}. This prevents verification of proper SQL escaping. Manual review required.",
+                                        "source": "QITStandard.DB.DynamicWpdbMethodCall.DynamicMethod",
+                                        "severity": 5,
+                                        "fixable": false,
+                                        "type": "ERROR",
+                                        "codeFragment": "$wpdb->{$methodName}( \'query\' );\\n",
+                                        "line": 154,
+                                        "column": 1
                                     },
                                     {
                                         "message": "Incorrect number of replacements passed to $wpdb->prepare(). Found 2 replacement parameters, expected 6.",
