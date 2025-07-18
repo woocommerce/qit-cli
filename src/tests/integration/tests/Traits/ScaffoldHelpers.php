@@ -65,13 +65,19 @@ PHP;
 	}
 
 	/**
-	 * @param array<string, mixed> $env_info The environment info to normalize.
-	 * @return array<string, mixed> The normalized environment info.
-	 * @phpstan-param array{env_id: string, plugins: array<int, array<string, mixed>>, ...} $env_info
-	 * @phpstan-return array<string, mixed>
+	 * Accept either the whole Pre‑Command result *or* just the env_info
+	 * subtree and normalise all volatile fields.
+	 *
+	 * @param array<string,mixed> $payload
 	 */
-	protected function normalize_env_info( array $env_info ): array {
-		$id = $env_info['env_id'];
+	protected function normalize_env_info( array $payload ): array {
+
+		// ─────────────────────────────────────────────────────────────
+		// 0. Detect which level we received
+		// ─────────────────────────────────────────────────────────────
+		$is_full_payload = isset($payload['env_info']);
+		$env_info        = $is_full_payload ? $payload['env_info'] : $payload;
+		$id              = $env_info['env_id'] ?? '<NO_ID>';
 
 		// Decode, str_replace, encode
 		$env_info = json_encode( $env_info, JSON_UNESCAPED_SLASHES );
@@ -85,13 +91,17 @@ PHP;
 				break;
 			}
 
-			if ( $d === '/' ) {
-				throw new \RuntimeException( 'Could not find the "custom_tests" directory.' );
+			// stop at repo root
+			if ( file_exists( $d . '/composer.json' ) ) {
+				$dir_to_replace = null;      // nothing to replace
+				break;
 			}
 		}
 
 		$env_info = str_replace( $id, 'ENV_ID_NORMALIZED', $env_info );
-		$env_info = str_replace( $dir_to_replace, '/path/normalized/', $env_info );
+		if ( $dir_to_replace ) {
+			$env_info = str_replace( $dir_to_replace, '/path/normalized/', $env_info );
+		}
 		$env_info = str_replace( rtrim( sys_get_temp_dir(), '/' ) . '/', '/tmp-normalized/', $env_info );
 		$env_info = str_replace( '/tmp/', '/tmp-normalized/', $env_info );
 		$env_info = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALIZED_ID', $env_info );
@@ -125,24 +135,82 @@ PHP;
 			$env_info['checksum'] = 'NORMALIZED_CHECKSUM';
 		}
 
-		foreach ( $env_info['plugins'] as &$p ) {
-			if ( isset($p['source']) && strpos( $p['source'], 'http' ) !== false ) {
-				$filename    = explode( '/', parse_url( $p['source'], PHP_URL_PATH ) );
-				$filename    = end( $filename );
-				$p['source'] = 'https://normalized-remote-source/' . $filename;
+		// Helper for *all* plugin arrays we may encounter
+		$plugin_normaliser = static function ( array &$plugins ): void {
+			foreach ( $plugins as &$p ) {
+				if ( isset($p['source']) && str_starts_with($p['source'], 'http') ) {
+					$filename    = basename( parse_url( $p['source'], PHP_URL_PATH ) );
+					$p['source'] = 'https://normalized-remote-source/' . $filename;
+				}
+				if ( ! empty( $p['version'] ) ) {
+					$p['version'] = 'NORMALIZED_VERSION';
+				}
+				if ( ! empty( $p['downloaded_source'] ) ) {
+					$p['downloaded_source'] = '/normalized/downloaded-path/file.zip';
+				}
+				if ( ! empty( $p['download_url'] ) ) {
+					$p['download_url'] = 'NORMALIZED_DOWNLOAD_URL';
+				}
+				if ( ! empty( $p['checksum'] ) ) {
+					$p['checksum'] = 'NORMALIZED_CHECKSUM';
+				}
 			}
-			if ( ! empty( $p['version'] ) ) {
-				$p['version'] = 'NORMALIZED_VERSION';
+		};
+
+		// env_info.plugins
+		if ( isset( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
+			$plugin_normaliser( $env_info['plugins'] );
+		}
+
+		// configuration.resolved_plugins / resolved_extensions
+		if ( $is_full_payload ) {
+			if ( isset( $payload['configuration']['resolved_plugins'] ) ) {
+				$plugin_normaliser( $payload['configuration']['resolved_plugins'] );
 			}
-			if ( ! empty( $p['downloaded_source'] ) ) {
-				$p['downloaded_source'] = '/normalized/downloaded-path/file.zip';
+			if ( isset( $payload['resolved_extensions'] ) ) {
+				$plugin_normaliser( $payload['resolved_extensions'] );
 			}
-			if ( ! empty( $p['download_url'] ) ) {
-				$p['download_url'] = 'NORMALIZED_DOWNLOAD_URL';
+
+			// ── sut_extension ────────────────────────────────────────
+			if ( isset( $payload['configuration']['sut_extension'] ) ) {
+				$tmpArr = [ $payload['configuration']['sut_extension'] ];
+				$plugin_normaliser( $tmpArr );
+				$payload['configuration']['sut_extension'] = $tmpArr[0];
 			}
-			if ( ! empty( $p['checksum'] ) ) {
-				$p['checksum'] = 'NORMALIZED_CHECKSUM';
+		}
+
+		// ─────────────────────────────────────────────────────────────
+		//  Post‑process misc. volatile paths / ids
+		// ─────────────────────────────────────────────────────────────
+		if ( $is_full_payload ) {
+			// configuration.cache_dir
+			if ( isset( $payload['configuration']['cache_dir'] ) ) {
+				$payload['configuration']['cache_dir']
+					= preg_replace(
+						'/tmp_qit_config-qit_custom_tests_[a-f0-9]+/',
+						'tmp_qit_config-qit_custom_tests_NORMALIZED_ID',
+						$payload['configuration']['cache_dir']
+					);
+				$payload['configuration']['cache_dir']
+					= str_replace(
+						rtrim( sys_get_temp_dir(), '/' ) . '/',
+						'/tmp-normalized/',
+						$payload['configuration']['cache_dir']
+					);
 			}
+
+			// downloaded_paths
+			if ( isset( $payload['downloaded_paths'] ) && is_array( $payload['downloaded_paths'] ) ) {
+				foreach ( $payload['downloaded_paths'] as &$path ) {
+					$path = '/normalized/downloaded-path/file.zip';
+				}
+			}
+		}
+
+		// Replace back into payload if we started with the full object
+		if ( $is_full_payload ) {
+			$payload['env_info'] = $env_info;
+			$env_info            = $payload;
 		}
 
 		return $env_info;
@@ -152,9 +220,9 @@ PHP;
 		$pattern = '/([+-]?\d+) pixels \(ratio [0-9.]+ of all image pixels\) are different\./';
 
 		return preg_replace_callback(
-$pattern,
-function ( $matches ) use ( $expected_diff ) {
-$current_diff = (int) $matches[1];
+			$pattern,
+			function ( $matches ) use ( $expected_diff ) {
+				$current_diff = (int) $matches[1];
 
 				if ( abs( $current_diff - $expected_diff ) <= 5 ) {
 					return "(SMALL_DIFF close to {$expected_diff})";
@@ -192,7 +260,7 @@ $current_diff = (int) $matches[1];
 		 * npm
 		 *** notice New minor version of npm available! 10.2.4 -> 10.6.0
 		 * npm
-		 *** notice Changelog: <https://github.com/npm/cli/releases/tag/v10.6.0\>
+		 *** notice Changelog: <https://github.com/npm/cli/releases/tag/v10.6.0>
 		 *** npm notice Run `npm install -g npm@10.6.0` to update!
 		 * npm notice
 		 *

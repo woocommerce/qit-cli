@@ -42,11 +42,8 @@ class ConsolidateWooCommerceStage implements PipelineStage {
 		}
 
 		if ( $found_index !== null ) {
-			// The user also added  --plugin woocommerce ...
-			// Don't overwrite an explicit semantic version.
-			if ( empty( $plugins[ $found_index ]->version ) ) {
-				$plugins[ $found_index ]->version = $woo_channel;
-			}
+			// --plugin woocommerce was present.  Woo flag wins.
+			$plugins[ $found_index ]->version = $woo_channel;
 		} else {
 			/** @phpstan-ignore-next-line */
 			$plugins[] = Extension::fromArray( [

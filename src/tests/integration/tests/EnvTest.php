@@ -94,13 +94,13 @@ PHP
 		$env         = json_decode( $output, true );
 		$userVolumes = array_values(
 			array_filter(
-				array_keys($env['volumes']),
-				static fn ($v) => str_contains($v, 'qit-tmp-plugin.php')
+				array_keys( $env['volumes'] ),
+				static fn( $v ) => str_contains( $v, 'qit-tmp-plugin.php' )
 			)
 		);
 
-		$this->assertCount(1, $userVolumes);
-		$this->assertStringContainsString('qit-tmp-plugin.php', $userVolumes[0]);
+		$this->assertCount( 1, $userVolumes );
+		$this->assertStringContainsString( 'qit-tmp-plugin.php', $userVolumes[0] );
 
 
 		// Bring up the environment for actual execution
@@ -122,13 +122,13 @@ PHP
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
-	public function test_env_up_wordpress_stable_version() {
+	public function test_env_up_wordpress_stable() {
 		// Check the configuration resolution using qit
 		$output = qit( [ 'env:up', '--wp', 'stable', '--json' ] );
 		$env    = json_decode( $output, true );
 
 		// Verify WordPress version is correctly resolved
-		$this->assertSame( 'stable', $env['wp_version'] );
+		$this->assertSame( 'stable', $env['wp'] );
 
 		// Bring up the environment for actual execution
 		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'stable' ] ), true );
@@ -143,13 +143,13 @@ PHP
 		$this->assertStringContainsString( 'WordPress is at the latest version', $output );
 	}
 
-	public function test_env_up_wordpress_nightly_version() {
+	public function test_env_up_wordpress_nightly() {
 		// Check the configuration resolution using qit
 		$output = qit( [ 'env:up', '--wp', 'nightly', '--json' ] );
 		$env    = json_decode( $output, true );
 
 		// Verify WordPress version is correctly resolved
-		$this->assertSame( 'nightly', $env['wp_version'] );
+		$this->assertSame( 'nightly', $env['wp'] );
 
 		// Bring up the environment for actual execution
 		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'nightly' ] ), true );
@@ -167,7 +167,7 @@ PHP
 		);
 	}
 
-	public function test_env_up_woocommerce_stable_version() {
+	public function test_env_up_woocommerce_stable() {
 		// Check the configuration resolution using qit
 		$output = qit( [ 'env:up', '--woo', 'stable', '--plugin', 'woocommerce', '--json' ] );
 		$env    = json_decode( $output, true );
@@ -190,7 +190,7 @@ PHP
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
-	public function test_env_up_woocommerce_stable_version_alternative_syntax() {
+	public function test_env_up_woocommerce_stable_alternative_syntax() {
 		// Check the configuration resolution using qit
 		$output = qit( [ 'env:up', '--plugin', 'woocommerce', '--json' ] );
 		$env    = json_decode( $output, true );
@@ -212,7 +212,7 @@ PHP
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
-	public function test_env_up_woocommerce_nightly_version() {
+	public function test_env_up_woocommerce_nightly() {
 		// Check the configuration resolution using qit
 		$output = qit( [
 			'env:up',
@@ -250,7 +250,7 @@ PHP
 		$this->assertStringContainsString( '-dev', $output );
 	}
 
-	public function test_env_up_woocommerce_rc_version() {
+	public function test_env_up_woocommerce_rc() {
 		$this->markTestSkipped();
 		$json = json_decode( qit( [
 			'env:up',
