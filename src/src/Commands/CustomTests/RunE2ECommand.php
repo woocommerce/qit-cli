@@ -216,11 +216,42 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 		if ( ! empty( $GLOBALS['env_to_shutdown'] ) ) {
 			try {
-				Environment::down( $GLOBALS['env_to_shutdown'] );
+				// Get the environment info from the environment monitor
+				$env_monitor = App::make( \QIT_CLI\Environment\EnvironmentMonitor::class );
+				try {
+					$env_info = $env_monitor->get_env_info_by_id( $GLOBALS['env_to_shutdown'] );
+					Environment::down( $env_info );
+				} catch ( \Exception $e ) {
+					\QIT_CLI\debug_log( 'Failed to find environment info for shutdown: ' . $GLOBALS['env_to_shutdown'] . ' - ' . $e->getMessage(), 'comment' );
+				}
 			} catch ( \Exception $e ) {
 				// Silent fail - environment cleanup errors are non-critical
-				debug_log( 'Failed to shutdown environment: ' . $e->getMessage(), 'comment' );
+				\QIT_CLI\debug_log( 'Failed to shutdown environment: ' . $e->getMessage(), 'comment' );
 			}
 		}
+	}
+
+	/**
+	 * Set up global variables needed for the test run.
+	 *
+	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
+	 * @param InputInterface $input The input interface.
+	 */
+	protected function setupGlobals( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, InputInterface $input ): void {
+		// Set up the global variable for environment shutdown
+		$GLOBALS['env_to_shutdown'] = $env_info->env_id;
+	}
+
+	/**
+	 * Run test packages using the CustomE2ERunner.
+	 *
+	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
+	 * @param array $test_packages The test packages to run.
+	 * @param SymfonyStyle $io The IO interface.
+	 * @return int The exit status.
+	 */
+	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
+		// Run tests using the CustomE2ERunner
+		return $this->spec_custom_test_orchestrator->run_custom_e2e_tests( $env_info, $io, false );
 	}
 }

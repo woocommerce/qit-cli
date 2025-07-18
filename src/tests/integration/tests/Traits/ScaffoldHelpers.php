@@ -96,6 +96,29 @@ PHP;
 		$env_info['created_at'] = '1700000000';
 		$env_info['sut_id']     = '123';
 
+		// Normalize new fields
+		if ( isset( $env_info['runner_args'] ) ) {
+			$env_info['runner_args'] = 'NORMALIZED_RUNNER_ARGS';
+		}
+
+		if ( isset( $env_info['playwright_config'] ) ) {
+			$env_info['playwright_config'] = 'NORMALIZED_PLAYWRIGHT_CONFIG';
+		}
+
+		// Normalize container names
+		if ( isset( $env_info['container_name'] ) ) {
+			$env_info['container_name'] = 'NORMALIZED_CONTAINER_NAME';
+		}
+
+		// Normalize download URLs and checksums
+		if ( isset( $env_info['download_url'] ) ) {
+			$env_info['download_url'] = 'NORMALIZED_DOWNLOAD_URL';
+		}
+
+		if ( isset( $env_info['checksum'] ) ) {
+			$env_info['checksum'] = 'NORMALIZED_CHECKSUM';
+		}
+
 		foreach ( $env_info['plugins'] as &$p ) {
 			if ( strpos( $p['source'], 'http' ) !== false ) {
 				$filename    = explode( '/', parse_url( $p['source'], PHP_URL_PATH ) );
@@ -107,6 +130,12 @@ PHP;
 			}
 			if ( ! empty( $p['downloaded_source'] ) ) {
 				$p['downloaded_source'] = '/normalized/downloaded-path/file.zip';
+			}
+			if ( ! empty( $p['download_url'] ) ) {
+				$p['download_url'] = 'NORMALIZED_DOWNLOAD_URL';
+			}
+			if ( ! empty( $p['checksum'] ) ) {
+				$p['checksum'] = 'NORMALIZED_CHECKSUM';
 			}
 		}
 

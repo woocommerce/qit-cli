@@ -62,8 +62,6 @@ class PreCommandHandler {
 		if ( $command instanceof ConfigurableTestCommand ) {
 			$context = ( new ValidateSUTStage() )->process( $context );
 			$context = ( new BuildApiPayloadStage() )->process( $context );
-
-			return $context->get_result();
 		}
 
 		if ( $command instanceof LocalTestCommand ) {
@@ -71,18 +69,35 @@ class PreCommandHandler {
 			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
 			$context = ( new ResolveTestPackagesStage( $this->test_package_resolver ) )->process( $context );
 			$context = ( new BuildLocalTestResultStage() )->process( $context );
-
-			return $context->get_result();
 		}
 
 		if ( $command instanceof EnvironmentCommand ) {
 			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
 			$context = ( new BuildEnvironmentResultStage() )->process( $context );
-
-			return $context->get_result();
 		}
 
-		throw new \RuntimeException( 'Command does not implement any PreCommand interface' );
+		/**
+		 * Early-bail mechanism for test runner.
+		 *
+		 * When QIT_SELF_TEST=precommand is set, this will build the objects as usual
+		 * but return the result without executing the actual command. This is useful
+		 * for testing the configuration resolution phase without running the full command.
+		 *
+		 * This allows tests to be split into different layers:
+		 * 1. Pre-Command tests (pure unit tests) - Only test the configuration resolution
+		 * 2. Command runtime tests (lightweight functional tests) - Test the command execution
+		 * 3. Full integration tests (slow, end-to-end scenarios) - Test the entire system
+		 *
+		 * Use the qit_precommand() function in tests to trigger this early-bail mechanism.
+		 */
+		if ( getenv( 'QIT_SELF_TEST' ) === 'precommand' ) {
+			// Return the result without executing the command
+			$result = $context->get_result();
+			$output->writeln( json_encode( $result, JSON_PRETTY_PRINT ) );
+			throw new PrecommandEarlyReturn();
+		}
+
+		return $context;
 	}
 
 	/**

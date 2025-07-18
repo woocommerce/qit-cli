@@ -29,20 +29,18 @@ class CommandInputPriorityTest extends \PHPUnit\Framework\TestCase {
 JSON;
 
 		// CLI flags should override qit.json values
-		$output = qit( [
+		$output = qit_precommand( [
 			'env:up',
-			'--json',
 			'--wp_version=6.1',
 			'--php_version=8.0',
 			'--woo_version=7.1',
+			'--json',
 		],
-			$qitJson,
-			0
+			$qitJson
 		);
-
-		$env = json_decode( $output, true );
-
-		$this->assertIsArray( $env, "JSON decoding failed. Output: $output" );
+		
+		$env = json_decode($output, true);
+		$this->assertIsArray( $env, "JSON decoding failed" );
 		$this->assertSame( '6.1', $env['wp_version'], "WP version should be CLI override '6.1'." );
 		$this->assertSame( '8.0', $env['php_version'], "PHP version should be CLI override '8.0'." );
 		$this->assertSame( '7.1', $env['woo_version'] ?? null, "WooCommerce version should be CLI override '7.1'." );
@@ -66,17 +64,15 @@ JSON;
 JSON;
 
 		// No CLI flags, so qit.json values should be used
-		$output = qit( [
+		$output = qit_precommand( [
 			'env:up',
 			'--json',
 		],
-			$qitJson,
-			0
+			$qitJson
 		);
-
-		$env = json_decode( $output, true );
-
-		$this->assertIsArray( $env, "JSON decoding failed. Output: $output" );
+		
+		$env = json_decode($output, true);
+		$this->assertIsArray( $env, "JSON decoding failed" );
 		$this->assertSame( '5.9', $env['wp_version'], "WP version should be from qit.json '5.9'." );
 		$this->assertSame( '8.1', $env['php_version'], "PHP version should be from qit.json '8.1'." );
 		$this->assertSame( '6.9', $env['woo_version'] ?? null, "WooCommerce version should be from qit.json '6.9'." );
@@ -87,17 +83,15 @@ JSON;
 	 */
 	public function test_defaults_only() {
 		// No qit.json, no CLI flags, so default values should be used
-		$output = qit( [
+		$output = qit_precommand( [
 			'env:up',
 			'--json',
 		],
-			null,
-			0
+			null
 		);
-
-		$env = json_decode( $output, true );
-
-		$this->assertIsArray( $env, "JSON decoding failed. Output: $output" );
+		
+		$env = json_decode($output, true);
+		$this->assertIsArray( $env, "JSON decoding failed" );
 		$this->assertSame( 'stable', $env['wp_version'], "WP version should be default 'stable'." );
 		$this->assertSame( '8.2', $env['php_version'], "PHP version should be the schema default '8.2'." );
 		$this->assertSame(

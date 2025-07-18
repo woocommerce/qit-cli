@@ -2,8 +2,8 @@
 
 use Symfony\Component\Process\Process;
 
-if (!is_dir('/tmp/qit')) {
-	mkdir('/tmp/qit', 0755, true);
+if ( ! is_dir( '/tmp/qit' ) ) {
+	mkdir( '/tmp/qit', 0755, true );
 }
 
 function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ): string {
@@ -113,4 +113,60 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 	}
 
 	return $qit->getOutput();
+}
+
+/**
+ * Runs a QIT command but only executes the PreCommand phase, returning the raw output.
+ * This is much faster than running the full command, as it doesn't touch Docker or download anything.
+ *
+ * This function is useful for testing the configuration resolution phase without running the full command.
+ * It allows tests to be split into different layers:
+ * 1. Pre-Command tests (pure unit tests) - Only test the configuration resolution
+ * 2. Command runtime tests (lightweight functional tests) - Test the command execution
+ * 3. Full integration tests (slow, end-to-end scenarios) - Test the entire system
+ *
+ * This function has the same parameters as the `qit` function, but adds the 'QIT_SELF_TEST' => 'precommand'
+ * environment variable to trigger the early-return mechanism in PreCommandHandler.
+ *
+ * Example usage:
+ * ```php
+ * // Basic usage:
+ * $output = qit_precommand(
+ *     ['env:up', '--wp_version', '6.1', '--json']
+ * );
+ * $env = json_decode($output, true);
+ * echo $env['wp_version']; // "6.1"
+ * 
+ * // With configuration:
+ * $output = qit_precommand(
+ *     ['env:up', '--json'],
+ *     <<<'JSON'
+ * { "environments": { "default": { "wp_version": "6.0" } } }
+ * JSON
+ * );
+ * $env = json_decode($output, true);
+ * 
+ * // With custom exit code and environment variables:
+ * $output = qit_precommand(
+ *     ['env:up', '--json'],
+ *     null,
+ *     0,
+ *     ['MY_CUSTOM_ENV' => 'value']
+ * );
+ * $env = json_decode($output, true);
+ * ```
+ *
+ * @param array $command Command line arguments to pass to QIT.
+ * @param string|array|null $qit_env_json Optional JSON configuration or array to use.
+ * @param int $expected_exit_code Expected exit code from the command.
+ * @param array $extra_env Additional environment variables to pass to the command.
+ *
+ * @return string The raw output from the PreCommand phase.
+ */
+function qit_precommand( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ) {
+	// Add the QIT_SELF_TEST environment variable to trigger the early-return mechanism
+	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'precommand' ] );
+	
+	// Pass all parameters to the qit function and return its output directly
+	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env );
 }

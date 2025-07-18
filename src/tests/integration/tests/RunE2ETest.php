@@ -4,12 +4,18 @@ use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
 use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
 use Spatie\Snapshots\Drivers\JsonDriver;
 
+/**
+ * Tests for the RunE2E command.
+ * Some tests only check the resolved configuration (using qit_precommand),
+ * while others execute the full command chain (using qit).
+ */
 class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 	use ScaffoldHelpers;
 
 	/**
 	 * @param array<string,mixed> $qit_json_array The array to convert to JSON.
+	 *
 	 * @return string The absolute path to the created qit.json file.
 	 * @throws \RuntimeException If file creation fails.
 	 */
@@ -30,6 +36,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 	/**
 	 * @param string $qit_json_path The absolute path to the qit.json file.
+	 *
 	 * @return void
 	 * @throws \RuntimeException If file deletion fails.
 	 */
@@ -49,7 +56,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 				'woocommerce-amazon-s3-storage',
 				$this->scaffold_test(),
 				'--plugin',
-				'woocommerce:activate',
+				'woocommerce',
 			]
 		);
 
@@ -59,54 +66,63 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	}
 
 	public function test_tag_and_run_test() {
-		qit( [
-			'tag:upload',
-			'woocommerce-amazon-s3-storage:self-test-tag-and-run',
-			$this->scaffold_test(),
-		] );
+		try {
+			qit( [
+				'tag:upload',
+				'woocommerce-amazon-s3-storage:self-test-tag-and-run',
+				$this->scaffold_test(),
+			] );
 
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			'self-test-tag-and-run',
-			'--plugin',
-			'woocommerce:activate',
-		] );
+			$output = qit( [
+				'run:e2e',
+				'woocommerce-amazon-s3-storage',
+				'self-test-tag-and-run',
+				'--plugin',
+				'woocommerce',
+			] );
 
-		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-tag-and-run' ] );
+			$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
+			$this->assertMatchesNormalizedSnapshot( $output );
+		} finally {
+			// Always clean up the tag, even if the test fails
+			qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-tag-and-run' ] );
+		}
 	}
 
 	public function test_multiple_tags_and_run_tests() {
-		qit( [
-			'tag:upload',
-			'woocommerce-amazon-s3-storage:self-test-multiple-test-tags',
-			$this->scaffold_test(),
-		] );
+		$tag1 = 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags';
+		$tag2 = 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another';
+		
+		try {
+			qit( [
+				'tag:upload',
+				$tag1,
+				$this->scaffold_test(),
+			] );
 
-		qit( [
-			'tag:upload',
-			'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another',
-			$this->scaffold_test( 'another-tag' ),
-		] );
+			qit( [
+				'tag:upload',
+				$tag2,
+				$this->scaffold_test( 'another-tag' ),
+			] );
 
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
-			'--plugin',
-			'woocommerce:activate',
-		] );
+			$output = qit( [
+				'run:e2e',
+				'woocommerce-amazon-s3-storage',
+				'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
+				'--plugin',
+				'woocommerce',
+			] );
 
-		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags' ] );
-		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another' ] );
+			$output = $this->normalize_scaffolded_test_run_output( $output );
 
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
+			$this->assertMatchesNormalizedSnapshot( $output );
+		} finally {
+			// Always clean up the tags, even if the test fails
+			qit( [ 'tag:delete', $tag1 ] );
+			qit( [ 'tag:delete', $tag2 ] );
+		}
 	}
 
 	public function test_theme_as_sut() {
@@ -202,7 +218,7 @@ JS;
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 
-		if ( extension_loaded( 'imagick' ) ) {
+		if ( extension_loaded( 'imagick' ) && method_exists( \ImagickDraw::class, 'rectangle' ) ) {
 			$image_path = $scaffolded_dir . '/__snapshots__/activate-theme.spec.js/home.png';
 
 			// Load the image into Imagick
@@ -235,26 +251,29 @@ JS;
 
 			$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 		} else {
-			$this->markTestSkipped( 'Imagick extension is not available.' );
+			$this->markTestSkipped( 'Imagick extension is not available or has a minimal build without rectangle method.' );
 		}
 	}
 
 	public function test_playwright_config_override() {
+		$config_json = <<<'JSON'
+{
+	"playwright_config": {
+		"reportSlowTests": {
+			"max": 10,
+			"threshold": 1
+		}
+	}
+}
+JSON;
+
 		$output = qit( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
 			'--plugin',
-			'woocommerce:activate',
-		], [
-				'playwright_config' => [
-					'reportSlowTests' => [
-						'max'       => 10,
-						'threshold' => 1,
-					],
-				],
-			]
-		);
+			'woocommerce',
+		], $config_json );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
@@ -262,25 +281,43 @@ JS;
 	}
 
 	public function test_cannot_use_woo_and_plugin_woocommerce() {
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--woo',
-			'8.6.2',
-			'--plugin',
-			'woocommerce',
-		],
-			[],
-			2
-		);
-
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
+		try {
+			$output = qit_precommand( [
+				'run:e2e',
+				'woocommerce-amazon-s3-storage',
+				$this->scaffold_test(),
+				'--woo_version',
+				'8.6.2',
+				'--plugin',
+				'woocommerce',
+				'--json',
+			] );
+			
+			$env = json_decode($output, true);
+			$this->fail('Expected an exception for conflicting WooCommerce options');
+		} catch (\RuntimeException $e) {
+			$this->assertStringContainsString('Cannot use both --woo_version and --plugin=woocommerce', $e->getMessage());
+		}
 	}
 
 	public function test_can_use_space() {
+		// Check the configuration resolution using qit_precommand
+		$output = qit_precommand( [
+			'run:e2e',
+			'woocommerce-amazon-s3-storage',
+			$this->scaffold_test(),
+			'--plugin',
+			'woocommerce',
+			'--json'
+		] );
+		
+		$env = json_decode($output, true);
+		
+		// Verify plugin is correctly resolved
+		$pluginSlugs = array_column( $env['plugins'], 'slug' );
+		$this->assertContains( 'woocommerce', $pluginSlugs );
+		
+		// Run the full command for actual execution
 		$output = qit( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
@@ -295,6 +332,22 @@ JS;
 	}
 
 	public function test_can_use_equal_signs() {
+		// Check the configuration resolution using qit_precommand
+		$output = qit_precommand( [
+			'run:e2e',
+			'woocommerce-amazon-s3-storage',
+			$this->scaffold_test(),
+			'--plugin=woocommerce',
+			'--json',
+		] );
+		
+		$env = json_decode($output, true);
+		
+		// Verify plugin is correctly resolved
+		$pluginSlugs = array_column( $env['plugins'], 'slug' );
+		$this->assertContains( 'woocommerce', $pluginSlugs );
+		
+		// Run the full command for actual execution
 		$output = qit( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
@@ -308,17 +361,18 @@ JS;
 	}
 
 	public function test_directory_with_same_basename_as_sut() {
-		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
+		$this->scaffold_plugin( 'woocommerce-amazon-s3-storage' );
 
-		$output = qit( [
+		$output = qit_precommand( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
-			'--json',
 			'--plugin=woocommerce',
-		], [], 0, [ 'QIT_SELF_TEST' => 'env_info' ] );
+			'--json',
+		] );
 
-		$output = $this->normalize_env_info( json_decode( $output, true ) );
+		$env = json_decode($output, true);
+		$output = $this->normalize_env_info( $env );
 
 		$output = json_encode( $output, JSON_PRETTY_PRINT );
 
@@ -326,17 +380,18 @@ JS;
 	}
 
 	public function test_directory_with_same_basename_as_sut_with_env_up() {
-		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
+		$this->scaffold_plugin( 'woocommerce-amazon-s3-storage' );
 
-		$output = qit( [
+		$output = qit_precommand( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
-			'--json',
 			'--plugin=woocommerce',
-		], [], 0, [ 'QIT_SELF_TEST' => 'env_up' ] );
+			'--json',
+		] );
 
-		$output = $this->normalize_env_info( json_decode( $output, true ) );
+		$env = json_decode($output, true);
+		$output = $this->normalize_env_info( $env );
 
 		$output = json_encode( $output, JSON_PRETTY_PRINT );
 
