@@ -235,7 +235,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	 * Set up global variables needed for the test run.
 	 *
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
-	 * @param InputInterface $input The input interface.
+	 * @param InputInterface                                   $input The input interface.
 	 */
 	protected function setupGlobals( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, InputInterface $input ): void {
 		// Set up the global variable for environment shutdown
@@ -246,10 +246,18 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	 * Run test packages using the CustomE2ERunner.
 	 *
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
-	 * @param array $test_packages The test packages to run.
-	 * @param SymfonyStyle $io The IO interface.
+	 * @param array                                            $test_packages The test packages to run.
+	 * @param SymfonyStyle                                     $io The IO interface.
 	 * @return int The exit status.
 	 */
+		/**
+		 * Run test packages using the CustomE2ERunner.
+		 *
+		 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
+		 * @param array<string,mixed>                              $test_packages The test packages to run.
+		 * @param SymfonyStyle                                     $io The IO interface.
+		 * @return int The exit status.
+		 */
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
 		// Run tests using the CustomE2ERunner
 		return $this->spec_custom_test_orchestrator->run_custom_e2e_tests( $env_info, $io, false );

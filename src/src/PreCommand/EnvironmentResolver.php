@@ -258,9 +258,9 @@ class EnvironmentResolver {
 
 	protected function set_environment_properties( E2EEnvInfo $env_info, array $env_config ): void {
 		// Keep versions as-is - no conversion
-		$env_info->wp  = $env_config['wp'] ?? 'stable';
-		$env_info->php = $env_config['php'] ?? '8.2';
-		$env_info->woo = $env_config['woo'] ?? '';
+		$env_info->wp           = $env_config['wp'] ?? 'stable';
+		$env_info->php          = $env_config['php'] ?? '8.2';
+		$env_info->woo          = $env_config['woo'] ?? '';
 		$env_info->object_cache = $env_config['object_cache'] ?? false;
 		$env_info->env          = $env_config['env_vars'] ?? [];
 
