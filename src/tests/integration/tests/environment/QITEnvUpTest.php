@@ -91,8 +91,8 @@ class QITEnvUpTest extends TestCase {
 		$output = qit( [ 'env:up', '--json' ], [
 			'environments' => [
 				'default' => [
-					'php_version' => '8.2',
-					'wp_version'  => 'stable'
+					'php' => '8.2',
+					'wp'  => 'stable'
 				]
 			]
 		] );
@@ -116,11 +116,11 @@ class QITEnvUpTest extends TestCase {
 		$output = qit( [
 			'env:up',
 			'--json',
-			'--wp_version',
+			'--wp',
 			'6.4',
-			'--php_version',
+			'--php',
 			'8.1',
-			'--woo_version',
+			'--woo',
 			'stable',
 			'--object_cache'
 		] );
@@ -178,9 +178,9 @@ class QITEnvUpTest extends TestCase {
 			],
 			'environments' => [
 				'default' => [
-					'wp_version'  => '6.3',
-					'php_version' => '8.0',
-					'woo_version' => 'stable',
+					'wp'  => '6.3',
+					'php' => '8.0',
+					'woo' => 'stable',
 					'plugins'     => [ 'woocommerce', 'wordpress-importer' ],
 					'themes'      => [ 'storefront' ]
 				]
@@ -207,17 +207,17 @@ class QITEnvUpTest extends TestCase {
 		$output = qit( [
 			'env:up',
 			'--json',
-			'--wp_version',
+			'--wp',
 			'6.4',
-			'--php_version',
+			'--php',
 			'8.2',
 			'--plugin',
 			'wordpress-importer'
 		], [
 			'environments' => [
 				'default' => [
-					'wp_version'  => '6.3',
-					'php_version' => '8.0',
+					'wp'  => '6.3',
+					'php' => '8.0',
 					'plugins'     => [ 'woocommerce' ]
 				]
 			]
@@ -369,27 +369,27 @@ class QITEnvUpTest extends TestCase {
 			],
 			'environments' => [
 				'default' => [
-					'php_version' => '8.2'
+					'php' => '8.2'
 				]
 			]
 		];
 
 		// Test stable
-		$output = qit( [ 'env:up', '--json', '--wp_version', 'stable' ], $config );
+		$output = qit( [ 'env:up', '--json', '--wp', 'stable' ], $config );
 		$result = json_decode( $output, true );
 		$this->assertEquals( 'stable', $result['wp_version'] );
 
 		qit( [ 'env:down' ] );
 
 		// Test specific version
-		$output = qit( [ 'env:up', '--json', '--wp_version', '6.4.2' ], $config );
+		$output = qit( [ 'env:up', '--json', '--wp', '6.4.2' ], $config );
 		$result = json_decode( $output, true );
 		$this->assertEquals( '6.4.2', $result['wp_version'] );
 
 		qit( [ 'env:down' ] );
 
 		// Test RC version
-		$output = qit( [ 'env:up', '--json', '--wp_version', 'rc' ], $config );
+		$output = qit( [ 'env:up', '--json', '--wp', 'rc' ], $config );
 		$result = json_decode( $output, true );
 		// RC should resolve to either a specific RC version or fall back to stable
 		$this->assertNotEmpty( $result['wp_version'] );
@@ -407,14 +407,14 @@ class QITEnvUpTest extends TestCase {
 			],
 			'environments' => [
 				'default' => [
-					'php_version' => '8.2',
-					'wp_version'  => 'stable'
+					'php' => '8.2',
+					'wp'  => 'stable'
 				]
 			]
 		];
 
 		// Test stable
-		$output = qit( [ 'env:up', '--json', '--woo_version', 'stable' ], $config );
+		$output = qit( [ 'env:up', '--json', '--woo', 'stable' ], $config );
 		$result = json_decode( $output, true );
 		$this->assertEquals( 'stable', $result['woo_version'] );
 
@@ -425,7 +425,7 @@ class QITEnvUpTest extends TestCase {
 		qit( [ 'env:down' ] );
 
 		// Test specific version
-		$output = qit( [ 'env:up', '--json', '--woo_version', '8.5.1' ], $config );
+		$output = qit( [ 'env:up', '--json', '--woo', '8.5.1' ], $config );
 		$result = json_decode( $output, true );
 		$this->assertEquals( '8.5.1', $result['woo_version'] );
 	}
@@ -437,7 +437,7 @@ class QITEnvUpTest extends TestCase {
 		$output = qit( [ 'env:up', '--environment', 'nonexistent' ], [
 			'environments' => [
 				'default' => [
-					'wp_version' => '6.3'
+					'wp' => '6.3'
 				]
 			]
 		], 1 );
@@ -466,8 +466,8 @@ class QITEnvUpTest extends TestCase {
 			],
 			'environments' => [
 				'default' => [
-					'php_version' => '8.2',
-					'wp_version'  => 'stable'
+					'php' => '8.2',
+					'wp'  => 'stable'
 				]
 			]
 		] );

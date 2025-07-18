@@ -81,9 +81,9 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Source of the extension' )
 
 			// Environment overrides
-			->addOption( 'wp_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
-			->addOption( 'woo_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
-			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )

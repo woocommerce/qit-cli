@@ -129,7 +129,7 @@ class PrepareDebugLog {
 				 * If we are running PHP 8+ on WordPress 6.1 or lower, ignore the following notices.
 				 * @link https://core.trac.wordpress.org/ticket/54504
 				 */
-				if ( version_compare( $env_info->php_version, '8', '>=' ) && version_compare( $env_info->wp_version, '6.2', '<' ) ) {
+				if ( version_compare( $env_info->php, '8', '>=' ) && version_compare( $env_info->wp, '6.2', '<' ) ) {
 					if (
 						stripos( $line, 'attribute should be used to temporarily suppress the notice in /var/www/html/wp-includes/Requests/Cookie/Jar.php' ) !== false
 						|| stripos( $line, 'attribute should be used to temporarily suppress the notice in /var/www/html/wp-includes/Requests/Utility/CaseInsensitiveDictionary.php' ) !== false

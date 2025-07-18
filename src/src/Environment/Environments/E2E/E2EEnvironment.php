@@ -103,7 +103,7 @@ class E2EEnvironment extends Environment {
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
 			'TUNNEL'            => $this->env_info->tunnel ? 'yes' : 'no',
-			'WORDPRESS_VERSION' => $this->env_info->wp_version === 'stable' ? 'latest' : $this->env_info->wp_version,
+			'WORDPRESS_VERSION' => $this->env_info->wp === 'stable' ? 'latest' : $this->env_info->wp,
 			'SITE_URL'          => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
@@ -170,8 +170,8 @@ class E2EEnvironment extends Environment {
 				sprintf( 'URL: %s', $this->env_info->site_url ),
 				sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
 				'Admin Credentials: admin/password',
-				sprintf( 'PHP Version: %s', $this->env_info->php_version ),
-				sprintf( 'WordPress Version: %s', $this->env_info->wp_version ),
+				sprintf( 'PHP Version: %s', $this->env_info->php ),
+				sprintf( 'WordPress Version: %s', $this->env_info->wp ),
 				sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
 				sprintf( 'Path: %s', $this->env_info->temporary_env ),
 			];
@@ -198,7 +198,7 @@ class E2EEnvironment extends Environment {
 	 */
 	protected function get_generate_docker_compose_envs(): array {
 		return [
-			'PHP_VERSION'      => $this->env_info->php_version,
+			'PHP_VERSION'      => $this->env_info->php,
 			'QIT_DOCKER_REDIS' => $this->env_info->object_cache ? 'yes' : 'no',
 			'DOMAIN'           => $this->env_info->domain,
 		];

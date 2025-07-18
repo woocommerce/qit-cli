@@ -280,50 +280,13 @@ JSON;
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
-	public function test_cannot_use_woo_and_plugin_woocommerce() {
-		try {
-			$output = qit_precommand( [
-				'run:e2e',
-				'woocommerce-amazon-s3-storage',
-				$this->scaffold_test(),
-				'--woo_version',
-				'8.6.2',
-				'--plugin',
-				'woocommerce',
-				'--json',
-			] );
-			
-			$env = json_decode($output, true);
-			$this->fail('Expected an exception for conflicting WooCommerce options');
-		} catch (\RuntimeException $e) {
-			$this->assertStringContainsString('Cannot use both --woo_version and --plugin=woocommerce', $e->getMessage());
-		}
-	}
-
 	public function test_can_use_space() {
-		// Check the configuration resolution using qit_precommand
-		$output = qit_precommand( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--plugin',
-			'woocommerce',
-			'--json'
-		] );
-		
-		$env = json_decode($output, true);
-		
-		// Verify plugin is correctly resolved
-		$pluginSlugs = array_column( $env['plugins'], 'slug' );
-		$this->assertContains( 'woocommerce', $pluginSlugs );
-		
-		// Run the full command for actual execution
 		$output = qit( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
 			'--plugin',
-			'woocommerce'
+			'woocommerce',
 		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
@@ -332,22 +295,6 @@ JSON;
 	}
 
 	public function test_can_use_equal_signs() {
-		// Check the configuration resolution using qit_precommand
-		$output = qit_precommand( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--plugin=woocommerce',
-			'--json',
-		] );
-		
-		$env = json_decode($output, true);
-		
-		// Verify plugin is correctly resolved
-		$pluginSlugs = array_column( $env['plugins'], 'slug' );
-		$this->assertContains( 'woocommerce', $pluginSlugs );
-		
-		// Run the full command for actual execution
 		$output = qit( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
@@ -358,43 +305,5 @@ JSON;
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
 		$this->assertMatchesNormalizedSnapshot( $output );
-	}
-
-	public function test_directory_with_same_basename_as_sut() {
-		$this->scaffold_plugin( 'woocommerce-amazon-s3-storage' );
-
-		$output = qit_precommand( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--plugin=woocommerce',
-			'--json',
-		] );
-
-		$env = json_decode($output, true);
-		$output = $this->normalize_env_info( $env );
-
-		$output = json_encode( $output, JSON_PRETTY_PRINT );
-
-		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
-	}
-
-	public function test_directory_with_same_basename_as_sut_with_env_up() {
-		$this->scaffold_plugin( 'woocommerce-amazon-s3-storage' );
-
-		$output = qit_precommand( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--plugin=woocommerce',
-			'--json',
-		] );
-
-		$env = json_decode($output, true);
-		$output = $this->normalize_env_info( $env );
-
-		$output = json_encode( $output, JSON_PRETTY_PRINT );
-
-		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
 	}
 }

@@ -44,7 +44,7 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, 'Local ZIP file (deprecated, use --source)' )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
-			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
@@ -99,7 +99,7 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 		}
 
 		// Pass through other options
-		foreach ( [ 'wp', 'woo', 'php_version', 'object_cache', 'dependencies_mode' ] as $option ) {
+		foreach ( [ 'wp', 'woo', 'php', 'object_cache', 'dependencies_mode' ] as $option ) {
 			$value = $input->getOption( $option );
 			if ( $value ) {
 				$run_e2e_options[ "--{$option}" ] = $value;

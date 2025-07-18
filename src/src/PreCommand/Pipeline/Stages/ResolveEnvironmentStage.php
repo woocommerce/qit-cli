@@ -39,9 +39,9 @@ class ResolveEnvironmentStage implements PipelineStage {
 				'php_extension' => 'php_extensions',
 				'env'           => 'env_vars',
 				'env_file'      => 'env_files',
-				'php_version'   => 'php_version',
-				'wp_version'    => 'wp_version',
-				'woo_version'   => 'woo_version',
+				'php'           => 'php',
+				'wp'            => 'wp',
+				'woo'           => 'woo',
 				'object_cache'  => 'object_cache',
 			]
 		);

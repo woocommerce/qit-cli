@@ -166,11 +166,11 @@ class TestE2ECommand extends QITCommand {
 
 		// Environment details
 		$output->writeln( '<info>Environment:</info>' );
-		$output->writeln( sprintf( '  PHP Version: %s', $env_config['php_version'] ?? 'default' ) );
-		$output->writeln( sprintf( '  WordPress Version: %s', $env_config['wp_version'] ?? 'default' ) );
+		$output->writeln( sprintf( '  PHP Version: %s', $env_config['php'] ?? 'default' ) );
+		$output->writeln( sprintf( '  WordPress Version: %s', $env_config['wp'] ?? 'default' ) );
 
-		if ( isset( $env_config['woo_version'] ) ) {
-			$output->writeln( sprintf( '  WooCommerce Version: %s', $env_config['woo_version'] ) );
+		if ( isset( $env_config['woo'] ) ) {
+			$output->writeln( sprintf( '  WooCommerce Version: %s', $env_config['woo'] ) );
 		}
 
 		if ( isset( $env_config['object_cache'] ) && $env_config['object_cache'] ) {

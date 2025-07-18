@@ -91,9 +91,9 @@ class EnvironmentResolver {
 	protected function apply_overrides( array $env_config, array $overrides, InputInterface $input ): array {
 		// Start with defaults from InputInterface
 		$defaults = [
-			'php_version'    => $input->getOption( 'php_version' ),
-			'wp_version'     => $input->getOption( 'wp_version' ),
-			'woo_version'    => $input->getOption( 'woo_version' ),
+			'php'            => $input->getOption( 'php' ),
+			'wp'             => $input->getOption( 'wp' ),
+			'woo'            => $input->getOption( 'woo' ),
 			'object_cache'   => $input->getOption( 'object_cache' ),
 			'plugins'        => $input->getOption( 'plugin' ),
 			'themes'         => $input->getOption( 'theme' ),
@@ -107,15 +107,15 @@ class EnvironmentResolver {
 		$env_config = array_merge( $defaults, $env_config );
 
 		// Merge explicit CLI overrides last
-		foreach ( [ 'php_version', 'wp_version', 'woo_version', 'object_cache' ] as $key ) {
+		foreach ( [ 'php', 'wp', 'woo', 'object_cache' ] as $key ) {
 			if ( isset( $overrides[ $key ] ) ) {
 				$env_config[ $key ] = $overrides[ $key ];
 			}
 		}
 
 		// Use VersionResolver for WordPress RC versions only
-		if ( isset( $env_config['wp_version'] ) && strtolower( $env_config['wp_version'] ) === 'rc' ) {
-			$env_config['wp_version'] = $this->version_resolver->resolve_wordpress_version( $env_config['wp_version'] );
+		if ( isset( $env_config['wp'] ) && strtolower( $env_config['wp'] ) === 'rc' ) {
+			$env_config['wp'] = $this->version_resolver->resolve_wordpress_version( $env_config['wp'] );
 		}
 
 		// No conversion for WooCommerce - keep everything as is
@@ -180,8 +180,8 @@ class EnvironmentResolver {
 			$extensions[] = $this->create_extension_from_config( $theme_config, 'theme' );
 		}
 
-		// Inject WooCommerce plugin if a special woo_version is requested but the plugin isn't configured.
-		$woo_version = $env_config['woo_version'] ?? '';
+		// Inject WooCommerce plugin if a special woo version is requested but the plugin isn't configured.
+		$woo_version = $env_config['woo'] ?? '';
 		if ( ! empty( $woo_version ) && strtolower( $woo_version ) !== 'stable' ) {
 			$found_wc = null;
 			foreach ( $extensions as $ext ) {
@@ -258,9 +258,9 @@ class EnvironmentResolver {
 
 	protected function set_environment_properties( E2EEnvInfo $env_info, array $env_config ): void {
 		// Keep versions as-is - no conversion
-		$env_info->wp_version   = $env_config['wp_version'] ?? 'stable';
-		$env_info->php_version  = $env_config['php_version'] ?? '8.2';
-		$env_info->woo_version  = $env_config['woo_version'] ?? '';
+		$env_info->wp  = $env_config['wp'] ?? 'stable';
+		$env_info->php = $env_config['php'] ?? '8.2';
+		$env_info->woo = $env_config['woo'] ?? '';
 		$env_info->object_cache = $env_config['object_cache'] ?? false;
 		$env_info->env          = $env_config['env_vars'] ?? [];
 

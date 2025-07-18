@@ -1,5 +1,7 @@
 <?php
 
+namespace integration\tests\PreCommand;
+
 use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
 
 /**
@@ -38,12 +40,12 @@ JSON;
 		],
 			$qitJson
 		);
-		
-		$env = json_decode($output, true);
+
+		$env = json_decode( $output, true );
 		$this->assertIsArray( $env, "JSON decoding failed" );
-		$this->assertSame( '6.1', $env['wp_version'], "WP version should be CLI override '6.1'." );
-		$this->assertSame( '8.0', $env['php_version'], "PHP version should be CLI override '8.0'." );
-		$this->assertSame( '7.1', $env['woo_version'] ?? null, "WooCommerce version should be CLI override '7.1'." );
+		$this->assertSame( '6.1', $env['env_info']['wp_version'], "WP version should be CLI override '6.1'." );
+		$this->assertSame( '8.0', $env['env_info']['php_version'], "PHP version should be CLI override '8.0'." );
+		$this->assertSame( '7.1', $env['env_info']['woo_version'] ?? null, "WooCommerce version should be CLI override '7.1'." );
 	}
 
 	/**
@@ -70,12 +72,12 @@ JSON;
 		],
 			$qitJson
 		);
-		
-		$env = json_decode($output, true);
+
+		$env = json_decode( $output, true );
 		$this->assertIsArray( $env, "JSON decoding failed" );
-		$this->assertSame( '5.9', $env['wp_version'], "WP version should be from qit.json '5.9'." );
-		$this->assertSame( '8.1', $env['php_version'], "PHP version should be from qit.json '8.1'." );
-		$this->assertSame( '6.9', $env['woo_version'] ?? null, "WooCommerce version should be from qit.json '6.9'." );
+		$this->assertSame( '5.9', $env['env_info']['wp_version'], "WP version should be from qit.json '5.9'." );
+		$this->assertSame( '8.1', $env['env_info']['php_version'], "PHP version should be from qit.json '8.1'." );
+		$this->assertSame( '6.9', $env['env_info']['woo_version'] ?? null, "WooCommerce version should be from qit.json '6.9'." );
 	}
 
 	/**
@@ -89,19 +91,19 @@ JSON;
 		],
 			null
 		);
-		
-		$env = json_decode($output, true);
+
+		$env = json_decode( $output, true );
 		$this->assertIsArray( $env, "JSON decoding failed" );
-		$this->assertSame( 'stable', $env['wp_version'], "WP version should be default 'stable'." );
-		$this->assertSame( '8.2', $env['php_version'], "PHP version should be the schema default '8.2'." );
+		$this->assertSame( 'stable', $env['env_info']['wp_version'], "WP version should be default 'stable'." );
+		$this->assertSame( '8.2', $env['env_info']['php_version'], "PHP version should be the schema default '8.2'." );
 		$this->assertSame(
 			'stable',
-			$env['woo_version'],
+			$env['env_info']['woo_version'],
 			'Default WooCommerce version should be "stable".'
 		);
 		$this->assertNotContains(
 			'woocommerce',
-			array_column( $env['plugins'], 'slug' ),
+			array_column( $env['env_info']['plugins'], 'slug' ),
 			'WooCommerce should not be installed when no version other than "stable" is requested.'
 		);
 

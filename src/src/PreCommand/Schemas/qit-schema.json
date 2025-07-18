@@ -172,7 +172,7 @@
                 "type": "string"
               }
             },
-            "php_version": {
+            "php": {
               "type": "string",
               "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
               "description": "PHP version override"
@@ -232,16 +232,16 @@
               "type": "string",
               "description": "Base environment to extend from"
             },
-            "php_version": {
+            "php": {
               "type": "string",
               "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
               "description": "PHP version for this environment"
             },
-            "wp_version": {
+            "wp": {
               "type": "string",
               "description": "WordPress version (e.g., 'stable', '6.5', 'latest')"
             },
-            "woo_version": {
+            "woo": {
               "type": "string",
               "description": "WooCommerce version (e.g., 'stable', '8.7.0')"
             },

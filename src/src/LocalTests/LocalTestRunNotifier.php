@@ -48,11 +48,11 @@ class LocalTestRunNotifier {
 	/**
 	 * @suppress PhanTypeArraySuspicious
 	 *
-	 * @param int        $woo_extension_id
-	 * @param string     $woocommerce_version
+	 * @param int $woo_extension_id
+	 * @param string $woocommerce_version
 	 * @param E2EEnvInfo $env_info
-	 * @param bool       $is_development
-	 * @param bool       $notify
+	 * @param bool $is_development
+	 * @param bool $notify
 	 */
 	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
@@ -82,9 +82,9 @@ class LocalTestRunNotifier {
 
 		$body = [
 			'woo_id'                  => $woo_extension_id,
-			'woo_version'             => $woocommerce_version,
-			'wp_version'              => $env_info->wp_version,
-			'php_version'             => $env_info->php_version,
+			'woo'                     => $woocommerce_version,
+			'wp'                      => $env_info->wp,
+			'php'                     => $env_info->php,
 			'additional_plugins'      => $additional_plugins,
 			'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
 			'test_type'               => $test_type,
@@ -105,12 +105,12 @@ class LocalTestRunNotifier {
 		}
 
 		$r = App::make( RequestBuilder::class )
-				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
-				->with_method( 'POST' )
-				->with_expected_status_codes( [ 200 ] )
-				->with_timeout_in_seconds( 60 )
-				->with_post_body( $body )
-				->request();
+		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-started' )
+		        ->with_method( 'POST' )
+		        ->with_expected_status_codes( [ 200 ] )
+		        ->with_timeout_in_seconds( 60 )
+		        ->with_post_body( $body )
+		        ->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );
@@ -255,12 +255,12 @@ class LocalTestRunNotifier {
 		];
 
 		$r = App::make( RequestBuilder::class )
-				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
-				->with_method( 'POST' )
-				->with_expected_status_codes( [ 200 ] )
-				->with_timeout_in_seconds( 60 )
-				->with_post_body( $data )
-				->request();
+		        ->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
+		        ->with_method( 'POST' )
+		        ->with_expected_status_codes( [ 200 ] )
+		        ->with_timeout_in_seconds( 60 )
+		        ->with_post_body( $data )
+		        ->request();
 
 		// Decode response as JSON.
 		$response = json_decode( $r, true );

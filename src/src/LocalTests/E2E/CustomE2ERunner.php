@@ -74,7 +74,7 @@ class CustomE2ERunner {
 		// 1) Notify that a test run started
 		$this->local_test_run_notifier->notify_test_started(
 			isset($env_info->sut['id']) ? $env_info->sut['id'] : 0,
-			$env_info->woo_version,
+			$env_info->woo,
 			$env_info,
 			$env_info->is_development_build,
 			$env_info->notify

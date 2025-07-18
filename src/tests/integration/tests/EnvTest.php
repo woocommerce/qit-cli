@@ -124,14 +124,14 @@ PHP
 
 	public function test_env_up_wordpress_stable_version() {
 		// Check the configuration resolution using qit
-		$output = qit( [ 'env:up', '--wp_version', 'stable', '--json' ] );
+		$output = qit( [ 'env:up', '--wp', 'stable', '--json' ] );
 		$env    = json_decode( $output, true );
 
 		// Verify WordPress version is correctly resolved
 		$this->assertSame( 'stable', $env['wp_version'] );
 
 		// Bring up the environment for actual execution
-		$json = json_decode( qit( [ 'env:up', '--json', '--wp_version', 'stable' ] ), true );
+		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'stable' ] ), true );
 
 		$output = qit( [
 			'env:exec',
@@ -145,14 +145,14 @@ PHP
 
 	public function test_env_up_wordpress_nightly_version() {
 		// Check the configuration resolution using qit
-		$output = qit( [ 'env:up', '--wp_version', 'nightly', '--json' ] );
+		$output = qit( [ 'env:up', '--wp', 'nightly', '--json' ] );
 		$env    = json_decode( $output, true );
 
 		// Verify WordPress version is correctly resolved
 		$this->assertSame( 'nightly', $env['wp_version'] );
 
 		// Bring up the environment for actual execution
-		$json = json_decode( qit( [ 'env:up', '--json', '--wp_version', 'nightly' ] ), true );
+		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'nightly' ] ), true );
 
 		$output = qit( [
 			'env:exec',
@@ -169,16 +169,16 @@ PHP
 
 	public function test_env_up_woocommerce_stable_version() {
 		// Check the configuration resolution using qit
-		$output = qit( [ 'env:up', '--woo_version', 'stable', '--plugin', 'woocommerce', '--json' ] );
+		$output = qit( [ 'env:up', '--woo', 'stable', '--plugin', 'woocommerce', '--json' ] );
 		$env    = json_decode( $output, true );
 
 		// Verify WooCommerce version is correctly resolved
-		$this->assertSame( 'stable', $env['woo_version'] );
+		$this->assertSame( 'stable', $env['woo'] );
 		$pluginSlugs = array_column( $env['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs );
 
 		// Bring up the environment for actual execution
-		$json = json_decode( qit( [ 'env:up', '--json', '--woo_version', 'stable', '--plugin', 'woocommerce' ] ), true );
+		$json = json_decode( qit( [ 'env:up', '--json', '--woo', 'stable', '--plugin', 'woocommerce' ] ), true );
 
 		$output = qit( [
 			'env:exec',
@@ -216,7 +216,7 @@ PHP
 		// Check the configuration resolution using qit
 		$output = qit( [
 			'env:up',
-			'--woo_version',
+			'--woo',
 			'nightly',
 			'--plugin',
 			'woocommerce',
@@ -226,7 +226,7 @@ PHP
 		$env = json_decode( $output, true );
 
 		// Verify WooCommerce version is correctly resolved
-		$this->assertSame( 'nightly', $env['woo_version'] );
+		$this->assertSame( 'nightly', $env['woo'] );
 		$pluginSlugs = array_column( $env['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs );
 
@@ -234,7 +234,7 @@ PHP
 		$json = json_decode( qit( [
 			'env:up',
 			'--json',
-			'--woo_version',
+			'--woo',
 			'nightly',
 			'--plugin',
 			'woocommerce',
@@ -255,7 +255,7 @@ PHP
 		$json = json_decode( qit( [
 			'env:up',
 			'--json',
-			'--woo_version',
+			'--woo',
 			'rc',
 			'--plugin',
 			'https://github.com/woocommerce/woocommerce/releases/download/wc-beta-tester-2.3.0/woocommerce-beta-tester.zip:activate',

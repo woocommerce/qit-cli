@@ -17,8 +17,8 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
   },
   "environments": {
     "default": {
-      "php_version": "8.2",
-      "wp_version": "stable"
+      "php": "8.2",
+      "wp": "stable"
     }
   }
 }
@@ -31,9 +31,9 @@ JSON
 	public function test_env_up_with_parameters() {
 		$output = qit_precommand( [
 				'env:up',
-				'--wp_version',
+				'--wp',
 				'6.5',
-				'--php_version',
+				'--php',
 				'8.3',
 				'--json',
 			]
@@ -66,8 +66,8 @@ JSON
 {
   "environments": {
     "default": {
-      "wp_version": "6.4",
-      "php_version": "8.2"
+      "wp": "6.4",
+      "php": "8.2"
     }
   }
 }
@@ -88,8 +88,8 @@ JSON
 {
   "environments": {
     "default": {
-      "wp_version": "6.4",
-      "php_version": "8.3"
+      "wp": "6.4",
+      "php": "8.3"
     }
   }
 }

@@ -15,13 +15,13 @@ class E2EEnvInfo extends EnvInfo {
 	public array $runner_args = [];
 
 	/** @var string */
-	public string $wp_version = '';
+	public string $wp = '';
 
 	/** @var bool */
 	public bool $object_cache = false;
 
 	/** @var string */
-	public string $php_version = '';
+	public string $php = '';
 
 	/** @var string */
 	public string $nginx_port = '';
@@ -54,7 +54,7 @@ class E2EEnvInfo extends EnvInfo {
 	public string $pw_test_tag = '';
 
 	/** @var string */
-	public string $woo_version = 'none';
+	public string $woo = 'none';
 
 	/** @var bool */
 	public bool $is_development_build = false;

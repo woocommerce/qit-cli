@@ -36,9 +36,9 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			->setAliases( [ 'env:start' ] )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Output JSON format' )
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
-			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.0, 7.4)', '8.2' )
-			->addOption( 'wp_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, nightly, rc, or version number)', 'stable' )
-			->addOption( 'woo_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version (stable, nightly, rc, or version number)', 'stable' )
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.0, 7.4)', '8.2' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, nightly, rc, or version number)', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version (stable, nightly, rc, or version number)', 'stable' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins to install', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes to install', [] )
@@ -100,10 +100,10 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			$output->writeln( '<info>Environment started successfully!</info>' );
 			$output->writeln( '' );
 			$output->writeln( 'Environment ID: ' . $env_info->env_id );
-			$output->writeln( 'PHP Version: ' . $env_info->php_version );
-			$output->writeln( 'WordPress Version: ' . $env_info->wp_version );
-			if ( $env_info->woo_version ) {
-				$output->writeln( 'WooCommerce Version: ' . $env_info->woo_version );
+			$output->writeln( 'PHP Version: ' . $env_info->php );
+			$output->writeln( 'WordPress Version: ' . $env_info->wp );
+			if ( $env_info->woo ) {
+				$output->writeln( 'WooCommerce Version: ' . $env_info->woo );
 			}
 			$output->writeln( '' );
 			$output->writeln( 'Installed Plugins:' );
@@ -145,20 +145,20 @@ Create a qit.json file to define environments:
   },
   "environments": {
     "base": {
-      "php_version": "8.0",
-      "wp_version": "stable",
+      "php": "8.0",
+      "wp": "stable",
       "plugins": ["woocommerce", "akismet"]
     },
     "legacy": {
       "extends": "base",
-      "php_version": "7.4",
-      "wp_version": "5.9"
+      "php": "7.4",
+      "wp": "5.9"
     }
   }
 }
 
 <comment>CLI Options Override Configuration</comment>
-<info>qit env:up --php_version=8.3</info> - Forces PHP 8.3 regardless of config
+<info>qit env:up --php=8.3</info> - Forces PHP 8.3 regardless of config
 <info>qit env:up --plugin=gutenberg</info> - Adds plugin to configured environment
 
 <comment>Examples</comment>
@@ -169,7 +169,7 @@ Create a qit.json file to define environments:
 <info>qit env:up --environment=legacy</info>
 
 # Override configuration
-<info>qit env:up --php_version=8.3 --plugin=gutenberg --object_cache</info>
+<info>qit env:up --php=8.3 --plugin=gutenberg --object_cache</info>
 
 # With tunnel for external access
 <info>qit env:up --tunnel=cloudflare</info>

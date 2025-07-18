@@ -15,6 +15,7 @@ use QIT_CLI\PreCommand\Pipeline\Stages\ResolveConfigStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ValidateSUTStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildApiPayloadStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ResolveEnvironmentStage;
+use QIT_CLI\PreCommand\Pipeline\Stages\ConsolidateWooCommerceStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildEnvironmentResultStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ResolveTestPackagesStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildLocalTestResultStage;
@@ -67,12 +68,14 @@ class PreCommandHandler {
 		if ( $command instanceof LocalTestCommand ) {
 			$context = ( new ValidateSUTStage() )->process( $context );
 			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
+			$context = ( new ConsolidateWooCommerceStage() )->process( $context );
 			$context = ( new ResolveTestPackagesStage( $this->test_package_resolver ) )->process( $context );
 			$context = ( new BuildLocalTestResultStage() )->process( $context );
 		}
 
 		if ( $command instanceof EnvironmentCommand ) {
 			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
+			$context = ( new ConsolidateWooCommerceStage() )->process( $context );
 			$context = ( new BuildEnvironmentResultStage() )->process( $context );
 		}
 
