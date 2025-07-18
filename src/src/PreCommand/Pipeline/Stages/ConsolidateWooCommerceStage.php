@@ -23,7 +23,7 @@ class ConsolidateWooCommerceStage implements PipelineStage {
 						?? $cfg->get_environment( 'default' )['woo']
 							?? null;
 
-		if ( $woo_channel === null ) {
+		if ( $woo_channel === null || $woo_channel === '' ) {
 			// Nothing to consolidate.
 			return $context;
 		}

@@ -42,10 +42,10 @@ JSON
 		$env = json_decode( $output, true );
 
 		// Check that WordPress Version is as expected:
-		$this->assertSame( '6.5', $env['env_info']['wp_version'] );
+		$this->assertSame( '6.5', $env['env_info']['wp'] );
 
 		// Check that PHP Version is as expected:
-		$this->assertSame( '8.3', $env['env_info']['php_version'] );
+		$this->assertSame( '8.3', $env['env_info']['php'] );
 	}
 
 	public function test_env_up_with_object_cache() {
@@ -77,10 +77,10 @@ JSON
 		$env = json_decode( $output, true );
 
 		// Check that WordPress Version is as expected:
-		$this->assertSame( '6.4', $env['env_info']['wp_version'] );
+		$this->assertSame( '6.4', $env['env_info']['wp'] );
 
 		// Check that PHP Version is as expected:
-		$this->assertSame( '8.2', $env['env_info']['php_version'] );
+		$this->assertSame( '8.2', $env['env_info']['php'] );
 	}
 
 	public function test_env_up_with_file_and_parameters() {
@@ -99,9 +99,9 @@ JSON
 		$env = json_decode( $output, true );
 
 		// Check that WordPress Version is as expected:
-		$this->assertSame( '6.4', $env['env_info']['wp_version'] );
+		$this->assertSame( '6.4', $env['env_info']['wp'] );
 
 		// Check that PHP Version is as expected:
-		$this->assertSame( '8.3', $env['env_info']['php_version'] );
+		$this->assertSame( '8.3', $env['env_info']['php'] );
 	}
 }

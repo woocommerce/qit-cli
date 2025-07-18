@@ -64,6 +64,12 @@ PHP;
 		} );
 	}
 
+	/**
+	 * @param array<string, mixed> $env_info The environment info to normalize.
+	 * @return array<string, mixed> The normalized environment info.
+	 * @phpstan-param array{env_id: string, plugins: array<int, array<string, mixed>>, ...} $env_info
+	 * @phpstan-return array<string, mixed>
+	 */
 	protected function normalize_env_info( array $env_info ): array {
 		$id = $env_info['env_id'];
 
@@ -120,7 +126,7 @@ PHP;
 		}
 
 		foreach ( $env_info['plugins'] as &$p ) {
-			if ( strpos( $p['source'], 'http' ) !== false ) {
+			if ( isset($p['source']) && strpos( $p['source'], 'http' ) !== false ) {
 				$filename    = explode( '/', parse_url( $p['source'], PHP_URL_PATH ) );
 				$filename    = end( $filename );
 				$p['source'] = 'https://normalized-remote-source/' . $filename;
@@ -146,9 +152,9 @@ PHP;
 		$pattern = '/([+-]?\d+) pixels \(ratio [0-9.]+ of all image pixels\) are different\./';
 
 		return preg_replace_callback(
-			$pattern,
-			function ( $matches ) use ( $expected_diff ) {
-				$current_diff = (int) $matches[1];
+$pattern,
+function ( $matches ) use ( $expected_diff ) {
+$current_diff = (int) $matches[1];
 
 				if ( abs( $current_diff - $expected_diff ) <= 5 ) {
 					return "(SMALL_DIFF close to {$expected_diff})";
@@ -186,7 +192,7 @@ PHP;
 		 * npm
 		 *** notice New minor version of npm available! 10.2.4 -> 10.6.0
 		 * npm
-		 *** notice Changelog: <https://github.com/npm/cli/releases/tag/v10.6.0>
+		 *** notice Changelog: <https://github.com/npm/cli/releases/tag/v10.6.0\>
 		 *** npm notice Run `npm install -g npm@10.6.0` to update!
 		 * npm notice
 		 *

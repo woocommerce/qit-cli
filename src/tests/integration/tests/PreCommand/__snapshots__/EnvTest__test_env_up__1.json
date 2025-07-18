@@ -17,13 +17,12 @@
             "source": "/tmp-normalised/./",
             "directory": "/tmp-normalised/./",
             "downloaded_source": "/tmp-normalised/./",
-            "entrypoint": "test-plugin/qit-tmp-plugin.php",
             "priority": 100
         },
         "environments": {
             "default": {
-                "php_version": "8.2",
-                "wp_version": "stable"
+                "php": "8.2",
+                "wp": "stable"
             }
         },
         "test_types": [],
@@ -38,7 +37,6 @@
                 "source": "/tmp-normalised/./",
                 "directory": "/tmp-normalised/./",
                 "downloaded_source": "/tmp-normalised/./",
-                "entrypoint": "test-plugin/qit-tmp-plugin.php",
                 "priority": 100
             }
         ],
@@ -73,7 +71,6 @@
                 "source": "/tmp-normalised/./",
                 "directory": "/tmp-normalised/./",
                 "downloaded_source": "/tmp-normalised/./",
-                "entrypoint": "test-plugin/qit-tmp-plugin.php",
                 "priority": 100
             }
         ],
@@ -83,9 +80,9 @@
         "tunnel_type": "no_tunnel",
         "site_url": "",
         "runner_args": [],
-        "wp_version": "stable",
+        "wp": "stable",
         "object_cache": false,
-        "php_version": "8.2",
+        "php": "8.2",
         "nginx_port": "PORT",
         "sut": [],
         "domain": "localhost",
@@ -94,7 +91,7 @@
         "tests": [],
         "playwright_config": [],
         "pw_test_tag": "",
-        "woo_version": "stable",
+        "woo": "",
         "is_development_build": false,
         "notify": "",
         "test_packages": []
@@ -108,7 +105,6 @@
             "source": "/tmp-normalised/./",
             "directory": "/tmp-normalised/./",
             "downloaded_source": "/tmp-normalised/./",
-            "entrypoint": "test-plugin/qit-tmp-plugin.php",
             "priority": 100
         }
     ],

@@ -54,7 +54,7 @@ class E2EEnvInfo extends EnvInfo {
 	public string $pw_test_tag = '';
 
 	/** @var string */
-	public string $woo = 'none';
+	public string $woo = '';
 
 	/** @var bool */
 	public bool $is_development_build = false;

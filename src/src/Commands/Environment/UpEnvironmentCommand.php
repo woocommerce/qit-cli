@@ -38,7 +38,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
 			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.0, 7.4)', '8.2' )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, nightly, rc, or version number)', 'stable' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version (stable, nightly, rc, or version number)', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version (stable, nightly, rc, or version number)' )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins to install', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes to install', [] )

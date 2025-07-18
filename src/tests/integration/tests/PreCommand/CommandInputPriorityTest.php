@@ -22,9 +22,9 @@ class CommandInputPriorityTest extends \PHPUnit\Framework\TestCase {
 {
   "environments": {
     "default": {
-      "wp_version": "6.0",
-      "php_version": "7.4",
-      "woo_version": "7.0"
+      "wp": "6.0",
+      "php": "7.4",
+      "woo": "7.0"
     }
   }
 }
@@ -33,9 +33,9 @@ JSON;
 		// CLI flags should override qit.json values
 		$output = qit_precommand( [
 			'env:up',
-			'--wp_version=6.1',
-			'--php_version=8.0',
-			'--woo_version=7.1',
+			'--wp=6.1',
+			'--php=8.0',
+			'--woo=7.1',
 			'--json',
 		],
 			$qitJson
@@ -43,9 +43,9 @@ JSON;
 
 		$env = json_decode( $output, true );
 		$this->assertIsArray( $env, "JSON decoding failed" );
-		$this->assertSame( '6.1', $env['env_info']['wp_version'], "WP version should be CLI override '6.1'." );
-		$this->assertSame( '8.0', $env['env_info']['php_version'], "PHP version should be CLI override '8.0'." );
-		$this->assertSame( '7.1', $env['env_info']['woo_version'] ?? null, "WooCommerce version should be CLI override '7.1'." );
+		$this->assertSame( '6.1', $env['env_info']['wp'], "WP version should be CLI override '6.1'." );
+		$this->assertSame( '8.0', $env['env_info']['php'], "PHP version should be CLI override '8.0'." );
+		$this->assertSame( '7.1', $env['env_info']['woo'] ?? null, "WooCommerce version should be CLI override '7.1'." );
 	}
 
 	/**
@@ -57,9 +57,9 @@ JSON;
 {
   "environments": {
     "default": {
-      "wp_version": "5.9",
-      "php_version": "8.1",
-      "woo_version": "6.9"
+      "wp": "5.9",
+      "php": "8.1",
+      "woo": "6.9"
     }
   }
 }
@@ -75,9 +75,9 @@ JSON;
 
 		$env = json_decode( $output, true );
 		$this->assertIsArray( $env, "JSON decoding failed" );
-		$this->assertSame( '5.9', $env['env_info']['wp_version'], "WP version should be from qit.json '5.9'." );
-		$this->assertSame( '8.1', $env['env_info']['php_version'], "PHP version should be from qit.json '8.1'." );
-		$this->assertSame( '6.9', $env['env_info']['woo_version'] ?? null, "WooCommerce version should be from qit.json '6.9'." );
+		$this->assertSame( '5.9', $env['env_info']['wp'], "WP version should be from qit.json '5.9'." );
+		$this->assertSame( '8.1', $env['env_info']['php'], "PHP version should be from qit.json '8.1'." );
+		$this->assertSame( '6.9', $env['env_info']['woo'] ?? null, "WooCommerce version should be from qit.json '6.9'." );
 	}
 
 	/**
@@ -94,18 +94,17 @@ JSON;
 
 		$env = json_decode( $output, true );
 		$this->assertIsArray( $env, "JSON decoding failed" );
-		$this->assertSame( 'stable', $env['env_info']['wp_version'], "WP version should be default 'stable'." );
-		$this->assertSame( '8.2', $env['env_info']['php_version'], "PHP version should be the schema default '8.2'." );
+		$this->assertSame( 'stable', $env['env_info']['wp'], "WP version should be default 'stable'." );
+		$this->assertSame( '8.2', $env['env_info']['php'], "PHP version should be the schema default '8.2'." );
 		$this->assertSame(
-			'stable',
-			$env['env_info']['woo_version'],
-			'Default WooCommerce version should be "stable".'
+			'',
+			$env['env_info']['woo'],
+			'WooCommerce should not be installed unless requested.'
 		);
 		$this->assertNotContains(
 			'woocommerce',
 			array_column( $env['env_info']['plugins'], 'slug' ),
-			'WooCommerce should not be installed when no version other than "stable" is requested.'
+			'WooCommerce should not be installed if not requested.'
 		);
-
 	}
 }
