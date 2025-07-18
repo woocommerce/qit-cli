@@ -70,6 +70,11 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 		$args[] = '"--trace on"';
 	}
 
+	if ( isset( $extra_env['QIT_SELF_TEST'] ) && $extra_env['QIT_SELF_TEST'] === 'precommand' ) {
+		$args[] = '--json';
+	}
+
+
 	$env = [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
 		'QIT_DISABLE_CLEANUP' => '1', // We need to disable it because of parallelization with individualized QIT_HOMEs.

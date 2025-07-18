@@ -91,13 +91,11 @@ class PreCommandHandler {
 		 * Use the qit_precommand() function in tests to trigger this early-bail mechanism.
 		 */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'precommand' ) {
-			// Return the result without executing the command
-			$result = $context->get_result();
-			$output->writeln( json_encode( $result, JSON_PRETTY_PRINT ) );
+			$output->writeln( json_encode( $context->get_result(), JSON_PRETTY_PRINT ) );
 			throw new PrecommandEarlyReturn();
 		}
 
-		return $context;
+		return $context->get_result();
 	}
 
 	/**
