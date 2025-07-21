@@ -279,13 +279,15 @@ HELP
 		}
 
 		if ( $skip_activating_plugins ) {
-			/** @var E2EEnvironment|PerformanceEnvironment $environment */
-			$environment->set_skip_activating_plugins( true );
+			if ( $environment instanceof E2EEnvironment || $environment instanceof PerformanceEnvironment ) {
+				$environment->set_skip_activating_plugins( true );
+			}
 		}
 
 		if ( $skip_activating_themes ) {
-			/** @var E2EEnvironment|PerformanceEnvironment $environment */
-			$environment->set_skip_activating_themes( true );
+			if ( $environment instanceof E2EEnvironment || $environment instanceof PerformanceEnvironment ) {
+				$environment->set_skip_activating_themes( true );
+			}
 		}
 
 		if ( ! empty( $input->getOption( 'config' ) ) ) {
