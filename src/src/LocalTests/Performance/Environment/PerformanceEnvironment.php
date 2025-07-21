@@ -83,7 +83,7 @@ class PerformanceEnvironment extends Environment {
 
 		try {
 			App::make( \QIT_CLI\Environment\Docker::class )->find_docker();
-		} catch ( \Exception ) {
+		} catch ( \Exception $e ) {
 			throw new \RuntimeException( 'QIT needs Docker to be able to process this command.' );
 		}
 

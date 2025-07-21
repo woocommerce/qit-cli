@@ -17,6 +17,10 @@ class K6DockerConfig {
 	}
 
 	/**
+	 * @param PerformanceEnvInfo $env_info
+	 * @param string             $results_dir
+	 * @param string             $container_name
+	 * @param array<mixed>       $test_infos
 	 * @return array<string>
 	 */
 	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $test_infos = [] ): array {
@@ -45,6 +49,9 @@ class K6DockerConfig {
 	}
 
 	/**
+	 * @param PerformanceEnvInfo $env_info
+	 * @param string             $results_dir
+	 * @param array<mixed>       $test_infos
 	 * @return array<string>
 	 */
 	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir, array $test_infos = [] ): array {

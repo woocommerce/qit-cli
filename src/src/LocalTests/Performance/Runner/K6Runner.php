@@ -35,13 +35,13 @@ class K6Runner {
 
 	/**
 	 * @param PerformanceEnvInfo    $env_info
-	 * @param array                 $test_infos
+	 * @param array<mixed>          $test_infos
 	 * @param PerformanceTestResult $test_result
 	 */
 	public function run_test( PerformanceEnvInfo $env_info, array $test_infos, PerformanceTestResult $test_result ): int {
 		$this->performance_test_result = $test_result;
 
-		$this->setup_test_environment( $env_info );
+		$this->setup_test_environment();
 
 		// Build and execute k6 test.
 		$k6_args = $this->docker_config->build_k6_docker_args(

@@ -31,7 +31,7 @@ class PerformanceTestManager {
 		$test_result = new PerformanceTestResult( $env_info );
 
 		// Run K6 performance tests.
-		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests ?? [], $test_result );
+		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
 
 		// Store exit code and set status based on how test finished.
 		$test_result->add_metric( 'k6_exit_code', $exit_status_code );
