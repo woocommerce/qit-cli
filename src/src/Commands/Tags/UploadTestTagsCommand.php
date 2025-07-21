@@ -189,7 +189,7 @@ class UploadTestTagsCommand extends Command {
 			if ( $file->isDir() ) {
 				continue;
 			}
-			
+
 			// Look for k6 test files (*.k6.js).
 			if ( preg_match( '/\.k6\.js$/', $file->getFilename() ) ) {
 				$possible_k6_files[] = $file->getPathname();
@@ -206,12 +206,12 @@ class UploadTestTagsCommand extends Command {
 			$contents = file_get_contents( $file, false, null, 0, 4 * 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
 
 			// Check for k6 imports or exports (common k6 patterns).
-			return str_contains( $contents, 'from "k6"' ) || 
-			       str_contains( $contents, 'from \'k6\'' ) ||
-			       str_contains( $contents, 'import http from "k6/http"' ) ||
-			       str_contains( $contents, 'import { check' ) ||
-			       str_contains( $contents, 'export let options' ) ||
-			       str_contains( $contents, 'export default function' );
+			return str_contains( $contents, 'from "k6"' ) ||
+					str_contains( $contents, 'from \'k6\'' ) ||
+					str_contains( $contents, 'import http from "k6/http"' ) ||
+					str_contains( $contents, 'import { check' ) ||
+					str_contains( $contents, 'export let options' ) ||
+					str_contains( $contents, 'export default function' );
 		} );
 
 		// Fail: None of the k6 files are valid k6 tests.

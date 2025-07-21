@@ -150,8 +150,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		// Add SUT as a plugin with proper extension structure.
 		$plugins = $input->getOption( 'plugin' ) ?: [];
-		
-		// Create structured extension definition like activation tests
+
+		// Create structured extension definition.
 		$sut_extension = [
 			'slug'      => $sut,
 			'source'    => $input->getOption( 'source' ) ?: $sut,
@@ -159,7 +159,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			'test_tags' => [ $input->getOption( 'test_tag' ) ?: 'default' ],
 			'priority'  => Extension::PRIORITY_LOW,
 		];
-		
+
 		$plugins[]                  = json_encode( $sut_extension );
 		$env_up_options['--plugin'] = $plugins;
 
@@ -170,8 +170,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		// Common options.
 		$env_up_options['--environment_type'] = 'performance';
-		$env_up_options['--json']            = true;
-		$env_up_options['--tunnel']          = TunnelRunner::get_tunnel_value( $input );
+		$env_up_options['--json']             = true;
+		$env_up_options['--tunnel']           = TunnelRunner::get_tunnel_value( $input );
 
 		// Verbosity.
 		if ( $input->getOption( 'verbose' ) ) {

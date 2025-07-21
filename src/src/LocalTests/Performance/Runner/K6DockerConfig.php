@@ -75,12 +75,16 @@ class K6DockerConfig {
 	private function get_environment_variables( PerformanceEnvInfo $env_info ): array {
 		// Environment variables for k6 container.
 		$internal_nginx_name = "qitenvnginx{$env_info->env_id}";
-		
+
 		$args = [
-			'-e', sprintf( 'BASE_URL=%s', $env_info->site_url ),
-			'-e', sprintf( 'QIT_DOMAIN=%s', $env_info->domain ),
-			'-e', sprintf( 'QIT_INTERNAL_DOMAIN=%s', "http://host.docker.internal:{$env_info->nginx_port}" ),
-			'-e', sprintf( 'QIT_INTERNAL_NGINX=%s', $internal_nginx_name ),
+			'-e',
+			sprintf( 'BASE_URL=%s', $env_info->site_url ),
+			'-e',
+			sprintf( 'QIT_DOMAIN=%s', $env_info->domain ),
+			'-e',
+			sprintf( 'QIT_INTERNAL_DOMAIN=%s', "http://host.docker.internal:{$env_info->nginx_port}" ),
+			'-e',
+			sprintf( 'QIT_INTERNAL_NGINX=%s', $internal_nginx_name ),
 		];
 
 		// Pass additional env vars to the test environment.

@@ -63,7 +63,7 @@ class K6Runner {
 	/**
 	 * Setup test environment - create directories.
 	 */
-	private function setup_test_environment( PerformanceEnvInfo $env_info ): void {
+	private function setup_test_environment(): void {
 		$this->ensure_directory_exists( Config::get_qit_dir() . 'cache/k6' );
 		$this->ensure_directory_exists( $this->performance_test_result->get_results_dir() );
 	}
@@ -80,7 +80,8 @@ class K6Runner {
 	}
 
 	/**
-	 * @param array<string> $k6_args
+	 * @param PerformanceEnvInfo $env_info
+	 * @param array<string>      $k6_args
 	 */
 	private function execute_k6_tests( PerformanceEnvInfo $env_info, array $k6_args ): int {
 		$test_file = $this->determine_test_file( $env_info );
@@ -127,42 +128,42 @@ class K6Runner {
 	/**
 	 * Determine which test file to use based on environment info.
 	 */
-private function determine_test_file( PerformanceEnvInfo $env_info ): string {
-    if ( $this->output->isVerbose() ) {
-        $this->output->writeln( '<info>Debug: Available tests in env_info:</info>' );
-        $this->output->writeln( json_encode( $env_info->tests, JSON_PRETTY_PRINT ) );
-    }
+	private function determine_test_file( PerformanceEnvInfo $env_info ): string {
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( '<info>Debug: Available tests in env_info:</info>' );
+			$this->output->writeln( json_encode( $env_info->tests, JSON_PRETTY_PRINT ) );
+		}
 
-    if ( empty( $env_info->tests ) ) {
-        throw new \RuntimeException('No test directories provided.');
-    }
+		if ( empty( $env_info->tests ) ) {
+			throw new \RuntimeException( 'No test directories provided.' );
+		}
 
-    foreach ( $env_info->tests as $test_info ) {
-        $host_path = $test_info['path_in_host'];
+		foreach ( $env_info->tests as $test_info ) {
+			$host_path = $test_info['path_in_host'];
 
-        if ( !is_dir($host_path) ) {
-            continue;
-        }
+			if ( ! is_dir( $host_path ) ) {
+				continue;
+			}
 
-        $directory = new \RecursiveDirectoryIterator($host_path, \RecursiveDirectoryIterator::SKIP_DOTS);
-        $iterator  = new \RecursiveIteratorIterator($directory);
+			$directory = new \RecursiveDirectoryIterator( $host_path, \RecursiveDirectoryIterator::SKIP_DOTS );
+			$iterator  = new \RecursiveIteratorIterator( $directory );
 
-        // This iterator filters the file list for your pattern before the loop starts.
-        $k6_files  = new \RegexIterator($iterator, '/\.k6\.js$/i');
+			// This iterator filters the file list for your pattern before the loop starts.
+			$k6_files = new \RegexIterator( $iterator, '/\.k6\.js$/i' );
 
-        // The loop now only runs for files that already match the pattern.
-        foreach ($k6_files as $file) {
-            $relative_path  = str_replace($host_path . '/', '', $file->getPathname());
-            $container_path = $test_info['path_in_php_container'] . '/' . $relative_path;
+			// The loop now only runs for files that already match the pattern.
+			foreach ( $k6_files as $file ) {
+				$relative_path  = str_replace( $host_path . '/', '', $file->getPathname() );
+				$container_path = $test_info['path_in_php_container'] . '/' . $relative_path;
 
-            if ( $this->output->isVerbose() ) {
-                $this->output->writeln( "<info>Debug: Found K6 test: {$container_path}</info>" );
-            }
+				if ( $this->output->isVerbose() ) {
+					$this->output->writeln( "<info>Debug: Found K6 test: {$container_path}</info>" );
+				}
 
-            $this->output->writeln( '<info>Using performance test: ' . $relative_path . '</info>' );
-            return $container_path;
-        }
-    }
+				$this->output->writeln( '<info>Using performance test: ' . $relative_path . '</info>' );
+				return $container_path;
+			}
+		}
 
 		// No remote tests found - this should not happen if compatibility dashboard has tests.
 		throw new \RuntimeException( 'No remote performance tests found for extension: ' . $env_info->sut_slug . ' with test tag: ' . ( $env_info->test_tag ?: 'default' ) );

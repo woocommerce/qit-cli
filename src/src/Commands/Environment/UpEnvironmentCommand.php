@@ -40,11 +40,11 @@ class UpEnvironmentCommand extends DynamicCommand {
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
-		$this->e2e_environment = $e2e_environment;
+		$this->e2e_environment         = $e2e_environment;
 		$this->performance_environment = $performance_environment;
-		$this->cache           = $cache;
-		$this->output          = $output;
-		$this->tunnel_runner   = $tunnel_runner;
+		$this->cache                   = $cache;
+		$this->output                  = $output;
+		$this->tunnel_runner           = $tunnel_runner;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
@@ -231,10 +231,10 @@ HELP
 		$this->parse_env_vars( $input->getOption( 'env' ), $input->getOption( 'env_file' ) );
 
 		// Set the environment type for EnvConfigLoader.
-		putenv( "QIT_ENVIRONMENT_TYPE=$environment_type" );
+		putenv( "QIT_ENVIRONMENT_TYPE=$environment_type" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 
 		$environment = $this->get_environment( $environment_type );
-		$tunnel = TunnelRunner::get_tunnel_value( $input );
+		$tunnel      = TunnelRunner::get_tunnel_value( $input );
 
 		try {
 			$options_to_env_info = $this->parse_options( $input );
