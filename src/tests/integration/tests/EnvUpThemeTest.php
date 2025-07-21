@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
+use QIT\IntegrationTests\Traits\SnapshotHelpers;
 
 /**
  * Tests for verifying single-theme auto-activation, multiple themes,

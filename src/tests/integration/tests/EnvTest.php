@@ -1,6 +1,6 @@
 <?php
 
-use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
+use QIT\IntegrationTests\Traits\SnapshotHelpers;
 
 class EnvTest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;

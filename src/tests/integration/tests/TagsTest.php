@@ -1,7 +1,7 @@
 <?php
 
-use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
-use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
+use QIT\IntegrationTests\Traits\ScaffoldHelpers;
+use QIT\IntegrationTests\Traits\SnapshotHelpers;
 
 class TagsTest extends \PHPUnit\Framework\TestCase {
 	use ScaffoldHelpers;

@@ -1,6 +1,8 @@
 <?php
 
-namespace QIT\SelfTests\CustomTests\Traits;
+namespace QIT\IntegrationTests\Traits;
+
+use QIT\IntegrationTests\Utils\Normalizer;
 
 trait ScaffoldHelpers {
 	/**
@@ -71,149 +73,8 @@ PHP;
 	 * @param array<string,mixed> $payload
 	 */
 	protected function normalize_env_info( array $payload ): array {
-
-		// ─────────────────────────────────────────────────────────────
-		// 0. Detect which level we received
-		// ─────────────────────────────────────────────────────────────
-		$is_full_payload = isset($payload['env_info']);
-		$env_info        = $is_full_payload ? $payload['env_info'] : $payload;
-		$id              = $env_info['env_id'] ?? '<NO_ID>';
-
-		// Decode, str_replace, encode
-		$env_info = json_encode( $env_info, JSON_UNESCAPED_SLASHES );
-
-		$d = __DIR__;
-
-		while ( true ) {
-			$d = dirname( $d );
-			if ( basename( $d ) === 'custom_tests' ) {
-				$dir_to_replace = realpath( $d );
-				break;
-			}
-
-			// stop at repo root
-			if ( file_exists( $d . '/composer.json' ) ) {
-				$dir_to_replace = null;      // nothing to replace
-				break;
-			}
-		}
-
-		$env_info = str_replace( $id, 'ENV_ID_NORMALIZED', $env_info );
-		if ( $dir_to_replace ) {
-			$env_info = str_replace( $dir_to_replace, '/path/normalized/', $env_info );
-		}
-		$env_info = str_replace( rtrim( sys_get_temp_dir(), '/' ) . '/', '/tmp-normalized/', $env_info );
-		$env_info = str_replace( '/tmp/', '/tmp-normalized/', $env_info );
-		$env_info = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALIZED_ID', $env_info );
-		$env_info = preg_replace( '/qit_config-qit_custom_tests_[a-f0-9]+/', 'qit_config-qit_custom_tests_NORMALIZED_ID', $env_info );
-
-		$env_info = json_decode( $env_info, true );
-
-		$env_info['created_at'] = '1700000000';
-		$env_info['sut_id']     = '123';
-
-		// Normalize new fields
-		if ( isset( $env_info['runner_args'] ) ) {
-			$env_info['runner_args'] = 'NORMALIZED_RUNNER_ARGS';
-		}
-
-		if ( isset( $env_info['playwright_config'] ) ) {
-			$env_info['playwright_config'] = 'NORMALIZED_PLAYWRIGHT_CONFIG';
-		}
-
-		// Normalize container names
-		if ( isset( $env_info['container_name'] ) ) {
-			$env_info['container_name'] = 'NORMALIZED_CONTAINER_NAME';
-		}
-
-		// Normalize download URLs and checksums
-		if ( isset( $env_info['download_url'] ) ) {
-			$env_info['download_url'] = 'NORMALIZED_DOWNLOAD_URL';
-		}
-
-		if ( isset( $env_info['checksum'] ) ) {
-			$env_info['checksum'] = 'NORMALIZED_CHECKSUM';
-		}
-
-		// Helper for *all* plugin arrays we may encounter
-		$plugin_normaliser = static function ( array &$plugins ): void {
-			foreach ( $plugins as &$p ) {
-				if ( isset($p['source']) && str_starts_with($p['source'], 'http') ) {
-					$filename    = basename( parse_url( $p['source'], PHP_URL_PATH ) );
-					$p['source'] = 'https://normalized-remote-source/' . $filename;
-				}
-				if ( ! empty( $p['version'] ) ) {
-					$p['version'] = 'NORMALIZED_VERSION';
-				}
-				if ( ! empty( $p['downloaded_source'] ) ) {
-					$p['downloaded_source'] = '/normalized/downloaded-path/file.zip';
-				}
-				if ( ! empty( $p['download_url'] ) ) {
-					$p['download_url'] = 'NORMALIZED_DOWNLOAD_URL';
-				}
-				if ( ! empty( $p['checksum'] ) ) {
-					$p['checksum'] = 'NORMALIZED_CHECKSUM';
-				}
-			}
-		};
-
-		// env_info.plugins
-		if ( isset( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
-			$plugin_normaliser( $env_info['plugins'] );
-		}
-
-		// configuration.resolved_plugins / resolved_extensions
-		if ( $is_full_payload ) {
-			if ( isset( $payload['configuration']['resolved_plugins'] ) ) {
-				$plugin_normaliser( $payload['configuration']['resolved_plugins'] );
-			}
-			if ( isset( $payload['resolved_extensions'] ) ) {
-				$plugin_normaliser( $payload['resolved_extensions'] );
-			}
-
-			// ── sut_extension ────────────────────────────────────────
-			if ( isset( $payload['configuration']['sut_extension'] ) ) {
-				$tmpArr = [ $payload['configuration']['sut_extension'] ];
-				$plugin_normaliser( $tmpArr );
-				$payload['configuration']['sut_extension'] = $tmpArr[0];
-			}
-		}
-
-		// ─────────────────────────────────────────────────────────────
-		//  Post‑process misc. volatile paths / ids
-		// ─────────────────────────────────────────────────────────────
-		if ( $is_full_payload ) {
-			// configuration.cache_dir
-			if ( isset( $payload['configuration']['cache_dir'] ) ) {
-				$payload['configuration']['cache_dir']
-					= preg_replace(
-						'/tmp_qit_config-qit_custom_tests_[a-f0-9]+/',
-						'tmp_qit_config-qit_custom_tests_NORMALIZED_ID',
-						$payload['configuration']['cache_dir']
-					);
-				$payload['configuration']['cache_dir']
-					= str_replace(
-						rtrim( sys_get_temp_dir(), '/' ) . '/',
-						'/tmp-normalized/',
-						$payload['configuration']['cache_dir']
-					);
-			}
-
-			// downloaded_paths
-			if ( isset( $payload['downloaded_paths'] ) && is_array( $payload['downloaded_paths'] ) ) {
-				foreach ( $payload['downloaded_paths'] as &$path ) {
-					$path = '/normalized/downloaded-path/file.zip';
-				}
-			}
-		}
-
-		// Replace back into payload if we started with the full object
-		if ( $is_full_payload ) {
-			$payload['env_info'] = $env_info;
-			$env_info            = $payload;
-		}
-
-		return $env_info;
+		// Delegates to the shared helper and returns immediately
+		return Normalizer::precommand( $payload );
 	}
 
 	protected function normalize_snapshot_diff( string $output, int $expected_diff ): string {

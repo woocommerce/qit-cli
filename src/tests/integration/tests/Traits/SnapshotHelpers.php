@@ -1,9 +1,10 @@
 <?php
 
-namespace QIT\SelfTests\CustomTests\Traits;
+namespace QIT\IntegrationTests\Traits;
 
 use Spatie\Snapshots\Drivers\TextDriver;
 use Spatie\Snapshots\MatchesSnapshots;
+use QIT\IntegrationTests\Utils\Normalizer;
 
 trait SnapshotHelpers {
 	use MatchesSnapshots;
@@ -174,10 +175,9 @@ trait SnapshotHelpers {
 	}
 
 	public function assertMatchesNormalizedSnapshot( string $actual, ?\Spatie\Snapshots\Driver $driver = null ): void {
-		$actual = str_replace( rtrim( sys_get_temp_dir(), '/' ) . '/', '/tmp-normalized/', $actual );
-		$actual = str_replace( '/tmp/', '/tmp-normalized/', $actual );
-		$actual = preg_replace( '/qit-results-[a-z0-9]+/', 'qit-results-normalizedid', $actual );
-		$actual = preg_replace( '/qit-env-[a-f0-9]{32}\.json/', 'qit-env-<hash>.json', $actual );
+		// One call cleans all generic paths; rest of the routine keeps the
+		// Docker & npm filters you already had.
+		$actual = Normalizer::cli( $actual );
 		// Remove Docker pull-related lines
 		// remove Docker pull-related lines
 		$actual = preg_replace(
@@ -305,89 +305,14 @@ trait SnapshotHelpers {
 		string|array $payload,
 		array $extraReplacements = []
 	): void {
-		// ─────────────────────────────────────────────────────────────
-		// 1. Decode (if necessary) and discover volatile identifiers
-		// ─────────────────────────────────────────────────────────────
 		$data = is_string( $payload ) ? json_decode( $payload, true ) : $payload;
 
 		if ( ! is_array( $data ) ) {
 			throw new \RuntimeException( 'Pre‑Command payload is not valid JSON.' );
 		}
 
-		$envId    = $data['env_info']['env_id'] ?? null;
-		$port     = $data['env_info']['nginx_port'] ?? null;
-		$repoRoot = realpath( __DIR__ . '/../../..' );   // adjust depth once
-		$tmp      = rtrim( sys_get_temp_dir(), '/' );
-
-		// ─────────────────────────────────────────────────────────────
-		// 2. Recursive normalisation helper
-		// ─────────────────────────────────────────────────────────────
-		$normalise = function ( &$value ) use (
-			&$normalise, $envId, $port, $tmp, $extraReplacements, $repoRoot
-		) {
-			if ( is_array( $value ) ) {
-				foreach ( $value as &$v ) {
-					$normalise( $v );
-				}
-
-				return;
-			}
-
-			if ( ! is_string( $value ) ) {
-				// created_at → constant timestamp
-				if ( is_numeric( $value ) ) {
-					// keys are lost here, fix afterwards
-				}
-
-				return;
-			}
-
-			// Generic path / id replacements
-			$value = str_replace( "$tmp/", '/tmp-normalised/', $value );
-
-			if ( $envId ) {
-				$value = str_replace( $envId, 'ENV_ID', $value );
-				$value = preg_replace( '/e2e-[a-f0-9]{11,}/', 'e2e-ENV_ID', $value );
-				$value = str_replace( "qit_network_$envId", 'qit_network_ENV_ID', $value );
-			}
-
-			if ( $port ) {
-				$value = str_replace( ":$port", ':PORT', $value );
-			}
-
-			$value = preg_replace(
-				'/qit-env-[a-f0-9]{32}\.json/',
-				'qit-env-<hash>.json',
-				$value
-			);
-
-			$value = str_replace( $repoRoot, '/repo', $value );
-
-			// File / dir slugs with random tails
-			$value = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALISED', $value );
-			$value = preg_replace( '/qit_config-qit_custom_tests_[a-f0-9]+/', 'qit_config-qit_custom_tests_NORMALISED', $value );
-			$value = preg_replace( '/cache\/[a-f0-9]+/', 'cache/NORMALISED_ID/', $value );
-
-			// Caller‑supplied replacements last
-			foreach ( $extraReplacements as $from => $to ) {
-				$value = str_replace( $from, $to, $value );
-			}
-		};
-
-		$normalise( $data );
-
-		// Fix scalar dynamic fields we could not detect by key (timestamps, ports)
-		$data['env_info']['created_at']    = 0;
-		$data['env_info']['nginx_port']    = 'PORT';
-		$data['env_info']['temporary_env'] = '/tmp-normalised/temporary-env/';
-
-		// ─────────────────────────────────────────────────────────────
-		// 3. Snapshot!
-		// ─────────────────────────────────────────────────────────────
-		$this->assertMatchesSnapshot(
-			$data,
-			new \Spatie\Snapshots\Drivers\JsonDriver()
-		);
+		$data = Normalizer::precommand( $data );
+		$this->assertMatchesSnapshot( $data, new \Spatie\Snapshots\Drivers\JsonDriver() );
 	}
 
 }

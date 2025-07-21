@@ -2,7 +2,7 @@
 
 namespace integration\tests\PreCommand;
 
-use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
+use QIT\IntegrationTests\Traits\ScaffoldHelpers;
 
 /**
  * Tests the precedence rules for configuration settings in the QIT CLI:

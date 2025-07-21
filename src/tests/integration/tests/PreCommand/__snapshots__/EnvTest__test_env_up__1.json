@@ -13,10 +13,10 @@
             "slug": "test-plugin",
             "type": "plugin",
             "from": "local",
-            "version": "undefined",
+            "version": "NORMALIZED_VERSION",
             "source": "/tmp-normalised/./",
             "directory": "/tmp-normalised/./",
-            "downloaded_source": "/tmp-normalised/./",
+            "downloaded_source": "/normalized/downloaded-path/file.zip",
             "entrypoint": "test-plugin/qit-tmp-plugin.php",
             "priority": 100
         },
@@ -34,10 +34,10 @@
                 "slug": "test-plugin",
                 "type": "plugin",
                 "from": "local",
-                "version": "undefined",
+                "version": "NORMALIZED_VERSION",
                 "source": "/tmp-normalised/./",
                 "directory": "/tmp-normalised/./",
-                "downloaded_source": "/tmp-normalised/./",
+                "downloaded_source": "/normalized/downloaded-path/file.zip",
                 "entrypoint": "test-plugin/qit-tmp-plugin.php",
                 "priority": 100
             }
@@ -49,7 +49,7 @@
         "metadata": {
             "config_file": "/tmp-normalised/qit-env-<hash>.json"
         },
-        "cache_dir": "/repo/integration/tmp-normalised/tmp_qit_config-qit_custom_tests_NORMALISED/cache/"
+        "cache_dir": "/normalized/cache/dir"
     },
     "env_info": {
         "extra": [],
@@ -69,10 +69,10 @@
                 "slug": "test-plugin",
                 "type": "plugin",
                 "from": "local",
-                "version": "undefined",
+                "version": "NORMALIZED_VERSION",
                 "source": "/tmp-normalised/./",
                 "directory": "/tmp-normalised/./",
-                "downloaded_source": "/tmp-normalised/./",
+                "downloaded_source": "/normalized/downloaded-path/file.zip",
                 "entrypoint": "test-plugin/qit-tmp-plugin.php",
                 "priority": 100
             }
@@ -104,15 +104,15 @@
             "slug": "test-plugin",
             "type": "plugin",
             "from": "local",
-            "version": "undefined",
+            "version": "NORMALIZED_VERSION",
             "source": "/tmp-normalised/./",
             "directory": "/tmp-normalised/./",
-            "downloaded_source": "/tmp-normalised/./",
+            "downloaded_source": "/normalized/downloaded-path/file.zip",
             "entrypoint": "test-plugin/qit-tmp-plugin.php",
             "priority": 100
         }
     ],
     "downloaded_paths": {
-        "test-plugin": "/tmp-normalised/./"
+        "test-plugin": "/normalized/downloaded-path/file.zip"
     }
 }

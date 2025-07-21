@@ -2,8 +2,8 @@
 
 namespace integration\tests\PreCommand;
 
-use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
-use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
+use QIT\IntegrationTests\Traits\ScaffoldHelpers;
+use QIT\IntegrationTests\Traits\SnapshotHelpers;
 use Spatie\Snapshots\Drivers\JsonDriver;
 
 /**

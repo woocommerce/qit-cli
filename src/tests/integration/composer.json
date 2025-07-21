@@ -9,7 +9,7 @@
   },
   "autoload": {
     "psr-4": {
-      "QIT\\SelfTests\\CustomTests\\": "tests"
+      "QIT\\IntegrationTests\\": "tests"
     },
     "files": [
       "QITTestExtension.php"
