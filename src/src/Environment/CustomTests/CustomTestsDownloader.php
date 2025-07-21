@@ -7,6 +7,7 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\Environment\ExtensionDownload\ExtensionDownloader;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
@@ -117,14 +118,14 @@ class CustomTestsDownloader {
 					continue;
 				}
 
-				$path_in_host          = "{$env_info->temporary_env}/tests/$test_type/{$extension->slug}/$processed_test_tag";
+				$path_in_host          = rtrim( $env_info->temporary_env, '/' ) . "/tests/$test_type/{$extension->slug}/$processed_test_tag";
 				$path_in_php_container = "/qit/tests/$test_type/{$extension->slug}/$processed_test_tag";
 
 				$this->zipper->extract_zip( $zip_file, $path_in_host );
 
 				$env_info->volumes[ $path_in_php_container ] = $path_in_host;
 
-				if ( $env_info instanceof E2EEnvInfo ) {
+				if ( $env_info instanceof E2EEnvInfo || $env_info instanceof PerformanceEnvInfo ) {
 					$env_info->tests[] = [
 						'slug'                  => $extension->slug,
 						'test_tag'              => $processed_test_tag,

@@ -35,7 +35,7 @@ class UploadTestTagsCommand extends Command {
 		$this
 			->addArgument( 'test_tag', InputArgument::REQUIRED, 'The test tag to upload, can be "my-extension", or "my-extension:my-test-tag". If test tag is not specified, it is the same as running "my-extension:default".' )
 			->addArgument( 'test_path', InputArgument::REQUIRED, 'The path to the custom tests to upload.' )
-			->addArgument( 'test_type', InputArgument::OPTIONAL, 'The test type.', 'e2e' )
+			->addArgument( 'test_type', InputArgument::OPTIONAL, 'The test type (e2e or performance).', 'e2e' )
 			->setDescription( 'Uploads your custom test to QIT.' );
 	}
 
@@ -44,8 +44,8 @@ class UploadTestTagsCommand extends Command {
 		$test_type = $input->getArgument( 'test_type' );
 		$tag       = $input->getArgument( 'test_tag' );
 
-		// Early bail: We only support E2E for now.
-		if ( $test_type !== 'e2e' ) {
+		// Early bail: We only support E2E and Performance for now.
+		if ( $test_type !== 'e2e' && $test_type !== 'performance' ) {
 			$output->writeln( '<error>Invalid test type.</error>' );
 
 			return Command::FAILURE;
@@ -103,35 +103,14 @@ class UploadTestTagsCommand extends Command {
 					$output->writeln( '<comment>No "bootstrap" directory found.</comment>' );
 				}
 
-				// Check if at least one ".js", ".ts" or ".tsx" file exists in the tests directory.
-				$possible_pw_files = [];
-				$extensions        = [ 'js', 'ts', 'tsx' ];
-
-				foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $test_path ) ) as $file ) {
-					if ( $file->isDir() || ! in_array( $file->getExtension(), $extensions, true ) ) {
-						continue;
-					}
-					$possible_pw_files[] = $file->getPathname();
+				// Validate test files based on test type.
+				if ( $test_type === 'e2e' ) {
+					$this->validate_e2e_tests( $test_path );
+				} elseif ( $test_type === 'performance' ) {
+					$this->validate_performance_tests( $test_path );
 				}
 
-				// Fail: No JS files in the tests directory.
-				if ( empty( $possible_pw_files ) ) {
-					throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found.' );
-				}
-
-				// Check that at least one of these files is actually PW.
-				$pw_files = array_filter( $possible_pw_files, static function ( $file ) {
-					$contents = file_get_contents( $file, false, null, 0, 4 * 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
-
-					return str_contains( $contents, '@playwright' );
-				} );
-
-				// Fail: None of the JS files are Playwright.
-				if ( empty( $pw_files ) ) {
-					throw new \RuntimeException( 'No Playwright test found.' );
-				}
-
-				$zip_to_upload = sys_get_temp_dir() . '/' . uniqid( 'e2e-test-' ) . '.zip';
+				$zip_to_upload = sys_get_temp_dir() . '/' . uniqid( $test_type . '-test-' ) . '.zip';
 
 				/*
 				 * If it's a directory, we need to zip it, excluding disallowed files such as:
@@ -158,6 +137,87 @@ class UploadTestTagsCommand extends Command {
 		$output->writeln( sprintf( '<info>Tests updated for extension \'%s\' successfully.</info>', $extension ) );
 
 		return Command::SUCCESS;
+	}
+
+	/**
+	 * Validates E2E test files (Playwright).
+	 *
+	 * @param string $test_path The path to the test directory.
+	 * @throws \RuntimeException If validation fails.
+	 */
+	private function validate_e2e_tests( string $test_path ): void {
+		// Check if at least one ".js", ".ts" or ".tsx" file exists in the tests directory.
+		$possible_pw_files = [];
+		$extensions        = [ 'js', 'ts', 'tsx' ];
+
+		foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $test_path ) ) as $file ) {
+			if ( $file->isDir() || ! in_array( $file->getExtension(), $extensions, true ) ) {
+				continue;
+			}
+			$possible_pw_files[] = $file->getPathname();
+		}
+
+		// Fail: No JS files in the tests directory.
+		if ( empty( $possible_pw_files ) ) {
+			throw new \RuntimeException( 'No ".js", ".ts" or ".tsx" file found.' );
+		}
+
+		// Check that at least one of these files is actually PW.
+		$pw_files = array_filter( $possible_pw_files, static function ( $file ) {
+			$contents = file_get_contents( $file, false, null, 0, 4 * 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+			return str_contains( $contents, '@playwright' );
+		} );
+
+		// Fail: None of the JS files are Playwright.
+		if ( empty( $pw_files ) ) {
+			throw new \RuntimeException( 'No Playwright test found.' );
+		}
+	}
+
+	/**
+	 * Validates Performance test files (k6).
+	 *
+	 * @param string $test_path The path to the test directory.
+	 * @throws \RuntimeException If validation fails.
+	 */
+	private function validate_performance_tests( string $test_path ): void {
+		// Check if at least one ".k6.js" file exists.
+		$possible_k6_files = [];
+
+		foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $test_path ) ) as $file ) {
+			if ( $file->isDir() ) {
+				continue;
+			}
+			
+			// Look for k6 test files (*.k6.js).
+			if ( preg_match( '/\.k6\.js$/', $file->getFilename() ) ) {
+				$possible_k6_files[] = $file->getPathname();
+			}
+		}
+
+		// Fail: No k6 files found.
+		if ( empty( $possible_k6_files ) ) {
+			throw new \RuntimeException( 'No ".k6.js" file found.' );
+		}
+
+		// Check that at least one of these files is actually a k6 test.
+		$k6_files = array_filter( $possible_k6_files, static function ( $file ) {
+			$contents = file_get_contents( $file, false, null, 0, 4 * 1024 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+
+			// Check for k6 imports or exports (common k6 patterns).
+			return str_contains( $contents, 'from "k6"' ) || 
+			       str_contains( $contents, 'from \'k6\'' ) ||
+			       str_contains( $contents, 'import http from "k6/http"' ) ||
+			       str_contains( $contents, 'import { check' ) ||
+			       str_contains( $contents, 'export let options' ) ||
+			       str_contains( $contents, 'export default function' );
+		} );
+
+		// Fail: None of the k6 files are valid k6 tests.
+		if ( empty( $k6_files ) ) {
+			throw new \RuntimeException( 'No valid k6 test found.' );
+		}
 	}
 
 	/**

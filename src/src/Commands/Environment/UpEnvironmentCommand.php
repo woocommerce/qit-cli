@@ -10,7 +10,9 @@ use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
+use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\EnvironmentVersionResolver;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
 use QIT_CLI\PluginDependencies;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
@@ -23,6 +25,9 @@ class UpEnvironmentCommand extends DynamicCommand {
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
 
+	/** @var PerformanceEnvironment */
+	protected $performance_environment;
+
 	/** @var Cache */
 	protected $cache;
 
@@ -34,8 +39,9 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
+	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
 		$this->e2e_environment = $e2e_environment;
+		$this->performance_environment = $performance_environment;
 		$this->cache           = $cache;
 		$this->output          = $output;
 		$this->tunnel_runner   = $tunnel_runner;
@@ -55,6 +61,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		$this
 			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
+			->addOption( 'environment_type', null, InputOption::VALUE_OPTIONAL, 'The type of environment to create. Valid values: "e2e", "performance".', 'e2e' )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", "rc", or a version number.', 'stable' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", "rc", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
@@ -193,6 +200,19 @@ HELP
 			);
 	}
 
+	/**
+	 * Get the appropriate environment instance based on the environment type.
+	 */
+	protected function get_environment( string $environment_type ): Environment {
+		switch ( $environment_type ) {
+			case 'performance':
+				return $this->performance_environment;
+			case 'e2e':
+			default:
+				return $this->e2e_environment;
+		}
+	}
+
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
@@ -200,14 +220,20 @@ HELP
 			return Command::FAILURE;
 		}
 
+		$environment_type        = $input->getOption( 'environment_type' );
 		$woo                     = $input->getOption( 'woo' );
 		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
 		$skip_activating_themes  = $input->getOption( 'skip_activating_themes' );
 		$input->setOption( 'woo', null );
 		$input->setOption( 'skip_activating_plugins', null );
 		$input->setOption( 'skip_activating_themes', null );
+		$input->setOption( 'environment_type', null );
 		$this->parse_env_vars( $input->getOption( 'env' ), $input->getOption( 'env_file' ) );
 
+		// Set the environment type for EnvConfigLoader.
+		putenv( "QIT_ENVIRONMENT_TYPE=$environment_type" );
+
+		$environment = $this->get_environment( $environment_type );
 		$tunnel = TunnelRunner::get_tunnel_value( $input );
 
 		try {
@@ -253,11 +279,13 @@ HELP
 		}
 
 		if ( $skip_activating_plugins ) {
-			$this->e2e_environment->set_skip_activating_plugins( true );
+			/** @var E2EEnvironment|PerformanceEnvironment $environment */
+			$environment->set_skip_activating_plugins( true );
 		}
 
 		if ( $skip_activating_themes ) {
-			$this->e2e_environment->set_skip_activating_themes( true );
+			/** @var E2EEnvironment|PerformanceEnvironment $environment */
+			$environment->set_skip_activating_themes( true );
 		}
 
 		if ( ! empty( $input->getOption( 'config' ) ) ) {
@@ -288,7 +316,7 @@ HELP
 			$this->output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT ) );
 		}
 
-		$this->e2e_environment->init( $env_info );
+		$environment->init( $env_info );
 
 		// Helper utility to test the environment.
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
@@ -298,7 +326,7 @@ HELP
 		}
 
 		// "up_and_test" is when we are using an environment to run a custom test. "up" is spinning up the environment on-demand.
-		$this->e2e_environment->up( getenv( 'QIT_UP_AND_TEST' ) ? 'up_and_test' : 'up' );
+		$environment->up( getenv( 'QIT_UP_AND_TEST' ) ? 'up_and_test' : 'up' );
 
 		if ( $input->getOption( 'json' ) ) {
 			$output->write( json_encode( $env_info ) );

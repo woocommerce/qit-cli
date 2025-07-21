@@ -7,6 +7,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
+use QIT_CLI\Environment\Extension;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
@@ -147,9 +148,19 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$options        = $this->parse_options( $input );
 		$env_up_options = $options['env_up'];
 
-		// Add SUT as a plugin.
-		$plugins                    = $input->getOption( 'plugin' ) ?: [];
-		$plugins[]                  = $sut;
+		// Add SUT as a plugin with proper extension structure.
+		$plugins = $input->getOption( 'plugin' ) ?: [];
+		
+		// Create structured extension definition like activation tests
+		$sut_extension = [
+			'slug'      => $sut,
+			'source'    => $input->getOption( 'source' ) ?: $sut,
+			'action'    => Extension::ACTIONS['bootstrap'],
+			'test_tags' => [ $input->getOption( 'test_tag' ) ?: 'default' ],
+			'priority'  => Extension::PRIORITY_LOW,
+		];
+		
+		$plugins[]                  = json_encode( $sut_extension );
 		$env_up_options['--plugin'] = $plugins;
 
 		// Add source if provided.
@@ -158,8 +169,9 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		}
 
 		// Common options.
-		$env_up_options['--json']   = true;
-		$env_up_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
+		$env_up_options['--environment_type'] = 'performance';
+		$env_up_options['--json']            = true;
+		$env_up_options['--tunnel']          = TunnelRunner::get_tunnel_value( $input );
 
 		// Verbosity.
 		if ( $input->getOption( 'verbose' ) ) {

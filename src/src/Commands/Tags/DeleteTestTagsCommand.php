@@ -42,8 +42,8 @@ class DeleteTestTagsCommand extends Command {
 		$test_tag  = $input->getArgument( 'test_tag' );
 		$test_type = $input->getArgument( 'test_type' );
 
-		// Early bail: We only support E2E for now.
-		if ( $test_type !== 'e2e' ) {
+		// Early bail: We only support E2E and Performance for now.
+		if ( $test_type !== 'e2e' && $test_type !== 'performance' ) {
 			$output->writeln( '<error>Invalid test type.</error>' );
 
 			return Command::FAILURE;

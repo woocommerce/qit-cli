@@ -58,6 +58,14 @@ class PerformanceEnvironment extends Environment {
 		// Add performance-specific nginx optimizations.
 		$qit_conf_contents .= $this->get_performance_nginx_config();
 		file_put_contents( $qit_conf, $qit_conf_contents );
+
+		// Update PHP configuration with environment ID.
+		$qit_ini = $this->env_info->temporary_env . '/docker/php-fpm/qit.ini';
+		if ( file_exists( $qit_ini ) ) {
+			$qit_ini_contents = file_get_contents( $qit_ini );
+			$qit_ini_contents = str_replace( '##QIT_ENV_ID##', $this->env_info->env_id, $qit_ini_contents );
+			file_put_contents( $qit_ini, $qit_ini_contents );
+		}
 	}
 
 	/**
@@ -65,45 +73,85 @@ class PerformanceEnvironment extends Environment {
 	 */
 	private function get_performance_nginx_config(): string {
 		return "\n\n# Performance test optimizations\n" .
-			"keepalive_timeout 65;\n" .
-			"keepalive_requests 1000;\n" .
-			"client_max_body_size 64M;\n" .
-			"fastcgi_read_timeout 300s;\n" .
-			"fastcgi_send_timeout 300s;\n";
+			"keepalive_requests 1000;\n";
+	}
+
+	public function up( string $type = 'up' ): void {
+		if ( ! in_array( $type, [ 'up', 'up_and_test' ], true ) ) {
+			throw new \InvalidArgumentException( 'Invalid type: ' . $type );
+		}
+
+		try {
+			App::make( \QIT_CLI\Environment\Docker::class )->find_docker();
+		} catch ( \Exception ) {
+			throw new \RuntimeException( 'QIT needs Docker to be able to process this command.' );
+		}
+
+		// Start the benchmark.
+		$start = microtime( true );
+
+		// Download the performance environment.
+		$this->environment_downloader->maybe_download( 'performance' );
+		$this->maybe_create_cache_dir();
+		$this->copy_environment();
+		$this->environment_monitor->environment_added_or_updated( $this->env_info );
+
+		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
+			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
+		}
+
+		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+
+		if ( $type === 'up_and_test' ) {
+			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes, 'performance' );
+		}
+
+		$this->output->writeln( '<info>Starting Docker Environment...</info>' );
+		$this->generate_docker_compose();
+		$this->post_generate_docker_compose();
+		$this->up_docker_compose();
+		$this->post_up();
+
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( 'Server started in ' . round( microtime( true ) - $start, 2 ) . ' seconds' );
+		}
+
+		$this->additional_output();
 	}
 
 	protected function post_up(): void {
-		$this->setup_site_url_and_ports();
+		if ( $this->env_info->tunnel ) {
+			// Host port.
+			$this->env_info->nginx_port = (string) $this->get_nginx_port();
+
+			$site_url = App::make( TunnelRunner::class )->start_tunnel( "http://localhost:{$this->env_info->nginx_port}/", $this->env_info->env_id );
+
+			$this->env_info->domain     = parse_url( $site_url, PHP_URL_HOST );
+			$this->env_info->nginx_port = (string) parse_url( $site_url, PHP_URL_PORT );
+
+			// Site URL with explicit port.
+			$this->env_info->site_url = sprintf( $site_url );
+		} else {
+			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+				// Inside docker, the port is always 80 (that's what Nginx is listening to).
+				$this->env_info->nginx_port = '80';
+
+				// Site URL without explicit port.
+				$this->env_info->site_url = sprintf( 'http://%s', $this->env_info->domain );
+			} else {
+				// Host port.
+				$this->env_info->nginx_port = (string) $this->get_nginx_port();
+
+				// Site URL with explicit port.
+				$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+			}
+		}
+
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
 		$this->install_php_extensions();
 		$this->setup_wordpress();
 		$this->activate_plugins_and_themes();
-	}
-
-	/**
-	 * Setup site URL and ports based on tunnel and environment configuration.
-	 */
-	private function setup_site_url_and_ports(): void {
-		if ( $this->env_info->tunnel ) {
-			$this->env_info->nginx_port = (string) $this->get_nginx_port();
-			$site_url                   = App::make( TunnelRunner::class )->start_tunnel(
-				"http://localhost:{$this->env_info->nginx_port}/",
-				$this->env_info->env_id
-			);
-
-			$this->env_info->domain     = parse_url( $site_url, PHP_URL_HOST );
-			$this->env_info->nginx_port = (string) parse_url( $site_url, PHP_URL_PORT );
-			$this->env_info->site_url   = $site_url;
-		} else {
-			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
-				$this->env_info->nginx_port = '80';
-				$this->env_info->site_url   = sprintf( 'http://%s', $this->env_info->domain );
-			} else {
-				$this->env_info->nginx_port = (string) $this->get_nginx_port();
-				$this->env_info->site_url   = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
-			}
-		}
 	}
 
 	/**
@@ -221,7 +269,6 @@ class PerformanceEnvironment extends Environment {
 	}
 
 	protected function additional_output(): void {
-		global $argv;
 		$io = new SymfonyStyle( App::make( InputInterface::class ), $this->output );
 
 		if ( $this->output->isVerbose() ) {
@@ -233,7 +280,7 @@ class PerformanceEnvironment extends Environment {
 			} else {
 				$volumes = [];
 
-				foreach ( $this->volumes as $k => $v ) {
+				foreach ( $this->volumes as $v ) {
 					$volumes[] = [ $v['local'], $v['in_container'] ];
 				}
 

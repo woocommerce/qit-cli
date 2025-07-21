@@ -28,12 +28,10 @@ class PerformanceTestManager {
 	}
 
 	public function run_tests( PerformanceEnvInfo $env_info ): int {
-		$this->ensure_default_tests( $env_info );
-
 		$test_result = new PerformanceTestResult( $env_info );
 
 		// Run K6 performance tests.
-		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
+		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests ?? [], $test_result );
 
 		// Store exit code and set status based on how test finished.
 		$test_result->add_metric( 'k6_exit_code', $exit_status_code );
@@ -46,7 +44,7 @@ class PerformanceTestManager {
 		}
 
 		// Notify test finished and get final status.
-		[ $report_url, $exit_status_code_override ] = $this->notifier->notify_test_finished( $test_result );
+		[ , $exit_status_code_override ] = $this->notifier->notify_test_finished( $test_result );
 
 		// Display results summary with final status.
 		$this->display_results_summary( $test_result );
@@ -57,28 +55,6 @@ class PerformanceTestManager {
 
 		// Use override exit code if provided.
 		return $exit_status_code_override ?? $exit_status_code;
-	}
-
-	/**
-	 * Ensure default tests are configured if none are specified.
-	 */
-	private function ensure_default_tests( PerformanceEnvInfo $env_info ): void {
-		if ( ! empty( $env_info->tests ) ) {
-			return;
-		}
-
-		$this->output->writeln( '<info>No specific performance tests configured. Running default performance test.</info>' );
-
-		$env_info->tests = [
-			[
-				'slug'                  => $env_info->sut_slug,
-				'test_tag'              => $env_info->test_tag ?: 'default',
-				'type'                  => $env_info->sut_type,
-				'action'                => 'activate',
-				'path_in_php_container' => '',
-				'path_in_host'          => '',
-			],
-		];
 	}
 
 	/**

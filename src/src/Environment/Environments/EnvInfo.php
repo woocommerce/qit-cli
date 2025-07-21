@@ -80,6 +80,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public $tunnel = false;
 
+	/** @var string The site URL, if any. */
+	public $site_url;
+
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this;
