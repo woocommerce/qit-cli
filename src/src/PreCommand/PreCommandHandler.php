@@ -125,6 +125,7 @@ class PreCommandHandler {
 	protected function get_test_option_mapping(): array {
 		return [
 			'phpstan_level' => 'phpstan_level',
+			'test_package'  => 'test_packages',
 		];
 	}
 }

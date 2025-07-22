@@ -1,37 +1,51 @@
 <?php
-// src/PreCommand/Pipeline/Stages/ResolveTestPackagesStage.php
 namespace QIT_CLI\PreCommand\Pipeline\Stages;
 
 use QIT_CLI\PreCommand\Pipeline\PipelineContext;
 use QIT_CLI\PreCommand\Pipeline\PipelineStage;
-use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
-use QIT_CLI\PreCommand\TestPackageResolver;
-use QIT_CLI\App;
+use QIT_CLI\PreCommand\Objects\TestPackage;
 
 class ResolveTestPackagesStage implements PipelineStage {
 
-	private TestPackageResolver $resolver;
-
-	public function __construct( ?TestPackageResolver $resolver = null ) {
-		$this->resolver = $resolver ?: App::make( TestPackageResolver::class );
-	}
-
 	public function process( PipelineContext $context ): PipelineContext {
-		$cmd = $context->command;
-		if ( ! $cmd instanceof LocalTestCommand ) {
-			return $context;
-		}
+		$cmd            = $context->command;
+		$resolved_cfg    = $context->get_resolved_config();
+		$input          = $context->input;
 
-		$resolved_config = $context->get( 'resolved_config' );
-		$test_type       = $cmd->get_test_type();
-		$profile         = $cmd->get_test_profile();
+		// -------- From profile (qit.json) ----------
+		$test_type  = method_exists( $cmd, 'get_test_type' ) ? $cmd->get_test_type() : 'e2e';
+		$profile    = method_exists( $cmd, 'get_test_profile' ) ? $cmd->get_test_profile() : 'default';
 
 		try {
-			$packages = $this->resolver->resolve( $resolved_config, $test_type, $profile );
+			$profile_cfg = $resolved_cfg->get_test_config( $test_type, $profile );
+			$packages_cfg = $profile_cfg['test_packages'] ?? [];
 		} catch ( \RuntimeException $e ) {
-			$packages = []; // no test config ⇒ no packages
+			$packages_cfg = [];
 		}
-		$context->set( 'test_packages', $packages );
+
+		// -------- From CLI -------------------------
+		$cli_specs = $input->getOption( 'test-package' ) ?? [];
+
+		// -------- Merge (CLI wins; de‑dupe on slug) --
+		$all_specs = array_merge( $packages_cfg, $cli_specs );
+
+		$seen  = [];
+		$final = [];
+		foreach ( $all_specs as $spec ) {
+			$tp = TestPackage::fromString( $spec );
+			if ( isset( $seen[ $tp->slug ] ) ) {
+				// if slug already present, overwrite only if coming from CLI
+				if ( in_array( $spec, $cli_specs, true ) ) {
+					$idx             = $seen[ $tp->slug ];
+					$final[ $idx ]   = $tp;
+				}
+				continue;
+			}
+			$seen[ $tp->slug ] = count( $final );
+			$final[]           = $tp;
+		}
+
+		$context->set( 'test_packages', $final );
 
 		return $context;
 	}

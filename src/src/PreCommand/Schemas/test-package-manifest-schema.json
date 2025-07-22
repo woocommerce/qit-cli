@@ -91,44 +91,32 @@
     },
     "lifecycle": {
       "type": "object",
-      "description": "Lifecycle hooks for test execution",
       "additionalProperties": false,
       "properties": {
-        "environment": {
+        "global": {
           "type": "object",
-          "description": "Environment-level lifecycle hooks (run once per test run)",
+          "description": "Commands that run ONCE per qit run; DB snapshot is taken after .setup",
           "additionalProperties": false,
           "properties": {
-            "setup": {
-              "$ref": "#/definitions/lifecycleCommands",
-              "description": "Commands to run when setting up the test environment"
-            },
-            "teardown": {
-              "$ref": "#/definitions/lifecycleCommands",
-              "description": "Commands to run when tearing down the test environment"
-            }
+            "setup":    { "$ref": "#/definitions/lifecycleCommands" },
+            "teardown": { "$ref": "#/definitions/lifecycleCommands" }
           }
         },
         "test": {
           "type": "object",
-          "description": "Test-level lifecycle hooks",
+          "description": "Hooks that execute for every test‑package invocation",
           "additionalProperties": false,
+          "allOf": [
+            { "anyOf": [ { "required": ["setup"] }, { "required": ["run"] } ] }
+          ],
           "properties": {
-            "setup": {
-              "$ref": "#/definitions/lifecycleCommands",
-              "description": "Commands to run before test execution"
-            },
-            "run": {
-              "$ref": "#/definitions/lifecycleCommands",
-              "description": "Commands to execute the tests"
-            },
-            "teardown": {
-              "$ref": "#/definitions/lifecycleCommands",
-              "description": "Commands to run after test execution"
-            }
+            "setup":    { "$ref": "#/definitions/lifecycleCommands" },
+            "run":      { "$ref": "#/definitions/lifecycleCommands" },
+            "teardown": { "$ref": "#/definitions/lifecycleCommands" }
           }
         }
-      }
+      },
+      "required": ["global", "test"]
     },
     "test_results": {
       "type": "object",

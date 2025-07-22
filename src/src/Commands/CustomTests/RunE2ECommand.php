@@ -85,6 +85,13 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
 			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+			->addOption(
+				'test-package',
+				null,
+				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Test packages to include (multiple values allowed)',
+				[]
+			)
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
 			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
