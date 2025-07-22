@@ -85,7 +85,7 @@ class QitJsonParser extends BaseJsonParser {
 		$this->parsed_config = $config;
 
 		// Add loaded test packages to the config (use manifest objects)
-		$this->parsed_config['test_packages'] = $this->loaded_manifest_objects;
+		$this->parsed_config['test_packages']         = $this->loaded_manifest_objects;
 		$this->parsed_config['test_package_metadata'] = $this->loaded_package_metadata;
 
 		$this->debug_log( '=== apply_business_logic completed ===' );
@@ -145,10 +145,10 @@ class QitJsonParser extends BaseJsonParser {
 			try {
 				$this->debug_log( "Attempting to parse test package at: $file_path" );
 				$manifest_object = $this->package_parser->parse( $file_path );
-				
+
 				// Store the manifest object
 				$this->loaded_manifest_objects[ $reference ] = $manifest_object;
-				
+
 				// Store metadata separately
 				$this->loaded_package_metadata[ $reference ] = [
 					'reference' => $reference,
@@ -156,9 +156,9 @@ class QitJsonParser extends BaseJsonParser {
 					'remote'    => false,
 					'path'      => $file_path,
 				];
-				
+
 				// Keep backward compatibility with array format
-				$this->loaded_packages[ $reference ] = $manifest_object->jsonSerialize();
+				$this->loaded_packages[ $reference ]              = $manifest_object->jsonSerialize();
 				$this->loaded_packages[ $reference ]['reference'] = $reference;
 				$this->loaded_packages[ $reference ]['local']     = true;
 				$this->loaded_packages[ $reference ]['path']      = $file_path;
@@ -167,9 +167,9 @@ class QitJsonParser extends BaseJsonParser {
 			}
 		} else {
 			// Remote reference - create stub
-			$stub = $this->create_remote_package_stub( $reference );
+			$stub                                = $this->create_remote_package_stub( $reference );
 			$this->loaded_packages[ $reference ] = $stub;
-			
+
 			// For remote packages, we don't have manifest objects yet, only metadata
 			$this->loaded_package_metadata[ $reference ] = [
 				'reference' => $reference,

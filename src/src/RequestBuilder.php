@@ -39,6 +39,9 @@ class RequestBuilder {
 	/** @var array<string> */
 	protected $additional_headers = [];
 
+	/** @var array */
+	protected $files = [];
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -145,6 +148,18 @@ class RequestBuilder {
 		return $this;
 	}
 
+	/**
+	 * @param string $field_name
+	 * @param string $file_path
+	 *
+	 * @return $this
+	 */
+	public function with_file( string $field_name, string $file_path ): self {
+		$this->files[ $field_name ] = $file_path;
+
+		return $this;
+	}
+
 	public function request(): string {
 		retry_request: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 		if ( defined( 'UNIT_TESTS' ) ) {
@@ -239,16 +254,28 @@ class RequestBuilder {
 				$curl_parameters[ CURLOPT_HTTPHEADER ] = $this->additional_headers;
 				break;
 			case 'POST':
-				$json_data                             = json_encode( $this->post_body );
-				$curl_parameters[ CURLOPT_POST ]       = true;
-				$curl_parameters[ CURLOPT_POSTFIELDS ] = $json_data;
-				$curl_parameters[ CURLOPT_HTTPHEADER ] = array_merge(
-					[
-						'Content-Type: application/json',
-						'Content-Length: ' . strlen( $json_data ),
-					],
-					$this->additional_headers
-				);
+				$curl_parameters[ CURLOPT_POST ] = true;
+
+				if ( ! empty( $this->files ) ) {
+					// Handle multipart/form-data for file uploads
+					$post_fields = $this->post_body;
+					foreach ( $this->files as $field_name => $file_path ) {
+						$post_fields[ $field_name ] = new \CURLFile( $file_path );
+					}
+					$curl_parameters[ CURLOPT_POSTFIELDS ] = $post_fields;
+					$curl_parameters[ CURLOPT_HTTPHEADER ] = $this->additional_headers;
+				} else {
+					// Handle JSON for regular requests
+					$json_data                             = json_encode( $this->post_body );
+					$curl_parameters[ CURLOPT_POSTFIELDS ] = $json_data;
+					$curl_parameters[ CURLOPT_HTTPHEADER ] = array_merge(
+						[
+							'Content-Type: application/json',
+							'Content-Length: ' . strlen( $json_data ),
+						],
+						$this->additional_headers
+					);
+				}
 				break;
 			default:
 				$curl_parameters[ CURLOPT_HTTPHEADER ]    = $this->additional_headers;

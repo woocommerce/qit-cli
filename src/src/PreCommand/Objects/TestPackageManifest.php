@@ -11,6 +11,9 @@ use InvalidArgumentException;
  * @see https://qit.woo.com/json-schema/test-package
  */
 final class TestPackageManifest implements \JsonSerializable {
+	private string $vendor;
+	private string $package;
+	private string $version;
 	/** @var string[] */
 	private array $tags;
 	private string $testType;
@@ -41,10 +44,14 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function __construct( array $payload ) {
 		// — Required —
-		if ( empty( $payload['test_type'] ) || empty( $payload['lifecycle'] ) ) {
-			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type" or "lifecycle".' );
+		if ( empty( $payload['test_type'] ) || empty( $payload['lifecycle'] ) ||
+			empty( $payload['vendor'] ) || empty( $payload['package'] ) || empty( $payload['version'] ) ) {
+			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "lifecycle", "vendor", "package", or "version".' );
 		}
 
+		$this->vendor      = $payload['vendor'];
+		$this->package     = $payload['package'];
+		$this->version     = $payload['version'];
 		$this->tags        = $payload['tags'] ?? [];
 		$this->testType    = $payload['test_type'];
 		$this->testDir     = $payload['test_dir'] ?? null;
@@ -56,12 +63,29 @@ final class TestPackageManifest implements \JsonSerializable {
 		$this->muPlugins   = $payload['mu_plugins'] ?? [];
 		$this->envVars     = $this->stringifyEnv( $payload['env_vars'] ?? [] );
 		$this->timeout     = (int) ( $payload['timeout'] ?? 1800 );
-		$this->retry       = $payload['retry'] ?? [ 'times' => 0, 'delay' => 0 ];
+		$this->retry       = $payload['retry'] ?? [
+			'times' => 0,
+			'delay' => 0,
+		];
 	}
 
+	/*
+	--------------------------------------------------------------------- */
+	/*
+		Simple getters                                                       */
 	/* --------------------------------------------------------------------- */
-	/*  Simple getters                                                       */
-	/* --------------------------------------------------------------------- */
+
+	public function getVendor(): string {
+		return $this->vendor;
+	}
+
+	public function getPackage(): string {
+		return $this->package;
+	}
+
+	public function getVersion(): string {
+		return $this->version;
+	}
 
 	public function getTags(): array {
 		return $this->tags;
@@ -107,8 +131,10 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->retry;
 	}
 
-	/* --------------------------------------------------------------------- */
-	/*  Convenience helpers                                                  */
+	/*
+	--------------------------------------------------------------------- */
+	/*
+		Convenience helpers                                                  */
 	/* --------------------------------------------------------------------- */
 
 	public function isE2E(): bool {
@@ -130,12 +156,17 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->lifecycle[ $phase ][ $hook ] ?? [];
 	}
 
-	/* --------------------------------------------------------------------- */
-	/*  JsonSerializable                                                     */
+	/*
+	--------------------------------------------------------------------- */
+	/*
+		JsonSerializable                                                     */
 	/* --------------------------------------------------------------------- */
 
 	public function jsonSerialize(): mixed {
 		return [
+			'vendor'       => $this->vendor,
+			'package'      => $this->package,
+			'version'      => $this->version,
 			'tags'         => $this->tags,
 			'test_type'    => $this->testType,
 			'test_dir'     => $this->testDir,
@@ -150,8 +181,10 @@ final class TestPackageManifest implements \JsonSerializable {
 		];
 	}
 
-	/* --------------------------------------------------------------------- */
-	/*  Internals                                                            */
+	/*
+	--------------------------------------------------------------------- */
+	/*
+		Internals                                                            */
 	/* --------------------------------------------------------------------- */
 
 	/** @param array<string,string|int|bool> $env */

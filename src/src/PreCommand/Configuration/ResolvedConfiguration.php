@@ -17,16 +17,16 @@ class ResolvedConfiguration {
 	public array $test_types         = [];
 	public array $groups             = [];
 	/** @var array<string,TestPackageManifest> */
-	public array $test_packages      = [];
+	public array $test_packages = [];
 	/** @var array<string,array> Package metadata (reference, local, remote, path, etc.) */
 	public array $test_package_metadata = [];
-	public array $resolved_plugins   = [];
-	public array $resolved_themes    = [];
-	public array $php_extensions     = [];
-	public array $required_secrets   = [];
-	public array $required_services  = [];
-	public array $metadata           = [];
-	public string $cache_dir         = '';
+	public array $resolved_plugins      = [];
+	public array $resolved_themes       = [];
+	public array $php_extensions        = [];
+	public array $required_secrets      = [];
+	public array $required_services     = [];
+	public array $metadata              = [];
+	public string $cache_dir            = '';
 
 	protected array $raw_config;
 
@@ -73,7 +73,7 @@ class ResolvedConfiguration {
 
 	/**
 	 * Get all test packages
-	 * 
+	 *
 	 * @return array<string,TestPackageManifest>
 	 */
 	public function getAllTestPackages(): array {
@@ -82,7 +82,7 @@ class ResolvedConfiguration {
 
 	/**
 	 * Get all test packages for a specific test configuration
-	 * 
+	 *
 	 * @return array<string,TestPackageManifest>
 	 */
 	public function get_test_packages_for_config( string $test_type, string $profile ): array {
@@ -214,23 +214,23 @@ class ResolvedConfiguration {
 	 */
 	public function export(): array {
 		return [
-			'sut'               => $this->sut,
+			'sut'                   => $this->sut,
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
-			'sut_extension'     => serialize( $this->sut_extension ),
-			'environments'      => $this->environments,
-			'test_types'        => $this->test_types,
-			'groups'            => $this->groups,
-			'test_packages'     => array_map( static fn ( TestPackageManifest $m ) => $m->jsonSerialize(), $this->test_packages ),
+			'sut_extension'         => serialize( $this->sut_extension ),
+			'environments'          => $this->environments,
+			'test_types'            => $this->test_types,
+			'groups'                => $this->groups,
+			'test_packages'         => array_map( static fn ( TestPackageManifest $m ) => $m->jsonSerialize(), $this->test_packages ),
 			'test_package_metadata' => $this->test_package_metadata,
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
-			'resolved_plugins'  => array_map( 'serialize', $this->resolved_plugins ),
+			'resolved_plugins'      => array_map( 'serialize', $this->resolved_plugins ),
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
-			'resolved_themes'   => array_map( 'serialize', $this->resolved_themes ),
-			'required_secrets'  => $this->required_secrets,
-			'required_services' => $this->required_services,
-			'php_extensions'    => $this->php_extensions,
-			'metadata'          => $this->metadata,
-			'cache_dir'         => $this->cache_dir,
+			'resolved_themes'       => array_map( 'serialize', $this->resolved_themes ),
+			'required_secrets'      => $this->required_secrets,
+			'required_services'     => $this->required_services,
+			'php_extensions'        => $this->php_extensions,
+			'metadata'              => $this->metadata,
+			'cache_dir'             => $this->cache_dir,
 		];
 	}
 
@@ -242,11 +242,11 @@ class ResolvedConfiguration {
 
 		$config->sut = $data['sut'];
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Used for object caching
-		$config->sut_extension = unserialize( $data['sut_extension'] );
-		$config->environments  = $data['environments'];
-		$config->test_types    = $data['test_types'];
-		$config->groups        = $data['groups'];
-		$config->test_packages = array_map( static fn ( array $a ) => new TestPackageManifest( $a ), $data['test_packages'] );
+		$config->sut_extension         = unserialize( $data['sut_extension'] );
+		$config->environments          = $data['environments'];
+		$config->test_types            = $data['test_types'];
+		$config->groups                = $data['groups'];
+		$config->test_packages         = array_map( static fn ( array $a ) => new TestPackageManifest( $a ), $data['test_packages'] );
 		$config->test_package_metadata = $data['test_package_metadata'] ?? [];
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Used for object caching
 		$config->resolved_plugins = array_map( 'unserialize', $data['resolved_plugins'] );

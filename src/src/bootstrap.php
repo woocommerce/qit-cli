@@ -39,6 +39,7 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
 use QIT_CLI\Commands\Tags\ListTestTagsCommand;
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\TestPackages\PublishCommand;
 use QIT_CLI\Commands\TestE2ECommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
@@ -240,6 +241,9 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( ListTestTagsCommand::class ) );
 	$application->add( $container->make( UploadTestTagsCommand::class ) );
 	$application->add( $container->make( DeleteTestTagsCommand::class ) );
+
+	// Test Package commands.
+	$application->add( $container->make( PublishCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( ScaffoldE2ECommand::class ) );

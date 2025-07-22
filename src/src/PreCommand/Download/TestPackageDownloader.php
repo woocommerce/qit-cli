@@ -104,10 +104,10 @@ class TestPackageDownloader {
 	 * Fetch download URLs from QIT Manager
 	 */
 	protected function fetch_download_urls( array $references ): array {
-		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/package-download-urls' ) )
+		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'packages' => implode( ',', $references ),
+				'references' => array_values( $references ),
 			] )
 			->request();
 
@@ -117,7 +117,13 @@ class TestPackageDownloader {
 			throw new \RuntimeException( 'Invalid response from package download API' );
 		}
 
-		return $data['urls'];
+		// Response is now keyed by full reference, so return as-is
+		$urls = [];
+		foreach ( $data['urls'] as $ref => $info ) {
+			$urls[ $ref ] = $info;
+		}
+
+		return $urls;
 	}
 
 	/**
@@ -126,7 +132,12 @@ class TestPackageDownloader {
 	 * @return TestPackageManifest
 	 */
 	protected function download_package( string $reference, array $url_info, string $cache_dir ): TestPackageManifest {
-		$cache_key = 'test_package_' . md5( $reference . '_' . ( $url_info['version'] ?? 'latest' ) );
+		// Use checksum in cache key for cache busting
+		$cache_suffix = $url_info['version'] ?? 'latest';
+		if ( isset( $url_info['checksum'] ) ) {
+			$cache_suffix .= '_' . substr( $url_info['checksum'], 0, 8 ); // Use first 8 chars of checksum
+		}
+		$cache_key = 'test_package_' . md5( $reference . '_' . $cache_suffix );
 		$cached    = $this->cache->get( $cache_key );
 
 		if ( $cached && is_array( $cached ) && isset( $cached['manifest'] ) ) {
@@ -175,7 +186,7 @@ class TestPackageDownloader {
 		$manifest_object = $this->manifest_parser->parse( $manifest_file );
 
 		// Prepare metadata separately
-		$metadata = [
+		$metadata                             = [
 			'reference'       => $reference,
 			'remote'          => true,
 			'downloaded_path' => $package_dir,

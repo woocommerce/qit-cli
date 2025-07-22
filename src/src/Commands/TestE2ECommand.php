@@ -308,21 +308,21 @@ class TestE2ECommand extends QITCommand {
 	 */
 	protected function get_test_packages(): array {
 		$resolved_config = $this->get_resolved_config();
-		$profile = $this->input->getOption( 'profile' ) ?? 'default';
-		
+		$profile         = $this->input->getOption( 'profile' ) ?? 'default';
+
 		// Get test packages for the current test type and profile
 		$test_packages = $resolved_config->get_test_packages_for_config( 'e2e', $profile );
-		
+
 		// Convert TestPackageManifest objects to arrays for backward compatibility
 		$packages = [];
 		foreach ( $test_packages as $ref => $manifest ) {
 			$packages[ $ref ] = $manifest->jsonSerialize();
-			
+
 			// Add metadata from resolved config
-			$metadata = $resolved_config->test_package_metadata[ $ref ] ?? [];
+			$metadata         = $resolved_config->test_package_metadata[ $ref ] ?? [];
 			$packages[ $ref ] = array_merge( $packages[ $ref ], $metadata );
 		}
-		
+
 		return $packages;
 	}
 
@@ -331,8 +331,8 @@ class TestE2ECommand extends QITCommand {
 	 */
 	protected function get_test_configuration(): array {
 		$resolved_config = $this->get_resolved_config();
-		$profile = $this->input->getOption( 'profile' ) ?? 'default';
-		
+		$profile         = $this->input->getOption( 'profile' ) ?? 'default';
+
 		return $resolved_config->get_test_config( 'e2e', $profile );
 	}
 
@@ -341,8 +341,8 @@ class TestE2ECommand extends QITCommand {
 	 */
 	protected function get_environment_config(): array {
 		$resolved_config = $this->get_resolved_config();
-		$environment = $this->input->getOption( 'environment' ) ?? 'default';
-		
+		$environment     = $this->input->getOption( 'environment' ) ?? 'default';
+
 		return $resolved_config->get_environment( $environment );
 	}
 
@@ -351,18 +351,18 @@ class TestE2ECommand extends QITCommand {
 	 */
 	protected function check_secrets(): void {
 		$resolved_config = $this->get_resolved_config();
-		
+
 		if ( ! $resolved_config->requires_secrets() ) {
 			return;
 		}
-		
+
 		$missing_secrets = [];
 		foreach ( $resolved_config->get_required_secrets() as $secret ) {
 			if ( empty( getenv( $secret ) ) ) {
 				$missing_secrets[] = $secret;
 			}
 		}
-		
+
 		if ( ! empty( $missing_secrets ) ) {
 			$this->output->writeln( '<error>Missing required secrets:</error>' );
 			foreach ( $missing_secrets as $secret ) {
@@ -377,7 +377,7 @@ class TestE2ECommand extends QITCommand {
 	 */
 	protected function output_config_summary(): void {
 		$resolved_config = $this->get_resolved_config();
-		
+
 		$this->output->writeln( '<info>Configuration Summary:</info>' );
 		$this->output->writeln( sprintf( '  Test Packages: %d', count( $resolved_config->getAllTestPackages() ) ) );
 		$this->output->writeln( sprintf( '  Environments: %d', count( $resolved_config->environments ) ) );

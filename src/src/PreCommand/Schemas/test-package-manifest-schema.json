@@ -3,13 +3,34 @@
   "title": "QIT Test Package Schema",
   "description": "Schema for QIT test package manifest files",
   "type": "object",
-  "required": ["$schema", "test_type", "lifecycle"],
+  "required": ["$schema", "test_type", "lifecycle", "vendor", "package", "version"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
       "type": "string",
       "const": "https://qit.woo.com/json-schema/test-package",
       "description": "Schema reference for IDE support"
+    },
+    "vendor": {
+      "type": "string",
+      "description": "Package vendor/organization name",
+      "pattern": "^[a-zA-Z0-9_.-]+$",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "package": {
+      "type": "string", 
+      "description": "Package name",
+      "pattern": "^[a-zA-Z0-9_.-]+$",
+      "minLength": 1,
+      "maxLength": 64
+    },
+    "version": {
+      "type": "string",
+      "description": "Package version (semantic version)",
+      "pattern": "^[a-zA-Z0-9_.-]+$",
+      "minLength": 1,
+      "maxLength": 32
     },
     "tags": {
       "type": "array",

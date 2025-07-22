@@ -16,11 +16,14 @@ class TestPackage implements \JsonSerializable {
 	}
 
 	public static function fromString( string $spec ): self {
-		[$slug, $version] = explode( ':', $spec, 2 ) + [1 => 'latest'];
+		[$slug, $version] = explode( ':', $spec, 2 ) + [ 1 => 'latest' ];
 		return new self( $slug, $version );
 	}
 
 	public function jsonSerialize(): mixed {
-		return [ 'slug' => $this->slug, 'version' => $this->version ];
+		return [
+			'slug'    => $this->slug,
+			'version' => $this->version,
+		];
 	}
 }

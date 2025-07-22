@@ -13,13 +13,13 @@ class ResolveTestPackagesStage implements PipelineStage {
 	}
 
 	public function process( PipelineContext $context ): PipelineContext {
-		$cmd            = $context->command;
-		$resolved_cfg   = $context->get_resolved_config();
-		$input          = $context->input;
+		$cmd          = $context->command;
+		$resolved_cfg = $context->get_resolved_config();
+		$input        = $context->input;
 
 		// -------- From profile (qit.json) ----------
-		$test_type  = method_exists( $cmd, 'get_test_type' ) ? $cmd->get_test_type() : 'e2e';
-		$profile    = method_exists( $cmd, 'get_test_profile' ) ? $cmd->get_test_profile() : 'default';
+		$test_type = method_exists( $cmd, 'get_test_type' ) ? $cmd->get_test_type() : 'e2e';
+		$profile   = method_exists( $cmd, 'get_test_profile' ) ? $cmd->get_test_profile() : 'default';
 
 		// -------------------------------------------------------------
 		// 1. Let TestPackageResolver handle downloading & resolving
@@ -27,7 +27,7 @@ class ResolveTestPackagesStage implements PipelineStage {
 		$resolved_packages = $this->resolver->resolve( $resolved_cfg, $test_type, $profile );
 
 		// Persist manifests & metadata on ResolvedConfiguration
-		$resolved_cfg->test_packages        = array_merge( $resolved_cfg->test_packages, $resolved_packages );
+		$resolved_cfg->test_packages         = array_merge( $resolved_cfg->test_packages, $resolved_packages );
 		$resolved_cfg->test_package_metadata = array_merge( $resolved_cfg->test_package_metadata, $this->resolver->getMetadata() );
 
 		// -------------------------------------------------------------
