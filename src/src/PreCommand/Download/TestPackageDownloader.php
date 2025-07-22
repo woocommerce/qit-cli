@@ -26,7 +26,7 @@ class TestPackageDownloader {
 	/** @var TestPackageManifestParser */
 	protected $manifest_parser;
 
-	/** @var array<string,array> */
+	/** @var array<string,array<string,mixed>> */
 	protected array $package_metadata = [];
 
 	public function __construct(
@@ -44,8 +44,8 @@ class TestPackageDownloader {
 	/**
 	 * Download multiple test packages
 	 *
-	 * @param array<string, array> $packages Map of reference => package info.
-	 * @param string               $cache_dir Cache directory.
+	 * @param array<string, array<string,mixed>> $packages Map of reference => package info.
+	 * @param string                             $cache_dir Cache directory.
 	 *
 	 * @return array<string,TestPackageManifest> Map of reference => manifest objects
 	 */
@@ -58,29 +58,21 @@ class TestPackageDownloader {
 		$manifests = [];
 
 		// Get download URLs from QIT Manager
+		$this->output->writeln( 'Fetching download URLs...' );
 		$download_urls = $this->fetch_download_urls( array_keys( $packages ) );
 
-		foreach ( $packages as $ref => $package ) {
-			if ( ! isset( $download_urls[ $ref ] ) ) {
-				$this->output->writeln( "<warning>No download URL found for package '$ref'</warning>" );
-				continue;
+		// Download each package
+		foreach ( $packages as $reference => $package_info ) {
+			if ( ! isset( $download_urls[ $reference ] ) ) {
+				throw new \RuntimeException( "No download URL found for package '$reference'" );
 			}
 
-			try {
-				$manifest          = $this->download_package( $ref, $download_urls[ $ref ], $cache_dir );
-				$manifests[ $ref ] = $manifest;
-			} catch ( \Exception $e ) {
-				$this->output->writeln( "<error>Failed to download package '$ref': {$e->getMessage()}</error>" );
-			}
+			$this->output->writeln( "Downloading package: $reference" );
+			$manifests[ $reference ] = $this->download_package( $reference, $download_urls[ $reference ], $cache_dir );
 		}
 
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf(
-				'Downloaded %d test packages in %f seconds.',
-				count( $manifests ),
-				microtime( true ) - $start
-			) );
-		}
+		$elapsed = round( microtime( true ) - $start, 2 );
+		$this->output->writeln( 'Downloaded ' . count( $manifests ) . " packages in {$elapsed}s" );
 
 		return $manifests;
 	}
@@ -102,6 +94,9 @@ class TestPackageDownloader {
 
 	/**
 	 * Fetch download URLs from QIT Manager
+	 *
+	 * @param string[] $references
+	 * @return array<string,array<string,mixed>>
 	 */
 	protected function fetch_download_urls( array $references ): array {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
@@ -129,6 +124,7 @@ class TestPackageDownloader {
 	/**
 	 * Download and extract a test package
 	 *
+	 * @param array<string,mixed> $url_info
 	 * @return TestPackageManifest
 	 */
 	protected function download_package( string $reference, array $url_info, string $cache_dir ): TestPackageManifest {
@@ -260,7 +256,9 @@ class TestPackageDownloader {
 	}
 
 	/**
-	 * Get package info from repository
+	 * Get package information from API
+	 *
+	 * @return array<string,mixed>
 	 */
 	public function get_package_info( string $reference ): array {
 		$cache_key = 'package_info_' . md5( $reference );
@@ -291,6 +289,9 @@ class TestPackageDownloader {
 
 	/**
 	 * Search for packages
+	 *
+	 * @param array<string,mixed> $filters
+	 * @return array<string,mixed>
 	 */
 	public function search( string $query, array $filters = [] ): array {
 		$params = [

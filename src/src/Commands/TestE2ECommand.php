@@ -305,6 +305,8 @@ class TestE2ECommand extends QITCommand {
 
 	/**
 	 * Get all test packages for the current profile
+	 *
+	 * @return array<string,mixed>
 	 */
 	protected function get_test_packages(): array {
 		$resolved_config = $this->get_resolved_config();
@@ -328,6 +330,8 @@ class TestE2ECommand extends QITCommand {
 
 	/**
 	 * Get test configuration for the current profile
+	 *
+	 * @return array<string,mixed>
 	 */
 	protected function get_test_configuration(): array {
 		$resolved_config = $this->get_resolved_config();
@@ -338,6 +342,8 @@ class TestE2ECommand extends QITCommand {
 
 	/**
 	 * Get environment configuration
+	 *
+	 * @return array<string,mixed>
 	 */
 	protected function get_environment_config(): array {
 		$resolved_config = $this->get_resolved_config();
@@ -379,7 +385,7 @@ class TestE2ECommand extends QITCommand {
 		$resolved_config = $this->get_resolved_config();
 
 		$this->output->writeln( '<info>Configuration Summary:</info>' );
-		$this->output->writeln( sprintf( '  Test Packages: %d', count( $resolved_config->getAllTestPackages() ) ) );
+		$this->output->writeln( sprintf( '  Test Packages: %d', count( $resolved_config->get_all_test_packages() ) ) );
 		$this->output->writeln( sprintf( '  Environments: %d', count( $resolved_config->environments ) ) );
 		$this->output->writeln( sprintf( '  Test Types: %d', count( $resolved_config->test_types ) ) );
 		$this->output->writeln( '' );

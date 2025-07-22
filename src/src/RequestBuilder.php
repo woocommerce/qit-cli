@@ -39,7 +39,7 @@ class RequestBuilder {
 	/** @var array<string> */
 	protected $additional_headers = [];
 
-	/** @var array */
+	/** @var array<string,mixed> */
 	protected $files = [];
 
 	public function __construct( string $url = '' ) {

@@ -81,6 +81,8 @@ class PublishCommand extends QITCommand {
 
 	/**
 	 * Resolve reference and determine owner (Woo extension or free vendor)
+	 *
+	 * @return array<string,mixed>
 	 */
 	private function resolve_reference( string $reference ): array {
 		// Parse reference format: vendor/pkg:version
@@ -184,6 +186,9 @@ class PublishCommand extends QITCommand {
 
 	/**
 	 * Upload package to Manager endpoint
+	 *
+	 * @param array<string,mixed> $resolved_reference
+	 * @return array<string,mixed>
 	 */
 	private function upload_to_manager( array $resolved_reference, string $zip_path, string $test_type, bool $force, OutputInterface $output ): array {
 		$output->writeln( 'Uploading to QIT Manager...' );

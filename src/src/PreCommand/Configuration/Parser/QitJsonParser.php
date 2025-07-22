@@ -10,9 +10,9 @@ class QitJsonParser extends BaseJsonParser {
 	private TestPackageManifestParser $package_parser;
 	/** @var array Cache for loaded test packages (arrays for backward compatibility). */
 	private array $loaded_packages = [];
-	/** @var array<string,TestPackageManifest> Cache for loaded test package manifest objects. */
+	/** @var array<string,\QIT_CLI\PreCommand\Objects\TestPackageManifest> Cache for loaded test package manifest objects. */
 	private array $loaded_manifest_objects = [];
-	/** @var array<string,array> Cache for test package metadata. */
+	/** @var array<string,array<string,mixed>> Cache for test package metadata. */
 	private array $loaded_package_metadata = [];
 	/** @var string Track the current file being parsed. */
 	private string $current_file_path;

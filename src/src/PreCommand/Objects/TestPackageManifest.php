@@ -23,7 +23,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	/** @var array<string,mixed> */
 	private array $requires;
 
-	/** @var array{global:array{setup?:array,teardown?:array},test:array{setup?:array,run?:array,teardown?:array}} */
+	/** @var array{global:array{setup?:array<string,mixed>,teardown?:array<string,mixed>},test:array{setup?:array<string,mixed>,run?:array<string,mixed>,teardown?:array<string,mixed>}} */
 	private array $lifecycle;
 
 	/** @var array<string,string> */
@@ -86,6 +86,9 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->version;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getTags(): array {
 		return $this->tags;
 	}
@@ -102,22 +105,37 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->description;
 	}
 
+	/**
+	 * @return array<string,mixed>
+	 */
 	public function getRequires(): array {
 		return $this->requires;
 	}
 
+	/**
+	 * @return array{global:array{setup?:array<string,mixed>,teardown?:array<string,mixed>},test:array{setup?:array<string,mixed>,run?:array<string,mixed>,teardown?:array<string,mixed>}}
+	 */
 	public function getLifecycle(): array {
 		return $this->lifecycle;
 	}
 
+	/**
+	 * @return array<string,string>
+	 */
 	public function getTestResults(): array {
 		return $this->test_results;
 	}
 
+	/**
+	 * @return string[]
+	 */
 	public function getMuPlugins(): array {
 		return $this->mu_plugins;
 	}
 
+	/**
+	 * @return array<string,string>
+	 */
 	public function getEnvVars(): array {
 		return $this->env_vars;
 	}
@@ -126,6 +144,9 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->timeout;
 	}
 
+	/**
+	 * @return array{times:int,delay:int}
+	 */
 	public function getRetry(): array {
 		return $this->retry;
 	}
@@ -148,7 +169,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	}
 
 	/**
-	 * @return string[]|array[] list of commands or command‑objects
+	 * @return string[]|array<string,mixed>[] list of commands or command‑objects
 	 */
 	public function getLifecycleCommands( string $phase, string $hook ): array {
 		return $this->lifecycle[ $phase ][ $hook ] ?? [];
@@ -186,6 +207,7 @@ final class TestPackageManifest implements \JsonSerializable {
 
 	/**
 	 * @param array<string,string|int|bool> $env
+	 * @return array<string,string>
 	 */
 	private function stringifyEnv( array $env ): array {
 		foreach ( $env as $k => $v ) {

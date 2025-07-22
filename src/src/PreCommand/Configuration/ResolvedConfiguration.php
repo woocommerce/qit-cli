@@ -10,51 +10,62 @@ use QIT_CLI\PreCommand\Objects\TestPackageManifest;
  * dependencies resolved, and test packages loaded.
  */
 class ResolvedConfiguration {
-	/** @var array|null Existing properties. */
+	/** @var array<string,mixed>|null Existing properties. */
 	public ?array $sut               = null;
 	public ?Extension $sut_extension = null;
-	public array $environments       = [];
-	public array $test_types         = [];
-	public array $groups             = [];
+	/** @var array<string,array<string,mixed>> */
+	public array $environments = [];
+	/** @var array<string,array<string,mixed>> */
+	public array $test_types = [];
+	/** @var array<string,array<string,mixed>> */
+	public array $groups = [];
 	/** @var array<string,TestPackageManifest> */
 	public array $test_packages = [];
-	/** @var array<string,array> Package metadata (reference, local, remote, path, etc.) */
+	/** @var array<string,array<string,mixed>> Package metadata (reference, local, remote, path, etc.) */
 	public array $test_package_metadata = [];
-	public array $resolved_plugins      = [];
-	public array $resolved_themes       = [];
-	public array $php_extensions        = [];
-	public array $required_secrets      = [];
-	public array $required_services     = [];
-	public array $metadata              = [];
-	public string $cache_dir            = '';
+	/** @var array<string,Extension> */
+	public array $resolved_plugins = [];
+	/** @var array<string,Extension> */
+	public array $resolved_themes = [];
+	/** @var string[] */
+	public array $php_extensions = [];
+	/** @var string[] */
+	public array $required_secrets = [];
+	/** @var string[] */
+	public array $required_services = [];
+	/** @var array<string,mixed> */
+	public array $metadata   = [];
+	public string $cache_dir = '';
 
+	/** @var array<string,mixed> */
 	protected array $raw_config;
 
+	/**
+	 * @param array<string,mixed> $raw_config
+	 */
 	public function __construct( array $raw_config ) {
 		$this->raw_config = $raw_config;
 	}
 
 	/**
-	 * Get environment configuration by name
+	 * @return array<string,mixed>
 	 */
-	public function get_environment( string $name ): array {
-		if ( ! isset( $this->environments[ $name ] ) ) {
-			throw new \RuntimeException( "Environment '$name' not found in configuration" );
-		}
-
-		return $this->environments[ $name ];
+	public function get_environment( string $environment ): array {
+		return $this->environments[ $environment ] ?? [];
 	}
 
 	/**
-	 * Get test configuration for a specific type and profile
+	 * Get test configuration for a given test type and profile.
+	 *
+	 * @return array<string,mixed>
 	 */
 	public function get_test_config( string $test_type, string $profile ): array {
 		if ( ! isset( $this->test_types[ $test_type ] ) ) {
-			throw new \RuntimeException( "Test type '$test_type' not found in configuration" );
+			throw new \InvalidArgumentException( "Test type '$test_type' is not defined." );
 		}
 
 		if ( ! isset( $this->test_types[ $test_type ][ $profile ] ) ) {
-			throw new \RuntimeException( "Profile '$profile' not found for test type '$test_type'" );
+			throw new \InvalidArgumentException( "Profile '$profile' is not defined for test type '$test_type'." );
 		}
 
 		return $this->test_types[ $test_type ][ $profile ];
@@ -125,6 +136,8 @@ class ResolvedConfiguration {
 
 	/**
 	 * Get all resolved plugins
+	 *
+	 * @return array<string,Extension>
 	 */
 	public function get_all_plugins(): array {
 		return $this->resolved_plugins;
@@ -132,6 +145,8 @@ class ResolvedConfiguration {
 
 	/**
 	 * Get all resolved themes
+	 *
+	 * @return array<string,Extension>
 	 */
 	public function get_all_themes(): array {
 		return $this->resolved_themes;
@@ -139,6 +154,8 @@ class ResolvedConfiguration {
 
 	/**
 	 * Get all PHP extensions required
+	 *
+	 * @return string[]
 	 */
 	public function get_all_php_extensions(): array {
 		return array_unique( $this->php_extensions );
@@ -146,6 +163,8 @@ class ResolvedConfiguration {
 
 	/**
 	 * Get required secrets
+	 *
+	 * @return string[]
 	 */
 	public function get_required_secrets(): array {
 		return array_unique( $this->required_secrets );
@@ -153,6 +172,8 @@ class ResolvedConfiguration {
 
 	/**
 	 * Get required external services
+	 *
+	 * @return string[]
 	 */
 	public function get_required_services(): array {
 		return array_unique( $this->required_services );
@@ -174,6 +195,8 @@ class ResolvedConfiguration {
 
 	/**
 	 * Validate the configuration
+	 *
+	 * @return string[]
 	 */
 	public function validate(): array {
 		$errors = [];
@@ -211,6 +234,8 @@ class ResolvedConfiguration {
 
 	/**
 	 * Export configuration for caching
+	 *
+	 * @return array<string,mixed>
 	 */
 	public function export(): array {
 		return [
@@ -230,12 +255,14 @@ class ResolvedConfiguration {
 			'required_services'     => $this->required_services,
 			'php_extensions'        => $this->php_extensions,
 			'metadata'              => $this->metadata,
-			'cache_dir'             => $this->cache_dir,
+			'raw_config'            => $this->raw_config,
 		];
 	}
 
 	/**
 	 * Import configuration from cache
+	 *
+	 * @param array<string,mixed> $data
 	 */
 	public static function import( array $data ): self {
 		$config = new self( $data );
@@ -256,7 +283,6 @@ class ResolvedConfiguration {
 		$config->required_services = $data['required_services'];
 		$config->php_extensions    = $data['php_extensions'];
 		$config->metadata          = $data['metadata'];
-		$config->cache_dir         = $data['cache_dir'];
 
 		return $config;
 	}

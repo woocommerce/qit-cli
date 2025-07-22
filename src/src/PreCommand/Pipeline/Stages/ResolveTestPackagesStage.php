@@ -28,7 +28,7 @@ class ResolveTestPackagesStage implements PipelineStage {
 
 		// Persist manifests & metadata on ResolvedConfiguration
 		$resolved_cfg->test_packages         = array_merge( $resolved_cfg->test_packages, $resolved_packages );
-		$resolved_cfg->test_package_metadata = array_merge( $resolved_cfg->test_package_metadata, $this->resolver->getMetadata() );
+		$resolved_cfg->test_package_metadata = array_merge( $resolved_cfg->test_package_metadata, $this->resolver->get_metadata() );
 
 		// -------------------------------------------------------------
 		// 2. CLI-level include/exclude filters
