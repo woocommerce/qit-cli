@@ -8,6 +8,8 @@ use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
@@ -187,6 +189,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$env_up_options['--object_cache'] = true;
 		}
 
+		$this->handle_termination();
+
 		if ( ! empty( $woo_extension_slug ) ) {
 			App::setVar( 'QIT_SUT', $woo_extension_id );
 			App::setVar( 'QIT_SUT_SLUG', $woo_extension_slug );
@@ -213,6 +217,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		try {
 			/** @var PerformanceEnvInfo $env_info */
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
+
+			$GLOBALS['env_to_shutdown'] = $env_info;
 
 			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
 				$output->write( json_encode( $env_info ) );
@@ -457,5 +463,48 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$env_up_options[ $key ][] = json_encode( $extension_data );
 
 		return $env_up_options;
+	}
+
+	/**
+	 * Handle termination signals and register shutdown functions to ensure environment cleanup.
+	 */
+	private function handle_termination(): void {
+		register_shutdown_function( static function () {
+			static::shutdown_test_run();
+		} );
+
+		if ( function_exists( 'pcntl_signal' ) ) {
+			$signal_handler = static function (): void {
+				static::shutdown_test_run();
+				exit( 0 );
+			};
+			pcntl_signal( SIGINT, $signal_handler );
+			pcntl_signal( SIGTERM, $signal_handler );
+		}
+	}
+
+	/**
+	 * Shutdown the test environment if one is running.
+	 */
+	public static function shutdown_test_run(): void {
+		static $did_shutdown = false;
+		if ( $did_shutdown ) {
+			return;
+		}
+		$did_shutdown = true;
+
+		if ( App::getVar( 'QIT_JSON_MODE' ) !== true ) {
+			echo "\nShutting down environment...\n";
+		}
+
+		if ( empty( $GLOBALS['env_to_shutdown'] ) || ! $GLOBALS['env_to_shutdown'] instanceof EnvInfo ) {
+			return;
+		}
+
+		try {
+			Environment::down( $GLOBALS['env_to_shutdown'] );
+		} catch ( \Exception $e ) { // phpcs:ignore
+			// no-op.
+		}
 	}
 }
