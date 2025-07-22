@@ -1,4 +1,27 @@
 {
-    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
-    "test_type": "e2e"
+    "tags": [],
+    "test_type": "e2e",
+    "test_dir": null,
+    "description": "",
+    "requires": [],
+    "lifecycle": {
+        "global": {
+            "setup": [
+                "echo 'Global setup'"
+            ]
+        },
+        "test": {
+            "run": [
+                "echo 'Test run'"
+            ]
+        }
+    },
+    "test_results": [],
+    "mu_plugins": [],
+    "env_vars": [],
+    "timeout": 1800,
+    "retry": {
+        "times": 0,
+        "delay": 0
+    }
 }

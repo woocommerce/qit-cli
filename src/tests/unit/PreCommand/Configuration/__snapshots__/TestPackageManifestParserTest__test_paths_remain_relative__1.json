@@ -1,7 +1,21 @@
 {
-    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
-    "test_type": "integration",
+    "tags": [],
+    "test_type": "e2e",
     "test_dir": ".\/src\/tests",
+    "description": "",
+    "requires": [],
+    "lifecycle": {
+        "global": {
+            "setup": [
+                "echo 'Global setup'"
+            ]
+        },
+        "test": {
+            "run": [
+                "echo 'Test run'"
+            ]
+        }
+    },
     "test_results": {
         "junit": ".\/output\/junit.xml",
         "coverage": ".\/output\/coverage\/index.html"
@@ -9,5 +23,11 @@
     "mu_plugins": [
         ".\/plugins\/helper.php",
         ".\/plugins\/mocks.php"
-    ]
+    ],
+    "env_vars": [],
+    "timeout": 1800,
+    "retry": {
+        "times": 0,
+        "delay": 0
+    }
 }

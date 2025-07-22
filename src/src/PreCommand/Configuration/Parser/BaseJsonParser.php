@@ -53,7 +53,7 @@ abstract class BaseJsonParser {
 	/**
 	 * Parse a JSON file with schema validation
 	 */
-	public function parse( string $file_path ): array {
+	public function parse( string $file_path ): mixed {
 		$this->root_path = dirname( $file_path );
 
 		// Load and validate JSON

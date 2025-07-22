@@ -29,15 +29,23 @@ class TestPackageManifestParserTest extends TestCase {
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "test_type": "e2e"
+    "test_type": "e2e",
+    "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
+        "test": {
+            "run": ["echo 'Test run'"]
+        }
+    }
 }
 JSON;
 		file_put_contents( $manifest_file, $manifest );
 
 		$parsed = $this->parser->parse( $manifest_file );
 
-		$this->assertEquals( 'e2e', $parsed['test_type'] );
-		$this->assertArrayHasKey( '$schema', $parsed );
+		$this->assertEquals( 'e2e', $parsed->getTestType() );
+		$this->assertTrue( $parsed->isE2E() );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
@@ -64,7 +72,7 @@ JSON;
         "external_services": ["Stripe API", "PayPal Sandbox"]
     },
     "lifecycle": {
-        "environment": {
+        "global": {
             "setup": [
                 "composer install",
                 {"command": "npm install", "timeout": 300}
@@ -111,41 +119,47 @@ JSON;
 		$parsed = $this->parser->parse( $manifest_file );
 
 		// Basic properties
-		$this->assertEquals( 'e2e', $parsed['test_type'] );
-		$this->assertEquals( './tests', $parsed['test_dir'] );
-		$this->assertEquals( 'Comprehensive E2E tests for checkout flow', $parsed['description'] );
-		$this->assertEquals( [ 'checkout', 'payments', 'critical' ], $parsed['tags'] );
+		$this->assertEquals( 'e2e', $parsed->getTestType() );
+		$this->assertEquals( './tests', $parsed->getTestDir() );
+		$this->assertEquals( 'Comprehensive E2E tests for checkout flow', $parsed->getDescription() );
+		$this->assertEquals( [ 'checkout', 'payments', 'critical' ], $parsed->getTags() );
 
 		// Requirements
-		$this->assertArrayHasKey( 'requires', $parsed );
-		$this->assertEquals( '^8.0.0', $parsed['requires']['plugins']['woocommerce'] );
-		$this->assertEquals( [ 'STRIPE_API_KEY', 'PAYPAL_CLIENT_ID' ], $parsed['requires']['secrets'] );
+		$requires = $parsed->getRequires();
+		$this->assertArrayHasKey( 'plugins', $requires );
+		$this->assertEquals( '^8.0.0', $requires['plugins']['woocommerce'] );
+		$this->assertEquals( [ 'STRIPE_API_KEY', 'PAYPAL_CLIENT_ID' ], $requires['secrets'] );
 
 		// Lifecycle
-		$this->assertCount( 2, $parsed['lifecycle']['environment']['setup'] );
-		$this->assertEquals( 'composer install', $parsed['lifecycle']['environment']['setup'][0] );
-		$this->assertIsArray( $parsed['lifecycle']['environment']['setup'][1] );
-		$this->assertEquals( 300, $parsed['lifecycle']['environment']['setup'][1]['timeout'] );
+		$globalSetup = $parsed->getLifecycleCommands( 'global', 'setup' );
+		$this->assertCount( 2, $globalSetup );
+		$this->assertEquals( 'composer install', $globalSetup[0] );
+		$this->assertIsArray( $globalSetup[1] );
+		$this->assertEquals( 300, $globalSetup[1]['timeout'] );
 
 		// Test results paths should remain relative
-		$this->assertEquals( './results/junit.xml', $parsed['test_results']['junit'] );
-		$this->assertEquals( './results/test-results.json', $parsed['test_results']['json'] );
+		$testResults = $parsed->getTestResults();
+		$this->assertEquals( './results/junit.xml', $testResults['junit'] );
+		$this->assertEquals( './results/test-results.json', $testResults['json'] );
 
 		// MU plugins paths should remain relative
-		$this->assertEquals( './mu-plugins/test-helper.php', $parsed['mu_plugins'][0] );
-		$this->assertEquals( './mu-plugins/mock-payments.php', $parsed['mu_plugins'][1] );
+		$muPlugins = $parsed->getMuPlugins();
+		$this->assertEquals( './mu-plugins/test-helper.php', $muPlugins[0] );
+		$this->assertEquals( './mu-plugins/mock-payments.php', $muPlugins[1] );
 
 		// Environment variables should be converted to strings
-		$this->assertIsString( $parsed['env_vars']['WP_DEBUG'] );
-		$this->assertEquals( 'true', $parsed['env_vars']['WP_DEBUG'] );
-		$this->assertEquals( 'false', $parsed['env_vars']['SCRIPT_DEBUG'] );
-		$this->assertEquals( '30000', $parsed['env_vars']['TEST_TIMEOUT'] );
-		$this->assertEquals( 'testing', $parsed['env_vars']['ENVIRONMENT'] );
+		$envVars = $parsed->getEnvVars();
+		$this->assertIsString( $envVars['WP_DEBUG'] );
+		$this->assertEquals( 'true', $envVars['WP_DEBUG'] );
+		$this->assertEquals( 'false', $envVars['SCRIPT_DEBUG'] );
+		$this->assertEquals( '30000', $envVars['TEST_TIMEOUT'] );
+		$this->assertEquals( 'testing', $envVars['ENVIRONMENT'] );
 
 		// Timeout and retry
-		$this->assertEquals( 1800, $parsed['timeout'] );
-		$this->assertEquals( 3, $parsed['retry']['times'] );
-		$this->assertEquals( 10, $parsed['retry']['delay'] );
+		$this->assertEquals( 1800, $parsed->getTimeout() );
+		$retry = $parsed->getRetry();
+		$this->assertEquals( 3, $retry['times'] );
+		$this->assertEquals( 10, $retry['delay'] );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
@@ -155,8 +169,11 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "test_type": "unit",
+    "test_type": "e2e",
     "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
         "test": {
             "setup": [
                 "composer install",
@@ -177,19 +194,20 @@ JSON;
 
 		$parsed = $this->parser->parse( $manifest_file );
 
-		$this->assertCount( 3, $parsed['lifecycle']['test']['setup'] );
+		$testSetup = $parsed->getLifecycleCommands( 'test', 'setup' );
+		$this->assertCount( 3, $testSetup );
 
 		// String commands remain strings
-		$this->assertIsString( $parsed['lifecycle']['test']['setup'][0] );
-		$this->assertEquals( 'composer install', $parsed['lifecycle']['test']['setup'][0] );
+		$this->assertIsString( $testSetup[0] );
+		$this->assertEquals( 'composer install', $testSetup[0] );
 
 		// Object commands remain objects
-		$this->assertIsArray( $parsed['lifecycle']['test']['setup'][1] );
-		$this->assertEquals( './scripts/setup.sh', $parsed['lifecycle']['test']['setup'][1]['command'] );
-		$this->assertEquals( 'host', $parsed['lifecycle']['test']['setup'][1]['runs_on'] );
+		$this->assertIsArray( $testSetup[1] );
+		$this->assertEquals( './scripts/setup.sh', $testSetup[1]['command'] );
+		$this->assertEquals( 'host', $testSetup[1]['runs_on'] );
 
-		$this->assertIsArray( $parsed['lifecycle']['test']['setup'][2] );
-		$this->assertTrue( $parsed['lifecycle']['test']['setup'][2]['continue_on_error'] );
+		$this->assertIsArray( $testSetup[2] );
+		$this->assertTrue( $testSetup[2]['continue_on_error'] );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
@@ -199,7 +217,15 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "test_type": "security",
+    "test_type": "e2e",
+    "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
+        "test": {
+            "run": ["echo 'Test run'"]
+        }
+    },
     "env_vars": {
         "DEBUG": true,
         "VERBOSE": false,
@@ -216,17 +242,18 @@ JSON;
 		$parsed = $this->parser->parse( $manifest_file );
 
 		// All values should be strings
-		foreach ( $parsed['env_vars'] as $key => $value ) {
+		$envVars = $parsed->getEnvVars();
+		foreach ( $envVars as $key => $value ) {
 			$this->assertIsString( $value, "env_vars[$key] should be a string" );
 		}
 
-		$this->assertEquals( 'true', $parsed['env_vars']['DEBUG'] );
-		$this->assertEquals( 'false', $parsed['env_vars']['VERBOSE'] );
-		$this->assertEquals( '5', $parsed['env_vars']['MAX_RETRIES'] );
-		$this->assertEquals( '30.5', $parsed['env_vars']['TIMEOUT'] );
-		$this->assertEquals( 'abc123', $parsed['env_vars']['API_KEY'] );
-		$this->assertEquals( '', $parsed['env_vars']['EMPTY_STRING'] );
-		$this->assertEquals( '0', $parsed['env_vars']['ZERO'] );
+		$this->assertEquals( 'true', $envVars['DEBUG'] );
+		$this->assertEquals( 'false', $envVars['VERBOSE'] );
+		$this->assertEquals( '5', $envVars['MAX_RETRIES'] );
+		$this->assertEquals( '30.5', $envVars['TIMEOUT'] );
+		$this->assertEquals( 'abc123', $envVars['API_KEY'] );
+		$this->assertEquals( '', $envVars['EMPTY_STRING'] );
+		$this->assertEquals( '0', $envVars['ZERO'] );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
@@ -236,7 +263,15 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "test_type": "integration",
+    "test_type": "e2e",
+    "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
+        "test": {
+            "run": ["echo 'Test run'"]
+        }
+    },
     "test_dir": "./src/tests",
     "test_results": {
         "junit": "./output/junit.xml",
@@ -258,13 +293,15 @@ JSON;
 		$parsed = $this->parser->parse( $manifest_file );
 
 		// All paths should remain relative as specified in the manifest
-		$this->assertEquals( './src/tests', $parsed['test_dir'] );
+		$this->assertEquals( './src/tests', $parsed->getTestDir() );
 
-		$this->assertEquals( './output/junit.xml', $parsed['test_results']['junit'] );
-		$this->assertEquals( './output/coverage/index.html', $parsed['test_results']['coverage'] );
+		$testResults = $parsed->getTestResults();
+		$this->assertEquals( './output/junit.xml', $testResults['junit'] );
+		$this->assertEquals( './output/coverage/index.html', $testResults['coverage'] );
 
-		$this->assertEquals( './plugins/helper.php', $parsed['mu_plugins'][0] );
-		$this->assertEquals( './plugins/mocks.php', $parsed['mu_plugins'][1] );
+		$muPlugins = $parsed->getMuPlugins();
+		$this->assertEquals( './plugins/helper.php', $muPlugins[0] );
+		$this->assertEquals( './plugins/mocks.php', $muPlugins[1] );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
@@ -308,6 +345,14 @@ JSON;
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "e2e",
+    "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
+        "test": {
+            "run": ["echo 'Test run'"]
+        }
+    },
     "test_dir": "./nonexistent"
 }
 JSON;
@@ -326,6 +371,9 @@ JSON;
     "$schema": "https://qit.woo.com/json-schema/test-package",
     "test_type": "e2e",
     "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
         "test": {
             "setup": [
                 {"command": "./scripts/missing.sh"}
@@ -347,8 +395,11 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "test_type": "phpstan",
+    "test_type": "e2e",
     "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
         "test": {
             "setup": [],
             "run": ["phpstan analyze"],
@@ -361,9 +412,9 @@ JSON;
 
 		$parsed = $this->parser->parse( $manifest_file );
 
-		$this->assertCount( 0, $parsed['lifecycle']['test']['setup'] );
-		$this->assertCount( 1, $parsed['lifecycle']['test']['run'] );
-		$this->assertCount( 0, $parsed['lifecycle']['test']['teardown'] );
+		$this->assertCount( 0, $parsed->getLifecycleCommands( 'test', 'setup' ) );
+		$this->assertCount( 1, $parsed->getLifecycleCommands( 'test', 'run' ) );
+		$this->assertCount( 0, $parsed->getLifecycleCommands( 'test', 'teardown' ) );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}

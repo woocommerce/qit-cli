@@ -139,7 +139,8 @@ class QitJsonParser extends BaseJsonParser {
 
 			try {
 				$this->debug_log( "Attempting to parse test package at: $file_path" );
-				$this->loaded_packages[ $reference ]              = $this->package_parser->parse( $file_path );
+				$manifest_object = $this->package_parser->parse( $file_path );
+				$this->loaded_packages[ $reference ] = $manifest_object->jsonSerialize();
 				$this->loaded_packages[ $reference ]['reference'] = $reference;
 				$this->loaded_packages[ $reference ]['local']     = true;
 				$this->loaded_packages[ $reference ]['path']      = $file_path;

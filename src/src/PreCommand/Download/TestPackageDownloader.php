@@ -159,9 +159,10 @@ class TestPackageDownloader {
 			throw new \RuntimeException( "No manifest.json found in package '$reference'" );
 		}
 
-		$manifest = $this->manifest_parser->parse( $manifest_file );
+		$manifest_object = $this->manifest_parser->parse( $manifest_file );
 
-		// Add metadata
+		// Convert to array and add metadata
+		$manifest = $manifest_object->jsonSerialize();
 		$manifest['reference']       = $reference;
 		$manifest['remote']          = true;
 		$manifest['downloaded_path'] = $package_dir;

@@ -1,13 +1,12 @@
 {
-    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
-    "test_type": "e2e",
-    "test_dir": ".\/tests",
-    "description": "Comprehensive E2E tests for checkout flow",
     "tags": [
         "checkout",
         "payments",
         "critical"
     ],
+    "test_type": "e2e",
+    "test_dir": ".\/tests",
+    "description": "Comprehensive E2E tests for checkout flow",
     "requires": {
         "plugins": {
             "woocommerce": "^8.0.0",
@@ -28,7 +27,7 @@
         ]
     },
     "lifecycle": {
-        "environment": {
+        "global": {
             "setup": [
                 "composer install",
                 {

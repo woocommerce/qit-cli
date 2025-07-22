@@ -2,12 +2,31 @@
 
 namespace QIT_CLI\PreCommand\Configuration\Parser;
 
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
+
 /**
  * Parser for test package manifest files
  */
 class TestPackageManifestParser extends BaseJsonParser {
 	protected function get_schema_type(): string {
 		return 'test-package';
+	}
+
+	/**
+	 * {@inheritDoc}
+	 *
+	 * @return TestPackageManifest
+	 */
+	public function parse( string $file_path ): TestPackageManifest {
+		$this->root_path = dirname( $file_path );
+
+		// Load and validate JSON
+		$config = $this->load_and_validate_json( $file_path );
+
+		// Apply business logic
+		$config = $this->apply_business_logic( $config );
+
+		return new TestPackageManifest( $config );
 	}
 
 	protected function apply_business_logic( array $config ): array {

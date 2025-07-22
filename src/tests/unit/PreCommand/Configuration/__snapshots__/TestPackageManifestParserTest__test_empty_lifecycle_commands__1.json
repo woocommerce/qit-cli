@@ -1,7 +1,15 @@
 {
-    "$schema": "https:\/\/qit.woo.com\/json-schema\/test-package",
-    "test_type": "phpstan",
+    "tags": [],
+    "test_type": "e2e",
+    "test_dir": null,
+    "description": "",
+    "requires": [],
     "lifecycle": {
+        "global": {
+            "setup": [
+                "echo 'Global setup'"
+            ]
+        },
         "test": {
             "setup": [],
             "run": [
@@ -9,5 +17,13 @@
             ],
             "teardown": []
         }
+    },
+    "test_results": [],
+    "mu_plugins": [],
+    "env_vars": [],
+    "timeout": 1800,
+    "retry": {
+        "times": 0,
+        "delay": 0
     }
 }
