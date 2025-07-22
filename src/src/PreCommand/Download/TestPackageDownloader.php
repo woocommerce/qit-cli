@@ -124,7 +124,9 @@ class TestPackageDownloader {
 	/**
 	 * Download and extract a test package
 	 *
+	 * @param string              $reference
 	 * @param array<string,mixed> $url_info
+	 * @param string              $cache_dir
 	 * @return TestPackageManifest
 	 */
 	protected function download_package( string $reference, array $url_info, string $cache_dir ): TestPackageManifest {
@@ -290,6 +292,7 @@ class TestPackageDownloader {
 	/**
 	 * Search for packages
 	 *
+	 * @param string              $query
 	 * @param array<string,mixed> $filters
 	 * @return array<string,mixed>
 	 */
