@@ -76,7 +76,7 @@ class ResolvedConfiguration {
 	 *
 	 * @return array<string,TestPackageManifest>
 	 */
-	public function getAllTestPackages(): array {
+	public function get_all_test_packages(): array {
 		return $this->test_packages;
 	}
 

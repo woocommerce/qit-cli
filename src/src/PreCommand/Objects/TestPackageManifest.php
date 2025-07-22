@@ -16,8 +16,8 @@ final class TestPackageManifest implements \JsonSerializable {
 	private string $version;
 	/** @var string[] */
 	private array $tags;
-	private string $testType;
-	private ?string $testDir;
+	private string $test_type;
+	private ?string $test_dir;
 	private string $description;
 
 	/** @var array<string,mixed> */
@@ -27,20 +27,20 @@ final class TestPackageManifest implements \JsonSerializable {
 	private array $lifecycle;
 
 	/** @var array<string,string> */
-	private array $testResults;
+	private array $test_results;
 
 	/** @var string[] */
-	private array $muPlugins;
+	private array $mu_plugins;
 
 	/** @var array<string,string> */
-	private array $envVars;
+	private array $env_vars;
 
 	private int $timeout;
 	/** @var array{times:int,delay:int} */
 	private array $retry;
 
 	/**
-	 * @param array<string,mixed> $payload – already validated & normalised by parser
+	 * @param array<string,mixed> $payload – already validated & normalised by parser.
 	 */
 	public function __construct( array $payload ) {
 		// — Required —
@@ -53,28 +53,27 @@ final class TestPackageManifest implements \JsonSerializable {
 		$this->package     = $payload['package'];
 		$this->version     = $payload['version'];
 		$this->tags        = $payload['tags'] ?? [];
-		$this->testType    = $payload['test_type'];
-		$this->testDir     = $payload['test_dir'] ?? null;
+		$this->test_type   = $payload['test_type'];
+		$this->test_dir    = $payload['test_dir'] ?? null;
 		$this->description = $payload['description'] ?? '';
 
-		$this->requires    = $payload['requires'] ?? [];
-		$this->lifecycle   = $payload['lifecycle'];
-		$this->testResults = $payload['test_results'] ?? [];
-		$this->muPlugins   = $payload['mu_plugins'] ?? [];
-		$this->envVars     = $this->stringifyEnv( $payload['env_vars'] ?? [] );
-		$this->timeout     = (int) ( $payload['timeout'] ?? 1800 );
-		$this->retry       = $payload['retry'] ?? [
+		$this->requires     = $payload['requires'] ?? [];
+		$this->lifecycle    = $payload['lifecycle'];
+		$this->test_results = $payload['test_results'] ?? [];
+		$this->mu_plugins   = $payload['mu_plugins'] ?? [];
+		$this->env_vars     = $this->stringifyEnv( $payload['env_vars'] ?? [] );
+		$this->timeout      = (int) ( $payload['timeout'] ?? 1800 );
+		$this->retry        = $payload['retry'] ?? [
 			'times' => 0,
 			'delay' => 0,
 		];
 	}
 
-	/*
-	--------------------------------------------------------------------- */
-	/*
-		Simple getters                                                       */
-	/* --------------------------------------------------------------------- */
-
+	/**
+	 * ----------------------------------------------------------------
+	 * Simple getters
+	 * ----------------------------------------------------------------
+	 */
 	public function getVendor(): string {
 		return $this->vendor;
 	}
@@ -92,11 +91,11 @@ final class TestPackageManifest implements \JsonSerializable {
 	}
 
 	public function getTestType(): string {
-		return $this->testType;
+		return $this->test_type;
 	}
 
 	public function getTestDir(): ?string {
-		return $this->testDir;
+		return $this->test_dir;
 	}
 
 	public function getDescription(): string {
@@ -112,15 +111,15 @@ final class TestPackageManifest implements \JsonSerializable {
 	}
 
 	public function getTestResults(): array {
-		return $this->testResults;
+		return $this->test_results;
 	}
 
 	public function getMuPlugins(): array {
-		return $this->muPlugins;
+		return $this->mu_plugins;
 	}
 
 	public function getEnvVars(): array {
-		return $this->envVars;
+		return $this->env_vars;
 	}
 
 	public function getTimeout(): int {
@@ -131,14 +130,13 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->retry;
 	}
 
-	/*
-	--------------------------------------------------------------------- */
-	/*
-		Convenience helpers                                                  */
-	/* --------------------------------------------------------------------- */
-
+	/**
+	 * ----------------------------------------------------------------
+	 * Convenience helpers
+	 * ----------------------------------------------------------------
+	 */
 	public function isE2E(): bool {
-		return $this->testType === 'e2e';
+		return $this->test_type === 'e2e';
 	}
 
 	public function needsPlugin( string $slug ): bool {
@@ -156,38 +154,39 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->lifecycle[ $phase ][ $hook ] ?? [];
 	}
 
-	/*
-	--------------------------------------------------------------------- */
-	/*
-		JsonSerializable                                                     */
-	/* --------------------------------------------------------------------- */
-
+	/**
+	 * ----------------------------------------------------------------
+	 * JsonSerializable
+	 * ----------------------------------------------------------------
+	 */
 	public function jsonSerialize(): mixed {
 		return [
 			'vendor'       => $this->vendor,
 			'package'      => $this->package,
 			'version'      => $this->version,
 			'tags'         => $this->tags,
-			'test_type'    => $this->testType,
-			'test_dir'     => $this->testDir,
+			'test_type'    => $this->test_type,
+			'test_dir'     => $this->test_dir,
 			'description'  => $this->description,
 			'requires'     => $this->requires,
 			'lifecycle'    => $this->lifecycle,
-			'test_results' => $this->testResults,
-			'mu_plugins'   => $this->muPlugins,
-			'env_vars'     => $this->envVars,
+			'test_results' => $this->test_results,
+			'mu_plugins'   => $this->mu_plugins,
+			'env_vars'     => $this->env_vars,
 			'timeout'      => $this->timeout,
 			'retry'        => $this->retry,
 		];
 	}
 
-	/*
-	--------------------------------------------------------------------- */
-	/*
-		Internals                                                            */
-	/* --------------------------------------------------------------------- */
+	/**
+	 * ----------------------------------------------------------------
+	 * Internals
+	 * ----------------------------------------------------------------
+	 */
 
-	/** @param array<string,string|int|bool> $env */
+	/**
+	 * @param array<string,string|int|bool> $env
+	 */
 	private function stringifyEnv( array $env ): array {
 		foreach ( $env as $k => $v ) {
 			$env[ $k ] = (string) $v;

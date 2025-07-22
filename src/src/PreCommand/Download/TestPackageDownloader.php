@@ -326,7 +326,7 @@ class TestPackageDownloader {
 	 *
 	 * @return array<string,mixed>
 	 */
-	public function getMetadata( string $reference ): array {
+	public function get_metadata( string $reference ): array {
 		return $this->package_metadata[ $reference ] ?? [];
 	}
 }

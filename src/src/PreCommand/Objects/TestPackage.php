@@ -7,8 +7,10 @@ namespace QIT_CLI\PreCommand\Objects;
  * Keep it immutable; we'll extend later with version, source, etc.
  */
 class TestPackage implements \JsonSerializable {
-	public string $slug;      // "woocommerce/checkout"
-	public string $version;   // "stable", "v1.2.3" …
+	/** @var string "woocommerce/checkout" */
+	public string $slug;
+	/** @var string "stable", "v1.2.3" … */
+	public string $version;
 
 	public function __construct( string $slug, string $version ) {
 		$this->slug    = $slug;

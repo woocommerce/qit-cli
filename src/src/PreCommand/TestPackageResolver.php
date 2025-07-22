@@ -56,7 +56,7 @@ class TestPackageResolver {
 			// Merge downloaded packages
 			foreach ( $downloaded as $ref => $manifest ) {
 				$resolved_packages[ $ref ] = $manifest;
-				$this->metadata[ $ref ]    = $this->package_downloader->getMetadata( $ref );
+				$this->metadata[ $ref ]    = $this->package_downloader->get_metadata( $ref );
 			}
 		}
 
@@ -68,7 +68,7 @@ class TestPackageResolver {
 	 *
 	 * @return array<string,array>
 	 */
-	public function getMetadata(): array {
+	public function get_metadata(): array {
 		return $this->metadata;
 	}
 }

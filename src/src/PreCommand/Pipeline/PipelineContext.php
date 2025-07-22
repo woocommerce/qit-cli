@@ -106,11 +106,11 @@ class PipelineContext {
 	/**
 	 * Get the test packages.
 	 *
-	 * @param array<string, array<string, mixed>> $default Default value if test packages are not set.
+	 * @param array<string, array<string, mixed>> $default_value Default value if test packages are not set.
 	 * @return array<string, array<string, mixed>> The test packages or default if not set.
 	 */
-	public function get_test_packages( array $default = [] ): array {
-		return $this->get( 'test_packages', $default );
+	public function get_test_packages( array $default_value = [] ): array {
+		return $this->get( 'test_packages', $default_value );
 	}
 
 	/**
