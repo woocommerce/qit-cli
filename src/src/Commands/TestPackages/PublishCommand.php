@@ -172,9 +172,6 @@ class PublishCommand extends QITCommand {
 				throw new \RuntimeException( "Reference package '{$resolved_reference['package']}' does not match manifest package '{$manifest->getPackage()}'" );
 			}
 
-			if ( $resolved_reference['version'] !== $manifest->getVersion() ) {
-				throw new \RuntimeException( "Reference version '{$resolved_reference['version']}' does not match manifest version '{$manifest->getVersion()}'" );
-			}
 
 			$output->writeln( 'Manifest validation passed' );
 

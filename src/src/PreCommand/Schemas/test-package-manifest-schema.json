@@ -3,7 +3,7 @@
   "title": "QIT Test Package Schema",
   "description": "Schema for QIT test package manifest files",
   "type": "object",
-  "required": ["$schema", "test_type", "lifecycle", "vendor", "package", "version"],
+  "required": ["$schema", "test_type", "lifecycle", "vendor", "package"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -24,13 +24,6 @@
       "pattern": "^[a-zA-Z0-9_.-]+$",
       "minLength": 1,
       "maxLength": 64
-    },
-    "version": {
-      "type": "string",
-      "description": "Package version (semantic version)",
-      "pattern": "^[a-zA-Z0-9_.-]+$",
-      "minLength": 1,
-      "maxLength": 32
     },
     "tags": {
       "type": "array",

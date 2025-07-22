@@ -13,7 +13,6 @@ use InvalidArgumentException;
 final class TestPackageManifest implements \JsonSerializable {
 	private string $vendor;
 	private string $package;
-	private string $version;
 	/** @var string[] */
 	private array $tags;
 	private string $test_type;
@@ -45,13 +44,12 @@ final class TestPackageManifest implements \JsonSerializable {
 	public function __construct( array $payload ) {
 		// — Required —
 		if ( empty( $payload['test_type'] ) || empty( $payload['lifecycle'] ) ||
-			empty( $payload['vendor'] ) || empty( $payload['package'] ) || empty( $payload['version'] ) ) {
-			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "lifecycle", "vendor", "package", or "version".' );
+			empty( $payload['vendor'] ) || empty( $payload['package'] ) ) {
+			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "lifecycle", "vendor", or "package".' );
 		}
 
 		$this->vendor      = $payload['vendor'];
 		$this->package     = $payload['package'];
-		$this->version     = $payload['version'];
 		$this->tags        = $payload['tags'] ?? [];
 		$this->test_type   = $payload['test_type'];
 		$this->test_dir    = $payload['test_dir'] ?? null;
@@ -82,9 +80,6 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->package;
 	}
 
-	public function getVersion(): string {
-		return $this->version;
-	}
 
 	/**
 	 * @return string[]
@@ -184,7 +179,6 @@ final class TestPackageManifest implements \JsonSerializable {
 		return [
 			'vendor'       => $this->vendor,
 			'package'      => $this->package,
-			'version'      => $this->version,
 			'tags'         => $this->tags,
 			'test_type'    => $this->test_type,
 			'test_dir'     => $this->test_dir,
