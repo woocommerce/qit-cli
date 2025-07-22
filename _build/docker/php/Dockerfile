@@ -3,6 +3,14 @@ ARG PHP_VERSION=8.3
 FROM php:${PHP_VERSION}-cli
 
 ARG CI
+
+# Fix repositories for older Debian versions (Buster for PHP 7.2)
+RUN if [ -f /etc/apt/sources.list ] && grep -q "buster" /etc/apt/sources.list; then \
+        sed -i 's/deb.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
+        sed -i 's/security.debian.org/archive.debian.org/g' /etc/apt/sources.list && \
+        sed -i '/buster-updates/d' /etc/apt/sources.list; \
+    fi
+
 RUN apt-get update \
     && apt-get install -y libzip-dev \
     && docker-php-ext-install zip pcntl \
