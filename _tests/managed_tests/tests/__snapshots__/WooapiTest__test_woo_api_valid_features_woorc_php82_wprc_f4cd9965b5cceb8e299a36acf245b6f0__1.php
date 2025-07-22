@@ -35,7 +35,6 @@
             "test_summary": "266 total, 261 passed, 0 failed, 5 skipped.",
             "version": "Undefined",
             "update_complete": true,
-            "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "1234567890",
             "runner": "normalized",
@@ -1500,7 +1499,12 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found."
+                                        "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found.",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/fixtures\\/install-wc.setup.js",
+                                            "line": 22,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
@@ -2326,7 +2330,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/tests\\/api-tests\\/data\\/data-crud.test.js",
+                                            "line": 3961,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             }
@@ -4262,7 +4271,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/tests\\/api-tests\\/products\\/product-list.test.js",
+                                            "line": 3271,
+                                            "column": 9
+                                        }
                                     }
                                 ]
                             }
@@ -4287,7 +4301,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/tests\\/api-tests\\/products\\/product-list.test.js",
+                                            "line": 3291,
+                                            "column": 9
+                                        }
                                     }
                                 ]
                             }
@@ -5929,7 +5948,12 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "skip"
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/tests\\/api-tests\\/settings\\/settings-crud.test.js",
+                                            "line": 1409,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
