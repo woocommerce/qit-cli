@@ -8,8 +8,12 @@ namespace QIT_CLI\PreCommand\Configuration\Parser;
 class QitJsonParser extends BaseJsonParser {
 	private array $parsed_config = [];
 	private TestPackageManifestParser $package_parser;
-	/** @var array Cache for loaded test packages. */
+	/** @var array Cache for loaded test packages (arrays for backward compatibility). */
 	private array $loaded_packages = [];
+	/** @var array<string,TestPackageManifest> Cache for loaded test package manifest objects. */
+	private array $loaded_manifest_objects = [];
+	/** @var array<string,array> Cache for test package metadata. */
+	private array $loaded_package_metadata = [];
 	/** @var string Track the current file being parsed. */
 	private string $current_file_path;
 	/** @var array Track which directory each path came from. */
@@ -80,8 +84,9 @@ class QitJsonParser extends BaseJsonParser {
 
 		$this->parsed_config = $config;
 
-		// Add loaded test packages to the config
-		$this->parsed_config['test_packages'] = $this->loaded_packages;
+		// Add loaded test packages to the config (use manifest objects)
+		$this->parsed_config['test_packages'] = $this->loaded_manifest_objects;
+		$this->parsed_config['test_package_metadata'] = $this->loaded_package_metadata;
 
 		$this->debug_log( '=== apply_business_logic completed ===' );
 
@@ -140,6 +145,19 @@ class QitJsonParser extends BaseJsonParser {
 			try {
 				$this->debug_log( "Attempting to parse test package at: $file_path" );
 				$manifest_object = $this->package_parser->parse( $file_path );
+				
+				// Store the manifest object
+				$this->loaded_manifest_objects[ $reference ] = $manifest_object;
+				
+				// Store metadata separately
+				$this->loaded_package_metadata[ $reference ] = [
+					'reference' => $reference,
+					'local'     => true,
+					'remote'    => false,
+					'path'      => $file_path,
+				];
+				
+				// Keep backward compatibility with array format
 				$this->loaded_packages[ $reference ] = $manifest_object->jsonSerialize();
 				$this->loaded_packages[ $reference ]['reference'] = $reference;
 				$this->loaded_packages[ $reference ]['local']     = true;
@@ -148,8 +166,19 @@ class QitJsonParser extends BaseJsonParser {
 				throw new \RuntimeException( "Failed to parse test package '$reference': " . $e->getMessage() );
 			}
 		} else {
-			// Remote reference
-			$this->loaded_packages[ $reference ] = $this->create_remote_package_stub( $reference );
+			// Remote reference - create stub
+			$stub = $this->create_remote_package_stub( $reference );
+			$this->loaded_packages[ $reference ] = $stub;
+			
+			// For remote packages, we don't have manifest objects yet, only metadata
+			$this->loaded_package_metadata[ $reference ] = [
+				'reference' => $reference,
+				'local'     => $stub['local'] ?? false,
+				'remote'    => $stub['remote'] ?? true,
+				'vendor'    => $stub['vendor'] ?? '',
+				'package'   => $stub['package'] ?? '',
+				'version'   => $stub['version'] ?? '',
+			];
 		}
 
 		return $this->loaded_packages[ $reference ];

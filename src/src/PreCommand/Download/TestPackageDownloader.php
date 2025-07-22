@@ -6,6 +6,7 @@ use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
 use QIT_CLI\Cache;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
@@ -25,6 +26,9 @@ class TestPackageDownloader {
 	/** @var TestPackageManifestParser */
 	protected $manifest_parser;
 
+	/** @var array<string,array> */
+	protected array $package_metadata = [];
+
 	public function __construct(
 		Cache $cache,
 		Zipper $zipper,
@@ -43,7 +47,7 @@ class TestPackageDownloader {
 	 * @param array<string, array> $packages Map of reference => package info.
 	 * @param string               $cache_dir Cache directory.
 	 *
-	 * @return array<string, array> Map of reference => manifest content
+	 * @return array<string,TestPackageManifest> Map of reference => manifest objects
 	 */
 	public function download( array $packages, string $cache_dir ): array {
 		if ( empty( $packages ) ) {
@@ -83,8 +87,10 @@ class TestPackageDownloader {
 
 	/**
 	 * Download a single test package
+	 *
+	 * @return TestPackageManifest
 	 */
-	public function download_single( string $reference, string $cache_dir ): array {
+	public function download_single( string $reference, string $cache_dir ): TestPackageManifest {
 		$download_urls = $this->fetch_download_urls( [ $reference ] );
 
 		if ( ! isset( $download_urls[ $reference ] ) ) {
@@ -116,17 +122,24 @@ class TestPackageDownloader {
 
 	/**
 	 * Download and extract a test package
+	 *
+	 * @return TestPackageManifest
 	 */
-	protected function download_package( string $reference, array $url_info, string $cache_dir ): array {
+	protected function download_package( string $reference, array $url_info, string $cache_dir ): TestPackageManifest {
 		$cache_key = 'test_package_' . md5( $reference . '_' . ( $url_info['version'] ?? 'latest' ) );
 		$cached    = $this->cache->get( $cache_key );
 
-		if ( $cached && is_array( $cached ) ) {
+		if ( $cached && is_array( $cached ) && isset( $cached['manifest'] ) ) {
 			if ( $this->output->isVeryVerbose() ) {
 				$this->output->writeln( "Using cached test package '$reference'" );
 			}
 
-			return $cached;
+			// Restore metadata for caller access
+			if ( isset( $cached['metadata'] ) ) {
+				$this->package_metadata[ $reference ] = $cached['metadata'];
+			}
+
+			return new TestPackageManifest( $cached['manifest'] );
 		}
 
 		// Download the package
@@ -161,20 +174,28 @@ class TestPackageDownloader {
 
 		$manifest_object = $this->manifest_parser->parse( $manifest_file );
 
-		// Convert to array and add metadata
-		$manifest = $manifest_object->jsonSerialize();
-		$manifest['reference']       = $reference;
-		$manifest['remote']          = true;
-		$manifest['downloaded_path'] = $package_dir;
-		$manifest['version']         = $url_info['version'] ?? 'unknown';
+		// Prepare metadata separately
+		$metadata = [
+			'reference'       => $reference,
+			'remote'          => true,
+			'downloaded_path' => $package_dir,
+			'version'         => $url_info['version'] ?? 'unknown',
+		];
+		$this->package_metadata[ $reference ] = $metadata;
 
-		// Cache the manifest
-		$this->cache->set( $cache_key, $manifest, DAY_IN_SECONDS );
+		$manifest_array = $manifest_object->jsonSerialize();
+
+		// Cache both manifest and metadata together
+		$this->cache->set( $cache_key, [
+			'manifest' => $manifest_array,
+			'metadata' => $metadata,
+		], DAY_IN_SECONDS );
 
 		// Clean up zip file
 		unlink( $zip_file );
 
-		return $manifest;
+		// Return the TestPackageManifest object
+		return $manifest_object;
 	}
 
 	/**
@@ -287,5 +308,14 @@ class TestPackageDownloader {
 		}
 
 		return $results;
+	}
+
+	/**
+	 * Expose package metadata collected during downloads.
+	 *
+	 * @return array<string,mixed>
+	 */
+	public function getMetadata( string $reference ): array {
+		return $this->package_metadata[ $reference ] ?? [];
 	}
 }

@@ -4,7 +4,8 @@
         "slug": "test-plugin",
         "source": {
             "type": "local",
-            "path": ".\/"
+            "path": ".\/",
+            "resolved_path": "\/tmp\/qit_test_fixed\/.\/"
         }
     },
     "test_types": {
@@ -14,6 +15,17 @@
                     "woocommerce\/e2e:stable"
                 ]
             }
+        }
+    },
+    "test_packages": [],
+    "test_package_metadata": {
+        "woocommerce\/e2e:stable": {
+            "reference": "woocommerce\/e2e:stable",
+            "local": false,
+            "remote": true,
+            "vendor": "woocommerce",
+            "package": "e2e",
+            "version": "stable"
         }
     }
 }

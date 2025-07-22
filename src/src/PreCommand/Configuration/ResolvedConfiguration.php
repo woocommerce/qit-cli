@@ -3,6 +3,7 @@
 namespace QIT_CLI\PreCommand\Configuration;
 
 use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 
 /**
  * Represents a fully resolved configuration with all extends processed,
@@ -15,7 +16,10 @@ class ResolvedConfiguration {
 	public array $environments       = [];
 	public array $test_types         = [];
 	public array $groups             = [];
+	/** @var array<string,TestPackageManifest> */
 	public array $test_packages      = [];
+	/** @var array<string,array> Package metadata (reference, local, remote, path, etc.) */
+	public array $test_package_metadata = [];
 	public array $resolved_plugins   = [];
 	public array $resolved_themes    = [];
 	public array $php_extensions     = [];
@@ -59,7 +63,7 @@ class ResolvedConfiguration {
 	/**
 	 * Get a specific test package by reference
 	 */
-	public function get_test_package( string $reference ): array {
+	public function get_test_package( string $reference ): TestPackageManifest {
 		if ( ! isset( $this->test_packages[ $reference ] ) ) {
 			throw new \RuntimeException( "Test package '$reference' not found" );
 		}
@@ -68,7 +72,18 @@ class ResolvedConfiguration {
 	}
 
 	/**
+	 * Get all test packages
+	 * 
+	 * @return array<string,TestPackageManifest>
+	 */
+	public function getAllTestPackages(): array {
+		return $this->test_packages;
+	}
+
+	/**
 	 * Get all test packages for a specific test configuration
+	 * 
+	 * @return array<string,TestPackageManifest>
 	 */
 	public function get_test_packages_for_config( string $test_type, string $profile ): array {
 		$config = $this->get_test_config( $test_type, $profile );
@@ -86,12 +101,26 @@ class ResolvedConfiguration {
 	}
 
 	/**
-	 * Check if a test package is local
+	 * Check if a test package is local based on reference format
 	 */
 	public function is_local_package( string $reference ): bool {
-		$package = $this->get_test_package( $reference );
+		// Check for local/ prefix (new format)
+		if ( strpos( $reference, 'local/' ) === 0 ) {
+			return true;
+		}
 
-		return ( $package['local'] ?? false ) || ( $package['remote'] ?? true ) === false;
+		// Check for file paths
+		if ( strpos( $reference, '/' ) !== false && strpos( $reference, ':' ) === false ) {
+			return true;
+		}
+
+		// Check for .json extension
+		if ( substr( $reference, - 5 ) === '.json' ) {
+			return true;
+		}
+
+		// Fallback to stored metadata
+		return $this->test_package_metadata[ $reference ]['local'] ?? false;
 	}
 
 	/**
@@ -191,7 +220,8 @@ class ResolvedConfiguration {
 			'environments'      => $this->environments,
 			'test_types'        => $this->test_types,
 			'groups'            => $this->groups,
-			'test_packages'     => $this->test_packages,
+			'test_packages'     => array_map( static fn ( TestPackageManifest $m ) => $m->jsonSerialize(), $this->test_packages ),
+			'test_package_metadata' => $this->test_package_metadata,
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
 			'resolved_plugins'  => array_map( 'serialize', $this->resolved_plugins ),
 			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_serialize -- Used for object caching
@@ -216,7 +246,8 @@ class ResolvedConfiguration {
 		$config->environments  = $data['environments'];
 		$config->test_types    = $data['test_types'];
 		$config->groups        = $data['groups'];
-		$config->test_packages = $data['test_packages'];
+		$config->test_packages = array_map( static fn ( array $a ) => new TestPackageManifest( $a ), $data['test_packages'] );
+		$config->test_package_metadata = $data['test_package_metadata'] ?? [];
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Used for object caching
 		$config->resolved_plugins = array_map( 'unserialize', $data['resolved_plugins'] );
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize -- Used for object caching

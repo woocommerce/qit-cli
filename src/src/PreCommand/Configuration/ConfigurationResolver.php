@@ -96,9 +96,10 @@ class ConfigurationResolver {
 			count( $resolved->groups )
 		) );
 
-		// Skip test packages
-		debug_log( 'Step 4: Loading test packages (skipped)...' );
+		// Load test packages
+		debug_log( 'Step 4: Loading test packages...' );
 		$resolved->test_packages = $parsed_config['test_packages'] ?? [];
+		$resolved->test_package_metadata = $parsed_config['test_package_metadata'] ?? [];
 
 		// Skip downloading remote test packages
 		debug_log( 'Step 5: Downloading remote test packages (skipped)...' );

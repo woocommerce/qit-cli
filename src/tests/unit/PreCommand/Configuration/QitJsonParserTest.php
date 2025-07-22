@@ -64,8 +64,8 @@ JSON;
     },
     "environments": {
         "default": {
-            "php_version": "7.4",
-            "wp_version": "6.0",
+            "php": "7.4",
+            "wp": "6.0",
             "plugins": [
                 {"slug": "woocommerce", "from": "wccom"},
                 {"slug": "test-plugin", "from": "local", "path": "./"}
@@ -83,7 +83,7 @@ JSON;
 		$parsed_config = $parser->parse( $config_file );
 
 		$this->assertArrayHasKey( 'environments', $parsed_config );
-		$this->assertEquals( '7.4', $parsed_config['environments']['default']['php_version'] );
+		$this->assertEquals( '7.4', $parsed_config['environments']['default']['php'] );
 		$this->assertCount( 2, $parsed_config['environments']['default']['plugins'] );
 		$this->assertCount( 1, $parsed_config['environments']['default']['themes'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
@@ -246,21 +246,24 @@ JSON;
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "build",
-            "command": "npm run build",
-            "output": "./plugin.zip"
+            "type": "local",
+            "path": "./plugin.zip",
+            "build": "npm run build"
         }
     }
 }
 JSON;
 		file_put_contents( $config_file, $config );
+		
+		// Create the plugin.zip file that the test expects
+		file_put_contents( $this->temp_dir . '/plugin.zip', 'dummy zip content' );
 
 		$parser        = new QitJsonParser();
 		$parsed_config = $parser->parse( $config_file );
 
-		$this->assertEquals( 'build', $parsed_config['sut']['source']['type'] );
-		$this->assertEquals( 'npm run build', $parsed_config['sut']['source']['command'] );
-		$this->assertStringEndsWith( 'plugin.zip', $parsed_config['sut']['source']['output'] );
+		$this->assertEquals( 'local', $parsed_config['sut']['source']['type'] );
+		$this->assertEquals( 'npm run build', $parsed_config['sut']['source']['build'] );
+		$this->assertStringEndsWith( 'plugin.zip', $parsed_config['sut']['source']['path'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 	}
 
@@ -270,8 +273,8 @@ JSON;
 {
     "environments": {
         "default": {
-            "php_version": "7.4",
-            "wp_version": "6.0"
+            "php": "7.4",
+            "wp": "6.0"
         }
     }
 }
@@ -292,7 +295,7 @@ JSON;
     },
     "environments": {
         "default": {
-            "php_version": "8.0"
+            "php": "8.0"
         }
     }
 }
@@ -303,8 +306,8 @@ JSON;
 		$parsed_config = $parser->parse( $config_file );
 
 		$this->assertArrayHasKey( 'environments', $parsed_config );
-		$this->assertEquals( '8.0', $parsed_config['environments']['default']['php_version'] );
-		$this->assertEquals( '6.0', $parsed_config['environments']['default']['wp_version'] );
+		$this->assertEquals( '8.0', $parsed_config['environments']['default']['php'] );
+		$this->assertEquals( '6.0', $parsed_config['environments']['default']['wp'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 	}
 
@@ -341,6 +344,9 @@ JSON;
     "test_dir": "./tests/e2e",
     "description": "E2E tests for checkout",
     "lifecycle": {
+        "global": {
+            "setup": ["echo 'Global setup'"]
+        },
         "test": {
             "run": ["npm run playwright"]
         }
@@ -412,14 +418,14 @@ JSON;
 		$this->assertEquals( 'https://example.com/plugin.zip', $parsed_config['sut']['source']['url'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 
-		// Test zip source
+		// Test local source with zip file
 		$config = <<<'JSON'
 {
     "sut": {
         "type": "plugin",
         "slug": "test-plugin",
         "source": {
-            "type": "zip",
+            "type": "local",
             "path": "./plugin.zip"
         }
     }
@@ -431,7 +437,7 @@ JSON;
 		$parser        = new QitJsonParser();
 		$parsed_config = $parser->parse( $config_file );
 
-		$this->assertEquals( 'zip', $parsed_config['sut']['source']['type'] );
+		$this->assertEquals( 'local', $parsed_config['sut']['source']['type'] );
 		$this->assertStringEndsWith( 'plugin.zip', $parsed_config['sut']['source']['path'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 
@@ -470,7 +476,7 @@ JSON;
     },
     "environments": {
         "default": {
-            "php_version": "8.0",
+            "php": "8.0",
             "env_vars": {
                 "QIT_DEBUG": "true",
                 "WP_DEBUG": "false"

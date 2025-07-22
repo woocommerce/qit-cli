@@ -6,12 +6,16 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
+use QIT_CLI\PreCommand\Configuration\ResolvedConfiguration;
+use QIT_CLI\PreCommand\Results\LocalTestResult;
 
 /**
  * Example implementation of a test command that uses the resolved configuration
  */
 class TestE2ECommand extends QITCommand {
 	protected static $defaultName = 'test:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+
+	protected ?ResolvedConfiguration $resolved_config = null;
 
 	protected function configure(): void {
 		parent::configure();
@@ -282,6 +286,103 @@ class TestE2ECommand extends QITCommand {
 			$output->writeln( '  ' . implode( ', ', $php_extensions ) );
 			$output->writeln( '' );
 		}
+	}
+
+	/**
+	 * Get the resolved configuration from precommand result
+	 */
+	protected function get_resolved_config(): ResolvedConfiguration {
+		if ( $this->resolved_config === null ) {
+			$result = $this->getPreCommandResult();
+			if ( $result instanceof LocalTestResult ) {
+				$this->resolved_config = $result->configuration;
+			} else {
+				throw new \RuntimeException( 'No resolved configuration available' );
+			}
+		}
+		return $this->resolved_config;
+	}
+
+	/**
+	 * Get all test packages for the current profile
+	 */
+	protected function get_test_packages(): array {
+		$resolved_config = $this->get_resolved_config();
+		$profile = $this->input->getOption( 'profile' ) ?? 'default';
+		
+		// Get test packages for the current test type and profile
+		$test_packages = $resolved_config->get_test_packages_for_config( 'e2e', $profile );
+		
+		// Convert TestPackageManifest objects to arrays for backward compatibility
+		$packages = [];
+		foreach ( $test_packages as $ref => $manifest ) {
+			$packages[ $ref ] = $manifest->jsonSerialize();
+			
+			// Add metadata from resolved config
+			$metadata = $resolved_config->test_package_metadata[ $ref ] ?? [];
+			$packages[ $ref ] = array_merge( $packages[ $ref ], $metadata );
+		}
+		
+		return $packages;
+	}
+
+	/**
+	 * Get test configuration for the current profile
+	 */
+	protected function get_test_configuration(): array {
+		$resolved_config = $this->get_resolved_config();
+		$profile = $this->input->getOption( 'profile' ) ?? 'default';
+		
+		return $resolved_config->get_test_config( 'e2e', $profile );
+	}
+
+	/**
+	 * Get environment configuration
+	 */
+	protected function get_environment_config(): array {
+		$resolved_config = $this->get_resolved_config();
+		$environment = $this->input->getOption( 'environment' ) ?? 'default';
+		
+		return $resolved_config->get_environment( $environment );
+	}
+
+	/**
+	 * Check required secrets
+	 */
+	protected function check_secrets(): void {
+		$resolved_config = $this->get_resolved_config();
+		
+		if ( ! $resolved_config->requires_secrets() ) {
+			return;
+		}
+		
+		$missing_secrets = [];
+		foreach ( $resolved_config->get_required_secrets() as $secret ) {
+			if ( empty( getenv( $secret ) ) ) {
+				$missing_secrets[] = $secret;
+			}
+		}
+		
+		if ( ! empty( $missing_secrets ) ) {
+			$this->output->writeln( '<error>Missing required secrets:</error>' );
+			foreach ( $missing_secrets as $secret ) {
+				$this->output->writeln( "  - $secret" );
+			}
+			throw new \RuntimeException( 'Required secrets are not set' );
+		}
+	}
+
+	/**
+	 * Output configuration summary
+	 */
+	protected function output_config_summary(): void {
+		$resolved_config = $this->get_resolved_config();
+		
+		$this->output->writeln( '<info>Configuration Summary:</info>' );
+		$this->output->writeln( sprintf( '  Test Packages: %d', count( $resolved_config->getAllTestPackages() ) ) );
+		$this->output->writeln( sprintf( '  Environments: %d', count( $resolved_config->environments ) ) );
+		$this->output->writeln( sprintf( '  Test Types: %d', count( $resolved_config->test_types ) ) );
+		$this->output->writeln( '' );
 	}
 
 	/**

@@ -6,5 +6,7 @@
             "type": "url",
             "url": "https:\/\/example.com\/plugin.zip"
         }
-    }
+    },
+    "test_packages": [],
+    "test_package_metadata": []
 }

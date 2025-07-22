@@ -1,8 +1,8 @@
 {
     "environments": {
         "default": {
-            "php_version": "8.0",
-            "wp_version": "6.0"
+            "php": "8.0",
+            "wp": "6.0"
         }
     },
     "sut": {
@@ -10,7 +10,10 @@
         "slug": "test-plugin",
         "source": {
             "type": "local",
-            "path": ".\/"
+            "path": ".\/",
+            "resolved_path": "\/tmp\/qit_test_fixed\/.\/"
         }
-    }
+    },
+    "test_packages": [],
+    "test_package_metadata": []
 }

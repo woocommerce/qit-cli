@@ -4,13 +4,14 @@
         "slug": "test-plugin",
         "source": {
             "type": "local",
-            "path": ".\/"
+            "path": ".\/",
+            "resolved_path": "\/tmp\/qit_test_fixed\/.\/"
         }
     },
     "environments": {
         "default": {
-            "php_version": "7.4",
-            "wp_version": "6.0",
+            "php": "7.4",
+            "wp": "6.0",
             "plugins": [
                 {
                     "slug": "woocommerce",
@@ -26,5 +27,7 @@
                 "storefront"
             ]
         }
-    }
+    },
+    "test_packages": [],
+    "test_package_metadata": []
 }

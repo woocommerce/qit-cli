@@ -4,7 +4,10 @@
         "slug": "test-plugin",
         "source": {
             "type": "local",
-            "path": ".\/"
+            "path": ".\/",
+            "resolved_path": "\/tmp\/qit_test_fixed\/.\/"
         }
-    }
+    },
+    "test_packages": [],
+    "test_package_metadata": []
 }

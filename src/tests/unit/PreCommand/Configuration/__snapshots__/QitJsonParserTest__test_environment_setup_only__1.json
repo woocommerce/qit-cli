@@ -4,7 +4,8 @@
         "slug": "test-plugin",
         "source": {
             "type": "local",
-            "path": ".\/"
+            "path": ".\/",
+            "resolved_path": "\/tmp\/qit_test_fixed\/.\/"
         }
     },
     "environments": {
@@ -12,6 +13,17 @@
             "setup_only": [
                 "woocommerce\/minimal:stable"
             ]
+        }
+    },
+    "test_packages": [],
+    "test_package_metadata": {
+        "woocommerce\/minimal:stable": {
+            "reference": "woocommerce\/minimal:stable",
+            "local": false,
+            "remote": true,
+            "vendor": "woocommerce",
+            "package": "minimal",
+            "version": "stable"
         }
     }
 }

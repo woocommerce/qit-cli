@@ -4,11 +4,13 @@ namespace QIT_CLI\PreCommand\Results;
 
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\PreCommand\Configuration\ResolvedConfiguration;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 
 /**
  * Result for local test commands - contains everything needed to run tests locally
  */
 class LocalTestResult extends EnvironmentResult {
+	/** @var TestPackageManifest[] */
 	public array $test_packages;
 	public array $test_config;
 
@@ -38,10 +40,11 @@ class LocalTestResult extends EnvironmentResult {
 		$paths = [];
 
 		foreach ( $this->test_packages as $ref => $package ) {
-			if ( isset( $package['path'] ) ) {
-				$paths[ $ref ] = $package['path'];
-			} elseif ( isset( $package['downloaded_path'] ) ) {
-				$paths[ $ref ] = $package['downloaded_path'];
+			$metadata = $this->configuration->test_package_metadata[ $ref ] ?? [];
+			if ( isset( $metadata['path'] ) ) {
+				$paths[ $ref ] = $metadata['path'];
+			} elseif ( isset( $metadata['downloaded_path'] ) ) {
+				$paths[ $ref ] = $metadata['downloaded_path'];
 			}
 		}
 

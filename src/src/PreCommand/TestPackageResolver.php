@@ -11,6 +11,9 @@ use function QIT_CLI\normalize_path;
 class TestPackageResolver {
 	protected TestPackageDownloader $package_downloader;
 
+	/** @var array<string,array> */
+	protected array $metadata = [];
+
 	public function __construct( TestPackageDownloader $package_downloader ) {
 		$this->package_downloader = $package_downloader;
 	}
@@ -52,10 +55,20 @@ class TestPackageResolver {
 
 			// Merge downloaded packages
 			foreach ( $downloaded as $ref => $manifest ) {
-				$resolved_packages[ $ref ] = array_merge( $remote_packages[ $ref ], $manifest );
+				$resolved_packages[ $ref ] = $manifest;
+				$this->metadata[ $ref ]  = $this->package_downloader->getMetadata( $ref );
 			}
 		}
 
 		return $resolved_packages;
+	}
+
+	/**
+	 * Return metadata for all resolved packages.
+	 *
+	 * @return array<string,array>
+	 */
+	public function getMetadata(): array {
+		return $this->metadata;
 	}
 }
