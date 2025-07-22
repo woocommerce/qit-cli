@@ -155,8 +155,7 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		if ( 
-			$input->getArgument( 'woo_extension' ) === 'woocommerce' && 
+		if ( $input->getArgument( 'woo_extension' ) === 'woocommerce' &&
 			$input->getArgument( 'test' ) === 'activation'
 		) {
 			$output->writeln( '<info>Running activation test scenario.</info>' );

@@ -8,6 +8,8 @@ use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
@@ -53,18 +55,23 @@ class LocalTestRunNotifier {
 	/**
 	 * @suppress PhanTypeArraySuspicious
 	 *
-	 * @param int        $woo_extension_id
-	 * @param string     $woocommerce_version
-	 * @param E2EEnvInfo $env_info
-	 * @param bool       $is_development
-	 * @param bool       $notify
+	 * @param int                           $woo_extension_id
+	 * @param string                        $woocommerce_version
+	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
+	 * @param bool                          $is_development
+	 * @param bool                          $notify
 	 */
-	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
+	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, $env_info, bool $is_development, bool $notify ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
 
 		$test_type = 'e2e';
+
+		// Check if we're running a performance test.
+		if ( getenv( 'QIT_ENVIRONMENT_TYPE' ) === 'performance' ) {
+			$test_type = 'performance';
+		}
 
 		foreach ( $env_info->plugins as $plugin ) {
 			// Are we running an activation test?
@@ -134,11 +141,11 @@ class LocalTestRunNotifier {
 	}
 
 	/**
-	 * @param TestResult $test_result
+	 * @param TestResult|PerformanceTestResult $test_result
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
-	public function notify_test_finished( TestResult $test_result ): array {
+	public function notify_test_finished( $test_result ): array {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {
@@ -225,9 +232,19 @@ class LocalTestRunNotifier {
 			$status = 'cancelled';
 		}
 
-		// If it has failed any assertion, it's a failure.
-		if ( is_null( $status ) && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
+		// Check for E2E test failures.
+		if ( is_null( $status ) && $test_result instanceof TestResult && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
 			$status = 'failed';
+		}
+
+		// Check for Performance test failures.
+		if ( is_null( $status ) && $test_result instanceof PerformanceTestResult ) {
+			$metrics      = $test_result->get_metrics();
+			$k6_exit_code = $metrics['k6_exit_code'] ?? null;
+
+			if ( $k6_exit_code !== null && $k6_exit_code !== 0 ) {
+				$status = 'failed';
+			}
 		}
 
 		// If there's anything on debug.log, it's a warning.
