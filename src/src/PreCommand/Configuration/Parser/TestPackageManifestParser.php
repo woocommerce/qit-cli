@@ -33,7 +33,7 @@ class TestPackageManifestParser extends BaseJsonParser {
 		// Normalize phase commands
 		if ( isset( $config['test']['phases'] ) ) {
 			foreach ( $config['test']['phases'] as $phase => &$commands ) {
-				$config['test']['phases'][$phase] = $this->normalize_phase_commands( $commands );
+				$config['test']['phases'][ $phase ] = $this->normalize_phase_commands( $commands );
 			}
 		}
 
@@ -64,6 +64,9 @@ class TestPackageManifestParser extends BaseJsonParser {
 
 	/**
 	 * Normalize phase commands
+	 *
+	 * @param mixed $commands
+	 * @return array<int, string|array<string, mixed>>
 	 */
 	private function normalize_phase_commands( $commands ): array {
 		if ( ! is_array( $commands ) ) {
@@ -80,7 +83,7 @@ class TestPackageManifestParser extends BaseJsonParser {
 				if ( ! is_string( $command['command'] ) ) {
 					throw new \RuntimeException( 'Command must be a string, got: ' . gettype( $command['command'] ) );
 				}
-				
+
 				// Check if command references a file
 				if ( strpos( $command['command'], './' ) === 0 ) {
 					$file_path = $this->resolve_path( $command['command'] );

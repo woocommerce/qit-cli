@@ -58,8 +58,8 @@ class PackageScaffoldCommand extends QITCommand {
 
 		// Get current partner name
 		$current_environment = Config::get_current_manager_backend();
-		$partner_name_parts = explode( '-', $current_environment );
-		$current_partner = end( $partner_name_parts );
+		$partner_name_parts  = explode( '-', $current_environment );
+		$current_partner     = end( $partner_name_parts );
 
 		// Single prompt for package reference in vendor/package format
 		if ( empty( $vendor ) || empty( $package ) ) {
@@ -90,7 +90,7 @@ class PackageScaffoldCommand extends QITCommand {
 				// Validate vendor part - must be partner alias or owned extension
 				if ( $vendor_part !== $current_partner ) {
 					// Check if it's a WooCommerce extension they maintain
-					$extensions = $this->woo_extensions_list->get_woo_extension_list();
+					$extensions      = $this->woo_extensions_list->get_woo_extension_list();
 					$extension_found = false;
 					foreach ( $extensions as $ext ) {
 						if ( $ext['slug'] === $vendor_part ) {
@@ -137,7 +137,7 @@ class PackageScaffoldCommand extends QITCommand {
 			// Validate vendor ownership - must be partner alias or owned extension
 			if ( $vendor !== $current_partner ) {
 				// Check if it's a WooCommerce extension they maintain
-				$extensions = $this->woo_extensions_list->get_woo_extension_list();
+				$extensions      = $this->woo_extensions_list->get_woo_extension_list();
 				$extension_found = false;
 				foreach ( $extensions as $ext ) {
 					if ( $ext['slug'] === $vendor ) {
@@ -210,7 +210,7 @@ BASH;
 				],
 				'results' => [
 					'ctrf-json'  => './results/ctrf.json',
-					'allure-dir' => './results/allure'
+					'allure-dir' => './results/allure',
 				],
 			],
 		];
@@ -268,7 +268,7 @@ BASH;
 			'private'         => true,
 			'type'            => 'module',
 			'devDependencies' => [],
-			'scripts'         => [ 'test:e2e' => 'playwright test' ]
+			'scripts'         => [ 'test:e2e' => 'playwright test' ],
 		];
 		file_put_contents(
 			$dir . '/package.json',
@@ -328,13 +328,16 @@ JS;
 		$packages = [
 			'@playwright/test',
 			'playwright-ctrf-json-reporter',
-			'allure-playwright'
+			'allure-playwright',
 		];
 
 		foreach ( $packages as $package ) {
 			$proc = new \Symfony\Component\Process\Process(
 				[ 'npm', 'install', '--save-dev', $package ], $dir,
-				[ 'CI' => '1', 'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD' => '1' ]
+				[
+					'CI'                               => '1',
+					'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD' => '1',
+				]
 			);
 			$proc->setTimeout( null );
 			$proc->run( fn( $t, $b ) => $out->write( $b ) );

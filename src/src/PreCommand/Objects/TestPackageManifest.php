@@ -182,11 +182,11 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function jsonSerialize(): mixed {
 		$result = [
-			'vendor'       => $this->vendor,
-			'package'      => $this->package,
-			'test_type'    => $this->test_type,
-			'test_dir'     => $this->test_dir,
-			'test'         => [
+			'vendor'    => $this->vendor,
+			'package'   => $this->package,
+			'test_type' => $this->test_type,
+			'test_dir'  => $this->test_dir,
+			'test'      => [
 				'phases'  => $this->phases,
 				'results' => $this->test_results,
 			],
