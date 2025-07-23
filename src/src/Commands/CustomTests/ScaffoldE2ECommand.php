@@ -9,6 +9,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\normalize_path;
@@ -19,221 +20,248 @@ class ScaffoldE2ECommand extends QITCommand {
 	protected function configure(): void {
 		parent::configure();
 		$this
-			->addArgument( 'path', InputArgument::REQUIRED, 'The path to scaffold an example E2E test.' )
-			->addOption( 'with-shared', 's', InputOption::VALUE_NONE, 'Include shared setup examples.' )
-			->addOption( 'with-teardown', 't', InputOption::VALUE_NONE, 'Include teardown examples.' )
-			->setDescription( 'Scaffold an example E2E test.' );
+			->addArgument( 'target_dir', InputArgument::REQUIRED, 'Directory to scaffold the E2E test package (must not exist).' )
+			->addOption( 'vendor', null, InputOption::VALUE_REQUIRED, 'Vendor slug for the test package (e.g. acme).' )
+			->addOption( 'package', null, InputOption::VALUE_REQUIRED, 'Package slug for the test package (e.g. my-plugin-tests).' )
+			->addOption( 'framework', null, InputOption::VALUE_REQUIRED, 'Framework to use (only "playwright" is supported).' )
+			->addOption( 'only-manifest', null, InputOption::VALUE_NONE, 'Create manifest.json only and exit.' )
+			->setDescription( 'Scaffold an E2E test package (manifest-first approach).' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$path = $input->getArgument( 'path' );
+		$io       = new SymfonyStyle( $input, $output );
+		$target_dir = $input->getArgument( 'target_dir' );
+		$vendor   = $input->getOption( 'vendor' );
+		$package  = $input->getOption( 'package' );
+		$framework = $input->getOption( 'framework' );
 
-		$path_to_generate = normalize_path( $path );
-
-		if ( file_exists( $path_to_generate ) ) {
-			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( "Directory already exists. Do you want to delete this directory and Scaffold E2E tests in \"$path_to_generate\" anyway? <question>(y/n)</question> ", false ) ) ) {
-				return Command::SUCCESS;
-			}
-
-			try {
-				$this->safely_delete_scaffolded_directory( $path_to_generate );
-			} catch ( \Exception $e ) {
-				$io = new SymfonyStyle( $input, $output );
-
-				$io->warning( [
-					"Could not delete the existing directory: $path_to_generate",
-					$e->getMessage(),
-				] );
-
-				$output->writeln( '<comment>For safety reasons, only expected files are deleted.</comment>' );
-				$output->writeln( '<comment>Please delete the directory "' . $path_to_generate . '" manually and try again.</comment>' );
-
+		// Interactive prompts for required values when missing.
+		$question_helper = $this->getHelper( 'question' );
+		
+		// Prompt for vendor if missing
+		if ( empty( $vendor ) ) {
+			$vendor_question = new Question( 'Vendor (e.g. acme): ' );
+			$vendor_question->setValidator( function ( $answer ) {
+				if ( empty( $answer ) || ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $answer ) ) {
+					throw new \RuntimeException( 'Vendor must be non-empty and contain only letters, numbers, underscores, dots, and hyphens.' );
+				}
+				return $answer;
+			} );
+			$vendor = $question_helper->ask( $input, $output, $vendor_question );
+		} else {
+			// Validate vendor from option
+			if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $vendor ) ) {
+				$io->error( 'Vendor must contain only letters, numbers, underscores, dots, and hyphens.' );
 				return Command::FAILURE;
 			}
 		}
 
-		if ( file_exists( $path_to_generate ) ) {
-			$output->writeln( '<error>Directory already exists: ' . $path_to_generate . '</error>' );
+		// Prompt for package if missing
+		if ( empty( $package ) ) {
+			$package_question = new Question( 'Package (e.g. my-plugin-tests): ' );
+			$package_question->setValidator( function ( $answer ) {
+				if ( empty( $answer ) || ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $answer ) ) {
+					throw new \RuntimeException( 'Package must be non-empty and contain only letters, numbers, underscores, dots, and hyphens.' );
+				}
+				return $answer;
+			} );
+			$package = $question_helper->ask( $input, $output, $package_question );
+		} else {
+			// Validate package from option
+			if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $package ) ) {
+				$io->error( 'Package must contain only letters, numbers, underscores, dots, and hyphens.' );
+				return Command::FAILURE;
+			}
+		}
 
+		// Prompt for framework if missing
+		if ( empty( $framework ) ) {
+			$framework_question = new Question( 'Framework (default playwright) [playwright]: ', 'playwright' );
+			$framework_question->setValidator( function ( $answer ) {
+				$answer = strtolower( trim( $answer ) );
+				if ( $answer !== 'playwright' ) {
+					throw new \RuntimeException( 'Only "playwright" framework is supported.' );
+				}
+				return $answer;
+			} );
+			$framework = $question_helper->ask( $input, $output, $framework_question );
+		} else {
+			// Validate framework from option
+			if ( strtolower( $framework ) !== 'playwright' ) {
+				$io->error( 'Only "playwright" framework is supported.' );
+				return Command::FAILURE;
+			}
+			$framework = strtolower( $framework );
+		}
+
+		$target_dir = normalize_path( $target_dir );
+		if ( file_exists( $target_dir ) ) {
+			$io->error( sprintf( 'Directory already exists: %s', $target_dir ) );
 			return Command::FAILURE;
 		}
-
-		if ( ! mkdir( $path_to_generate, 0755, true ) ) {
-			$output->writeln( '<error>Could not create directory: ' . $path_to_generate . '</error>' );
-
-			return Command::FAILURE;
-		}
-
-		// Create basic 'bootstrap' directory.
-		if ( ! mkdir( $path_to_generate . '/bootstrap', 0755, true ) ) {
-			$output->writeln( '<error>Could not create directory: ' . $path_to_generate . '/bootstrap</error>' );
-
-			return Command::FAILURE;
-		}
-
-		// We bootstrap with isolated setup files by default.
-		$files = [
-			'setup-sh.txt'          => '/bootstrap/setup.sh',
-			'setup-js.txt'          => '/bootstrap/setup.js',
-			'mu-plugin-php.txt'     => '/bootstrap/mu-plugin.php',
-			'dependencies-json.txt' => '/bootstrap/dependencies.json',
-			'example-spec-js.txt'   => '/example.spec.js',
-		];
-
-		// If the user requests shared setup examples, we include them.
-		if ( $input->getOption( 'with-shared' ) ) {
-			$files = array_merge( $files, [
-				'shared-setup-sh.txt' => '/bootstrap/shared-setup.sh',
-				'shared-setup-js.txt' => '/bootstrap/shared-setup.js',
-			] );
-		}
-
-		// If the user requests teardown examples, include both isolated and shared teardowns.
-		if ( $input->getOption( 'with-teardown' ) ) {
-			$teardown_files = [
-				'teardown-sh.txt' => '/bootstrap/teardown.sh',
-				'teardown-js.txt' => '/bootstrap/teardown.js',
-			];
-
-			// Add shared teardowns only if shared setups were requested.
-			if ( $input->getOption( 'with-shared' ) ) {
-				$teardown_files = array_merge( $teardown_files, [
-					'shared-teardown-sh.txt' => '/bootstrap/shared-teardown.sh',
-					'shared-teardown-js.txt' => '/bootstrap/shared-teardown.js',
-				] );
-			}
-
-			$files = array_merge( $files, $teardown_files );
-		}
-
-		foreach ( $files as $example => $destination ) {
-			$result = $this->create_file_from_template( $output, $path_to_generate, $example, $destination );
-			if ( $result === Command::FAILURE ) {
-				return $result;
-			}
-		}
-
-		$output->writeln( '<info>Example E2E test generated in: ' . $path_to_generate . '</info>' );
-		$output->writeln( "You can now run your first test with <comment>qit run:e2e <your_slug> \"$path_to_generate\" --ui</comment>" );
-		$output->writeln( 'You can start writing your tests with codegen: <comment>qit run:e2e --codegen</comment>' );
-		$output->writeln( 'And when you are ready, you can publish your tests with <comment>qit test-tags:upload <your_slug> <path_to_test></comment>' );
-		$output->writeln( 'Read more about it on our documentation: https://qit.woo.com/docs/custom-tests/generating-tests' );
-
-		return Command::SUCCESS;
-	}
-
-	protected function create_file_from_template( OutputInterface $output, string $path_to_generate, string $source, string $destination ): int {
-		if ( ! file_put_contents( "$path_to_generate/$destination", file_get_contents( __DIR__ . "/scaffolding/$source" ) ) ) {
-			$output->writeln( '<error>Could not create file: ' . basename( $destination ) . '</error>' );
-
-			return Command::FAILURE;
-		}
-
-		return Command::SUCCESS;
-	}
-
-	/**
-	 * Safely deletes a scaffolded directory after performing safety checks.
-	 *
-	 * @param string $path_to_generate The path to the directory to be safely deleted.
-	 *
-	 * @throws \RuntimeException If the directory contains unexpected files or directories.
-	 */
-	protected function safely_delete_scaffolded_directory( string $path_to_generate ): void {
-		$expected_files = [
-			'./'        => [
-				'*.spec.js',
-			],
-			'bootstrap' => [
-				'*.sh',
-				'*.php',
-				'*.js',
-				'dependencies.json',
-			],
-		];
-
-		if ( ! is_dir( $path_to_generate ) ) {
-			throw new \RuntimeException( "$path_to_generate is not a directory" );
-		}
-
-		$root_iterator = new \DirectoryIterator( $path_to_generate );
-
-		$has_bootstrap_dir = false;
-
-		foreach ( $root_iterator as $fileinfo ) {
-			if ( $fileinfo->isDot() ) {
-				continue;
-			}
-
-			$filename = $fileinfo->getFilename();
-
-			if ( $fileinfo->isDir() ) {
-				if ( $filename === 'bootstrap' ) {
-					$has_bootstrap_dir = true;
-				} else {
-					throw new \RuntimeException( "Unexpected directory '$filename' found in the root directory." );
-				}
-			} elseif ( $fileinfo->isFile() ) {
-				// Check if the file matches any of the expected patterns in './'.
-				$matches_expected = false;
-				foreach ( $expected_files['./'] as $pattern ) {
-					if ( fnmatch( $pattern, $filename ) ) {
-						$matches_expected = true;
-						break;
-					}
-				}
-				if ( ! $matches_expected ) {
-					throw new \RuntimeException( "Unexpected file '$filename' found in the root directory." );
-				}
-			} else {
-				throw new \RuntimeException( "Unexpected item '$filename' found in the root directory." );
-			}
-		}
-
-		// If 'bootstrap' directory exists, check its contents.
-		if ( $has_bootstrap_dir ) {
-			$bootstrap_path = $path_to_generate . DIRECTORY_SEPARATOR . 'bootstrap';
-			if ( ! is_dir( $bootstrap_path ) ) {
-				throw new \RuntimeException( "'bootstrap' exists but is not a directory." );
-			}
-
-			$bootstrap_iterator = new \DirectoryIterator( $bootstrap_path );
-
-			// Iterate over bootstrap directory.
-			foreach ( $bootstrap_iterator as $fileinfo ) {
-				if ( $fileinfo->isDot() ) {
-					continue;
-				}
-
-				$filename = $fileinfo->getFilename();
-
-				if ( $fileinfo->isDir() ) {
-					throw new \RuntimeException( "Unexpected directory '$filename' found in the 'bootstrap' directory." );
-				} elseif ( $fileinfo->isFile() ) {
-					// Check if the file matches any of the expected patterns in 'bootstrap'.
-					$matches_expected = false;
-					foreach ( $expected_files['bootstrap'] as $pattern ) {
-						if ( fnmatch( $pattern, $filename ) ) {
-							$matches_expected = true;
-							break;
-						}
-					}
-					if ( ! $matches_expected ) {
-						throw new \RuntimeException( "Unexpected file '$filename' found in the 'bootstrap' directory." );
-					}
-				} else {
-					throw new \RuntimeException( "Unexpected item '$filename' found in the 'bootstrap' directory." );
-				}
-			}
-		}
-
-		// All safety checks passed, proceed to delete the directory.
-		$filesystem = new Filesystem();
 
 		try {
-			$filesystem->remove( $path_to_generate );
-		} catch ( \Exception $exception ) {
-			throw new \RuntimeException( "An error occurred while deleting '$path_to_generate': " . $exception->getMessage() );
+			(new Filesystem())->mkdir( $target_dir, 0755 );
+			// Create bootstrap subdirectory
+			(new Filesystem())->mkdir( $target_dir . DIRECTORY_SEPARATOR . 'bootstrap', 0755 );
+		} catch ( \Exception $e ) {
+			$io->error( 'Unable to create directory: ' . $e->getMessage() );
+			return Command::FAILURE;
+		}
+
+		// Create bootstrap/setup.sh with executable permissions
+		$setup_script_path = $target_dir . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'setup.sh';
+		$setup_script_content = <<<'BASH'
+#!/bin/bash
+# Example isolated setup script.
+# 🛈 The plugin under test is already active.
+# Add commands below; they run inside the Docker container used by QIT.
+# Examples:
+# wp theme install storefront --activate
+# wp option update blogname "My e2e test site"
+
+echo "Setup complete"
+BASH;
+
+		file_put_contents( $setup_script_path, $setup_script_content );
+		chmod( $setup_script_path, 0755 );
+
+		$manifest_path = $target_dir . DIRECTORY_SEPARATOR . 'manifest.json';
+		$manifest = [
+			'$schema'  => 'https://qit.woo.com/json-schema/test-package',
+			'vendor'   => $vendor,
+			'package'  => $package,
+			'test_type'=> 'e2e',
+			'test' => [
+				'phases'  => [
+					'beforeAllPlugins' => [],
+					'setup'            => ['./bootstrap/setup.sh'],
+					'run'              => [ 'npx playwright test' ],
+					'teardown'         => [],
+					'afterAllPlugins'  => [],
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'allure-dir'=> './results/allure'
+				],
+			],
+		];
+
+		file_put_contents( $manifest_path, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+
+		// Validate manifest against schema.
+		try {
+			$parser = new \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser();
+			$parser->parse( $manifest_path );
+		} catch ( \Throwable $e ) {
+			(new Filesystem())->remove( $target_dir );
+			$io->error( 'Manifest validation failed: ' . $e->getMessage() );
+			return Command::FAILURE;
+		}
+
+		if ( $input->getOption( 'only-manifest' ) ) {
+			$io->success( 'manifest.json created at ' . $manifest_path );
+			return Command::SUCCESS;
+		}
+
+		try {
+			$this->ensure_npm_available();
+			$this->write_package_json( $target_dir );
+			$this->write_playwright_config( $target_dir );
+			$this->write_sample_test( $target_dir );
+			$this->install_dev_dependencies( $target_dir, $output );
+		} catch ( \Throwable $e ) {
+			// Cleanup on failure.
+			(new Filesystem())->remove( $target_dir );
+			$io->error( $e->getMessage() );
+			return Command::FAILURE;
+		}
+
+		$io->success( 'E2E scaffold generated in ' . $target_dir );
+		$io->writeln( 'Next steps:' );
+		$io->writeln( '  • npm install (if not already done by Playwright wizard)' );
+		$io->writeln( '  • Edit bootstrap/setup.sh to customize your test environment setup' );
+		$io->writeln( sprintf( '  • qit package:publish %s/%s:<tag> %s', $vendor, $package, $target_dir ) );
+
+		return Command::SUCCESS;
+	}
+
+	private function ensure_npm_available(): void {
+		$process = \Symfony\Component\Process\Process::fromShellCommandline( 'command -v npm' );
+		$process->run();
+		if ( ! $process->isSuccessful() ) {
+			throw new \RuntimeException( 'npm must be installed and in PATH to scaffold Playwright projects.' );
+		}
+	}
+
+	private function write_package_json(string $dir): void {
+		$pkg = [
+			'private'         => true,
+			'type'            => 'module',
+			'devDependencies' => [],
+			'scripts' => [ 'test:e2e' => 'playwright test' ]
+		];
+		file_put_contents(
+			$dir . '/package.json',
+			json_encode($pkg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES) . PHP_EOL
+		);
+	}
+
+	private function write_playwright_config(string $dir): void {
+		$cfg = <<<'TS'
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './tests',
+  fullyParallel: true,
+  reporter: [
+    'list',
+    ['playwright-ctrf-json-reporter', { outputFile: './results/ctrf.json' }],
+    ['allure-playwright',             { outputFolder: './results/allure' }]
+  ],
+  use: { trace: 'on-first-retry' },
+  projects: [
+    { name: 'chromium', use: { ...devices['Desktop Chrome'] } },
+    { name: 'firefox',  use: { ...devices['Desktop Firefox'] } },
+    { name: 'webkit',   use: { ...devices['Desktop Safari'] } }
+  ]
+});
+TS;
+		file_put_contents($dir . '/playwright.config.ts', $cfg);
+	}
+
+	private function write_sample_test(string $dir): void {
+		(new \Symfony\Component\Filesystem\Filesystem())
+			->mkdir($dir . '/tests', 0755);
+
+		$spec = <<<'JS'
+import { test, expect } from '@playwright/test';
+
+test('homepage title', async ({ page }) => {
+  await page.goto('https://example.com');
+  await expect(page).toHaveTitle(/Example Domain/);
+});
+JS;
+		file_put_contents($dir . '/tests/example.spec.js', $spec);
+	}
+
+	private function install_dev_dependencies(string $dir, OutputInterface $out): void {
+		$packages = [
+			'@playwright/test',
+			'playwright-ctrf-json-reporter',
+			'allure-playwright'
+		];
+
+		foreach ($packages as $package) {
+			$proc = new \Symfony\Component\Process\Process(
+				['npm', 'install', '--save-dev', $package], $dir,
+				['CI'=>'1','PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD'=>'1']
+			);
+			$proc->setTimeout(null);
+			$proc->run(fn($t,$b)=>$out->write($b));
+			if (!$proc->isSuccessful()) {
+				throw new \Symfony\Component\Process\Exception\ProcessFailedException($proc);
+			}
 		}
 	}
 }

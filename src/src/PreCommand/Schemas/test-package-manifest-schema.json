@@ -3,7 +3,7 @@
   "title": "QIT Test Package Schema",
   "description": "Schema for QIT test package manifest files",
   "type": "object",
-  "required": ["$schema", "test_type", "lifecycle", "vendor", "package"],
+  "required": ["$schema", "test_type", "vendor", "package", "test"],
   "additionalProperties": false,
   "properties": {
     "$schema": {
@@ -43,7 +43,8 @@
     "test_dir": {
       "type": "string",
       "description": "Directory containing test files",
-      "pattern": "^\\./.*$"
+      "pattern": "^\\./.*$",
+      "default": "./"
     },
     "description": {
       "type": "string",
@@ -104,45 +105,42 @@
         }
       }
     },
-    "lifecycle": {
+    "test": {
       "type": "object",
+      "description": "Test configuration",
       "additionalProperties": false,
       "properties": {
-        "global": {
+        "phases": {
           "type": "object",
-          "description": "Commands that run ONCE per qit run; DB snapshot is taken after .setup",
+          "description": "Execution phases in order. Only ✧run✧ is mandatory.",
           "additionalProperties": false,
           "properties": {
-            "setup":    { "$ref": "#/definitions/lifecycleCommands" },
-            "teardown": { "$ref": "#/definitions/lifecycleCommands" }
-          }
+            "beforeAllPlugins": { "$ref": "#/definitions/lifecycleCommands" },
+            "setup":            { "$ref": "#/definitions/lifecycleCommands" },
+            "run":              { "$ref": "#/definitions/lifecycleCommands" },
+            "teardown":         { "$ref": "#/definitions/lifecycleCommands" },
+            "afterAllPlugins":  { "$ref": "#/definitions/lifecycleCommands" }
+          },
+          "required": ["run"]
         },
-        "test": {
+        "results": {
           "type": "object",
-          "description": "Hooks that execute for every test‑package invocation",
-          "additionalProperties": false,
-          "allOf": [
-            { "anyOf": [ { "required": ["setup"] }, { "required": ["run"] } ] }
-          ],
+          "description": "Produced artefacts: key → relative path",
           "properties": {
-            "setup":    { "$ref": "#/definitions/lifecycleCommands" },
-            "run":      { "$ref": "#/definitions/lifecycleCommands" },
-            "teardown": { "$ref": "#/definitions/lifecycleCommands" }
-          }
+            "ctrf-json": {
+              "type": "string",
+              "description": "Relative path for CTRF JSON result artefact"
+            },
+            "allure-dir": {
+              "type": "string",
+              "description": "Relative path for Allure directory result artefact"
+            }
+          },
+          "required": ["ctrf-json"],
+          "additionalProperties": false
         }
       },
-      "required": ["global", "test"]
-    },
-    "test_results": {
-      "type": "object",
-      "description": "Test result output configuration",
-      "patternProperties": {
-        "^[a-zA-Z0-9_.-]+$": {
-          "type": "string",
-          "description": "Path to result file for this format"
-        }
-      },
-      "additionalProperties": false
+      "required": ["phases", "results"]
     },
     "mu_plugins": {
       "type": "array",

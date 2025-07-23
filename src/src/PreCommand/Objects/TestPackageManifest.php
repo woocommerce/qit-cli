@@ -16,14 +16,14 @@ final class TestPackageManifest implements \JsonSerializable {
 	/** @var string[] */
 	private array $tags;
 	private string $test_type;
-	private ?string $test_dir;
+	private string $test_dir;
 	private string $description;
 
 	/** @var array<string,mixed> */
 	private array $requires;
 
-	/** @var array{global:array{setup?:array<string,mixed>,teardown?:array<string,mixed>},test:array{setup?:array<string,mixed>,run?:array<string,mixed>,teardown?:array<string,mixed>}} */
-	private array $lifecycle;
+	/** @var array{beforeAllPlugins?:array<string,mixed>,setup?:array<string,mixed>,run:array<string,mixed>,teardown?:array<string,mixed>,afterAllPlugins?:array<string,mixed>} */
+	private array $phases;
 
 	/** @var array<string,string> */
 	private array $test_results;
@@ -43,21 +43,26 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function __construct( array $payload ) {
 		// — Required —
-		if ( empty( $payload['test_type'] ) || empty( $payload['lifecycle'] ) ||
+		if ( empty( $payload['test_type'] ) || empty( $payload['test'] ) ||
 			empty( $payload['vendor'] ) || empty( $payload['package'] ) ) {
-			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "lifecycle", "vendor", or "package".' );
+			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "vendor", or "package".' );
+		}
+
+		// Add defensive check for required run phase
+		if ( ! isset( $payload['test']['phases']['run'] ) ) {
+			throw new InvalidArgumentException( 'Manifest missing mandatory "test.phases.run" key.' );
 		}
 
 		$this->vendor      = $payload['vendor'];
 		$this->package     = $payload['package'];
 		$this->tags        = $payload['tags'] ?? [];
 		$this->test_type   = $payload['test_type'];
-		$this->test_dir    = $payload['test_dir'] ?? null;
+		$this->test_dir    = $payload['test_dir'] ?? './';
 		$this->description = $payload['description'] ?? '';
 
 		$this->requires     = $payload['requires'] ?? [];
-		$this->lifecycle    = $payload['lifecycle'];
-		$this->test_results = $payload['test_results'] ?? [];
+		$this->phases       = $payload['test']['phases'] ?? [];
+		$this->test_results = $payload['test']['results'] ?? [];
 		$this->mu_plugins   = $payload['mu_plugins'] ?? [];
 		$this->env_vars     = $this->stringifyEnv( $payload['env_vars'] ?? [] );
 		$this->timeout      = (int) ( $payload['timeout'] ?? 1800 );
@@ -92,7 +97,7 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->test_type;
 	}
 
-	public function getTestDir(): ?string {
+	public function getTestDir(): string {
 		return $this->test_dir;
 	}
 
@@ -108,10 +113,10 @@ final class TestPackageManifest implements \JsonSerializable {
 	}
 
 	/**
-	 * @return array{global:array{setup?:array<string,mixed>,teardown?:array<string,mixed>},test:array{setup?:array<string,mixed>,run?:array<string,mixed>,teardown?:array<string,mixed>}}
+	 * @return array{beforeAllPlugins?:array<string,mixed>,setup?:array<string,mixed>,run:array<string,mixed>,teardown?:array<string,mixed>,afterAllPlugins?:array<string,mixed>}
 	 */
-	public function getLifecycle(): array {
-		return $this->lifecycle;
+	public function getPhases(): array {
+		return $this->phases;
 	}
 
 	/**
@@ -166,8 +171,8 @@ final class TestPackageManifest implements \JsonSerializable {
 	/**
 	 * @return string[]|array<string,mixed>[] list of commands or command‑objects
 	 */
-	public function getLifecycleCommands( string $phase, string $hook ): array {
-		return $this->lifecycle[ $phase ][ $hook ] ?? [];
+	public function getPhaseCommands( string $phase ): array {
+		return $this->phases[ $phase ] ?? [];
 	}
 
 	/**
@@ -176,21 +181,41 @@ final class TestPackageManifest implements \JsonSerializable {
 	 * ----------------------------------------------------------------
 	 */
 	public function jsonSerialize(): mixed {
-		return [
+		$result = [
 			'vendor'       => $this->vendor,
 			'package'      => $this->package,
-			'tags'         => $this->tags,
 			'test_type'    => $this->test_type,
 			'test_dir'     => $this->test_dir,
-			'description'  => $this->description,
-			'requires'     => $this->requires,
-			'lifecycle'    => $this->lifecycle,
-			'test_results' => $this->test_results,
-			'mu_plugins'   => $this->mu_plugins,
-			'env_vars'     => $this->env_vars,
-			'timeout'      => $this->timeout,
-			'retry'        => $this->retry,
+			'test'         => [
+				'phases'  => $this->phases,
+				'results' => $this->test_results,
+			],
 		];
+
+		// Only include non-empty optional fields to keep the file slimmer
+		if ( ! empty( $this->tags ) ) {
+			$result['tags'] = $this->tags;
+		}
+		if ( ! empty( $this->description ) ) {
+			$result['description'] = $this->description;
+		}
+		if ( ! empty( $this->requires ) ) {
+			$result['requires'] = $this->requires;
+		}
+		if ( ! empty( $this->mu_plugins ) ) {
+			$result['mu_plugins'] = $this->mu_plugins;
+		}
+		if ( ! empty( $this->env_vars ) ) {
+			$result['env_vars'] = $this->env_vars;
+		}
+		if ( $this->timeout !== 1800 ) { // Only include if not default
+			$result['timeout'] = $this->timeout;
+		}
+		if ( $this->retry['times'] !== 0 || $this->retry['delay'] !== 0 ) { // Only include if not default
+			$result['retry'] = $this->retry;
+		}
+
+		return $result;
 	}
 
 	/**

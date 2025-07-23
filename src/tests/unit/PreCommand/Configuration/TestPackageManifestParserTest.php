@@ -29,13 +29,19 @@ class TestPackageManifestParserTest extends TestCase {
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "minimal-test",
     "test_type": "e2e",
-    "lifecycle": {
-        "global": {
-            "setup": ["echo 'Global setup'"]
+    "test": {
+        "phases": {
+            "beforeAllPlugins": ["echo 'Before all plugins'"],
+            "setup": [],
+            "run": ["echo 'Test run'"],
+            "teardown": [],
+            "afterAllPlugins": []
         },
-        "test": {
-            "run": ["echo 'Test run'"]
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
         }
     }
 }
@@ -54,6 +60,8 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "complete-test",
     "test_type": "e2e",
     "test_dir": "./tests",
     "description": "Comprehensive E2E tests for checkout flow",
@@ -71,25 +79,23 @@ JSON;
         "secrets": ["STRIPE_API_KEY", "PAYPAL_CLIENT_ID"],
         "external_services": ["Stripe API", "PayPal Sandbox"]
     },
-    "lifecycle": {
-        "global": {
-            "setup": [
+    "test": {
+        "phases": {
+            "beforeAllPlugins": [
                 "composer install",
                 {"command": "npm install", "timeout": 300}
             ],
-            "teardown": ["./cleanup.sh"]
-        },
-        "test": {
             "setup": ["npm run build"],
             "run": [
                 {"command": "npm test", "env": {"NODE_ENV": "test"}}
             ],
-            "teardown": ["rm -rf test-artifacts"]
+            "teardown": ["rm -rf test-artifacts"],
+            "afterAllPlugins": ["./cleanup.sh"]
+        },
+        "results": {
+            "ctrf-json": "./results/ctrf-json/results.json",
+            "allure-dir": "./results/allure"
         }
-    },
-    "test_results": {
-        "junit": "./results/junit.xml",
-        "json": "./results/test-results.json"
     },
     "mu_plugins": [
         "./mu-plugins/test-helper.php",
@@ -130,7 +136,22 @@ JSON;
 		$this->assertEquals( '^8.0.0', $requires['plugins']['woocommerce'] );
 		$this->assertEquals( [ 'STRIPE_API_KEY', 'PAYPAL_CLIENT_ID' ], $requires['secrets'] );
 
-		// Lifecycle
+		// Test new phases structure
+		$phases = $parsed->getPhases();
+		$this->assertArrayHasKey( 'beforeAllPlugins', $phases );
+		$this->assertArrayHasKey( 'setup', $phases );
+		$this->assertArrayHasKey( 'run', $phases );
+		$this->assertArrayHasKey( 'teardown', $phases );
+		$this->assertArrayHasKey( 'afterAllPlugins', $phases );
+
+		// Test phase commands
+		$beforeAllPlugins = $parsed->getPhaseCommands( 'beforeAllPlugins' );
+		$this->assertCount( 2, $beforeAllPlugins );
+		$this->assertEquals( 'composer install', $beforeAllPlugins[0] );
+		$this->assertIsArray( $beforeAllPlugins[1] );
+		$this->assertEquals( 300, $beforeAllPlugins[1]['timeout'] );
+
+		// Test backward compatibility - shim should map phases to lifecycle
 		$globalSetup = $parsed->getLifecycleCommands( 'global', 'setup' );
 		$this->assertCount( 2, $globalSetup );
 		$this->assertEquals( 'composer install', $globalSetup[0] );
@@ -139,8 +160,8 @@ JSON;
 
 		// Test results paths should remain relative
 		$testResults = $parsed->getTestResults();
-		$this->assertEquals( './results/junit.xml', $testResults['junit'] );
-		$this->assertEquals( './results/test-results.json', $testResults['json'] );
+		$this->assertEquals( './results/ctrf-json/results.json', $testResults['ctrf-json'] );
+		$this->assertEquals( './results/allure', $testResults['allure-dir'] );
 
 		// MU plugins paths should remain relative
 		$muPlugins = $parsed->getMuPlugins();
@@ -164,23 +185,28 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
 
-	public function test_lifecycle_normalization(): void {
+	public function test_phase_normalization(): void {
 		$manifest_file = $this->temp_dir . '/manifest.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "phase-normalization-test",
     "test_type": "e2e",
-    "lifecycle": {
-        "global": {
-            "setup": ["echo 'Global setup'"]
-        },
-        "test": {
+    "test": {
+        "phases": {
+            "beforeAllPlugins": ["echo 'Before all plugins'"],
             "setup": [
                 "composer install",
                 {"command": "./scripts/setup.sh", "runs_on": "host"},
                 {"command": "npm test", "continue_on_error": true}
             ],
-            "run": ["phpunit"]
+            "run": ["phpunit"],
+            "teardown": [],
+            "afterAllPlugins": []
+        },
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
         }
     }
 }
@@ -194,20 +220,26 @@ JSON;
 
 		$parsed = $this->parser->parse( $manifest_file );
 
-		$testSetup = $parsed->getLifecycleCommands( 'test', 'setup' );
-		$this->assertCount( 3, $testSetup );
+		// Test new phase commands method
+		$setupCommands = $parsed->getPhaseCommands( 'setup' );
+		$this->assertCount( 3, $setupCommands );
 
 		// String commands remain strings
-		$this->assertIsString( $testSetup[0] );
-		$this->assertEquals( 'composer install', $testSetup[0] );
+		$this->assertIsString( $setupCommands[0] );
+		$this->assertEquals( 'composer install', $setupCommands[0] );
 
 		// Object commands remain objects
-		$this->assertIsArray( $testSetup[1] );
-		$this->assertEquals( './scripts/setup.sh', $testSetup[1]['command'] );
-		$this->assertEquals( 'host', $testSetup[1]['runs_on'] );
+		$this->assertIsArray( $setupCommands[1] );
+		$this->assertEquals( './scripts/setup.sh', $setupCommands[1]['command'] );
+		$this->assertEquals( 'host', $setupCommands[1]['runs_on'] );
 
-		$this->assertIsArray( $testSetup[2] );
-		$this->assertTrue( $testSetup[2]['continue_on_error'] );
+		$this->assertIsArray( $setupCommands[2] );
+		$this->assertTrue( $setupCommands[2]['continue_on_error'] );
+
+		// Test backward compatibility - shim should map phases to lifecycle
+		$testSetup = $parsed->getLifecycleCommands( 'test', 'setup' );
+		$this->assertCount( 3, $testSetup );
+		$this->assertEquals( 'composer install', $testSetup[0] );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed, JSON_PRETTY_PRINT ) );
 	}
@@ -217,13 +249,19 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "env-var-test",
     "test_type": "e2e",
-    "lifecycle": {
-        "global": {
-            "setup": ["echo 'Global setup'"]
+    "test": {
+        "phases": {
+            "beforeAllPlugins": ["echo 'Before all plugins'"],
+            "setup": [],
+            "run": ["echo 'Test run'"],
+            "teardown": [],
+            "afterAllPlugins": []
         },
-        "test": {
-            "run": ["echo 'Test run'"]
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
         }
     },
     "env_vars": {
@@ -263,19 +301,22 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "paths-test",
     "test_type": "e2e",
-    "lifecycle": {
-        "global": {
-            "setup": ["echo 'Global setup'"]
-        },
-        "test": {
-            "run": ["echo 'Test run'"]
-        }
-    },
     "test_dir": "./src/tests",
-    "test_results": {
-        "junit": "./output/junit.xml",
-        "coverage": "./output/coverage/index.html"
+    "test": {
+        "phases": {
+            "beforeAllPlugins": ["echo 'Before all plugins'"],
+            "setup": [],
+            "run": ["echo 'Test run'"],
+            "teardown": [],
+            "afterAllPlugins": []
+        },
+        "results": {
+            "ctrf-json": "./output/ctrf-json/results.json",
+            "allure-dir": "./output/allure"
+        }
     },
     "mu_plugins": [
         "./plugins/helper.php",
@@ -296,8 +337,8 @@ JSON;
 		$this->assertEquals( './src/tests', $parsed->getTestDir() );
 
 		$testResults = $parsed->getTestResults();
-		$this->assertEquals( './output/junit.xml', $testResults['junit'] );
-		$this->assertEquals( './output/coverage/index.html', $testResults['coverage'] );
+		$this->assertEquals( './output/ctrf-json/results.json', $testResults['ctrf-json'] );
+		$this->assertEquals( './output/allure', $testResults['allure-dir'] );
 
 		$muPlugins = $parsed->getMuPlugins();
 		$this->assertEquals( './plugins/helper.php', $muPlugins[0] );
@@ -327,7 +368,21 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "invalid-schema-test",
     "test_type": "e2e",
+    "test": {
+        "phases": {
+            "beforeAllPlugins": [],
+            "setup": [],
+            "run": ["echo 'Test run'"],
+            "teardown": [],
+            "afterAllPlugins": []
+        },
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
+        }
+    },
     "invalid_field": "This field is not in the schema"
 }
 JSON;
@@ -344,16 +399,22 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "missing-test-dir",
     "test_type": "e2e",
-    "lifecycle": {
-        "global": {
-            "setup": ["echo 'Global setup'"]
+    "test_dir": "./nonexistent",
+    "test": {
+        "phases": {
+            "beforeAllPlugins": [],
+            "setup": [],
+            "run": ["echo 'Test run'"],
+            "teardown": [],
+            "afterAllPlugins": []
         },
-        "test": {
-            "run": ["echo 'Test run'"]
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
         }
-    },
-    "test_dir": "./nonexistent"
+    }
 }
 JSON;
 		file_put_contents( $manifest_file, $manifest );
@@ -364,20 +425,26 @@ JSON;
 		$this->parser->parse( $manifest_file );
 	}
 
-	public function test_missing_lifecycle_script(): void {
+	public function test_missing_phase_script(): void {
 		$manifest_file = $this->temp_dir . '/manifest.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "missing-phase-script",
     "test_type": "e2e",
-    "lifecycle": {
-        "global": {
-            "setup": ["echo 'Global setup'"]
-        },
-        "test": {
+    "test": {
+        "phases": {
+            "beforeAllPlugins": [],
             "setup": [
                 {"command": "./scripts/missing.sh"}
-            ]
+            ],
+            "run": ["echo 'Test run'"],
+            "teardown": [],
+            "afterAllPlugins": []
+        },
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
         }
     }
 }
@@ -385,25 +452,29 @@ JSON;
 		file_put_contents( $manifest_file, $manifest );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'Lifecycle script not found: ./scripts/missing.sh' );
+		$this->expectExceptionMessage( 'Phase script not found: ./scripts/missing.sh' );
 
 		$this->parser->parse( $manifest_file );
 	}
 
-	public function test_empty_lifecycle_commands(): void {
+	public function test_empty_phase_commands(): void {
 		$manifest_file = $this->temp_dir . '/manifest.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "test",
+    "package": "empty-phase-commands",
     "test_type": "e2e",
-    "lifecycle": {
-        "global": {
-            "setup": ["echo 'Global setup'"]
-        },
-        "test": {
+    "test": {
+        "phases": {
+            "beforeAllPlugins": [],
             "setup": [],
             "run": ["phpstan analyze"],
-            "teardown": []
+            "teardown": [],
+            "afterAllPlugins": []
+        },
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
         }
     }
 }
@@ -412,6 +483,12 @@ JSON;
 
 		$parsed = $this->parser->parse( $manifest_file );
 
+		// Test new phase commands methods
+		$this->assertCount( 0, $parsed->getPhaseCommands( 'setup' ) );
+		$this->assertCount( 1, $parsed->getPhaseCommands( 'run' ) );
+		$this->assertCount( 0, $parsed->getPhaseCommands( 'teardown' ) );
+
+		// Test backward compatibility - shim should work
 		$this->assertCount( 0, $parsed->getLifecycleCommands( 'test', 'setup' ) );
 		$this->assertCount( 1, $parsed->getLifecycleCommands( 'test', 'run' ) );
 		$this->assertCount( 0, $parsed->getLifecycleCommands( 'test', 'teardown' ) );
@@ -441,7 +518,21 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/qit",
-    "test_type": "e2e"
+    "vendor": "test",
+    "package": "wrong-schema-test",
+    "test_type": "e2e",
+    "test": {
+        "phases": {
+            "beforeAllPlugins": [],
+            "setup": [],
+            "run": ["echo 'Test run'"],
+            "teardown": [],
+            "afterAllPlugins": []
+        },
+        "results": {
+            "ctrf-json": "./test-results/ctrf-json/results.json"
+        }
+    }
 }
 JSON;
 		file_put_contents( $manifest_file, $manifest );

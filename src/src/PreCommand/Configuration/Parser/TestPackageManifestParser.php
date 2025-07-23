@@ -30,14 +30,10 @@ class TestPackageManifestParser extends BaseJsonParser {
 	}
 
 	protected function apply_business_logic( array $config ): array {
-		// Normalize lifecycle commands
-		if ( isset( $config['lifecycle'] ) ) {
-			foreach ( $config['lifecycle'] as $phase => &$phase_config ) {
-				foreach ( [ 'setup', 'teardown', 'run' ] as $hook ) {
-					if ( isset( $phase_config[ $hook ] ) ) {
-						$phase_config[ $hook ] = $this->normalize_lifecycle_commands( $phase_config[ $hook ] );
-					}
-				}
+		// Normalize phase commands
+		if ( isset( $config['test']['phases'] ) ) {
+			foreach ( $config['test']['phases'] as $phase => &$commands ) {
+				$config['test']['phases'][$phase] = $this->normalize_phase_commands( $commands );
 			}
 		}
 
@@ -67,9 +63,9 @@ class TestPackageManifestParser extends BaseJsonParser {
 	}
 
 	/**
-	 * Normalize lifecycle commands
+	 * Normalize phase commands
 	 */
-	private function normalize_lifecycle_commands( $commands ): array {
+	private function normalize_phase_commands( $commands ): array {
 		if ( ! is_array( $commands ) ) {
 			return [];
 		}
@@ -80,11 +76,16 @@ class TestPackageManifestParser extends BaseJsonParser {
 			if ( is_string( $command ) ) {
 				$normalized[] = $command;
 			} elseif ( is_array( $command ) && isset( $command['command'] ) ) {
+				// Add safety check for command string
+				if ( ! is_string( $command['command'] ) ) {
+					throw new \RuntimeException( 'Command must be a string, got: ' . gettype( $command['command'] ) );
+				}
+				
 				// Check if command references a file
 				if ( strpos( $command['command'], './' ) === 0 ) {
 					$file_path = $this->resolve_path( $command['command'] );
 					if ( ! file_exists( $file_path ) ) {
-						throw new \RuntimeException( "Lifecycle script not found: {$command['command']}" );
+						throw new \RuntimeException( "Phase script not found: {$command['command']}" );
 					}
 				}
 				$normalized[] = $command;

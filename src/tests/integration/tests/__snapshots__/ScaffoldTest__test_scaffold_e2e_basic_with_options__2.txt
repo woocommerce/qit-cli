@@ -1,0 +1,23 @@
+{
+    "$schema": "https://qit.woo.com/json-schema/test-package",
+    "vendor": "acme",
+    "package": "demo",
+    "test_type": "e2e",
+    "test": {
+        "phases": {
+            "beforeAllPlugins": [],
+            "setup": [
+                "./bootstrap/setup.sh"
+            ],
+            "run": [
+                "npx playwright test"
+            ],
+            "teardown": [],
+            "afterAllPlugins": []
+        },
+        "results": {
+            "ctrf-json": "./results/ctrf.json",
+            "allure-dir": "./results/allure"
+        }
+    }
+}
