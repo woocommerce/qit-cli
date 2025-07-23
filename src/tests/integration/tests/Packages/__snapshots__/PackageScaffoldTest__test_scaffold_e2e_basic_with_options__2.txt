@@ -1,7 +1,7 @@
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "acme",
-    "package": "demo",
+    "vendor": "woocommerce",
+    "package": "tests",
     "test_type": "e2e",
     "test": {
         "phases": {

@@ -2,7 +2,7 @@
 
 use QIT\IntegrationTests\Traits\SnapshotHelpers;
 
-class ScaffoldTest extends \PHPUnit\Framework\TestCase {
+class PackageScaffoldTest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 
 	/**
@@ -14,10 +14,12 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 
 		// Run the scaffold command with vendor and package options
 		$output = qit( [
-			'scaffold:e2e',
+			'package:scaffold',
 			$temp_dir,
-			'--vendor=acme',
-			'--package=demo',
+			'--vendor=woocommerce',
+			'--package=tests',
+			'--framework=playwright',
+			'--test-type=e2e',
 			'--no-interaction'
 		] );
 
@@ -27,10 +29,10 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 		// Check that manifest.json exists and has correct content
 		$this->assertFileExists( $temp_dir . '/manifest.json' );
 		$manifest = json_decode( file_get_contents( $temp_dir . '/manifest.json' ), true );
-		$this->assertEquals( 'acme', $manifest['vendor'] );
-		$this->assertEquals( 'demo', $manifest['package'] );
+		$this->assertEquals( 'woocommerce', $manifest['vendor'] );
+		$this->assertEquals( 'tests', $manifest['package'] );
 		$this->assertEquals( 'e2e', $manifest['test_type'] );
-		
+
 		// Validate that the run command is clean (no reporter flags)
 		$this->assertSame(
 			['npx playwright test'],
@@ -39,7 +41,7 @@ class ScaffoldTest extends \PHPUnit\Framework\TestCase {
 		$this->assertArrayHasKey('allure-dir', $manifest['test']['results']);
 		$this->assertEquals('./results/allure', $manifest['test']['results']['allure-dir']);
 
-		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/playwright.config.ts' ) );
+		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/playwright.config.js' ) );
 		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/manifest.json' ) );
 		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/bootstrap/setup.sh' ) );
 	}

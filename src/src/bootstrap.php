@@ -11,7 +11,6 @@ use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
-use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
 use QIT_CLI\Commands\CustomTests\ShowReportCommand;
 use QIT_CLI\Commands\CustomTests\ValidateE2ECommand;
 use QIT_CLI\Commands\DevModeCommand;
@@ -39,6 +38,7 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
 use QIT_CLI\Commands\Tags\ListTestTagsCommand;
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
 use QIT_CLI\Commands\TestPackages\PublishCommand;
 use QIT_CLI\Commands\TestE2ECommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
@@ -244,9 +244,9 @@ if ( $is_connected_to_backend ) {
 
 	// Test Package commands.
 	$application->add( $container->make( PublishCommand::class ) );
+	$application->add( $container->make( PackageScaffoldCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
-	$application->add( $container->make( ScaffoldE2ECommand::class ) );
 
 	// Group Commands.
 	$application->add( $container->make( GroupRunCommand::class ) );
