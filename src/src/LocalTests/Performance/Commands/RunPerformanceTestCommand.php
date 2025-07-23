@@ -5,7 +5,6 @@ namespace QIT_CLI\LocalTests\Performance\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
-use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\Environments\Environment;
@@ -398,10 +397,10 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
 
 		// Gather CLI overrides.
-		$cli_action     = $input->getOption( 'sut_action' );
-		$cli_test       = $input->getArgument( 'test' );
-		$cli_test_tags  = $cli_test ? explode( ',', $cli_test ) : [];
-		$cli_source     = $input->getOption( 'source' );
+		$cli_action    = $input->getOption( 'sut_action' );
+		$cli_test      = $input->getArgument( 'test' );
+		$cli_test_tags = $cli_test ? explode( ',', $cli_test ) : [];
+		$cli_source    = $input->getOption( 'source' );
 
 		// STEP 1: Find & parse any existing entry for this slug from qit.yml or earlier merges.
 		$old_index     = null;
