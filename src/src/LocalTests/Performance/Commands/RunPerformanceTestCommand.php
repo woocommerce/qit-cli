@@ -78,11 +78,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			throw new \RuntimeException( 'Performance schema not set or incomplete.' );
 		}
 
-		// Use dedicated performance schema.
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['performance'], [
-			'php_version',
-		], [] );
-
 		$this
 			->setDescription( 'Run Performance tests.' )
 			->setHelp( 'Run k6 performance tests against a given extension.' )
@@ -90,9 +85,9 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
-			->addOption( 'test_tag', null, InputOption::VALUE_OPTIONAL, 'The performance test tag to run.', '' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
@@ -234,7 +229,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		$test_tag = $input->getOption( 'test_tag' ) ?? '';
+		$test_tag = $input->getArgument( 'test' ) ?? '';
 
 		if ( $env_info instanceof PerformanceEnvInfo && ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug = $woo_extension_slug;
@@ -403,10 +398,10 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
 
 		// Gather CLI overrides.
-		$cli_action    = $input->getOption( 'sut_action' );
-		$test_arg      = $input->getArgument( 'test' );
-		$cli_test_tags = $test_arg ? explode( ',', $test_arg ) : [];
-		$cli_source    = $input->getOption( 'source' );
+		$cli_action     = $input->getOption( 'sut_action' );
+		$cli_test       = $input->getArgument( 'test' );
+		$cli_test_tags  = $cli_test ? explode( ',', $cli_test ) : [];
+		$cli_source     = $input->getOption( 'source' );
 
 		// STEP 1: Find & parse any existing entry for this slug from qit.yml or earlier merges.
 		$old_index     = null;
