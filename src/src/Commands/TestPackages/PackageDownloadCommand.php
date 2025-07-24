@@ -14,8 +14,8 @@ use function QIT_CLI\get_manager_url;
 class PackageDownloadCommand extends QITCommand {
 	protected static $defaultName = 'package:download'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	private const MAX_RETRIES = 3;
-	private const RETRY_DELAY_BASE = 1; // seconds
+	private const MAX_RETRIES      = 3;
+	private const RETRY_DELAY_BASE = 1;
 
 	private Zipper $zipper;
 
@@ -77,18 +77,18 @@ class PackageDownloadCommand extends QITCommand {
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$packages = $input->getArgument( 'packages' );
+		$packages   = $input->getArgument( 'packages' );
 		$output_dir = rtrim( $input->getOption( 'output-dir' ), '/' ) . '/';
-		$verify = $input->getOption( 'verify' );
-		$extract = ! $input->getOption( 'no-extract' ); // Extract by default unless --no-extract
-		$install = ! $input->getOption( 'no-install' ); // Install by default unless --no-install
-		$force = $input->getOption( 'force' );
-		$format = $input->getOption( 'format' );
+		$verify     = $input->getOption( 'verify' );
+		$extract    = ! $input->getOption( 'no-extract' ); // Extract by default unless --no-extract
+		$install    = ! $input->getOption( 'no-install' ); // Install by default unless --no-install
+		$force      = $input->getOption( 'force' );
+		$format     = $input->getOption( 'format' );
 
 		// Validate package format
 		foreach ( $packages as $package ) {
-			if ( ! $this->validate_reference_format( $package ) ) {
-				$output->writeln( "<error>Invalid package format: $package. Expected format: vendor/package:version</error>" );
+			if ( ! $this->validate_package_id_format( $package ) ) {
+				$output->writeln( "<error>Invalid package format: $package. Expected format: namespace/package:version</error>" );
 				return self::FAILURE;
 			}
 		}
@@ -117,26 +117,26 @@ class PackageDownloadCommand extends QITCommand {
 
 		// Calculate proper exit code based on results
 		$successful = count( array_filter( $results, fn( $result ) => $result['status'] === 'success' ) );
-		$failed = count( $results ) - $successful;
+		$failed     = count( $results ) - $successful;
 
 		if ( $failed === 0 ) {
 			return self::SUCCESS; // 0 = all success
 		} elseif ( $failed === count( $results ) ) {
-			return 2; // 2 = total failure  
+			return 2; // 2 = total failure
 		} else {
 			return 1; // 1 = partial success
 		}
 	}
 
-	private function validate_reference_format( string $reference ): bool {
-		return preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $reference ) === 1;
+	private function validate_package_id_format( string $package_id ): bool {
+		return preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $package_id ) === 1;
 	}
 
 	private function fetch_download_urls( array $packages ): array {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'references' => $packages,
+				'package_ids' => $packages,
 			] )
 			->request();
 
@@ -151,7 +151,7 @@ class PackageDownloadCommand extends QITCommand {
 
 	private function download_packages( array $packages, array $download_urls, string $output_dir, bool $verify, bool $extract, bool $install, bool $force, OutputInterface $output ): array {
 		$results = [];
-		$total = count( $packages );
+		$total   = count( $packages );
 
 		$output->writeln( 'Downloading packages...' );
 
@@ -165,20 +165,20 @@ class PackageDownloadCommand extends QITCommand {
 				}
 
 				$url_info = $download_urls[ $package ];
-				$result = $this->download_single_package( $package, $url_info, $output_dir, $verify, $extract, $install, $force );
+				$result   = $this->download_single_package( $package, $url_info, $output_dir, $verify, $extract, $install, $force );
 
 				$size_mb = round( ( $result['size'] ?? 0 ) / 1024 / 1024, 1 );
 				$output->writeln( "✓ Downloaded ({$size_mb} MB)" );
 
 				$results[ $package ] = [
 					'status' => 'success',
-					'data' => $result,
+					'data'   => $result,
 				];
 			} catch ( \Exception $e ) {
 				$output->writeln( "✗ Failed ({$e->getMessage()})" );
 				$results[ $package ] = [
 					'status' => 'failed',
-					'error' => $e->getMessage(),
+					'error'  => $e->getMessage(),
 				];
 			}
 		}
@@ -187,7 +187,7 @@ class PackageDownloadCommand extends QITCommand {
 	}
 
 	private function download_single_package( string $package, array $url_info, string $output_dir, bool $verify, bool $extract, bool $install, bool $force ): array {
-		$filename = $this->generate_filename( $package );
+		$filename  = $this->generate_filename( $package );
 		$file_path = $output_dir . $filename;
 
 		// Check if file exists and handle force flag
@@ -207,22 +207,22 @@ class PackageDownloadCommand extends QITCommand {
 		}
 
 		$result = [
-			'package' => $package,
+			'package'       => $package,
 			'downloaded_to' => $file_path,
-			'size' => $url_info['size'] ?? filesize( $file_path ),
-			'checksum' => $url_info['checksum'] ?? null,
-			'version' => $url_info['version'] ?? 'unknown',
+			'size'          => $url_info['size'] ?? filesize( $file_path ),
+			'checksum'      => $url_info['checksum'] ?? null,
+			'version'       => $url_info['version'] ?? 'unknown',
 		];
 
 		// Extract if requested
 		if ( $extract ) {
 			// Extract to output directory using new Zipper whitelist functionality
-			$extract_dir = rtrim($output_dir, '/') . '/' . pathinfo($filename, PATHINFO_FILENAME);
-			$this->zipper->allowExtractInto([$output_dir]);
+			$extract_dir = rtrim( $output_dir, '/' ) . '/' . pathinfo( $filename, PATHINFO_FILENAME );
+			$this->zipper->allow_extract_into( [ $output_dir ] );
 			try {
 				$this->extract_package( $file_path, $extract_dir, $force );
 				$result['extracted_to'] = $extract_dir;
-				
+
 				// Install dependencies if requested
 				if ( $install ) {
 					try {
@@ -231,15 +231,15 @@ class PackageDownloadCommand extends QITCommand {
 					} catch ( \Exception $e ) {
 						// If installation fails, don't fail the entire download
 						// Just log the error and continue
-						error_log( "Dependency installation failed: " . $e->getMessage() );
+						error_log( 'Dependency installation failed: ' . $e->getMessage() );
 						$result['dependencies_installed'] = false;
-						$result['install_error'] = $e->getMessage();
+						$result['install_error']          = $e->getMessage();
 					}
 				}
 			} catch ( \Exception $e ) {
 				// If extraction fails, don't fail the entire download
 				// Just log the error and continue
-				error_log( "Extraction failed: " . $e->getMessage() );
+				error_log( 'Extraction failed: ' . $e->getMessage() );
 			}
 		}
 
@@ -271,7 +271,7 @@ class PackageDownloadCommand extends QITCommand {
 			}
 		}
 
-		throw new \RuntimeException( "Download failed after " . self::MAX_RETRIES . " attempts: " . $last_exception->getMessage() );
+		throw new \RuntimeException( 'Download failed after ' . self::MAX_RETRIES . ' attempts: ' . $last_exception->getMessage() );
 	}
 
 	private function verify_checksum( string $file_path, string $expected_checksum ): bool {
@@ -296,41 +296,41 @@ class PackageDownloadCommand extends QITCommand {
 
 	private function install_dependencies( string $extract_dir ): void {
 		$installed_something = false;
-		
+
 		// Check for package.json and run appropriate npm command
 		if ( file_exists( $extract_dir . '/package.json' ) ) {
 			// Use npm ci if package-lock.json exists, otherwise use npm install
-			$use_ci = file_exists( $extract_dir . '/package-lock.json' );
-			$npm_command = 'cd ' . escapeshellarg( $extract_dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
-			$npm_output = [];
+			$use_ci          = file_exists( $extract_dir . '/package-lock.json' );
+			$npm_command     = 'cd ' . escapeshellarg( $extract_dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
+			$npm_output      = [];
 			$npm_return_code = 0;
-			
+
 			exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
-			
+
 			if ( $npm_return_code !== 0 ) {
 				$command_used = $use_ci ? 'npm ci' : 'npm install';
 				throw new \RuntimeException( $command_used . ' failed: ' . implode( "\n", $npm_output ) );
 			}
-			
+
 			$installed_something = true;
 		}
-		
+
 		// Check for composer.json and run composer install
 		if ( file_exists( $extract_dir . '/composer.json' ) ) {
-			$composer = escapeshellcmd( 'composer' );
-			$composer_command = 'cd ' . escapeshellarg( $extract_dir ) . ' && ' . $composer . ' install --no-dev --optimize-autoloader';
-			$composer_output = [];
+			$composer             = escapeshellcmd( 'composer' );
+			$composer_command     = 'cd ' . escapeshellarg( $extract_dir ) . ' && ' . $composer . ' install --no-dev --optimize-autoloader';
+			$composer_output      = [];
 			$composer_return_code = 0;
-			
+
 			exec( $composer_command . ' 2>&1', $composer_output, $composer_return_code );
-			
+
 			if ( $composer_return_code !== 0 ) {
 				throw new \RuntimeException( 'composer install failed: ' . implode( "\n", $composer_output ) );
 			}
-			
+
 			$installed_something = true;
 		}
-		
+
 		if ( ! $installed_something ) {
 			// No package.json or composer.json found, nothing to install
 			return;
@@ -352,7 +352,7 @@ class PackageDownloadCommand extends QITCommand {
 
 	private function output_results( array $results, string $format, OutputInterface $output ): void {
 		$successful = count( array_filter( $results, fn( $result ) => $result['status'] === 'success' ) );
-		$failed = count( $results ) - $successful;
+		$failed     = count( $results ) - $successful;
 
 		$output->writeln( '' );
 		$output->writeln( "Summary: $successful successful, $failed failed" );
@@ -361,9 +361,9 @@ class PackageDownloadCommand extends QITCommand {
 			$json_output = [
 				'success' => $failed === 0,
 				'summary' => [
-					'requested' => count( $results ),
+					'requested'  => count( $results ),
 					'successful' => $successful,
-					'failed' => $failed,
+					'failed'     => $failed,
 				],
 				'results' => $results,
 			];
@@ -373,9 +373,9 @@ class PackageDownloadCommand extends QITCommand {
 			if ( $failed > 0 ) {
 				$output->writeln( '' );
 				$output->writeln( '<error>Failed downloads:</error>' );
-				foreach ( $results as $reference => $result ) {
+				foreach ( $results as $package_id => $result ) {
 					if ( $result['status'] === 'failed' ) {
-						$output->writeln( "  - $reference: {$result['error']}" );
+						$output->writeln( "  - $package_id: {$result['error']}" );
 					}
 				}
 			}

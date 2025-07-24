@@ -13,8 +13,8 @@ class Zipper {
 	/** @var Docker */
 	private $docker;
 
-	/** @var array */
-	private array $extraAllowedDirs = [];
+	/** @var array<string,string> */
+	private array $extra_allowed_dirs = [];
 
 	public function __construct( OutputInterface $output, Docker $docker ) {
 		$this->output = $output;
@@ -22,11 +22,11 @@ class Zipper {
 	}
 
 	/** Allow callers to add one or more base paths that are safe for extraction. */
-	public function allowExtractInto(array $paths): void {
-		foreach ($paths as $p) {
+	public function allow_extract_into( array $paths ): void {
+		foreach ( $paths as $p ) {
 			// Store the canonical path to defeat "../../" tricks
-			$real = realpath($p) ?: $p;
-			$this->extraAllowedDirs[] = rtrim($real, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+			$real                       = realpath( $p ) ?: $p;
+			$this->extra_allowed_dirs[] = rtrim( $real, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
 		}
 	}
 
@@ -64,27 +64,27 @@ class Zipper {
 
 		// Make sure $extract_to is within allowed directories.
 		if ( ! file_exists( '/.dockerenv' ) ) {
-			$extract_to_canonical = realpath($extract_to) ?: $extract_to;
-			$extract_to_canonical = rtrim($extract_to_canonical, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+			$extract_to_canonical = realpath( $extract_to ) ?: $extract_to;
+			$extract_to_canonical = rtrim( $extract_to_canonical, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
 
 			$allowed = array_merge(
 				[
-					rtrim(Config::get_qit_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR,
-					rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR,
+					rtrim( Config::get_qit_dir(), DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR,
+					rtrim( sys_get_temp_dir(), DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR,
 				],
-				$this->extraAllowedDirs
+				$this->extra_allowed_dirs
 			);
 
 			$ok = false;
-			foreach ($allowed as $base) {
-				if (strpos($extract_to_canonical, $base) === 0) {
+			foreach ( $allowed as $base ) {
+				if ( strpos( $extract_to_canonical, $base ) === 0 ) {
 					$ok = true;
 					break;
 				}
 			}
 
-			if (!$ok) {
-				throw new \RuntimeException("Extraction directory not whitelisted: $extract_to");
+			if ( ! $ok ) {
+				throw new \RuntimeException( "Extraction directory not whitelisted: $extract_to" );
 			}
 		}
 

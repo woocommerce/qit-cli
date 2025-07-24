@@ -30,19 +30,19 @@ class PackageScaffoldCommand extends QITCommand {
 		parent::configure();
 		$this
 			->addArgument( 'target_dir', InputArgument::REQUIRED, 'Directory to scaffold the E2E test package (must not exist).' )
-			->addOption( 'vendor', null, InputOption::VALUE_REQUIRED, 'Vendor slug for the test package (e.g. acme).' )
+			->addOption( 'namespace', null, InputOption::VALUE_REQUIRED, 'Namespace slug for the test package (e.g. acme).' )
 			->addOption( 'package', null, InputOption::VALUE_REQUIRED, 'Package slug for the test package (e.g. my-plugin-tests).' )
 			->addOption( 'framework', null, InputOption::VALUE_REQUIRED, 'Framework to use (currently only "playwright" is accepted).', 'playwright' )
 			->addOption( 'test-type', null, InputOption::VALUE_REQUIRED, 'Test type to use (currently only "e2e" is accepted).', 'e2e' )
 			->addOption( 'only-manifest', null, InputOption::VALUE_NONE, 'Create manifest.json only and exit.' )
 			->setDescription( 'Scaffold an E2E test package with --framework and --test-type options (currently only Playwright E2E is supported).' )
-			->setHelp( 'Note: if you authenticate with an e‑mail address you must publish under an extension slug you maintain; personal namespaces are reserved for partner aliases.' );
+			->setHelp( 'You can only publish test packages under the namespace of extensions you maintain.' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		$io         = new SymfonyStyle( $input, $output );
 		$target_dir = $input->getArgument( 'target_dir' );
-		$vendor     = $input->getOption( 'vendor' );
+		$namespace  = $input->getOption( 'namespace' );
 		$package    = $input->getOption( 'package' );
 		$framework  = $input->getOption( 'framework' );
 		$test_type  = $input->getOption( 'test-type' );
@@ -57,77 +57,45 @@ class PackageScaffoldCommand extends QITCommand {
 			return Command::FAILURE;
 		}
 
-		// Get current partner name
-		$current_environment = Config::get_current_manager_backend();
-		$partner_name_parts  = explode( '-', $current_environment );
-		$current_partner     = end( $partner_name_parts );
+		// Single prompt for package id in namespace/package format
+		if ( empty( $namespace ) || empty( $package ) ) {
 
-		// Single prompt for package reference in vendor/package format
-		if ( empty( $vendor ) || empty( $package ) ) {
-			$default_reference = $current_partner . '/tests';
-
-			$package_ref_question = new Question(
-				sprintf(
-					"Package reference (vendor/package)\n  • Use your partner alias '%s'  →  %s/<package>\n  • Or an extension slug you maintain   →  woocommerce-payments/<package>\n[default: %s]: ",
-					$current_partner,
-					$current_partner,
-					$default_reference
-				)
+			$package_id_question = new Question(
+				'Namespace slug (must be one you maintain) > '
 			);
 
-			$package_ref_question->setValidator( function ( $answer ) use ( $default_reference, $current_partner ) {
-				// Use default if empty
+			$package_id_question->setValidator( function ( $answer ) {
+				// Namespace slug is required
 				if ( empty( $answer ) ) {
-					$answer = $default_reference;
+					throw new \RuntimeException( 'Namespace slug is required.' );
 				}
 
 				// Validate format
 				if ( ! preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/', $answer ) ) {
-					throw new \RuntimeException( 'Package reference must be in vendor/package format and contain only letters, numbers, underscores, dots, and hyphens.' );
+					throw new \RuntimeException( 'Package ID must be in namespace/package format and contain only letters, numbers, underscores, dots, and hyphens.' );
 				}
 
-				list( $vendor_part, $package_part ) = explode( '/', $answer, 2 );
+				list( $namespace_part, $package_part ) = explode( '/', $answer, 2 );
 
-				// Validate vendor part - must be partner alias or owned extension
-				if ( $vendor_part !== $current_partner ) {
-					// Check if it's a WooCommerce extension they maintain
-					$extensions      = $this->woo_extensions_list->get_woo_extension_list();
-					$extension_found = false;
-					foreach ( $extensions as $ext ) {
-						if ( $ext['slug'] === $vendor_part ) {
-							$extension_found = true;
-							break;
-						}
-					}
-
-					if ( ! $extension_found ) {
-						throw new \RuntimeException( sprintf( "You are not a maintainer of '%s'.", $vendor_part ) );
-					}
+				// Validate that user maintains the namespace
+				if ( ! $this->woo_extensions_list->user_maintains( $namespace_part ) ) {
+					throw new \RuntimeException( sprintf( "You are not a maintainer of '%s'.", $namespace_part ) );
 				}
 
 				return $answer;
 			} );
 
-			$package_reference = $question_helper->ask( $input, $output, $package_ref_question );
+			$package_id = $question_helper->ask( $input, $output, $package_id_question );
 
-			// Use default if still empty
-			if ( empty( $package_reference ) ) {
-				$package_reference = $default_reference;
-			}
-
-			// Split the reference
-			list( $vendor, $package ) = explode( '/', $package_reference, 2 );
+			// Split the package id
+			list( $namespace, $package ) = explode( '/', $package_id, 2 );
 
 			// Show success message
-			if ( $vendor === $current_partner ) {
-				$io->writeln( sprintf( '✔ Using: %s', $package_reference ) );
-			} else {
-				$io->writeln( sprintf( '✓ Verified – you are a maintainer of \'%s\'', $vendor ) );
-			}
+			$io->writeln( sprintf( '✓ Verified – you are a maintainer of \'%s\'', $namespace ) );
 		} else {
-			// Validate vendor and package from options
-			if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $vendor ) ) {
-				$io->error( 'Vendor must contain only letters, numbers, underscores, dots, and hyphens.' );
+			// Validate namespace and package from options
+			if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $namespace ) ) {
+				$io->error( 'Namespace must contain only letters, numbers, underscores, dots, and hyphens.' );
 				return Command::FAILURE;
 			}
 			if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $package ) ) {
@@ -135,22 +103,10 @@ class PackageScaffoldCommand extends QITCommand {
 				return Command::FAILURE;
 			}
 
-			// Validate vendor ownership - must be partner alias or owned extension
-			if ( $vendor !== $current_partner ) {
-				// Check if it's a WooCommerce extension they maintain
-				$extensions      = $this->woo_extensions_list->get_woo_extension_list();
-				$extension_found = false;
-				foreach ( $extensions as $ext ) {
-					if ( $ext['slug'] === $vendor ) {
-						$extension_found = true;
-						break;
-					}
-				}
-
-				if ( ! $extension_found ) {
-					$io->error( sprintf( "You are not a maintainer of '%s'.", $vendor ) );
-					return Command::FAILURE;
-				}
+			// Validate that user maintains the namespace
+			if ( ! $this->woo_extensions_list->user_maintains( $namespace ) ) {
+				$io->error( sprintf( "You are not a maintainer of '%s'.", $namespace ) );
+				return Command::FAILURE;
 			}
 		}
 
@@ -197,10 +153,10 @@ BASH;
 
 		$manifest_path = $target_dir . DIRECTORY_SEPARATOR . 'manifest.json';
 		$manifest      = [
-'$schema'   => 'https://qit.woo.com/json-schema/test-package',
-'vendor'    => $vendor,
-'package'   => $package,
-'test_type' => $test_type,
+			'$schema'   => 'https://qit.woo.com/json-schema/test-package',
+			'namespace' => $namespace,
+			'package'   => $package,
+			'test_type' => $test_type,
 			'test'      => [
 				'phases'  => [
 					'beforeAllPlugins' => [],

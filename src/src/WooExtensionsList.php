@@ -86,4 +86,19 @@ class WooExtensionsList {
 
 		throw new \UnexpectedValueException( "Could not find Woo Extension with id $woo_extension_id." );
 	}
+
+	/**
+	 * Check if the current user maintains the given extension slug
+	 *
+	 * @param string $slug
+	 * @return bool
+	 */
+	public function user_maintains( string $slug ): bool {
+		foreach ( $this->get_woo_extension_list() as $ext ) {
+			if ( $ext['slug'] === $slug ) {
+				return true;
+			}
+		}
+		return false;
+	}
 }
