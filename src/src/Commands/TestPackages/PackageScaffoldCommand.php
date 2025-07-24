@@ -35,7 +35,8 @@ class PackageScaffoldCommand extends QITCommand {
 			->addOption( 'framework', null, InputOption::VALUE_REQUIRED, 'Framework to use (currently only "playwright" is accepted).', 'playwright' )
 			->addOption( 'test-type', null, InputOption::VALUE_REQUIRED, 'Test type to use (currently only "e2e" is accepted).', 'e2e' )
 			->addOption( 'only-manifest', null, InputOption::VALUE_NONE, 'Create manifest.json only and exit.' )
-			->setDescription( 'Scaffold an E2E test package with --framework and --test-type options (currently only Playwright E2E is supported).' );
+			->setDescription( 'Scaffold an E2E test package with --framework and --test-type options (currently only Playwright E2E is supported).' )
+			->setHelp( 'Note: if you authenticate with an e‑mail address you must publish under an extension slug you maintain; personal namespaces are reserved for partner aliases.' );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {

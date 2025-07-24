@@ -29,6 +29,7 @@ class PublishCommand extends QITCommand {
 		$this
 			->setName( 'package:publish' )
 			->setDescription( 'Publish a test package to QIT' )
+			->setHelp( 'Note: if you authenticate with an e‑mail address you must publish under an extension slug you maintain; personal namespaces are reserved for partner aliases.' )
 			->addArgument( 'reference', InputArgument::REQUIRED, 'Package reference (vendor/pkg:version)' )
 			->addArgument( 'path', InputArgument::REQUIRED, 'Path to directory or zip file' )
 			->addOption( 'test-type', null, InputOption::VALUE_REQUIRED, 'Test type', 'e2e' )
