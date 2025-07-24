@@ -13,6 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
+            "ctrf_json": [],
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
@@ -33,6 +34,12 @@
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
             "test_summary": "Delete_Products Normalized Summary",
+            "debug_log": [
+                {
+                    "count": "0",
+                    "message": "Debug log is ignored for woo-e2e\\/delete_products tests."
+                }
+            ],
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -43,23 +50,10 @@
             "phpstan_level": null,
             "test_variation": "",
             "test_group_id": "",
-            "test_result_json_extracted": "{EXTRACTED}",
-            "ctrf_json_extracted": "{EXTRACTED}",
-            "debug_log_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": []
-        },
-        {
-            "ctrf_json": []
-        },
-        {
-            "debug_log": [
-                {
-                    "count": "0",
-                    "message": "Debug log is ignored for woo-e2e\\/delete_products tests."
-                }
-            ]
         }
     ]
 ]';
