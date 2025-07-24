@@ -314,8 +314,8 @@ class PublishCommand extends QITCommand {
 		$output->writeln( 'Uploading to QIT Manager...' );
 
 		$post_data = [
-			'reference' => $resolved_package_id['id'],
-			'test_type' => $test_type,
+			'package_id' => $resolved_package_id['id'],
+			'test_type'  => $test_type,
 		];
 
 		if ( $force ) {
@@ -388,7 +388,7 @@ class PublishCommand extends QITCommand {
 	}
 
 	/**
-	 * Find manifest.json in directory or zip file
+	 * @phpstan-ignore-next-line method.unused Allow future reuse in CLI workflows.
 	 */
 	private function find_manifest_in_zip_or_dir( string $path ): ?string {
 		if ( is_dir( $path ) ) {

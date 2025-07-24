@@ -132,6 +132,13 @@ class PackageDownloadCommand extends QITCommand {
 		return preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $package_id ) === 1;
 	}
 
+	/**
+	 * Contact the Manager and retrieve download URLs for the requested packages.
+	 *
+	 * @param array<string> $packages List of package IDs.
+	 *
+	 * @return array<string, array<string,mixed>>
+	 */
 	private function fetch_download_urls( array $packages ): array {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
@@ -149,6 +156,14 @@ class PackageDownloadCommand extends QITCommand {
 		return $data['urls'];
 	}
 
+	/**
+	 * Download all packages to the local filesystem.
+	 *
+	 * @param array<string>                      $packages      Original package ID order.
+	 * @param array<string, array<string,mixed>> $download_urls Map of package_id => URL metadata.
+	 *
+	 * @return array<string,mixed>
+	 */
 	private function download_packages( array $packages, array $download_urls, string $output_dir, bool $verify, bool $extract, bool $install, bool $force, OutputInterface $output ): array {
 		$results = [];
 		$total   = count( $packages );
@@ -167,7 +182,7 @@ class PackageDownloadCommand extends QITCommand {
 				$url_info = $download_urls[ $package ];
 				$result   = $this->download_single_package( $package, $url_info, $output_dir, $verify, $extract, $install, $force );
 
-				$size_mb = round( ( $result['size'] ?? 0 ) / 1024 / 1024, 1 );
+				$size_mb = isset( $result['size'] ) ? round( $result['size'] / 1024 / 1024, 1 ) : 0;
 				$output->writeln( "✓ Downloaded ({$size_mb} MB)" );
 
 				$results[ $package ] = [
@@ -186,6 +201,14 @@ class PackageDownloadCommand extends QITCommand {
 		return $results;
 	}
 
+	/**
+	 * Download a single package and return the result information.
+	 *
+	 * @param string                                 $package   Package identifier.
+	 * @param array{url:string,checksum:string|null} $url_info  Metadata for the download.
+	 *
+	 * @return array<string,mixed>
+	 */
 	private function download_single_package( string $package, array $url_info, string $output_dir, bool $verify, bool $extract, bool $install, bool $force ): array {
 		$filename  = $this->generate_filename( $package );
 		$file_path = $output_dir . $filename;
@@ -231,7 +254,8 @@ class PackageDownloadCommand extends QITCommand {
 					} catch ( \Exception $e ) {
 						// If installation fails, don't fail the entire download
 						// Just log the error and continue
-						error_log( 'Dependency installation failed: ' . $e->getMessage() );
+						// Log dependency installation failure while continuing execution.
+						fwrite( STDERR, 'Dependency installation failed: ' . $e->getMessage() . PHP_EOL );
 						$result['dependencies_installed'] = false;
 						$result['install_error']          = $e->getMessage();
 					}
@@ -239,7 +263,7 @@ class PackageDownloadCommand extends QITCommand {
 			} catch ( \Exception $e ) {
 				// If extraction fails, don't fail the entire download
 				// Just log the error and continue
-				error_log( 'Extraction failed: ' . $e->getMessage() );
+				fwrite( STDERR, 'Extraction failed: ' . $e->getMessage() . PHP_EOL );
 			}
 		}
 
@@ -350,6 +374,11 @@ class PackageDownloadCommand extends QITCommand {
 		rmdir( $dir );
 	}
 
+	/**
+	 * Display download results to the user.
+	 *
+	 * @param array<string, array{status:string,message:string}> $results
+	 */
 	private function output_results( array $results, string $format, OutputInterface $output ): void {
 		$successful = count( array_filter( $results, fn( $result ) => $result['status'] === 'success' ) );
 		$failed     = count( $results ) - $successful;

@@ -21,7 +21,11 @@ class Zipper {
 		$this->docker = $docker;
 	}
 
-	/** Allow callers to add one or more base paths that are safe for extraction. */
+	/**
+	 * Whitelist directories that extraction is allowed to write into.
+	 *
+	 * @param array<string> $paths
+	 */
 	public function allow_extract_into( array $paths ): void {
 		foreach ( $paths as $p ) {
 			// Store the canonical path to defeat "../../" tricks
