@@ -38,6 +38,7 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
 use QIT_CLI\Commands\Tags\ListTestTagsCommand;
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\TestPackages\PackageDownloadCommand;
 use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
 use QIT_CLI\Commands\TestPackages\PublishCommand;
 use QIT_CLI\Commands\TestE2ECommand;
@@ -243,6 +244,7 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( DeleteTestTagsCommand::class ) );
 
 	// Test Package commands.
+	$application->add( $container->make( PackageDownloadCommand::class ) );
 	$application->add( $container->make( PublishCommand::class ) );
 	$application->add( $container->make( PackageScaffoldCommand::class ) );
 
