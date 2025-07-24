@@ -11,10 +11,10 @@ use InvalidArgumentException;
  * @see https://qit.woo.com/json-schema/test-package
  */
 final class TestPackageManifest implements \JsonSerializable {
-	private string $vendor;
-	private string $package;
-	/** @var string[] */
-	private array $tags;
+private string $vendor;
+private string $package;
+/** @var string[] */
+private array $tags;
 	private string $test_type;
 	private string $test_dir;
 	private string $description;
@@ -42,9 +42,8 @@ final class TestPackageManifest implements \JsonSerializable {
 	 * @param array<string,mixed> $payload – already validated & normalised by parser.
 	 */
 	public function __construct( array $payload ) {
-		// — Required —
 		if ( empty( $payload['test_type'] ) || empty( $payload['test'] ) ||
-			empty( $payload['vendor'] ) || empty( $payload['package'] ) ) {
+			 empty( $payload['vendor'] ) || empty( $payload['package'] ) ) {
 			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "vendor", or "package".' );
 		}
 
@@ -84,7 +83,6 @@ final class TestPackageManifest implements \JsonSerializable {
 	public function getPackage(): string {
 		return $this->package;
 	}
-
 
 	/**
 	 * @return string[]

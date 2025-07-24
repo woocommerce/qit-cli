@@ -31,9 +31,9 @@ class PackageDownloadCommand extends QITCommand {
 			->setName( 'package:download' )
 			->setDescription( 'Download test packages sequentially' )
 			->addArgument(
-				'references',
+				'packages',
 				InputArgument::IS_ARRAY | InputArgument::REQUIRED,
-				'Package references in vendor/package:version format'
+				'Package in vendor/package:version format'
 			)
 			->addOption(
 				'output-dir',
@@ -77,7 +77,7 @@ class PackageDownloadCommand extends QITCommand {
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$references = $input->getArgument( 'references' );
+		$packages = $input->getArgument( 'packages' );
 		$output_dir = rtrim( $input->getOption( 'output-dir' ), '/' ) . '/';
 		$verify = $input->getOption( 'verify' );
 		$extract = ! $input->getOption( 'no-extract' ); // Extract by default unless --no-extract
@@ -85,10 +85,10 @@ class PackageDownloadCommand extends QITCommand {
 		$force = $input->getOption( 'force' );
 		$format = $input->getOption( 'format' );
 
-		// Validate references format
-		foreach ( $references as $reference ) {
-			if ( ! $this->validate_reference_format( $reference ) ) {
-				$output->writeln( "<error>Invalid reference format: $reference. Expected format: vendor/package:version</error>" );
+		// Validate package format
+		foreach ( $packages as $package ) {
+			if ( ! $this->validate_reference_format( $package ) ) {
+				$output->writeln( "<error>Invalid package format: $package. Expected format: vendor/package:version</error>" );
 				return self::FAILURE;
 			}
 		}
@@ -103,14 +103,14 @@ class PackageDownloadCommand extends QITCommand {
 
 		// Fetch download URLs from QIT Manager
 		try {
-			$download_urls = $this->fetch_download_urls( $references );
+			$download_urls = $this->fetch_download_urls( $packages );
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>Failed to fetch download URLs: {$e->getMessage()}</error>" );
 			return self::FAILURE;
 		}
 
 		// Download packages sequentially
-		$results = $this->download_packages( $references, $download_urls, $output_dir, $verify, $extract, $install, $force, $output );
+		$results = $this->download_packages( $packages, $download_urls, $output_dir, $verify, $extract, $install, $force, $output );
 
 		// Output results
 		$this->output_results( $results, $format, $output );
@@ -132,11 +132,11 @@ class PackageDownloadCommand extends QITCommand {
 		return preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $reference ) === 1;
 	}
 
-	private function fetch_download_urls( array $references ): array {
+	private function fetch_download_urls( array $packages ): array {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'references' => $references,
+				'references' => $packages,
 			] )
 			->request();
 
@@ -149,34 +149,34 @@ class PackageDownloadCommand extends QITCommand {
 		return $data['urls'];
 	}
 
-	private function download_packages( array $references, array $download_urls, string $output_dir, bool $verify, bool $extract, bool $install, bool $force, OutputInterface $output ): array {
+	private function download_packages( array $packages, array $download_urls, string $output_dir, bool $verify, bool $extract, bool $install, bool $force, OutputInterface $output ): array {
 		$results = [];
-		$total = count( $references );
+		$total = count( $packages );
 
 		$output->writeln( 'Downloading packages...' );
 
-		foreach ( $references as $index => $reference ) {
+		foreach ( $packages as $index => $package ) {
 			$current = $index + 1;
-			$output->write( "[$current/$total] $reference " );
+			$output->write( "[$current/$total] $package " );
 
 			try {
-				if ( ! isset( $download_urls[ $reference ] ) ) {
+				if ( ! isset( $download_urls[ $package ] ) ) {
 					throw new \RuntimeException( 'Package not found or access denied' );
 				}
 
-				$url_info = $download_urls[ $reference ];
-				$result = $this->download_single_package( $reference, $url_info, $output_dir, $verify, $extract, $install, $force );
+				$url_info = $download_urls[ $package ];
+				$result = $this->download_single_package( $package, $url_info, $output_dir, $verify, $extract, $install, $force );
 
 				$size_mb = round( ( $result['size'] ?? 0 ) / 1024 / 1024, 1 );
 				$output->writeln( "✓ Downloaded ({$size_mb} MB)" );
 
-				$results[ $reference ] = [
+				$results[ $package ] = [
 					'status' => 'success',
 					'data' => $result,
 				];
 			} catch ( \Exception $e ) {
 				$output->writeln( "✗ Failed ({$e->getMessage()})" );
-				$results[ $reference ] = [
+				$results[ $package ] = [
 					'status' => 'failed',
 					'error' => $e->getMessage(),
 				];
@@ -186,8 +186,8 @@ class PackageDownloadCommand extends QITCommand {
 		return $results;
 	}
 
-	private function download_single_package( string $reference, array $url_info, string $output_dir, bool $verify, bool $extract, bool $install, bool $force ): array {
-		$filename = $this->generate_filename( $reference );
+	private function download_single_package( string $package, array $url_info, string $output_dir, bool $verify, bool $extract, bool $install, bool $force ): array {
+		$filename = $this->generate_filename( $package );
 		$file_path = $output_dir . $filename;
 
 		// Check if file exists and handle force flag
@@ -207,7 +207,7 @@ class PackageDownloadCommand extends QITCommand {
 		}
 
 		$result = [
-			'reference' => $reference,
+			'package' => $package,
 			'downloaded_to' => $file_path,
 			'size' => $url_info['size'] ?? filesize( $file_path ),
 			'checksum' => $url_info['checksum'] ?? null,
@@ -246,12 +246,12 @@ class PackageDownloadCommand extends QITCommand {
 		return $result;
 	}
 
-	private function generate_filename( string $reference ): string {
+	private function generate_filename( string $package ): string {
 		// Convert vendor/package:version to vendor-package__version.zip
 		// Use __ for version separator to prevent collisions with dashes in vendor names
-		$safe_reference = str_replace( '/', '-', $reference );
-		$safe_reference = str_replace( ':', '__', $safe_reference );
-		return $safe_reference . '.zip';
+		$safe_package = str_replace( '/', '-', $package );
+		$safe_package = str_replace( ':', '__', $safe_package );
+		return $safe_package . '.zip';
 	}
 
 	private function download_with_retry( string $url, string $destination ): void {

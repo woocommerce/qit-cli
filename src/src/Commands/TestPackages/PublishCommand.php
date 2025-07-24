@@ -11,6 +11,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use function QIT_CLI\get_manager_url;
 
 class PublishCommand extends QITCommand {
@@ -30,37 +31,61 @@ class PublishCommand extends QITCommand {
 			->setName( 'package:publish' )
 			->setDescription( 'Publish a test package to QIT' )
 			->setHelp( 'Note: if you authenticate with an e‑mail address you must publish under an extension slug you maintain; personal namespaces are reserved for partner aliases.' )
-			->addArgument( 'reference', InputArgument::REQUIRED, 'Package reference (vendor/pkg:version)' )
 			->addArgument( 'path', InputArgument::REQUIRED, 'Path to directory or zip file' )
+			->addOption( 'version', null, InputOption::VALUE_REQUIRED, 'SemVer or tag for this release (e.g. 1.0.0, 1.0.0-beta.1)', null )
 			->addOption( 'test-type', null, InputOption::VALUE_REQUIRED, 'Test type', 'e2e' )
 			->addOption( 'force', null, InputOption::VALUE_NONE, 'Force overwrite existing package' )
 			->addOption( 'skip-validate', null, InputOption::VALUE_NONE, 'Skip manifest validation' );
 	}
 
+
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$reference     = $input->getArgument( 'reference' );
 		$path          = $input->getArgument( 'path' );
+		$version       = $input->getOption( 'version' );
 		$test_type     = $input->getOption( 'test-type' );
 		$force         = $input->getOption( 'force' );
 		$skip_validate = $input->getOption( 'skip-validate' );
 
 		try {
-			// Step 1: Resolve reference & owner
-			$resolved_reference = $this->resolve_reference( $reference );
-			$output->writeln( "Publishing package: {$resolved_reference['reference']}" );
+			// Step 1: Parse manifest to get vendor/package
+			$manifest_path = $this->find_manifest_in_zip_or_dir( $path );
+			if ( ! $manifest_path ) {
+				throw new \RuntimeException( 'No manifest.json found in package' );
+			}
 
-			// Step 2: Handle directory or zip
+			$manifest = $this->manifest_parser->parse( $manifest_path );
+
+			// Step 2: Collect version (from option or interactive prompt)
+			if ( ! $version ) {
+				$question_helper = $this->getHelper( 'question' );
+				$question = new Question( 'Version to publish [default: 1.0.0]: ', '1.0.0' );
+				$version = $question_helper->ask( $input, $output, $question );
+			}
+
+			// Validate version format (simple SemVer check)
+			if ( ! preg_match( '/^\d+\.\d+\.\d+(-.+)?$/', $version ) ) {
+				throw new \RuntimeException( 'Version must be in SemVer format (e.g., 1.0.0, 1.0.0-beta.1)' );
+			}
+
+			// Step 3: Build reference from manifest + version
+			$reference = $manifest->getVendor() . '/' . $manifest->getPackage() . ':' . $version;
+
+			// Step 4: Handle directory or zip
 			$zip_path = $this->prepare_zip( $path, $output );
 
-			// Step 3: Parse and validate manifest (unless --skip-validate)
+			// Step 5: Resolve reference & owner
+			$resolved_reference = $this->resolve_reference( $reference );
+			$output->writeln( "Using reference {$resolved_reference['reference']} from manifest" );
+
+			// Step 6: Parse and validate manifest (unless --skip-validate)
 			if ( ! $skip_validate ) {
 				$this->validate_manifest( $zip_path, $resolved_reference['reference'], $output );
 			}
 
-			// Step 4: Upload to Manager
+			// Step 7: Upload to Manager
 			$upload_result = $this->upload_to_manager( $resolved_reference, $zip_path, $test_type, $force, $output );
 
-			// Step 5: Surface success to user
+			// Step 8: Surface success to user
 			$output->writeln( '<info>Package published successfully!</info>' );
 			$output->writeln( "Upload ID: {$upload_result['upload_id']}" );
 			if ( isset( $upload_result['checksum'] ) ) {
@@ -79,7 +104,6 @@ class PublishCommand extends QITCommand {
 			return 1;
 		}
 	}
-
 	/**
 	 * Resolve reference and determine owner (Woo extension or free vendor)
 	 *
@@ -262,5 +286,48 @@ class PublishCommand extends QITCommand {
 			}
 		}
 		rmdir( $dir );
+	}
+
+	/**
+	 * Find manifest.json in directory or zip file
+	 */
+	private function find_manifest_in_zip_or_dir( string $path ): ?string {
+		if ( is_dir( $path ) ) {
+			// Check root directory
+			if ( file_exists( $path . '/manifest.json' ) ) {
+				return $path . '/manifest.json';
+			}
+			
+			// Check one level deep
+			$entries = scandir( $path );
+			foreach ( $entries as $entry ) {
+				if ( $entry === '.' || $entry === '..' ) {
+					continue;
+				}
+				
+				$entry_path = $path . '/' . $entry;
+				if ( is_dir( $entry_path ) && file_exists( $entry_path . '/manifest.json' ) ) {
+					return $entry_path . '/manifest.json';
+				}
+			}
+		} elseif ( is_file( $path ) && pathinfo( $path, PATHINFO_EXTENSION ) === 'zip' ) {
+			// Extract to temp directory to find manifest
+			$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'qit_manifest_' );
+			$this->zipper->extract_zip( $path, $temp_dir );
+			
+			try {
+				$manifest_path = $this->find_manifest( $temp_dir );
+				if ( $manifest_path ) {
+					// Copy manifest to a temp file so we can parse it after cleanup
+					$temp_manifest = sys_get_temp_dir() . '/' . uniqid( 'manifest_' ) . '.json';
+					copy( $manifest_path, $temp_manifest );
+					return $temp_manifest;
+				}
+			} finally {
+				$this->recursive_rmdir( $temp_dir );
+			}
+		}
+		
+		return null;
 	}
 }

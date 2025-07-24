@@ -197,10 +197,10 @@ BASH;
 
 		$manifest_path = $target_dir . DIRECTORY_SEPARATOR . 'manifest.json';
 		$manifest      = [
-			'$schema'   => 'https://qit.woo.com/json-schema/test-package',
-			'vendor'    => $vendor,
-			'package'   => $package,
-			'test_type' => $test_type,
+'$schema'   => 'https://qit.woo.com/json-schema/test-package',
+'vendor'    => $vendor,
+'package'   => $package,
+'test_type' => $test_type,
 			'test'      => [
 				'phases'  => [
 					'beforeAllPlugins' => [],
@@ -251,7 +251,7 @@ BASH;
 
 		$io->writeln( 'Scaffolding test package…' );
 		$io->writeln( sprintf( "\n🟩 Package scaffolded (%s • %s)", $test_type, $framework ) );
-		$io->writeln( sprintf( "\nNext → qit package:publish %s/%s:<tag> %s", $vendor, $package, $target_dir ) );
+		$io->writeln( sprintf( "\nNext → qit package:publish %s", $target_dir ) );
 
 		return Command::SUCCESS;
 	}
