@@ -1,9 +1,11 @@
 <?php
+/**
+ *  QIT CLI – Scaffold command (fixed UX)
+ */
 
 namespace QIT_CLI\Commands\TestPackages;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Config;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -16,146 +18,175 @@ use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\normalize_path;
 
 class PackageScaffoldCommand extends QITCommand {
+	/** @static */
 	protected static $defaultName = 'package:scaffold'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var WooExtensionsList */
-	private $woo_extensions_list;
+	private WooExtensionsList $extensions;
 
-	public function __construct( WooExtensionsList $woo_extensions_list ) {
+	public function __construct( WooExtensionsList $extensions ) {
 		parent::__construct();
-		$this->woo_extensions_list = $woo_extensions_list;
+		$this->extensions = $extensions;
 	}
 
 	protected function configure(): void {
 		parent::configure();
+
 		$this
-			->addArgument( 'target_dir', InputArgument::REQUIRED, 'Directory to scaffold the E2E test package (must not exist).' )
-			->addOption( 'namespace', null, InputOption::VALUE_REQUIRED, 'Namespace slug for the test package (e.g. acme).' )
-			->addOption( 'package', null, InputOption::VALUE_REQUIRED, 'Package slug for the test package (e.g. my-plugin-tests).' )
-			->addOption( 'framework', null, InputOption::VALUE_REQUIRED, 'Framework to use (currently only "playwright" is accepted).', 'playwright' )
-			->addOption( 'test-type', null, InputOption::VALUE_REQUIRED, 'Test type to use (currently only "e2e" is accepted).', 'e2e' )
-			->addOption( 'only-manifest', null, InputOption::VALUE_NONE, 'Create manifest.json only and exit.' )
-			->setDescription( 'Scaffold an E2E test package with --framework and --test-type options (currently only Playwright E2E is supported).' )
-			->setHelp( 'You can only publish test packages under the namespace of extensions you maintain.' );
+			->addArgument(
+				'target_dir',
+				InputArgument::REQUIRED,
+				'Directory to scaffold the test package (must not already exist)'
+			)
+			->addOption(
+				'namespace',
+				null,
+				InputOption::VALUE_REQUIRED,
+				'Extension slug you maintain – this becomes the "vendor/namespace" in manifest'
+			)
+			->addOption(
+				'package',
+				null,
+				InputOption::VALUE_REQUIRED,
+				'Package name (default: e2e)',
+				'e2e'
+			)
+			->addOption(
+				'framework',
+				null,
+				InputOption::VALUE_REQUIRED,
+				'Test framework (only "playwright" is supported)',
+				'playwright'
+			)
+			->addOption(
+				'test-type',
+				null,
+				InputOption::VALUE_REQUIRED,
+				'Test type (only "e2e" is supported)',
+				'e2e'
+			)
+			->addOption(
+				'only-manifest',
+				null,
+				InputOption::VALUE_NONE,
+				'Create manifest.json only (skip npm scaffolding)'
+			)
+			->setDescription( 'Scaffold a Playwright E2E test package' )
+			->setHelp(
+				'You can scaffold test packages only under the namespace (extension slug) that you maintain.' . "\n\n" .
+				'Package identifier structure: namespace/package-name:[version]' . "\n" .
+				'Example: woocommerce/e2e:stable' . "\n" .
+				'  - namespace: woocommerce (your extension slug)' . "\n" .
+				'  - package-name: e2e (what you\'re creating now)' . "\n" .
+				'  - [version]: you will choose this when you publish the package'
+			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$io         = new SymfonyStyle( $input, $output );
-		$target_dir = $input->getArgument( 'target_dir' );
-		$namespace  = $input->getOption( 'namespace' );
-		$package    = $input->getOption( 'package' );
-		$framework  = $input->getOption( 'framework' );
-		$test_type  = $input->getOption( 'test-type' );
+	protected function doExecute( InputInterface $in, OutputInterface $out ): int {
+		$io           = new SymfonyStyle( $in, $out );
+		$fs           = new Filesystem();
+		$target_dir   = normalize_path( $in->getArgument( 'target_dir' ) );
+		$namespace    = (string) $in->getOption( 'namespace' );
+		$package_name = (string) $in->getOption( 'package' );
+		$framework    = strtolower( (string) $in->getOption( 'framework' ) );
+		$test_type    = strtolower( (string) $in->getOption( 'test-type' ) );
 
-		// Interactive prompts for required values when missing.
-		$question_helper = $this->getHelper( 'question' );
+		/* ---------------------------------------------------------------------
+		 * Explain the workflow
+		 * -------------------------------------------------------------------*/
+		$io->title( 'Scaffold Test Package' );
+		$io->writeln( '<comment>This command creates files locally on your machine.</comment>' );
+		$io->writeln( '<comment>Nothing is published or uploaded yet.</comment>' );
+		$io->writeln( '' );
+		$io->writeln( '<info>Workflow:</info>' );
+		$io->writeln( '  1. <info>Scaffold</info> → Create local test package files (this command)' );
+		$io->writeln( '  2. <info>Develop</info> → Write your tests and customize' );
+		$io->writeln( '  3. <info>Publish</info> → Upload to QIT registry (qit package:publish)' );
+		$io->writeln( '' );
 
-		$target_dir = normalize_path( $target_dir );
-		if ( file_exists( $target_dir ) ) {
+		/* ---------------------------------------------------------------------
+		 * Pre‑flight validation
+		 * -------------------------------------------------------------------*/
+		if ( $fs->exists( $target_dir ) ) {
 			$io->error( sprintf( 'Directory already exists: %s', $target_dir ) );
 
 			return Command::FAILURE;
 		}
+		if ( $framework !== 'playwright' ) {
+			$io->error( 'Only "playwright" is supported for now.' );
 
-		// Single prompt for package id in namespace/package format
-		if ( empty( $namespace ) || empty( $package ) ) {
+			return Command::FAILURE;
+		}
+		if ( $test_type !== 'e2e' ) {
+			$io->error( 'Only "e2e" is supported for now.' );
 
-			$package_id_question = new Question(
-				'Namespace slug (must be one you maintain) > '
-			);
+			return Command::FAILURE;
+		}
 
-			$package_id_question->setValidator( function ( $answer ) {
-				// Namespace slug is required
-				if ( empty( $answer ) ) {
-					throw new \RuntimeException( 'Namespace slug is required.' );
-				}
+		$helper = $this->getHelper( 'question' );
 
-				// Validate format
-				if ( ! preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+$/', $answer ) ) {
-					throw new \RuntimeException( 'Package ID must be in namespace/package format and contain only letters, numbers, underscores, dots, and hyphens.' );
-				}
-
-				list( $namespace_part, $package_part ) = explode( '/', $answer, 2 );
-
-				// Validate that user maintains the namespace
-				if ( ! $this->woo_extensions_list->user_maintains( $namespace_part ) ) {
-					throw new \RuntimeException( sprintf( "You are not a maintainer of '%s'.", $namespace_part ) );
-				}
-
-				return $answer;
+		/* ---------------------------------------------------------------------
+		 * Ask for namespace (extension slug)
+		 * -------------------------------------------------------------------*/
+		if ( $namespace === '' ) {
+			$q = new Question( 'Extension slug you maintain (namespace) > ' );
+			$q->setValidator( function ( $answer ) {
+				return $this->validate_namespace( $answer );
 			} );
-
-			$package_id = $question_helper->ask( $input, $output, $package_id_question );
-
-			// Split the package id
-			list( $namespace, $package ) = explode( '/', $package_id, 2 );
-
-			// Show success message
-			$io->writeln( sprintf( '✓ Verified – you are a maintainer of \'%s\'', $namespace ) );
+			$namespace = (string) $helper->ask( $in, $out, $q );
 		} else {
-			// Validate namespace and package from options
-			if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $namespace ) ) {
-				$io->error( 'Namespace must contain only letters, numbers, underscores, dots, and hyphens.' );
-				return Command::FAILURE;
-			}
-			if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $package ) ) {
-				$io->error( 'Package must contain only letters, numbers, underscores, dots, and hyphens.' );
-				return Command::FAILURE;
-			}
+			$this->validate_namespace( $namespace ); // throws on failure
+		}
+		$io->writeln( "✓ You are a maintainer of \"{$namespace}\"" );
 
-			// Validate that user maintains the namespace
-			if ( ! $this->woo_extensions_list->user_maintains( $namespace ) ) {
-				$io->error( sprintf( "You are not a maintainer of '%s'.", $namespace ) );
-				return Command::FAILURE;
-			}
+		/* ---------------------------------------------------------------------
+		 * Ask for package name
+		 * -------------------------------------------------------------------*/
+		$should_ask = $package_name === '' || $package_name === 'e2e';
+
+		if ( $should_ask ) {
+			$io->writeln( "\n<comment>Package identifier structure:</comment>" );
+			$io->writeln( "  <info>namespace/package-name:[version]</info>" );
+			$io->writeln( "  Example: <info>woocommerce/e2e:stable</info>" );
+			$io->writeln( sprintf( "\nYour package identifier will be: <info>%s/[package-name]:[version]</info>", $namespace ) );
+			$q = new Question( 'Package name [e2e]: ', 'e2e' );
+			$q->setValidator( function ( $a ) {
+				return $this->validate_slug( $a, 'Package name' );
+			} );
+			$package_name = (string) $helper->ask( $in, $out, $q );
+		} else {
+			$this->validate_slug( $package_name, 'Package name' );
 		}
 
-		// Validate framework option
-		if ( strtolower( $framework ) !== 'playwright' ) {
-			$io->error( 'Error: only \'playwright\' is supported for --framework.' );
-			return Command::FAILURE;
-		}
-		$framework = strtolower( $framework );
+		$io->writeln( sprintf( "✓ Package identifier will be: <info>%s/%s:[version]</info>", $namespace, $package_name ) );
 
-		// Validate test-type option
-		if ( strtolower( $test_type ) !== 'e2e' ) {
-			$io->error( 'Error: only \'e2e\' is supported for --test-type.' );
-			return Command::FAILURE;
-		}
-		$test_type = strtolower( $test_type );
-
+		/* ---------------------------------------------------------------------
+		 * Files & manifest
+		 * -------------------------------------------------------------------*/
 		try {
-			( new Filesystem() )->mkdir( $target_dir, 0755 );
-			// Create bootstrap subdirectory
-			( new Filesystem() )->mkdir( $target_dir . DIRECTORY_SEPARATOR . 'bootstrap', 0755 );
-		} catch ( \Exception $e ) {
+			$fs->mkdir( [
+				$target_dir,
+				"$target_dir/bootstrap",
+			], 0755 );
+		} catch ( \Throwable $e ) {
 			$io->error( 'Unable to create directory: ' . $e->getMessage() );
 
 			return Command::FAILURE;
 		}
 
-		// Create bootstrap/setup.sh with executable permissions
-		$setup_script_path    = $target_dir . DIRECTORY_SEPARATOR . 'bootstrap' . DIRECTORY_SEPARATOR . 'setup.sh';
-		$setup_script_content = <<<'BASH'
+		/* bootstrap/setup.sh */
+		$setup_sh = <<<BASH
 #!/bin/bash
-# Example isolated setup script.
-# 🛈 The plugin under test is already active.
-# Add commands below; they run inside the Docker container used by QIT.
-# Examples:
-# wp theme install storefront --activate
-# wp option update blogname "My e2e test site"
-
+# This script runs inside the container before tests.
 echo "Setup complete"
 BASH;
+		file_put_contents( "$target_dir/bootstrap/setup.sh", $setup_sh );
+		chmod( "$target_dir/bootstrap/setup.sh", 0755 );
 
-		file_put_contents( $setup_script_path, $setup_script_content );
-		chmod( $setup_script_path, 0755 );
-
-		$manifest_path = $target_dir . DIRECTORY_SEPARATOR . 'manifest.json';
-		$manifest      = [
+		/* manifest.json */
+		$manifest = [
 			'$schema'   => 'https://qit.woo.com/json-schema/test-package',
-			'namespace' => $namespace,
-			'package'   => $package,
+			'vendor'    => $namespace,              // <-- key must be "vendor" for current schema
+			'package'   => $package_name,
 			'test_type' => $test_type,
 			'test'      => [
 				'phases'  => [
@@ -171,40 +202,47 @@ BASH;
 				],
 			],
 		];
+		file_put_contents(
+			"$target_dir/manifest.json",
+			json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . PHP_EOL
+		);
 
-		file_put_contents( $manifest_path, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
-
-		// Validate manifest against schema.
+		/* Validate manifest (will throw if schema mismatch) */
 		try {
-			$parser = new \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser();
-			$parser->parse( $manifest_path );
+			( new \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser() )
+				->parse( "$target_dir/manifest.json" );
 		} catch ( \Throwable $e ) {
-			( new Filesystem() )->remove( $target_dir );
+			$fs->remove( $target_dir );
 			$io->error( 'Manifest validation failed: ' . $e->getMessage() );
 
 			return Command::FAILURE;
 		}
 
-		if ( $input->getOption( 'only-manifest' ) ) {
-			$io->success( 'manifest.json created at ' . $manifest_path );
+		if ( $in->getOption( 'only-manifest' ) ) {
+			$io->success( 'manifest.json created at ' . $target_dir . '/manifest.json' );
 
 			return Command::SUCCESS;
 		}
 
+		/* ---------------------------------------------------------------------
+		 * Extra Playwright scaffolding
+		 * -------------------------------------------------------------------*/
 		try {
-			$this->ensure_npm_available();
+			$this->ensure_npm();
 			$this->write_package_json( $target_dir );
 			$this->write_playwright_config( $target_dir );
 			$this->write_sample_test( $target_dir );
-			$this->install_dev_dependencies( $target_dir, $output );
+			$this->install_dev_dependencies( $target_dir, $out );
 		} catch ( \Throwable $e ) {
-			// Cleanup on failure.
-			( new Filesystem() )->remove( $target_dir );
+			$fs->remove( $target_dir );
 			$io->error( $e->getMessage() );
 
 			return Command::FAILURE;
 		}
 
+		/* ---------------------------------------------------------------------
+		 * Done
+		 * -------------------------------------------------------------------*/
 		$io->writeln( 'Scaffolding test package…' );
 		$io->writeln( sprintf( "\n🟩 Package scaffolded (%s • %s)", $test_type, $framework ) );
 		$io->writeln( sprintf( "\nNext → qit package:publish %s", $target_dir ) );
@@ -212,11 +250,32 @@ BASH;
 		return Command::SUCCESS;
 	}
 
-	private function ensure_npm_available(): void {
-		$process = \Symfony\Component\Process\Process::fromShellCommandline( 'command -v npm' );
-		$process->run();
-		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( 'npm must be installed and in PATH to scaffold Playwright projects.' );
+	/* -------------------------------------------------------------------------
+	 * Helpers
+	 * -----------------------------------------------------------------------*/
+	private function validate_namespace( string $slug ): string {
+		$this->validate_slug( $slug, 'Namespace' );
+
+		if ( ! $this->extensions->user_maintains( $slug ) ) {
+			throw new \RuntimeException( "You are not a maintainer of \"{$slug}\"." );
+		}
+
+		return $slug;
+	}
+
+	private function validate_slug( string $slug, string $label = 'Slug' ): string {
+		if ( ! preg_match( '/^[a-zA-Z0-9_.-]+$/', $slug ) ) {
+			throw new \RuntimeException( "{$label} may contain only letters, numbers, underscores, dots and hyphens." );
+		}
+
+		return $slug;
+	}
+
+	private function ensure_npm(): void {
+		$proc = \Symfony\Component\Process\Process::fromShellCommandline( 'command -v npm' );
+		$proc->run();
+		if ( ! $proc->isSuccessful() ) {
+			throw new \RuntimeException( 'npm must be installed and in $PATH.' );
 		}
 	}
 
@@ -228,13 +287,13 @@ BASH;
 			'scripts'         => [ 'test:e2e' => 'playwright test' ],
 		];
 		file_put_contents(
-			$dir . '/package.json',
+			"$dir/package.json",
 			json_encode( $pkg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . PHP_EOL
 		);
 	}
 
 	private function write_playwright_config( string $dir ): void {
-		$cfg = <<<'JS'
+		$config = <<<'JS'
 import { defineConfig, devices } from '@playwright/test';
 
 export default defineConfig({
@@ -258,14 +317,11 @@ export default defineConfig({
   ]
 });
 JS;
-		file_put_contents( $dir . '/playwright.config.js', $cfg );
+		file_put_contents( "$dir/playwright.config.js", $config );
 	}
 
-
 	private function write_sample_test( string $dir ): void {
-		( new \Symfony\Component\Filesystem\Filesystem() )
-			->mkdir( $dir . '/tests', 0755 );
-
+		( new Filesystem() )->mkdir( "$dir/tests", 0755 );
 		$spec = <<<'JS'
 import { test, expect } from '@playwright/test';
 
@@ -273,33 +329,33 @@ test('site is reachable and has a body', async ({ page }) => {
   const response = await page.goto('/');
   expect(response?.status()).toBe(200);
 
-  const body = await page.locator('body');
-  await expect(body).toBeVisible();
+  await expect(page.locator('body')).toBeVisible();
 });
 JS;
-		file_put_contents( $dir . '/tests/example.spec.js', $spec );
+		file_put_contents( "$dir/tests/example.spec.js", $spec );
 	}
 
-
 	private function install_dev_dependencies( string $dir, OutputInterface $out ): void {
-		$packages = [
+		$deps = [
 			'@playwright/test',
 			'playwright-ctrf-json-reporter',
 			'allure-playwright',
 		];
-
-		foreach ( $packages as $package ) {
-			$proc = new \Symfony\Component\Process\Process(
-				[ 'npm', 'install', '--save-dev', $package ], $dir,
+		foreach ( $deps as $pkg ) {
+			$p = new \Symfony\Component\Process\Process(
+				[ 'npm', 'install', '--save-dev', $pkg ],
+				$dir,
 				[
 					'CI'                               => '1',
 					'PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD' => '1',
 				]
 			);
-			$proc->setTimeout( null );
-			$proc->run( fn( $t, $b ) => $out->write( $b ) );
-			if ( ! $proc->isSuccessful() ) {
-				throw new \Symfony\Component\Process\Exception\ProcessFailedException( $proc );
+			$p->setTimeout( null );
+			$p->run( function ( $type, $buffer ) use ( $out ) {
+				$out->write( $buffer );
+			} );
+			if ( ! $p->isSuccessful() ) {
+				throw new \Symfony\Component\Process\Exception\ProcessFailedException( $p );
 			}
 		}
 	}
