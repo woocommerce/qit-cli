@@ -13,9 +13,21 @@ class Zipper {
 	/** @var Docker */
 	private $docker;
 
+	/** @var array */
+	private array $extraAllowedDirs = [];
+
 	public function __construct( OutputInterface $output, Docker $docker ) {
 		$this->output = $output;
 		$this->docker = $docker;
+	}
+
+	/** Allow callers to add one or more base paths that are safe for extraction. */
+	public function allowExtractInto(array $paths): void {
+		foreach ($paths as $p) {
+			// Store the canonical path to defeat "../../" tricks
+			$real = realpath($p) ?: $p;
+			$this->extraAllowedDirs[] = rtrim($real, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+		}
 	}
 
 	/**
@@ -50,10 +62,29 @@ class Zipper {
 			}
 		}
 
-		// Make sure $extract_to is within Config Dir or sys_get_temp_dir.
+		// Make sure $extract_to is within allowed directories.
 		if ( ! file_exists( '/.dockerenv' ) ) {
-			if ( strpos( normalize_path( $extract_to ), Config::get_qit_dir() ) !== 0 && strpos( normalize_path( $extract_to ), normalize_path( sys_get_temp_dir() ) ) !== 0 ) {
-				throw new \RuntimeException( 'Invalid directory.' );
+			$extract_to_canonical = realpath($extract_to) ?: $extract_to;
+			$extract_to_canonical = rtrim($extract_to_canonical, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+
+			$allowed = array_merge(
+				[
+					rtrim(Config::get_qit_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR,
+					rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR,
+				],
+				$this->extraAllowedDirs
+			);
+
+			$ok = false;
+			foreach ($allowed as $base) {
+				if (strpos($extract_to_canonical, $base) === 0) {
+					$ok = true;
+					break;
+				}
+			}
+
+			if (!$ok) {
+				throw new \RuntimeException("Extraction directory not whitelisted: $extract_to");
 			}
 		}
 

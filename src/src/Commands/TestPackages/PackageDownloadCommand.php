@@ -50,10 +50,16 @@ class PackageDownloadCommand extends QITCommand {
 				true
 			)
 			->addOption(
-				'extract',
+				'no-extract',
 				null,
 				InputOption::VALUE_NONE,
-				'Auto-extract packages after download'
+				'Skip auto-extraction of packages (extracts by default)'
+			)
+			->addOption(
+				'no-install',
+				null,
+				InputOption::VALUE_NONE,
+				'Skip dependency installation after extraction (installs by default)'
 			)
 			->addOption(
 				'force',
@@ -74,7 +80,8 @@ class PackageDownloadCommand extends QITCommand {
 		$references = $input->getArgument( 'references' );
 		$output_dir = rtrim( $input->getOption( 'output-dir' ), '/' ) . '/';
 		$verify = $input->getOption( 'verify' );
-		$extract = $input->getOption( 'extract' );
+		$extract = ! $input->getOption( 'no-extract' ); // Extract by default unless --no-extract
+		$install = ! $input->getOption( 'no-install' ); // Install by default unless --no-install
 		$force = $input->getOption( 'force' );
 		$format = $input->getOption( 'format' );
 
@@ -103,7 +110,7 @@ class PackageDownloadCommand extends QITCommand {
 		}
 
 		// Download packages sequentially
-		$results = $this->download_packages( $references, $download_urls, $output_dir, $verify, $extract, $force, $output );
+		$results = $this->download_packages( $references, $download_urls, $output_dir, $verify, $extract, $install, $force, $output );
 
 		// Output results
 		$this->output_results( $results, $format, $output );
@@ -142,7 +149,7 @@ class PackageDownloadCommand extends QITCommand {
 		return $data['urls'];
 	}
 
-	private function download_packages( array $references, array $download_urls, string $output_dir, bool $verify, bool $extract, bool $force, OutputInterface $output ): array {
+	private function download_packages( array $references, array $download_urls, string $output_dir, bool $verify, bool $extract, bool $install, bool $force, OutputInterface $output ): array {
 		$results = [];
 		$total = count( $references );
 
@@ -158,7 +165,7 @@ class PackageDownloadCommand extends QITCommand {
 				}
 
 				$url_info = $download_urls[ $reference ];
-				$result = $this->download_single_package( $reference, $url_info, $output_dir, $verify, $extract, $force );
+				$result = $this->download_single_package( $reference, $url_info, $output_dir, $verify, $extract, $install, $force );
 
 				$size_mb = round( ( $result['size'] ?? 0 ) / 1024 / 1024, 1 );
 				$output->writeln( "✓ Downloaded ({$size_mb} MB)" );
@@ -179,7 +186,7 @@ class PackageDownloadCommand extends QITCommand {
 		return $results;
 	}
 
-	private function download_single_package( string $reference, array $url_info, string $output_dir, bool $verify, bool $extract, bool $force ): array {
+	private function download_single_package( string $reference, array $url_info, string $output_dir, bool $verify, bool $extract, bool $install, bool $force ): array {
 		$filename = $this->generate_filename( $reference );
 		$file_path = $output_dir . $filename;
 
@@ -209,10 +216,26 @@ class PackageDownloadCommand extends QITCommand {
 
 		// Extract if requested
 		if ( $extract ) {
-			$extract_dir = $output_dir . pathinfo( $filename, PATHINFO_FILENAME );
+			// Extract to output directory using new Zipper whitelist functionality
+			$extract_dir = rtrim($output_dir, '/') . '/' . pathinfo($filename, PATHINFO_FILENAME);
+			$this->zipper->allowExtractInto([$output_dir]);
 			try {
 				$this->extract_package( $file_path, $extract_dir, $force );
 				$result['extracted_to'] = $extract_dir;
+				
+				// Install dependencies if requested
+				if ( $install ) {
+					try {
+						$this->install_dependencies( $extract_dir );
+						$result['dependencies_installed'] = true;
+					} catch ( \Exception $e ) {
+						// If installation fails, don't fail the entire download
+						// Just log the error and continue
+						error_log( "Dependency installation failed: " . $e->getMessage() );
+						$result['dependencies_installed'] = false;
+						$result['install_error'] = $e->getMessage();
+					}
+				}
 			} catch ( \Exception $e ) {
 				// If extraction fails, don't fail the entire download
 				// Just log the error and continue
@@ -269,6 +292,49 @@ class PackageDownloadCommand extends QITCommand {
 		}
 
 		$this->zipper->extract_zip( $zip_path, $extract_dir );
+	}
+
+	private function install_dependencies( string $extract_dir ): void {
+		$installed_something = false;
+		
+		// Check for package.json and run appropriate npm command
+		if ( file_exists( $extract_dir . '/package.json' ) ) {
+			// Use npm ci if package-lock.json exists, otherwise use npm install
+			$use_ci = file_exists( $extract_dir . '/package-lock.json' );
+			$npm_command = 'cd ' . escapeshellarg( $extract_dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
+			$npm_output = [];
+			$npm_return_code = 0;
+			
+			exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
+			
+			if ( $npm_return_code !== 0 ) {
+				$command_used = $use_ci ? 'npm ci' : 'npm install';
+				throw new \RuntimeException( $command_used . ' failed: ' . implode( "\n", $npm_output ) );
+			}
+			
+			$installed_something = true;
+		}
+		
+		// Check for composer.json and run composer install
+		if ( file_exists( $extract_dir . '/composer.json' ) ) {
+			$composer = escapeshellcmd( 'composer' );
+			$composer_command = 'cd ' . escapeshellarg( $extract_dir ) . ' && ' . $composer . ' install --no-dev --optimize-autoloader';
+			$composer_output = [];
+			$composer_return_code = 0;
+			
+			exec( $composer_command . ' 2>&1', $composer_output, $composer_return_code );
+			
+			if ( $composer_return_code !== 0 ) {
+				throw new \RuntimeException( 'composer install failed: ' . implode( "\n", $composer_output ) );
+			}
+			
+			$installed_something = true;
+		}
+		
+		if ( ! $installed_something ) {
+			// No package.json or composer.json found, nothing to install
+			return;
+		}
 	}
 
 	private function recursive_rmdir( string $dir ): void {
