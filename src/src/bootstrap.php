@@ -35,9 +35,6 @@ use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\RunActivationTestCommand;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
-use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
-use QIT_CLI\Commands\Tags\ListTestTagsCommand;
-use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
 use QIT_CLI\Commands\TestPackages\PackageDeleteCommand;
 use QIT_CLI\Commands\TestPackages\PackageDownloadCommand;
 use QIT_CLI\Commands\TestPackages\PackageListCommand;
@@ -241,9 +238,6 @@ if ( $is_connected_to_backend ) {
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );
 
-	$application->add( $container->make( ListTestTagsCommand::class ) );
-	$application->add( $container->make( UploadTestTagsCommand::class ) );
-	$application->add( $container->make( DeleteTestTagsCommand::class ) );
 
 	// Test Package commands.
 	$application->add( $container->make( PackageDeleteCommand::class ) );

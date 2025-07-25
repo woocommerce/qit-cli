@@ -65,65 +65,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
-	public function test_tag_and_run_test() {
-		try {
-			qit( [
-				'tag:upload',
-				'woocommerce-amazon-s3-storage:self-test-tag-and-run',
-				$this->scaffold_test(),
-			] );
 
-			$output = qit( [
-				'run:e2e',
-				'woocommerce-amazon-s3-storage',
-				'self-test-tag-and-run',
-				'--plugin',
-				'woocommerce',
-			] );
-
-			$output = $this->normalize_scaffolded_test_run_output( $output );
-
-			$this->assertMatchesNormalizedSnapshot( $output );
-		} finally {
-			// Always clean up the tag, even if the test fails
-			qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-tag-and-run' ] );
-		}
-	}
-
-	public function test_multiple_tags_and_run_tests() {
-		$tag1 = 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags';
-		$tag2 = 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another';
-		
-		try {
-			qit( [
-				'tag:upload',
-				$tag1,
-				$this->scaffold_test(),
-			] );
-
-			qit( [
-				'tag:upload',
-				$tag2,
-				$this->scaffold_test( 'another-tag' ),
-			] );
-
-			$output = qit( [
-				'run:e2e',
-				'woocommerce-amazon-s3-storage',
-				'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
-				'--plugin',
-				'woocommerce',
-			] );
-
-			$output = $this->normalize_scaffolded_test_run_output( $output );
-
-			$this->assertMatchesNormalizedSnapshot( $output );
-		} finally {
-			// Always clean up the tags, even if the test fails
-			qit( [ 'tag:delete', $tag1 ] );
-			qit( [ 'tag:delete', $tag2 ] );
-		}
-	}
 
 	public function test_theme_as_sut() {
 		// Scaffold.
