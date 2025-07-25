@@ -351,7 +351,6 @@ class PackagePublishCommand extends QITCommand {
 			throw new \RuntimeException( 'Failed to upload package: ' . $e->getMessage() );
 		}
 
-
 		$data = json_decode( $response, true );
 
 		if ( ! is_array( $data ) ) {
