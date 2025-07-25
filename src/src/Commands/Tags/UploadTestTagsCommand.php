@@ -209,6 +209,9 @@ class UploadTestTagsCommand extends Command {
 			return str_contains( $contents, 'from "k6"' ) ||
 					str_contains( $contents, 'from \'k6\'' ) ||
 					str_contains( $contents, 'import http from "k6/http"' ) ||
+					str_contains( $contents, 'import http from \'k6/http\'' ) ||
+					str_contains( $contents, 'import { browser } from "k6/browser"' ) ||
+					str_contains( $contents, 'import { browser } from \'k6/browser\'' ) ||
 					str_contains( $contents, 'import { check' ) ||
 					str_contains( $contents, 'export let options' ) ||
 					str_contains( $contents, 'export default function' );

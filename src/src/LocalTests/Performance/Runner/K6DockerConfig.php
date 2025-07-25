@@ -28,7 +28,6 @@ class K6DockerConfig {
 			$this->get_base_docker_args( $env_info, $container_name ),
 			$this->get_volume_mounts( $env_info, $results_dir, $test_infos ),
 			$this->get_environment_variables( $env_info ),
-			$this->get_user_args(),
 			$this->get_k6_command()
 		);
 	}
@@ -45,6 +44,7 @@ class K6DockerConfig {
 			'--rm',
 			'--init',
 			'--add-host=host.docker.internal:host-gateway',
+			'--cap-add=SYS_ADMIN',
 		];
 	}
 
@@ -106,28 +106,10 @@ class K6DockerConfig {
 	/**
 	 * @return array<string>
 	 */
-	private function get_user_args(): array {
-		if ( Docker::should_set_user() ) {
-			return [
-				'--user',
-				implode( ':', Docker::get_user_and_group() ),
-			];
-		}
-
-		return [];
-	}
-
-	/**
-	 * @return array<string>
-	 */
 	private function get_k6_command(): array {
 		return [
-			'grafana/k6:latest',
+			'grafana/k6:latest-with-browser',
 			'run',
-			'--duration',
-			'30s',
-			'--vus',
-			'10',
 			'--out',
 			'json=/results/k6-results.json',
 		];
