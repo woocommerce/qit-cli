@@ -242,16 +242,16 @@ class PackagePublishCommand extends QITCommand {
 	}
 
 	/**
-	 * Validate that the user maintains the specified namespace
+	 * Validate that the user maintains the specified namespace.
 	 */
-	private function validate_namespace_maintenance( string $namespace, SymfonyStyle $io ): void {
-		if ( ! $this->woo_extensions_list->user_maintains( $namespace ) ) {
+	private function validate_namespace_maintenance( string $namespace_param, SymfonyStyle $io ): void {
+		if ( ! $this->woo_extensions_list->user_maintains( $namespace_param ) ) {
 			throw new \RuntimeException(
-				sprintf( 'You are not a maintainer of namespace "%s". You can only publish packages under namespaces you maintain.', $namespace )
+				sprintf( 'You are not a maintainer of namespace "%s". You can only publish packages under namespaces you maintain.', $namespace_param )
 			);
 		}
 
-		$io->writeln( sprintf( '✓ You are a maintainer of namespace "<info>%s</info>"', $namespace ) );
+		$io->writeln( sprintf( '✓ You are a maintainer of namespace "<info>%s</info>"', $namespace_param ) );
 	}
 
 	/**

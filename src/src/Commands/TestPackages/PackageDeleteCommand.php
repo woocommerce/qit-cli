@@ -109,6 +109,8 @@ class PackageDeleteCommand extends QITCommand {
 
 	/**
 	 * Output deletion result
+	 *
+	 * @param array<string, mixed> $result
 	 */
 	private function output_result( array $result, string $format, OutputInterface $output, SymfonyStyle $io ): void {
 		if ( $format === 'json' ) {

@@ -76,15 +76,15 @@ class PackageListCommand extends QITCommand {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function fetch_packages_from_manager( ?string $test_type, ?string $namespace, bool $owned_only, OutputInterface $output ): array {
+	private function fetch_packages_from_manager( ?string $test_type, ?string $namespace_param, bool $owned_only, OutputInterface $output ): array {
 		$output->writeln( '📦 Fetching available packages...' );
 
 		$post_body = [];
 		if ( $test_type ) {
 			$post_body['test_type'] = $test_type;
 		}
-		if ( $namespace ) {
-			$post_body['namespace'] = $namespace;
+		if ( $namespace_param ) {
+			$post_body['namespace'] = $namespace_param;
 		}
 		if ( $owned_only ) {
 			$post_body['owned_only'] = '1';
@@ -113,6 +113,8 @@ class PackageListCommand extends QITCommand {
 
 	/**
 	 * Output packages list
+	 *
+	 * @param array<string, mixed> $response
 	 */
 	private function output_packages( array $response, string $format, OutputInterface $output, SymfonyStyle $io ): void {
 		$packages     = $response['packages'] ?? [];
