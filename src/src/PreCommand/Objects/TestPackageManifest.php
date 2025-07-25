@@ -11,7 +11,7 @@ use InvalidArgumentException;
  * @see https://qit.woo.com/json-schema/test-package
  */
 final class TestPackageManifest implements \JsonSerializable {
-	private string $vendor;
+	private string $namespace;
 	private string $package;
 	/** @var string[] */
 	private array $tags;
@@ -43,8 +43,8 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function __construct( array $payload ) {
 		if ( empty( $payload['test_type'] ) || empty( $payload['test'] ) ||
-			empty( $payload['vendor'] ) || empty( $payload['package'] ) ) {
-			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "vendor", or "package".' );
+			empty( $payload['namespace'] ) || empty( $payload['package'] ) ) {
+			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "namespace", or "package".' );
 		}
 
 		// Add defensive check for required run phase
@@ -52,7 +52,7 @@ final class TestPackageManifest implements \JsonSerializable {
 			throw new InvalidArgumentException( 'Manifest missing mandatory "test.phases.run" key.' );
 		}
 
-		$this->vendor      = $payload['vendor'];
+		$this->namespace   = $payload['namespace'];
 		$this->package     = $payload['package'];
 		$this->tags        = $payload['tags'] ?? [];
 		$this->test_type   = $payload['test_type'];
@@ -76,8 +76,8 @@ final class TestPackageManifest implements \JsonSerializable {
 	 * Simple getters
 	 * ----------------------------------------------------------------
 	 */
-	public function getVendor(): string {
-		return $this->vendor;
+	public function getNamespace(): string {
+		return $this->namespace;
 	}
 
 	public function getPackage(): string {
@@ -158,13 +158,6 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->test_type === 'e2e';
 	}
 
-	public function needsPlugin( string $slug ): bool {
-		return isset( $this->requires['plugins'][ $slug ] );
-	}
-
-	public function needsTheme( string $slug ): bool {
-		return isset( $this->requires['themes'][ $slug ] );
-	}
 
 	/**
 	 * @return string[]|array<string,mixed>[] list of commands or command‑objects
@@ -180,7 +173,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function jsonSerialize(): mixed {
 		$result = [
-			'vendor'    => $this->vendor,
+			'namespace' => $this->namespace,
 			'package'   => $this->package,
 			'test_type' => $this->test_type,
 			'test_dir'  => $this->test_dir,

@@ -44,7 +44,7 @@ class PackageScaffoldCommand extends QITCommand {
 				'namespace',
 				null,
 				InputOption::VALUE_REQUIRED,
-				'Extension slug you maintain – this becomes the "vendor/namespace" in manifest'
+				'Namespace (extension slug) you maintain – this becomes the "vendor/namespace" in manifest'
 			)
 			->addOption(
 				'package',

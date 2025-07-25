@@ -85,7 +85,7 @@ class PackagePublishCommand extends QITCommand {
 			$io->writeln( '<info>Reading package details from manifest.json...</info>' );
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
-			$namespace    = $manifest->getVendor();
+ 		$namespace    = $manifest->getNamespace();
 			$package_name = $manifest->getPackage();
 			$test_type    = $manifest->getTestType();
 
@@ -244,14 +244,14 @@ class PackagePublishCommand extends QITCommand {
 	/**
 	 * Validate that the user maintains the specified namespace
 	 */
-	private function validate_namespace_maintenance( string $vendor_namespace, SymfonyStyle $io ): void {
-		if ( ! $this->woo_extensions_list->user_maintains( $vendor_namespace ) ) {
+	private function validate_namespace_maintenance( string $namespace, SymfonyStyle $io ): void {
+		if ( ! $this->woo_extensions_list->user_maintains( $namespace ) ) {
 			throw new \RuntimeException(
-				sprintf( 'You are not a maintainer of namespace "%s". You can only publish packages under namespaces you maintain.', $vendor_namespace )
+				sprintf( 'You are not a maintainer of namespace "%s". You can only publish packages under namespaces you maintain.', $namespace )
 			);
 		}
 
-		$io->writeln( sprintf( '✓ You are a maintainer of namespace "<info>%s</info>"', $vendor_namespace ) );
+		$io->writeln( sprintf( '✓ You are a maintainer of namespace "<info>%s</info>"', $namespace ) );
 	}
 
 	/**
@@ -306,8 +306,8 @@ class PackagePublishCommand extends QITCommand {
 			// Parse and validate manifest
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
-			if ( $expected_namespace !== $manifest->getVendor() ) {
-				throw new \RuntimeException( "Manifest namespace '{$manifest->getVendor()}' does not match expected '{$expected_namespace}'" );
+ 		if ( $expected_namespace !== $manifest->getNamespace() ) {
+ 			throw new \RuntimeException( "Manifest namespace '{$manifest->getNamespace()}' does not match expected '{$expected_namespace}'" );
 			}
 
 			if ( $expected_package !== $manifest->getPackage() ) {

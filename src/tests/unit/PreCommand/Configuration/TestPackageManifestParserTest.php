@@ -29,7 +29,7 @@ class TestPackageManifestParserTest extends TestCase {
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "minimal-test",
     "test_type": "e2e",
     "test": {
@@ -60,7 +60,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "complete-test",
     "test_type": "e2e",
     "test_dir": "./tests",
@@ -190,7 +190,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "phase-normalization-test",
     "test_type": "e2e",
     "test": {
@@ -249,7 +249,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "env-var-test",
     "test_type": "e2e",
     "test": {
@@ -301,7 +301,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "paths-test",
     "test_type": "e2e",
     "test_dir": "./src/tests",
@@ -368,7 +368,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "invalid-schema-test",
     "test_type": "e2e",
     "test": {
@@ -399,7 +399,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "missing-test-dir",
     "test_type": "e2e",
     "test_dir": "./nonexistent",
@@ -430,7 +430,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "missing-phase-script",
     "test_type": "e2e",
     "test": {
@@ -462,7 +462,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "test",
+    "namespace": "test",
     "package": "empty-phase-commands",
     "test_type": "e2e",
     "test": {
@@ -518,7 +518,7 @@ JSON;
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/qit",
-    "vendor": "test",
+    "namespace": "test",
     "package": "wrong-schema-test",
     "test_type": "e2e",
     "test": {
