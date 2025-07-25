@@ -40,7 +40,7 @@ use QIT_CLI\Commands\Tags\ListTestTagsCommand;
 use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
 use QIT_CLI\Commands\TestPackages\PackageDownloadCommand;
 use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
-use QIT_CLI\Commands\TestPackages\PublishCommand;
+use QIT_CLI\Commands\TestPackages\PackagePublishCommand;
 use QIT_CLI\Commands\TestE2ECommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
@@ -245,7 +245,7 @@ if ( $is_connected_to_backend ) {
 
 	// Test Package commands.
 	$application->add( $container->make( PackageDownloadCommand::class ) );
-	$application->add( $container->make( PublishCommand::class ) );
+	$application->add( $container->make( PackagePublishCommand::class ) );
 	$application->add( $container->make( PackageScaffoldCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );

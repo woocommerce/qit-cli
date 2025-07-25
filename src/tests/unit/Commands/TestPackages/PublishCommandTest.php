@@ -4,7 +4,7 @@ namespace QIT_CLI\Tests\Unit\Commands\TestPackages;
 
 use QIT_CLI\App;
 use QIT_CLI\Auth;
-use QIT_CLI\Commands\TestPackages\PublishCommand;
+use QIT_CLI\Commands\TestPackages\PackagePublishCommand;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI_Tests\QITTestCase;
 use QIT_CLI\WooExtensionsList;
@@ -14,7 +14,7 @@ use Symfony\Component\Console\Tester\CommandTester;
 use function QIT_CLI\get_manager_url;
 
 class PublishCommandTest extends QITTestCase {
-	private PublishCommand $command;
+	private PackagePublishCommand $command;
 	private CommandTester $command_tester;
 	private TestPackageManifestParser $manifest_parser;
 	private Zipper $zipper;
@@ -29,7 +29,7 @@ class PublishCommandTest extends QITTestCase {
 		$this->woo_extensions_list = $this->createMock( WooExtensionsList::class );
 		$this->auth = $this->createMock( Auth::class );
 
-		$this->command = new PublishCommand( $this->manifest_parser, $this->zipper, $this->woo_extensions_list, $this->auth );
+		$this->command = new PackagePublishCommand( $this->manifest_parser, $this->zipper, $this->woo_extensions_list, $this->auth );
 
 		$application = new Application();
 		$application->add( $this->command );
