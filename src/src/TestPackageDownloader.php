@@ -10,14 +10,12 @@ use function QIT_CLI\get_manager_url;
  * Used by both PackageDownloadCommand and PreCommand components.
  */
 class TestPackageDownloader {
-	private RequestBuilder $request_builder;
 	private Zipper $zipper;
-	
-	public function __construct( RequestBuilder $request_builder, Zipper $zipper ) {
-		$this->request_builder = $request_builder;
+
+	public function __construct( Zipper $zipper ) {
 		$this->zipper = $zipper;
 	}
-	
+
 	/**
 	 * Fetch download URLs from Manager API.
 	 *
@@ -29,27 +27,27 @@ class TestPackageDownloader {
 			->with_method( 'POST' )
 			->with_post_body( [ 'package_ids' => $package_ids ] )
 			->request();
-			
+
 		$data = json_decode( $response, true );
-		
+
 		if ( ! is_array( $data ) || ! isset( $data['urls'] ) ) {
 			throw new RuntimeException( 'Invalid response from package download API' );
 		}
-		
+
 		return $data['urls'];
 	}
-	
+
 	/**
 	 * Download a file from URL to destination (no retries).
 	 *
 	 * @param string $url
 	 * @param string $destination
-	 * @throws RuntimeException
+	 * @throws RuntimeException When download fails.
 	 */
 	public function download_file( string $url, string $destination ): void {
 		RequestBuilder::download_file( $url, $destination );
 	}
-	
+
 	/**
 	 * Verify file checksum.
 	 *
@@ -61,18 +59,18 @@ class TestPackageDownloader {
 		$actual_checksum = hash_file( 'sha256', $file_path );
 		return strcasecmp( $actual_checksum, $expected_checksum ) === 0;
 	}
-	
+
 	/**
 	 * Extract ZIP file to directory.
 	 *
 	 * @param string $zip_path
 	 * @param string $extract_dir
-	 * @param bool $force_overwrite
-	 * @throws RuntimeException
+	 * @param bool   $force_overwrite
+	 * @throws RuntimeException When extraction fails.
 	 */
 	public function extract_package( string $zip_path, string $extract_dir, bool $force_overwrite = false ): void {
 		$this->zipper->validate_zip( $zip_path );
-		
+
 		if ( is_dir( $extract_dir ) ) {
 			if ( $force_overwrite ) {
 				$this->recursive_rmdir( $extract_dir );
@@ -80,10 +78,10 @@ class TestPackageDownloader {
 				throw new RuntimeException( 'Extract directory already exists' );
 			}
 		}
-		
+
 		$this->zipper->extract_zip( $zip_path, $extract_dir );
 	}
-	
+
 	/**
 	 * Generate safe filename from package identifier.
 	 *
@@ -93,7 +91,7 @@ class TestPackageDownloader {
 	public function generate_filename( string $package_id ): string {
 		return str_replace( [ '/', ':' ], '-', $package_id ) . '.zip';
 	}
-	
+
 	/**
 	 * Validate package identifier format.
 	 *
@@ -103,33 +101,33 @@ class TestPackageDownloader {
 	public function is_valid_package_identifier( string $package_id ): bool {
 		return preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $package_id ) === 1;
 	}
-	
+
 	/**
 	 * Process a single package: download, verify, optionally extract, and install dependencies.
 	 *
-	 * @param string $package_id Package identifier
-	 * @param array{url:string,checksum:string|null,version?:string} $url_info Package URL info
-	 * @param string $output_dir Output directory
-	 * @param bool $verify Whether to verify checksums
-	 * @param bool $extract Whether to extract the package
-	 * @param bool $force Whether to overwrite existing files
-	 * @param bool $install Whether to install dependencies (npm/composer)
-	 * @param bool $cleanup_zip Whether to delete ZIP file after extraction (only when extract=true)
-	 * @return array<string,mixed> Processing result
-	 * @throws RuntimeException On any failure
+	 * @param string                                                 $package_id Package identifier.
+	 * @param array{url:string,checksum:string|null,version?:string} $url_info Package URL info.
+	 * @param string                                                 $output_dir Output directory.
+	 * @param bool                                                   $verify Whether to verify checksums.
+	 * @param bool                                                   $extract Whether to extract the package.
+	 * @param bool                                                   $force Whether to overwrite existing files.
+	 * @param bool                                                   $install Whether to install dependencies (npm/composer).
+	 * @param bool                                                   $cleanup_zip Whether to delete ZIP file after extraction (only when extract=true).
+	 * @return array<string,mixed> Processing result.
+	 * @throws RuntimeException On any failure.
 	 */
 	public function process_package( string $package_id, array $url_info, string $output_dir, bool $verify = true, bool $extract = true, bool $force = false, bool $install = false, bool $cleanup_zip = true ): array {
-		$filename = $this->generate_filename( $package_id );
+		$filename  = $this->generate_filename( $package_id );
 		$file_path = rtrim( $output_dir, '/' ) . '/' . $filename;
-		
+
 		// Check if file exists and handle force flag
 		if ( file_exists( $file_path ) && ! $force ) {
 			throw new RuntimeException( 'File already exists (use --force to overwrite)' );
 		}
-		
+
 		// Download the package (no retries - single attempt)
 		$this->download_file( $url_info['url'], $file_path );
-		
+
 		// Verify checksum if enabled and available
 		if ( $verify && ! empty( $url_info['checksum'] ) ) {
 			if ( ! $this->verify_checksum( $file_path, $url_info['checksum'] ) ) {
@@ -137,7 +135,7 @@ class TestPackageDownloader {
 				throw new RuntimeException( 'Checksum verification failed' );
 			}
 		}
-		
+
 		$result = [
 			'package'       => $package_id,
 			'downloaded_to' => $file_path,
@@ -145,15 +143,15 @@ class TestPackageDownloader {
 			'checksum'      => $url_info['checksum'] ?? null,
 			'version'       => $url_info['version'] ?? 'unknown',
 		];
-		
+
 		// Extract if requested
 		if ( $extract ) {
 			$extract_dir = rtrim( $output_dir, '/' ) . '/' . pathinfo( $filename, PATHINFO_FILENAME );
-			
+
 			try {
 				$this->extract_package( $file_path, $extract_dir, $force );
 				$result['extracted_to'] = $extract_dir;
-				
+
 				// Clean up ZIP file after successful extraction if requested
 				// This preserves the security measure of using unlink() with proper error handling
 				if ( $cleanup_zip && file_exists( $file_path ) ) {
@@ -166,7 +164,7 @@ class TestPackageDownloader {
 				throw new RuntimeException( 'Extraction failed: ' . $e->getMessage() );
 			}
 		}
-		
+
 		// Install dependencies if requested and package was extracted
 		if ( $install && isset( $result['extracted_to'] ) ) {
 			try {
@@ -176,23 +174,23 @@ class TestPackageDownloader {
 				// If installation fails, don't fail the entire download
 				// Just log the error and continue (same behavior as command)
 				$result['dependencies_installed'] = false;
-				$result['install_error'] = $e->getMessage();
+				$result['install_error']          = $e->getMessage();
 			}
 		}
-		
+
 		// Add verification status to result
 		if ( $verify && ! empty( $url_info['checksum'] ) ) {
 			$result['checksum_verified'] = true;
 		}
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * Install dependencies (npm/composer) in the extracted directory.
 	 *
-	 * @param string $extract_dir The directory where the package was extracted
-	 * @throws RuntimeException If dependency installation fails
+	 * @param string $extract_dir The directory where the package was extracted.
+	 * @throws RuntimeException If dependency installation fails.
 	 */
 	private function install_dependencies( string $extract_dir ): void {
 		$installed_something = false;
@@ -236,12 +234,12 @@ class TestPackageDownloader {
 			return;
 		}
 	}
-	
+
 	private function recursive_rmdir( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			return;
 		}
-		
+
 		$files = array_diff( scandir( $dir ), [ '.', '..' ] );
 		foreach ( $files as $file ) {
 			$path = $dir . '/' . $file;

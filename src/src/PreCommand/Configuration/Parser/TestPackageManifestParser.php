@@ -29,6 +29,10 @@ class TestPackageManifestParser extends BaseJsonParser {
 		return new TestPackageManifest( $config );
 	}
 
+	/**
+	 * @param array<string, mixed> $config
+	 * @return array<string, mixed>
+	 */
 	protected function apply_business_logic( array $config ): array {
 		// Normalize phase commands
 		if ( isset( $config['test']['phases'] ) ) {

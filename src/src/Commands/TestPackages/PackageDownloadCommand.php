@@ -198,7 +198,7 @@ class PackageDownloadCommand extends QITCommand {
 	/**
 	 * Download all packages to the local filesystem.
 	 *
-	 * @param array<string> $packages Original package ID order.
+	 * @param array<string>                      $packages Original package ID order.
 	 * @param array<string, array<string,mixed>> $download_urls Map of package_id => URL metadata.
 	 *
 	 * @return array<string,mixed>
@@ -275,7 +275,7 @@ class PackageDownloadCommand extends QITCommand {
 	/**
 	 * Download a single package and return the result information.
 	 *
-	 * @param string $package Package identifier.
+	 * @param string                                                 $package Package identifier.
 	 * @param array{url:string,checksum:string|null,version?:string} $url_info Metadata for the download.
 	 *
 	 * @return array<string,mixed>

@@ -92,7 +92,7 @@ class PackageDeleteCommand extends QITCommand {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/delete-test-package' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'package_id' => $package_id
+				'package_id' => $package_id,
 			] )
 			->request();
 

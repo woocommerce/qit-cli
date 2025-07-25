@@ -135,6 +135,9 @@ class ConfigurationResolver {
 		return $resolved;
 	}
 
+	/**
+	 * @param array<string, mixed> $sut
+	 */
 	protected function create_sut_extension( array $sut ): Extension {
 		debug_log( "Creating SUT extension for: {$sut['slug']} ({$sut['type']})" );
 		debug_dump( $sut, 'SUT configuration' );
@@ -182,6 +185,9 @@ class ConfigurationResolver {
 		return $extension;
 	}
 
+	/**
+	 * @return Extension[]
+	 */
 	protected function collect_all_extensions( ResolvedConfiguration $config ): array {
 		debug_log( 'Collecting all extensions from configuration' );
 		$extensions = [];
@@ -253,6 +259,9 @@ class ConfigurationResolver {
 		return $result;
 	}
 
+	/**
+	 * @param array<string, mixed> $config
+	 */
 	protected function create_extension_from_config( array $config, string $type ): Extension {
 		debug_log( "Creating extension from config: {$config['slug']} ($type)" );
 		debug_dump( $config, 'Extension config' );

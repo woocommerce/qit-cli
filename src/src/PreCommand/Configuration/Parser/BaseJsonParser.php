@@ -10,6 +10,7 @@ use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
 abstract class BaseJsonParser {
 	protected Validator $validator;
 	protected ErrorFormatter $error_formatter;
+	/** @var array<string, mixed> */
 	protected array $schema_cache = [];
 	protected string $root_path;
 
@@ -27,6 +28,9 @@ abstract class BaseJsonParser {
 
 	/**
 	 * Apply business logic after validation
+	 *
+	 * @param array<string, mixed> $config
+	 * @return array<string, mixed>
 	 */
 	abstract protected function apply_business_logic( array $config ): array;
 
@@ -65,6 +69,8 @@ abstract class BaseJsonParser {
 
 	/**
 	 * Load JSON file and validate against schema
+	 *
+	 * @return array<string, mixed>
 	 */
 	protected function load_and_validate_json( string $file_path ): array {
 		if ( ! file_exists( $file_path ) ) {
@@ -98,6 +104,8 @@ abstract class BaseJsonParser {
 
 	/**
 	 * Format validation errors for output
+	 *
+	 * @param mixed $errors
 	 */
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- Parameter may be used by subclasses
 	protected function format_validation_errors( $errors, string $context ): string {
@@ -118,6 +126,10 @@ abstract class BaseJsonParser {
 
 	/**
 	 * Deep merge two arrays
+	 *
+	 * @param array<string, mixed> $base
+	 * @param array<string, mixed> $override
+	 * @return array<string, mixed>
 	 */
 	protected function deep_merge( array $base, array $override ): array {
 		$merged = $base;

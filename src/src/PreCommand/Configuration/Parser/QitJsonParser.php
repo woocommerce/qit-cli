@@ -6,9 +6,10 @@ namespace QIT_CLI\PreCommand\Configuration\Parser;
  * Enhanced Parser for qit.json configuration files with full feature support
  */
 class QitJsonParser extends BaseJsonParser {
+	/** @var array<string, mixed> */
 	private array $parsed_config = [];
 	private TestPackageManifestParser $package_parser;
-	/** @var array Cache for loaded test packages (arrays for backward compatibility). */
+	/** @var array<string, array<string, mixed>> Cache for loaded test packages (arrays for backward compatibility). */
 	private array $loaded_packages = [];
 	/** @var array<string,\QIT_CLI\PreCommand\Objects\TestPackageManifest> Cache for loaded test package manifest objects. */
 	private array $loaded_manifest_objects = [];
@@ -16,7 +17,7 @@ class QitJsonParser extends BaseJsonParser {
 	private array $loaded_package_metadata = [];
 	/** @var string Track the current file being parsed. */
 	private string $current_file_path;
-	/** @var array Track which directory each path came from. */
+	/** @var array<string, string> Track which directory each path came from. */
 	private array $path_contexts        = [];
 	private ?string $url_extend_context = null; // Track context for URL extends
 
@@ -29,6 +30,9 @@ class QitJsonParser extends BaseJsonParser {
 		return 'qit';
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	public function parse( string $file_path ): array {
 		$this->root_path = dirname( $file_path );
 
@@ -42,6 +46,10 @@ class QitJsonParser extends BaseJsonParser {
 		return $this->apply_business_logic( $config );
 	}
 
+	/**
+	 * @param array<string, mixed> $config
+	 * @return array<string, mixed>
+	 */
 	protected function apply_business_logic( array $config ): array {
 		$this->debug_log( '=== apply_business_logic called ===' );
 
@@ -95,6 +103,8 @@ class QitJsonParser extends BaseJsonParser {
 
 	/**
 	 * Load all test packages referenced in test types
+	 *
+	 * @param array<string, mixed> $test_types
 	 */
 	private function load_all_test_packages( array $test_types ): void {
 		foreach ( $test_types as $type => $profiles ) {
@@ -110,6 +120,8 @@ class QitJsonParser extends BaseJsonParser {
 
 	/**
 	 * Load setup-only packages from environments
+	 *
+	 * @param array<string, mixed> $environments
 	 */
 	private function load_setup_packages( array $environments ): void {
 		foreach ( $environments as $env_name => $env ) {
@@ -123,6 +135,8 @@ class QitJsonParser extends BaseJsonParser {
 
 	/**
 	 * Get a loaded test package by reference
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function get_test_package( string $reference ): array {
 		if ( isset( $this->loaded_packages[ $reference ] ) ) {
@@ -186,6 +200,8 @@ class QitJsonParser extends BaseJsonParser {
 
 	/**
 	 * Get all test packages referenced in a test configuration
+	 *
+	 * @return array<string, array<string, mixed>>
 	 */
 	public function get_test_packages_for_profile( string $test_type, string $profile ): array {
 		if ( ! isset( $this->parsed_config['test_types'][ $test_type ][ $profile ]['test_packages'] ) ) {
@@ -204,6 +220,8 @@ class QitJsonParser extends BaseJsonParser {
 
 	/**
 	 * Get setup-only packages for an environment
+	 *
+	 * @return array<string, array<string, mixed>>
 	 */
 	public function get_setup_packages_for_environment( string $environment ): array {
 		if ( ! isset( $this->parsed_config['environments'][ $environment ]['setup_only'] ) ) {
@@ -239,6 +257,9 @@ class QitJsonParser extends BaseJsonParser {
 		return false;
 	}
 
+	/**
+	 * @return array<string, mixed>
+	 */
 	private function create_remote_package_stub( string $reference ): array {
 		// Handle local/ prefix for new format
 		if ( strpos( $reference, 'local/' ) === 0 ) {

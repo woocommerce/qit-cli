@@ -34,6 +34,13 @@ class EnvironmentResolver {
 		$this->version_resolver   = $version_resolver ?: App::make( VersionResolver::class );
 	}
 
+	/**
+	 * @param ResolvedConfiguration $config
+	 * @param string                $environment_name
+	 * @param bool                  $should_prepare
+	 * @param array<string, mixed>  $cli_overrides
+	 * @param InputInterface        $input
+	 */
 	public function resolve(
 		ResolvedConfiguration $config,
 		string $environment_name,
@@ -88,6 +95,11 @@ class EnvironmentResolver {
 		return new EnvironmentResult( $config, $env_info );
 	}
 
+	/**
+	 * @param array<string, mixed> $env_config
+	 * @param array<string, mixed> $overrides
+	 * @return array<string, mixed>
+	 */
 	protected function apply_overrides( array $env_config, array $overrides, InputInterface $input ): array {
 		// Start with defaults from InputInterface
 		$defaults = [
@@ -146,6 +158,9 @@ class EnvironmentResolver {
 		return $env_config;
 	}
 
+	/**
+	 * @param array<string, mixed> $env_config
+	 */
 	protected function create_env_info( array $env_config ): E2EEnvInfo {
 		$env_info                = new E2EEnvInfo();
 		$env_info->env_id        = uniqid();
@@ -162,6 +177,10 @@ class EnvironmentResolver {
 		return $env_info;
 	}
 
+	/**
+	 * @param array<string, mixed> $env_config
+	 * @return Extension[]
+	 */
 	protected function collect_extensions( array $env_config, ResolvedConfiguration $config ): array {
 		$extensions = [];
 
@@ -207,6 +226,9 @@ class EnvironmentResolver {
 		return $extensions;
 	}
 
+	/**
+	 * @param mixed $config
+	 */
 	protected function create_extension_from_config( $config, string $type ): Extension {
 		if ( is_string( $config ) ) {
 			// Simple string format - defaults to wporg
@@ -256,6 +278,10 @@ class EnvironmentResolver {
 		return $extension;
 	}
 
+	/**
+	 * @param E2EEnvInfo           $env_info
+	 * @param array<string, mixed> $env_config
+	 */
 	protected function set_environment_properties( E2EEnvInfo $env_info, array $env_config ): void {
 		// Keep versions as-is - no conversion
 		$env_info->wp           = $env_config['wp'] ?? 'stable';
