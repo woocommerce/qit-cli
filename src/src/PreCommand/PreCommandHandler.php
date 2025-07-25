@@ -19,11 +19,7 @@ use QIT_CLI\PreCommand\Pipeline\Stages\ResolveEnvironmentStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ConsolidateWooCommerceStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildEnvironmentResultStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ResolveTestPackagesStage;
-use QIT_CLI\PreCommand\Pipeline\Stages\ResolveTestPackageStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildLocalTestResultStage;
-use QIT_CLI\PreCommand\Results\ConfigurationResult;
-use QIT_CLI\PreCommand\Results\EnvironmentResult;
-use QIT_CLI\PreCommand\Results\LocalTestResult;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -32,18 +28,15 @@ class PreCommandHandler {
 
 	protected ConfigurationResolver $config_resolver;
 	protected EnvironmentResolver $env_resolver;
-	protected TestPackageResolver $test_package_resolver;
 	protected TestPackageDownloader $test_package_downloader;
 
 	public function __construct(
 		ConfigurationResolver $config_resolver,
 		EnvironmentResolver $env_resolver,
-		TestPackageResolver $test_package_resolver,
 		TestPackageDownloader $test_package_downloader
 	) {
 		$this->config_resolver         = $config_resolver;
 		$this->env_resolver            = $env_resolver;
-		$this->test_package_resolver   = $test_package_resolver;
 		$this->test_package_downloader = $test_package_downloader;
 	}
 
@@ -58,9 +51,9 @@ class PreCommandHandler {
 			$context->set( 'config_file', $config_file );
 		}
 
-		$context = ( new ExtractInputStage() )->process( $context );
-		$context = ( new ResolveConfigStage( $this->config_resolver ) )->process( $context );
-		$context = ( new ResolveTestPackageStage( $this->test_package_downloader ) )->process( $context );
+		$context = App::make( ExtractInputStage::class )->process( $context );
+		$context = App::make( ResolveConfigStage::class )->process( $context );
+		$context = App::make( ResolveTestPackagesStage::class )->process( $context );
 
 		/** @var ResolvedConfiguration $resolved_config */
 		$resolved_config = $context->get( 'resolved_config' );
@@ -72,17 +65,16 @@ class PreCommandHandler {
 		}
 
 		if ( $command instanceof LocalTestCommand ) {
-			$context = ( new ValidateSUTStage() )->process( $context );
-			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
-			$context = ( new ConsolidateWooCommerceStage() )->process( $context );
-			$context = ( new ResolveTestPackagesStage( $this->test_package_resolver ) )->process( $context );
-			$context = ( new BuildLocalTestResultStage() )->process( $context );
+			$context = App::make( ValidateSUTStage::class )->process( $context );
+			$context = App::make( ResolveEnvironmentStage::class )->process( $context );
+			$context = App::make( ConsolidateWooCommerceStage::class )->process( $context );
+			$context = App::make( BuildLocalTestResultStage::class )->process( $context );
 		}
 
 		if ( $command instanceof EnvironmentCommand ) {
-			$context = ( new ResolveEnvironmentStage( $this->env_resolver ) )->process( $context );
-			$context = ( new ConsolidateWooCommerceStage() )->process( $context );
-			$context = ( new BuildEnvironmentResultStage() )->process( $context );
+			$context = App::make( ResolveEnvironmentStage::class )->process( $context );
+			$context = App::make( ConsolidateWooCommerceStage::class )->process( $context );
+			$context = App::make( BuildEnvironmentResultStage::class )->process( $context );
 		}
 
 		/**
