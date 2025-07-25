@@ -44,7 +44,7 @@ class PackageScaffoldCommand extends QITCommand {
 				'namespace',
 				null,
 				InputOption::VALUE_REQUIRED,
-				'Namespace (extension slug) you maintain – this becomes the "vendor/namespace" in manifest'
+				'Namespace (extension slug) you maintain – this becomes the "namespace" in manifest'
 			)
 			->addOption(
 				'package',
@@ -198,7 +198,7 @@ BASH;
 		/* manifest.json */
 		$manifest = [
 			'$schema'   => 'https://qit.woo.com/json-schema/test-package',
-			'vendor'    => $namespace,              // <-- key must be "vendor" for current schema
+			'namespace' => $namespace,
 			'package'   => $package_name,
 			'test_type' => $test_type,
 			'test'      => [
@@ -277,6 +277,7 @@ BASH;
 	 * Validate namespace (extension slug).
 	 *
 	 * @param string $slug The slug to validate.
+	 *
 	 * @return string The validated slug.
 	 * @throws \RuntimeException If validation fails.
 	 */

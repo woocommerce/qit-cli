@@ -85,7 +85,7 @@ class PackagePublishCommand extends QITCommand {
 			$io->writeln( '<info>Reading package details from manifest.json...</info>' );
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
- 		$namespace    = $manifest->getNamespace();
+			$namespace    = $manifest->getNamespace();
 			$package_name = $manifest->getPackage();
 			$test_type    = $manifest->getTestType();
 
@@ -306,8 +306,8 @@ class PackagePublishCommand extends QITCommand {
 			// Parse and validate manifest
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
- 		if ( $expected_namespace !== $manifest->getNamespace() ) {
- 			throw new \RuntimeException( "Manifest namespace '{$manifest->getNamespace()}' does not match expected '{$expected_namespace}'" );
+			if ( $expected_namespace !== $manifest->getNamespace() ) {
+				throw new \RuntimeException( "Manifest namespace '{$manifest->getNamespace()}' does not match expected '{$expected_namespace}'" );
 			}
 
 			if ( $expected_package !== $manifest->getPackage() ) {
@@ -341,11 +341,16 @@ class PackagePublishCommand extends QITCommand {
 
 		$post_data['checksum'] = $checksum;
 
-		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-packages' ) )
-			->with_method( 'POST' )
-			->with_file( 'file', $zip_path )
-			->with_post_body( $post_data )
-			->request();
+		try {
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/publish-test-package' ) )
+				->with_method( 'POST' )
+				->with_file( 'file', $zip_path )
+				->with_post_body( $post_data )
+				->request();
+		} catch ( \Exception $e ) {
+			throw new \RuntimeException( 'Failed to upload package: ' . $e->getMessage() );
+		}
+
 
 		$data = json_decode( $response, true );
 
