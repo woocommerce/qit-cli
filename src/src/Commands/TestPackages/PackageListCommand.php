@@ -162,14 +162,14 @@ class PackageListCommand extends QITCommand {
 			'Test Type',
 			'Version',
 			'Size',
-			'Access',
+			'Visibility',
 			'Created',
 		] );
 
 		foreach ( $packages as $package ) {
-			$size    = $this->format_file_size( $package['size_bytes'] ?? 0 );
-			$access  = $package['is_owned'] ? '👤 Owned' : '🌐 Public';
-			$created = $this->format_date( $package['created_at'] ?? '' );
+			$size       = $this->format_file_size( $package['size_bytes'] ?? 0 );
+			$visibility = $package['visibility'] === 'private' ? '👤 Private' : '🌐 Public';
+			$created    = $this->format_date( $package['created_at'] ?? '' );
 
 			$table->addRow( [
 				$package['package_id'] ?? 'N/A',
@@ -178,7 +178,7 @@ class PackageListCommand extends QITCommand {
 				$package['test_type'] ?? 'N/A',
 				$package['version'] ?? 'N/A',
 				$size,
-				$access,
+				$visibility,
 				$created,
 			] );
 		}
