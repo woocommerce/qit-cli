@@ -18,7 +18,10 @@ use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\normalize_path;
 
 class PackageScaffoldCommand extends QITCommand {
-	/** @static */
+	/**
+	 * @var string
+	 * @static
+	 */
 	protected static $defaultName = 'package:scaffold'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	private WooExtensionsList $extensions;
@@ -90,9 +93,11 @@ class PackageScaffoldCommand extends QITCommand {
 		$framework    = strtolower( (string) $in->getOption( 'framework' ) );
 		$test_type    = strtolower( (string) $in->getOption( 'test-type' ) );
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Explain the workflow
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		$io->title( 'Scaffold Test Package' );
 		$io->writeln( '<comment>This command creates files locally on your machine.</comment>' );
 		$io->writeln( '<comment>Nothing is published or uploaded yet.</comment>' );
@@ -103,9 +108,11 @@ class PackageScaffoldCommand extends QITCommand {
 		$io->writeln( '  3. <info>Publish</info> → Upload to QIT registry (qit package:publish)' );
 		$io->writeln( '' );
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Pre‑flight validation
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		if ( $fs->exists( $target_dir ) ) {
 			$io->error( sprintf( 'Directory already exists: %s', $target_dir ) );
 
@@ -124,9 +131,11 @@ class PackageScaffoldCommand extends QITCommand {
 
 		$helper = $this->getHelper( 'question' );
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Ask for namespace (extension slug)
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		if ( $namespace === '' ) {
 			$q = new Question( 'Extension slug you maintain (namespace) > ' );
 			$q->setValidator( function ( $answer ) {
@@ -138,15 +147,17 @@ class PackageScaffoldCommand extends QITCommand {
 		}
 		$io->writeln( "✓ You are a maintainer of \"{$namespace}\"" );
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Ask for package name
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		$should_ask = $package_name === '' || $package_name === 'e2e';
 
 		if ( $should_ask ) {
 			$io->writeln( "\n<comment>Package identifier structure:</comment>" );
-			$io->writeln( "  <info>namespace/package-name:[version]</info>" );
-			$io->writeln( "  Example: <info>woocommerce/e2e:stable</info>" );
+			$io->writeln( '  <info>namespace/package-name:[version]</info>' );
+			$io->writeln( '  Example: <info>woocommerce/e2e:stable</info>' );
 			$io->writeln( sprintf( "\nYour package identifier will be: <info>%s/[package-name]:[version]</info>", $namespace ) );
 			$q = new Question( 'Package name [e2e]: ', 'e2e' );
 			$q->setValidator( function ( $a ) {
@@ -157,11 +168,13 @@ class PackageScaffoldCommand extends QITCommand {
 			$this->validate_slug( $package_name, 'Package name' );
 		}
 
-		$io->writeln( sprintf( "✓ Package identifier will be: <info>%s/%s:[version]</info>", $namespace, $package_name ) );
+		$io->writeln( sprintf( '✓ Package identifier will be: <info>%s/%s:[version]</info>', $namespace, $package_name ) );
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Files & manifest
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		try {
 			$fs->mkdir( [
 				$target_dir,
@@ -224,9 +237,11 @@ BASH;
 			return Command::SUCCESS;
 		}
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Extra Playwright scaffolding
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		try {
 			$this->ensure_npm();
 			$this->write_package_json( $target_dir );
@@ -240,9 +255,11 @@ BASH;
 			return Command::FAILURE;
 		}
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Done
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		$io->writeln( 'Scaffolding test package…' );
 		$io->writeln( sprintf( "\n🟩 Package scaffolded (%s • %s)", $test_type, $framework ) );
 		$io->writeln( sprintf( "\nNext → qit package:publish %s", $target_dir ) );
@@ -250,9 +267,19 @@ BASH;
 		return Command::SUCCESS;
 	}
 
-	/* -------------------------------------------------------------------------
+	/*
+	-------------------------------------------------------------------------
 	 * Helpers
-	 * -----------------------------------------------------------------------*/
+	 * -----------------------------------------------------------------------
+	 */
+
+	/**
+	 * Validate namespace (extension slug).
+	 *
+	 * @param string $slug The slug to validate.
+	 * @return string The validated slug.
+	 * @throws \RuntimeException If validation fails.
+	 */
 	private function validate_namespace( string $slug ): string {
 		$this->validate_slug( $slug, 'Namespace' );
 

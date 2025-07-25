@@ -61,18 +61,22 @@ class PackagePublishCommand extends QITCommand {
 			$version = 'latest';
 		}
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Explain the workflow
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		$io->title( 'Publish Test Package' );
 		$io->writeln( '<comment>This command uploads your test package to the QIT registry.</comment>' );
 		$io->writeln( '<comment>Package details will be read from manifest.json</comment>' );
 		$io->writeln( '' );
 
 		try {
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 1: Find and read manifest.json
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			$manifest_path = $this->find_manifest_in_path( $path );
 			if ( ! $manifest_path ) {
 				throw new \RuntimeException( 'No manifest.json found in the specified path. Make sure you\'re in a scaffolded test package directory.' );
@@ -85,21 +89,27 @@ class PackagePublishCommand extends QITCommand {
 			$package_name = $manifest->getPackage();
 			$test_type    = $manifest->getTestType();
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 2: Validate namespace ownership
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			$this->validate_namespace_maintenance( $namespace, $io );
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 3: Validate version format
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			if ( $version !== 'latest' && ! preg_match( '/^\d+\.\d+\.\d+(-.+)?$/', $version ) ) {
 				throw new \RuntimeException( 'Version must be semantic version (e.g., 1.0.0, 1.0.0-beta.1) or "latest"' );
 			}
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 4: Build and display package identifier
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			$package_identifier = sprintf( '%s/%s:%s', $namespace, $package_name, $version );
 
 			$io->writeln( '' );
@@ -118,9 +128,11 @@ class PackagePublishCommand extends QITCommand {
 			$io->writeln( sprintf( '   Version: <info>%s</info>', $version_display ) );
 			$io->writeln( sprintf( '   Test type: <info>%s</info>', $test_type ) );
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 5: Confirmation (unless non-interactive)
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			if ( $input->isInteractive() ) {
 				$io->writeln( '' );
 				$confirm_question = new ConfirmationQuestion( 'Proceed with publishing? [Y/n] ', true );
@@ -133,29 +145,37 @@ class PackagePublishCommand extends QITCommand {
 				}
 			}
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 6: Prepare zip file
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			$zip_path = $this->prepare_zip( $path, $output );
 
 			// Calculate checksum of generated zip so the Manager can validate integrity.
 			$checksum = hash_file( 'sha256', $zip_path );
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 7: Validate manifest in zip (unless --skip-validate)
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			if ( ! $skip_validate ) {
 				$this->validate_manifest_in_zip( $zip_path, $namespace, $package_name, $output );
 			}
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 8: Upload to QIT registry
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, $force, $checksum, $output );
 
-			/* ---------------------------------------------------------------------
+			/*
+			---------------------------------------------------------------------
 			 * Step 9: Success!
-			 * -------------------------------------------------------------------*/
+			 * -------------------------------------------------------------------
+			 */
 			$io->writeln( '' );
 			$io->success( sprintf( 'Package published successfully: %s', $package_identifier ) );
 			$io->writeln( sprintf( 'Upload ID: <info>%s</info>', $upload_result['upload_id'] ) );
@@ -224,14 +244,14 @@ class PackagePublishCommand extends QITCommand {
 	/**
 	 * Validate that the user maintains the specified namespace
 	 */
-	private function validate_namespace_maintenance( string $namespace, SymfonyStyle $io ): void {
-		if ( ! $this->woo_extensions_list->user_maintains( $namespace ) ) {
+	private function validate_namespace_maintenance( string $vendor_namespace, SymfonyStyle $io ): void {
+		if ( ! $this->woo_extensions_list->user_maintains( $vendor_namespace ) ) {
 			throw new \RuntimeException(
-				sprintf( 'You are not a maintainer of namespace "%s". You can only publish packages under namespaces you maintain.', $namespace )
+				sprintf( 'You are not a maintainer of namespace "%s". You can only publish packages under namespaces you maintain.', $vendor_namespace )
 			);
 		}
 
-		$io->writeln( sprintf( '✓ You are a maintainer of namespace "<info>%s</info>"', $namespace ) );
+		$io->writeln( sprintf( '✓ You are a maintainer of namespace "<info>%s</info>"', $vendor_namespace ) );
 	}
 
 	/**
@@ -304,6 +324,8 @@ class PackagePublishCommand extends QITCommand {
 
 	/**
 	 * Upload package to Manager endpoint
+	 *
+	 * @return array<string, mixed>
 	 */
 	private function upload_to_manager( string $package_identifier, string $zip_path, string $test_type, bool $force, string $checksum, OutputInterface $output ): array {
 		$output->writeln( '🚀 Uploading to QIT registry...' );
@@ -317,7 +339,7 @@ class PackagePublishCommand extends QITCommand {
 			$post_data['force'] = true;
 		}
 
-		$post_data['checksum']  = $checksum;
+		$post_data['checksum'] = $checksum;
 
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-packages' ) )
 			->with_method( 'POST' )

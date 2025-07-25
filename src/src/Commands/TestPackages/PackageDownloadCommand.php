@@ -15,7 +15,7 @@ use function QIT_CLI\get_manager_url;
 class PackageDownloadCommand extends QITCommand {
 	protected static $defaultName = 'package:download'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	private const MAX_RETRIES = 3;
+	private const MAX_RETRIES      = 3;
 	private const RETRY_DELAY_BASE = 1;
 
 	private Zipper $zipper;
@@ -107,9 +107,11 @@ class PackageDownloadCommand extends QITCommand {
 		$format       = $input->getOption( 'format' );
 		$cleanup_zips = $extract && ! $input->getOption( 'no-cleanup-zips' ); // Cleanup when extracting unless --no-cleanup-zips
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Explain the workflow
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		$io->title( 'Download Test Packages' );
 		$io->writeln( '<comment>This command downloads test packages from the QIT registry.</comment>' );
 		$io->writeln( '<comment>Files will be saved to your local machine.</comment>' );
@@ -130,9 +132,11 @@ class PackageDownloadCommand extends QITCommand {
 		}
 		$io->writeln( '' );
 
-		/* ---------------------------------------------------------------------
+		/*
+		---------------------------------------------------------------------
 		 * Show package details
-		 * -------------------------------------------------------------------*/
+		 * -------------------------------------------------------------------
+		 */
 		$io->writeln( '<comment>Package identifier structure:</comment>' );
 		$io->writeln( '  <info>namespace/package-name:[version]</info>' );
 		$io->writeln( '' );
@@ -227,7 +231,7 @@ class PackageDownloadCommand extends QITCommand {
 	/**
 	 * Download all packages to the local filesystem.
 	 *
-	 * @param array<string> $packages Original package ID order.
+	 * @param array<string>                      $packages Original package ID order.
 	 * @param array<string, array<string,mixed>> $download_urls Map of package_id => URL metadata.
 	 *
 	 * @return array<string,mixed>
@@ -264,17 +268,15 @@ class PackageDownloadCommand extends QITCommand {
 				if ( isset( $result['extracted_to'] ) ) {
 					// When extracted, show final directory status
 					$dir_name       = basename( $result['extracted_to'] );
-					$status_parts[] = sprintf( "✓ Ready at %s (%s)", $dir_name, $display_size );
+					$status_parts[] = sprintf( '✓ Ready at %s (%s)', $dir_name, $display_size );
 
 					// Show cleanup status (only mention if non-default behavior)
-					if ( isset( $result['zip_cleaned_up'] ) ) {
-						// Default behavior - don't clutter output unless verbose
-					} else {
+					if ( ! isset( $result['zip_cleaned_up'] ) ) {
 						$status_parts[] = 'zip preserved';
 					}
 				} else {
 					// When not extracted, show zip file status
-					$status_parts[] = sprintf( "✓ Downloaded (%s)", $display_size );
+					$status_parts[] = sprintf( '✓ Downloaded (%s)', $display_size );
 				}
 
 				if ( $verify && isset( $result['checksum_verified'] ) && $result['checksum_verified'] ) {
@@ -306,8 +308,8 @@ class PackageDownloadCommand extends QITCommand {
 	/**
 	 * Download a single package and return the result information.
 	 *
-	 * @param string $package Package identifier.
-	 * @param array{url:string,checksum:string|null} $url_info Metadata for the download.
+	 * @param string                                                 $package Package identifier.
+	 * @param array{url:string,checksum:string|null,version?:string} $url_info Metadata for the download.
 	 *
 	 * @return array<string,mixed>
 	 */
@@ -336,7 +338,7 @@ class PackageDownloadCommand extends QITCommand {
 			'downloaded_to' => $file_path,
 			'size'          => filesize( $file_path ),
 			'checksum'      => $url_info['checksum'] ?? null,
-			'version'       => $url_info['version'] ?? 'unknown',
+			'version'       => isset( $url_info['version'] ) ? $url_info['version'] : 'unknown',
 		];
 
 		// Extract if requested
@@ -394,7 +396,7 @@ class PackageDownloadCommand extends QITCommand {
 	private function download_with_retry( string $url, string $destination ): void {
 		$last_exception = null;
 
-		for ( $attempt = 1; $attempt <= self::MAX_RETRIES; $attempt ++ ) {
+		for ( $attempt = 1; $attempt <= self::MAX_RETRIES; $attempt++ ) {
 			try {
 				RequestBuilder::download_file( $url, $destination );
 
@@ -492,7 +494,7 @@ class PackageDownloadCommand extends QITCommand {
 	/**
 	 * Display download results to the user.
 	 *
-	 * @param array<string, array{status:string,message:string}> $results
+	 * @param array<string, array{status:string,error:string}> $results
 	 */
 	private function output_results( array $results, string $format, OutputInterface $output, SymfonyStyle $io ): void {
 		$successful = count( array_filter( $results, function ( $result ) {
