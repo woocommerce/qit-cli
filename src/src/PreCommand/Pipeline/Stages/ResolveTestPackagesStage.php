@@ -7,6 +7,7 @@ use QIT_CLI\PreCommand\Interfaces\ConfigurableTestCommand;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\TestPackageDownloader;
 use RuntimeException;
+use Symfony\Component\Console\Input\InputInterface;
 
 /**
  * Single, generic resolver for *all* test‑package scenarios.
@@ -35,18 +36,22 @@ class ResolveTestPackagesStage implements PipelineStage {
 
 		$needed_packages = [];
 
-		/* --------------------------------------------------------------------
+		/*
+		--------------------------------------------------------------------
 		 * 1.  CLI‑level explicit packages (highest priority)
-		 * ------------------------------------------------------------------*/
-		$cli_packages = $this->cliPackageList( $input );
+		 * ------------------------------------------------------------------
+		 */
+		$cli_packages    = $this->cliPackageList( $input );
 		$needed_packages = array_merge( $needed_packages, $cli_packages );
 
-		/* --------------------------------------------------------------------
+		/*
+		--------------------------------------------------------------------
 		 * 2.  Packages implied by the current command
-		 * ------------------------------------------------------------------*/
+		 * ------------------------------------------------------------------
+		 */
 		if ( $cmd instanceof LocalTestCommand ) {
 			// 2‑a) Local test package(s) from environment->setup_only
-			$env_name = $cmd->get_environment();                  // always set on Local* cmds
+			$env_name = $cmd->get_environment_name();                  // always set on Local* cmds
 			if ( isset( $resolved->environments[ $env_name ]['setup_only'] ) ) {
 				$needed_packages = array_merge(
 					$needed_packages,
@@ -56,32 +61,35 @@ class ResolveTestPackagesStage implements PipelineStage {
 
 			// 2‑b) Packages declared in the active test profile (if any)
 			if ( $cmd->get_test_type() && $cmd->get_test_profile() ) {
-				$pkg = $resolved->test_types[ $cmd->get_test_type() ]
-				       [ $cmd->get_test_profile() ]['test_packages'] ?? [];
+				$pkg             = $resolved->test_types[ $cmd->get_test_type() ]
+						[ $cmd->get_test_profile() ]['test_packages'] ?? [];
 				$needed_packages = array_merge( $needed_packages, $pkg );
 			}
-		}
-		elseif ( $cmd instanceof ConfigurableTestCommand ) {
-			// Remote runs only need the active profile’s packages
-			$pkg = $resolved->test_types[ $cmd->get_test_type() ]
-			       [ $cmd->get_test_profile() ]['test_packages'] ?? [];
+		} elseif ( $cmd instanceof ConfigurableTestCommand ) {
+			// Remote runs only need the active profile's packages
+			$pkg             = $resolved->test_types[ $cmd->get_test_type() ]
+					[ $cmd->get_test_profile() ]['test_packages'] ?? [];
 			$needed_packages = array_merge( $needed_packages, $pkg );
 		}
 
 		// De‑dupe + normalise
 		$needed_packages = array_values( array_unique( array_filter( $needed_packages ) ) );
 
-		/* --------------------------------------------------------------------
+		/*
+		--------------------------------------------------------------------
 		 * 3.  Nothing to do?  Bail early.
-		 * ------------------------------------------------------------------*/
+		 * ------------------------------------------------------------------
+		 */
 		if ( empty( $needed_packages ) ) {
 			$context->set_test_packages( [] );
 			return $context;
 		}
 
-		/* --------------------------------------------------------------------
+		/*
+		--------------------------------------------------------------------
 		 * 4.  Download / extract
-		 * ------------------------------------------------------------------*/
+		 * ------------------------------------------------------------------
+		 */
 		$verify = $input->getOption( 'verify' ) !== false;
 
 		$download_urls = $this->downloader->fetch_download_urls( $needed_packages );
@@ -115,18 +123,28 @@ class ResolveTestPackagesStage implements PipelineStage {
 			];
 		}
 
-		/* --------------------------------------------------------------------
+		/*
+		--------------------------------------------------------------------
 		 * 5.  Persist in context
-		 * ------------------------------------------------------------------*/
+		 * ------------------------------------------------------------------
+		 */
 		$context->set_test_packages( $resolved_paths );
 
 		return $context;
 	}
 
-	/* ----------------------------------------------------------------------
+	/*
+	----------------------------------------------------------------------
 	 * Helpers
-	 * --------------------------------------------------------------------*/
-	private function cliPackageList( $input ): array {
+	 * --------------------------------------------------------------------
+	 */
+	/**
+	 * Extract test packages from CLI input
+	 *
+	 * @param InputInterface $input CLI input object.
+	 * @return string[] Array of package identifiers
+	 */
+	private function cliPackageList( InputInterface $input ): array {
 		$out = [];
 
 		// Positional <package>
@@ -139,8 +157,7 @@ class ResolveTestPackagesStage implements PipelineStage {
 			$opt = $input->getOption( 'test-package' );
 			if ( is_string( $opt ) && $opt !== '' ) {
 				$out[] = $opt;
-			}
-			elseif ( is_array( $opt ) ) {
+			} elseif ( is_array( $opt ) ) {
 				$out = array_merge( $out, $opt );
 			}
 		}
