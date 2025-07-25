@@ -6,6 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\PreCommand\Configuration\ConfigurationResolver;
 use QIT_CLI\PreCommand\Configuration\ResolvedConfiguration;
+use QIT_CLI\TestPackageDownloader;
 use QIT_CLI\PreCommand\Interfaces\ConfigurableTestCommand;
 use QIT_CLI\PreCommand\Interfaces\EnvironmentCommand;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
@@ -18,6 +19,7 @@ use QIT_CLI\PreCommand\Pipeline\Stages\ResolveEnvironmentStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ConsolidateWooCommerceStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildEnvironmentResultStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\ResolveTestPackagesStage;
+use QIT_CLI\PreCommand\Pipeline\Stages\ResolveTestPackageStage;
 use QIT_CLI\PreCommand\Pipeline\Stages\BuildLocalTestResultStage;
 use QIT_CLI\PreCommand\Results\ConfigurationResult;
 use QIT_CLI\PreCommand\Results\EnvironmentResult;
@@ -31,15 +33,18 @@ class PreCommandHandler {
 	protected ConfigurationResolver $config_resolver;
 	protected EnvironmentResolver $env_resolver;
 	protected TestPackageResolver $test_package_resolver;
+	protected TestPackageDownloader $test_package_downloader;
 
 	public function __construct(
 		ConfigurationResolver $config_resolver,
 		EnvironmentResolver $env_resolver,
-		TestPackageResolver $test_package_resolver
+		TestPackageResolver $test_package_resolver,
+		TestPackageDownloader $test_package_downloader
 	) {
-		$this->config_resolver       = $config_resolver;
-		$this->env_resolver          = $env_resolver;
-		$this->test_package_resolver = $test_package_resolver;
+		$this->config_resolver         = $config_resolver;
+		$this->env_resolver            = $env_resolver;
+		$this->test_package_resolver   = $test_package_resolver;
+		$this->test_package_downloader = $test_package_downloader;
 	}
 
 	public function handle( QITCommand $command, InputInterface $input, OutputInterface $output, ?string $config_file = null ): object {
@@ -55,6 +60,7 @@ class PreCommandHandler {
 
 		$context = ( new ExtractInputStage() )->process( $context );
 		$context = ( new ResolveConfigStage( $this->config_resolver ) )->process( $context );
+		$context = ( new ResolveTestPackageStage( $this->test_package_downloader ) )->process( $context );
 
 		/** @var ResolvedConfiguration $resolved_config */
 		$resolved_config = $context->get( 'resolved_config' );
