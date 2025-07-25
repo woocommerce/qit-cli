@@ -79,24 +79,22 @@ class PackageListCommand extends QITCommand {
 	private function fetch_packages_from_manager( ?string $test_type, ?string $namespace, bool $owned_only, OutputInterface $output ): array {
 		$output->writeln( '📦 Fetching available packages...' );
 
-		$query_params = [];
+		$post_body = [];
 		if ( $test_type ) {
-			$query_params['test_type'] = $test_type;
+			$post_body['test_type'] = $test_type;
 		}
 		if ( $namespace ) {
-			$query_params['namespace'] = $namespace;
+			$post_body['namespace'] = $namespace;
 		}
 		if ( $owned_only ) {
-			$query_params['owned_only'] = '1';
+			$post_body['owned_only'] = '1';
 		}
 
 		$url = get_manager_url() . '/wp-json/cd/v1/cli/test-packages';
-		if ( ! empty( $query_params ) ) {
-			$url .= '?' . http_build_query( $query_params );
-		}
 
 		$response = ( new RequestBuilder( $url ) )
-			->with_method( 'GET' )
+			->with_method( 'POST' )
+			->with_post_body( $post_body )
 			->request();
 
 		$data = json_decode( $response, true );
