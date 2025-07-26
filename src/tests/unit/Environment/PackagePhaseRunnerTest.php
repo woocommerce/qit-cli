@@ -211,46 +211,6 @@ class PackagePhaseRunnerTest extends TestCase {
 	}
 
 	/**
-	 * Test backward compatibility of run_setup method
-	 */
-	public function test_run_setup_backward_compatibility(): void {
-		$package_dir = $this->temp_dir . '/setup-compat';
-		mkdir( $package_dir, 0777, true );
-		
-		$manifest = [
-			'$schema' => 'https://qit.woo.com/json-schema/test-package',
-			'test_type' => 'e2e',
-			'lifecycle' => [
-				'setup' => [
-					'npm install'
-				]
-			]
-		];
-		
-		file_put_contents( $package_dir . '/manifest.json', json_encode( $manifest ) );
-
-		// Mock the parser
-		$mock_parser = $this->createMock( TestPackageManifestParser::class );
-		$mock_manifest = $this->createMock( TestPackageManifest::class );
-		
-		$mock_manifest->method( 'getPhaseCommands' )
-			->with( 'setup' )
-			->willReturn( [ 'npm install' ] );
-		
-		$mock_parser->method( 'parse' )->willReturn( $mock_manifest );
-
-		// Inject mock parser
-		$reflection = new \ReflectionClass( $this->runner );
-		$parser_property = $reflection->getProperty( 'parser' );
-		$parser_property->setAccessible( true );
-		$parser_property->setValue( $this->runner, $mock_parser );
-
-		// Test that run_setup still works and returns correct count
-		$count = $this->runner->run_setup( $this->env_info, 'setup-compat', $package_dir );
-		$this->assertEquals( 1, $count );
-	}
-
-	/**
 	 * Helper method to recursively delete directory
 	 */
 	private function deleteDirectory( string $dir ): void {

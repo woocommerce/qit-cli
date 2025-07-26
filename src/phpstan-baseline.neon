@@ -175,55 +175,6 @@ parameters:
 			count: 1
 			path: src/Environment/Environments/Environment.php
 
-		-
-			message: "#^Access to an undefined property QIT_CLI\\\\Environment\\\\Environments\\\\E2E\\\\E2EEnvInfo\\:\\:\\$sut_id\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Access to undefined constant QIT_CLI\\\\Environment\\\\Extension\\:\\:ACTIONS\\.$#"
-			count: 7
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Method QIT_CLI\\\\LocalTests\\\\E2E\\\\CustomE2ERunner\\:\\:get_config_for_plugin\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Method QIT_CLI\\\\LocalTests\\\\E2E\\\\CustomE2ERunner\\:\\:merge_results\\(\\) has no return type specified\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Method QIT_CLI\\\\LocalTests\\\\E2E\\\\CustomE2ERunner\\:\\:run_shared_setup\\(\\) has parameter \\$env_info with no type specified\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Method QIT_CLI\\\\LocalTests\\\\E2E\\\\CustomE2ERunner\\:\\:run_shared_teardown\\(\\) has parameter \\$env_info with no type specified\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Offset 'action' on array\\{slug\\: string, test_tag\\: string, type\\: string, action\\: string, path_in_php_container\\: string, path_in_host\\: string\\} in isset\\(\\) always exists and is not nullable\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Parameter \\#5 \\$notify of method QIT_CLI\\\\LocalTests\\\\LocalTestRunNotifier\\:\\:notify_test_started\\(\\) expects bool, string given\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
-
-		-
-			message: "#^Property QIT_CLI\\\\LocalTests\\\\E2E\\\\CustomE2ERunner\\:\\:\\$plugin_configs type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/LocalTests/E2E/CustomE2ERunner.php
 
 		-
 			message: "#^Method QIT_CLI\\\\LocalTests\\\\E2E\\\\ExtensionTestRunner\\:\\:build_ctrf_snippet\\(\\) has parameter \\$capture with no value type specified in iterable type array\\.$#"
