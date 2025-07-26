@@ -167,6 +167,7 @@ class LocalTestRunNotifier {
 						// Read the JSON file if it exists
 						if ( file_exists( $json_file_path ) && is_readable( $json_file_path ) ) {
 							$test_result_json_original = file_get_contents( $json_file_path );
+							$test_result_json_original = base64_encode( gzcompress( $test_result_json_original ) );
 							break; // Use the first found JSON file
 						}
 					}

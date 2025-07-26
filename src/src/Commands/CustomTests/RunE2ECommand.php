@@ -136,6 +136,10 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		/** @var LocalTestResult $result */
 		$result = $this->getPreCommandResult();
 
+		// Determine whether we should upload the Allure report.
+		// By default we upload unless the user explicitly passes --no_upload_report.
+		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
+
 		// PreCommand has already:
 		// - Resolved SUT from CLI argument (if provided)
 		// - Resolved test packages based on profile/test argument
