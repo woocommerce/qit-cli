@@ -152,6 +152,28 @@ class LocalTestRunNotifier {
 		$qm_logs_path              = $results_dir . '/logs';
 		$test_result_json_original = '';
 
+		// Try to read test_result_json_original from manifest's json property
+		$env_info = $test_result->get_env_info();
+		if ( ! empty( $env_info->test_packages_metadata ) ) {
+			foreach ( $env_info->test_packages_metadata as $pkg_id => $pkg_info ) {
+				if ( isset( $pkg_info['manifest'] ) && $pkg_info['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+					$manifest = $pkg_info['manifest'];
+					$test_results = $manifest->getTestResults();
+					
+					// Check if 'json' property exists in manifest results
+					if ( isset( $test_results['json'] ) ) {
+						$json_file_path = $pkg_info['path'] . '/' . ltrim( $test_results['json'], './' );
+						
+						// Read the JSON file if it exists
+						if ( file_exists( $json_file_path ) && is_readable( $json_file_path ) ) {
+							$test_result_json_original = file_get_contents( $json_file_path );
+							break; // Use the first found JSON file
+						}
+					}
+				}
+			}
+		}
+
 		/**
 		 * If the logs directory exists, we will send the Query Monitor logs as well.
 		 */
@@ -259,7 +281,7 @@ class LocalTestRunNotifier {
 		$data = [
 			'test_run_id'               => $test_run_id,
 			'test_result_json'          => '',
-			'test_result_json_original' => '',
+			'test_result_json_original' => $test_result_json_original,
 			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
 			'debug_log'                 => json_encode( $debug_log ),
 			'status'                    => $status,

@@ -131,6 +131,10 @@
               "type": "string",
               "description": "Relative path for CTRF JSON result artefact"
             },
+            "json": {
+              "type": "string",
+              "description": "Relative path for original JSON test results artefact"
+            },
             "allure-dir": {
               "type": "string",
               "description": "Relative path for Allure directory result artefact"

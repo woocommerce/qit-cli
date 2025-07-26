@@ -237,6 +237,51 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		return true;
 	}
 
+	/**
+	 * Clean test package results based on manifest declarations
+	 *
+	 * @param string $package_path Path to the test package
+	 * @param \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest Parsed manifest
+	 * @throws \RuntimeException On cleanup failures
+	 */
+	private function cleanup_test_package_results( string $package_path, \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest ): void {
+		$results = $manifest->getTestResults();
+
+		foreach ( $results as $type => $rel_path ) {
+			$full_path = rtrim( $package_path, '/' ) . '/' . ltrim( $rel_path, './' );
+
+			switch ( $type ) {
+				case 'ctrf-json':
+					if ( is_file( $full_path ) ) {
+						if ( ! unlink( $full_path ) ) {
+							throw new \RuntimeException( "Failed to delete CTRF file: {$full_path}" );
+						}
+					}
+					break;
+
+				case 'json':
+					if ( is_file( $full_path ) ) {
+						if ( ! unlink( $full_path ) ) {
+							throw new \RuntimeException( "Failed to delete JSON results file: {$full_path}" );
+						}
+					}
+					break;
+
+				case 'allure-dir':
+					if ( is_dir( $full_path ) ) {
+						$is_allure_dir = ! empty( glob( $full_path . '/*-result.json' ) );
+						if ( $is_allure_dir ) {
+							$fs = new \Symfony\Component\Filesystem\Filesystem();
+							$fs->remove( $full_path );
+							// Recreate the directory for new results
+							mkdir( $full_path, 0755, true );
+						}
+					}
+					break;
+			}
+		}
+	}
+
 	private function handle_termination(): void {
 		register_shutdown_function( static function () {
 			static::shutdown_test_run();
@@ -305,8 +350,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			$total_executed  = 0;
 			$failed_packages = [];
 
-			// Set up artifacts directory
-			$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . uniqid();
+ 		// Set up artifacts directory using env_id for consistency
+ 		$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
 
 			// Get bootstrap package IDs to skip them (they only run globalSetup)
 			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
@@ -359,6 +404,14 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 					if ( file_exists( $manifest_path ) ) {
 						$parser   = App::make( \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser::class );
 						$manifest = $parser->parse( $manifest_path );
+
+						// Clean previous test results before running
+						$this->cleanup_test_package_results( $package_path, $manifest );
+
+						// Store manifest in test_packages_metadata for later use
+						if ( isset( $env_info->test_packages_metadata[ $pkg_id ] ) ) {
+							$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
+						}
 					}
 
 					// Run full lifecycle for test packages: setup -> run -> teardown
