@@ -108,7 +108,6 @@ class ResultCollector {
                 [],
                 null,
                 30,
-                null,
                 false
             );
         } catch (RuntimeException $e) {

@@ -139,15 +139,6 @@ class E2EEnvironment extends Environment {
 					"\n<info>[OK] 🟩  All {$total_cmds} command(s) executed successfully.</info>\n"
 				);
 			}
-
-			// Take database snapshot after globalSetup phase completion
-			$this->output->writeln( '<info>Taking database snapshot after globalSetup...</info>' );
-			try {
-				$this->docker->run_inside_docker( $this->env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
-				$this->output->writeln( '<info>✓ Database snapshot created successfully</info>' );
-			} catch ( \Exception $e ) {
-				throw new \RuntimeException( 'Infrastructure failure: Failed to create database snapshot after globalSetup: ' . $e->getMessage(), 3 );
-			}
 		}
 
 		// Activate plugins.

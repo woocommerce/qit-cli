@@ -386,7 +386,7 @@ export default defineConfig({
   fullyParallel: false,
   workers: 1,
   reporter: [
-    'list',
+    ['list'],
     ['html', { open: 'never' }],
     ['playwright-ctrf-json-reporter', { outputFile: './results/ctrf.json' }],
     ['allure-playwright',             { outputFolder: './results/allure' }]

@@ -286,7 +286,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			// Export baseline database snapshot after all globalSetup scripts ran
 			$io->writeln( '<info>Exporting baseline database snapshot...</info>' );
 			$docker = App::make( Docker::class );
-			$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
+			$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql', '--skip-ssl' ] );
 
 			$is_first_package = true;
 			foreach ( $test_packages as $pkg_id => $meta ) {
@@ -309,7 +309,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 				if ( ! $is_first_package ) {
 					$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
 					try {
-						App::make( Docker::class )->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
+						App::make( Docker::class )->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql', '--skip-ssl' ] );
 						$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
 					} catch ( \Exception $e ) {
 						throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
