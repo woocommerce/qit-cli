@@ -140,7 +140,7 @@ class LocalTestRunNotifier {
 			throw new \RuntimeException( 'Test run ID not set.' );
 		}
 
-		$env_info = $test_result->get_env_info();
+		$env_info    = $test_result->get_env_info();
 		$results_dir = $test_result->get_results_dir();
 
 		// Use artifacts directory if available, otherwise fall back to results directory
@@ -157,13 +157,13 @@ class LocalTestRunNotifier {
 		if ( ! empty( $env_info->test_packages_metadata ) ) {
 			foreach ( $env_info->test_packages_metadata as $pkg_id => $pkg_info ) {
 				if ( isset( $pkg_info['manifest'] ) && $pkg_info['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
-					$manifest = $pkg_info['manifest'];
+					$manifest     = $pkg_info['manifest'];
 					$test_results = $manifest->getTestResults();
-					
+
 					// Check if 'json' property exists in manifest results
 					if ( isset( $test_results['json'] ) ) {
 						$json_file_path = $pkg_info['path'] . '/' . ltrim( $test_results['json'], './' );
-						
+
 						// Read the JSON file if it exists
 						if ( file_exists( $json_file_path ) && is_readable( $json_file_path ) ) {
 							$test_result_json_original = file_get_contents( $json_file_path );
@@ -213,7 +213,7 @@ class LocalTestRunNotifier {
 		} else {
 			$allure_dir = $results_dir . '/allure';
 		}
-		
+
 		if ( is_dir( $allure_dir ) && App::getVar( 'should_upload_report' ) ) {
 			$zip_path = $results_dir . '/allure-raw.zip';
 			$this->zipper->zip_directory( $allure_dir, $zip_path );

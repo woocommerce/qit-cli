@@ -240,7 +240,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	/**
 	 * Clean test package results based on manifest declarations
 	 *
-	 * @param string $package_path Path to the test package
+	 * @param string                                          $package_path Path to the test package
 	 * @param \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest Parsed manifest
 	 * @throws \RuntimeException On cleanup failures
 	 */
@@ -350,8 +350,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			$total_executed  = 0;
 			$failed_packages = [];
 
- 		// Set up artifacts directory using env_id for consistency
- 		$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
+			// Set up artifacts directory using env_id for consistency
+			$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
 
 			// Get bootstrap package IDs to skip them (they only run globalSetup)
 			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
@@ -459,10 +459,9 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			// Output artifact locations
 			$final_ctrf_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
 
-
 			// Check for final Allure location
 			$final_allure_path = $artifacts_dir . '/final/allure';
-			if ( is_dir( $final_allure_path ) && !empty( glob( $final_allure_path . '/*', GLOB_ONLYDIR ) ) ) {
+			if ( is_dir( $final_allure_path ) && ! empty( glob( $final_allure_path . '/*', GLOB_ONLYDIR ) ) ) {
 				$io->writeln( "<info>Allure reports saved → {$final_allure_path}</info>" );
 			}
 			if ( file_exists( $final_ctrf_path ) ) {
