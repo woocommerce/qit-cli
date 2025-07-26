@@ -23,51 +23,157 @@ class ResultCollector {
 	/**
 	 * Collect artifacts from a test package after it finishes running
 	 */
-	public function collect( E2EEnvInfo $env_info, string $slug, TestPackageManifest $manifest, string $artifactsDir, string $phase = 'run' ): void {
-		$container_pkg_root = '/qit/packages/' . basename( $slug );
-		$test_results       = $manifest->getTestResults();
+	public function collect(
+		E2EEnvInfo $env,
+		string $slug,
+		TestPackageManifest $mf,
+		string $dir,
+		string $phase = 'run'
+	): void {
 
-		// 1) CTRF collection
-		$ctrfRel = $test_results['ctrf-json'] ?? null;
-		if ( $ctrfRel ) {
-			$container_ctrf_path = $container_pkg_root . '/' . ltrim( $ctrfRel, './' );
-			$safeId              = str_replace( [ '/', ':' ], '_', $slug );
-			$host_ctrf_path      = $artifactsDir . '/ctrf/' . $safeId . '.json';
+		// --------- 1️⃣  collect CTRF ------------------------------------------
+		$this->collectCtrf(
+			$env,
+			$slug,
+			$mf,
+			$dir,
+			/* mandatory = */ $phase === 'run',   // ← only "run" is mandatory
+			$phase
+		);
 
-			// Ensure ctrf directory exists
-			$ctrf_dir = dirname( $host_ctrf_path );
-			if ( ! is_dir( $ctrf_dir ) ) {
-				mkdir( $ctrf_dir, 0755, true );
+		// --------- 2️⃣  collect Allure (never mandatory) ----------------------
+		$this->collectAllure( $env, $slug, $mf, $dir, $phase );
+	}
+
+	private function collectCtrf(
+		E2EEnvInfo $env,
+		string $slug,
+		TestPackageManifest $mf,
+		string $dir,
+		bool $mandatory,
+		string $phase
+	): void {
+
+		$rel = $mf->getTestResults()['ctrf-json'] ?? null;
+		if ( ! $rel ) {
+			if ( $mandatory ) {
+				throw new RuntimeException( "manifest lacks ctrf-json for phase '{$phase}'" );
 			}
 
-			try {
-				// Tag CTRF before copying
-				$this->tagCtrfInContainer( $env_info, $container_ctrf_path, $slug, $manifest, $phase );
-
-				// Copy from container to host
-				$this->docker->copy_from_docker( $env_info, $container_ctrf_path, $host_ctrf_path );
-			} catch ( RuntimeException $e ) {
-				// CTRF file might not exist if tests didn't run - that's okay
-			}
+			return;                 // optional → skip
 		}
 
-		// 2) Allure collection (optional)
-		$allureRel = $test_results['allure-dir'] ?? null;
-		if ( $allureRel ) {
-			$container_allure_path = $container_pkg_root . '/' . trim( $allureRel, '/' );
-			$host_allure_path      = $artifactsDir . '/allure/' . basename( $slug );
+		$safe = ltrim( str_replace( [ '/', ':' ], '_', $slug ), '._' );
+		$dst  = $dir . '/ctrf/' . $safe . '.json';
+		@mkdir( dirname( $dst ), 0755, true );
 
-			// Ensure allure directory exists
-			if ( ! is_dir( dirname( $host_allure_path ) ) ) {
-				mkdir( dirname( $host_allure_path ), 0755, true );
-			}
+		/* 1 — host path ------------------------------------------------------- */
+		$hostPkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
+		$hostSrc = rtrim( $hostPkg, '/' ) . '/' . ltrim( $rel, './' );
+		if ( is_readable( $hostSrc ) ) {
+			copy( $hostSrc, $dst );
+			$this->tagCtrf( $dst, $slug, $mf, $phase );
 
-			try {
-				// Copy recursively from container to host
-				$this->docker->copy_from_docker( $env_info, $container_allure_path, $host_allure_path );
-			} catch ( RuntimeException $e ) {
-				// Allure results might not exist if tests didn't run - that's okay
+			return;
+		}
+
+		/* 2 — container fallback --------------------------------------------- */
+		$ctrPath = '/qit/packages/' . basename( $slug ) . '/' . ltrim( $rel, './' );
+		try {
+			$this->docker->copy_from_docker( $env, $ctrPath, $dst, 'php' );
+			$this->tagCtrf( $dst, $slug, $mf, $phase );
+		} catch ( \RuntimeException $e ) {
+			if ( $mandatory ) {
+				throw $e;           // only fail for "run"
 			}
+			// optional → do nothing
+		}
+	}
+
+	private function collectAllure(
+		E2EEnvInfo $env,
+		string $slug,
+		TestPackageManifest $mf,
+		string $dir,
+		string $phase
+	): void {
+
+		$rel = $mf->getTestResults()['allure-dir'] ?? null;
+		if ( ! $rel ) {
+			return;
+		}                     // no declaration → skip
+
+		$hostPkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
+		$hostSrc = rtrim( $hostPkg, '/' ) . '/' . trim( $rel, '/' );
+
+		$dst = $dir . '/allure/' . basename( $slug );
+		@mkdir( dirname( $dst ), 0755, true );
+
+		/* host first */
+		if ( is_dir( $hostSrc ) ) {
+			$this->recursiveCopy( $hostSrc, $dst );
+
+			return;
+		}
+
+		/* container fallback */
+		$ctrPath = '/qit/packages/' . basename( $slug ) . '/' . trim( $rel, '/' );
+		try {
+			$this->docker->copy_from_docker( $env, $ctrPath, $dst, 'php' );
+		} catch ( \RuntimeException $e ) {
+			// never mandatory – just ignore
+		}
+	}
+
+	/**
+	 * Recursively copy a directory from source to destination
+	 */
+	private function recursiveCopy( string $src, string $dst ): void {
+		if ( ! is_dir( $src ) ) {
+			return;
+		}
+
+		if ( ! is_dir( $dst ) ) {
+			mkdir( $dst, 0755, true );
+		}
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $src, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ( $iterator as $item ) {
+			$target = $dst . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
+			if ( $item->isDir() ) {
+				if ( ! is_dir( $target ) ) {
+					mkdir( $target, 0755, true );
+				}
+			} else {
+				copy( $item, $target );
+			}
+		}
+	}
+
+	/**
+	 * Tag CTRF file with package metadata (host version)
+	 */
+	private function tagCtrf( string $ctrfPath, string $slug, TestPackageManifest $mf, string $phase ): void {
+		if ( ! file_exists( $ctrfPath ) ) {
+			return;
+		}
+
+		$data = json_decode( file_get_contents( $ctrfPath ), true );
+		if ( is_array( $data ) && ! empty( $data["results"]["tests"] ) && is_array( $data["results"]["tests"] ) ) {
+			foreach ( $data["results"]["tests"] as &$test ) {
+				if ( ! isset( $test["extra"] ) ) {
+					$test["extra"] = [];
+				}
+				$test["extra"]["packageSlug"] = $slug;
+				$test["extra"]["phase"]       = $phase;
+				$test["extra"]["testType"]    = $mf->getTestType();
+				$test["extra"]["namespace"]   = $mf->getNamespace();
+			}
+			file_put_contents( $ctrfPath, json_encode( $data, JSON_PRETTY_PRINT ) );
 		}
 	}
 
