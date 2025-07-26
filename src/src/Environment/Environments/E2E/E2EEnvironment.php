@@ -108,6 +108,38 @@ class E2EEnvironment extends Environment {
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
 
+		/* --------------------------------------------------------------
+		 * Execute setup‑only test‑packages
+		 * ------------------------------------------------------------*/
+		if ( ! empty( $this->env_info->setup_only_packages ) ) {
+			$runner        = new \QIT_CLI\Environment\PackagePhaseRunner(
+				$this->docker,
+				$this->output
+			);
+			$total_cmds    = 0;
+
+			$this->output->writeln( "\n<comment>🔧  Test‑package setup phase</comment>" );
+			$this->output->writeln( '<comment>----------------------------</comment>' );
+
+			foreach ( $this->env_info->setup_only_packages as $pkg_id => $info ) {
+				$total_cmds += $runner->run_setup(
+					$this->env_info,
+					$pkg_id,
+					$info['path']
+				);
+			}
+
+			if ( $total_cmds === 0 ) {
+				$this->output->writeln(
+					"  <info>• No setup commands found – skipping</info>\n"
+				);
+			} else {
+				$this->output->writeln(
+					"\n<info>[OK] 🟩  All {$total_cmds} command(s) executed successfully.</info>\n"
+				);
+			}
+		}
+
 		// Activate plugins.
 		if ( ! $this->skip_activating_plugins ) {
 			$this->output->writeln( '<info>Activating plugins...</info>' );

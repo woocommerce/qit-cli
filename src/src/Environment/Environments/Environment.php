@@ -209,6 +209,17 @@ abstract class Environment {
 
 		$default_volumes = $this->additional_default_volumes( $default_volumes );
 
+		/* Mount test‑packages (setup_only) as read‑only -----------------------*/
+		if ( ! empty( $this->env_info->setup_only_packages ) ) {
+			foreach ( $this->env_info->setup_only_packages as $pkg_id => $info ) {
+				if ( empty( $info['path'] ) || ! is_dir( $info['path'] ) ) {
+					continue;
+				}
+				$container = '/qit/packages/' . basename( $pkg_id );
+				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
+			}
+		}
+
 		$volumes = array_merge( $default_volumes, $this->env_info->volumes );
 
 		/*
