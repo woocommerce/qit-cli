@@ -14,6 +14,8 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
 use QIT_CLI\Environment\ResultCollector;
+use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\PreCommand\Results\LocalTestResult;
 use QIT_CLI\WooExtensionsList;
@@ -30,6 +32,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	protected WooExtensionsList $woo_extensions_list;
 	protected PackagePhaseRunner $package_phase_runner;
 	protected ResultCollector $result_collector;
+	protected LocalTestRunNotifier $local_test_run_notifier;
 
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -45,12 +48,14 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		E2EEnvironment $e2e_environment,
 		WooExtensionsList $woo_extensions_list,
 		PackagePhaseRunner $package_phase_runner,
-		ResultCollector $result_collector
+		ResultCollector $result_collector,
+		LocalTestRunNotifier $local_test_run_notifier
 	) {
-		$this->e2e_environment      = $e2e_environment;
-		$this->woo_extensions_list  = $woo_extensions_list;
-		$this->package_phase_runner = $package_phase_runner;
-		$this->result_collector     = $result_collector;
+		$this->e2e_environment         = $e2e_environment;
+		$this->woo_extensions_list     = $woo_extensions_list;
+		$this->package_phase_runner    = $package_phase_runner;
+		$this->result_collector        = $result_collector;
+		$this->local_test_run_notifier = $local_test_run_notifier;
 		parent::__construct();
 	}
 
@@ -171,9 +176,38 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		$this->e2e_environment->init( $env_info );
 		$this->e2e_environment->up();
 
+		// Notify test started
+		if ( isset( $env_info->sut['slug'] ) ) {
+			$woo_extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $env_info->sut['slug'] );
+			$woocommerce_version = $env_info->woo;
+			$is_development = $env_info->is_development_build;
+			$notify = $input->getOption( 'notify' ) ?? false;
+
+			$this->local_test_run_notifier->notify_test_started(
+				$woo_extension_id,
+				$woocommerce_version,
+				$env_info,
+				$is_development,
+				$notify
+			);
+		}
+
 		// Run tests with test packages
 		$io          = new SymfonyStyle( $input, $output );
 		$exit_status = $this->runTestPackages( $env_info, $test_packages, $io );
+
+		// Notify test finished
+		if ( isset( $env_info->sut['slug'] ) ) {
+			$test_result = TestResult::init_from( $env_info );
+			$test_result->set_status( $exit_status === Command::SUCCESS ? 'success' : 'failed' );
+
+			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result );
+
+			// Use exit status override if provided
+			if ( $exit_status_override !== null ) {
+				$exit_status = $exit_status_override;
+			}
+		}
 
 		// Output results
 		if ( $exit_status === Command::SUCCESS ) {
@@ -365,13 +399,9 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 			// Output artifact locations
 			$final_ctrf_path   = $artifacts_dir . '/final/ctrf/ctrf-report.json';
-			$final_allure_path = $artifacts_dir . '/final/allure-html/index.html';
 
 			if ( file_exists( $final_ctrf_path ) ) {
 				$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
-			}
-			if ( file_exists( $final_allure_path ) ) {
-				$io->writeln( "<info>Allure HTML → {$final_allure_path}</info>" );
 			}
 
 			// Summary

@@ -142,7 +142,7 @@ class LocalTestRunNotifier {
 
 		$results_dir = $test_result->get_results_dir();
 
-		$ctrf_file                 = $results_dir . '/ctrf/ctrf-report.json';
+		$ctrf_file                 = $results_dir . '/final/ctrf/ctrf-report.json';
 		$qm_logs_path              = $results_dir . '/logs';
 		$test_result_json_original = '';
 

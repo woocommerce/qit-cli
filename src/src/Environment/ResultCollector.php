@@ -269,35 +269,64 @@ class ResultCollector {
 		}
 	}
 
+	/**
+	 * Merge Allure results from multiple test packages into a unified structure
+	 */
 	private function mergeAllure( string $artifactsDir, SymfonyStyle $io ): void {
 		$allureDir = $artifactsDir . '/allure';
-
+		
 		// Skip if no Allure directories
-		$paths = glob( $allureDir . '/*' );
-		if ( empty( $paths ) ) {
+		if ( ! is_dir( $allureDir ) || empty( glob( $allureDir . '/*', GLOB_ONLYDIR ) ) ) {
 			return;
 		}
-
-		// Ensure allure-commandline is available
-		$bin_dir    = $this->node_deps->ensurePackages( [ 'allure-commandline' ], $io );
-		$allure_bin = $bin_dir . '/allure';
-
-		$io->text( 'Generating Allure HTML report...' );
-
-		$outDir = $artifactsDir . '/final/allure-html';
-		$args   = array_merge( [ 'generate', '--clean', '-o', $outDir ], $paths );
-
-		$proc = new Process( array_merge( [ $allure_bin ], $args ) );
-		$proc->setTimeout( 300 );
-		$proc->run( function ( $type, $buf ) use ( $io ) {
-			if ( ! $io->isQuiet() ) {
-				$io->write( $buf );
-			}
-		} );
-
-		if ( ! $proc->isSuccessful() ) {
-			throw new RuntimeException( 'Allure generate failed: ' . $proc->getErrorOutput() );
+		
+		$io->text( 'Merging Allure reports...' );
+		
+		// Create merged directory
+		$mergedDir = $artifactsDir . '/allure-merged';
+		if ( ! is_dir( $mergedDir ) ) {
+			mkdir( $mergedDir, 0755, true );
 		}
+		
+		// Find all plugin-specific allure directories
+		$pluginDirs = glob( $allureDir . '/*', GLOB_ONLYDIR );
+		
+		foreach ( $pluginDirs as $pluginDir ) {
+			if ( is_dir( $pluginDir ) ) {
+				$this->recursiveCopy( $pluginDir, $mergedDir );
+			}
+		}
+		
+		// Replace the original allure directory with merged results
+		if ( is_dir( $mergedDir ) && ! empty( glob( $mergedDir . '/*' ) ) ) {
+			// Remove original segmented directory
+			$this->removeDirectory( $allureDir );
+			// Move merged results to expected location
+			rename( $mergedDir, $allureDir );
+		}
+	}
+
+	/**
+	 * Recursively remove a directory and all its contents
+	 */
+	private function removeDirectory( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::CHILD_FIRST
+		);
+		
+		foreach ( $iterator as $file ) {
+			if ( $file->isDir() ) {
+				rmdir( $file->getPathname() );
+			} else {
+				unlink( $file->getPathname() );
+			}
+		}
+		rmdir( $dir );
 	}
 
 	/**
