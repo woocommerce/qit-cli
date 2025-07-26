@@ -268,6 +268,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 		$io->section( 'Running Test Packages' );
 
+		$is_first_package = true;
 		foreach ( $test_packages as $pkg_id => $meta ) {
 			// Skip packages that are in bootstrap_packages (they only run globalSetup)
 			if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
@@ -284,6 +285,17 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 			$io->writeln( "<info>Processing package: {$pkg_id}</info>" );
 
+			// Import database snapshot before each non-first package
+			if ( ! $is_first_package ) {
+				$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
+				try {
+					$this->e2e_environment->get_docker()->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
+					$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
+				} catch ( \Exception $e ) {
+					throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
+				}
+			}
+
 			try {
 				// Run full lifecycle for test packages: setup -> run -> teardown
 				$setup_count = $phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path );
@@ -295,9 +307,14 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 				$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
 
+				// Mark that we've processed the first package
+				$is_first_package = false;
+
 			} catch ( \Exception $e ) {
 				$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
 				$failed_packages[] = $pkg_id;
+				// Still mark as processed to maintain the sequence for subsequent packages
+				$is_first_package = false;
 			}
 		}
 
