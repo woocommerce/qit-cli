@@ -3,6 +3,7 @@ namespace QIT_CLI\Environment;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -40,9 +41,9 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a command on the host system
 	 *
-	 * @param string $cmd Command to execute.
-	 * @param string $package_path Working directory for the command.
-	 * @param array  $env_vars Environment variables.
+	 * @param string                $cmd Command to execute.
+	 * @param string                $package_path Working directory for the command.
+	 * @param array<string, string> $env_vars Environment variables.
 	 * @throws \RuntimeException On command failure.
 	 */
 	private function run_on_host( string $cmd, string $package_path, array $env_vars = [] ): void {
@@ -64,11 +65,11 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a command inside Docker container
 	 *
-	 * @param string  $cmd Command to execute.
-	 * @param EnvInfo $env_info Environment information.
-	 * @param string  $package_id Package identifier.
-	 * @param string  $workdir Working directory inside container.
-	 * @param array   $env_vars Environment variables.
+	 * @param string                $cmd Command to execute.
+	 * @param EnvInfo               $env_info Environment information.
+	 * @param string                $package_id Package identifier.
+	 * @param string                $workdir Working directory inside container.
+	 * @param array<string, string> $env_vars Environment variables.
 	 * @throws \RuntimeException On command failure.
 	 */
 	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [] ): void {
@@ -126,7 +127,7 @@ class PackagePhaseRunner {
 			if ( $venue === 'host' ) {
 				// Pass QIT_SITE_URL environment variable for host commands (e.g., Playwright tests)
 				$env_vars = [
-					'QIT_SITE_URL' => $env_info->site_url,
+					'QIT_SITE_URL' => $env_info instanceof E2EEnvInfo ? $env_info->site_url : '',
 				];
 				$this->run_on_host( $cmd, $package_path, $env_vars );
 			} else {

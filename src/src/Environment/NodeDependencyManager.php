@@ -21,7 +21,7 @@ class NodeDependencyManager {
 	/**
 	 * Ensure required npm packages are available
 	 *
-	 * @param array $packages ['ctrf-cli', 'allure-commandline'].
+	 * @param array<string> $packages ['ctrf-cli', 'allure-commandline'].
 	 *
 	 * @return string Path to node_modules/.bin directory
 	 */
@@ -39,6 +39,9 @@ class NodeDependencyManager {
 		return $bin_dir;
 	}
 
+	/**
+	 * @param array<string> $packages
+	 */
 	private function are_packages_installed( array $packages ): bool {
 		$bin_dir = $this->cache_dir . '/node_modules/.bin';
 
@@ -57,6 +60,9 @@ class NodeDependencyManager {
 		return true;
 	}
 
+	/**
+	 * @param array<string> $packages
+	 */
 	private function install_packages( array $packages, SymfonyStyle $io ): void {
 		// Initialize package.json if it doesn't exist
 		$package_json = $this->cache_dir . '/package.json';

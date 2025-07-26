@@ -179,6 +179,8 @@ class ResultCollector {
 
 	/**
 	 * Tag CTRF file inside the container with package metadata
+	 *
+	 * @phpstan-ignore-next-line method.unused
 	 */
 	private function tag_ctrf_in_container( E2EEnvInfo $env_info, string $container_ctrf_path, string $package_id, TestPackageManifest $manifest, string $phase ): void {
 		$tag_script = sprintf(
@@ -215,7 +217,7 @@ class ResultCollector {
 				[],
 				null,
 				30,
-				false
+				'php'
 			);
 		} catch ( RuntimeException $e ) {
 			// Tagging failed - continue anyway
@@ -332,6 +334,8 @@ class ResultCollector {
 
 	/**
 	 * Map container result paths to host artifact directories
+	 *
+	 * @return array<array{container_path: string, host_path: string, type: string}>
 	 */
 	public function map_container_to_host_paths( TestPackageManifest $manifest, string $package_id, string $host_artifacts_dir ): array {
 		$mappings = [];
@@ -357,6 +361,8 @@ class ResultCollector {
 
 	/**
 	 * Tag CTRF with package metadata instead of plugin slug
+	 *
+	 * @return array{packageSlug: string, testType: string, namespace: string}
 	 */
 	public function tag_ctrf_with_package_metadata( string $package_id, TestPackageManifest $manifest ): array {
 		return [

@@ -167,7 +167,9 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		// Populate test packages metadata for volume mounting
 		$env_info->test_packages_metadata = [];
 		foreach ( $test_packages as $pkg_id => $meta ) {
+			/** @phpstan-ignore-next-line offsetAccess.nonOffsetAccessible */
 			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
+				/** @phpstan-ignore-next-line offsetAccess.nonOffsetAccessible */
 				$env_info->test_packages_metadata[ $pkg_id ] = [ 'path' => $meta['path'] ];
 			}
 		}
@@ -392,9 +394,10 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			}
 
 			// Merge all collected artifacts
-			$this->result_collector->mergeAllArtifacts( $artifacts_dir, $io );
+			$this->result_collector->merge_all_artifacts( $artifacts_dir, $io );
 
 			// Store artifacts directory in env_info for later use by Manager
+			/** @phpstan-ignore-next-line property.notFound */
 			$env_info->artifacts_dir = $artifacts_dir;
 
 			// Output artifact locations
