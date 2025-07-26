@@ -92,6 +92,16 @@ class EnvironmentResolver {
 		// Set other environment properties
 		$this->set_environment_properties( $env_info, $env_config );
 
+		// Propagate the SUT data to the environment info
+		if ( $config->sut ) {
+			$env_info->sut = [
+				'slug'    => $config->sut['slug'],
+				'type'    => $config->sut['type'],
+				'source'  => $config->sut['source'] ?? null,
+				'version' => $config->sut['version'] ?? null,
+			];
+		}
+
 		return new EnvironmentResult( $config, $env_info );
 	}
 

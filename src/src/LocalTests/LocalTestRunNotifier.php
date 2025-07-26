@@ -63,9 +63,9 @@ class LocalTestRunNotifier {
 
 		foreach ( $env_info->plugins as $plugin ) {
 			// Are we running an activation test?
-			if ( $plugin['type'] === 'plugin' && $plugin['slug'] === 'woocommerce' ) {
-				if ( ! empty( $plugin['test_tags'] ) && is_array( $plugin['test_tags'] ) ) {
-					foreach ( $plugin['test_tags'] as $t ) {
+			if ( $plugin->type === 'plugin' && $plugin->slug === 'woocommerce' ) {
+				if ( ! empty( $plugin->test_tags ) && is_array( $plugin->test_tags ) ) {
+					foreach ( $plugin->test_tags as $t ) {
 						if ( $t === 'activation' ) {
 							$test_type = 'activation';
 						}
@@ -73,8 +73,8 @@ class LocalTestRunNotifier {
 				}
 			}
 
-			if ( $plugin['type'] === 'plugin' && isset( $env_info->sut ) && $plugin['slug'] !== $env_info->sut['slug'] ) {
-				$additional_plugins[] = $plugin['slug'];
+			if ( $plugin->type === 'plugin' && isset( $env_info->sut ) && $plugin->slug !== $env_info->sut['slug'] ) {
+				$additional_plugins[] = $plugin->slug;
 			}
 		}
 
@@ -140,9 +140,15 @@ class LocalTestRunNotifier {
 			throw new \RuntimeException( 'Test run ID not set.' );
 		}
 
+		$env_info = $test_result->get_env_info();
 		$results_dir = $test_result->get_results_dir();
 
-		$ctrf_file                 = $results_dir . '/final/ctrf/ctrf-report.json';
+		// Use artifacts directory if available, otherwise fall back to results directory
+		if ( isset( $env_info->artifacts_dir ) && ! empty( $env_info->artifacts_dir ) ) {
+			$ctrf_file = $env_info->artifacts_dir . '/final/ctrf/ctrf-report.json';
+		} else {
+			$ctrf_file = $results_dir . '/final/ctrf/ctrf-report.json';
+		}
 		$qm_logs_path              = $results_dir . '/logs';
 		$test_result_json_original = '';
 
@@ -179,7 +185,13 @@ class LocalTestRunNotifier {
 			$debug_log['debug_log'] = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 
-		$allure_dir = $results_dir . '/allure';
+		// Use artifacts directory if available, otherwise fall back to results directory
+		if ( isset( $env_info->artifacts_dir ) && ! empty( $env_info->artifacts_dir ) ) {
+			$allure_dir = $env_info->artifacts_dir . '/final/allure';
+		} else {
+			$allure_dir = $results_dir . '/allure';
+		}
+		
 		if ( is_dir( $allure_dir ) && App::getVar( 'should_upload_report' ) ) {
 			$zip_path = $results_dir . '/allure-raw.zip';
 			$this->zipper->zip_directory( $allure_dir, $zip_path );
