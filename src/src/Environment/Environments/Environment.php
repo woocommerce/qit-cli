@@ -220,6 +220,17 @@ abstract class Environment {
 			}
 		}
 
+		/* Mount test‑packages (test_packages_metadata) as read‑only -------------------*/
+		if ( ! empty( $this->env_info->test_packages_metadata ) ) {
+			foreach ( $this->env_info->test_packages_metadata as $pkg_id => $info ) {
+				if ( empty( $info['path'] ) || ! is_dir( $info['path'] ) ) {
+					continue;
+				}
+				$container = '/qit/packages/' . basename( $pkg_id );
+				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
+			}
+		}
+
 		$volumes = array_merge( $default_volumes, $this->env_info->volumes );
 
 		/*

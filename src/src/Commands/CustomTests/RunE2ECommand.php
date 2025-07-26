@@ -159,6 +159,14 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			return self::SUCCESS;
 		}
 
+		// Populate test packages metadata for volume mounting
+		$env_info->test_packages_metadata = [];
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
+				$env_info->test_packages_metadata[ $pkg_id ] = [ 'path' => $meta['path'] ];
+			}
+		}
+
 		// Initialize environment
 		$this->e2e_environment->init( $env_info );
 		$this->e2e_environment->up();
