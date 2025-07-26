@@ -388,17 +388,26 @@ export default defineConfig({
   reporter: [
     ['list'],
     ['html', { open: 'never' }],
-    ['playwright-ctrf-json-reporter', { outputFile: './results/ctrf.json' }],
-    ['allure-playwright',             { outputFolder: './results/allure' }]
+    ['playwright-ctrf-json-reporter', {
+      outputDir: './results',
+      outputFile: 'ctrf.json',
+    }],
+    ['allure-playwright', {
+      resultsDir: './results/allure',
+    }],
   ],
   use: {
     baseURL: process.env.QIT_SITE_URL || 'http://localhost:8080',
-    trace: 'on-first-retry'
+    trace: 'on-first-retry',
   },
   projects: [
-    { name: 'chromium', use: { ...devices['Desktop Chrome'] } }
-  ]
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+  ],
 });
+
 JS;
 		file_put_contents( "$dir/playwright.config.js", $config );
 	}
