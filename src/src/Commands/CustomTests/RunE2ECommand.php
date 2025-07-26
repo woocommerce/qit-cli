@@ -11,6 +11,7 @@ use QIT_CLI\App;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\PackagePhaseRunner;
 use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\PreCommand\Results\LocalTestResult;
@@ -250,23 +251,63 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	}
 
 	/**
-	 * Run test packages using the CustomE2ERunner.
+	 * Run test packages using manifest-based approach with PackagePhaseRunner.
 	 *
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
-	 * @param array                                            $test_packages The test packages to run.
+	 * @param array<string,mixed>                              $test_packages The test packages to run.
 	 * @param SymfonyStyle                                     $io The IO interface.
 	 * @return int The exit status.
 	 */
-		/**
-		 * Run test packages using the CustomE2ERunner.
-		 *
-		 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
-		 * @param array<string,mixed>                              $test_packages The test packages to run.
-		 * @param SymfonyStyle                                     $io The IO interface.
-		 * @return int The exit status.
-		 */
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
-		// Run tests using the CustomE2ERunner
-		return $this->spec_custom_test_orchestrator->run_custom_e2e_tests( $env_info, $io, false );
+		$phase_runner = new PackagePhaseRunner( $this->e2e_environment->get_docker(), $io );
+		$total_executed = 0;
+		$failed_packages = [];
+
+		// Get bootstrap package IDs to skip them (they only run globalSetup)
+		$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages );
+
+		$io->section( 'Running Test Packages' );
+
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			// Skip packages that are in bootstrap_packages (they only run globalSetup)
+			if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
+				$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
+				continue;
+			}
+
+			$package_path = $meta['path'] ?? '';
+			if ( empty( $package_path ) || ! is_dir( $package_path ) ) {
+				$io->error( "Invalid package path for {$pkg_id}: {$package_path}" );
+				$failed_packages[] = $pkg_id;
+				continue;
+			}
+
+			$io->writeln( "<info>Processing package: {$pkg_id}</info>" );
+
+			try {
+				// Run full lifecycle for test packages: setup -> run -> teardown
+				$setup_count = $phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path );
+				$run_count = $phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
+				$teardown_count = $phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path );
+
+				$package_total = $setup_count + $run_count + $teardown_count;
+				$total_executed += $package_total;
+
+				$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
+
+			} catch ( \Exception $e ) {
+				$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
+				$failed_packages[] = $pkg_id;
+			}
+		}
+
+		// Summary
+		if ( empty( $failed_packages ) ) {
+			$io->success( "All test packages completed successfully. Total commands executed: {$total_executed}" );
+			return Command::SUCCESS;
+		} else {
+			$io->error( "Failed packages: " . implode( ', ', $failed_packages ) . ". Total commands executed: {$total_executed}" );
+			return Command::FAILURE;
+		}
 	}
 }

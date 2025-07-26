@@ -179,6 +179,7 @@ class PackageScaffoldCommand extends QITCommand {
 			$fs->mkdir( [
 				$target_dir,
 				"$target_dir/bootstrap",
+				"$target_dir/results",
 			], 0755 );
 		} catch ( \Throwable $e ) {
 			$io->error( 'Unable to create directory: ' . $e->getMessage() );
@@ -186,16 +187,67 @@ class PackageScaffoldCommand extends QITCommand {
 			return Command::FAILURE;
 		}
 
-		/* bootstrap/setup.sh */
+		/* bootstrap/global-setup.sh */
+		$global_setup_sh = <<<BASH
+#!/bin/bash
+# ------------------------------------------------------------------
+# Global Setup – executed INSIDE the WP container
+# ------------------------------------------------------------------
+# Put your plugin/extension into a _minimal ready state_ here.
+#   – Creates sandbox credentials
+#   – Disables onboarding banners
+#   – Turns off tracking, etc.
+# This runs **once** per test run (even if your package is only in
+# `bootstrap_packages`) and should finish fast.
+
+set -euo pipefail
+
+echo "[globalSetup] Starting global configuration..."
+# Example:
+# wp option update my_plugin_onboarding_complete yes
+echo "[globalSetup] Done."
+BASH;
+		file_put_contents( "$target_dir/bootstrap/global-setup.sh", $global_setup_sh );
+		chmod( "$target_dir/bootstrap/global-setup.sh", 0755 );
+
+		/* bootstrap/setup.sh (isolated setup) */
 		$setup_sh = <<<BASH
 #!/bin/bash
-# This script runs inside the container before tests.
-echo "Setup complete"
+# ------------------------------------------------------------------
+# Isolated Setup – executed INSIDE the WP container
+# ------------------------------------------------------------------
+# Runs before the *run* phase of THIS package only.
+# Safe place to create test data that must not leak to other packages.
+
+set -euo pipefail
+
+echo "[setup] Creating sample data ..."
+# Example:
+# wp wc product create --name="Test Product" --type=simple --price=9.99
+echo "[setup] Done."
 BASH;
 		file_put_contents( "$target_dir/bootstrap/setup.sh", $setup_sh );
 		chmod( "$target_dir/bootstrap/setup.sh", 0755 );
 
-		/* manifest.json */
+		/* bootstrap/global-teardown.sh */
+		$global_teardown_sh = <<<BASH
+#!/bin/bash
+# ------------------------------------------------------------------
+# Global Teardown – executed INSIDE the WP container
+# ------------------------------------------------------------------
+# Runs once at the very end.  Clean up anything created in globalSetup.
+
+set -euo pipefail
+
+echo "[globalTeardown] Cleaning up ..."
+# Example:
+# wp option delete my_plugin_sandbox_token
+echo "[globalTeardown] Done."
+BASH;
+		file_put_contents( "$target_dir/bootstrap/global-teardown.sh", $global_teardown_sh );
+		chmod( "$target_dir/bootstrap/global-teardown.sh", 0755 );
+
+		/* manifest.json – wired to the three scripts above */
 		$manifest = [
 			'$schema'   => 'https://qit.woo.com/json-schema/test-package',
 			'namespace' => $namespace,
@@ -203,11 +255,11 @@ BASH;
 			'test_type' => $test_type,
 			'test'      => [
 				'phases'  => [
-					'globalSetup' => [],
-					'setup'            => [ './bootstrap/setup.sh' ],
-					'run'              => [ 'npx playwright test' ],
-					'teardown'         => [],
-					'globalTeardown'  => [],
+					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
+					'setup'          => [ './bootstrap/setup.sh' ],
+					'run'            => [ 'npx playwright test' ],
+					'teardown'       => [],
+					'globalTeardown' => [ './bootstrap/global-teardown.sh' ],
 				],
 				'results' => [
 					'ctrf-json'  => './results/ctrf.json',
@@ -262,6 +314,9 @@ BASH;
 		 */
 		$io->writeln( 'Scaffolding test package…' );
 		$io->writeln( sprintf( "\n🟩 Package scaffolded (%s • %s)", $test_type, $framework ) );
+		$io->writeln(
+			"\n<comment>🗒  Edit bootstrap/*.sh to configure global or isolated setup.</comment>"
+		);
 		$io->writeln( sprintf( "\nNext → qit package:publish %s", $target_dir ) );
 
 		return Command::SUCCESS;

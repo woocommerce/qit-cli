@@ -136,6 +136,8 @@ Creates a configurable, temporary, disposable test environment.
 <comment>Configuration File</comment>
 Create a qit.json file to define environments:
 
+<comment>Note:</comment> Packages declared in <info>bootstrap_packages</info> run <info>only</info> their <info>globalSetup</info> phase.
+
 {
   "$schema": "https://qit.woo.com/json-schema/qit",
   "sut": {
@@ -147,7 +149,8 @@ Create a qit.json file to define environments:
     "base": {
       "php": "8.0",
       "wp": "stable",
-      "plugins": ["woocommerce", "akismet"]
+      "plugins": ["woocommerce", "akismet"],
+      "bootstrap_packages": ["vendor/setup-package:stable"]
     },
     "legacy": {
       "extends": "base",

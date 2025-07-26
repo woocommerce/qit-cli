@@ -287,7 +287,7 @@ class QitJsonParserPathResolutionTest extends TestCase {
 		$base_config = [
 			'environments' => [
 				'default' => [
-					'setup_only' => [ './missing/package.json' ]
+					'bootstrap_packages' => [ './missing/package.json' ]
 				]
 			]
 		];
@@ -308,7 +308,7 @@ class QitJsonParserPathResolutionTest extends TestCase {
 		file_put_contents( $this->temp_dir . '/project/qit.json', json_encode( $project_config ) );
 
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'Setup package file not found: ./missing/package.json' );
+		$this->expectExceptionMessage( 'Bootstrap package file not found: ./missing/package.json' );
 
 		$parser = new QitJsonParser();
 		$parser->parse( $this->temp_dir . '/project/qit.json' );
@@ -327,7 +327,7 @@ class QitJsonParserPathResolutionTest extends TestCase {
 			'environments' => [
 				'default' => [
 					'php_version' => '8.0',
-					'setup_only'  => [ './setup/remote-setup.json' ] // Path in "remote" config
+					'bootstrap_packages'  => [ './setup/remote-setup.json' ] // Path in "remote" config
 				]
 			],
 			'test_types'   => [
@@ -361,7 +361,7 @@ class QitJsonParserPathResolutionTest extends TestCase {
 			'environments' => [
 				'staging' => [
 					'extends'    => 'default',
-					'setup_only' => [ './local-setup.json' ]
+					'bootstrap_packages' => [ './local-setup.json' ]
 				]
 			]
 		]; // Another local path
@@ -405,15 +405,15 @@ class QitJsonParserPathResolutionTest extends TestCase {
 		$config = $parser->parse( $this->temp_dir . '/project/qit.json' );
 
 		// Verify paths remain relative
-		$this->assertEquals( [ './setup/remote-setup.json' ], $config['environments']['default']['setup_only'] );
+		$this->assertEquals( [ './setup/remote-setup.json' ], $config['environments']['default']['bootstrap_packages'] );
 		$this->assertEquals( [ './tests/integration.json' ], $config['test_types']['integration']['default']['test_packages'] );
 		$this->assertEquals( [ './e2e/tests.json' ], $config['test_types']['e2e']['default']['test_packages'] );
-		$this->assertEquals( [ './local-setup.json' ], $config['environments']['staging']['setup_only'] );
+		$this->assertEquals( [ './local-setup.json' ], $config['environments']['staging']['bootstrap_packages'] );
 
 		// Verify all packages can be loaded (paths resolved correctly relative to project)
-		$default_setup_packages = $parser->get_setup_packages_for_environment( 'default' );
-		$this->assertArrayHasKey( './setup/remote-setup.json', $default_setup_packages );
-		$this->assertEquals( 'Setup from remote config', $default_setup_packages['./setup/remote-setup.json']['description'] );
+		$default_bootstrap_packages = $parser->get_bootstrap_packages_for_environment( 'default' );
+		$this->assertArrayHasKey( './setup/remote-setup.json', $default_bootstrap_packages );
+		$this->assertEquals( 'Setup from remote config', $default_bootstrap_packages['./setup/remote-setup.json']['description'] );
 
 		$integration_packages = $parser->get_test_packages_for_profile( 'integration', 'default' );
 		$this->assertArrayHasKey( './tests/integration.json', $integration_packages );
@@ -423,9 +423,9 @@ class QitJsonParserPathResolutionTest extends TestCase {
 		$this->assertArrayHasKey( './e2e/tests.json', $e2e_packages );
 		$this->assertEquals( 'Local E2E tests', $e2e_packages['./e2e/tests.json']['description'] );
 
-		$staging_setup_packages = $parser->get_setup_packages_for_environment( 'staging' );
-		$this->assertArrayHasKey( './local-setup.json', $staging_setup_packages );
-		$this->assertEquals( 'Local setup package', $staging_setup_packages['./local-setup.json']['description'] );
+		$staging_bootstrap_packages = $parser->get_bootstrap_packages_for_environment( 'staging' );
+		$this->assertArrayHasKey( './local-setup.json', $staging_bootstrap_packages );
+		$this->assertEquals( 'Local setup package', $staging_bootstrap_packages['./local-setup.json']['description'] );
 	}
 
 	private function delete_dir( string $dir ): void {

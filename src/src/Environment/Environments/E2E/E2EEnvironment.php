@@ -122,8 +122,9 @@ class E2EEnvironment extends Environment {
 			$this->output->writeln( '<comment>----------------------------</comment>' );
 
 			foreach ( $this->env_info->bootstrap_packages as $pkg_id => $info ) {
-				$total_cmds += $runner->run_setup(
+				$total_cmds += $runner->run_phase(
 					$this->env_info,
+					'globalSetup',
 					$pkg_id,
 					$info['path']
 				);

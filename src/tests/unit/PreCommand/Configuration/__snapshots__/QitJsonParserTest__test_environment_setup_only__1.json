@@ -10,7 +10,7 @@
     },
     "environments": {
         "default": {
-            "setup_only": [
+            "bootstrap_packages": [
                 "woocommerce\/minimal:stable"
             ]
         }

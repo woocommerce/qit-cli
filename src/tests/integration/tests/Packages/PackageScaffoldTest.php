@@ -41,6 +41,33 @@ class PackageScaffoldTest extends \PHPUnit\Framework\TestCase {
 		$this->assertArrayHasKey('allure-dir', $manifest['test']['results']);
 		$this->assertEquals('./results/allure', $manifest['test']['results']['allure-dir']);
 
+		// Validate that all three bootstrap scripts are wired correctly in manifest
+		$this->assertSame(
+			['./bootstrap/global-setup.sh'],
+			$manifest['test']['phases']['globalSetup']
+		);
+		$this->assertSame(
+			['./bootstrap/setup.sh'],
+			$manifest['test']['phases']['setup']
+		);
+		$this->assertSame(
+			['./bootstrap/global-teardown.sh'],
+			$manifest['test']['phases']['globalTeardown']
+		);
+
+		// Check that all three bootstrap scripts exist and are executable
+		$this->assertFileExists( $temp_dir . '/bootstrap/global-setup.sh' );
+		$this->assertFileExists( $temp_dir . '/bootstrap/setup.sh' );
+		$this->assertFileExists( $temp_dir . '/bootstrap/global-teardown.sh' );
+		
+		// Verify files are executable
+		$this->assertTrue( is_executable( $temp_dir . '/bootstrap/global-setup.sh' ) );
+		$this->assertTrue( is_executable( $temp_dir . '/bootstrap/setup.sh' ) );
+		$this->assertTrue( is_executable( $temp_dir . '/bootstrap/global-teardown.sh' ) );
+
+		// Check that results directory exists
+		$this->assertDirectoryExists( $temp_dir . '/results' );
+
 		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/playwright.config.js' ) );
 		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/manifest.json' ) );
 		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/bootstrap/setup.sh' ) );
