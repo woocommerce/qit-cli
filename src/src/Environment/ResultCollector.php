@@ -30,7 +30,8 @@ class ResultCollector {
         $ctrfRel = $test_results['ctrf-json'] ?? null;
         if ($ctrfRel) {
             $container_ctrf_path = $container_pkg_root . '/' . ltrim($ctrfRel, './');
-            $host_ctrf_path = $artifactsDir . '/ctrf/' . basename($slug) . '.json';
+            $safeId = str_replace(['/', ':'], '_', $slug);
+            $host_ctrf_path = $artifactsDir . '/ctrf/' . $safeId . '.json';
             
             // Ensure ctrf directory exists
             $ctrf_dir = dirname($host_ctrf_path);
@@ -107,7 +108,7 @@ class ResultCollector {
                 [],
                 null,
                 30,
-                'php',
+                null,
                 false
             );
         } catch (RuntimeException $e) {
@@ -156,6 +157,8 @@ class ResultCollector {
         }
         
         if (file_exists($ctrfDir . '/ctrf-report.json')) {
+            // Remove existing file to prevent rename() failures on reruns
+            @unlink($final_dir . '/ctrf-report.json');
             rename($ctrfDir . '/ctrf-report.json', $final_dir . '/ctrf-report.json');
         }
     }

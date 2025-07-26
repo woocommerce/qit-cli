@@ -13,6 +13,7 @@ use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
+use QIT_CLI\Environment\ResultCollector;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\PreCommand\Results\LocalTestResult;
 use QIT_CLI\WooExtensionsList;
@@ -27,6 +28,8 @@ use function QIT_CLI\is_windows;
 class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	protected E2EEnvironment $e2e_environment;
 	protected WooExtensionsList $woo_extensions_list;
+	protected PackagePhaseRunner $package_phase_runner;
+	protected ResultCollector $result_collector;
 
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -40,12 +43,14 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 	public function __construct(
 		E2EEnvironment $e2e_environment,
-		CustomE2ERunner $spec_custom_test_orchestrator,
-		WooExtensionsList $woo_extensions_list
+		WooExtensionsList $woo_extensions_list,
+		PackagePhaseRunner $package_phase_runner,
+		ResultCollector $result_collector
 	) {
-		$this->e2e_environment               = $e2e_environment;
-		$this->spec_custom_test_orchestrator = $spec_custom_test_orchestrator;
-		$this->woo_extensions_list           = $woo_extensions_list;
+		$this->e2e_environment      = $e2e_environment;
+		$this->woo_extensions_list  = $woo_extensions_list;
+		$this->package_phase_runner = $package_phase_runner;
+		$this->result_collector     = $result_collector;
 		parent::__construct();
 	}
 
@@ -57,8 +62,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	}
 
 	public function should_prepare_environment(): bool {
-		// Don't prepare if just checking config or in up_only mode
-		return ! $this->input->getOption( 'up_only' );
+		return true;
 	}
 
 	public function get_test_type(): string {
@@ -109,8 +113,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		     ->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional Playwright options' )
 
 			// Execution options
-			 ->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'Just start environment' )
-		     ->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
+			 ->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
 		     ->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
 		     ->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
 		     ->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
@@ -158,12 +161,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 		// Initialize environment
 		$this->e2e_environment->init( $env_info );
-		$this->e2e_environment->up( 'up' );
-
-		// Handle up_only mode
-		if ( $input->getOption( 'up_only' ) ) {
-			return $this->handleUpOnly( $env_info, $output );
-		}
+		$this->e2e_environment->up();
 
 		// Run tests with test packages
 		$io          = new SymfonyStyle( $input, $output );
@@ -259,75 +257,120 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	 * @return int The exit status.
 	 */
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
-		$docker          = App::make( Docker::class );
-		$phase_runner    = new PackagePhaseRunner( $docker, $io );
-		$total_executed  = 0;
-		$failed_packages = [];
+		try {
+			$total_executed  = 0;
+			$failed_packages = [];
 
-		// Get bootstrap package IDs to skip them (they only run globalSetup)
-		$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages );
+			// Set up artifacts directory
+			$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . uniqid();
 
-		$io->section( 'Running Test Packages' );
+			// Get bootstrap package IDs to skip them (they only run globalSetup)
+			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
 
-		$is_first_package = true;
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			// Skip packages that are in bootstrap_packages (they only run globalSetup)
-			if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
-				$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
-				continue;
-			}
+			$io->section( 'Running Test Packages' );
 
-			$package_path = $meta['path'] ?? '';
-			if ( empty( $package_path ) || ! is_dir( $package_path ) ) {
-				$io->error( "Invalid package path for {$pkg_id}: {$package_path}" );
-				$failed_packages[] = $pkg_id;
-				continue;
-			}
+			$is_first_package = true;
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				// Skip packages that are in bootstrap_packages (they only run globalSetup)
+				if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
+					$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
+					continue;
+				}
 
-			$io->writeln( "<info>Processing package: {$pkg_id}</info>" );
+				$package_path = $meta['path'] ?? '';
+				if ( empty( $package_path ) || ! is_dir( $package_path ) ) {
+					$io->error( "Invalid package path for {$pkg_id}: {$package_path}" );
+					$failed_packages[] = $pkg_id;
+					continue;
+				}
 
-			// Import database snapshot before each non-first package
-			if ( ! $is_first_package ) {
-				$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
+				$io->writeln( "<info>Processing package: {$pkg_id}</info>" );
+
+				// Import database snapshot before each non-first package
+				if ( ! $is_first_package ) {
+					$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
+					try {
+						App::make( Docker::class )->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
+						$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
+					} catch ( \Exception $e ) {
+						throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
+					}
+				}
+
 				try {
-					$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
-					$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
+					// Parse manifest for result collection
+					$manifest_path = $package_path . '/manifest.json';
+					$manifest      = null;
+					if ( file_exists( $manifest_path ) ) {
+						$parser   = App::make( \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser::class );
+						$manifest = $parser->parse( $manifest_path );
+					}
+
+					// Run full lifecycle for test packages: setup -> run -> teardown
+					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path );
+					if ( $manifest && $setup_count > 0 ) {
+						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
+					}
+
+					$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
+					if ( $manifest && $run_count > 0 ) {
+						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
+					}
+
+					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path );
+					if ( $manifest && $teardown_count > 0 ) {
+						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'teardown' );
+					}
+
+					$package_total  = $setup_count + $run_count + $teardown_count;
+					$total_executed += $package_total;
+
+					$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
+
+					// Mark that we've processed the first package
+					$is_first_package = false;
+
 				} catch ( \Exception $e ) {
-					throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
+					$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
+					$failed_packages[] = $pkg_id;
+					// Still mark as processed to maintain the sequence for subsequent packages
+					$is_first_package = false;
 				}
 			}
 
-			try {
-				// Run full lifecycle for test packages: setup -> run -> teardown
-				$setup_count    = $phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path );
-				$run_count      = $phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
-				$teardown_count = $phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path );
+			// Merge all collected artifacts
+			$this->result_collector->mergeAllArtifacts( $artifacts_dir, $io );
 
-				$package_total  = $setup_count + $run_count + $teardown_count;
-				$total_executed += $package_total;
+			// Output artifact locations
+			$final_ctrf_path   = $artifacts_dir . '/final/ctrf/ctrf-report.json';
+			$final_allure_path = $artifacts_dir . '/final/allure-html/index.html';
 
-				$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
-
-				// Mark that we've processed the first package
-				$is_first_package = false;
-
-			} catch ( \Exception $e ) {
-				$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
-				$failed_packages[] = $pkg_id;
-				// Still mark as processed to maintain the sequence for subsequent packages
-				$is_first_package = false;
+			if ( file_exists( $final_ctrf_path ) ) {
+				$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
 			}
-		}
+			if ( file_exists( $final_allure_path ) ) {
+				$io->writeln( "<info>Allure HTML → {$final_allure_path}</info>" );
+			}
 
-		// Summary
-		if ( empty( $failed_packages ) ) {
-			$io->success( "All test packages completed successfully. Total commands executed: {$total_executed}" );
+			// Summary
+			if ( empty( $failed_packages ) ) {
+				$io->success( "All test packages completed successfully. Total commands executed: {$total_executed}" );
 
-			return Command::SUCCESS;
-		} else {
-			$io->error( "Failed packages: " . implode( ', ', $failed_packages ) . ". Total commands executed: {$total_executed}" );
+				return Command::SUCCESS;
+			} else {
+				$io->error( "Failed packages: " . implode( ', ', $failed_packages ) . ". Total commands executed: {$total_executed}" );
 
-			return Command::FAILURE;
+				return Command::FAILURE;
+			}
+		} catch ( \RuntimeException $e ) {
+			// Handle infrastructure failures (code 3)
+			if ( $e->getCode() === 3 ) {
+				$io->error( $e->getMessage() );
+
+				return 3;
+			}
+			// Re-throw other RuntimeExceptions
+			throw $e;
 		}
 	}
 }

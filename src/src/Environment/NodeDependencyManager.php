@@ -11,7 +11,7 @@ class NodeDependencyManager {
     
     public function __construct() {
         // Use QIT config directory + node-deps subdirectory
-        $this->cache_dir = Config::get_qit_dir() . 'node-deps';
+        $this->cache_dir = rtrim(Config::get_qit_dir(), '/\\') . '/node-deps';
         if (!is_dir($this->cache_dir)) {
             mkdir($this->cache_dir, 0755, true);
         }
@@ -38,6 +38,10 @@ class NodeDependencyManager {
     
     private function arePackagesInstalled(array $packages): bool {
         $bin_dir = $this->cache_dir . '/node_modules/.bin';
+        
+        if (!is_dir($bin_dir)) {
+            return false;
+        }
         
         foreach ($packages as $package) {
             // Extract binary name from package name
@@ -81,6 +85,7 @@ class NodeDependencyManager {
     
     private function getBinaryName(string $package): string {
         // Map package names to their binary names
+        // Note: On Windows, these would be ctrf.cmd / allure.cmd (not urgent - we run in Docker/WSL)
         $binary_map = [
             'ctrf-cli' => 'ctrf',
             'allure-commandline' => 'allure',
