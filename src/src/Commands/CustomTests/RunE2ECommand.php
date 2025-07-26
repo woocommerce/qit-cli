@@ -420,15 +420,29 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
 					}
 
-					$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
+					// Run phase with CTRF collection even on test failures
+					try {
+						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
+					} catch ( \RuntimeException $e ) {
+						// Collect CTRF even if tests failed (exit code 1 from test failures)
+						if ( $manifest ) {
+							try {
+								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
+							} catch ( \Throwable $collectorErr ) {
+								$io->writeln( "<comment>CTRF collection after failure failed: {$collectorErr->getMessage()}</comment>" );
+							}
+						}
+						// Re-throw to maintain failure status
+						throw $e;
+					}
+
+					// Normal CTRF collection for successful runs
 					if ( $manifest && $run_count > 0 ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 					}
 
 					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path );
-					if ( $manifest && $teardown_count > 0 ) {
-						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'teardown' );
-					}
+					// Note: teardown phase is for cleanup only - no result collection needed
 
 					$package_total   = $setup_count + $run_count + $teardown_count;
 					$total_executed += $package_total;
