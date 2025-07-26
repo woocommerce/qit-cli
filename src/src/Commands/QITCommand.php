@@ -18,7 +18,7 @@ abstract class QITCommand extends Command {
 	protected ?object $precommand_result = null;
 
 	protected function configure(): void {
-		if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand ) {
+		if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand || $this instanceof LocalTestCommand ) {
 			$this->addOption(
 				'config',
 				'',
@@ -38,7 +38,7 @@ abstract class QITCommand extends Command {
 			);
 		}
 
-		if ( $this instanceof EnvironmentCommand ) {
+		if ( $this instanceof EnvironmentCommand || $this instanceof LocalTestCommand ) {
 			$this->addOption(
 				'environment',
 				'e',
@@ -54,7 +54,7 @@ abstract class QITCommand extends Command {
 		$this->output = $output;
 
 		try {
-			if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand ) {
+			if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand || $this instanceof LocalTestCommand ) {
 				// Use ./qit.json if it exists and --config is not set
 				$config_file = $input->getOption( 'config' );
 				if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {

@@ -25,8 +25,16 @@ class ExtractInputStage implements PipelineStage {
 		}
 
 		$context->set( 'sut_slug', $sut_slug )
-				->set( 'sut_type', $sut_type )
-				->set( 'config_file', $in->getOption( 'config' ) );
+				->set( 'sut_type', $sut_type );
+
+		// Only set config_file from input if not already set in context
+		// This preserves auto-detected qit.json files from QITCommand
+		$config_from_input = $in->getOption( 'config' );
+		if ( $config_from_input !== null ) {
+			$context->set( 'config_file', $config_from_input );
+		} elseif ( $context->get( 'config_file' ) === null ) {
+			$context->set( 'config_file', null );
+		}
 
 		return $context;
 	}

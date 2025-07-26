@@ -69,9 +69,7 @@ class PreCommandHandler {
 			$context = App::make( ResolveEnvironmentStage::class )->process( $context );
 			$context = App::make( ConsolidateWooCommerceStage::class )->process( $context );
 			$context = App::make( BuildLocalTestResultStage::class )->process( $context );
-		}
-
-		if ( $command instanceof EnvironmentCommand ) {
+		} elseif ( $command instanceof EnvironmentCommand ) {
 			$context = App::make( ResolveEnvironmentStage::class )->process( $context );
 			$context = App::make( ConsolidateWooCommerceStage::class )->process( $context );
 			$context = App::make( BuildEnvironmentResultStage::class )->process( $context );
