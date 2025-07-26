@@ -9,10 +9,10 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
-use QIT_CLI\LocalTests\E2E\CustomE2ERunner;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\PreCommand\Results\LocalTestResult;
 use QIT_CLI\WooExtensionsList;
@@ -26,7 +26,6 @@ use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	protected E2EEnvironment $e2e_environment;
-	protected CustomE2ERunner $spec_custom_test_orchestrator;
 	protected WooExtensionsList $woo_extensions_list;
 
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
@@ -74,49 +73,49 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		parent::configure();
 
 		$this->setDescription( 'Run E2E tests' )
-			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'Extension slug or ID' )
-			->addArgument( 'test', InputArgument::OPTIONAL, 'Test tags or directory', 'default' )
-			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
+		     ->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'Extension slug or ID' )
+		     ->addArgument( 'test', InputArgument::OPTIONAL, 'Test tags or directory', 'default' )
+		     ->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
 
 			// SUT options
-			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Source of the extension' )
+			 ->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Source of the extension' )
 
 			// Environment overrides
-			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
-			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
-			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
-			->addOption(
-				'test-package',
-				null,
-				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-				'Test packages to include (multiple values allowed)',
-				[]
-			)
-			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
-			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )
-			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
-			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
-			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
-			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
-			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling', 'no_tunnel' )
-			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
-			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment files', [] )
+			 ->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
+		     ->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
+		     ->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
+		     ->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+		     ->addOption(
+			     'test-package',
+			     null,
+			     InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+			     'Test packages to include (multiple values allowed)',
+			     []
+		     )
+		     ->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
+		     ->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )
+		     ->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+		     ->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
+		     ->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
+		     ->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
+		     ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling', 'no_tunnel' )
+		     ->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
+		     ->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment files', [] )
 
 			// Test options
-			->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'Playwright test tag', '' )
-			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright sharding' )
-			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots' )
-			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional Playwright options' )
+			 ->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'Playwright test tag', '' )
+		     ->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright sharding' )
+		     ->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots' )
+		     ->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional Playwright options' )
 
 			// Execution options
-			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'Just start environment' )
-			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
-			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
-			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
-			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
-			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false );
+			 ->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'Just start environment' )
+		     ->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
+		     ->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
+		     ->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
+		     ->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
+		     ->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
+		     ->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -243,7 +242,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	 * Set up global variables needed for the test run.
 	 *
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
-	 * @param InputInterface                                   $input The input interface.
+	 * @param InputInterface $input The input interface.
 	 */
 	protected function setupGlobals( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, InputInterface $input ): void {
 		// Set up the global variable for environment shutdown
@@ -254,13 +253,15 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	 * Run test packages using manifest-based approach with PackagePhaseRunner.
 	 *
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
-	 * @param array<string,mixed>                              $test_packages The test packages to run.
-	 * @param SymfonyStyle                                     $io The IO interface.
+	 * @param array<string,mixed> $test_packages The test packages to run.
+	 * @param SymfonyStyle $io The IO interface.
+	 *
 	 * @return int The exit status.
 	 */
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
-		$phase_runner = new PackagePhaseRunner( $this->e2e_environment->get_docker(), $io );
-		$total_executed = 0;
+		$docker          = App::make( Docker::class );
+		$phase_runner    = new PackagePhaseRunner( $docker, $io );
+		$total_executed  = 0;
 		$failed_packages = [];
 
 		// Get bootstrap package IDs to skip them (they only run globalSetup)
@@ -289,7 +290,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			if ( ! $is_first_package ) {
 				$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
 				try {
-					$this->e2e_environment->get_docker()->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
+					$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql' ] );
 					$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
 				} catch ( \Exception $e ) {
 					throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
@@ -298,11 +299,11 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 			try {
 				// Run full lifecycle for test packages: setup -> run -> teardown
-				$setup_count = $phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path );
-				$run_count = $phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
+				$setup_count    = $phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path );
+				$run_count      = $phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
 				$teardown_count = $phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path );
 
-				$package_total = $setup_count + $run_count + $teardown_count;
+				$package_total  = $setup_count + $run_count + $teardown_count;
 				$total_executed += $package_total;
 
 				$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
@@ -321,9 +322,11 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		// Summary
 		if ( empty( $failed_packages ) ) {
 			$io->success( "All test packages completed successfully. Total commands executed: {$total_executed}" );
+
 			return Command::SUCCESS;
 		} else {
 			$io->error( "Failed packages: " . implode( ', ', $failed_packages ) . ". Total commands executed: {$total_executed}" );
+
 			return Command::FAILURE;
 		}
 	}
