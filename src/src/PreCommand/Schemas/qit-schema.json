@@ -288,9 +288,9 @@
                 ]
               }
             },
-            "setup_only": {
+            "bootstrap_packages": {
               "type": "array",
-              "description": "Test packages to run only during setup",
+              "description": "Test packages to run only during bootstrap",
               "items": {
                 "type": "string"
               }

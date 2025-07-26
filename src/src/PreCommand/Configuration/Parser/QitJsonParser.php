@@ -81,9 +81,9 @@ class QitJsonParser extends BaseJsonParser {
 			$this->load_all_test_packages( $config['test_types'] );
 		}
 
-		// Process setup_only packages in environments
+		// Process bootstrap_packages in environments
 		if ( isset( $config['environments'] ) ) {
-			$this->load_setup_packages( $config['environments'] );
+			$this->load_bootstrap_packages( $config['environments'] );
 		}
 
 		// Validate cross-references
@@ -119,14 +119,14 @@ class QitJsonParser extends BaseJsonParser {
 	}
 
 	/**
-	 * Load setup-only packages from environments
+	 * Load bootstrap packages from environments
 	 *
 	 * @param array<string, mixed> $environments
 	 */
-	private function load_setup_packages( array $environments ): void {
+	private function load_bootstrap_packages( array $environments ): void {
 		foreach ( $environments as $env_name => $env ) {
-			if ( isset( $env['setup_only'] ) ) {
-				foreach ( $env['setup_only'] as $package_ref ) {
+			if ( isset( $env['bootstrap_packages'] ) ) {
+				foreach ( $env['bootstrap_packages'] as $package_ref ) {
 					$this->get_test_package( $package_ref );
 				}
 			}
@@ -219,17 +219,17 @@ class QitJsonParser extends BaseJsonParser {
 	}
 
 	/**
-	 * Get setup-only packages for an environment
+	 * Get bootstrap packages for an environment
 	 *
 	 * @return array<string, array<string, mixed>>
 	 */
-	public function get_setup_packages_for_environment( string $environment ): array {
-		if ( ! isset( $this->parsed_config['environments'][ $environment ]['setup_only'] ) ) {
+	public function get_bootstrap_packages_for_environment( string $environment ): array {
+		if ( ! isset( $this->parsed_config['environments'][ $environment ]['bootstrap_packages'] ) ) {
 			return [];
 		}
 
 		$packages   = [];
-		$references = $this->parsed_config['environments'][ $environment ]['setup_only'];
+		$references = $this->parsed_config['environments'][ $environment ]['bootstrap_packages'];
 
 		foreach ( $references as $reference ) {
 			$packages[ $reference ] = $this->get_test_package( $reference );
@@ -368,11 +368,11 @@ class QitJsonParser extends BaseJsonParser {
 			}
 		}
 
-		// Mark setup_only paths
+		// Mark bootstrap_packages paths
 		if ( isset( $config['environments'] ) ) {
 			foreach ( $config['environments'] as $env_name => $env ) {
-				if ( isset( $env['setup_only'] ) ) {
-					foreach ( $env['setup_only'] as $package ) {
+				if ( isset( $env['bootstrap_packages'] ) ) {
+					foreach ( $env['bootstrap_packages'] as $package ) {
 						if ( $this->is_local_package_reference( $package ) ) {
 							$this->path_contexts[ $package ] = $effective_context;
 							$this->debug_log( "Marked path context: '$package' => '$effective_context'" );
@@ -698,20 +698,20 @@ class QitJsonParser extends BaseJsonParser {
 			}
 		}
 
-		// Validate setup_only package references in environments
+		// Validate bootstrap_packages references in environments
 		if ( isset( $config['environments'] ) ) {
-			$this->debug_log( 'Validating environment setup_only packages' );
+			$this->debug_log( 'Validating environment bootstrap_packages' );
 			foreach ( $config['environments'] as $env_name => $env ) {
-				if ( isset( $env['setup_only'] ) ) {
-					foreach ( $env['setup_only'] as $package_ref ) {
-						$this->debug_log( "Checking setup_only package: $package_ref" );
+				if ( isset( $env['bootstrap_packages'] ) ) {
+					foreach ( $env['bootstrap_packages'] as $package_ref ) {
+						$this->debug_log( "Checking bootstrap_packages package: $package_ref" );
 						if ( $this->is_local_package_reference( $package_ref ) ) {
 							$context = $this->get_path_context( $package_ref );
 							$path    = $this->resolve_path_with_context( $package_ref, $context );
-							$this->debug_log( "Setup package resolved path: $path (context: $context)" );
+							$this->debug_log( "Bootstrap package resolved path: $path (context: $context)" );
 							if ( ! file_exists( $path ) ) {
 								throw new \RuntimeException(
-									"Setup package file not found: $package_ref in environment '$env_name'"
+									"Bootstrap package file not found: $package_ref in environment '$env_name'"
 								);
 							}
 						}

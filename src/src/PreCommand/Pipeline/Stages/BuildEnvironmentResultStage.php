@@ -12,7 +12,7 @@ class BuildEnvironmentResultStage implements PipelineStage {
 		// env_result already holds an EnvironmentResult from resolver
 		$result = $context->get( 'env_result' );
 		if ( $result instanceof EnvironmentResult ) {
-			$result->env_info->setup_only_packages = $context->get( 'setup_only_packages' ) ?? [];
+			$result->env_info->bootstrap_packages = $context->get( 'bootstrap_packages' ) ?? [];
 			$context->set_result( $result );
 		}
 		return $context;

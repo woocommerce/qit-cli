@@ -109,19 +109,19 @@ class E2EEnvironment extends Environment {
 		] );
 
 		/* --------------------------------------------------------------
-		 * Execute setup‑only test‑packages
+		 * Execute bootstrap test‑packages
 		 * ------------------------------------------------------------*/
-		if ( ! empty( $this->env_info->setup_only_packages ) ) {
+		if ( ! empty( $this->env_info->bootstrap_packages ) ) {
 			$runner        = new \QIT_CLI\Environment\PackagePhaseRunner(
 				$this->docker,
 				$this->output
 			);
 			$total_cmds    = 0;
 
-			$this->output->writeln( "\n<comment>🔧  Test‑package setup phase</comment>" );
+			$this->output->writeln( "\n<comment>🔧  Test‑package bootstrap phase</comment>" );
 			$this->output->writeln( '<comment>----------------------------</comment>' );
 
-			foreach ( $this->env_info->setup_only_packages as $pkg_id => $info ) {
+			foreach ( $this->env_info->bootstrap_packages as $pkg_id => $info ) {
 				$total_cmds += $runner->run_setup(
 					$this->env_info,
 					$pkg_id,

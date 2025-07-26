@@ -495,7 +495,7 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 	}
 
-	public function test_environment_setup_only(): void {
+	public function test_environment_bootstrap_packages(): void {
 		$config_file = $this->temp_dir . '/qit.json';
 		$config      = <<<'JSON'
 {
@@ -509,7 +509,7 @@ JSON;
     },
     "environments": {
         "default": {
-            "setup_only": ["woocommerce/minimal:stable"]
+            "bootstrap_packages": ["woocommerce/minimal:stable"]
         }
     }
 }
@@ -519,13 +519,13 @@ JSON;
 		$parser        = new QitJsonParser();
 		$parsed_config = $parser->parse( $config_file );
 
-		$this->assertArrayHasKey( 'setup_only', $parsed_config['environments']['default'] );
-		$this->assertEquals( [ 'woocommerce/minimal:stable' ], $parsed_config['environments']['default']['setup_only'] );
+		$this->assertArrayHasKey( 'bootstrap_packages', $parsed_config['environments']['default'] );
+		$this->assertEquals( [ 'woocommerce/minimal:stable' ], $parsed_config['environments']['default']['bootstrap_packages'] );
 
-		// Test lazy loading of setup packages
-		$setup_packages = $parser->get_setup_packages_for_environment( 'default' );
-		$this->assertArrayHasKey( 'woocommerce/minimal:stable', $setup_packages );
-		$this->assertTrue( $setup_packages['woocommerce/minimal:stable']['remote'] );
+		// Test lazy loading of bootstrap packages
+		$bootstrap_packages = $parser->get_bootstrap_packages_for_environment( 'default' );
+		$this->assertArrayHasKey( 'woocommerce/minimal:stable', $bootstrap_packages );
+		$this->assertTrue( $bootstrap_packages['woocommerce/minimal:stable']['remote'] );
 
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 	}

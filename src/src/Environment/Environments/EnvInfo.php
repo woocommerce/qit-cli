@@ -81,7 +81,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	public array $env = [];
 
 	/** @var array<string,array{path:string}>  (package‑id => ['path' => dir]) */
-	public array $setup_only_packages = [];
+	public array $bootstrap_packages = [];
 
 	/**
 	 * @var bool Whether to use tunnels to expose the environment.

@@ -34,7 +34,7 @@ class QitJsonParserPathResolutionTest extends TestCase {
 			'environments' => [
 				'default' => [
 					'php_version' => '8.0',
-					'setup_only'  => [ './shared/setup.json' ]
+					'bootstrap_packages'  => [ './shared/setup.json' ]
 				]
 			]
 		];
@@ -85,7 +85,7 @@ class QitJsonParserPathResolutionTest extends TestCase {
 
 		// Verify paths remain relative
 		$this->assertEquals( './src', $config['sut']['source']['path'] );
-		$this->assertEquals( [ './shared/setup.json' ], $config['environments']['default']['setup_only'] );
+		$this->assertEquals( [ './shared/setup.json' ], $config['environments']['default']['bootstrap_packages'] );
 		$this->assertEquals( [ './tests/e2e.json' ], $config['test_types']['e2e']['default']['test_packages'] );
 
 		// Verify that validation passed (files were found using correct resolution)
@@ -169,20 +169,20 @@ class QitJsonParserPathResolutionTest extends TestCase {
 	}
 
 	/**
-	 * Test that setup_only packages are validated with correct path resolution
+	 * Test that bootstrap_packages are validated with correct path resolution
 	 */
-	public function test_setup_only_path_resolution_with_extends(): void {
+	public function test_bootstrap_packages_path_resolution_with_extends(): void {
 		// Create directory structure
 		mkdir( $this->temp_dir . '/parent', 0777, true );
 		mkdir( $this->temp_dir . '/parent/packages', 0777, true );
 		mkdir( $this->temp_dir . '/child', 0777, true );
 
-		// Create parent config with setup_only
+		// Create parent config with bootstrap_packages
 		$parent_config = [
 			'environments' => [
 				'base' => [
 					'php_version' => '8.1',
-					'setup_only'  => [ './packages/db-setup.json' ]
+					'bootstrap_packages'  => [ './packages/db-setup.json' ]
 				]
 			]
 		];
@@ -217,7 +217,7 @@ class QitJsonParserPathResolutionTest extends TestCase {
 			'environments' => [
 				'dev' => [
 					'extends'    => 'base',
-					'setup_only' => [ './local-setup.json' ] // Add local setup in addition
+					'bootstrap_packages' => [ './local-setup.json' ] // Add local bootstrap in addition
 				]
 			]
 		];
@@ -235,8 +235,8 @@ class QitJsonParserPathResolutionTest extends TestCase {
 		$config = $parser->parse( $this->temp_dir . '/child/qit.json' );
 
 		// Verify paths remain relative
-		$this->assertEquals( [ './packages/db-setup.json' ], $config['environments']['base']['setup_only'] );
-		$this->assertEquals( [ './local-setup.json' ], $config['environments']['dev']['setup_only'] );
+		$this->assertEquals( [ './packages/db-setup.json' ], $config['environments']['base']['bootstrap_packages'] );
+		$this->assertEquals( [ './local-setup.json' ], $config['environments']['dev']['bootstrap_packages'] );
 
 		// Load setup packages to verify they resolve correctly
 		$base_setup_packages = $parser->get_setup_packages_for_environment( 'base' );

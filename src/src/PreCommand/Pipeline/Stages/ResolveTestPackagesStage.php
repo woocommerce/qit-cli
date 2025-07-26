@@ -56,10 +56,10 @@ class ResolveTestPackagesStage implements PipelineStage {
 			 * LOCAL test commands (run:e2e, etc.)
 			 * -------------------------------------------------------*/
 			$env_name = $cmd->get_environment_name();
-			if ( isset( $resolved->environments[ $env_name ]['setup_only'] ) ) {
+			if ( isset( $resolved->environments[ $env_name ]['bootstrap_packages'] ) ) {
 				$needed_packages = array_merge(
 					$needed_packages,
-					$resolved->environments[ $env_name ]['setup_only']
+					$resolved->environments[ $env_name ]['bootstrap_packages']
 				);
 			}
 
@@ -75,10 +75,10 @@ class ResolveTestPackagesStage implements PipelineStage {
 			 * -------------------------------------------------------*/
 			$env_name = $cmd->get_environment_name();     // exists on EnvironmentCommand
 
-			if ( isset( $resolved->environments[ $env_name ]['setup_only'] ) ) {
+			if ( isset( $resolved->environments[ $env_name ]['bootstrap_packages'] ) ) {
 				$needed_packages = array_merge(
 					$needed_packages,
-					$resolved->environments[ $env_name ]['setup_only']
+					$resolved->environments[ $env_name ]['bootstrap_packages']
 				);
 			}
 		} elseif ( $cmd instanceof ConfigurableTestCommand ) {
@@ -178,8 +178,8 @@ class ResolveTestPackagesStage implements PipelineStage {
 		 */
 		$context->set_test_packages( $resolved_paths );
 
-		// NEW: expose "setup‑only" packages for the environment result
-		$context->set( 'setup_only_packages', $resolved_paths );
+		// NEW: expose "bootstrap" packages for the environment result
+		$context->set( 'bootstrap_packages', $resolved_paths );
 
 		return $context;
 	}
