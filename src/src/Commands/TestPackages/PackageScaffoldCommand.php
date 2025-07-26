@@ -203,11 +203,11 @@ BASH;
 			'test_type' => $test_type,
 			'test'      => [
 				'phases'  => [
-					'beforeAllPlugins' => [],
+					'globalSetup' => [],
 					'setup'            => [ './bootstrap/setup.sh' ],
 					'run'              => [ 'npx playwright test' ],
 					'teardown'         => [],
-					'afterAllPlugins'  => [],
+					'globalTeardown'  => [],
 				],
 				'results' => [
 					'ctrf-json'  => './results/ctrf.json',

@@ -22,7 +22,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	/** @var array<string,mixed> */
 	private array $requires;
 
-	/** @var array{beforeAllPlugins?:array<string,mixed>,setup?:array<string,mixed>,run:array<string,mixed>,teardown?:array<string,mixed>,afterAllPlugins?:array<string,mixed>} */
+	/** @var array{globalSetup?:array<string,mixed>,setup?:array<string,mixed>,run:array<string,mixed>,teardown?:array<string,mixed>,globalTeardown?:array<string,mixed>} */
 	private array $phases;
 
 	/** @var array<string,string> */
@@ -111,7 +111,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	}
 
 	/**
-	 * @return array{beforeAllPlugins?:array<string,mixed>,setup?:array<string,mixed>,run:array<string,mixed>,teardown?:array<string,mixed>,afterAllPlugins?:array<string,mixed>}
+	 * @return array{globalSetup?:array<string,mixed>,setup?:array<string,mixed>,run:array<string,mixed>,teardown?:array<string,mixed>,globalTeardown?:array<string,mixed>}
 	 */
 	public function getPhases(): array {
 		return $this->phases;

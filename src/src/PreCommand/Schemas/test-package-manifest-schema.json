@@ -115,11 +115,11 @@
           "description": "Execution phases in order. Only ✧run✧ is mandatory.",
           "additionalProperties": false,
           "properties": {
-            "beforeAllPlugins": { "$ref": "#/definitions/lifecycleCommands" },
+            "globalSetup": { "$ref": "#/definitions/lifecycleCommands" },
             "setup":            { "$ref": "#/definitions/lifecycleCommands" },
             "run":              { "$ref": "#/definitions/lifecycleCommands" },
             "teardown":         { "$ref": "#/definitions/lifecycleCommands" },
-            "afterAllPlugins":  { "$ref": "#/definitions/lifecycleCommands" }
+            "globalTeardown":  { "$ref": "#/definitions/lifecycleCommands" }
           },
           "required": ["run"]
         },
