@@ -269,6 +269,17 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 			$io->section( 'Running Test Packages' );
 
+			// Run globalSetup phase for all packages
+			$io->writeln( '<info>Running globalSetup phase for all packages...</info>' );
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'] );
+			}
+
+			// Export baseline database snapshot after all globalSetup scripts ran
+			$io->writeln( '<info>Exporting baseline database snapshot...</info>' );
+			$docker = App::make( Docker::class );
+			$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql' ] );
+
 			$is_first_package = true;
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				// Skip packages that are in bootstrap_packages (they only run globalSetup)
@@ -341,6 +352,9 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			// Merge all collected artifacts
 			$this->result_collector->mergeAllArtifacts( $artifacts_dir, $io );
 
+			// Store artifacts directory in env_info for later use by Manager
+			$env_info->artifacts_dir = $artifacts_dir;
+
 			// Output artifact locations
 			$final_ctrf_path   = $artifacts_dir . '/final/ctrf/ctrf-report.json';
 			$final_allure_path = $artifacts_dir . '/final/allure-html/index.html';
@@ -371,6 +385,12 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			}
 			// Re-throw other RuntimeExceptions
 			throw $e;
+		} finally {
+			// Run globalTeardown phase for all packages
+			$io->writeln( '<info>Running globalTeardown phase for all packages...</info>' );
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'] );
+			}
 		}
 	}
 }
