@@ -124,7 +124,11 @@ class PackagePhaseRunner {
 			$venue = $this->determine_execution_venue( $cmd );
 			
 			if ( $venue === 'host' ) {
-				$this->runOnHost( $cmd, $package_path, [] );
+				// Pass QIT_SITE_URL environment variable for host commands (e.g., Playwright tests)
+				$env_vars = [
+					'QIT_SITE_URL' => $env_info->site_url,
+				];
+				$this->runOnHost( $cmd, $package_path, $env_vars );
 			} else {
 				$this->runInDocker( $cmd, $env_info, $package_id, $workdir, [] );
 			}
