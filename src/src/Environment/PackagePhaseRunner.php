@@ -134,19 +134,4 @@ class PackagePhaseRunner {
 
 		return $executed;
 	}
-
-	/**
-	 * Executes the *setup* phase of one test‑package.
-	 * (Backward compatibility method)
-	 *
-	 * @return int  Number of commands that were actually executed.
-	 * @throws \RuntimeException on the first failing command.
-	 */
-	public function run_setup(
-		EnvInfo $env_info,
-		string $package_id,
-		string $package_path
-	): int {
-		return $this->run_phase( $env_info, 'setup', $package_id, $package_path );
-	}
 }
