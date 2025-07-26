@@ -52,7 +52,8 @@ class ResolveTestPackagesStage implements PipelineStage {
 		 * ------------------------------------------------------------------
 		 */
 		if ( $cmd instanceof LocalTestCommand ) {
-			/* ---------------------------------------------------------
+			/*
+			---------------------------------------------------------
 			 * LOCAL test commands (run:e2e, etc.)
 			 * -------------------------------------------------------*/
 			$env_name = $cmd->get_environment_name();
@@ -66,11 +67,12 @@ class ResolveTestPackagesStage implements PipelineStage {
 			// 2‑b) Packages declared in the active test profile (if any)
 			if ( $cmd->get_test_type() && $cmd->get_test_profile() ) {
 				$pkg             = $resolved->test_types[ $cmd->get_test_type() ]
-				                   [ $cmd->get_test_profile() ]['test_packages'] ?? [];
+									[ $cmd->get_test_profile() ]['test_packages'] ?? [];
 				$needed_packages = array_merge( $needed_packages, $pkg );
 			}
 		} elseif ( $cmd instanceof EnvironmentCommand ) {
-			/* ---------------------------------------------------------
+			/*
+			---------------------------------------------------------
 			 * Pure env commands (env:up, env:enter, …)
 			 * -------------------------------------------------------*/
 			$env_name = $cmd->get_environment_name();     // exists on EnvironmentCommand
@@ -84,7 +86,7 @@ class ResolveTestPackagesStage implements PipelineStage {
 		} elseif ( $cmd instanceof ConfigurableTestCommand ) {
 			// Remote runs only need the active profile's packages
 			$pkg             = $resolved->test_types[ $cmd->get_test_type() ]
-			                   [ $cmd->get_test_profile() ]['test_packages'] ?? [];
+								[ $cmd->get_test_profile() ]['test_packages'] ?? [];
 			$needed_packages = array_merge( $needed_packages, $pkg );
 		}
 
@@ -108,9 +110,9 @@ class ResolveTestPackagesStage implements PipelineStage {
 		$local_packages  = [];
 		$remote_packages = [];
 
-		foreach ($needed_packages as $id) {
-			$meta = $resolved->test_package_metadata[$id] ?? null;
-			if ($meta && !empty($meta['local'])) {
+		foreach ( $needed_packages as $id ) {
+			$meta = $resolved->test_package_metadata[ $id ] ?? null;
+			if ( $meta && ! empty( $meta['local'] ) ) {
 				$local_packages[] = $id;
 			} else {
 				$remote_packages[] = $id;
@@ -119,51 +121,53 @@ class ResolveTestPackagesStage implements PipelineStage {
 
 		$resolved_paths = [];
 
-		/*--------------------------------------------------------------
+		/*
+		--------------------------------------------------------------
 		 * 5‑a  Handle LOCAL packages
 		 *-------------------------------------------------------------*/
-		foreach ($local_packages as $identifier) {
-			$configDir = dirname($context->get('config_file') ?? getcwd());
-			$path      = $this->resolve_local_package_path($identifier, $configDir);
+		foreach ( $local_packages as $identifier ) {
+			$configDir = dirname( $context->get( 'config_file' ) ?? getcwd() );
+			$path      = $this->resolve_local_package_path( $identifier, $configDir );
 
-			$resolved_paths[$identifier] = [
+			$resolved_paths[ $identifier ] = [
 				'path'     => $path,
 				'type'     => 'local',
 				'resolved' => true,
 			];
 		}
 
-		/*--------------------------------------------------------------
+		/*
+		--------------------------------------------------------------
 		 * 5‑b  Handle REMOTE packages
 		 *-------------------------------------------------------------*/
-		if ($remote_packages) {
-			$verify        = $input->hasOption('verify')
-				? $input->getOption('verify') !== false
+		if ( $remote_packages ) {
+			$verify        = $input->hasOption( 'verify' )
+				? $input->getOption( 'verify' ) !== false
 				: true;
-			$download_urls = $this->downloader->fetch_download_urls($remote_packages);
+			$download_urls = $this->downloader->fetch_download_urls( $remote_packages );
 
-			foreach ($remote_packages as $identifier) {
-				if (!isset($download_urls[$identifier])) {
-					throw new RuntimeException("Package not found or access denied: {$identifier}");
+			foreach ( $remote_packages as $identifier ) {
+				if ( ! isset( $download_urls[ $identifier ] ) ) {
+					throw new RuntimeException( "Package not found or access denied: {$identifier}" );
 				}
 
-				$url_info = $download_urls[$identifier];
-				$zip      = sys_get_temp_dir() . '/qit-' . $this->downloader->generate_filename($identifier);
-				$extract  = sys_get_temp_dir() . '/qit-' . str_replace(['/', ':'], '-', $identifier);
+				$url_info = $download_urls[ $identifier ];
+				$zip      = sys_get_temp_dir() . '/qit-' . $this->downloader->generate_filename( $identifier );
+				$extract  = sys_get_temp_dir() . '/qit-' . str_replace( [ '/', ':' ], '-', $identifier );
 
-				$this->downloader->download_file($url_info['url'], $zip);
+				$this->downloader->download_file( $url_info['url'], $zip );
 
-				if ($verify && !empty($url_info['checksum'])) {
-					if (!$this->downloader->verify_checksum($zip, $url_info['checksum'])) {
-						unlink($zip);
-						throw new RuntimeException("Checksum verification failed for: {$identifier}");
+				if ( $verify && ! empty( $url_info['checksum'] ) ) {
+					if ( ! $this->downloader->verify_checksum( $zip, $url_info['checksum'] ) ) {
+						unlink( $zip );
+						throw new RuntimeException( "Checksum verification failed for: {$identifier}" );
 					}
 				}
 
-				$this->downloader->extract_package($zip, $extract, true);
-				unlink($zip);
+				$this->downloader->extract_package( $zip, $extract, true );
+				unlink( $zip );
 
-				$resolved_paths[$identifier] = [
+				$resolved_paths[ $identifier ] = [
 					'path'     => $extract,
 					'type'     => 'remote',
 					'resolved' => true,
@@ -217,7 +221,8 @@ class ResolveTestPackagesStage implements PipelineStage {
 		return $out;
 	}
 
-	/* ---------------------------------------------------------------
+	/*
+	---------------------------------------------------------------
 	 * Resolve local path helper
 	 * -------------------------------------------------------------*/
 	/** Resolve a local test‑package reference to its directory */
@@ -226,24 +231,24 @@ class ResolveTestPackagesStage implements PipelineStage {
 		string $configDir // ← pass dirname($context->get('config_file'))
 	): string {
 		// Absolute or relative → make absolute first
-		$abs = str_starts_with($identifier, '/')
+		$abs = str_starts_with( $identifier, '/' )
 			? $identifier
-			: $configDir . '/' . ltrim($identifier, '/');
+			: $configDir . '/' . ltrim( $identifier, '/' );
 
 		// If a manifest file is given → drop filename
-		if (substr($abs, -13) === '/manifest.json') {
-			$abs = dirname($abs);
+		if ( substr( $abs, -13 ) === '/manifest.json' ) {
+			$abs = dirname( $abs );
 		}
 
 		// Resolve symlinks & "../" parts (don't care if it returns false)
-		$real = realpath($abs) ?: $abs;
+		$real = realpath( $abs ) ?: $abs;
 
 		// Final sanity check
-		if (!is_dir($real)) {
-			throw new RuntimeException("Local package directory not found: {$identifier}");
+		if ( ! is_dir( $real ) ) {
+			throw new RuntimeException( "Local package directory not found: {$identifier}" );
 		}
-		if (!file_exists($real . '/manifest.json')) {
-			throw new RuntimeException("No manifest.json found in local package: {$real}");
+		if ( ! file_exists( $real . '/manifest.json' ) ) {
+			throw new RuntimeException( "No manifest.json found in local package: {$real}" );
 		}
 		return $real;
 	}

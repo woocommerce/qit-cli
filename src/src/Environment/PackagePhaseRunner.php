@@ -16,9 +16,9 @@ use Symfony\Component\Process\Process;
  * – Aborts by throwing \RuntimeException on the first non‑zero exit status.
  */
 class PackagePhaseRunner {
-	private Docker                     $docker;
-	private OutputInterface            $output;
-	private TestPackageManifestParser  $parser;
+	private Docker $docker;
+	private OutputInterface $output;
+	private TestPackageManifestParser $parser;
 
 	public function __construct( Docker $docker, OutputInterface $output ) {
 		$this->docker = $docker;
@@ -42,12 +42,12 @@ class PackagePhaseRunner {
 	 *
 	 * @param string $cmd Command to execute
 	 * @param string $package_path Working directory for the command
-	 * @param array $env_vars Environment variables
+	 * @param array  $env_vars Environment variables
 	 * @throws \RuntimeException on command failure
 	 */
 	private function runOnHost( string $cmd, string $package_path, array $env_vars = [] ): void {
 		$process = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, 300 );
-		
+
 		$process->run( function ( $type, $buffer ) {
 			if ( ! $this->output->isQuiet() ) {
 				$this->output->write( $buffer );
@@ -55,8 +55,8 @@ class PackagePhaseRunner {
 		} );
 
 		if ( ! $process->isSuccessful() ) {
-			throw new \RuntimeException( 
-				"Host command failed: {$cmd}\nExit code: {$process->getExitCode()}\nOutput: {$process->getOutput()}\nError: {$process->getErrorOutput()}" 
+			throw new \RuntimeException(
+				"Host command failed: {$cmd}\nExit code: {$process->getExitCode()}\nOutput: {$process->getOutput()}\nError: {$process->getErrorOutput()}"
 			);
 		}
 	}
@@ -64,11 +64,11 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a command inside Docker container
 	 *
-	 * @param string $cmd Command to execute
+	 * @param string  $cmd Command to execute
 	 * @param EnvInfo $env_info Environment information
-	 * @param string $package_id Package identifier
-	 * @param string $workdir Working directory inside container
-	 * @param array $env_vars Environment variables
+	 * @param string  $package_id Package identifier
+	 * @param string  $workdir Working directory inside container
+	 * @param array   $env_vars Environment variables
 	 * @throws \RuntimeException on command failure
 	 */
 	private function runInDocker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [] ): void {
@@ -89,9 +89,9 @@ class PackagePhaseRunner {
 	 * Execute a specific phase for a test package
 	 *
 	 * @param EnvInfo $env_info Environment information
-	 * @param string $phase Phase name (setup, run, teardown, globalSetup, globalTeardown)
-	 * @param string $package_id Package identifier
-	 * @param string $package_path Package directory path
+	 * @param string  $phase Phase name (setup, run, teardown, globalSetup, globalTeardown)
+	 * @param string  $package_id Package identifier
+	 * @param string  $package_path Package directory path
 	 * @return int Number of commands that were actually executed
 	 * @throws \RuntimeException on command failure
 	 */
@@ -122,7 +122,7 @@ class PackagePhaseRunner {
 		$executed = 0;
 		foreach ( $commands as $cmd ) {
 			$venue = $this->determine_execution_venue( $cmd );
-			
+
 			if ( $venue === 'host' ) {
 				// Pass QIT_SITE_URL environment variable for host commands (e.g., Playwright tests)
 				$env_vars = [
@@ -132,8 +132,8 @@ class PackagePhaseRunner {
 			} else {
 				$this->runInDocker( $cmd, $env_info, $package_id, $workdir, [] );
 			}
-			
-			$executed++;
+
+			++$executed;
 		}
 
 		return $executed;

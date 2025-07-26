@@ -215,7 +215,7 @@ abstract class Environment {
 				if ( empty( $info['path'] ) || ! is_dir( $info['path'] ) ) {
 					continue;
 				}
-				$container = '/qit/packages/' . basename( $pkg_id );
+				$container                                    = '/qit/packages/' . basename( $pkg_id );
 				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
 			}
 		}
@@ -226,7 +226,7 @@ abstract class Environment {
 				if ( empty( $info['path'] ) || ! is_dir( $info['path'] ) ) {
 					continue;
 				}
-				$container = '/qit/packages/' . basename( $pkg_id );
+				$container                                    = '/qit/packages/' . basename( $pkg_id );
 				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
 			}
 		}
@@ -366,10 +366,10 @@ abstract class Environment {
 		if ( ! empty( $env_info->bootstrap_packages ) ) {
 			$docker = App::make( Docker::class );
 			$runner = new \QIT_CLI\Environment\PackagePhaseRunner( $docker, $output );
-			
+
 			$output->writeln( "\n<comment>🧹  Test‑package globalTeardown phase</comment>" );
 			$output->writeln( '<comment>-----------------------------------</comment>' );
-			
+
 			foreach ( $env_info->bootstrap_packages as $pkg_id => $info ) {
 				try {
 					$teardown_cmds = $runner->run_phase(
@@ -378,13 +378,13 @@ abstract class Environment {
 						$pkg_id,
 						$info['path']
 					);
-					
+
 					if ( $teardown_cmds > 0 ) {
 						$output->writeln( "<info>✓ {$pkg_id}: {$teardown_cmds} globalTeardown commands executed</info>" );
 					}
 				} catch ( \Exception $e ) {
 					// Log the error but continue with teardown - globalTeardown failures should not prevent environment cleanup
-					$output->writeln( "<error>Failed to execute globalTeardown for {$pkg_id}: " . $e->getMessage() . "</error>" );
+					$output->writeln( "<error>Failed to execute globalTeardown for {$pkg_id}: " . $e->getMessage() . '</error>' );
 				}
 			}
 		}

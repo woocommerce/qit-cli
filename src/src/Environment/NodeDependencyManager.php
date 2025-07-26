@@ -64,7 +64,7 @@ class NodeDependencyManager {
 			file_put_contents( $package_json, json_encode( [
 				'name'        => 'qit-node-deps',
 				'private'     => true,
-				'description' => 'QIT Node.js dependencies cache'
+				'description' => 'QIT Node.js dependencies cache',
 			], JSON_PRETTY_PRINT ) );
 		}
 

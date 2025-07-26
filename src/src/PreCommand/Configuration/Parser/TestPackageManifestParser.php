@@ -19,7 +19,7 @@ class TestPackageManifestParser extends BaseJsonParser {
 	 */
 	public function parse( string $file_path ): TestPackageManifest {
 		// Accept directory entries during parsing
-		if (is_dir($file_path) && file_exists($file_path . '/manifest.json')) {
+		if ( is_dir( $file_path ) && file_exists( $file_path . '/manifest.json' ) ) {
 			$file_path .= '/manifest.json';
 		}
 

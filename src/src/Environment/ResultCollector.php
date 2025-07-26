@@ -24,7 +24,7 @@ class ResultCollector {
 	 * Collect artifacts from a test package after it finishes running
 	 */
 	public function collect( E2EEnvInfo $env_info, string $slug, TestPackageManifest $manifest, string $artifactsDir, string $phase = 'run' ): void {
-		$container_pkg_root = "/qit/packages/" . basename( $slug );
+		$container_pkg_root = '/qit/packages/' . basename( $slug );
 		$test_results       = $manifest->getTestResults();
 
 		// 1) CTRF collection
@@ -212,7 +212,7 @@ class ResultCollector {
 			$mappings[] = [
 				'container_path' => $container_path,
 				'host_path'      => $host_path,
-				'type'           => $type
+				'type'           => $type,
 			];
 		}
 

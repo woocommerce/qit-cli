@@ -108,15 +108,16 @@ class E2EEnvironment extends Environment {
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
 
-		/* --------------------------------------------------------------
+		/*
+		--------------------------------------------------------------
 		 * Execute bootstrap test‑packages
 		 * ------------------------------------------------------------*/
 		if ( ! empty( $this->env_info->bootstrap_packages ) ) {
-			$runner        = new \QIT_CLI\Environment\PackagePhaseRunner(
+			$runner     = new \QIT_CLI\Environment\PackagePhaseRunner(
 				$this->docker,
 				$this->output
 			);
-			$total_cmds    = 0;
+			$total_cmds = 0;
 
 			$this->output->writeln( "\n<comment>🔧  Test‑package bootstrap phase</comment>" );
 			$this->output->writeln( '<comment>----------------------------</comment>' );
