@@ -6,10 +6,14 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use Symfony\Component\Process\Process;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Filesystem\Filesystem;
 use RuntimeException;
 
 /**
- * Handles result collection and merging for CTRF and Allure reports
+ * Handles result collection and CTRF report merging
+ * 
+ * CTRF results are merged into unified reports for analysis.
+ * Allure results are collected raw in per-package directories for CI workflow processing.
  */
 class ResultCollector {
 	private NodeDependencyManager $node_deps;
@@ -24,35 +28,35 @@ class ResultCollector {
 	 * Collect artifacts from a test package after it finishes running
 	 */
 	public function collect(
-		E2EEnvInfo $env,
-		string $slug,
-		TestPackageManifest $mf,
-		string $dir,
-		string $phase = 'run'
-	): void {
+E2EEnvInfo $env,
+string $slug,
+TestPackageManifest $mf,
+string $dir,
+string $phase = 'run'
+): void {
 
 		// --------- 1️⃣  collect CTRF ------------------------------------------
 		$this->collect_ctrf(
-			$env,
-			$slug,
-			$mf,
-			$dir,
-			/* mandatory = */ $phase === 'run',   // ← only "run" is mandatory
-			$phase
-		);
+$env,
+$slug,
+$mf,
+$dir,
+/* mandatory = */ $phase === 'run',   // ← only "run" is mandatory
+$phase
+);
 
 		// --------- 2️⃣  collect Allure (never mandatory) ----------------------
 		$this->collect_allure( $env, $slug, $mf, $dir );
 	}
 
 	private function collect_ctrf(
-		E2EEnvInfo $env,
-		string $slug,
-		TestPackageManifest $mf,
-		string $dir,
-		bool $mandatory,
-		string $phase
-	): void {
+E2EEnvInfo $env,
+string $slug,
+TestPackageManifest $mf,
+string $dir,
+bool $mandatory,
+string $phase
+): void {
 
 		$rel = $mf->getTestResults()['ctrf-json'] ?? null;
 		if ( ! $rel ) {
@@ -110,7 +114,9 @@ class ResultCollector {
 
 		/* host first */
 		if ( is_dir( $host_src ) ) {
-			$this->recursive_copy( $host_src, $dst );
+			// Use Symfony Filesystem mirror instead of custom implementation
+			$fs = new Filesystem();
+			$fs->mirror( $host_src, $dst );
 
 			return;
 		}
@@ -125,34 +131,6 @@ class ResultCollector {
 		}
 	}
 
-	/**
-	 * Recursively copy a directory from source to destination
-	 */
-	private function recursive_copy( string $src, string $dst ): void {
-		if ( ! is_dir( $src ) ) {
-			return;
-		}
-
-		if ( ! is_dir( $dst ) ) {
-			mkdir( $dst, 0755, true );
-		}
-
-		$iterator = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator( $src, \RecursiveDirectoryIterator::SKIP_DOTS ),
-			\RecursiveIteratorIterator::SELF_FIRST
-		);
-
-		foreach ( $iterator as $item ) {
-			$target = $dst . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
-			if ( $item->isDir() ) {
-				if ( ! is_dir( $target ) ) {
-					mkdir( $target, 0755, true );
-				}
-			} else {
-				copy( $item, $target );
-			}
-		}
-	}
 
 	/**
 	 * Tag CTRF file with package metadata (host version)
@@ -177,63 +155,7 @@ class ResultCollector {
 		}
 	}
 
-	/**
-	 * Tag CTRF file inside the container with package metadata
-	 *
-	 * @phpstan-ignore-next-line method.unused
-	 */
-	private function tag_ctrf_in_container( E2EEnvInfo $env_info, string $container_ctrf_path, string $package_id, TestPackageManifest $manifest, string $phase ): void {
-		$tag_script = sprintf(
-			'if [ -f "%s" ]; then
-                php -r "
-                    \$data = json_decode(file_get_contents(\"%s\"), true);
-                    if (is_array(\$data) && !empty(\$data[\"results\"][\"tests\"]) && is_array(\$data[\"results\"][\"tests\"])) {
-                        foreach (\$data[\"results\"][\"tests\"] as &\$test) {
-                            if (!isset(\$test[\"extra\"])) {
-                                \$test[\"extra\"] = [];
-                            }
-                            \$test[\"extra\"][\"packageSlug\"] = \"%s\";
-                            \$test[\"extra\"][\"phase\"] = \"%s\";
-                            \$test[\"extra\"][\"testType\"] = \"%s\";
-                            \$test[\"extra\"][\"namespace\"] = \"%s\";
-                        }
-                        file_put_contents(\"%s\", json_encode(\$data, JSON_PRETTY_PRINT));
-                    }
-                ";
-            fi',
-			$container_ctrf_path,
-			$container_ctrf_path,
-			$package_id,
-			$phase,
-			$manifest->getTestType(),
-			$manifest->getNamespace(),
-			$container_ctrf_path
-		);
-
-		try {
-			$this->docker->run_inside_docker(
-				$env_info,
-				[ '/bin/bash', '-c', $tag_script ],
-				[],
-				null,
-				30,
-				'php'
-			);
-		} catch ( RuntimeException $e ) {
-			// Tagging failed - continue anyway
-			unset( $e ); // Explicitly acknowledge the exception is not used
-		}
-	}
-
-	/**
-	 * Merge all collected artifacts into final reports
-	 */
-	public function merge_all_artifacts( string $artifacts_dir, SymfonyStyle $io ): void {
-		$this->merge_ctrf( $artifacts_dir, $io );
-		$this->merge_allure( $artifacts_dir, $io );
-	}
-
-	private function merge_ctrf( string $artifacts_dir, SymfonyStyle $io ): void {
+	public function merge_ctrf( string $artifacts_dir, SymfonyStyle $io ): void {
 		$ctrf_dir = $artifacts_dir . '/ctrf';
 
 		// Skip if no CTRF files
@@ -250,7 +172,7 @@ class ResultCollector {
 		$proc = new Process( [ $ctrf_bin, 'merge', $ctrf_dir ] );
 		$proc->setTimeout( 300 );
 		$proc->run( function ( $type, $buf ) use ( $io ) {
-			if ( ! $io->isQuiet() ) {
+if ( ! $io->isQuiet() ) {
 				$io->write( $buf );
 			}
 		} );
@@ -273,9 +195,9 @@ class ResultCollector {
 	}
 
 	/**
-	 * Merge Allure results from multiple test packages into a unified structure
+	 * Save Allure reports to final location, preserving per-package structure
 	 */
-	private function merge_allure( string $artifacts_dir, SymfonyStyle $io ): void {
+	public function save_allure_to_final_location( string $artifacts_dir, SymfonyStyle $io ): void {
 		$allure_dir = $artifacts_dir . '/allure';
 
 		// Skip if no Allure directories
@@ -283,92 +205,65 @@ class ResultCollector {
 			return;
 		}
 
-		$io->text( 'Merging Allure reports...' );
+		$io->text( 'Saving Allure reports to final location...' );
 
-		// Create merged directory
-		$merged_dir = $artifacts_dir . '/allure-merged';
-		if ( ! is_dir( $merged_dir ) ) {
-			mkdir( $merged_dir, 0755, true );
-		}
-
-		// Find all plugin-specific allure directories
-		$plugin_dirs = glob( $allure_dir . '/*', GLOB_ONLYDIR );
-
-		foreach ( $plugin_dirs as $plugin_dir ) {
-			if ( is_dir( $plugin_dir ) ) {
-				$this->recursive_copy( $plugin_dir, $merged_dir );
-			}
-		}
-
-		// Replace the original allure directory with merged results
-		if ( is_dir( $merged_dir ) && ! empty( glob( $merged_dir . '/*' ) ) ) {
-			// Remove original segmented directory
-			$this->remove_directory( $allure_dir );
-			// Move merged results to expected location
-			rename( $merged_dir, $allure_dir );
-		}
-	}
-
-	/**
-	 * Recursively remove a directory and all its contents
-	 */
-	private function remove_directory( string $dir ): void {
-		if ( ! is_dir( $dir ) ) {
-			return;
-		}
-
-		$iterator = new \RecursiveIteratorIterator(
-			new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
-			\RecursiveIteratorIterator::CHILD_FIRST
-		);
-
-		foreach ( $iterator as $file ) {
-			if ( $file->isDir() ) {
-				rmdir( $file->getPathname() );
-			} else {
-				unlink( $file->getPathname() );
-			}
-		}
-		rmdir( $dir );
-	}
-
-	/**
-	 * Map container result paths to host artifact directories
-	 *
-	 * @return array<array{container_path: string, host_path: string, type: string}>
-	 */
-	public function map_container_to_host_paths( TestPackageManifest $manifest, string $package_id, string $host_artifacts_dir ): array {
-		$mappings = [];
-		$results  = $manifest->getTestResults();
-
-		foreach ( $results as $type => $container_path ) {
-			// Handle relative paths
-			if ( strpos( $container_path, './' ) === 0 ) {
-				$container_path = '/qit/packages/' . basename( $package_id ) . '/' . substr( $container_path, 2 );
+		try {
+			// Try to save to final location using Symfony Filesystem mirror
+			$final_dir = $artifacts_dir . '/final/allure';
+			if ( ! is_dir( $final_dir ) ) {
+				mkdir( $final_dir, 0755, true );
 			}
 
-			$host_path = rtrim( $host_artifacts_dir, '/' ) . '/' . $package_id . '/' . $type;
+			$fs = new Filesystem();
+			$fs->mirror( $allure_dir, $final_dir );
 
-			$mappings[] = [
-				'container_path' => $container_path,
-				'host_path'      => $host_path,
-				'type'           => $type,
-			];
+			$io->text( "Allure reports saved to final location: {$final_dir}" );
+
+		} catch ( \Exception $e ) {
+			// If saving to final location fails, reports remain in original location
+			$io->text( "Final location save failed: " . $e->getMessage() );
+			$io->text( "Allure reports remain available in original location: {$allure_dir}" );
+			$io->text( "Reports will be zipped from original location for CI processing" );
 		}
-
-		return $mappings;
 	}
 
-	/**
-	 * Tag CTRF with package metadata instead of plugin slug
-	 *
-	 * @return array{packageSlug: string, testType: string, namespace: string}
-	 */
-	public function tag_ctrf_with_package_metadata( string $package_id, TestPackageManifest $manifest ): array {
-		return [
-			'packageSlug' => $package_id,
-			'testType'    => $manifest->getTestType(),
-			'namespace'   => $manifest->getNamespace(),
-		];
-	}
+/**
+ * Map container result paths to host artifact directories
+ *
+ * @return array<array{container_path: string, host_path: string, type: string}>
+ */
+public function map_container_to_host_paths( TestPackageManifest $manifest, string $package_id, string $host_artifacts_dir ): array {
+$mappings = [];
+$results  = $manifest->getTestResults();
+
+foreach ( $results as $type => $container_path ) {
+// Handle relative paths
+if ( strpos( $container_path, './' ) === 0 ) {
+$container_path = '/qit/packages/' . basename( $package_id ) . '/' . substr( $container_path, 2 );
+}
+
+$host_path = rtrim( $host_artifacts_dir, '/' ) . '/' . $package_id . '/' . $type;
+
+$mappings[] = [
+'container_path' => $container_path,
+'host_path'      => $host_path,
+'type'           => $type,
+];
+}
+
+return $mappings;
+}
+
+/**
+ * Tag CTRF with package metadata instead of plugin slug
+ *
+ * @return array{packageSlug: string, testType: string, namespace: string}
+ */
+public function tag_ctrf_with_package_metadata( string $package_id, TestPackageManifest $manifest ): array {
+return [
+'packageSlug' => $package_id,
+'testType'    => $manifest->getTestType(),
+'namespace'   => $manifest->getNamespace(),
+];
+}
 }

@@ -393,8 +393,11 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 				}
 			}
 
-			// Merge all collected artifacts
-			$this->result_collector->merge_all_artifacts( $artifacts_dir, $io );
+			// Merge CTRF artifacts
+			$this->result_collector->merge_ctrf( $artifacts_dir, $io );
+
+			// Try to save Allure reports to final location
+			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io );
 
 			// Store artifacts directory in env_info for later use by Manager
 			/** @phpstan-ignore-next-line property.notFound */
@@ -403,6 +406,12 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			// Output artifact locations
 			$final_ctrf_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
 
+
+			// Check for final Allure location
+			$final_allure_path = $artifacts_dir . '/final/allure';
+			if ( is_dir( $final_allure_path ) && !empty( glob( $final_allure_path . '/*', GLOB_ONLYDIR ) ) ) {
+				$io->writeln( "<info>Allure reports saved → {$final_allure_path}</info>" );
+			}
 			if ( file_exists( $final_ctrf_path ) ) {
 				$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
 			}
