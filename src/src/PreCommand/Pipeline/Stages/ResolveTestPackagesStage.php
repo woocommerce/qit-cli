@@ -55,7 +55,8 @@ class ResolveTestPackagesStage implements PipelineStage {
 			/*
 			---------------------------------------------------------
 			 * LOCAL test commands (run:e2e, etc.)
-			 * -------------------------------------------------------*/
+			 * -------------------------------------------------------
+			 */
 			$env_name = $cmd->get_environment_name();
 			if ( isset( $resolved->environments[ $env_name ]['bootstrap_packages'] ) ) {
 				$needed_packages = array_merge(
@@ -74,7 +75,8 @@ class ResolveTestPackagesStage implements PipelineStage {
 			/*
 			---------------------------------------------------------
 			 * Pure env commands (env:up, env:enter, …)
-			 * -------------------------------------------------------*/
+			 * -------------------------------------------------------
+			 */
 			$env_name = $cmd->get_environment_name();     // exists on EnvironmentCommand
 
 			if ( isset( $resolved->environments[ $env_name ]['bootstrap_packages'] ) ) {
@@ -106,7 +108,8 @@ class ResolveTestPackagesStage implements PipelineStage {
 
 		/*
 		 * 4.  Split local ⬄ remote
-		 * -------------------------------------------------------------*/
+		 * -------------------------------------------------------------
+		 */
 		$local_packages  = [];
 		$remote_packages = [];
 
@@ -124,10 +127,11 @@ class ResolveTestPackagesStage implements PipelineStage {
 		/*
 		--------------------------------------------------------------
 		 * 5‑a  Handle LOCAL packages
-		 *-------------------------------------------------------------*/
+		 *-------------------------------------------------------------
+		 */
 		foreach ( $local_packages as $identifier ) {
-			$configDir = dirname( $context->get( 'config_file' ) ?? getcwd() );
-			$path      = $this->resolve_local_package_path( $identifier, $configDir );
+			$config_dir = dirname( $context->get( 'config_file' ) ?? getcwd() );
+			$path       = $this->resolve_local_package_path( $identifier, $config_dir );
 
 			$resolved_paths[ $identifier ] = [
 				'path'     => $path,
@@ -139,7 +143,8 @@ class ResolveTestPackagesStage implements PipelineStage {
 		/*
 		--------------------------------------------------------------
 		 * 5‑b  Handle REMOTE packages
-		 *-------------------------------------------------------------*/
+		 *-------------------------------------------------------------
+		 */
 		if ( $remote_packages ) {
 			$verify        = $input->hasOption( 'verify' )
 				? $input->getOption( 'verify' ) !== false
@@ -224,16 +229,17 @@ class ResolveTestPackagesStage implements PipelineStage {
 	/*
 	---------------------------------------------------------------
 	 * Resolve local path helper
-	 * -------------------------------------------------------------*/
+	 * -------------------------------------------------------------
+	 */
 	/** Resolve a local test‑package reference to its directory */
 	private function resolve_local_package_path(
 		string $identifier,
-		string $configDir // ← pass dirname($context->get('config_file'))
+		string $config_dir // ← pass dirname($context->get('config_file'))
 	): string {
 		// Absolute or relative → make absolute first
 		$abs = str_starts_with( $identifier, '/' )
 			? $identifier
-			: $configDir . '/' . ltrim( $identifier, '/' );
+			: $config_dir . '/' . ltrim( $identifier, '/' );
 
 		// If a manifest file is given → drop filename
 		if ( substr( $abs, -13 ) === '/manifest.json' ) {

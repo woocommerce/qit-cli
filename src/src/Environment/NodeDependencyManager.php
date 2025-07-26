@@ -21,25 +21,25 @@ class NodeDependencyManager {
 	/**
 	 * Ensure required npm packages are available
 	 *
-	 * @param array $packages ['ctrf-cli', 'allure-commandline']
+	 * @param array $packages ['ctrf-cli', 'allure-commandline'].
 	 *
 	 * @return string Path to node_modules/.bin directory
 	 */
-	public function ensurePackages( array $packages, SymfonyStyle $io ): string {
+	public function ensure_packages( array $packages, SymfonyStyle $io ): string {
 		$bin_dir = $this->cache_dir . '/node_modules/.bin';
 
 		// Check if all packages are already installed
-		if ( $this->arePackagesInstalled( $packages ) ) {
+		if ( $this->are_packages_installed( $packages ) ) {
 			return $bin_dir;
 		}
 
 		$io->text( 'Installing required Node.js dependencies...' );
-		$this->installPackages( $packages, $io );
+		$this->install_packages( $packages, $io );
 
 		return $bin_dir;
 	}
 
-	private function arePackagesInstalled( array $packages ): bool {
+	private function are_packages_installed( array $packages ): bool {
 		$bin_dir = $this->cache_dir . '/node_modules/.bin';
 
 		if ( ! is_dir( $bin_dir ) ) {
@@ -48,7 +48,7 @@ class NodeDependencyManager {
 
 		foreach ( $packages as $package ) {
 			// Extract binary name from package name
-			$binary = $this->getBinaryName( $package );
+			$binary = $this->get_binary_name( $package );
 			if ( ! file_exists( $bin_dir . '/' . $binary ) ) {
 				return false;
 			}
@@ -57,7 +57,7 @@ class NodeDependencyManager {
 		return true;
 	}
 
-	private function installPackages( array $packages, SymfonyStyle $io ): void {
+	private function install_packages( array $packages, SymfonyStyle $io ): void {
 		// Initialize package.json if it doesn't exist
 		$package_json = $this->cache_dir . '/package.json';
 		if ( ! file_exists( $package_json ) ) {
@@ -86,7 +86,7 @@ class NodeDependencyManager {
 		}
 	}
 
-	private function getBinaryName( string $package ): string {
+	private function get_binary_name( string $package ): string {
 		// Map package names to their binary names
 		// Note: On Windows, these would be ctrf.cmd / allure.cmd (not urgent - we run in Docker/WSL)
 		$binary_map = [
@@ -100,8 +100,8 @@ class NodeDependencyManager {
 	/**
 	 * Get the full path to a specific binary
 	 */
-	public function getBinaryPath( string $package ): string {
-		$binary = $this->getBinaryName( $package );
+	public function get_binary_path( string $package ): string {
+		$binary = $this->get_binary_name( $package );
 
 		return $this->cache_dir . '/node_modules/.bin/' . $binary;
 	}

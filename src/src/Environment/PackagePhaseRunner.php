@@ -30,7 +30,7 @@ class PackagePhaseRunner {
 	 * Determine execution venue based on command type.
 	 * Rule: *.sh → container | anything else → host
 	 *
-	 * @param string $cmd The command to analyze
+	 * @param string $cmd The command to analyze.
 	 * @return string 'container' or 'host'
 	 */
 	private function determine_execution_venue( string $cmd ): string {
@@ -40,12 +40,12 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a command on the host system
 	 *
-	 * @param string $cmd Command to execute
-	 * @param string $package_path Working directory for the command
-	 * @param array  $env_vars Environment variables
-	 * @throws \RuntimeException on command failure
+	 * @param string $cmd Command to execute.
+	 * @param string $package_path Working directory for the command.
+	 * @param array  $env_vars Environment variables.
+	 * @throws \RuntimeException On command failure.
 	 */
-	private function runOnHost( string $cmd, string $package_path, array $env_vars = [] ): void {
+	private function run_on_host( string $cmd, string $package_path, array $env_vars = [] ): void {
 		$process = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, 300 );
 
 		$process->run( function ( $type, $buffer ) {
@@ -64,14 +64,14 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a command inside Docker container
 	 *
-	 * @param string  $cmd Command to execute
-	 * @param EnvInfo $env_info Environment information
-	 * @param string  $package_id Package identifier
-	 * @param string  $workdir Working directory inside container
-	 * @param array   $env_vars Environment variables
-	 * @throws \RuntimeException on command failure
+	 * @param string  $cmd Command to execute.
+	 * @param EnvInfo $env_info Environment information.
+	 * @param string  $package_id Package identifier.
+	 * @param string  $workdir Working directory inside container.
+	 * @param array   $env_vars Environment variables.
+	 * @throws \RuntimeException On command failure.
 	 */
-	private function runInDocker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [] ): void {
+	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [] ): void {
 		$wrapped = [ '/bin/bash', '-c', "cd {$workdir} && {$cmd}" ];
 
 		$this->docker->run_inside_docker(
@@ -88,12 +88,12 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a specific phase for a test package
 	 *
-	 * @param EnvInfo $env_info Environment information
-	 * @param string  $phase Phase name (setup, run, teardown, globalSetup, globalTeardown)
-	 * @param string  $package_id Package identifier
-	 * @param string  $package_path Package directory path
-	 * @return int Number of commands that were actually executed
-	 * @throws \RuntimeException on command failure
+	 * @param EnvInfo $env_info Environment information.
+	 * @param string  $phase Phase name (setup, run, teardown, globalSetup, globalTeardown).
+	 * @param string  $package_id Package identifier.
+	 * @param string  $package_path Package directory path.
+	 * @return int Number of commands that were actually executed.
+	 * @throws \RuntimeException On command failure.
 	 */
 	public function run_phase(
 		EnvInfo $env_info,
@@ -128,9 +128,9 @@ class PackagePhaseRunner {
 				$env_vars = [
 					'QIT_SITE_URL' => $env_info->site_url,
 				];
-				$this->runOnHost( $cmd, $package_path, $env_vars );
+				$this->run_on_host( $cmd, $package_path, $env_vars );
 			} else {
-				$this->runInDocker( $cmd, $env_info, $package_id, $workdir, [] );
+				$this->run_in_docker( $cmd, $env_info, $package_id, $workdir, [] );
 			}
 
 			++$executed;

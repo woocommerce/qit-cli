@@ -32,7 +32,7 @@ class ResultCollector {
 	): void {
 
 		// --------- 1️⃣  collect CTRF ------------------------------------------
-		$this->collectCtrf(
+		$this->collect_ctrf(
 			$env,
 			$slug,
 			$mf,
@@ -42,10 +42,10 @@ class ResultCollector {
 		);
 
 		// --------- 2️⃣  collect Allure (never mandatory) ----------------------
-		$this->collectAllure( $env, $slug, $mf, $dir, $phase );
+		$this->collect_allure( $env, $slug, $mf, $dir );
 	}
 
-	private function collectCtrf(
+	private function collect_ctrf(
 		E2EEnvInfo $env,
 		string $slug,
 		TestPackageManifest $mf,
@@ -68,20 +68,20 @@ class ResultCollector {
 		@mkdir( dirname( $dst ), 0755, true );
 
 		/* 1 — host path ------------------------------------------------------- */
-		$hostPkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
-		$hostSrc = rtrim( $hostPkg, '/' ) . '/' . ltrim( $rel, './' );
-		if ( is_readable( $hostSrc ) ) {
-			copy( $hostSrc, $dst );
-			$this->tagCtrf( $dst, $slug, $mf, $phase );
+		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
+		$host_src = rtrim( $host_pkg, '/' ) . '/' . ltrim( $rel, './' );
+		if ( is_readable( $host_src ) ) {
+			copy( $host_src, $dst );
+			$this->tag_ctrf( $dst, $slug, $mf, $phase );
 
 			return;
 		}
 
 		/* 2 — container fallback --------------------------------------------- */
-		$ctrPath = '/qit/packages/' . basename( $slug ) . '/' . ltrim( $rel, './' );
+		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . ltrim( $rel, './' );
 		try {
-			$this->docker->copy_from_docker( $env, $ctrPath, $dst, 'php' );
-			$this->tagCtrf( $dst, $slug, $mf, $phase );
+			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
+			$this->tag_ctrf( $dst, $slug, $mf, $phase );
 		} catch ( \RuntimeException $e ) {
 			if ( $mandatory ) {
 				throw $e;           // only fail for "run"
@@ -90,12 +90,11 @@ class ResultCollector {
 		}
 	}
 
-	private function collectAllure(
+	private function collect_allure(
 		E2EEnvInfo $env,
 		string $slug,
 		TestPackageManifest $mf,
-		string $dir,
-		string $phase
+		string $dir
 	): void {
 
 		$rel = $mf->getTestResults()['allure-dir'] ?? null;
@@ -103,32 +102,33 @@ class ResultCollector {
 			return;
 		}                     // no declaration → skip
 
-		$hostPkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
-		$hostSrc = rtrim( $hostPkg, '/' ) . '/' . trim( $rel, '/' );
+		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
+		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
 
 		$dst = $dir . '/allure/' . basename( $slug );
 		@mkdir( dirname( $dst ), 0755, true );
 
 		/* host first */
-		if ( is_dir( $hostSrc ) ) {
-			$this->recursiveCopy( $hostSrc, $dst );
+		if ( is_dir( $host_src ) ) {
+			$this->recursive_copy( $host_src, $dst );
 
 			return;
 		}
 
 		/* container fallback */
-		$ctrPath = '/qit/packages/' . basename( $slug ) . '/' . trim( $rel, '/' );
+		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . trim( $rel, '/' );
 		try {
-			$this->docker->copy_from_docker( $env, $ctrPath, $dst, 'php' );
+			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 		} catch ( \RuntimeException $e ) {
-			// never mandatory – just ignore
+			// Never mandatory for allure collection - silently ignore failures
+			unset( $e ); // Explicitly acknowledge the exception is not used
 		}
 	}
 
 	/**
 	 * Recursively copy a directory from source to destination
 	 */
-	private function recursiveCopy( string $src, string $dst ): void {
+	private function recursive_copy( string $src, string $dst ): void {
 		if ( ! is_dir( $src ) ) {
 			return;
 		}
@@ -157,30 +157,30 @@ class ResultCollector {
 	/**
 	 * Tag CTRF file with package metadata (host version)
 	 */
-	private function tagCtrf( string $ctrfPath, string $slug, TestPackageManifest $mf, string $phase ): void {
-		if ( ! file_exists( $ctrfPath ) ) {
+	private function tag_ctrf( string $ctrf_path, string $slug, TestPackageManifest $mf, string $phase ): void {
+		if ( ! file_exists( $ctrf_path ) ) {
 			return;
 		}
 
-		$data = json_decode( file_get_contents( $ctrfPath ), true );
-		if ( is_array( $data ) && ! empty( $data["results"]["tests"] ) && is_array( $data["results"]["tests"] ) ) {
-			foreach ( $data["results"]["tests"] as &$test ) {
-				if ( ! isset( $test["extra"] ) ) {
-					$test["extra"] = [];
+		$data = json_decode( file_get_contents( $ctrf_path ), true );
+		if ( is_array( $data ) && ! empty( $data['results']['tests'] ) && is_array( $data['results']['tests'] ) ) {
+			foreach ( $data['results']['tests'] as &$test ) {
+				if ( ! isset( $test['extra'] ) ) {
+					$test['extra'] = [];
 				}
-				$test["extra"]["packageSlug"] = $slug;
-				$test["extra"]["phase"]       = $phase;
-				$test["extra"]["testType"]    = $mf->getTestType();
-				$test["extra"]["namespace"]   = $mf->getNamespace();
+				$test['extra']['packageSlug'] = $slug;
+				$test['extra']['phase']       = $phase;
+				$test['extra']['testType']    = $mf->getTestType();
+				$test['extra']['namespace']   = $mf->getNamespace();
 			}
-			file_put_contents( $ctrfPath, json_encode( $data, JSON_PRETTY_PRINT ) );
+			file_put_contents( $ctrf_path, json_encode( $data, JSON_PRETTY_PRINT ) );
 		}
 	}
 
 	/**
 	 * Tag CTRF file inside the container with package metadata
 	 */
-	private function tagCtrfInContainer( E2EEnvInfo $env_info, string $container_ctrf_path, string $package_id, TestPackageManifest $manifest, string $phase ): void {
+	private function tag_ctrf_in_container( E2EEnvInfo $env_info, string $container_ctrf_path, string $package_id, TestPackageManifest $manifest, string $phase ): void {
 		$tag_script = sprintf(
 			'if [ -f "%s" ]; then
                 php -r "
@@ -219,32 +219,33 @@ class ResultCollector {
 			);
 		} catch ( RuntimeException $e ) {
 			// Tagging failed - continue anyway
+			unset( $e ); // Explicitly acknowledge the exception is not used
 		}
 	}
 
 	/**
 	 * Merge all collected artifacts into final reports
 	 */
-	public function mergeAllArtifacts( string $artifactsDir, SymfonyStyle $io ): void {
-		$this->mergeCtrf( $artifactsDir, $io );
-		$this->mergeAllure( $artifactsDir, $io );
+	public function merge_all_artifacts( string $artifacts_dir, SymfonyStyle $io ): void {
+		$this->merge_ctrf( $artifacts_dir, $io );
+		$this->merge_allure( $artifacts_dir, $io );
 	}
 
-	private function mergeCtrf( string $artifactsDir, SymfonyStyle $io ): void {
-		$ctrfDir = $artifactsDir . '/ctrf';
+	private function merge_ctrf( string $artifacts_dir, SymfonyStyle $io ): void {
+		$ctrf_dir = $artifacts_dir . '/ctrf';
 
 		// Skip if no CTRF files
-		if ( ! is_dir( $ctrfDir ) || empty( glob( $ctrfDir . '/*.json' ) ) ) {
+		if ( ! is_dir( $ctrf_dir ) || empty( glob( $ctrf_dir . '/*.json' ) ) ) {
 			return;
 		}
 
 		// Ensure ctrf-cli is available
-		$bin_dir  = $this->node_deps->ensurePackages( [ 'ctrf-cli' ], $io );
+		$bin_dir  = $this->node_deps->ensure_packages( [ 'ctrf-cli' ], $io );
 		$ctrf_bin = $bin_dir . '/ctrf';
 
 		$io->text( 'Merging CTRF reports...' );
 
-		$proc = new Process( [ $ctrf_bin, 'merge', $ctrfDir ] );
+		$proc = new Process( [ $ctrf_bin, 'merge', $ctrf_dir ] );
 		$proc->setTimeout( 300 );
 		$proc->run( function ( $type, $buf ) use ( $io ) {
 			if ( ! $io->isQuiet() ) {
@@ -257,68 +258,68 @@ class ResultCollector {
 		}
 
 		// Move merged report to final location
-		$final_dir = $artifactsDir . '/final/ctrf';
+		$final_dir = $artifacts_dir . '/final/ctrf';
 		if ( ! is_dir( $final_dir ) ) {
 			mkdir( $final_dir, 0755, true );
 		}
 
-		if ( file_exists( $ctrfDir . '/ctrf-report.json' ) ) {
+		if ( file_exists( $ctrf_dir . '/ctrf-report.json' ) ) {
 			// Remove existing file to prevent rename() failures on reruns
 			@unlink( $final_dir . '/ctrf-report.json' );
-			rename( $ctrfDir . '/ctrf-report.json', $final_dir . '/ctrf-report.json' );
+			rename( $ctrf_dir . '/ctrf-report.json', $final_dir . '/ctrf-report.json' );
 		}
 	}
 
 	/**
 	 * Merge Allure results from multiple test packages into a unified structure
 	 */
-	private function mergeAllure( string $artifactsDir, SymfonyStyle $io ): void {
-		$allureDir = $artifactsDir . '/allure';
-		
+	private function merge_allure( string $artifacts_dir, SymfonyStyle $io ): void {
+		$allure_dir = $artifacts_dir . '/allure';
+
 		// Skip if no Allure directories
-		if ( ! is_dir( $allureDir ) || empty( glob( $allureDir . '/*', GLOB_ONLYDIR ) ) ) {
+		if ( ! is_dir( $allure_dir ) || empty( glob( $allure_dir . '/*', GLOB_ONLYDIR ) ) ) {
 			return;
 		}
-		
+
 		$io->text( 'Merging Allure reports...' );
-		
+
 		// Create merged directory
-		$mergedDir = $artifactsDir . '/allure-merged';
-		if ( ! is_dir( $mergedDir ) ) {
-			mkdir( $mergedDir, 0755, true );
+		$merged_dir = $artifacts_dir . '/allure-merged';
+		if ( ! is_dir( $merged_dir ) ) {
+			mkdir( $merged_dir, 0755, true );
 		}
-		
+
 		// Find all plugin-specific allure directories
-		$pluginDirs = glob( $allureDir . '/*', GLOB_ONLYDIR );
-		
-		foreach ( $pluginDirs as $pluginDir ) {
-			if ( is_dir( $pluginDir ) ) {
-				$this->recursiveCopy( $pluginDir, $mergedDir );
+		$plugin_dirs = glob( $allure_dir . '/*', GLOB_ONLYDIR );
+
+		foreach ( $plugin_dirs as $plugin_dir ) {
+			if ( is_dir( $plugin_dir ) ) {
+				$this->recursive_copy( $plugin_dir, $merged_dir );
 			}
 		}
-		
+
 		// Replace the original allure directory with merged results
-		if ( is_dir( $mergedDir ) && ! empty( glob( $mergedDir . '/*' ) ) ) {
+		if ( is_dir( $merged_dir ) && ! empty( glob( $merged_dir . '/*' ) ) ) {
 			// Remove original segmented directory
-			$this->removeDirectory( $allureDir );
+			$this->remove_directory( $allure_dir );
 			// Move merged results to expected location
-			rename( $mergedDir, $allureDir );
+			rename( $merged_dir, $allure_dir );
 		}
 	}
 
 	/**
 	 * Recursively remove a directory and all its contents
 	 */
-	private function removeDirectory( string $dir ): void {
+	private function remove_directory( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			return;
 		}
-		
+
 		$iterator = new \RecursiveIteratorIterator(
 			new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
 			\RecursiveIteratorIterator::CHILD_FIRST
 		);
-		
+
 		foreach ( $iterator as $file ) {
 			if ( $file->isDir() ) {
 				rmdir( $file->getPathname() );

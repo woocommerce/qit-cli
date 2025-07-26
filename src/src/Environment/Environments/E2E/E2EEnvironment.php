@@ -111,7 +111,8 @@ class E2EEnvironment extends Environment {
 		/*
 		--------------------------------------------------------------
 		 * Execute bootstrap test‑packages
-		 * ------------------------------------------------------------*/
+		 * ------------------------------------------------------------
+		 */
 		if ( ! empty( $this->env_info->bootstrap_packages ) ) {
 			$runner     = new \QIT_CLI\Environment\PackagePhaseRunner(
 				$this->docker,

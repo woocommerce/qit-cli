@@ -178,10 +178,10 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 		// Notify test started
 		if ( isset( $env_info->sut['slug'] ) ) {
-			$woo_extension_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $env_info->sut['slug'] );
+			$woo_extension_id    = $this->woo_extensions_list->get_woo_extension_id_by_slug( $env_info->sut['slug'] );
 			$woocommerce_version = $env_info->woo;
-			$is_development = $env_info->is_development_build;
-			$notify = $input->getOption( 'notify' ) ?? false;
+			$is_development      = $env_info->is_development_build;
+			$notify              = $input->getOption( 'notify' ) ?? false;
 
 			$this->local_test_run_notifier->notify_test_started(
 				$woo_extension_id,
@@ -398,7 +398,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			$env_info->artifacts_dir = $artifacts_dir;
 
 			// Output artifact locations
-			$final_ctrf_path   = $artifacts_dir . '/final/ctrf/ctrf-report.json';
+			$final_ctrf_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
 
 			if ( file_exists( $final_ctrf_path ) ) {
 				$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
