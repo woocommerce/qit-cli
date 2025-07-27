@@ -255,6 +255,155 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 		}
 	}
 
+	public function test_tp003_local_vs_published_packages(): void {
+		$tempDir = null;
+		$localPackageDir = null;
+		$downloadedPackageDir = null;
+		$configPath = null;
+
+		try {
+			$tempDir = sys_get_temp_dir() . '/qit_test_' . uniqid();
+			mkdir($tempDir, 0755, true);
+			
+			// Create local test package
+			$localPackageDir = $tempDir . '/local-test-package';
+			qit([
+				'package:scaffold',
+				$localPackageDir,
+				'--namespace=qit-test-plugin',
+				'--package=tp003-local',
+				'--framework=playwright',
+				'--test-type=e2e',
+				'--no-interaction'
+			]);
+
+			$this->assertDirectoryExists($localPackageDir);
+			$this->assertFileExists($localPackageDir . '/manifest.json');
+
+			// Modify local package manifest
+			$localManifest = json_decode(file_get_contents($localPackageDir . '/manifest.json'), true);
+			$localManifest['test']['phases'] = [
+				'globalSetup' => ['./bootstrap/global-setup.sh'],
+				'setup' => ['./bootstrap/setup.sh'],
+				'run' => ['npx playwright test'],
+				'teardown' => [],
+				'globalTeardown' => ['./bootstrap/global-teardown.sh']
+			];
+			file_put_contents($localPackageDir . '/manifest.json', json_encode($localManifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+
+			// Publish the package
+			$publishProcess = qit([
+				'package:publish',
+				$localPackageDir,
+				'1.0.0',
+				'--force'
+			], return_process: true);
+
+			// Check if publish was successful
+			$this->assertSame(0, $publishProcess->getExitCode(),
+				'Package publish failed: ' . $publishProcess->getErrorOutput() ?: $publishProcess->getOutput());
+
+			$publishOutput = $publishProcess->getOutput();
+			$this->assertStringContainsString('Package published successfully', $publishOutput);
+
+			// Download the published package
+			$downloadDir = $tempDir . '/downloaded-packages';
+			mkdir($downloadDir, 0755, true);
+			
+			$downloadProcess = qit([
+				'package:download',
+				'qit-test-plugin/tp003-local:1.0.0',
+				'--output-dir=' . $downloadDir,
+				'--force'
+			], return_process: true);
+
+			// Check if download was successful
+			$this->assertSame(0, $downloadProcess->getExitCode(),
+				'Package download failed: ' . $downloadProcess->getErrorOutput() ?: $downloadProcess->getOutput());
+
+			$downloadOutput = $downloadProcess->getOutput();
+			$this->assertStringContainsString('All 1 package(s) downloaded successfully', $downloadOutput);
+
+			// The downloaded package should be in a directory named after the package
+			$downloadedPackageDir = $downloadDir . '/qit-test-plugin-tp003-local-1.0.0';
+			$this->assertDirectoryExists($downloadedPackageDir);
+			$this->assertFileExists($downloadedPackageDir . '/manifest.json');
+
+			// Make bootstrap scripts executable (they lose permissions during zip extraction)
+			$bootstrapDir = $downloadedPackageDir . '/bootstrap';
+			if (is_dir($bootstrapDir)) {
+				foreach (glob($bootstrapDir . '/*.sh') as $script) {
+					chmod($script, 0755);
+				}
+			}
+
+			// Create qit.json configuration with both local and "downloaded" (published) packages
+			$qit_json = [
+				'$schema' => 'https://qit.woo.com/json-schema/qit',
+				'sut' => [
+					'type' => 'plugin',
+					'slug' => 'woocommerce',
+					'source' => ['type' => 'wporg']
+				],
+				'test_types' => [
+					'e2e' => [
+						'default' => [
+							'test_packages' => [
+								$localPackageDir,
+								$downloadedPackageDir  // Use the downloaded package (which was published)
+							]
+						]
+					]
+				],
+				'environments' => [
+					'without-setup' => [
+						'php' => '8.2',
+						'wp' => 'stable'
+					]
+				]
+			];
+
+			$configPath = $tempDir . '/qit-config.json';
+			file_put_contents($configPath, json_encode($qit_json, JSON_PRETTY_PRINT));
+
+			// Run the test with both local and downloaded packages
+			$proc = qit([
+				'run:e2e',
+				'woocommerce',
+				'--environment=without-setup',
+				'--config=' . $configPath
+			], return_process: true);
+
+			// Exit code assertion
+			$this->assertSame(0, $proc->getExitCode(),
+				$proc->getErrorOutput() ?: $proc->getOutput());
+
+			$out = $proc->getOutput();
+
+			// Verify both packages were processed
+			$this->assertStringContainsString('Processing package: ' . $localPackageDir, $out);
+			$this->assertStringContainsString('Processing package: ' . $downloadedPackageDir, $out);
+			
+			// Verify CTRF collection works for both package types
+			$this->validateCtfrCollection($out, $localPackageDir);
+
+		} finally {
+			// Clean up resources
+			if (isset($configPath) && file_exists($configPath)) {
+				unlink($configPath);
+			}
+			if (isset($localPackageDir) && is_dir($localPackageDir)) {
+				$this->recursiveRemoveDirectory($localPackageDir);
+			}
+			if (isset($downloadedPackageDir) && is_dir($downloadedPackageDir)) {
+				$this->recursiveRemoveDirectory($downloadedPackageDir);
+			}
+			if (isset($tempDir) && is_dir($tempDir)) {
+				$this->recursiveRemoveDirectory($tempDir);
+			}
+		}
+	}
+
 	private function validateCtfrCollection(string $output, string $packageDir): void {
 		// Check that CTRF merged report path is in output
 		$this->assertMatchesRegularExpression(
