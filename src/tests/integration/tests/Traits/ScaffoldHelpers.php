@@ -7,18 +7,18 @@ use QIT\IntegrationTests\Utils\Normalizer;
 trait ScaffoldHelpers {
 	/**
 	 * @param string|null $spec_name This can be used to differentiate between different scaffolded tests.
-	 * @param string|null $vendor The vendor slug for the test package.
+	 * @param string|null $namespace The namespace (extension slug) for the test package.
 	 * @param string|null $package The package slug for the test package.
 	 *
 	 * @return string The path to the scaffolded directory.
 	 */
-	protected function scaffold_test( ?string $spec_name = null, ?string $vendor = 'test-vendor', ?string $package = 'test-package' ): string {
+	protected function scaffold_test( ?string $spec_name = null, ?string $namespace = 'woocommerce', ?string $package = 'internal-integration-test' ): string {
 		$scaffolded_dir = sys_get_temp_dir() . '/qit_scaffolded_e2e-' . uniqid();
 		
 		$command = [ 'scaffold:e2e', $scaffolded_dir ];
 		
-		if ( $vendor && $package ) {
-			$command[] = '--vendor=' . $vendor;
+		if ( $namespace && $package ) {
+			$command[] = '--namespace=' . $namespace;
 			$command[] = '--package=' . $package;
 		}
 		
