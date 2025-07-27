@@ -6,7 +6,7 @@ if ( ! is_dir( '/tmp/qit' ) ) {
 	mkdir( '/tmp/qit', 0755, true );
 }
 
-function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ): string {
+function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process {
 	if ( ! empty( $qit_env_json ) ) {
 		if ( is_array( $qit_env_json ) ) {
 			$qit_env_json = json_encode( $qit_env_json );
@@ -69,11 +69,19 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 	// Special case for group:clear command - don't throw an exception if it fails with "No group found"
 	if ( $command[0] === 'group:clear' && $qit->getExitCode() === 1 && strpos( $qit->getOutput(), 'No group found' ) !== false ) {
 		// This is fine - the group was already cleared or didn't exist
+		if ( $return_process ) {
+			return $qit;
+		}
+
 		return $qit->getOutput();
 	}
 
 	if ( $qit->getExitCode() !== $expected_exit_code ) {
 		throw new \RuntimeException( sprintf( "Command \"%s\" failed with exit code %d. \n\nError Output:\n %s \n\nOutput:\n %s", implode( ' ', $command ), $qit->getExitCode(), $qit->getErrorOutput(), $qit->getOutput() ) );
+	}
+
+	if ( $return_process ) {
+		return $qit;
 	}
 
 	return $qit->getOutput();
@@ -100,7 +108,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
  * );
  * $env = json_decode($output, true);
  * echo $env['wp_version']; // "6.1"
- * 
+ *
  * // With configuration:
  * $output = qit_precommand(
  *     ['env:up', '--json'],
@@ -109,7 +117,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
  * JSON
  * );
  * $env = json_decode($output, true);
- * 
+ *
  * // With custom exit code and environment variables:
  * $output = qit_precommand(
  *     ['env:up', '--json'],
@@ -130,7 +138,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 function qit_precommand( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ) {
 	// Add the QIT_SELF_TEST environment variable to trigger the early-return mechanism
 	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'precommand' ] );
-	
+
 	// Pass all parameters to the qit function and return its output directly
 	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env );
 }
