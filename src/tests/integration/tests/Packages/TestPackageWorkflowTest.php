@@ -1,23 +1,26 @@
 <?php
 
 use QIT\IntegrationTests\Traits\ScaffoldHelpers;
-use Symfony\Component\Process\Process;
+use QIT\IntegrationTests\Traits\CtrfSnapshotNormalizer;
+use Spatie\Snapshots\MatchesSnapshots;
 
 class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 	use ScaffoldHelpers;
+	use MatchesSnapshots;
+	use CtrfSnapshotNormalizer;
 
 	public function test_tp001_all_phases_execute_in_order(): void {
-		$tempDir = null;
+		$tempDir    = null;
 		$packageDir = null;
 		$configPath = null;
 
 		try {
 			$tempDir = sys_get_temp_dir() . '/qit_test_' . uniqid();
-			mkdir($tempDir, 0755, true);
+			mkdir( $tempDir, 0755, true );
 			$packageDir = $tempDir . '/test-package';
 
 			// Scaffold a test package with full Playwright setup (not --only-manifest)
-			qit([
+			qit( [
 				'package:scaffold',
 				$packageDir,
 				'--namespace=qit-test-plugin',
@@ -25,151 +28,151 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 				'--framework=playwright',
 				'--test-type=e2e',
 				'--no-interaction'
-			]);
+			] );
 
-			$this->assertDirectoryExists($packageDir);
-			$this->assertFileExists($packageDir . '/manifest.json');
-			$this->assertFileExists($packageDir . '/package.json');
-			$this->assertFileExists($packageDir . '/playwright.config.js');
-			$this->assertFileExists($packageDir . '/tests/example.spec.js');
+			$this->assertDirectoryExists( $packageDir );
+			$this->assertFileExists( $packageDir . '/manifest.json' );
+			$this->assertFileExists( $packageDir . '/package.json' );
+			$this->assertFileExists( $packageDir . '/playwright.config.js' );
+			$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 
 			// Modify manifest to include all phases with meaningful commands
 			$manifest_path = $packageDir . '/manifest.json';
-			$manifest = json_decode(file_get_contents($manifest_path), true);
+			$manifest      = json_decode( file_get_contents( $manifest_path ), true );
 
 			// Modify manifest to include all phases with real commands
 			// Note: Only include phases that have actual scripts created by scaffold
 			$manifest['test']['phases'] = [
-				'globalSetup' => ['./bootstrap/global-setup.sh'],
-				'setup' => ['./bootstrap/setup.sh'],
-				'run' => ['npx playwright test'], // Real Playwright test execution
-				'teardown' => [], // No teardown script is created by scaffold
-				'globalTeardown' => ['./bootstrap/global-teardown.sh']
+				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
+				'setup'          => [ './bootstrap/setup.sh' ],
+				'run'            => [ 'npx playwright test' ], // Real Playwright test execution
+				'teardown'       => [], // No teardown script is created by scaffold
+				'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
 			];
 
-			file_put_contents($manifest_path, json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+			file_put_contents( $manifest_path, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			// Create qit.json configuration
 			$qit_json = [
-				'$schema' => 'https://qit.woo.com/json-schema/qit',
-				'sut' => [
-					'type' => 'plugin',
-					'slug' => 'woocommerce',
-					'source' => ['type' => 'wporg']
+				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'sut'          => [
+					'type'   => 'plugin',
+					'slug'   => 'woocommerce',
+					'source' => [ 'type' => 'wporg' ]
 				],
-				'test_types' => [
+				'test_types'   => [
 					'e2e' => [
 						'default' => [
-							'test_packages' => [$packageDir]
+							'test_packages' => [ $packageDir ]
 						]
 					]
 				],
 				'environments' => [
 					'without-setup' => [
 						'php' => '8.2',
-						'wp' => 'stable'
+						'wp'  => 'stable'
 					]
 				]
 			];
 
 			$configPath = $tempDir . '/qit-config.json';
-			file_put_contents($configPath, json_encode($qit_json, JSON_PRETTY_PRINT));
+			file_put_contents( $configPath, json_encode( $qit_json, JSON_PRETTY_PRINT ) );
 
 			// Run the test
-			$proc = qit([
+			$proc = qit( [
 				'run:e2e',
 				'woocommerce',
 				'--environment=without-setup',
 				'--config=' . $configPath
-			], return_process: true);
+			], return_process: true );
 
 			// Exit code assertion
-			$this->assertSame(0, $proc->getExitCode(),
-				$proc->getErrorOutput() ?: $proc->getOutput());
+			$this->assertSame( 0, $proc->getExitCode(),
+				$proc->getErrorOutput() ?: $proc->getOutput() );
 
 			$out = $proc->getOutput();
 
 			// Phase order assertion using stdout parsing
 			// Note: Empty phases (like teardown with []) are not executed and won't appear in output
-			preg_match_all('~\((globalSetup|setup|run|teardown|globalTeardown)\)~', $out, $m);
+			preg_match_all( '~\((globalSetup|setup|run|teardown|globalTeardown)\)~', $out, $m );
 			$this->assertSame(
-				['globalSetup', 'setup', 'run', 'globalTeardown'],
+				[ 'globalSetup', 'setup', 'run', 'globalTeardown' ],
 				$m[1],
 				'Phases did not run in expected order'
 			);
 
 			// CTRF assertion - check merged report path in output
-			if (preg_match('~CTRF merged →\s+(.+/ctrf-report\.json)~', $out, $ctrfMatch)) {
+			if ( preg_match( '~CTRF merged →\s+(.+/ctrf-report\.json)~', $out, $ctrfMatch ) ) {
 				$ctrfPath = $ctrfMatch[1];
 				// The path might be relative to artifacts directory, so we need to find it
 				// Let's look for the artifacts directory pattern in the output
-				if (preg_match('~Allure reports saved to final location: (.+/final/allure)~', $out, $artifactsMatch)) {
-					$artifactsBase = dirname($artifactsMatch[1]);
+				if ( preg_match( '~Allure reports saved to final location: (.+/final/allure)~', $out, $artifactsMatch ) ) {
+					$artifactsBase  = dirname( $artifactsMatch[1] );
 					$mergedCtfrPath = $artifactsBase . '/ctrf/ctrf-report.json';
-					if (file_exists($mergedCtfrPath)) {
-						$ctrf = json_decode(file_get_contents($mergedCtfrPath), true);
+					if ( file_exists( $mergedCtfrPath ) ) {
+						$ctrf    = json_decode( file_get_contents( $mergedCtfrPath ), true );
 						$summary = $ctrf['results']['summary'] ?? [];
-						$this->assertIsArray($summary, 'CTRF summary should be an array');
+						$this->assertIsArray( $summary, 'CTRF summary should be an array' );
 						// The scaffolded test may fail due to site not being reachable, but we still check structure
-						$this->assertArrayHasKey('tests', $summary, 'CTRF summary should have tests count');
-						$this->assertArrayHasKey('passed', $summary, 'CTRF summary should have passed count');
-						$this->assertArrayHasKey('failed', $summary, 'CTRF summary should have failed count');
+						$this->assertArrayHasKey( 'tests', $summary, 'CTRF summary should have tests count' );
+						$this->assertArrayHasKey( 'passed', $summary, 'CTRF summary should have passed count' );
+						$this->assertArrayHasKey( 'failed', $summary, 'CTRF summary should have failed count' );
 					} else {
 						// Fallback to checking the package-local CTRF if merged one doesn't exist
 						$packageCtfrPath = $packageDir . '/results/ctrf.json';
-						if (file_exists($packageCtfrPath)) {
-							$ctrf = json_decode(file_get_contents($packageCtfrPath), true);
+						if ( file_exists( $packageCtfrPath ) ) {
+							$ctrf    = json_decode( file_get_contents( $packageCtfrPath ), true );
 							$summary = $ctrf['results']['summary'] ?? [];
-							$this->assertIsArray($summary, 'CTRF summary should be an array');
-							$this->assertArrayHasKey('tests', $summary, 'CTRF summary should have tests count');
-							$this->assertArrayHasKey('passed', $summary, 'CTRF summary should have passed count');
-							$this->assertArrayHasKey('failed', $summary, 'CTRF summary should have failed count');
+							$this->assertIsArray( $summary, 'CTRF summary should be an array' );
+							$this->assertArrayHasKey( 'tests', $summary, 'CTRF summary should have tests count' );
+							$this->assertArrayHasKey( 'passed', $summary, 'CTRF summary should have passed count' );
+							$this->assertArrayHasKey( 'failed', $summary, 'CTRF summary should have failed count' );
 						} else {
-							$this->fail('Neither merged nor package-local CTRF report found');
+							$this->fail( 'Neither merged nor package-local CTRF report found' );
 						}
 					}
 				}
 			} else {
 				// Fallback to package-local CTRF if merged path not found in output
 				$packageCtfrPath = $packageDir . '/results/ctrf.json';
-				if (file_exists($packageCtfrPath)) {
-					$ctrf = json_decode(file_get_contents($packageCtfrPath), true);
+				if ( file_exists( $packageCtfrPath ) ) {
+					$ctrf    = json_decode( file_get_contents( $packageCtfrPath ), true );
 					$summary = $ctrf['results']['summary'] ?? [];
-					$this->assertIsArray($summary, 'CTRF summary should be an array');
-					$this->assertArrayHasKey('tests', $summary, 'CTRF summary should have tests count');
-					$this->assertArrayHasKey('passed', $summary, 'CTRF summary should have passed count');
-					$this->assertArrayHasKey('failed', $summary, 'CTRF summary should have failed count');
+					$this->assertIsArray( $summary, 'CTRF summary should be an array' );
+					$this->assertArrayHasKey( 'tests', $summary, 'CTRF summary should have tests count' );
+					$this->assertArrayHasKey( 'passed', $summary, 'CTRF summary should have passed count' );
+					$this->assertArrayHasKey( 'failed', $summary, 'CTRF summary should have failed count' );
 				} else {
-					$this->fail('Merged CTRF report path not found in output and package-local CTRF not found');
+					$this->fail( 'Merged CTRF report path not found in output and package-local CTRF not found' );
 				}
 			}
 
 		} finally {
 			// Clean up resources
-			if (isset($configPath) && file_exists($configPath)) {
-				unlink($configPath);
+			if ( isset( $configPath ) && file_exists( $configPath ) ) {
+				unlink( $configPath );
 			}
-			if (isset($packageDir) && is_dir($packageDir)) {
-				$this->recursiveRemoveDirectory($packageDir);
+			if ( isset( $packageDir ) && is_dir( $packageDir ) ) {
+				$this->recursiveRemoveDirectory( $packageDir );
 			}
-			if (isset($tempDir) && is_dir($tempDir)) {
-				$this->recursiveRemoveDirectory($tempDir);
+			if ( isset( $tempDir ) && is_dir( $tempDir ) ) {
+				$this->recursiveRemoveDirectory( $tempDir );
 			}
 		}
 	}
 
 	public function test_tp002_ctrf_result_collection(): void {
-		$tempDir = null;
+		$tempDir    = null;
 		$packageDir = null;
 		$configPath = null;
 
 		try {
 			$tempDir = sys_get_temp_dir() . '/qit_test_' . uniqid();
-			mkdir($tempDir, 0755, true);
+			mkdir( $tempDir, 0755, true );
 			$packageDir = $tempDir . '/test-package';
 
 			// Scaffold a test package with full Playwright setup (not --only-manifest)
-			qit([
+			qit( [
 				'package:scaffold',
 				$packageDir,
 				'--namespace=qit-test-plugin',
@@ -177,97 +180,97 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 				'--framework=playwright',
 				'--test-type=e2e',
 				'--no-interaction'
-			]);
+			] );
 
-			$this->assertDirectoryExists($packageDir);
-			$this->assertFileExists($packageDir . '/manifest.json');
-			$this->assertFileExists($packageDir . '/package.json');
-			$this->assertFileExists($packageDir . '/playwright.config.js');
-			$this->assertFileExists($packageDir . '/tests/example.spec.js');
+			$this->assertDirectoryExists( $packageDir );
+			$this->assertFileExists( $packageDir . '/manifest.json' );
+			$this->assertFileExists( $packageDir . '/package.json' );
+			$this->assertFileExists( $packageDir . '/playwright.config.js' );
+			$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 
 			// Modify manifest to include all phases with real commands
 			// Note: Only include phases that have actual scripts created by scaffold
-			$manifest_path = $packageDir . '/manifest.json';
-			$manifest = json_decode(file_get_contents($packageDir . '/manifest.json'), true);
+			$manifest_path              = $packageDir . '/manifest.json';
+			$manifest                   = json_decode( file_get_contents( $packageDir . '/manifest.json' ), true );
 			$manifest['test']['phases'] = [
-				'globalSetup' => ['./bootstrap/global-setup.sh'],
-				'setup' => ['./bootstrap/setup.sh'],
-				'run' => ['npx playwright test'], // Real Playwright test execution
-				'teardown' => [], // No teardown script is created by scaffold
-				'globalTeardown' => ['./bootstrap/global-teardown.sh']
+				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
+				'setup'          => [ './bootstrap/setup.sh' ],
+				'run'            => [ 'npx playwright test' ], // Real Playwright test execution
+				'teardown'       => [], // No teardown script is created by scaffold
+				'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
 			];
-			file_put_contents($manifest_path, json_encode($manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+			file_put_contents( $manifest_path, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			// Create qit.json configuration
 			$qit_json = [
-				'$schema' => 'https://qit.woo.com/json-schema/qit',
-				'sut' => [
-					'type' => 'plugin',
-					'slug' => 'woocommerce',
-					'source' => ['type' => 'wporg']
+				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'sut'          => [
+					'type'   => 'plugin',
+					'slug'   => 'woocommerce',
+					'source' => [ 'type' => 'wporg' ]
 				],
-				'test_types' => [
+				'test_types'   => [
 					'e2e' => [
 						'default' => [
-							'test_packages' => [$packageDir]
+							'test_packages' => [ $packageDir ]
 						]
 					]
 				],
 				'environments' => [
 					'without-setup' => [
 						'php' => '8.2',
-						'wp' => 'stable'
+						'wp'  => 'stable'
 					]
 				]
 			];
 
 			$configPath = $tempDir . '/qit-config.json';
-			file_put_contents($configPath, json_encode($qit_json, JSON_PRETTY_PRINT));
+			file_put_contents( $configPath, json_encode( $qit_json, JSON_PRETTY_PRINT ) );
 
 			// Run the test
-			$proc = qit([
+			$proc = qit( [
 				'run:e2e',
 				'woocommerce',
 				'--environment=without-setup',
 				'--config=' . $configPath
-			], return_process: true);
+			], return_process: true );
 
 			// Exit code assertion
-			$this->assertSame(0, $proc->getExitCode(),
-				$proc->getErrorOutput() ?: $proc->getOutput());
+			$this->assertSame( 0, $proc->getExitCode(),
+				$proc->getErrorOutput() ?: $proc->getOutput() );
 
 			$out = $proc->getOutput();
 
 			// CTRF collection validation
-			$this->validateCtfrCollection($out, $packageDir);
+			$this->validateCtfrCollection( $out, $packageDir );
 
 		} finally {
 			// Clean up resources
-			if (isset($configPath) && file_exists($configPath)) {
-				unlink($configPath);
+			if ( isset( $configPath ) && file_exists( $configPath ) ) {
+				unlink( $configPath );
 			}
-			if (isset($packageDir) && is_dir($packageDir)) {
-				$this->recursiveRemoveDirectory($packageDir);
+			if ( isset( $packageDir ) && is_dir( $packageDir ) ) {
+				$this->recursiveRemoveDirectory( $packageDir );
 			}
-			if (isset($tempDir) && is_dir($tempDir)) {
-				$this->recursiveRemoveDirectory($tempDir);
+			if ( isset( $tempDir ) && is_dir( $tempDir ) ) {
+				$this->recursiveRemoveDirectory( $tempDir );
 			}
 		}
 	}
 
 	public function test_tp003_local_vs_published_packages(): void {
-		$tempDir = null;
-		$localPackageDir = null;
+		$tempDir              = null;
+		$localPackageDir      = null;
 		$downloadedPackageDir = null;
-		$configPath = null;
+		$configPath           = null;
 
 		try {
 			$tempDir = sys_get_temp_dir() . '/qit_test_' . uniqid();
-			mkdir($tempDir, 0755, true);
-			
+			mkdir( $tempDir, 0755, true );
+
 			// Create local test package
 			$localPackageDir = $tempDir . '/local-test-package';
-			qit([
+			qit( [
 				'package:scaffold',
 				$localPackageDir,
 				'--namespace=qit-test-plugin',
@@ -275,77 +278,77 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 				'--framework=playwright',
 				'--test-type=e2e',
 				'--no-interaction'
-			]);
+			] );
 
-			$this->assertDirectoryExists($localPackageDir);
-			$this->assertFileExists($localPackageDir . '/manifest.json');
+			$this->assertDirectoryExists( $localPackageDir );
+			$this->assertFileExists( $localPackageDir . '/manifest.json' );
 
 			// Modify local package manifest
-			$localManifest = json_decode(file_get_contents($localPackageDir . '/manifest.json'), true);
+			$localManifest                   = json_decode( file_get_contents( $localPackageDir . '/manifest.json' ), true );
 			$localManifest['test']['phases'] = [
-				'globalSetup' => ['./bootstrap/global-setup.sh'],
-				'setup' => ['./bootstrap/setup.sh'],
-				'run' => ['npx playwright test'],
-				'teardown' => [],
-				'globalTeardown' => ['./bootstrap/global-teardown.sh']
+				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
+				'setup'          => [ './bootstrap/setup.sh' ],
+				'run'            => [ 'npx playwright test' ],
+				'teardown'       => [],
+				'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
 			];
-			file_put_contents($localPackageDir . '/manifest.json', json_encode($localManifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+			file_put_contents( $localPackageDir . '/manifest.json', json_encode( $localManifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			// Publish the package
-			$publishProcess = qit([
+			$publishProcess = qit( [
 				'package:publish',
 				$localPackageDir,
 				'1.0.0',
 				'--force'
-			], return_process: true);
+			], return_process: true );
 
 			// Check if publish was successful
-			$this->assertSame(0, $publishProcess->getExitCode(),
-				'Package publish failed: ' . $publishProcess->getErrorOutput() ?: $publishProcess->getOutput());
+			$this->assertSame( 0, $publishProcess->getExitCode(),
+				'Package publish failed: ' . $publishProcess->getErrorOutput() ?: $publishProcess->getOutput() );
 
 			$publishOutput = $publishProcess->getOutput();
-			$this->assertStringContainsString('Package published successfully', $publishOutput);
+			$this->assertStringContainsString( 'Package published successfully', $publishOutput );
 
 			// Download the published package
 			$downloadDir = $tempDir . '/downloaded-packages';
-			mkdir($downloadDir, 0755, true);
-			
-			$downloadProcess = qit([
+			mkdir( $downloadDir, 0755, true );
+
+			$downloadProcess = qit( [
 				'package:download',
 				'qit-test-plugin/tp003-local:1.0.0',
 				'--output-dir=' . $downloadDir,
 				'--force'
-			], return_process: true);
+			], return_process: true );
 
 			// Check if download was successful
-			$this->assertSame(0, $downloadProcess->getExitCode(),
-				'Package download failed: ' . $downloadProcess->getErrorOutput() ?: $downloadProcess->getOutput());
+			$this->assertSame( 0, $downloadProcess->getExitCode(),
+				'Package download failed: ' . $downloadProcess->getErrorOutput() ?: $downloadProcess->getOutput() );
 
 			$downloadOutput = $downloadProcess->getOutput();
-			$this->assertStringContainsString('All 1 package(s) downloaded successfully', $downloadOutput);
+			$this->assertStringContainsString( 'All 1 package(s) downloaded successfully', $downloadOutput );
 
 			// The downloaded package should be in a directory named after the package
 			$downloadedPackageDir = $downloadDir . '/qit-test-plugin-tp003-local-1.0.0';
-			$this->assertDirectoryExists($downloadedPackageDir);
-			$this->assertFileExists($downloadedPackageDir . '/manifest.json');
+			$this->assertDirectoryExists( $downloadedPackageDir );
+			$this->assertFileExists( $downloadedPackageDir . '/manifest.json' );
 
 			// Make bootstrap scripts executable (they lose permissions during zip extraction)
 			$bootstrapDir = $downloadedPackageDir . '/bootstrap';
-			if (is_dir($bootstrapDir)) {
-				foreach (glob($bootstrapDir . '/*.sh') as $script) {
-					chmod($script, 0755);
+			if ( is_dir( $bootstrapDir ) ) {
+				foreach ( glob( $bootstrapDir . '/*.sh' ) as $script ) {
+					chmod( $script, 0755 );
 				}
 			}
 
 			// Create qit.json configuration with both local and "downloaded" (published) packages
 			$qit_json = [
-				'$schema' => 'https://qit.woo.com/json-schema/qit',
-				'sut' => [
-					'type' => 'plugin',
-					'slug' => 'woocommerce',
-					'source' => ['type' => 'wporg']
+				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'sut'          => [
+					'type'   => 'plugin',
+					'slug'   => 'woocommerce',
+					'source' => [ 'type' => 'wporg' ]
 				],
-				'test_types' => [
+				'test_types'   => [
 					'e2e' => [
 						'default' => [
 							'test_packages' => [
@@ -358,53 +361,53 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 				'environments' => [
 					'without-setup' => [
 						'php' => '8.2',
-						'wp' => 'stable'
+						'wp'  => 'stable'
 					]
 				]
 			];
 
 			$configPath = $tempDir . '/qit-config.json';
-			file_put_contents($configPath, json_encode($qit_json, JSON_PRETTY_PRINT));
+			file_put_contents( $configPath, json_encode( $qit_json, JSON_PRETTY_PRINT ) );
 
 			// Run the test with both local and downloaded packages
-			$proc = qit([
+			$proc = qit( [
 				'run:e2e',
 				'woocommerce',
 				'--environment=without-setup',
 				'--config=' . $configPath
-			], return_process: true);
+			], return_process: true );
 
 			// Exit code assertion
-			$this->assertSame(0, $proc->getExitCode(),
-				$proc->getErrorOutput() ?: $proc->getOutput());
+			$this->assertSame( 0, $proc->getExitCode(),
+				$proc->getErrorOutput() ?: $proc->getOutput() );
 
 			$out = $proc->getOutput();
 
 			// Verify both packages were processed
-			$this->assertStringContainsString('Processing package: ' . $localPackageDir, $out);
-			$this->assertStringContainsString('Processing package: ' . $downloadedPackageDir, $out);
-			
+			$this->assertStringContainsString( 'Processing package: ' . $localPackageDir, $out );
+			$this->assertStringContainsString( 'Processing package: ' . $downloadedPackageDir, $out );
+
 			// Verify CTRF collection works for both package types
-			$this->validateCtfrCollection($out, $localPackageDir);
+			$this->validateCtfrCollection( $out, $localPackageDir );
 
 		} finally {
 			// Clean up resources
-			if (isset($configPath) && file_exists($configPath)) {
-				unlink($configPath);
+			if ( isset( $configPath ) && file_exists( $configPath ) ) {
+				unlink( $configPath );
 			}
-			if (isset($localPackageDir) && is_dir($localPackageDir)) {
-				$this->recursiveRemoveDirectory($localPackageDir);
+			if ( isset( $localPackageDir ) && is_dir( $localPackageDir ) ) {
+				$this->recursiveRemoveDirectory( $localPackageDir );
 			}
-			if (isset($downloadedPackageDir) && is_dir($downloadedPackageDir)) {
-				$this->recursiveRemoveDirectory($downloadedPackageDir);
+			if ( isset( $downloadedPackageDir ) && is_dir( $downloadedPackageDir ) ) {
+				$this->recursiveRemoveDirectory( $downloadedPackageDir );
 			}
-			if (isset($tempDir) && is_dir($tempDir)) {
-				$this->recursiveRemoveDirectory($tempDir);
+			if ( isset( $tempDir ) && is_dir( $tempDir ) ) {
+				$this->recursiveRemoveDirectory( $tempDir );
 			}
 		}
 	}
 
-	private function validateCtfrCollection(string $output, string $packageDir): void {
+	private function validateCtfrCollection( string $output, string $packageDir ): void {
 		// Check that CTRF merged report path is in output
 		$this->assertMatchesRegularExpression(
 			'~CTRF merged →\s+.+/ctrf-report\.json~',
@@ -413,68 +416,268 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 		);
 
 		// Extract merged CTRF path and validate its contents
-		if (preg_match('~CTRF merged →\s+(.+/ctrf-report\.json)~', $output, $ctrfMatch)) {
+		if ( preg_match( '~CTRF merged →\s+(.+/ctrf-report\.json)~', $output, $ctrfMatch ) ) {
 			$mergedCtfrPath = $ctrfMatch[1];
-			
+
 			// Look for the artifacts directory pattern in the output
-			if (preg_match('~Allure reports saved to final location: (.+/final/allure)~', $output, $artifactsMatch)) {
-				$artifactsBase = dirname($artifactsMatch[1]);
+			if ( preg_match( '~Allure reports saved to final location: (.+/final/allure)~', $output, $artifactsMatch ) ) {
+				$artifactsBase    = dirname( $artifactsMatch[1] );
 				$actualMergedPath = $artifactsBase . '/ctrf/ctrf-report.json';
-				
+
 				// Validate merged CTRF file exists and has proper structure
-				$this->assertFileExists($actualMergedPath, 'Merged CTRF report should exist');
-				
-				$ctrf = json_decode(file_get_contents($actualMergedPath), true);
-				$this->assertIsArray($ctrf, 'CTRF content should be valid JSON');
-				
+				$this->assertFileExists( $actualMergedPath, 'Merged CTRF report should exist' );
+
+				$ctrf = json_decode( file_get_contents( $actualMergedPath ), true );
+				$this->assertIsArray( $ctrf, 'CTRF content should be valid JSON' );
+
 				// Validate CTRF structure
-				$this->assertArrayHasKey('results', $ctrf, 'CTRF should have results key');
+				$this->assertArrayHasKey( 'results', $ctrf, 'CTRF should have results key' );
 				$results = $ctrf['results'];
-				
-				$this->assertArrayHasKey('tool', $results, 'CTRF results should have tool info');
-				$this->assertArrayHasKey('summary', $results, 'CTRF results should have summary');
-				$this->assertArrayHasKey('tests', $results, 'CTRF results should have tests array');
-				
+
+				$this->assertArrayHasKey( 'tool', $results, 'CTRF results should have tool info' );
+				$this->assertArrayHasKey( 'summary', $results, 'CTRF results should have summary' );
+				$this->assertArrayHasKey( 'tests', $results, 'CTRF results should have tests array' );
+
 				$summary = $results['summary'];
-				$this->assertArrayHasKey('tests', $summary, 'CTRF summary should have tests count');
-				$this->assertArrayHasKey('passed', $summary, 'CTRF summary should have passed count');
-				$this->assertArrayHasKey('failed', $summary, 'CTRF summary should have failed count');
-				
+				$this->assertArrayHasKey( 'tests', $summary, 'CTRF summary should have tests count' );
+				$this->assertArrayHasKey( 'passed', $summary, 'CTRF summary should have passed count' );
+				$this->assertArrayHasKey( 'failed', $summary, 'CTRF summary should have failed count' );
+
 				// Validate that tests were actually executed (at least the scaffolded example test)
-				$this->assertGreaterThanOrEqual(1, $summary['tests'], 'At least one test should have been executed');
+				$this->assertGreaterThanOrEqual( 1, $summary['tests'], 'At least one test should have been executed' );
 			}
 		}
 
 		// Also validate package-local CTRF exists and has correct structure
 		$packageCtfrPath = $packageDir . '/results/ctrf.json';
-		$this->assertFileExists($packageCtfrPath, 'Package-local CTRF report should exist');
-		
-		$packageCtfr = json_decode(file_get_contents($packageCtfrPath), true);
-		$this->assertIsArray($packageCtfr, 'Package-local CTRF content should be valid JSON');
-		
+		$this->assertFileExists( $packageCtfrPath, 'Package-local CTRF report should exist' );
+
+		$packageCtfr = json_decode( file_get_contents( $packageCtfrPath ), true );
+		$this->assertIsArray( $packageCtfr, 'Package-local CTRF content should be valid JSON' );
+
 		// Validate package-local CTRF structure
-		$this->assertArrayHasKey('results', $packageCtfr, 'Package-local CTRF should have results key');
+		$this->assertArrayHasKey( 'results', $packageCtfr, 'Package-local CTRF should have results key' );
 		$packageResults = $packageCtfr['results'];
-		
-		$this->assertArrayHasKey('tool', $packageResults, 'Package-local CTRF results should have tool info');
-		$this->assertArrayHasKey('summary', $packageResults, 'Package-local CTRF results should have summary');
-		$this->assertArrayHasKey('tests', $packageResults, 'Package-local CTRF results should have tests array');
+
+		$this->assertArrayHasKey( 'tool', $packageResults, 'Package-local CTRF results should have tool info' );
+		$this->assertArrayHasKey( 'summary', $packageResults, 'Package-local CTRF results should have summary' );
+		$this->assertArrayHasKey( 'tests', $packageResults, 'Package-local CTRF results should have tests array' );
 	}
 
-	private function recursiveRemoveDirectory(string $dir): void {
-		if (!is_dir($dir)) {
+	public function test_tp004_multiple_test_packages_same_run(): void {
+		$tempDir     = null;
+		$packageDirs = [];
+		$configPath  = null;
+
+		try {
+			$tempDir = sys_get_temp_dir() . '/qit_test_' . uniqid();
+			mkdir( $tempDir, 0755, true );
+
+			// Create 3 local test packages to test "2+" requirement
+			$packageNames = [ 'tp004-package-alpha', 'tp004-package-beta', 'tp004-package-gamma' ];
+
+			foreach ( $packageNames as $index => $packageName ) {
+				$packageDir    = $tempDir . '/' . $packageName;
+				$packageDirs[] = $packageDir;
+
+				// Scaffold test package
+				qit( [
+					'package:scaffold',
+					$packageDir,
+					'--namespace=qit-test-plugin',
+					'--package=' . $packageName,
+					'--framework=playwright',
+					'--test-type=e2e',
+					'--no-interaction'
+				] );
+
+				$this->assertDirectoryExists( $packageDir );
+				$this->assertFileExists( $packageDir . '/manifest.json' );
+				$this->assertFileExists( $packageDir . '/package.json' );
+				$this->assertFileExists( $packageDir . '/playwright.config.js' );
+				$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
+
+				// Modify manifest to include all phases
+				$manifestPath               = $packageDir . '/manifest.json';
+				$manifest                   = json_decode( file_get_contents( $manifestPath ), true );
+				$manifest['test']['phases'] = [
+					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
+					'setup'          => [ './bootstrap/setup.sh' ],
+					'run'            => [ 'npx playwright test' ],
+					'teardown'       => [],
+					'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
+				];
+				file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+
+				// Modify bootstrap scripts to include WordPress option markers for tracking
+				$this->modifyBootstrapScriptsWithWpOptions( $packageDir, $packageName );
+			}
+
+			// Create qit.json configuration with all packages
+			$qit_json = [
+				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'sut'          => [
+					'type'   => 'plugin',
+					'slug'   => 'woocommerce',
+					'source' => [ 'type' => 'wporg' ]
+				],
+				'test_types'   => [
+					'e2e' => [
+						'default' => [
+							'test_packages' => $packageDirs
+						]
+					]
+				],
+				'environments' => [
+					'without-setup' => [
+						'php' => '8.2',
+						'wp'  => 'stable'
+					]
+				]
+			];
+
+			$configPath = $tempDir . '/qit-config.json';
+			file_put_contents( $configPath, json_encode( $qit_json, JSON_PRETTY_PRINT ) );
+
+			// Run the test with all packages
+			$proc = qit( [
+				'run:e2e',
+				'woocommerce',
+				'--environment=without-setup',
+				'--config=' . $configPath
+			], return_process: true );
+
+			// Exit code assertion
+			$this->assertSame( 0, $proc->getExitCode(),
+				$proc->getErrorOutput() ?: $proc->getOutput() );
+
+			$out = $proc->getOutput();
+
+			// Verify all packages were processed
+			foreach ( $packageDirs as $packageDir ) {
+				$this->assertStringContainsString( 'Processing package: ' . $packageDir, $out,
+					'Package ' . basename( $packageDir ) . ' should be processed' );
+			}
+
+			// Verify phases execute for each package
+			// Count occurrences of each phase to ensure they run for all packages
+			preg_match_all( '~\((globalSetup|setup|run|teardown|globalTeardown)\)~', $out, $phaseMatches );
+			$phaseCounts = array_count_values( $phaseMatches[1] );
+
+			// Each phase should run once per package (except teardown which is empty)
+			$expectedCount = count( $packageDirs );
+			$this->assertGreaterThanOrEqual( $expectedCount, $phaseCounts['globalSetup'] ?? 0,
+				'globalSetup should run for all packages' );
+			$this->assertGreaterThanOrEqual( $expectedCount, $phaseCounts['setup'] ?? 0,
+				'setup should run for all packages' );
+			$this->assertGreaterThanOrEqual( $expectedCount, $phaseCounts['run'] ?? 0,
+				'run should run for all packages' );
+			$this->assertGreaterThanOrEqual( $expectedCount, $phaseCounts['globalTeardown'] ?? 0,
+				'globalTeardown should run for all packages' );
+
+			// Verify CTRF results are collected from all packages
+			$this->assertMatchesRegularExpression(
+				'~CTRF merged →\s+.+/ctrf-report\.json~',
+				$out,
+				'CTRF merged report path should be in output'
+			);
+
+			// Verify merged CTRF contains results from all packages
+			if ( preg_match( '~CTRF merged →\s+(.+/ctrf-report\.json)~', $out, $ctrfMatch ) ) {
+				if ( preg_match( '~Allure reports saved to final location: (.+/final/allure)~', $out, $artifactsMatch ) ) {
+					$artifactsBase  = dirname( $artifactsMatch[1] );
+					$mergedCtfrPath = $artifactsBase . '/ctrf/ctrf-report.json';
+
+					if ( file_exists( $mergedCtfrPath ) ) {
+						$ctrf_json = json_decode( file_get_contents( $mergedCtfrPath ), true );
+						$this->assertIsArray( $ctrf_json, 'Merged CTRF content should be valid JSON' );
+						$this->assertCtrfMatchesSnapshot( $ctrf_json );
+					} else {
+						$this->fail( 'Merged CTRF report path not found in output or file does not exist: ' . $mergedCtfrPath );
+					}
+				}
+			}
+
+			// Verify no interference between packages by checking execution completed successfully
+			$this->assertStringNotContainsString( 'FATAL ERROR', $out,
+				'No fatal errors should occur during execution' );
+			$this->assertStringNotContainsString( 'Package execution failed', $out,
+				'All packages should execute successfully' );
+
+		} finally {
+			// Clean up resources
+			if ( isset( $configPath ) && file_exists( $configPath ) ) {
+				unlink( $configPath );
+			}
+			foreach ( $packageDirs as $packageDir ) {
+				if ( is_dir( $packageDir ) ) {
+					$this->recursiveRemoveDirectory( $packageDir );
+				}
+			}
+			if ( isset( $tempDir ) && is_dir( $tempDir ) ) {
+				$this->recursiveRemoveDirectory( $tempDir );
+			}
+		}
+	}
+
+	private function recursiveRemoveDirectory( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
 			return;
 		}
 
-		$files = array_diff(scandir($dir), ['.', '..']);
-		foreach ($files as $file) {
+		$files = array_diff( scandir( $dir ), [ '.', '..' ] );
+		foreach ( $files as $file ) {
 			$path = "$dir/$file";
-			if (is_dir($path)) {
-				$this->recursiveRemoveDirectory($path);
+			if ( is_dir( $path ) ) {
+				$this->recursiveRemoveDirectory( $path );
 			} else {
-				unlink($path);
+				unlink( $path );
 			}
 		}
-		rmdir($dir);
+		rmdir( $dir );
+	}
+
+	/**
+	 * Modify bootstrap scripts to include WordPress option markers for tracking test execution phases.
+	 *
+	 * @param string $packageDir The package directory path
+	 * @param string $packageName The package name to use in option keys
+	 */
+	private function modifyBootstrapScriptsWithWpOptions( string $packageDir, string $packageName ): void {
+		// Modify global-setup.sh
+		$globalSetupPath = $packageDir . '/bootstrap/global-setup.sh';
+		if ( file_exists( $globalSetupPath ) ) {
+			$content = file_get_contents( $globalSetupPath );
+			$content = str_replace(
+				'echo "[globalSetup] Done."',
+				"wp option update \"{$packageName}_global_setup_ran\" \"true\"\necho \"[globalSetup] Done.\"",
+				$content
+			);
+			file_put_contents( $globalSetupPath, $content );
+		}
+
+		// Modify setup.sh
+		$setupPath = $packageDir . '/bootstrap/setup.sh';
+		if ( file_exists( $setupPath ) ) {
+			$content = file_get_contents( $setupPath );
+			$content = str_replace(
+				'echo "[setup] Done."',
+				"# Verify global setup ran and set setup marker\nif wp option get \"{$packageName}_global_setup_ran\" >/dev/null 2>&1; then\n    wp option update \"{$packageName}_setup_ran\" \"true\"\n    echo \"[setup] Global setup verified for {$packageName}\"\nelse\n    echo \"[setup] ERROR: Global setup did not run for {$packageName}\"\n    exit 1\nfi\necho \"[setup] Done.\"",
+				$content
+			);
+			file_put_contents( $setupPath, $content );
+		}
+
+		// Modify global-teardown.sh
+		$globalTeardownPath = $packageDir . '/bootstrap/global-teardown.sh';
+		if ( file_exists( $globalTeardownPath ) ) {
+			$content = file_get_contents( $globalTeardownPath );
+			$content = str_replace(
+				'echo "[globalTeardown] Done."',
+				"# Check if phase markers exist (they may not persist across all phases)\nif wp option get \"{$packageName}_global_setup_ran\" >/dev/null 2>&1 || \\\n   wp option get \"{$packageName}_setup_ran\" >/dev/null 2>&1; then\n    echo \"[globalTeardown] Phase markers found for {$packageName} - cleaning up\"\n    # Clean up any existing markers\n    wp option delete \"{$packageName}_global_setup_ran\" 2>/dev/null || true\n    wp option delete \"{$packageName}_setup_ran\" 2>/dev/null || true\nelse\n    echo \"[globalTeardown] No phase markers found for {$packageName} (this is expected if database was reset)\"\nfi\necho \"[globalTeardown] Done.\"",
+				$content
+			);
+			file_put_contents( $globalTeardownPath, $content );
+		}
 	}
 }

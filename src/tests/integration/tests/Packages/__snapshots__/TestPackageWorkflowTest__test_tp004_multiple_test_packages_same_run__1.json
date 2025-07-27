@@ -1,0 +1,95 @@
+{
+    "results": {
+        "tool": {
+            "name": "playwright"
+        },
+        "summary": {
+            "tests": 3,
+            "passed": 3,
+            "failed": 0,
+            "pending": 0,
+            "skipped": 0,
+            "other": 0,
+            "start": 1000000000000,
+            "stop": 1000000001000,
+            "suites": 0
+        },
+        "tests": [
+            {
+                "name": "site is reachable and has a body",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "rawStatus": "passed",
+                "tags": [],
+                "type": "e2e",
+                "filePath": "/tmp/qit_test_NORMALIZED/tp004-package-alpha/tests/example.spec.js",
+                "retries": 0,
+                "flaky": false,
+                "steps": [],
+                "suite": "chromium > example.spec.js",
+                "attachments": [],
+                "stdout": [],
+                "stderr": [],
+                "extra": {
+                    "annotations": [],
+                    "packageSlug": "/tmp/qit_test_NORMALIZED/tp004-package-alpha",
+                    "phase": "run",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin"
+                }
+            },
+            {
+                "name": "site is reachable and has a body",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "rawStatus": "passed",
+                "tags": [],
+                "type": "e2e",
+                "filePath": "/tmp/qit_test_NORMALIZED/tp004-package-beta/tests/example.spec.js",
+                "retries": 0,
+                "flaky": false,
+                "steps": [],
+                "suite": "chromium > example.spec.js",
+                "attachments": [],
+                "stdout": [],
+                "stderr": [],
+                "extra": {
+                    "annotations": [],
+                    "packageSlug": "/tmp/qit_test_NORMALIZED/tp004-package-beta",
+                    "phase": "run",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin"
+                }
+            },
+            {
+                "name": "site is reachable and has a body",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "rawStatus": "passed",
+                "tags": [],
+                "type": "e2e",
+                "filePath": "/tmp/qit_test_NORMALIZED/tp004-package-gamma/tests/example.spec.js",
+                "retries": 0,
+                "flaky": false,
+                "steps": [],
+                "suite": "chromium > example.spec.js",
+                "attachments": [],
+                "stdout": [],
+                "stderr": [],
+                "extra": {
+                    "annotations": [],
+                    "packageSlug": "/tmp/qit_test_NORMALIZED/tp004-package-gamma",
+                    "phase": "run",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin"
+                }
+            }
+        ]
+    }
+}
