@@ -67,9 +67,12 @@ class ResultCollector {
 			return;                 // optional → skip
 		}
 
-		$safe = ltrim( str_replace( [ '/', ':' ], '_', $slug ), '._' );
-		$dst  = $dir . '/ctrf/' . $safe . '.json';
-		@mkdir( dirname( $dst ), 0755, true );
+ 	$safe = ltrim( str_replace( [ '/', ':' ], '_', $slug ), '._' );
+ 	$dst  = $dir . '/ctrf/' . $safe . '.json';
+ 	$dir_path = dirname( $dst );
+ 	if ( ! is_dir( $dir_path ) ) {
+ 		mkdir( $dir_path, 0755, true );
+ 	}
 
 		/* 1 — host path ------------------------------------------------------- */
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
@@ -109,8 +112,11 @@ class ResultCollector {
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
 
-		$dst = $dir . '/allure/' . basename( $slug );
-		@mkdir( dirname( $dst ), 0755, true );
+ 	$dst = $dir . '/allure/' . basename( $slug );
+ 	$dir_path = dirname( $dst );
+ 	if ( ! is_dir( $dir_path ) ) {
+ 		mkdir( $dir_path, 0755, true );
+ 	}
 
 		/* host first */
 		if ( is_dir( $host_src ) ) {
@@ -189,7 +195,10 @@ class ResultCollector {
 
 		if ( file_exists( $ctrf_dir . '/ctrf-report.json' ) ) {
 			// Remove existing file to prevent rename() failures on reruns
-			@unlink( $final_dir . '/ctrf-report.json' );
+			$target_file = $final_dir . '/ctrf-report.json';
+			if ( file_exists( $target_file ) ) {
+				unlink( $target_file );
+			}
 			rename( $ctrf_dir . '/ctrf-report.json', $final_dir . '/ctrf-report.json' );
 		}
 	}
