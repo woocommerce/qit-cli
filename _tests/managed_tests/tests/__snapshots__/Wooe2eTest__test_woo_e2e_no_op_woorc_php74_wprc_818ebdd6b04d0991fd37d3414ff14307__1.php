@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "399 total, 374 passed, 0 failed, 25 skipped.",
+            "test_summary": "385 total, 335 passed, 0 failed, 50 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -50,13 +50,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 92,
-                "numPendingTestSuites": 13,
-                "numTotalTestSuites": 105,
+                "numPassedTestSuites": 79,
+                "numPendingTestSuites": 21,
+                "numTotalTestSuites": 100,
                 "numFailedTests": 0,
-                "numPassedTests": 374,
-                "numPendingTests": 25,
-                "numTotalTests": 399,
+                "numPassedTests": 335,
+                "numPendingTests": 50,
+                "numTotalTests": 385,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -76,15 +76,9 @@
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "authenticate admin": [
+                            "authenticate users": [
                                 {
-                                    "title": "authenticate admin",
-                                    "status": "passed"
-                                }
-                            ],
-                            "authenticate customer": [
-                                {
-                                    "title": "authenticate customer",
+                                    "title": "authenticate users",
                                     "status": "passed"
                                 }
                             ]
@@ -95,33 +89,9 @@
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "configure HPOS": [
+                            "setup site": [
                                 {
-                                    "title": "configure HPOS",
-                                    "status": "passed"
-                                }
-                            ],
-                            "disable coming soon": [
-                                {
-                                    "title": "disable coming soon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "disable onboarding wizard": [
-                                {
-                                    "title": "disable onboarding wizard",
-                                    "status": "passed"
-                                }
-                            ],
-                            "determine if multisite": [
-                                {
-                                    "title": "determine if multisite",
-                                    "status": "passed"
-                                }
-                            ],
-                            "general settings": [
-                                {
-                                    "title": "general settings",
+                                    "title": "setup site",
                                     "status": "passed"
                                 }
                             ]
@@ -701,31 +671,6 @@
                         }
                     },
                     {
-                        "file": "coupons\\/checkout-block-coupons.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Checkout Block Applying Coupons": [
-                                {
-                                    "title": "allows checkout block to apply coupon of any type",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "allows checkout block to apply multiple coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "prevents checkout block applying same coupon twice",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "prevents checkout block applying coupon with usage limit",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "coupons\\/create-coupon.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1183,32 +1128,6 @@
                         }
                     },
                     {
-                        "file": "editor\\/create-woocommerce-blocks.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Add WooCommerce Blocks Into Page": [
-                                {
-                                    "title": "can insert all WooCommerce blocks into page",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "editor\\/create-woocommerce-patterns.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Add WooCommerce Patterns Into Page": [
-                                {
-                                    "title": "can insert WooCommerce patterns into page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "email\\/account-emails.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1291,19 +1210,6 @@
                             "WooCommerce Email Settings List View": [
                                 {
                                     "title": "Email settings list view renders correctly and allows to edit email status and search",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email\\/settings-email-style-sync.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Email Style Sync": [
-                                {
-                                    "title": "Auto-sync toggle in email settings works correctly",
                                     "status": "passed"
                                 }
                             ]
@@ -1840,13 +1746,13 @@
                     {
                         "file": "product\\/block-editor\\/create-grouped-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Grouped product": [
                                 {
                                     "title": "can create a grouped product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1854,27 +1760,27 @@
                     {
                         "file": "product\\/block-editor\\/create-simple-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Simple product form": [
                                 {
                                     "title": "renders each block without error",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1912,38 +1818,20 @@
                     {
                         "file": "product\\/block-editor\\/disable-block-product-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Disable block product editor": [
                                 {
                                     "title": "is hooked up to sidebar \\"Add New\\"",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can be disabled from the header",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can be disabled from settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/enable-block-product-editor.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Enable block product editor": [],
-                            "Enable block product editor > Enabled": [
-                                {
-                                    "title": "is not hooked up to sidebar \\"Add New\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can enable the block product editor",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1951,13 +1839,13 @@
                     {
                         "file": "product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1965,13 +1853,13 @@
                     {
                         "file": "product\\/block-editor\\/organization-tab-product-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Create product - Organization tab": [
                                 {
                                     "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1979,30 +1867,30 @@
                     {
                         "file": "product\\/block-editor\\/product-attributes-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "add local attribute (with terms) to the Product": [
                                 {
                                     "title": "add local attribute (with terms) to the Product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can add existing attributes": [
                                 {
                                     "title": "can add existing attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can update product attributes": [
                                 {
                                     "title": "can update product attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can remove product attributes": [
                                 {
                                     "title": "can remove product attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2010,26 +1898,26 @@
                     {
                         "file": "product\\/block-editor\\/product-edit-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Publish dropdown options": [
                                 {
                                     "title": "can schedule a product publication",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can duplicate a product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can update the general information of a product": [
                                 {
                                     "title": "can update the general information of a product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2037,30 +1925,30 @@
                     {
                         "file": "product\\/block-editor\\/product-images-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can add images": [
                                 {
                                     "title": "can add images",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can replace an image": [
                                 {
                                     "title": "can replace an image",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can remove an image": [
                                 {
                                     "title": "can remove an image",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can set an image as cover": [
                                 {
                                     "title": "can set an image as cover",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2068,30 +1956,30 @@
                     {
                         "file": "product\\/block-editor\\/product-inventory-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can update sku": [
                                 {
                                     "title": "can update sku",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can update stock status": [
                                 {
                                     "title": "can update stock status",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can track stock quantity": [
                                 {
                                     "title": "can track stock quantity",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can limit purchases": [
                                 {
                                     "title": "can limit purchases",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2799,7 +2687,7 @@
                         }
                     }
                 ],
-                "summary": "399 total, 374 passed, 0 failed, 25 skipped."
+                "summary": "385 total, 335 passed, 0 failed, 50 skipped."
             }
         },
         {
@@ -2809,11 +2697,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 399,
-                        "passed": 374,
+                        "tests": 385,
+                        "passed": 335,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 25,
+                        "skipped": 50,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2838,7 +2726,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": [
                                     {
@@ -2854,7 +2744,7 @@
                             }
                         },
                         {
-                            "name": "authenticate admin",
+                            "name": "authenticate users",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -2865,7 +2755,16 @@
                             "filePath": "\\/normalized\\/path\\/auth.setup.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "authenticate admin",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "authenticate customer",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
                             "attachments": [],
                             "stdout": [
@@ -2877,30 +2776,7 @@
                             }
                         },
                         {
-                            "name": "authenticate customer",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/auth.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "configure HPOS",
+                            "name": "setup site",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -2911,105 +2787,38 @@
                             "filePath": "\\/normalized\\/path\\/site.setup.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "configure HPOS",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "disable coming soon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "disable onboarding wizard",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "determine if multisite",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "general settings",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "disable coming soon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Failed to update onboarding profile: \\u001b[90mundefined\\u001b[39m\\n"
                             ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "disable onboarding wizard",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "determine if multisite",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "general settings",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -3072,7 +2881,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -3095,7 +2907,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -3118,7 +2932,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -3141,7 +2957,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -3164,7 +2982,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -3187,7 +3007,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -3210,7 +3032,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -3599,7 +3424,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4128,7 +3955,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4174,7 +4003,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4210,7 +4042,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4262,7 +4096,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4314,7 +4152,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4337,7 +4178,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4360,7 +4203,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4383,7 +4228,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4452,7 +4299,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4475,7 +4324,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4498,7 +4349,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4567,7 +4420,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4590,7 +4447,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4613,7 +4473,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4636,7 +4499,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4659,7 +4525,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4682,7 +4551,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4705,7 +4577,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4728,7 +4603,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4751,7 +4629,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4774,7 +4655,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4797,7 +4681,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4866,7 +4752,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -4898,7 +4786,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5058,7 +4950,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5090,7 +4984,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5186,7 +5084,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5383,99 +5283,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows checkout block to apply coupon of any type",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "allows checkout block to apply multiple coupons",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "prevents checkout block applying same coupon twice",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "prevents checkout block applying coupon with usage limit",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-block-coupons.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/checkout-block-coupons.spec.js > Checkout Block Applying Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             }
@@ -5511,7 +5322,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5547,7 +5360,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5583,7 +5398,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5623,7 +5440,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5663,7 +5482,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5707,7 +5528,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5751,7 +5574,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5795,7 +5620,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5839,7 +5666,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5883,7 +5712,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5927,7 +5758,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -5967,7 +5800,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6011,7 +5846,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6055,7 +5892,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6099,7 +5938,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6143,7 +5984,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6187,7 +6030,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6217,7 +6062,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customer\\/customer-list.spec.js",
-                                            "line": 94,
+                                            "line": 98,
                                             "column": 7
                                         }
                                     }
@@ -6251,7 +6096,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6295,7 +6142,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -6473,12 +6322,7 @@
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Expect \\"poll toEqual\\"",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
                             "attachments": [],
                             "stdout": [
@@ -7617,7 +7461,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7669,70 +7515,6 @@
                             }
                         },
                         {
-                            "name": "can insert all WooCommerce blocks into page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-woocommerce-blocks.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/create-woocommerce-blocks.spec.js > Add WooCommerce Blocks Into Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/create-woocommerce-blocks.spec.js",
-                                            "line": 249,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            }
-                        },
-                        {
-                            "name": "can insert WooCommerce patterns into page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-woocommerce-patterns.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Insert Hero Product 3 Split pattern",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Insert Featured Category Cover Image pattern",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > editor\\/create-woocommerce-patterns.spec.js > Add WooCommerce Patterns Into Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
                             "name": "New customer should receive an email with login details",
                             "status": "passed",
                             "duration": 999,
@@ -7759,7 +7541,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7795,7 +7579,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7831,7 +7617,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7854,7 +7642,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7886,7 +7676,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7918,7 +7710,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7950,7 +7744,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -7982,7 +7778,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8005,7 +7803,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8024,29 +7824,6 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email\\/settings-email-listing.spec.js > WooCommerce Email Settings List View",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "Auto-sync toggle in email settings works correctly",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email-style-sync.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email-style-sync.spec.js > Email Style Sync",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8588,7 +8365,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8611,7 +8390,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8634,7 +8415,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8657,7 +8441,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8680,7 +8467,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8743,10 +8533,21 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": [
+                                {
+                                    "status": "failed",
+                                    "duration": 23769,
+                                    "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n",
+                                    "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/add-product-task.spec.js:98:5",
+                                    "snippet": "\\u001b[0m \\u001b[90m  96 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m  97 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Physical product\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m  98 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m  99 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 100 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Variable product\'\\u001b[39m } )\\n \\u001b[90m 101 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m"
+                                }
+                            ]
                         },
                         {
                             "name": "Products page redirects to add product task when no products exist",
@@ -8789,7 +8590,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8812,7 +8615,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8835,7 +8641,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8858,7 +8666,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8881,7 +8691,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8904,7 +8716,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8927,7 +8741,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -8950,7 +8766,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9182,7 +9000,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9205,7 +9025,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9235,7 +9057,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js",
-                                            "line": 110,
+                                            "line": 117,
                                             "column": 6
                                         }
                                     }
@@ -9260,7 +9082,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9283,7 +9108,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9306,7 +9133,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9329,7 +9158,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9352,7 +9184,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9411,7 +9245,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9434,7 +9270,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9457,7 +9296,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9480,7 +9321,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9503,7 +9346,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9667,7 +9512,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9690,7 +9537,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9713,7 +9562,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9736,7 +9587,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9759,7 +9612,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9782,7 +9637,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9805,7 +9662,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9849,7 +9708,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9872,7 +9733,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9895,14 +9758,16 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": [
                                     {
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js",
-                                            "line": 117,
+                                            "line": 121,
                                             "column": 8
                                         }
                                     }
@@ -9927,7 +9792,10 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -9950,7 +9818,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -10111,18 +9981,20 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
                         },
                         {
                             "name": "can create a grouped product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-grouped-product-block-editor.spec.js",
@@ -10136,16 +10008,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-grouped-product-block-editor.spec.js",
+                                            "line": 54,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "renders each block without error",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
@@ -10159,132 +10040,33 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 44,
+                                            "column": 16
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can create a simple product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add simple product description",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add full product description",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify full product description",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product summary",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add custom fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add inventory details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add shipping details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the saved product in frontend",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can not create a product with duplicated SKU",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add inventory details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the product",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can a shopper add the simple product to the cart",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
@@ -10298,7 +10080,80 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "can not create a product with duplicated SKU",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "can a shopper add the simple product to the cart",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -10463,11 +10318,11 @@
                         },
                         {
                             "name": "is hooked up to sidebar \\"Add New\\"",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
@@ -10481,16 +10336,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can be disabled from the header",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
@@ -10504,16 +10368,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can be disabled from settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
@@ -10527,62 +10400,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "is not hooked up to sidebar \\"Add New\\"",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/enable-block-product-editor.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/enable-block-product-editor.spec.js > Enable block product editor > Enabled",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can enable the block product editor",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/enable-block-product-editor.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/enable-block-product-editor.spec.js > Enable block product editor > Enabled",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can create a product with linked products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.js",
@@ -10596,16 +10432,33 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                                            "line": 32,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                                            "line": 86,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can create a simple product with categories, tags and with password required",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/organization-tab-product-block-editor.spec.js",
@@ -10619,43 +10472,39 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/organization-tab-product-block-editor.spec.js",
+                                            "line": 32,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/organization-tab-product-block-editor.spec.js",
+                                            "line": 41,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "add local attribute (with terms) to the Product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor -> Organization tab -> Click on `Add new`",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "create local attributes with terms",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10663,47 +10512,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 111,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can add existing attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, Organization tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add an existing attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor after product update",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10711,51 +10544,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 282,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, Organization tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"wait for the attribute\'s terms to load\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update product\'s attribute terms",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor after product update",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10763,43 +10576,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 368,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can remove product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, Organization tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove product\'s attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor after update",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10807,39 +10608,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 464,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update the general information of a product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "edit the product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "edit the product description and summary",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the updated product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10847,16 +10640,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
+                                            "line": 38,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can schedule a product publication",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
@@ -10870,16 +10672,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
+                                            "line": 93,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can duplicate a product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
@@ -10893,16 +10704,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
+                                            "line": 93,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can delete a product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
@@ -10916,39 +10736,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
+                                            "line": 93,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can add images",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add images",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10956,39 +10768,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 81,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can replace an image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "replace an image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10996,39 +10800,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 133,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can remove an image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove an image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11036,39 +10832,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 190,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can set an image as cover",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove an image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11076,43 +10864,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 241,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update sku",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sku value",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11120,43 +10896,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 56,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update stock status",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sku value",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11164,67 +10928,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 92,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can track stock quantity",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "enable track stock quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update available quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "return to product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update available quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11232,51 +10960,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 121,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "ensure limit purchases is disabled",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add 2 items to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "return to product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "enable limit purchases",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify you cannot order more than 1 item",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11284,7 +10992,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 199,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -11312,7 +11029,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js",
-                                            "line": 143,
+                                            "line": 150,
                                             "column": 6
                                         }
                                     }
@@ -11638,7 +11355,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -11706,7 +11425,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -11770,7 +11491,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -11806,7 +11529,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -11842,7 +11567,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -11878,7 +11605,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -11922,7 +11651,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -11970,7 +11701,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12018,7 +11751,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12050,7 +11785,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12082,7 +11819,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12118,7 +11857,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12154,7 +11895,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12194,7 +11937,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12230,7 +11975,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12253,7 +12000,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12276,7 +12025,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12312,7 +12063,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12348,7 +12101,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12384,7 +12139,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12420,7 +12177,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12456,7 +12215,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12486,7 +12247,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
-                                            "line": 104,
+                                            "line": 103,
                                             "column": 15
                                         }
                                     }
@@ -12518,7 +12279,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
-                                            "line": 104,
+                                            "line": 103,
                                             "column": 15
                                         }
                                     }
@@ -12550,7 +12311,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
-                                            "line": 104,
+                                            "line": 103,
                                             "column": 15
                                         }
                                     }
@@ -12604,7 +12365,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12656,7 +12419,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12708,7 +12473,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12756,7 +12523,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12779,7 +12548,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12802,7 +12573,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12825,7 +12598,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12848,7 +12623,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12871,7 +12648,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12894,7 +12673,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12949,7 +12730,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12972,7 +12755,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -12995,7 +12780,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13041,7 +12828,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13087,7 +12876,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13156,7 +12947,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13179,7 +12972,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13202,7 +12997,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13225,7 +13022,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13294,7 +13093,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13792,7 +13593,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13838,7 +13641,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13861,7 +13666,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13884,7 +13691,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13907,7 +13716,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13930,7 +13741,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13976,7 +13789,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -13999,7 +13814,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14022,7 +13839,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14045,7 +13864,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14068,7 +13889,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14091,7 +13914,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14114,7 +13939,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14142,7 +13969,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14206,7 +14035,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14229,7 +14060,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14315,7 +14148,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14359,7 +14194,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14387,7 +14224,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14423,7 +14262,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14459,7 +14300,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14482,7 +14325,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14505,7 +14350,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
@@ -14533,7 +14380,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             }
