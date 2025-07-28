@@ -7,10 +7,18 @@ use QIT_CLI\PreCommand\Pipeline\PipelineStage;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\PreCommand\Results\LocalTestResult;
 use QIT_CLI\PreCommand\SmartOptionExtraction;
+use QIT_CLI\PreCommand\Configuration\ConfigMerger;
+use QIT_CLI\App;
 
 class BuildLocalTestResultStage implements PipelineStage {
 
 	use SmartOptionExtraction;
+
+	private ConfigMerger $merger;
+
+	public function __construct( ConfigMerger $merger ) {
+		$this->merger = $merger;
+	}
 
 	public function process( PipelineContext $context ): PipelineContext {
 		$cmd = $context->command;
@@ -25,19 +33,24 @@ class BuildLocalTestResultStage implements PipelineStage {
 		$test_type = $cmd->get_test_type();
 		$profile   = $cmd->get_test_profile();
 
+		// Extract CLI overrides
+		$cli_overrides = $this->extract_explicit_options(
+			$cmd,
+			$context->input
+		);
+
+		// Get config values from qit.json
 		try {
-			$test_cfg = $resolved_config->get_test_config( $test_type, $profile );
+			$config_values = $resolved_config->get_test_config( $test_type, $profile );
 		} catch ( \RuntimeException $e ) {
-			$test_cfg = []; // run with defaults
+			$config_values = []; // run with defaults
 		}
 
-		// CLI overrides for test‑specific options
-		$overrides = $this->extract_explicit_options(
-			$cmd,
-			$context->input,
-			[ 'phpstan_level' => 'phpstan_level' ]
-		);
-		$test_cfg  = array_merge( $test_cfg, $overrides );
+		// Get command defaults
+		$command_defaults = $this->extract_option_defaults( $cmd );
+
+		// Use ConfigMerger to apply proper precedence
+		$test_cfg = $this->merger->merge( $cli_overrides, $config_values, $command_defaults );
 
 		$result = new LocalTestResult( $resolved_config, $env_result->env_info, $test_packages, $test_cfg );
 		$context->set_result( $result );

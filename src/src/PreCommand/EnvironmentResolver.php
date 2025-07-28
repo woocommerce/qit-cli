@@ -10,6 +10,7 @@ use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\Environment\EnvVolumeParser;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\PreCommand\Configuration\ResolvedConfiguration;
+use QIT_CLI\PreCommand\Configuration\ConfigMerger;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
 use QIT_CLI\PreCommand\Extensions\VersionResolver;
 use QIT_CLI\PreCommand\Results\EnvironmentResult;
@@ -21,17 +22,20 @@ class EnvironmentResolver {
 	protected EnvParser $env_parser;
 	protected EnvVolumeParser $volume_parser;
 	protected VersionResolver $version_resolver;
+	protected ConfigMerger $config_merger;
 
 	public function __construct(
 		ExtensionResolver $extension_resolver,
 		EnvParser $env_parser,
 		EnvVolumeParser $volume_parser,
-		VersionResolver $version_resolver = null
+		VersionResolver $version_resolver,
+		ConfigMerger $config_merger
 	) {
 		$this->extension_resolver = $extension_resolver;
 		$this->env_parser         = $env_parser;
 		$this->volume_parser      = $volume_parser;
-		$this->version_resolver   = $version_resolver ?: App::make( VersionResolver::class );
+		$this->version_resolver   = $version_resolver;
+		$this->config_merger      = $config_merger;
 	}
 
 	/**
@@ -44,9 +48,9 @@ class EnvironmentResolver {
 	public function resolve(
 		ResolvedConfiguration $config,
 		string $environment_name,
+		InputInterface $input,
 		bool $should_prepare = true,
-		array $cli_overrides = [],
-		InputInterface $input
+		array $cli_overrides = []
 	): EnvironmentResult {
 		// Get environment configuration from qit.json, if it exists
 		try {
@@ -111,8 +115,8 @@ class EnvironmentResolver {
 	 * @return array<string, mixed>
 	 */
 	protected function apply_overrides( array $env_config, array $overrides, InputInterface $input ): array {
-		// Start with defaults from InputInterface
-		$defaults = [
+		// Extract command defaults from InputInterface
+		$command_defaults = [
 			'php'            => $input->getOption( 'php' ),
 			'wp'             => $input->getOption( 'wp' ),
 			'woo'            => $input->getOption( 'woo' ),
@@ -125,13 +129,16 @@ class EnvironmentResolver {
 			'env_files'      => $input->getOption( 'env_file' ),
 		];
 
-		// Merge JSON config over defaults
-		$env_config = array_merge( $defaults, $env_config );
+		// 1) precedence merge for all keys
+		$env_config = $this->config_merger->merge( $overrides, $env_config, $command_defaults );
 
-		// Merge explicit CLI overrides last
-		foreach ( [ 'php', 'wp', 'woo', 'object_cache' ] as $key ) {
-			if ( isset( $overrides[ $key ] ) ) {
-				$env_config[ $key ] = $overrides[ $key ];
+		// 2) array‑append rule
+		foreach ( ['plugins','themes','volumes','php_extensions','env_vars','env_files'] as $k ) {
+			if ( isset( $overrides[$k] ) ) {
+				$env_config[$k] = array_merge(
+					(array)($env_config[$k] ?? []),
+					(array)$overrides[$k]
+				);
 			}
 		}
 
@@ -141,16 +148,6 @@ class EnvironmentResolver {
 		}
 
 		// No conversion for WooCommerce - keep everything as is
-
-		// Merge arrays (append CLI values to JSON/defaults)
-		foreach ( [ 'plugins', 'themes', 'volumes', 'php_extensions', 'env_vars', 'env_files' ] as $key ) {
-			if ( isset( $overrides[ $key ] ) ) {
-				$env_config[ $key ] = array_merge(
-					$env_config[ $key ] ?? [],
-					is_array( $overrides[ $key ] ) ? $overrides[ $key ] : [ $overrides[ $key ] ]
-				);
-			}
-		}
 
 		// Handle environment variables
 		if ( isset( $env_config['env_vars'] ) || isset( $env_config['env_files'] ) ) {

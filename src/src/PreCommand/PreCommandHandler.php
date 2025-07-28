@@ -97,31 +97,4 @@ class PreCommandHandler {
 		return $context->get_result();
 	}
 
-	/**
-	 * Define option name mappings for environment commands.
-	 *
-	 * @return array<string, string> Mapping of CLI option names to config keys.
-	 */
-	protected function get_environment_option_mapping(): array {
-		return [
-			'plugin'        => 'plugins',
-			'theme'         => 'themes',
-			'volume'        => 'volumes',
-			'php_extension' => 'php_extensions',
-			'env'           => 'env_vars',
-			'env_file'      => 'env_files',
-		];
-	}
-
-	/**
-	 * Define option name mappings for test commands.
-	 *
-	 * @return array<string, string> Mapping of CLI option names to config keys.
-	 */
-	protected function get_test_option_mapping(): array {
-		return [
-			'phpstan_level' => 'phpstan_level',
-			'test_package'  => 'test_packages',
-		];
-	}
 }

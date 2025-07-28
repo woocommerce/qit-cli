@@ -9,18 +9,32 @@ use function QIT_CLI\is_option_explicitly_provided;
 
 trait SmartOptionExtraction {
 	/**
+	 * Normalize CLI option name to config key.
+	 * For multi-value options use a plural key, otherwise keep original.
+	 *
+	 * @param string      $cliName CLI option name
+	 * @param InputOption $option  Option definition
+	 * @return string Normalized config key
+	 */
+	private static function normaliseKey( string $cliName, InputOption $option ): string {
+		// For multi-value options use a plural key, otherwise keep original.
+		if ( $option->isArray() ) {
+			return str_ends_with( $cliName, 's' ) ? $cliName : $cliName . 's';
+		}
+		return $cliName;
+	}
+
+	/**
 	 * Extract all explicitly provided options from input, excluding framework options.
 	 *
-	 * @param Command               $command The command to get option definitions from.
-	 * @param InputInterface        $input The input to extract from.
-	 * @param array<string, string> $option_mapping Optional mapping of option names to config keys.
+	 * @param Command        $command The command to get option definitions from.
+	 * @param InputInterface $input The input to extract from.
 	 *
 	 * @return array<string, mixed> Extracted options with proper key names.
 	 */
 	protected function extract_explicit_options(
 		Command $command,
-		InputInterface $input,
-		array $option_mapping = []
+		InputInterface $input
 	): array {
 		$overrides  = [];
 		$definition = $command->getDefinition();
@@ -53,8 +67,8 @@ trait SmartOptionExtraction {
 			if ( is_option_explicitly_provided( $input, $option_name ) ) {
 				$value = $input->getOption( $option_name );
 
-				// Map option name to config key
-				$config_key = $option_mapping[ $option_name ] ?? $option_name;
+				// Normalize option name to config key
+				$config_key = self::normaliseKey( $option_name, $option );
 
 				// Handle special cases
 				if ( $option_name === 'phpstan_level' && $value !== null ) {
@@ -71,14 +85,12 @@ trait SmartOptionExtraction {
 	/**
 	 * Get all option defaults from a command.
 	 *
-	 * @param Command               $command The command to get defaults from.
-	 * @param array<string, string> $option_mapping Optional mapping of option names to config keys.
+	 * @param Command $command The command to get defaults from.
 	 *
 	 * @return array<string, mixed> Default values with proper key names.
 	 */
 	protected function extract_option_defaults(
-		Command $command,
-		array $option_mapping = []
+		Command $command
 	): array {
 		$defaults   = [];
 		$definition = $command->getDefinition();
@@ -110,8 +122,8 @@ trait SmartOptionExtraction {
 			// Get default value
 			$default = $option->getDefault();
 
-			// Map option name to config key
-			$config_key = $option_mapping[ $option_name ] ?? $option_name;
+			// Normalize option name to config key
+			$config_key = self::normaliseKey( $option_name, $option );
 
 			// Include default value (including null for optional options)
 			$defaults[ $config_key ] = $default;
