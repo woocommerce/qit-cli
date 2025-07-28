@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 335 passed, 1 failed, 49 skipped.",
+            "test_summary": "385 total, 335 passed, 0 failed, 50 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,13 +49,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 79,
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 1,
+                "numFailedTests": 0,
                 "numPassedTests": 335,
-                "numPendingTests": 49,
+                "numPendingTests": 50,
                 "numTotalTests": 385,
                 "testResults": [
                     {
@@ -1866,7 +1866,7 @@
                     },
                     {
                         "file": "product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "add local attribute (with terms) to the Product": [
@@ -1884,7 +1884,7 @@
                             "can update product attributes": [
                                 {
                                     "title": "can update product attributes",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can remove product attributes": [
@@ -2687,7 +2687,7 @@
                         }
                     }
                 ],
-                "summary": "385 total, 335 passed, 1 failed, 49 skipped."
+                "summary": "385 total, 335 passed, 0 failed, 50 skipped."
             }
         },
         {
@@ -2699,9 +2699,9 @@
                     "summary": {
                         "tests": 385,
                         "passed": 335,
-                        "failed": 1,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 49,
+                        "skipped": 50,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -3158,16 +3158,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 2779,
-                                    "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]}]\\"\\u001b[39m",
-                                    "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]}]\\"\\u001b[39m\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:112:32\\n    at resetSections (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:108:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:180:4",
-                                    "snippet": "\\u001b[0m \\u001b[90m 110 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m { dashboard_sections } \\u001b[33m=\\u001b[39m woocommerce_meta\\u001b[33m;\\u001b[39m\\n \\u001b[90m 111 |\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 112 |\\u001b[39m \\t\\texpect( dashboard_sections )\\u001b[33m.\\u001b[39mtoHaveLength( \\u001b[35m0\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t                             \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 113 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 114 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 115 |\\u001b[39m\\u001b[0m"
-                                }
-                            ]
+                            }
                         },
                         {
                             "name": "should not display move up for the top, or move down for the bottom section",
@@ -3275,16 +3266,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 1631,
-                                    "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]}]\\"\\u001b[39m",
-                                    "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]}]\\"\\u001b[39m\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:112:32\\n    at resetSections (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:108:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:180:4",
-                                    "snippet": "\\u001b[0m \\u001b[90m 110 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m { dashboard_sections } \\u001b[33m=\\u001b[39m woocommerce_meta\\u001b[33m;\\u001b[39m\\n \\u001b[90m 111 |\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 112 |\\u001b[39m \\t\\texpect( dashboard_sections )\\u001b[33m.\\u001b[39mtoHaveLength( \\u001b[35m0\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t                             \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 113 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 114 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 115 |\\u001b[39m\\u001b[0m"
-                                }
-                            ]
+                            }
                         },
                         {
                             "name": "Load the home page",
@@ -6861,16 +6843,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 27854,
-                                    "message": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n",
-                                    "trace": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n\\n    at AssemblerPage.waitForLoadingScreenFinish (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/assembler.page.js:21:5)\\n    at prepareAssembler (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:20:19)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:294:3",
-                                    "snippet": "   at customize-store\\/assembler\\/assembler.page.js:21\\n\\n\\u001b[0m \\u001b[90m 19 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m frame\\n \\u001b[90m 20 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Finish customizing\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 21 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mwaitFor( { timeout\\u001b[33m:\\u001b[39m \\u001b[35m25000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 22 |\\u001b[39m \\t}\\n \\u001b[90m 23 |\\u001b[39m\\n \\u001b[90m 24 |\\u001b[39m \\t\\u001b[90m\\/**\\u001b[39m\\u001b[0m"
-                                }
-                            ]
+                            }
                         },
                         {
                             "name": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
@@ -8569,7 +8542,7 @@
                             "retryAttempts": [
                                 {
                                     "status": "failed",
-                                    "duration": 22921,
+                                    "duration": 23075,
                                     "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n",
                                     "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/add-product-task.spec.js:98:5",
                                     "snippet": "\\u001b[0m \\u001b[90m  96 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m  97 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Physical product\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m  98 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m  99 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 100 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Variable product\'\\u001b[39m } )\\n \\u001b[90m 101 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m"
@@ -10585,13 +10558,11 @@
                         },
                         {
                             "name": "can update product attributes",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
@@ -10599,40 +10570,23 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-0124a-n-update-product-attributes-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-0124a-n-update-product-attributes-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-0124a-n-update-product-attributes-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 218,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 368,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can remove product attributes",
