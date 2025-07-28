@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 335 passed, 11 failed, 39 skipped.",
+            "test_summary": "385 total, 335 passed, 1 failed, 49 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,13 +49,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 5,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 79,
-                "numPendingTestSuites": 20,
+                "numPendingTestSuites": 21,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 11,
+                "numFailedTests": 1,
                 "numPassedTests": 335,
-                "numPendingTests": 39,
+                "numPendingTests": 49,
                 "numTotalTests": 385,
                 "testResults": [
                     {
@@ -1838,14 +1838,14 @@
                     },
                     {
                         "file": "product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "General tab": [],
                             "General tab > Linked product": [
                                 {
                                     "title": "can create a product with linked products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1878,7 +1878,7 @@
                             "can add existing attributes": [
                                 {
                                     "title": "can add existing attributes",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can update product attributes": [
@@ -1890,14 +1890,14 @@
                             "can remove product attributes": [
                                 {
                                     "title": "can remove product attributes",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "product\\/block-editor\\/product-edit-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Publish dropdown options": [
@@ -1917,14 +1917,14 @@
                             "can update the general information of a product": [
                                 {
                                     "title": "can update the general information of a product",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "product\\/block-editor\\/product-images-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "can add images": [
@@ -1936,26 +1936,26 @@
                             "can replace an image": [
                                 {
                                     "title": "can replace an image",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can remove an image": [
                                 {
                                     "title": "can remove an image",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can set an image as cover": [
                                 {
                                     "title": "can set an image as cover",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "can update sku": [
@@ -1967,19 +1967,19 @@
                             "can update stock status": [
                                 {
                                     "title": "can update stock status",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can track stock quantity": [
                                 {
                                     "title": "can track stock quantity",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can limit purchases": [
                                 {
                                     "title": "can limit purchases",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2687,7 +2687,7 @@
                         }
                     }
                 ],
-                "summary": "385 total, 335 passed, 11 failed, 39 skipped."
+                "summary": "385 total, 335 passed, 1 failed, 49 skipped."
             }
         },
         {
@@ -2699,9 +2699,9 @@
                     "summary": {
                         "tests": 385,
                         "passed": 335,
-                        "failed": 11,
+                        "failed": 1,
                         "pending": 0,
-                        "skipped": 39,
+                        "skipped": 49,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -3158,7 +3158,16 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": [
+                                {
+                                    "status": "failed",
+                                    "duration": 2779,
+                                    "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]}]\\"\\u001b[39m",
+                                    "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]}]\\"\\u001b[39m\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:112:32\\n    at resetSections (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:108:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:180:4",
+                                    "snippet": "\\u001b[0m \\u001b[90m 110 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m { dashboard_sections } \\u001b[33m=\\u001b[39m woocommerce_meta\\u001b[33m;\\u001b[39m\\n \\u001b[90m 111 |\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 112 |\\u001b[39m \\t\\texpect( dashboard_sections )\\u001b[33m.\\u001b[39mtoHaveLength( \\u001b[35m0\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t                             \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 113 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 114 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 115 |\\u001b[39m\\u001b[0m"
+                                }
+                            ]
                         },
                         {
                             "name": "should not display move up for the top, or move down for the bottom section",
@@ -3266,7 +3275,16 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": [
+                                {
+                                    "status": "failed",
+                                    "duration": 1631,
+                                    "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]}]\\"\\u001b[39m",
+                                    "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveLength\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nExpected length: \\u001b[32m0\\u001b[39m\\nReceived length: \\u001b[31m1345\\u001b[39m\\nReceived string: \\u001b[31m\\"[{\\\\\\"key\\\\\\":\\\\\\"store-performance\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Performance\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"d\\\\\\":\\\\\\"m14.5 6.5-1 1 3.7 3.7H4v1.6h13.2l-3.7 3.7 1 1 5.6-5.5z\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\/amount\\\\\\",\\\\\\"coupons\\/orders_count\\\\\\",\\\\\\"downloads\\/download_count\\\\\\",\\\\\\"taxes\\/order_tax\\\\\\",\\\\\\"taxes\\/total_tax\\\\\\",\\\\\\"taxes\\/shipping_tax\\\\\\",\\\\\\"revenue\\/shipping\\\\\\",\\\\\\"orders\\/avg_order_value\\\\\\",\\\\\\"revenue\\/refunds\\\\\\",\\\\\\"revenue\\/gross_sales\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"charts\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Charts\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"type\\\\\\":{\\\\\\"displayName\\\\\\":\\\\\\"SVG\\\\\\"},\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"xmlns\\\\\\":\\\\\\"http:\\/\\/www.w3.org\\/2000\\/svg\\\\\\",\\\\\\"viewBox\\\\\\":\\\\\\"0 0 24 24\\\\\\",\\\\\\"children\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{\\\\\\"fillRule\\\\\\":\\\\\\"evenodd\\\\\\",\\\\\\"d\\\\\\":\\\\\\"M11.25 5h1.5v15h-1.5V5zM6 10h1.5v10H6V10zm12 4h-1.5v6H18v-6z\\\\\\",\\\\\\"clipRule\\\\\\":\\\\\\"evenodd\\\\\\"},\\\\\\"_owner\\\\\\":null}},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"orders_avg_order_value\\\\\\",\\\\\\"avg_items_per_order\\\\\\",\\\\\\"products_items_sold\\\\\\",\\\\\\"revenue_total_sales\\\\\\",\\\\\\"revenue_refunds\\\\\\",\\\\\\"coupons_amount\\\\\\",\\\\\\"coupons_orders_count\\\\\\",\\\\\\"revenue_shipping\\\\\\",\\\\\\"taxes_total_tax\\\\\\",\\\\\\"taxes_order_tax\\\\\\",\\\\\\"taxes_shipping_tax\\\\\\",\\\\\\"downloads_download_count\\\\\\"]},{\\\\\\"key\\\\\\":\\\\\\"leaderboards\\\\\\",\\\\\\"title\\\\\\":\\\\\\"Leaderboards\\\\\\",\\\\\\"isVisible\\\\\\":true,\\\\\\"icon\\\\\\":{\\\\\\"key\\\\\\":null,\\\\\\"ref\\\\\\":null,\\\\\\"props\\\\\\":{},\\\\\\"_owner\\\\\\":null},\\\\\\"hiddenBlocks\\\\\\":[\\\\\\"coupons\\\\\\",\\\\\\"customers\\\\\\"]}]\\"\\u001b[39m\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:112:32\\n    at resetSections (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:108:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-overview.spec.js:180:4",
+                                    "snippet": "\\u001b[0m \\u001b[90m 110 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m { dashboard_sections } \\u001b[33m=\\u001b[39m woocommerce_meta\\u001b[33m;\\u001b[39m\\n \\u001b[90m 111 |\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 112 |\\u001b[39m \\t\\texpect( dashboard_sections )\\u001b[33m.\\u001b[39mtoHaveLength( \\u001b[35m0\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t                             \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 113 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 114 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 115 |\\u001b[39m\\u001b[0m"
+                                }
+                            ]
                         },
                         {
                             "name": "Load the home page",
@@ -4583,16 +4601,7 @@
                             ],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 28131,
-                                    "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Edit shipping address\' })\\u001b[22m\\n",
-                                    "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Edit shipping address\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:449:7",
-                                    "snippet": "\\u001b[0m \\u001b[90m 447 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 448 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Edit shipping address\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 449 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 450 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m fillShippingCheckoutBlocks( page\\u001b[33m,\\u001b[39m shippingAddress )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 451 |\\u001b[39m \\t\\t\\t}\\n \\u001b[90m 452 |\\u001b[39m\\u001b[0m"
-                                }
-                            ]
+                            }
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
@@ -6856,7 +6865,7 @@
                             "retryAttempts": [
                                 {
                                     "status": "failed",
-                                    "duration": 27832,
+                                    "duration": 27854,
                                     "message": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n",
                                     "trace": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n\\n    at AssemblerPage.waitForLoadingScreenFinish (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/assembler.page.js:21:5)\\n    at prepareAssembler (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:20:19)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:294:3",
                                     "snippet": "   at customize-store\\/assembler\\/assembler.page.js:21\\n\\n\\u001b[0m \\u001b[90m 19 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m frame\\n \\u001b[90m 20 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Finish customizing\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 21 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mwaitFor( { timeout\\u001b[33m:\\u001b[39m \\u001b[35m25000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 22 |\\u001b[39m \\t}\\n \\u001b[90m 23 |\\u001b[39m\\n \\u001b[90m 24 |\\u001b[39m \\t\\u001b[90m\\/**\\u001b[39m\\u001b[0m"
@@ -8560,7 +8569,7 @@
                             "retryAttempts": [
                                 {
                                     "status": "failed",
-                                    "duration": 22872,
+                                    "duration": 22921,
                                     "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n",
                                     "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/add-product-task.spec.js:98:5",
                                     "snippet": "\\u001b[0m \\u001b[90m  96 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m  97 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Physical product\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m  98 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m  99 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 100 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Variable product\'\\u001b[39m } )\\n \\u001b[90m 101 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m"
@@ -10432,13 +10441,11 @@
                         },
                         {
                             "name": "can create a product with linked products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.js",
@@ -10446,42 +10453,31 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js > General tab > Linked product",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-linke-04ed4-roduct-with-linked-products-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-linke-04ed4-roduct-with-linked-products-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-linke-04ed4-roduct-with-linked-products-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 216,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                                            "line": 32,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                                            "line": 86,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can create a simple product with categories, tags and with password required",
@@ -10557,13 +10553,11 @@
                         },
                         {
                             "name": "can add existing attributes",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
@@ -10571,40 +10565,23 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-c2359-can-add-existing-attributes-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-c2359-can-add-existing-attributes-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-c2359-can-add-existing-attributes-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 284,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 282,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can update product attributes",
@@ -10651,7 +10628,7 @@
                             "retryAttempts": [
                                 {
                                     "status": "failed",
-                                    "duration": 281,
+                                    "duration": 218,
                                     "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
                                     "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
                                 }
@@ -10659,13 +10636,11 @@
                         },
                         {
                             "name": "can remove product attributes",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
@@ -10673,50 +10648,31 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-d2bba-n-remove-product-attributes-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-d2bba-n-remove-product-attributes-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-d2bba-n-remove-product-attributes-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 277,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 464,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can update the general information of a product",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
@@ -10724,40 +10680,23 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-e64ad-al-information-of-a-product-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-e64ad-al-information-of-a-product-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-e64ad-al-information-of-a-product-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 305,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
+                                            "line": 38,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can schedule a product publication",
@@ -10889,13 +10828,11 @@
                         },
                         {
                             "name": "can replace an image",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
@@ -10903,50 +10840,31 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-d5ea9-editor-can-replace-an-image-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-d5ea9-editor-can-replace-an-image-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-d5ea9-editor-can-replace-an-image-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 276,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 133,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can remove an image",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
@@ -10954,50 +10872,31 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-38605--editor-can-remove-an-image-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-38605--editor-can-remove-an-image-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-38605--editor-can-remove-an-image-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 281,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 190,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can set an image as cover",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
@@ -11005,40 +10904,23 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-92aa3-r-can-set-an-image-as-cover-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-92aa3-r-can-set-an-image-as-cover-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-92aa3-r-can-set-an-image-as-cover-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 269,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 241,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can update sku",
@@ -11074,13 +10956,11 @@
                         },
                         {
                             "name": "can update stock status",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
@@ -11088,50 +10968,31 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-5b6ec-tor-can-update-stock-status-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-5b6ec-tor-can-update-stock-status-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-5b6ec-tor-can-update-stock-status-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 277,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 92,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can track stock quantity",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
@@ -11139,50 +11000,31 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-eb008-or-can-track-stock-quantity-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-eb008-or-can-track-stock-quantity-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-eb008-or-can-track-stock-quantity-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 265,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 121,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
@@ -11190,40 +11032,23 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-de295--editor-can-limit-purchases-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-de295--editor-can-limit-purchases-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-produ-de295--editor-can-limit-purchases-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 272,
-                                    "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                                    "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n"
-                                }
-                            ]
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 199,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            }
                         },
                         {
                             "name": "can add custom product attributes",
