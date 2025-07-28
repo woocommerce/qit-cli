@@ -205,6 +205,22 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		// Notify test finished
 		if ( isset( $env_info->sut['slug'] ) ) {
 			$test_result = TestResult::init_from( $env_info );
+			$results_dir = $test_result->get_results_dir();
+			
+			// Copy debug.log from Docker container to results directory
+			try {
+				$docker = App::make( Docker::class );
+				$docker->copy_from_docker( 
+					$env_info, 
+					'/var/www/html/wp-content/debug.log', 
+					$results_dir . '/debug.log' 
+				);
+				$io->writeln( '<info>✓ Debug log copied from container</info>' );
+			} catch ( \RuntimeException $e ) {
+				// Debug log might not exist if no errors occurred - this is normal
+				$io->writeln( '<comment>No debug log found in container (this is normal if no PHP errors occurred)</comment>' );
+			}
+			
 			$test_result->set_status( $exit_status === Command::SUCCESS ? 'success' : 'failed' );
 
 			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result );
