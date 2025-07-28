@@ -1,11 +1,11 @@
 {
     "results": {
         "tool": {
-            "name": "playwright"
+            "name": "qit-bash-scripts"
         },
         "summary": {
-            "tests": 3,
-            "passed": 3,
+            "tests": 9,
+            "passed": 9,
             "failed": 0,
             "pending": 0,
             "skipped": 0,
@@ -15,6 +15,141 @@
             "suites": 0
         },
         "tests": [
+            {
+                "name": "global-setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/global-setup.sh",
+                "stdout": [
+                    "[globalSetup] Starting global configuration...",
+                    "Success: Updated 'tp004-package-alpha_global_setup_ran' option.",
+                    "[globalSetup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "globalSetup",
+                    "packageSlug": "tp004-package-alpha",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "global-setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/global-setup.sh",
+                "stdout": [
+                    "[globalSetup] Starting global configuration...",
+                    "Success: Updated 'tp004-package-beta_global_setup_ran' option.",
+                    "[globalSetup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "globalSetup",
+                    "packageSlug": "tp004-package-beta",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "global-setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/global-setup.sh",
+                "stdout": [
+                    "[globalSetup] Starting global configuration...",
+                    "Success: Updated 'tp004-package-gamma_global_setup_ran' option.",
+                    "[globalSetup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "globalSetup",
+                    "packageSlug": "tp004-package-gamma",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/setup.sh",
+                "stdout": [
+                    "[setup] Creating sample data ...",
+                    "Success: Updated 'tp004-package-alpha_setup_ran' option.",
+                    "[setup] Global setup verified for tp004-package-alpha",
+                    "[setup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "setup",
+                    "packageSlug": "tp004-package-alpha",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/setup.sh",
+                "stdout": [
+                    "[setup] Creating sample data ...",
+                    "Success: Updated 'tp004-package-beta_setup_ran' option.",
+                    "[setup] Global setup verified for tp004-package-beta",
+                    "[setup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "setup",
+                    "packageSlug": "tp004-package-beta",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/setup.sh",
+                "stdout": [
+                    "[setup] Creating sample data ...",
+                    "Success: Updated 'tp004-package-gamma_setup_ran' option.",
+                    "[setup] Global setup verified for tp004-package-gamma",
+                    "[setup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "setup",
+                    "packageSlug": "tp004-package-gamma",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
             {
                 "name": "site is reachable and has a body",
                 "status": "passed",

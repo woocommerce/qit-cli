@@ -365,7 +365,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			// Run globalSetup phase for all packages
 			$io->writeln( '<info>Running globalSetup phase for all packages...</info>' );
 			foreach ( $test_packages as $pkg_id => $meta ) {
-				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'] );
+				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir );
 			}
 
 			// Export baseline database snapshot after all globalSetup scripts ran
@@ -419,14 +419,14 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 					}
 
 					// Run full lifecycle for test packages: setup -> run -> teardown
-					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path );
+					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir );
 					if ( $manifest && $setup_count > 0 ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
 					}
 
 					// Run phase with CTRF collection even on test failures
 					try {
-						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path );
+						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir );
 					} catch ( \RuntimeException $e ) {
 						// Collect CTRF even if tests failed (exit code 1 from test failures)
 						if ( $manifest ) {
@@ -445,7 +445,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 					}
 
-					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path );
+					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir );
 					// Note: teardown phase is for cleanup only - no result collection needed
 
 					$package_total   = $setup_count + $run_count + $teardown_count;

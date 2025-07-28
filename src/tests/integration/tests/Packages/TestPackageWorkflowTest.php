@@ -497,7 +497,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 				$this->assertFileExists( $packageDir . '/playwright.config.js' );
 				$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 
-				// Modify manifest to include all phases
+				// Modify manifest to include all phases and CTRF configuration
 				$manifestPath               = $packageDir . '/manifest.json';
 				$manifest                   = json_decode( file_get_contents( $manifestPath ), true );
 				$manifest['test']['phases'] = [
@@ -507,6 +507,19 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 					'teardown'       => [],
 					'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
 				];
+				
+				// Add CTRF configuration for bash script reporting
+				if ( ! isset( $manifest['test']['results'] ) ) {
+					$manifest['test']['results'] = [];
+				}
+				$manifest['test']['results']['ctrf-json'] = './results/ctrf.json';
+				
+				// Ensure results directory exists
+				$resultsDir = $packageDir . '/results';
+				if ( ! is_dir( $resultsDir ) ) {
+					mkdir( $resultsDir, 0755, true );
+				}
+				
 				file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 				// Modify bootstrap scripts to include WordPress option markers for tracking
