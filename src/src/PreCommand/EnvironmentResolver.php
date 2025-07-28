@@ -132,12 +132,13 @@ class EnvironmentResolver {
 		// 1) precedence merge for all keys
 		$env_config = $this->config_merger->merge( $overrides, $env_config, $command_defaults );
 
-		// 2) array‑append rule
-		foreach ( ['plugins','themes','volumes','php_extensions','env_vars','env_files'] as $k ) {
-			if ( isset( $overrides[$k] ) ) {
-				$env_config[$k] = array_merge(
-					(array)($env_config[$k] ?? []),
-					(array)$overrides[$k]
+		// 2) Dynamic array‑append rule
+		foreach ( $overrides as $key => $cli_value ) {
+			// Apply append behavior to array values only
+			if ( is_array( $cli_value ) && isset( $env_config[$key] ) ) {
+				$env_config[$key] = array_merge(
+					(array)($env_config[$key] ?? []),
+					(array)$cli_value
 				);
 			}
 		}
