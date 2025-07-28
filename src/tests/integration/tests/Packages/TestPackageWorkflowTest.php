@@ -1225,6 +1225,190 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 		rmdir( $dir );
 	}
 
+	public function test_tp009_php_debug_logs_captured(): void {
+		$tempDir    = null;
+		$packageDir = null;
+		$configPath = null;
+
+		try {
+			$tempDir = sys_get_temp_dir() . '/qit_test_' . uniqid();
+			mkdir( $tempDir, 0755, true );
+			$packageDir = $tempDir . '/test-package';
+
+			// Scaffold a test package
+			qit( [
+				'package:scaffold',
+				$packageDir,
+				'--namespace=qit-test-plugin',
+				'--package=tp009-debug-logs',
+				'--framework=playwright',
+				'--test-type=e2e',
+				'--no-interaction'
+			] );
+
+			$this->assertDirectoryExists( $packageDir );
+			$this->assertFileExists( $packageDir . '/manifest.json' );
+
+			// Create a custom plugin that generates PHP warnings
+			$pluginDir = $packageDir . '/plugins';
+			mkdir( $pluginDir, 0755, true );
+			
+			$pluginContent = '<?php
+/**
+ * Plugin Name: TP009 Debug Log Test Plugin
+ * Description: Generates PHP warnings for testing debug log collection
+ * Version: 1.0.0
+ */
+
+// Hook into WordPress init to generate PHP warnings
+add_action( "init", function() {
+	// Generate a PHP warning by accessing undefined array key
+	$test_array = [ "existing_key" => "value" ];
+	$undefined_value = $test_array["missing_key"]; // This will generate a PHP warning
+	
+	// Log a custom message to help identify our test
+	error_log( "TP009: Custom plugin loaded and generated PHP warning" );
+} );
+';
+			file_put_contents( $pluginDir . '/tp009-debug-test.php', $pluginContent );
+
+			// Modify global-setup.sh to install and activate our custom plugin
+			$globalSetupPath = $packageDir . '/bootstrap/global-setup.sh';
+			if ( file_exists( $globalSetupPath ) ) {
+				$content = file_get_contents( $globalSetupPath );
+				$content = str_replace(
+					'echo "[globalSetup] Done."',
+					'# Install and activate our custom debug test plugin
+cp /qit/packages/tp009-debug-logs/plugins/tp009-debug-test.php /var/www/html/wp-content/plugins/
+wp plugin activate tp009-debug-test
+echo "[globalSetup] Custom plugin activated"
+echo "[globalSetup] Done."',
+					$content
+				);
+				file_put_contents( $globalSetupPath, $content );
+			}
+
+			// Create a simple Playwright test that visits the site to trigger the plugin
+			$testContent = 'const { test, expect } = require("@playwright/test");
+
+test("trigger PHP warnings by visiting site", async ({ page }) => {
+	// Visit the site homepage to trigger WordPress init and our plugin
+	await page.goto("/");
+	
+	// Wait a moment to ensure the plugin code executes
+	await page.waitForTimeout(1000);
+	
+	// Simple assertion to make the test pass
+	expect(await page.title()).toBeTruthy();
+});
+';
+			file_put_contents( $packageDir . '/tests/example.spec.js', $testContent );
+
+			// Modify manifest to include our custom plugin in the volume mapping
+			$manifest_path = $packageDir . '/manifest.json';
+			$manifest      = json_decode( file_get_contents( $manifest_path ), true );
+
+			// Add volume mapping for our custom plugin
+			if ( ! isset( $manifest['test']['volumes'] ) ) {
+				$manifest['test']['volumes'] = [];
+			}
+			$manifest['test']['volumes']['./plugins'] = '/qit/packages/tp009-debug-logs/plugins';
+
+			// Ensure phases are properly configured
+			$manifest['test']['phases'] = [
+				'globalSetup' => [ './bootstrap/global-setup.sh' ],
+				'setup'       => [ './bootstrap/setup.sh' ],
+				'run'         => [ 'npx playwright test' ],
+				'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
+			];
+
+			file_put_contents( $manifest_path, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+
+			// Create qit.json configuration
+			$qit_json = [
+				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'sut'          => [
+					'type'   => 'plugin',
+					'slug'   => 'woocommerce',
+					'source' => [ 'type' => 'wporg' ]
+				],
+				'test_types'   => [
+					'e2e' => [
+						'default' => [
+							'test_packages' => [ $packageDir ]
+						]
+					]
+				],
+				'environments' => [
+					'without-setup' => [
+						'php' => '8.2',
+						'wp'  => 'stable'
+					]
+				]
+			];
+
+			$configPath = $tempDir . '/qit-config.json';
+			file_put_contents( $configPath, json_encode( $qit_json, JSON_PRETTY_PRINT ) );
+
+			// Run the test
+			$proc = qit( [
+				'run:e2e',
+				'woocommerce',
+				'--environment=without-setup',
+				'--config=' . $configPath
+			], true );
+
+			// The test should complete (exit code 0 or 3 for warnings are both acceptable)
+			$exitCode = $proc->getExitCode();
+			$this->assertContains( $exitCode, [ 0, 3 ],
+				'Test should complete successfully or with warnings. Output: ' . $proc->getOutput() . ' Error: ' . $proc->getErrorOutput() );
+
+			$output = $proc->getOutput();
+
+			// Verify that debug log copying message appears in output
+			$this->assertStringContainsString( 'Debug log copied from container', $output,
+				'Debug log should be copied from container to results directory' );
+
+			// Find the results directory from the output
+			$resultsDir = null;
+			if ( preg_match( '~Allure reports saved to final location: (.+/final/allure)~', $output, $matches ) ) {
+				$resultsDir = dirname( $matches[1] );
+			} elseif ( preg_match( '~CTRF merged →\s+(.+)/final/ctrf/ctrf-report\.json~', $output, $matches ) ) {
+				$resultsDir = $matches[1];
+			}
+
+			$this->assertNotNull( $resultsDir, 'Should be able to determine results directory from output' );
+
+			// Verify debug.log file exists in results directory
+			$debugLogPath = $resultsDir . '/debug.log';
+			$this->assertFileExists( $debugLogPath, 'Debug log should exist in results directory' );
+
+			// Verify debug log contains our PHP warning
+			$debugLogContent = file_get_contents( $debugLogPath );
+			$this->assertNotEmpty( $debugLogContent, 'Debug log should not be empty' );
+			
+			// Check for PHP warning about undefined array key
+			$this->assertStringContainsString( 'missing_key', $debugLogContent,
+				'Debug log should contain PHP warning about undefined array key' );
+			
+			// Check for our custom log message
+			$this->assertStringContainsString( 'TP009: Custom plugin loaded', $debugLogContent,
+				'Debug log should contain our custom plugin log message' );
+
+		} finally {
+			// Cleanup
+			if ( isset( $configPath ) && file_exists( $configPath ) ) {
+				unlink( $configPath );
+			}
+			if ( isset( $packageDir ) && is_dir( $packageDir ) ) {
+				$this->recursiveRemoveDirectory( $packageDir );
+			}
+			if ( isset( $tempDir ) && is_dir( $tempDir ) ) {
+				$this->recursiveRemoveDirectory( $tempDir );
+			}
+		}
+	}
+
 	/**
 	 * Modify bootstrap scripts to include WordPress option markers for tracking test execution phases.
 	 *
