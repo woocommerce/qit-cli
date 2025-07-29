@@ -6,7 +6,6 @@ use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
-use QIT_CLI\PreCommand\Results\ConfigurationResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Upload;
@@ -69,15 +68,12 @@ class CreateRunCommands extends DynamicCommandCreator {
 			}
 
 			public function doExecute( InputInterface $input, OutputInterface $output ): int {
-				/** @var ConfigurationResult $result */
-				$result = $this->getPreCommandResult();
+				// Get the test profile configuration using the simplified API
+				$profile_name = $input->getOption( 'profile' ) ?? 'default';
+				$test_config  = $this->get_current_test_profile( $this->test_type, $profile_name );
 
-				// The PreCommand has already:
-				// - Parsed qit.json
-				// - Resolved the test configuration for this profile
-				// - Prepared the base API payload
-
-				$options = $result->api_payload;
+				// Use the merged test configuration as the base for API options
+				$options = $test_config;
 
 				// Add/override with CLI-specific options
 				// Handle woo_extension argument
@@ -202,6 +198,9 @@ class CreateRunCommands extends DynamicCommandCreator {
 				return Command::SUCCESS;
 			}
 
+			/**
+			 * @param array<string, mixed> $response
+			 */
 			protected function waitForTestCompletion( array $response, InputInterface $input, OutputInterface $output ): int {
 				// Show a message if user aborts waiting.
 				foreach ( [ \SIGINT, \SIGTERM ] as $signal ) {

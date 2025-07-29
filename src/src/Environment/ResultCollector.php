@@ -67,12 +67,12 @@ class ResultCollector {
 			return;                 // optional → skip
 		}
 
- 	$safe = ltrim( str_replace( [ '/', ':' ], '_', $slug ), '._' );
- 	$dst  = $dir . '/ctrf/' . $safe . '.json';
- 	$dir_path = dirname( $dst );
- 	if ( ! is_dir( $dir_path ) ) {
- 		mkdir( $dir_path, 0755, true );
- 	}
+		$safe     = ltrim( str_replace( [ '/', ':' ], '_', $slug ), '._' );
+		$dst      = $dir . '/ctrf/' . $safe . '.json';
+		$dir_path = dirname( $dst );
+		if ( ! is_dir( $dir_path ) ) {
+			mkdir( $dir_path, 0755, true );
+		}
 
 		/* 1 — host path ------------------------------------------------------- */
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
@@ -112,11 +112,11 @@ class ResultCollector {
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
 
- 	$dst = $dir . '/allure/' . basename( $slug );
- 	$dir_path = dirname( $dst );
- 	if ( ! is_dir( $dir_path ) ) {
- 		mkdir( $dir_path, 0755, true );
- 	}
+		$dst      = $dir . '/allure/' . basename( $slug );
+		$dir_path = dirname( $dst );
+		if ( ! is_dir( $dir_path ) ) {
+			mkdir( $dir_path, 0755, true );
+		}
 
 		/* host first */
 		if ( is_dir( $host_src ) ) {
@@ -165,21 +165,21 @@ class ResultCollector {
 		$ctrf_dir = $artifacts_dir . '/ctrf';
 
 		$debug_msg = "DEBUG: merge_ctrf called with artifacts_dir: $artifacts_dir, ctrf_dir: $ctrf_dir";
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 
-		$debug_msg = "DEBUG: ctrf_dir exists: " . (is_dir($ctrf_dir) ? 'YES' : 'NO');
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
+		$debug_msg = 'DEBUG: ctrf_dir exists: ' . ( is_dir( $ctrf_dir ) ? 'YES' : 'NO' );
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 
-		if (is_dir($ctrf_dir)) {
-			$files = glob($ctrf_dir . '/*.json');
-			$debug_msg = "DEBUG: Found " . count($files) . " JSON files in ctrf_dir: " . implode(', ', $files);
-			file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
+		if ( is_dir( $ctrf_dir ) ) {
+			$files     = glob( $ctrf_dir . '/*.json' );
+			$debug_msg = 'DEBUG: Found ' . count( $files ) . ' JSON files in ctrf_dir: ' . implode( ', ', $files );
+			file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 		}
 
 		// Skip if no CTRF files
 		if ( ! is_dir( $ctrf_dir ) || empty( glob( $ctrf_dir . '/*.json' ) ) ) {
-			$debug_msg = "DEBUG: Skipping CTRF merge - no directory or no files";
-			file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
+			$debug_msg = 'DEBUG: Skipping CTRF merge - no directory or no files';
+			file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 			return;
 		}
 

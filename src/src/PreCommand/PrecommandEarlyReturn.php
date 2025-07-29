@@ -1,14 +1,10 @@
 <?php
 namespace QIT_CLI\PreCommand;
 
-use QIT_CLI\PreCommand\Pipeline\PipelineContext;
+/**
+ * Exception thrown when QIT_SELF_TEST=precommand is set to enable early return
+ * with configuration data for testing purposes.
+ */
 class PrecommandEarlyReturn extends \Exception {
-		/** @var PipelineContext */
-		protected $context;
-	public function set_context( PipelineContext $context ): void {
-			$this->context = $context;
-	}
-	public function get_context(): PipelineContext {
-			return $this->context;
-	}
+	// Simple exception class - the JSON data is passed in the message
 }

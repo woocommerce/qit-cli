@@ -4,9 +4,11 @@ namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\PreCommand\Interfaces\EnvironmentCommand;
-use QIT_CLI\PreCommand\Results\EnvironmentResult;
+use QIT_CLI\PreCommand\EnvBuilder;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
+use QIT_CLI\App;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -44,7 +46,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes to install', [] )
 			->addOption( 'volume', '', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings (local:container)', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install', [] )
-			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables (KEY=value)', [] )
+			->addOption( 'env_var', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables (KEY=value)', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Load env vars from file', [] );
 
 		$this->setHelp( $this->getHelpText() );
@@ -65,11 +67,30 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			return Command::FAILURE;
 		}
 
-		/** @var EnvironmentResult $result */
-		$result = $this->getPreCommandResult();
+		// Get the merged environment configuration using the simplified API
+		$env_config = $this->get_environment_config( $this->get_environment_name() );
 
-		// Everything is already resolved and downloaded!
-		$env_info = $result->env_info;
+		// Create proper E2EEnvInfo object from the config
+		$env_info_array = [
+			'environment'    => 'e2e',
+			'env_id'         => 'qitenv' . bin2hex( random_bytes( 8 ) ),
+			'php'            => $env_config['php'] ?? '8.2',
+			'wp'             => $env_config['wp'] ?? 'stable',
+			'woo'            => $env_config['woo'] ?? '',
+			'plugins'        => $env_config['plugins'] ?? [],
+			'themes'         => $env_config['themes'] ?? [],
+			'volumes'        => $env_config['volumes'] ?? [],
+			'php_extensions' => $env_config['php_extensions'] ?? [],
+			'env_vars'       => $env_config['env_vars'] ?? [],
+			'env_files'      => $env_config['env_files'] ?? [],
+			'object_cache'   => $env_config['object_cache'] ?? false,
+			'site_url'       => 'http://localhost:8080', // This would be determined during setup
+		];
+
+		$env_info = \QIT_CLI\Environment\Environments\EnvInfo::from_array( $env_info_array );
+
+		// Type assertion: we know this is E2EEnvInfo since environment is 'e2e'
+		assert( $env_info instanceof E2EEnvInfo );
 
 		// Handle tunnel option
 		$tunnel = TunnelRunner::get_tunnel_value( $input );

@@ -226,7 +226,6 @@ if ( $is_connected_to_backend ) {
 	$container->make( CreateRunCommands::class )->register_commands( $application );
 
 	$application->add( $container->make( RunActivationTestCommand::class ) );
-	$application->add( $container->make( TestE2ECommand::class ) );
 
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );

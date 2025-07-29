@@ -6,16 +6,19 @@ use QIT_CLI\App;
 use QIT_CLI\PreCommand\Interfaces\ConfigurableTestCommand;
 use QIT_CLI\PreCommand\Interfaces\EnvironmentCommand;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
-use QIT_CLI\PreCommand\PreCommandHandler;
+use QIT_CLI\PreCommand\PreCommandAware;
+use QIT_CLI\PreCommand\TinyPreCommand;
+use QIT_CLI\PreCommand\Configuration\ConfigurationResolver;
+use QIT_CLI\PreCommand\Configuration\ConfigMerger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-abstract class QITCommand extends Command {
+abstract class QITCommand extends Command implements PreCommandAware {
 	protected InputInterface $input;
 	protected OutputInterface $output;
-	protected ?object $precommand_result = null;
+	protected ?TinyPreCommand $tiny_pre_command = null;
 
 	protected function configure(): void {
 		if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand || $this instanceof LocalTestCommand ) {
@@ -61,8 +64,13 @@ abstract class QITCommand extends Command {
 					$config_file = getcwd() . '/qit.json';
 				}
 
-				$handler                 = App::make( PreCommandHandler::class );
-				$this->precommand_result = $handler->handle( $this, $input, $output, $config_file );
+				// Create TinyPreCommand instance - lazy and simple
+				$this->tiny_pre_command = new TinyPreCommand(
+					$input,
+					$config_file,
+					App::make( ConfigurationResolver::class ),
+					App::make( ConfigMerger::class )
+				);
 			}
 
 			return $this->doExecute( $input, $output );
@@ -70,15 +78,32 @@ abstract class QITCommand extends Command {
 			// This is normal in tests - just return success
 			return Command::SUCCESS;
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( "<error>{$e->getMessage()}</error>" );
+			$output->writeln( "<e>{$e->getMessage()}</e>" );
 
 			return Command::FAILURE;
 		}
 	}
 
-	protected function getPreCommandResult(): ?object {
-		return $this->precommand_result;
+	/**
+	 * Implement PreCommandAware interface - get environment configuration.
+	 */
+	public function get_environment_config( string $env = 'default' ): array {
+		if ( $this->tiny_pre_command === null ) {
+			throw new \RuntimeException( 'PreCommand not available for this command type' );
+		}
+		return $this->tiny_pre_command->get_environment_config( $env );
 	}
+
+	/**
+	 * Implement PreCommandAware interface - get test profile configuration.
+	 */
+	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
+		if ( $this->tiny_pre_command === null ) {
+			throw new \RuntimeException( 'PreCommand not available for this command type' );
+		}
+		return $this->tiny_pre_command->get_current_test_profile( $test_type, $profile );
+	}
+
 
 	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
 }

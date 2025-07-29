@@ -50,7 +50,7 @@ class PackagePhaseRunner {
 	 */
 	private function run_on_host( string $cmd, string $package_path, array $env_vars = [] ): array {
 		$start_time = microtime( true );
-		$process = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, 300 );
+		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, 300 );
 
 		$process->run( function ( $type, $buffer ) {
 			if ( ! $this->output->isQuiet() ) {
@@ -89,11 +89,11 @@ class PackagePhaseRunner {
 	 * @throws \RuntimeException On command failure.
 	 */
 	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [] ): array {
-		$wrapped = [ '/bin/bash', '-c', "cd {$workdir} && {$cmd}" ];
+		$wrapped    = [ '/bin/bash', '-c', "cd {$workdir} && {$cmd}" ];
 		$start_time = microtime( true );
-		$stdout = '';
-		$stderr = '';
-		$exit_code = 0;
+		$stdout     = '';
+		$stderr     = '';
+		$exit_code  = 0;
 
 		try {
 			$stdout = $this->docker->run_inside_docker(
@@ -131,51 +131,51 @@ class PackagePhaseRunner {
 	/**
 	 * Generate individual CTRF file for a single bash script execution
 	 *
-	 * @param string $package_path Package directory path.
-	 * @param TestPackageManifest $manifest Package manifest.
-	 * @param string $phase Phase name.
-	 * @param array $script_execution Script execution data.
+	 * @param string               $package_path Package directory path.
+	 * @param TestPackageManifest  $manifest Package manifest.
+	 * @param string               $phase Phase name.
+	 * @param array<string, mixed> $script_execution Script execution data.
 	 */
-	private function generate_individual_bash_script_ctrf( 
-		string $package_path, 
-		TestPackageManifest $manifest, 
-		string $phase, 
+	private function generate_individual_bash_script_ctrf(
+		string $package_path,
+		TestPackageManifest $manifest,
+		string $phase,
 		array $script_execution,
 		?string $artifacts_dir = null
 	): void {
 		$debug_msg = "DEBUG: generate_individual_bash_script_ctrf called for phase: $phase, script: " . $script_execution['script'];
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
-		
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
+
 		// Get CTRF file path from manifest
 		$test_results = $manifest->getTestResults();
-		$ctrf_path = $test_results['ctrf-json'] ?? null;
-		
-		$debug_msg = "DEBUG: CTRF path from manifest: " . ($ctrf_path ?? 'null');
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
-		
+		$ctrf_path    = $test_results['ctrf-json'] ?? null;
+
+		$debug_msg = 'DEBUG: CTRF path from manifest: ' . ( $ctrf_path ?? 'null' );
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
+
 		if ( ! $ctrf_path ) {
-			$debug_msg = "DEBUG: No CTRF configuration, returning early";
-			file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
+			$debug_msg = 'DEBUG: No CTRF configuration, returning early';
+			file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 			return; // No CTRF configuration
 		}
 
 		// Create unique filename for this script execution
-		$script_name = basename( $script_execution['script'], '.sh' );
+		$script_name     = basename( $script_execution['script'], '.sh' );
 		$unique_filename = $phase . '_' . $script_name . '_' . uniqid() . '.json';
-		
+
 		// Use artifacts directory if provided, otherwise fall back to package directory
 		if ( $artifacts_dir ) {
-			$ctrf_dir = $artifacts_dir . '/ctrf';
+			$ctrf_dir             = $artifacts_dir . '/ctrf';
 			$individual_ctrf_path = $ctrf_dir . '/' . $unique_filename;
 		} else {
 			// Fallback to package directory (original behavior)
-			$ctrf_dir = dirname( $package_path . '/' . ltrim( $ctrf_path, './' ) );
+			$ctrf_dir             = dirname( $package_path . '/' . ltrim( $ctrf_path, './' ) );
 			$individual_ctrf_path = $ctrf_dir . '/' . $unique_filename;
 		}
-		
-		$debug_msg = "DEBUG: Individual CTRF path: $individual_ctrf_path (artifacts_dir: " . ($artifacts_dir ?? 'null') . ")";
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
-		
+
+		$debug_msg = "DEBUG: Individual CTRF path: $individual_ctrf_path (artifacts_dir: " . ( $artifacts_dir ?? 'null' ) . ')';
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
+
 		// Ensure directory exists
 		if ( ! is_dir( $ctrf_dir ) ) {
 			mkdir( $ctrf_dir, 0755, true );
@@ -184,67 +184,67 @@ class PackagePhaseRunner {
 		// Generate standalone CTRF structure for this script
 		$ctrf_data = [
 			'results' => [
-				'tool' => [
-					'name' => 'qit-bash-scripts'
+				'tool'    => [
+					'name' => 'qit-bash-scripts',
 				],
 				'summary' => [
-					'tests' => 1,
-					'passed' => $script_execution['exit_code'] === 0 ? 1 : 0,
-					'failed' => $script_execution['exit_code'] === 0 ? 0 : 1,
+					'tests'   => 1,
+					'passed'  => $script_execution['exit_code'] === 0 ? 1 : 0,
+					'failed'  => $script_execution['exit_code'] === 0 ? 0 : 1,
 					'pending' => 0,
 					'skipped' => 0,
-					'other' => 0,
-					'start' => time() * 1000,
-					'stop' => time() * 1000,
-					'suites' => 0
+					'other'   => 0,
+					'start'   => time() * 1000,
+					'stop'    => time() * 1000,
+					'suites'  => 0,
 				],
-				'tests' => [
+				'tests'   => [
 					[
-						'name' => basename( $script_execution['script'] ),
-						'status' => $script_execution['exit_code'] === 0 ? 'passed' : 'failed',
+						'name'     => basename( $script_execution['script'] ),
+						'status'   => $script_execution['exit_code'] === 0 ? 'passed' : 'failed',
 						'duration' => (int) round( $script_execution['duration'] ),
-						'start' => time() * 1000,
-						'stop' => time() * 1000,
-						'type' => 'script',
+						'start'    => time() * 1000,
+						'stop'     => time() * 1000,
+						'type'     => 'script',
 						'filePath' => $script_execution['script'],
-						'stdout' => array_filter( explode( "\n", $script_execution['stdout'] ) ),
-						'stderr' => array_filter( explode( "\n", $script_execution['stderr'] ) ),
-						'extra' => [
-							'phase' => $phase,
+						'stdout'   => array_filter( explode( "\n", $script_execution['stdout'] ) ),
+						'stderr'   => array_filter( explode( "\n", $script_execution['stderr'] ) ),
+						'extra'    => [
+							'phase'       => $phase,
 							'packageSlug' => basename( $package_path ),
-							'testType' => $manifest->getTestType(),
-							'namespace' => $manifest->getNamespace(),
-							'scriptType' => 'bash'
-						]
-					]
-				]
-			]
+							'testType'    => $manifest->getTestType(),
+							'namespace'   => $manifest->getNamespace(),
+							'scriptType'  => 'bash',
+						],
+					],
+				],
+			],
 		];
 
 		// Save individual CTRF file
 		$debug_msg = "DEBUG: About to write CTRF file to: $individual_ctrf_path";
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
-		
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
+
 		$result = file_put_contents( $individual_ctrf_path, json_encode( $ctrf_data, JSON_PRETTY_PRINT ) );
-		
-		$debug_msg = "DEBUG: File write result: " . ($result !== false ? "SUCCESS ($result bytes)" : "FAILED");
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
-		
+
+		$debug_msg = 'DEBUG: File write result: ' . ( $result !== false ? "SUCCESS ($result bytes)" : 'FAILED' );
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
+
 		if ( file_exists( $individual_ctrf_path ) ) {
-			$debug_msg = "DEBUG: File exists after write: YES";
+			$debug_msg = 'DEBUG: File exists after write: YES';
 		} else {
-			$debug_msg = "DEBUG: File exists after write: NO";
+			$debug_msg = 'DEBUG: File exists after write: NO';
 		}
-		file_put_contents('/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND);
+		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 	}
 
 	/**
 	 * Execute a specific phase for a test package
 	 *
-	 * @param EnvInfo $env_info Environment information.
-	 * @param string  $phase Phase name (setup, run, teardown, globalSetup, globalTeardown).
-	 * @param string  $package_id Package identifier.
-	 * @param string  $package_path Package directory path.
+	 * @param EnvInfo     $env_info Environment information.
+	 * @param string      $phase Phase name (setup, run, teardown, globalSetup, globalTeardown).
+	 * @param string      $package_id Package identifier.
+	 * @param string      $package_path Package directory path.
 	 * @param string|null $artifacts_dir Artifacts directory for CTRF files.
 	 * @return int Number of commands that were actually executed.
 	 * @throws \RuntimeException On command failure.
@@ -276,13 +276,13 @@ class PackagePhaseRunner {
 
 		$executed = 0;
 		foreach ( $commands as $cmd ) {
-			$venue = $this->determine_execution_venue( $cmd );
+			$venue          = $this->determine_execution_venue( $cmd );
 			$is_bash_script = $venue === 'container'; // Bash scripts run in container
 
 			try {
 				if ( $venue === 'host' ) {
 					// Pass QIT_SITE_URL environment variable for host commands (e.g., Playwright tests)
-					$env_vars = [
+					$env_vars       = [
 						'QIT_SITE_URL' => $env_info instanceof E2EEnvInfo ? $env_info->site_url : '',
 					];
 					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars );
@@ -295,16 +295,15 @@ class PackagePhaseRunner {
 					$script_execution = array_merge( $execution_data, [ 'script' => $cmd ] );
 					$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $script_execution, $artifacts_dir );
 				}
-
 			} catch ( \RuntimeException $e ) {
 				// Generate CTRF for failed bash scripts too
 				if ( $is_bash_script ) {
 					$failed_execution = [
-						'script' => $cmd,
+						'script'    => $cmd,
 						'exit_code' => 1,
-						'duration' => 0,
-						'stdout' => '',
-						'stderr' => $e->getMessage()
+						'duration'  => 0,
+						'stdout'    => '',
+						'stderr'    => $e->getMessage(),
 					];
 					$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $failed_execution, $artifacts_dir );
 				}

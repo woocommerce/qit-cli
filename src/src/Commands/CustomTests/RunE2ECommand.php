@@ -10,14 +10,15 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Docker;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
 use QIT_CLI\Environment\ResultCollector;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
-use QIT_CLI\PreCommand\Results\LocalTestResult;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -133,21 +134,42 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			return self::FAILURE;
 		}
 
-		/** @var LocalTestResult $result */
-		$result = $this->getPreCommandResult();
+		// Get environment configuration using the simplified API
+		$env_config = $this->get_environment_config( $this->get_environment_name() );
+
+		// Get test profile configuration using the simplified API
+		$test_config = $this->get_current_test_profile( $this->get_test_type(), $this->get_test_profile() );
 
 		// Determine whether we should upload the Allure report.
 		// By default we upload unless the user explicitly passes --no_upload_report.
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 
-		// PreCommand has already:
-		// - Resolved SUT from CLI argument (if provided)
-		// - Resolved test packages based on profile/test argument
-		// - Applied all CLI overrides
-		// - Downloaded everything
+		// Create proper E2EEnvInfo object from the merged configuration
+		$env_info_array = [
+			'environment'          => 'e2e',
+			'env_id'               => 'qitenv' . bin2hex( random_bytes( 8 ) ),
+			'php'                  => $env_config['php'] ?? '8.2',
+			'wp'                   => $env_config['wp'] ?? 'stable',
+			'woo'                  => $env_config['woo'] ?? '',
+			'plugins'              => $env_config['plugins'] ?? [],
+			'themes'               => $env_config['themes'] ?? [],
+			'volumes'              => $env_config['volumes'] ?? [],
+			'php_extensions'       => $env_config['php_extensions'] ?? [],
+			'env_vars'             => $env_config['env_vars'] ?? [],
+			'env_files'            => $env_config['env_files'] ?? [],
+			'object_cache'         => $env_config['object_cache'] ?? false,
+			'site_url'             => 'http://localhost:8080', // This would be determined during setup
+			'sut'                  => $test_config['sut'] ?? [],
+			'is_development_build' => false, // This would be determined during SUT resolution
+		];
 
-		$env_info      = $result->env_info;
-		$test_packages = $result->test_packages;
+		$env_info = EnvInfo::from_array( $env_info_array );
+
+		// Type assertion: we know this is E2EEnvInfo since environment is 'e2e'
+		assert( $env_info instanceof E2EEnvInfo );
+
+		// Handle test packages from test configuration
+		$test_packages = $test_config['test_packages'] ?? [];
 
 		// Validate shard format
 		$shard = $input->getOption( 'shard' );
@@ -206,21 +228,21 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		if ( isset( $env_info->sut['slug'] ) ) {
 			$test_result = TestResult::init_from( $env_info );
 			$results_dir = $test_result->get_results_dir();
-			
+
 			// Copy debug.log from Docker container to results directory
 			try {
 				$docker = App::make( Docker::class );
-				$docker->copy_from_docker( 
-					$env_info, 
-					'/var/www/html/wp-content/debug.log', 
-					$results_dir . '/debug.log' 
+				$docker->copy_from_docker(
+					$env_info,
+					'/var/www/html/wp-content/debug.log',
+					$results_dir . '/debug.log'
 				);
 				$io->writeln( '<info>✓ Debug log copied from container</info>' );
 			} catch ( \RuntimeException $e ) {
 				// Debug log might not exist if no errors occurred - this is normal
 				$io->writeln( '<comment>No debug log found in container (this is normal if no PHP errors occurred)</comment>' );
 			}
-			
+
 			$test_result->set_status( $exit_status === Command::SUCCESS ? 'success' : 'failed' );
 
 			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result );
@@ -260,9 +282,9 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 	/**
 	 * Clean test package results based on manifest declarations
 	 *
-	 * @param string                                          $package_path Path to the test package
-	 * @param \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest Parsed manifest
-	 * @throws \RuntimeException On cleanup failures
+	 * @param string                                          $package_path Path to the test package.
+	 * @param \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest Parsed manifest.
+	 * @throws \RuntimeException On cleanup failures.
 	 */
 	private function cleanup_test_package_results( string $package_path, \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest ): void {
 		$results = $manifest->getTestResults();
@@ -448,8 +470,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 						if ( $manifest ) {
 							try {
 								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
-							} catch ( \Throwable $collectorErr ) {
-								$io->writeln( "<comment>CTRF collection after failure failed: {$collectorErr->getMessage()}</comment>" );
+							} catch ( \Throwable $collector_err ) {
+								$io->writeln( "<comment>CTRF collection after failure failed: {$collector_err->getMessage()}</comment>" );
 							}
 						}
 						// Re-throw to maintain failure status

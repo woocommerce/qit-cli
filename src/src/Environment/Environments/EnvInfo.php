@@ -83,7 +83,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	/** @var array<string,array{path:string}>  (package‑id => ['path' => dir]) */
 	public array $bootstrap_packages = [];
 
-	/** @var array<string,array{path:string}>  (package‑id => ['path' => dir]) */
+	/** @var array<string,array{path:string,manifest?:\QIT_CLI\PreCommand\Objects\TestPackageManifest}>  (package‑id => ['path' => dir, 'manifest' => optional manifest object]) */
 	public array $test_packages_metadata = [];
 
 	/**
@@ -134,7 +134,7 @@ abstract class EnvInfo implements \JsonSerializable {
 
 		// Set basic properties
 		$env_info->environment   = $environment;
-		$env_info->env_id        = $env_info_array['env_id'] ?? uniqid();
+		$env_info->env_id        = $env_info_array['env_id'] ?? ( 'qitenv' . bin2hex( random_bytes( 8 ) ) );
 		$env_info->temporary_env = $env_info_array['temporary_env'] ?? normalize_path( Environment::get_temp_envs_dir() . $environment . '-' . $env_info->env_id );
 		$env_info->created_at    = $env_info_array['created_at'] ?? time();
 		$env_info->status        = $env_info_array['status'] ?? 'pending';

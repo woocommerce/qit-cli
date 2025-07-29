@@ -5,7 +5,6 @@ parameters:
     - /app/src/qit-cli.php
   scanDirectories:
     - /app/src/vendor
-    - /app/src/src/AI/dev
   excludePaths:
     analyse:
       - /app/src/src/Commands/AI
