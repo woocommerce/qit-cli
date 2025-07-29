@@ -9,7 +9,9 @@
     "created_at": 0,
     "status": "pending",
     "env_id": "ENV_ID",
-    "volumes": [],
+    "volumes": [
+        "/repo/integration/helpers/CUSTOM_MU_PLUGIN.php:/var/www/html/wp-content/mu-plugins/CUSTOM_MU_PLUGIN.php"
+    ],
     "docker_images": [],
     "php_extensions": [],
     "plugins": [],

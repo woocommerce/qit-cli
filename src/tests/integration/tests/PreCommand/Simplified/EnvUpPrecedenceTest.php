@@ -435,13 +435,17 @@ final class EnvUpPrecedenceTest extends TestCase {
 		] );
 
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+		// Normalize the payload to get stable paths for assertions
+		$normalizedPayload = \QIT\IntegrationTests\Utils\Normalizer::precommand( $payload );
+		
 		$this->assertEqualsCanonicalizing(
 			[
 				'/host/cache:/var/www/cache',
 				'/host/logs:/var/www/logs',
+				'/repo/integration/helpers/CUSTOM_MU_PLUGIN.php:/var/www/html/wp-content/mu-plugins/CUSTOM_MU_PLUGIN.php',
 			],
-			$payload['volumes'] ?? [],
-			'Volume mappings should be merged and deduplicated preserving both entries.',
+			$normalizedPayload['volumes'] ?? [],
+			'Volume mappings should be merged and deduplicated, including auto-injected mu-plugin.',
 		);
 
 		$this->assertMatchesPrecommandSnapshot( $raw );
@@ -486,20 +490,30 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$raw = qit_precommand( [ 'env:up' ] );
 
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+		// Normalize the payload to get stable paths for assertions
+		$normalizedPayload = \QIT\IntegrationTests\Utils\Normalizer::precommand( $payload );
 
 		// ── scalar defaults that UpEnvironmentCommand declares ─────────
-		$this->assertSame( '8.2', $payload['php'], 'Default PHP should be 8.2' );
-		$this->assertSame( 'stable', $payload['wp'], 'Default WP should be "stable"' );
+		$this->assertSame( '8.2', $normalizedPayload['php'], 'Default PHP should be 8.2' );
+		$this->assertSame( 'stable', $normalizedPayload['wp'], 'Default WP should be "stable"' );
 
 		// ── flags / tunnel ─────────────────────────────────────────────
-		$this->assertFalse( $payload['object_cache'], 'object_cache must default to false' );
-		$this->assertFalse( $payload['tunnel'], 'tunnel flag must be false by default' );
-		$this->assertSame( 'no_tunnel', $payload['tunnel_type'] );
+		$this->assertFalse( $normalizedPayload['object_cache'], 'object_cache must default to false' );
+		$this->assertFalse( $normalizedPayload['tunnel'], 'tunnel flag must be false by default' );
+		$this->assertSame( 'no_tunnel', $normalizedPayload['tunnel_type'] );
 
 		// ── optional arrays should start empty ─────────────────────────
-		foreach ( [ 'plugins', 'themes', 'volumes', 'php_extensions' ] as $k ) {
-			$this->assertEmpty( $payload[ $k ], "$k should be empty when not provided" );
+		foreach ( [ 'plugins', 'themes', 'php_extensions' ] as $k ) {
+			$this->assertEmpty( $normalizedPayload[ $k ], "$k should be empty when not provided" );
 		}
+
+		// ── volumes should contain only the auto-injected mu-plugin ────
+		$this->assertCount( 1, $normalizedPayload['volumes'], 'volumes should contain only the auto-injected mu-plugin' );
+		$this->assertContains(
+			'/repo/integration/helpers/CUSTOM_MU_PLUGIN.php:/var/www/html/wp-content/mu-plugins/CUSTOM_MU_PLUGIN.php',
+			$normalizedPayload['volumes'],
+			'Auto‑injected mu‑plugin volume must always be present'
+		);
 
 		// Snapshot the fully‑normalised payload
 		$this->assertMatchesPrecommandSnapshot( $raw );

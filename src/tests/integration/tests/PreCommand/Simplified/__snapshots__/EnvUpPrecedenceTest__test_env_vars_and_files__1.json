@@ -4,17 +4,17 @@
             "DEBUG=true"
         ],
         "env_files": [
-            "\/tmp-normalised\/qit_env_7a6YPc"
+            "/tmp-normalised/qit_env_NORMALISED"
         ]
     },
     "environment": "e2e",
     "dependencies_mode": "activate",
-    "temporary_env": "\/tmp-normalised\/qit-test-688922d4a28a0\/temporary-envs\/e2e-ENV_ID\/",
+    "temporary_env": "/repo/integration/tmp-normalised/tmp_qit_config-qit_custom_tests_NORMALISED/temporary-envs/e2e-ENV_ID/",
     "created_at": 0,
     "status": "pending",
     "env_id": "ENV_ID",
     "volumes": [
-        "\/repo\/integration\/helpers\/CUSTOM_MU_PLUGIN.php:\/var\/www\/html\/wp-content\/mu-plugins\/CUSTOM_MU_PLUGIN.php"
+        "/repo/integration/helpers/CUSTOM_MU_PLUGIN.php:/var/www/html/wp-content/mu-plugins/CUSTOM_MU_PLUGIN.php"
     ],
     "docker_images": [],
     "php_extensions": [],
@@ -25,7 +25,7 @@
     "test_packages_metadata": [],
     "tunnel": false,
     "tunnel_type": "no_tunnel",
-    "site_url": "http:\/\/localhost:8080",
+    "site_url": "http://localhost:8080",
     "runner_args": [],
     "wp": "stable",
     "object_cache": false,
@@ -45,7 +45,7 @@
     "env_info": {
         "created_at": 0,
         "nginx_port": "PORT",
-        "temporary_env": "\/tmp-normalised\/temporary-env\/",
+        "temporary_env": "/tmp-normalised/temporary-env/",
         "plugins": null
     },
     "configuration": {

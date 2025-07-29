@@ -22,7 +22,21 @@ final class Normalizer {
 		$v = preg_replace( '/qit-cache-\d{8}-\d+/', 'qit-cache-NORMALISED', $v );
 		$v = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALISED', $v );
 		$v = preg_replace( '/qit_config-qit_custom_tests_[a-f0-9]+/', 'qit_config-qit_custom_tests_NORMALISED', $v );
+		$v = preg_replace( '/qit_env_[a-zA-Z0-9]+/', 'qit_env_NORMALISED', $v );
+		$v = preg_replace( '/qit-test-[a-f0-9]+/', 'qit-test-NORMALISED', $v );
 		$v = preg_replace( '/cache\/[a-f0-9]+/', 'cache/NORMALISED_ID/', $v );
+
+		// Normalize mu-plugin paths to stable placeholders
+		$v = str_replace(
+			'helpers/custom-test-mu-plugin.php',
+			'helpers/CUSTOM_MU_PLUGIN.php',
+			$v
+		);
+		$v = str_replace(
+			'mu-plugins/custom-test-mu-plugin.php',
+			'mu-plugins/CUSTOM_MU_PLUGIN.php',
+			$v
+		);
 
 		if ( $envId ) {
 			$v = str_replace( $envId, 'ENV_ID', $v );
@@ -159,15 +173,6 @@ final class Normalizer {
 			$data['configuration']['sut_extension'] = $tmp[0];
 		}
 
-		// Filter out built-in MU-plugin volume mapping from volumes array
-		if ( isset( $data['volumes'] ) && is_array( $data['volumes'] ) ) {
-			$data['volumes'] = array_filter( $data['volumes'], function( $volume ) {
-				// Filter out MU-plugin volume mappings (they contain 'mu-plugins' in the path)
-				return ! str_contains( $volume, 'mu-plugins' );
-			} );
-			// Re-index the array to maintain consistent ordering
-			$data['volumes'] = array_values( $data['volumes'] );
-		}
 
 		/* Step 3 – return in the same format we received */
 		return $isJson ? json_encode( $data, JSON_PRETTY_PRINT ) : $data;
