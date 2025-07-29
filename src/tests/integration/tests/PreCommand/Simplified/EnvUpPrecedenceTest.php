@@ -23,8 +23,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 		] ) );
 
 		// 2. Run Pre‑Command
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--php',
 			'8.1',   // CLI should override config
 			'--wp',
@@ -34,7 +35,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		] );
 
 		// 3. Snapshot with built‑in normalisation
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/*────────────────── NEW TESTS ──────────────────*/
@@ -55,8 +56,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		] ) );
 
-		$raw     = qit_precommand( [
+		$raw     = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--plugin',
 			'jetpack',
 			'--theme',
@@ -72,10 +74,6 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$plugins = $payload['plugins'];
 		$themes  = $payload['themes'];
 
-		// Debug: dump the actual payload to understand what we're getting
-		file_put_contents( '/tmp/test_debug.json', json_encode( $payload, JSON_PRETTY_PRINT ) );
-		echo "\nDEBUG: Plugins array: " . json_encode( $plugins ) . "\n";
-		echo "DEBUG: Themes array: " . json_encode( $themes ) . "\n";
 
 		// Plugins and themes are returned as simple string arrays, not objects
 		$this->assertCount( 3, $plugins );  // woocommerce, akismet, jetpack
@@ -93,7 +91,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$this->assertContains( 'xdebug', $payload['php_extensions'] );
 
 		// Snapshot the fully‑normalised payload for shape regression.
-		$this->assertMatchesPrecommandSnapshot( $payload );
+		$this->assertMatchesEnvUpSnapshot( $payload );
 	}
 
 	/**
@@ -109,8 +107,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		] ) );
 
-		$raw  = qit_precommand( [
+		$raw  = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--object_cache',    // flips the flag to TRUE
 			'--tunnel=cloudflare',
 			'--config',
@@ -122,7 +121,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$this->assertTrue( $data['tunnel'] );
 		$this->assertEquals( 'cloudflare', $data['tunnel_type'] );
 
-		$this->assertMatchesPrecommandSnapshot( $data );
+		$this->assertMatchesEnvUpSnapshot( $data );
 	}
 
 	/**
@@ -147,8 +146,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		] ) );
 
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--environment=local',
 			'--php=8.3',              // CLI beats everything
 			'--config',
@@ -158,7 +158,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$data = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
 		$this->assertEquals( '8.3', $data['php'] );  // CLI
 
-		$this->assertMatchesPrecommandSnapshot( $data );
+		$this->assertMatchesEnvUpSnapshot( $data );
 	}
 
 
@@ -179,8 +179,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 		], JSON_PRETTY_PRINT ) );
 
 		// 2 · run Pre‑Command
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--php',
 			'8.1',   // CLI wins
 			'--wp',
@@ -198,7 +199,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$this->assertSame( '8.0', $payload['woo'] );
 
 		// 4 · full‑payload snapshot (normalised automatically)
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/* ================================================================
@@ -219,8 +220,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		], JSON_PRETTY_PRINT ) );
 
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--php',
 			'8.2',     // final winner
 			'--config',
@@ -232,7 +234,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$this->assertSame( '8.2', $payload['php'], 'CLI must override profile/default.' );
 		$this->assertSame( '6.1', $payload['wp'], 'Profile overrides environment default.' );
 
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/* ================================================================
@@ -253,8 +255,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		], JSON_PRETTY_PRINT ) );
 
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--environment',
 			'premium',
 			'--config',
@@ -281,7 +284,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 			'Child environment should inherit + extend plugin list.',
 		);
 
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/* ================================================================
@@ -294,8 +297,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			'environments' => [ 'default' => [] ],
 		], JSON_PRETTY_PRINT ) );
 
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--object_cache',        // short‑hand -o would work as well
 			'--config',
 			$configPath,
@@ -304,7 +308,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
 		$this->assertTrue( $payload['object_cache'], 'CLI flag must set object_cache = true.' );
 
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/* ================================================================
@@ -320,8 +324,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		], JSON_PRETTY_PRINT ) );
 
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--plugin',
 			'jetpack',
 			'--plugin',
@@ -344,7 +349,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 			'CLI plugins should be merged (no duplicates, order irrelevant).',
 		);
 
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/* ================================================================
@@ -356,8 +361,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 		file_put_contents( $envFilePath, "API_KEY=from_file\nMODE=test\n" );
 
 		// ---- 2. run Pre‑Command -----------------------------------
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--env_var',
 			'DEBUG=true',
 			'--env_file',
@@ -370,7 +376,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$this->assertContains( 'DEBUG=true', $payload['extra']['env_vars'] ?? [] );
 		$this->assertCount( 1, $payload['extra']['env_files'] ?? [] );
 
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 
 		// ---- 4. cleanup -------------------------------------------
 		@unlink( $envFilePath );
@@ -389,8 +395,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		], JSON_PRETTY_PRINT ) );
 
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--php_extension',
 			'imagick',
 			'--php_extension',
@@ -406,7 +413,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 			'php_extensions should be the union of config & CLI without duplicates.'
 		);
 
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/* ================================================================
@@ -424,8 +431,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 			],
 		], JSON_PRETTY_PRINT ) );
 
-		$raw = qit_precommand( [
+		$raw = qit_run_env_up( [
 			'env:up',
+			'--json',
 			'--volume',
 			'/host/logs:/var/www/logs',
 			'--volume',
@@ -448,7 +456,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 			'Volume mappings should be merged and deduplicated, including auto-injected mu-plugin.',
 		);
 
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 	/* ================================================================
@@ -457,8 +465,8 @@ final class EnvUpPrecedenceTest extends TestCase {
 	 * ============================================================== */
 	public function test_json_flag_is_accepted_and_idempotent(): void {
 		// 1. Run once without --json, once with --json
-		$rawWithout = qit_precommand( [ 'env:up', '--php', '8.2' ] );
-		$rawWith    = qit_precommand( [ 'env:up', '--php', '8.2', '--json' ] );
+		$rawWithout = qit_run_env_up( [ 'env:up', '--json', '--php', '8.2' ] );
+		$rawWith    = qit_run_env_up( [ 'env:up', '--json', '--php', '8.2', '--json' ] );
 
 		// 2. Decode -> normalise -> re‑encode so both payloads become deterministic
 		$normWithout = json_encode(
@@ -478,7 +486,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		);
 
 		// 4. Snapshot the normalised version (not the raw one)
-		$this->assertMatchesPrecommandSnapshot( json_decode( $normWith, true ) );
+		$this->assertMatchesEnvUpSnapshot( json_decode( $normWith, true ) );
 	}
 
 
@@ -487,7 +495,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 	 * ============================================================== */
 	public function test_defaults_when_no_cli_or_config_values(): void {
 		// No --config file, no CLI overrides – pure defaults
-		$raw = qit_precommand( [ 'env:up' ] );
+		$raw = qit_run_env_up( [ 'env:up', '--json' ] );
 
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
 		// Normalize the payload to get stable paths for assertions
@@ -516,7 +524,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		);
 
 		// Snapshot the fully‑normalised payload
-		$this->assertMatchesPrecommandSnapshot( $raw );
+		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
 

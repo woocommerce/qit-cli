@@ -3,7 +3,7 @@
 use Symfony\Component\Process\Process;
 
 // Set up required global variables for integration tests
-$GLOBALS['qit-php'] = __DIR__ . '/../../../src/qit-cli.php';
+$GLOBALS['qit-php']  = __DIR__ . '/../../../src/qit-cli.php';
 $GLOBALS['QIT_HOME'] = sys_get_temp_dir() . '/qit-test-' . uniqid();
 
 if ( ! is_dir( '/tmp/qit' ) ) {
@@ -139,9 +139,32 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
  *
  * @return string The raw output from the PreCommand phase.
  */
-function qit_precommand( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process{
+function qit_run_env_up( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process {
 	// Add the QIT_SELF_TEST environment variable to trigger the early-return mechanism
-	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'precommand' ] );
+	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'env_up' ] );
+
+	// Pass all parameters to the qit function and return its output directly
+	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process );
+}
+
+/**
+ * Runs a QIT run:e2e command but only executes up to the env_info creation phase.
+ * This is useful for testing the configuration resolution and environment setup
+ * without actually running Docker or tests.
+ *
+ * This function uses the 'QIT_SELF_TEST' => 'env_info' environment variable
+ * to trigger the early-return mechanism in RunE2ECommand.
+ *
+ * @param array $command Command line arguments to pass to QIT (should start with 'run:e2e').
+ * @param string|array|null $qit_env_json Optional JSON configuration or array to use.
+ * @param int $expected_exit_code Expected exit code from the command.
+ * @param array $extra_env Additional environment variables to pass to the command.
+ *
+ * @return string The raw JSON output from the env_info phase.
+ */
+function qit_run_e2e( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process {
+	// Add the QIT_SELF_TEST environment variable to trigger the env_info early-return mechanism
+	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'run_e2e' ] );
 
 	// Pass all parameters to the qit function and return its output directly
 	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process );

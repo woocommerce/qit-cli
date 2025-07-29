@@ -140,7 +140,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 				// Handle QIT_SELF_TEST=options
 				if ( getenv( 'QIT_SELF_TEST' ) === 'options' ) {
-					$output->write( json_encode( $options, JSON_PRETTY_PRINT ) );
+					$output->write( json_encode( $options, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 					return Command::SUCCESS;
 				}

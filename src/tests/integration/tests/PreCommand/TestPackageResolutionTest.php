@@ -15,7 +15,7 @@ class TestPackageResolutionTest extends \PHPUnit\Framework\TestCase {
      * Test that test packages can be specified via CLI.
      */
     public function test_cli_test_packages() {
-        $output = qit_precommand([
+        $output = qit_run_env_up([
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),
@@ -45,7 +45,7 @@ class TestPackageResolutionTest extends \PHPUnit\Framework\TestCase {
      * Test that multiple test packages can be specified via CLI.
      */
     public function test_multiple_cli_test_packages() {
-        $output = qit_precommand([
+        $output = qit_run_env_up([
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),
@@ -94,7 +94,7 @@ class TestPackageResolutionTest extends \PHPUnit\Framework\TestCase {
 }
 JSON;
 
-        $output = qit_precommand([
+        $output = qit_run_env_up([
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),
@@ -136,7 +136,7 @@ JSON;
      * Test that test packages with default version are properly handled.
      */
     public function test_default_version() {
-        $output = qit_precommand([
+        $output = qit_run_env_up([
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),

@@ -84,7 +84,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			'env_vars'       => $env_config['env_vars'] ?? [],
 			'env_files'      => $env_config['env_files'] ?? [],
 			'object_cache'   => $env_config['object_cache'] ?? false,
-			'tunnel'         => ($env_config['tunnel'] ?? false) === true,
+			'tunnel'         => ( $env_config['tunnel'] ?? false ) === true,
 			'tunnel_type'    => $env_config['tunnel_type'] ?? 'no_tunnel',
 			'site_url'       => 'http://localhost:8080', // This would be determined during setup
 		];
@@ -92,7 +92,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 		$env_info = \QIT_CLI\Environment\Environments\EnvInfo::from_array( $env_info_array );
 
 		// Handle QIT_SELF_TEST=precommand early return
-		if ( getenv( 'QIT_SELF_TEST' ) === 'precommand' ) {
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 
 			return Command::SUCCESS;

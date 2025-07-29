@@ -31,7 +31,7 @@ class CommandInputPriorityTest extends \PHPUnit\Framework\TestCase {
 JSON;
 
 		// CLI flags should override qit.json values
-		$output = qit_precommand( [
+		$output = qit_run_env_up( [
 			'env:up',
 			'--wp=6.1',
 			'--php=8.0',
@@ -66,7 +66,7 @@ JSON;
 JSON;
 
 		// No CLI flags, so qit.json values should be used
-		$output = qit_precommand( [
+		$output = qit_run_env_up( [
 			'env:up',
 			'--json',
 		],
@@ -85,7 +85,7 @@ JSON;
 	 */
 	public function test_defaults_only() {
 		// No qit.json, no CLI flags, so default values should be used
-		$output = qit_precommand( [
+		$output = qit_run_env_up( [
 			'env:up',
 			'--json',
 		],

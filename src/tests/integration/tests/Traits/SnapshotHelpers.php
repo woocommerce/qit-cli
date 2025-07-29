@@ -301,7 +301,7 @@ trait SnapshotHelpers {
 	 *                               string‑to‑string replacements a caller
 	 *                               might want to inject.
 	 */
-	protected function assertMatchesPrecommandSnapshot(
+	protected function assertMatchesEnvUpSnapshot(
 		string|array $payload,
 		array $extraReplacements = []
 	): void {

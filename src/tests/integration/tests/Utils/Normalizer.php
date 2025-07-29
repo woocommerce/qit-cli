@@ -19,11 +19,9 @@ final class Normalizer {
 		$v = str_replace( '/tmp/', self::TMP_PLACEHOLDER, $v );
 
 		$v = preg_replace( '/qit-env-[a-f0-9]{32}\.json/', 'qit-env-<hash>.json', $v );
-		// Normalize both cache directory patterns to consistent placeholder
-		$v = preg_replace( '/(?:tmp_qit_config-qit_custom_tests_[a-f0-9]+|qit-cache-\d{8}-\d+)/', 'qit-cache-NORMALISED', $v );
-		$v = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALISED', $v );
+		// Normalize all temporary directory patterns to consistent placeholder
+		$v = preg_replace( "/(?:tmp_qit_config-qit_custom_tests_[a-f0-9]+|qit-cache-\\d{8}-\\d+|qit-test-[a-f0-9]+)/", "qit-cache-NORMALISED", $v );
 		$v = preg_replace( '/qit_env_[a-zA-Z0-9]+/', 'qit_env_NORMALISED', $v );
-		$v = preg_replace( '/qit-test-[a-f0-9]+/', 'qit-test-NORMALISED', $v );
 		$v = preg_replace( '/cache\/[a-f0-9]+/', 'cache/NORMALISED_ID/', $v );
 
 		// Normalize mu-plugin paths to stable placeholders

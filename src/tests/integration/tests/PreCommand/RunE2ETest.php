@@ -15,7 +15,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
     use ScaffoldHelpers;
 
     public function test_woo_version_and_plugin_are_merged() {
-        $json = qit_precommand([
+        $json = qit_run_env_up([
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),
@@ -37,7 +37,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
     }
 
     public function test_can_use_space() {
-        $output = qit_precommand( [
+        $output = qit_run_env_up( [
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),
@@ -51,7 +51,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
     }
 
     public function test_can_use_equal_signs() {
-        $output = qit_precommand( [
+        $output = qit_run_env_up( [
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),
@@ -66,7 +66,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
     public function test_directory_with_same_basename_as_sut() {
         $this->scaffold_plugin( 'woocommerce-amazon-s3-storage' );
 
-        $output = qit_precommand( [
+        $output = qit_run_env_up( [
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),
@@ -84,7 +84,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
     public function test_directory_with_same_basename_as_sut_with_env_up() {
         $this->scaffold_plugin( 'woocommerce-amazon-s3-storage' );
 
-        $output = qit_precommand( [
+        $output = qit_run_env_up( [
             'run:e2e',
             'woocommerce-amazon-s3-storage',
             $this->scaffold_test(),

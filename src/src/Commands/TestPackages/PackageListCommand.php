@@ -62,7 +62,7 @@ class PackageListCommand extends QITCommand {
 					'success'  => false,
 					'error'    => $e->getMessage(),
 					'packages' => [],
-				], JSON_PRETTY_PRINT ) );
+				], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			} else {
 				$io->error( $e->getMessage() );
 			}
@@ -129,7 +129,7 @@ class PackageListCommand extends QITCommand {
 				'owned_count'  => $owned_count,
 				'public_count' => $public_count,
 				'packages'     => $packages,
-			], JSON_PRETTY_PRINT ) );
+			], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			return;
 		}

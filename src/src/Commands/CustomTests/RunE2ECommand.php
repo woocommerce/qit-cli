@@ -184,8 +184,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		$this->handle_termination();
 
 		// For testing
-		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
-			$output->write( json_encode( $env_info ) );
+		if ( getenv( 'QIT_SELF_TEST' ) === 'run_e2e' ) {
+			$output->write( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 
 			return self::SUCCESS;
 		}

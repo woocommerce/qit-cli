@@ -17,7 +17,7 @@ file_put_contents( $configPath, json_encode( $config ) );
 echo "Testing qit_precommand with env:up...\n";
 
 try {
-    $output = qit_precommand( [
+    $output = qit_run_env_up( [
         'env:up',
         '--php', '8.1',
         '--wp', '6.0',

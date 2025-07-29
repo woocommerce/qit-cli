@@ -73,7 +73,7 @@ class PackageDeleteCommand extends QITCommand {
 					'success'    => false,
 					'error'      => $e->getMessage(),
 					'package_id' => $package_id,
-				], JSON_PRETTY_PRINT ) );
+				], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			} else {
 				$io->error( $e->getMessage() );
 			}
@@ -121,7 +121,7 @@ class PackageDeleteCommand extends QITCommand {
 				'success'    => true,
 				'message'    => $result['message'] ?? 'Package deleted successfully',
 				'package_id' => $result['package_id'] ?? null,
-			], JSON_PRETTY_PRINT ) );
+			], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		} else {
 			$io->success( $result['message'] ?? 'Package deleted successfully! 🎉' );
 		}

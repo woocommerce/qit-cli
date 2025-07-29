@@ -323,7 +323,7 @@ class PackageDownloadCommand extends QITCommand {
 				],
 				'results' => $results,
 			];
-			$output->writeln( json_encode( $json_output, JSON_PRETTY_PRINT ) );
+			$output->writeln( json_encode( $json_output, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		} else {
 			// Table format (default)
 			if ( $failed > 0 ) {

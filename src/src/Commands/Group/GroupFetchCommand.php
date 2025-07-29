@@ -50,7 +50,7 @@ class GroupFetchCommand extends QITCommand {
 		}
 
 		if ( $input->getOption( 'json' ) ) {
-			$output->writeln( json_encode( $group, JSON_PRETTY_PRINT ) );
+			$output->writeln( json_encode( $group, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			return Command::SUCCESS;
 		}
 

@@ -8,7 +8,7 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 
 	public function test_env_up() {
-		$output = qit_precommand( [ 'env:up' ], <<<'JSON'
+		$output = qit_run_env_up( [ 'env:up' ], <<<'JSON'
 {
   "sut": {
     "type": "plugin",
@@ -25,11 +25,11 @@ class EnvTest extends \PHPUnit\Framework\TestCase {
 JSON
 		); // Raw output is needed for regex
 
-		$this->assertMatchesPrecommandSnapshot( $output );
+		$this->assertMatchesEnvUpSnapshot( $output );
 	}
 
 	public function test_env_up_with_parameters() {
-		$output = qit_precommand( [
+		$output = qit_run_env_up( [
 				'env:up',
 				'--wp',
 				'6.5',
@@ -49,7 +49,7 @@ JSON
 	}
 
 	public function test_env_up_with_object_cache() {
-		$output = qit_precommand( [
+		$output = qit_run_env_up( [
 				'env:up',
 				'--object_cache',
 				'--json',
@@ -62,7 +62,7 @@ JSON
 	}
 
 	public function test_env_up_with_file() {
-		$output = qit_precommand( [ 'env:up', '--json' ], <<<'JSON'
+		$output = qit_run_env_up( [ 'env:up', '--json' ], <<<'JSON'
 {
   "environments": {
     "default": {
@@ -84,7 +84,7 @@ JSON
 	}
 
 	public function test_env_up_with_file_and_parameters() {
-		$output = qit_precommand( [ 'env:up', '--json' ], <<<'JSON'
+		$output = qit_run_env_up( [ 'env:up', '--json' ], <<<'JSON'
 {
   "environments": {
     "default": {
