@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 333 passed, 0 failed, 52 skipped.",
+            "test_summary": "385 total, 335 passed, 0 failed, 50 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -50,12 +50,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 78,
-                "numPendingTestSuites": 22,
+                "numPassedTestSuites": 79,
+                "numPendingTestSuites": 21,
                 "numTotalTestSuites": 100,
                 "numFailedTests": 0,
-                "numPassedTests": 333,
-                "numPendingTests": 52,
+                "numPassedTests": 335,
+                "numPendingTests": 50,
                 "numTotalTests": 385,
                 "testResults": [
                     {
@@ -495,7 +495,7 @@
                     {
                         "file": "checkout\\/checkout.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
                                 {
@@ -536,13 +536,13 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout": [
@@ -2687,7 +2687,7 @@
                         }
                     }
                 ],
-                "summary": "385 total, 333 passed, 0 failed, 52 skipped."
+                "summary": "385 total, 335 passed, 0 failed, 50 skipped."
             }
         },
         {
@@ -2698,10 +2698,10 @@
                     },
                     "summary": {
                         "tests": 385,
-                        "passed": 333,
+                        "passed": 335,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 52,
+                        "skipped": 50,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4561,11 +4561,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4577,27 +4577,21 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js",
-                                            "line": 381,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4609,18 +4603,12 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js",
-                                            "line": 381,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             }
                         },
                         {
@@ -8554,7 +8542,7 @@
                             "retryAttempts": [
                                 {
                                     "status": "failed",
-                                    "duration": 22847,
+                                    "duration": 22857,
                                     "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n",
                                     "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/add-product-task.spec.js:98:5",
                                     "snippet": "\\u001b[0m \\u001b[90m  96 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m  97 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Physical product\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m  98 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m  99 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 100 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Variable product\'\\u001b[39m } )\\n \\u001b[90m 101 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m"
@@ -10449,14 +10437,6 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
-                                            "line": 32,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
                                             "line": 86,
                                             "column": 8
                                         }
@@ -10485,14 +10465,6 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/organization-tab-product-block-editor.spec.js",
-                                            "line": 32,
-                                            "column": 15
-                                        }
-                                    },
                                     {
                                         "type": "skip",
                                         "location": {
