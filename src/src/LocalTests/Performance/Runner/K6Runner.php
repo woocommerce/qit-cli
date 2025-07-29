@@ -147,7 +147,7 @@ class K6Runner {
 			}
 		}
 
-		// No tests found
+		// No tests found.
 		$error_context = $target_file ? "specific test file '{$target_file}'" : 'any K6 test files';
 		throw new \RuntimeException(
 			"No {$error_context} found for extension: {$env_info->sut_slug} with test tag: " . ( $env_info->test_tag ?: 'default' )
@@ -157,8 +157,8 @@ class K6Runner {
 	/**
 	 * Find a test file in the given directory.
 	 *
-	 * @param array<string,string> $test_info Test directory information
-	 * @param string|null          $target_file Specific file to search for, or null for any K6 file
+	 * @param array<string,string> $test_info Test directory information.
+	 * @param string|null          $target_file Specific file to search for, or null for any K6 file.
 	 */
 	private function find_test_file_in_directory( array $test_info, ?string $target_file ): ?string {
 		$host_path = $test_info['path_in_host'];
@@ -174,7 +174,7 @@ class K6Runner {
 		$directory = new \RecursiveDirectoryIterator( $host_path, \RecursiveDirectoryIterator::SKIP_DOTS );
 		$iterator  = new \RecursiveIteratorIterator( $directory );
 
-		// Apply regex filter for K6 files only if no specific file is requested
+		// Apply regex filter for K6 files only if no specific file is requested.
 		if ( ! $target_file ) {
 			$iterator = new \RegexIterator( $iterator, '/\.k6\.js$/i' );
 		}
@@ -186,7 +186,7 @@ class K6Runner {
 
 			$relative_path = str_replace( $host_path . '/', '', $file->getPathname() );
 
-			// Check if this file matches our criteria
+			// Check if this file matches our criteria.
 			if ( $this->is_matching_test_file( $relative_path, $target_file ) ) {
 				$container_path = $test_info['path_in_php_container'] . '/' . $relative_path;
 
@@ -213,11 +213,11 @@ class K6Runner {
 	 */
 	private function is_matching_test_file( string $relative_path, ?string $target_file ): bool {
 		if ( ! $target_file ) {
-			// Any K6 file is acceptable (regex filter already applied)
+			// Any K6 file is acceptable (regex filter already applied).
 			return true;
 		}
 
-		// For specific files, check exact match or basename match
+		// For specific files, check exact match or basename match.
 		return $relative_path === $target_file || basename( $relative_path ) === $target_file;
 	}
 
