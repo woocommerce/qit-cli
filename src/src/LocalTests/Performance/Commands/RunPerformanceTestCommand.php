@@ -229,13 +229,13 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		$test_tag = $input->getArgument( 'test' ) ?? '';
+		$test_tag     = $input->getArgument( 'test' ) ?? '';
 		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
 
 		if ( $env_info instanceof PerformanceEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut_slug = $woo_extension_slug;
-			$env_info->sut_type = $sut_type;
-			$env_info->test_tag = $test_tag;
+			$env_info->sut_slug     = $woo_extension_slug;
+			$env_info->sut_type     = $sut_type;
+			$env_info->test_tag     = $test_tag;
 			$env_info->k6_test_file = $k6_test_file;
 
 			$this->test_run_notifier->notify_test_started(

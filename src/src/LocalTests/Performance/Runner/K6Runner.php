@@ -150,7 +150,7 @@ class K6Runner {
 		// No tests found
 		$error_context = $target_file ? "specific test file '{$target_file}'" : 'any K6 test files';
 		throw new \RuntimeException(
-			"No {$error_context} found for extension: {$env_info->sut_slug} with test tag: " . ( $env_info->test_tag ?: 'default' ) 
+			"No {$error_context} found for extension: {$env_info->sut_slug} with test tag: " . ( $env_info->test_tag ?: 'default' )
 		);
 	}
 
@@ -158,7 +158,7 @@ class K6Runner {
 	 * Find a test file in the given directory.
 	 *
 	 * @param array<string,string> $test_info Test directory information
-	 * @param string|null $target_file Specific file to search for, or null for any K6 file
+	 * @param string|null          $target_file Specific file to search for, or null for any K6 file
 	 */
 	private function find_test_file_in_directory( array $test_info, ?string $target_file ): ?string {
 		$host_path = $test_info['path_in_host'];
@@ -172,7 +172,7 @@ class K6Runner {
 		}
 
 		$directory = new \RecursiveDirectoryIterator( $host_path, \RecursiveDirectoryIterator::SKIP_DOTS );
-		$iterator = new \RecursiveIteratorIterator( $directory );
+		$iterator  = new \RecursiveIteratorIterator( $directory );
 
 		// Apply regex filter for K6 files only if no specific file is requested
 		if ( ! $target_file ) {
@@ -192,7 +192,7 @@ class K6Runner {
 
 				$test_type = $target_file ? 'specific performance' : 'performance';
 				$this->output->writeln( "<info>Using {$test_type} test: {$relative_path}</info>" );
-				
+
 				if ( $this->output->isVerbose() ) {
 					$this->output->writeln( "<info>Debug: Found test file: {$container_path}</info>" );
 				}
