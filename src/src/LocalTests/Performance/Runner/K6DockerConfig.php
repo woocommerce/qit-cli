@@ -17,13 +17,17 @@ class K6DockerConfig {
 	}
 
 	/**
+	 * @param PerformanceEnvInfo $env_info
+	 * @param string             $results_dir
+	 * @param string             $container_name
+	 * @param array<mixed>       $test_infos
 	 * @return array<string>
 	 */
-	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name ): array {
+	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $test_infos = [] ): array {
 		return array_merge(
 			$this->get_base_docker_args( $env_info, $container_name ),
-			$this->get_volume_mounts( $env_info, $results_dir ),
-			$this->get_environment_variables(),
+			$this->get_volume_mounts( $env_info, $results_dir, $test_infos ),
+			$this->get_environment_variables( $env_info ),
 			$this->get_user_args(),
 			$this->get_k6_command()
 		);
@@ -45,16 +49,16 @@ class K6DockerConfig {
 	}
 
 	/**
+	 * @param PerformanceEnvInfo $env_info
+	 * @param string             $results_dir
+	 * @param array<mixed>       $test_infos
 	 * @return array<string>
 	 */
-	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir ): array {
+	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir, array $test_infos = [] ): array {
+		// Base volumes for K6 operation.
 		$volumes = [
-			Config::get_qit_dir() . 'cache/k6'             => '/k6-cache',
-			$env_info->temporary_env . '/k6'               => '/tests',
-			$results_dir                                   => '/results',
-			$env_info->temporary_env . '/k6/qitHelpers.js' => '/qitHelpers/qitHelpers.js',
-			$env_info->temporary_env . '/k6/test-info.json' => '/qitHelpers/test-info.json',
-			sys_get_temp_dir() . '/qit-k6-default-test.js' => '/tests/default-performance-test.js',
+			Config::get_qit_dir() . 'cache/k6' => '/k6-cache',
+			$results_dir                       => '/results',
 		];
 
 		$args = [];
@@ -63,29 +67,37 @@ class K6DockerConfig {
 			$args[] = "$host_path:$container_path";
 		}
 
+		// Mount test directories.
+		foreach ( $test_infos as $test_info ) {
+			$args[] = '-v';
+			$args[] = "{$test_info['path_in_host']}:{$test_info['path_in_php_container']}";
+		}
+
 		return $args;
 	}
 
 	/**
 	 * @return array<string>
 	 */
-	private function get_environment_variables(): array {
-		$env_vars = array_merge(
-			[
-				'BASE_URL'            => App::getVar( 'BASE_URL' ),
-				'QIT_DOMAIN'          => App::getVar( 'QIT_DOMAIN' ),
-				'QIT_INTERNAL_DOMAIN' => App::getVar( 'QIT_INTERNAL_DOMAIN' ),
-				'QIT_INTERNAL_NGINX'  => App::getVar( 'QIT_INTERNAL_NGINX' ),
-			],
-			App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? []
-		);
+	private function get_environment_variables( PerformanceEnvInfo $env_info ): array {
+		// Environment variables for k6 container.
+		$internal_nginx_name = "qitenvnginx{$env_info->env_id}";
 
-		$args = [];
-		foreach ( $env_vars as $key => $value ) {
-			if ( $value ) {
-				$args[] = '-e';
-				$args[] = "$key=$value";
-			}
+		$args = [
+			'-e',
+			sprintf( 'BASE_URL=%s', $env_info->site_url ),
+			'-e',
+			sprintf( 'QIT_DOMAIN=%s', $env_info->domain ),
+			'-e',
+			sprintf( 'QIT_INTERNAL_DOMAIN=%s', "http://host.docker.internal:{$env_info->nginx_port}" ),
+			'-e',
+			sprintf( 'QIT_INTERNAL_NGINX=%s', $internal_nginx_name ),
+		];
+
+		// Pass additional env vars to the test environment.
+		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
+			$args[] = '-e';
+			$args[] = "$env_key=$env_value";
 		}
 
 		return $args;
@@ -119,18 +131,5 @@ class K6DockerConfig {
 			'--out',
 			'json=/results/k6-results.json',
 		];
-	}
-
-	public function set_environment_variables( PerformanceEnvInfo $env_info ): void {
-		$env_vars = [
-			'BASE_URL'            => $env_info->site_url,
-			'QIT_DOMAIN'          => $env_info->domain,
-			'QIT_INTERNAL_DOMAIN' => "host.docker.internal:{$env_info->nginx_port}",
-			'QIT_INTERNAL_NGINX'  => "qitenvnginx{$env_info->env_id}",
-		];
-
-		foreach ( $env_vars as $key => $value ) {
-			App::setVar( $key, $value );
-		}
 	}
 }

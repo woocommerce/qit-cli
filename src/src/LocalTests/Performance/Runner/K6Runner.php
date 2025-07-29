@@ -28,7 +28,6 @@ class K6Runner {
 	/** @var PerformanceTestResult */
 	private $performance_test_result;
 
-
 	public function __construct( OutputInterface $output, Docker $docker ) {
 		$this->output        = $output;
 		$this->docker_config = new K6DockerConfig( $docker );
@@ -42,17 +41,17 @@ class K6Runner {
 	public function run_test( PerformanceEnvInfo $env_info, array $test_infos, PerformanceTestResult $test_result ): int {
 		$this->performance_test_result = $test_result;
 
-		// Setup directories and environment.
-		$this->setup_test_environment( $env_info );
+		$this->setup_test_environment();
 
 		// Build and execute k6 test.
 		$k6_args = $this->docker_config->build_k6_docker_args(
 			$env_info,
 			$test_result->get_results_dir(),
-			"qit_env_k6_{$env_info->env_id}"
+			"qit_env_k6_{$env_info->env_id}",
+			$test_infos
 		);
 
-		$exit_code = $this->execute_k6_tests( $k6_args );
+		$exit_code = $this->execute_k6_tests( $env_info, $k6_args );
 
 		// Collect and process results.
 		$this->collect_results( $test_result );
@@ -62,12 +61,11 @@ class K6Runner {
 	}
 
 	/**
-	 * Setup test environment - create directories and set environment variables.
+	 * Setup test environment - create directories.
 	 */
-	private function setup_test_environment( PerformanceEnvInfo $env_info ): void {
+	private function setup_test_environment(): void {
 		$this->ensure_directory_exists( Config::get_qit_dir() . 'cache/k6' );
 		$this->ensure_directory_exists( $this->performance_test_result->get_results_dir() );
-		$this->docker_config->set_environment_variables( $env_info );
 	}
 
 	/**
@@ -82,15 +80,16 @@ class K6Runner {
 	}
 
 	/**
-	 * @param array<string> $k6_args
+	 * @param PerformanceEnvInfo $env_info
+	 * @param array<string>      $k6_args
 	 */
-	private function execute_k6_tests( array $k6_args ): int {
-		$this->create_default_k6_test();
+	private function execute_k6_tests( PerformanceEnvInfo $env_info, array $k6_args ): int {
+		$test_file = $this->determine_test_file( $env_info );
 
 		$this->output->writeln( '<info>Running k6 performance test for WooCommerce extension</info>' );
 
 		// Execute K6 test.
-		$test_args = array_merge( $k6_args, [ '/tests/default-performance-test.js' ] );
+		$test_args = array_merge( $k6_args, [ $test_file ] );
 		$process   = new Process( $test_args );
 		$process->setTimeout( 3600 ); // 1 hour timeout
 
@@ -126,89 +125,48 @@ class K6Runner {
 		return $exit_code;
 	}
 
-	public function create_default_k6_test( ?string $target_file = null ): string {
-		$source = __DIR__ . '/../tests/default-performance.k6.js';
-		$target = $target_file ?: sys_get_temp_dir() . '/qit-k6-default-test.js';
+	/**
+	 * Determine which test file to use based on environment info.
+	 */
+	private function determine_test_file( PerformanceEnvInfo $env_info ): string {
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( '<info>Debug: Available tests in env_info:</info>' );
+			$this->output->writeln( json_encode( $env_info->tests, JSON_PRETTY_PRINT ) );
+		}
 
-		if ( ! file_exists( $source ) ) {
-			// If the source file doesn't exist (e.g., running from phar), use embedded content.
-			$default_k6_content = 'import { check, sleep } from "k6";
-import http from "k6/http";
+		if ( empty( $env_info->tests ) ) {
+			throw new \RuntimeException( 'No test directories provided.' );
+		}
 
-export let options = {
-    stages: [
-        { duration: "10s", target: 5 },
-        { duration: "20s", target: 10 },
-        { duration: "10s", target: 0 },
-    ],
-    thresholds: {
-        // Performance thresholds - K6 will exit with non-zero if these fail
-        \'http_req_duration\': [\'p(95)<5000\'], // 95th percentile under 5 seconds (increased)
-        \'http_req_duration{expected_response:true}\': [\'avg<2000\'], // Average response time under 2 seconds (increased)
-        \'http_req_failed\': [\'rate<0.2\'], // Error rate under 20% (increased from 10%)
-        \'checks\': [\'rate>0.8\'], // At least 80% of checks should pass (decreased from 90%)
-    },
-};
+		foreach ( $env_info->tests as $test_info ) {
+			$host_path = $test_info['path_in_host'];
 
-export default function() {
-    const baseUrl = __ENV.BASE_URL || "http://localhost";
-    
-    // Test homepage
-    let response = http.get(baseUrl);
-    check(response, {
-        "homepage status is 200": (r) => r.status === 200,
-        "homepage loads in < 500ms": (r) => r.timings.duration < 500,
-    });
-    
-    sleep(1);
-    
-    // Test WooCommerce shop page
-    response = http.get(`${baseUrl}/shop/`);
-    check(response, {
-        "shop page status is 200": (r) => r.status === 200,
-        "shop page loads in < 800ms": (r) => r.timings.duration < 800,
-    });
-    
-    sleep(1);
-    
-    // Test cart page
-    response = http.get(`${baseUrl}/cart/`);
-    check(response, {
-        "cart page accessible": (r) => r.status === 200 || r.status === 404,
-    });
-    
-    // Test checkout page
-    response = http.get(`${baseUrl}/checkout/`);
-    check(response, {
-        "checkout page accessible": (r) => r.status === 200 || r.status === 404,
-    });
-    
-    // Test WooCommerce REST API health
-    response = http.get(`${baseUrl}/wp-json/wc/v3/system_status`);
-    check(response, {
-        "WooCommerce API accessible": (r) => r.status === 200 || r.status === 401, // 401 is OK, means auth is needed
-    });
-    
-    sleep(Math.random() * 2 + 1);
-}
-';
-
-			$this->ensure_directory_exists( dirname( $target ) );
-
-			if ( ! file_put_contents( $target, $default_k6_content ) ) {
-				throw new \RuntimeException( "Could not write default performance test to: $target" );
+			if ( ! is_dir( $host_path ) ) {
+				continue;
 			}
 
-			return $target;
+			$directory = new \RecursiveDirectoryIterator( $host_path, \RecursiveDirectoryIterator::SKIP_DOTS );
+			$iterator  = new \RecursiveIteratorIterator( $directory );
+
+			// This iterator filters the file list for your pattern before the loop starts.
+			$k6_files = new \RegexIterator( $iterator, '/\.k6\.js$/i' );
+
+			// The loop now only runs for files that already match the pattern.
+			foreach ( $k6_files as $file ) {
+				$relative_path  = str_replace( $host_path . '/', '', $file->getPathname() );
+				$container_path = $test_info['path_in_php_container'] . '/' . $relative_path;
+
+				if ( $this->output->isVerbose() ) {
+					$this->output->writeln( "<info>Debug: Found K6 test: {$container_path}</info>" );
+				}
+
+				$this->output->writeln( '<info>Using performance test: ' . $relative_path . '</info>' );
+				return $container_path;
+			}
 		}
 
-		$this->ensure_directory_exists( dirname( $target ) );
-
-		if ( ! copy( $source, $target ) ) {
-			throw new \RuntimeException( "Could not copy default performance test to: $target" );
-		}
-
-		return $target;
+		// No remote tests found - this should not happen if compatibility dashboard has tests.
+		throw new \RuntimeException( 'No remote performance tests found for extension: ' . $env_info->sut_slug . ' with test tag: ' . ( $env_info->test_tag ?: 'default' ) );
 	}
 
 	private function collect_results( PerformanceTestResult $test_result ): void {

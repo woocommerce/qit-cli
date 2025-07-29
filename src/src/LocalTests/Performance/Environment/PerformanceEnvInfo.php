@@ -8,9 +8,6 @@ class PerformanceEnvInfo extends EnvInfo {
 	/** @var string */
 	public $environment = 'performance';
 
-	/** @var string The site URL, if any. */
-	public $site_url;
-
 	/** @var string */
 	public $wp = '';
 
