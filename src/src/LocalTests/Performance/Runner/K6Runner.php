@@ -176,7 +176,7 @@ class K6Runner {
 
 		// Apply regex filter for K6 files only if no specific file is requested.
 		if ( ! $target_file ) {
-			$iterator = new \RegexIterator( $iterator, '/\.k6\.js$/i' );
+			$iterator = new \RegexIterator( $iterator, '/\.js$/i' );
 		}
 
 		foreach ( $iterator as $file ) {
