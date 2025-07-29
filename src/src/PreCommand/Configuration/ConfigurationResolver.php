@@ -38,6 +38,13 @@ class ConfigurationResolver {
 	}
 
 	public function resolve( ?string $config_file, ?string $sut_slug = null, ?string $sut_type = null ): ResolvedConfiguration {
+		// Debug: trace resolve() method entry
+		file_put_contents( '/tmp/resolver_entry_debug.json', json_encode( [
+			'config_file' => $config_file,
+			'file_exists' => $config_file ? file_exists( $config_file ) : false,
+			'timestamp' => date( 'Y-m-d H:i:s' ),
+		], JSON_PRETTY_PRINT ) );
+		
 		$this->output->writeln( '<info>Resolving configuration...</info>' );
 		debug_log( 'Starting resolution of config file: ' . ( $config_file ?? 'none' ), 'info' );
 
@@ -58,8 +65,21 @@ class ConfigurationResolver {
 		// Parse qit.json if provided
 		if ( $config_file ) {
 			debug_log( 'Step 1: Parsing qit.json...' );
-			$parsed_config = $this->parser->parse( $config_file );
-			debug_dump( $parsed_config, 'Parsed configuration' );
+			try {
+				$parsed_config = $this->parser->parse( $config_file );
+				// Debug: dump parsed config immediately after parsing
+				file_put_contents( '/tmp/parser_result_debug.json', json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
+				debug_dump( $parsed_config, 'Parsed configuration' );
+			} catch ( \Exception $e ) {
+				// Debug: capture parsing exception
+				file_put_contents( '/tmp/parser_exception_debug.json', json_encode( [
+					'error' => $e->getMessage(),
+					'file' => $e->getFile(),
+					'line' => $e->getLine(),
+					'config_file' => $config_file,
+				], JSON_PRETTY_PRINT ) );
+				throw $e;
+			}
 		} else {
 			debug_log( 'No qit.json provided, relying on CLI inputs and defaults' );
 		}
@@ -87,6 +107,7 @@ class ConfigurationResolver {
 
 		// Copy basic configuration
 		debug_log( 'Step 3: Copying basic configuration...' );
+		file_put_contents( '/tmp/parsed_config_debug.json', json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 		$resolved->environments = $parsed_config['environments'] ?? [];
 		$resolved->test_types   = $parsed_config['test_types'] ?? [];
 		$resolved->groups       = $parsed_config['groups'] ?? [];

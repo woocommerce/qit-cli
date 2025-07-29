@@ -45,6 +45,12 @@ final class TinyPreCommand implements PreCommandAware {
 	 */
 	private function cfg(): ResolvedConfiguration {
 		if ( $this->cfg === null ) {
+ 		// Debug: trace configuration loading
+ 		file_put_contents( '/tmp/tiny_precommand_debug.json', json_encode( [
+ 			'config_file' => $this->config_file,
+ 			'file_exists' => $this->config_file ? file_exists( $this->config_file ) : false,
+ 		], JSON_PRETTY_PRINT ) );
+			
 			// Fix: ConfigurationResolver::resolve() requires 3 parameters
 			$this->cfg = $this->parser->resolve( $this->config_file, null, null );
 		}
@@ -53,6 +59,7 @@ final class TinyPreCommand implements PreCommandAware {
 
 	/**
 	 * Extract CLI defaults using the simplified approach.
+	 * Only includes options that were NOT explicitly provided by the user.
 	 *
 	 * @return array<string, mixed>
 	 */
@@ -63,6 +70,11 @@ final class TinyPreCommand implements PreCommandAware {
 		foreach ( $this->input->getOptions() as $name => $value ) {
 			// Skip framework options
 			if ( in_array( $name, [ 'help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction' ], true ) ) {
+				continue;
+			}
+
+			// Skip explicitly provided options - they should be handled by extractExplicit()
+			if ( $this->isExplicitlyProvided( $name ) ) {
 				continue;
 			}
 
@@ -98,6 +110,23 @@ final class TinyPreCommand implements PreCommandAware {
 					$value = (int) $value;
 				}
 
+				// For boolean flags, treat explicitly provided null as true
+				// For boolean flags with values, set the flag to true but preserve the value
+				if ( $this->isBooleanFlag( $name ) ) {
+					if ( $value === null ) {
+						$value = true;
+					} else {
+						// For tunnel, we need both tunnel=true and tunnel_type=value
+						if ( $name === 'tunnel' && $value !== null ) {
+							$explicit['tunnel'] = true;
+							$explicit['tunnel_type'] = $value;
+							continue; // Skip the normal assignment below
+						} else {
+							$value = true; // Other boolean flags with values still become true
+						}
+					}
+				}
+
 				$explicit[ $config_key ] = $value;
 			}
 		}
@@ -110,6 +139,21 @@ final class TinyPreCommand implements PreCommandAware {
 	 */
 	private function isExplicitlyProvided( string $option_name ): bool {
 		return is_option_explicitly_provided( $this->input, $option_name );
+	}
+
+	/**
+	 * Check if an option is a boolean flag that should be treated as true when present.
+	 */
+	private function isBooleanFlag( string $option_name ): bool {
+		$boolean_flags = [
+			'object_cache',
+			'tunnel',
+			'json',
+			'skip_activating_plugins',
+			'skip_activating_themes',
+		];
+
+		return in_array( $option_name, $boolean_flags, true );
 	}
 
 	/**
@@ -132,29 +176,54 @@ final class TinyPreCommand implements PreCommandAware {
 	}
 
 	public function get_environment_config( string $env = 'default' ): array {
-		// Handle QIT_SELF_TEST=precommand early return
-		if ( getenv( 'QIT_SELF_TEST' ) === 'precommand' ) {
-			$this->handleEarlyReturn();
-		}
-
 		$defaults = $this->extractDefaults();
 		$cli      = $this->extractExplicit();
 
 		try {
 			$json = $this->cfg()->get_environment( $env );
+			// Debug: log what we got from environment
+			file_put_contents( '/tmp/environment_config_debug.json', json_encode( [
+				'env' => $env,
+				'json' => $json,
+			], JSON_PRETTY_PRINT ) );
 		} catch ( \RuntimeException $e ) {
 			$json = [];
+			// Debug: log the exception
+			file_put_contents( '/tmp/environment_config_debug.json', json_encode( [
+				'env' => $env,
+				'error' => $e->getMessage(),
+				'json' => [],
+			], JSON_PRETTY_PRINT ) );
 		}
 
-		return $this->merger->merge( $cli, $json, $defaults );
+		// Apply profile defaults for environment commands
+		// env:up is an e2e command, so apply e2e profile defaults
+		$profile_defaults = [];
+		try {
+			$profile_defaults = $this->cfg()->get_test_config( 'e2e', 'default' );
+			// Debug: log profile defaults
+			file_put_contents( '/tmp/profile_defaults_debug.json', json_encode( [
+				'profile_defaults' => $profile_defaults,
+				'original_defaults' => $defaults,
+			], JSON_PRETTY_PRINT ) );
+		} catch ( \InvalidArgumentException $e ) {
+			// No profile defaults available, use empty array
+			file_put_contents( '/tmp/profile_defaults_debug.json', json_encode( [
+				'error' => $e->getMessage(),
+				'original_defaults' => $defaults,
+			], JSON_PRETTY_PRINT ) );
+		}
+
+		// Merge in correct precedence order: CLI > Profile Defaults > Environment Config > Command Defaults
+		// First merge command defaults with environment config (environment takes precedence over command defaults)
+		$base = $this->merger->merge( [], $json, $defaults );
+		// Then merge with profile defaults (profile takes precedence over environment)
+		$base = $this->merger->merge( [], $profile_defaults, $base );
+		// Finally merge with CLI (CLI takes precedence over everything)
+		return $this->merger->merge( $cli, [], $base );
 	}
 
 	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
-		// Handle QIT_SELF_TEST=precommand early return
-		if ( getenv( 'QIT_SELF_TEST' ) === 'precommand' ) {
-			$this->handleEarlyReturn();
-		}
-
 		$defaults = $this->extractDefaults();
 		$cli      = $this->extractExplicit();
 
@@ -165,20 +234,5 @@ final class TinyPreCommand implements PreCommandAware {
 		}
 
 		return $this->merger->merge( $cli, $json, $defaults );
-	}
-
-	/**
-	 * Handle QIT_SELF_TEST=precommand early return.
-	 */
-	private function handleEarlyReturn(): void {
-		// Create a simple data structure for testing
-		$data = [
-			'resolved_config' => $this->cfg(),
-			'env_config'      => $this->extractExplicit(),
-			'test_config'     => $this->extractExplicit(),
-		];
-
-		// Throw PrecommandEarlyReturn exception with JSON data
-		throw new PrecommandEarlyReturn( json_encode( $data, JSON_PRETTY_PRINT ) );
 	}
 }

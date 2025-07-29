@@ -74,6 +74,13 @@ class EnvironmentDownloader {
 			return;
 		}
 
+		if ( getenv( 'QIT_MOCK_DIR' ) ) {
+			// If we're in a mock environment, we don't download the environment.
+			// This is useful for testing purposes.
+			$this->output->writeln( '<comment>Mock environment detected. Skipping download.</comment>' );
+			return;
+		}
+
 		$env_contents = @file_get_contents( $manager_hashes[ $env_name ]['url'] );
 
 		// Save to temp zip.

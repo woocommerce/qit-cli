@@ -1,0 +1,51 @@
+{
+    "extra": {
+        "env_vars": [],
+        "env_files": []
+    },
+    "environment": "e2e",
+    "dependencies_mode": "activate",
+    "temporary_env": "\/tmp-normalised\/qit-test-688922d4a28a0\/temporary-envs\/e2e-ENV_ID\/",
+    "created_at": 0,
+    "status": "pending",
+    "env_id": "ENV_ID",
+    "volumes": [
+        "\/repo\/integration\/helpers\/CUSTOM_MU_PLUGIN.php:\/var\/www\/html\/wp-content\/mu-plugins\/CUSTOM_MU_PLUGIN.php"
+    ],
+    "docker_images": [],
+    "php_extensions": [],
+    "plugins": [],
+    "themes": [],
+    "env": [],
+    "bootstrap_packages": [],
+    "test_packages_metadata": [],
+    "tunnel": false,
+    "tunnel_type": "no_tunnel",
+    "site_url": "http:\/\/localhost:8080",
+    "runner_args": [],
+    "wp": "stable",
+    "object_cache": false,
+    "php": "8.3",
+    "nginx_port": "",
+    "sut": [],
+    "domain": "localhost",
+    "skip_activating_plugins": false,
+    "skip_activating_themes": false,
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": "",
+    "woo": "",
+    "is_development_build": false,
+    "notify": "",
+    "test_packages": [],
+    "env_info": {
+        "created_at": 0,
+        "nginx_port": "PORT",
+        "temporary_env": "\/tmp-normalised\/temporary-env\/",
+        "plugins": null
+    },
+    "configuration": {
+        "resolved_plugins": null
+    },
+    "resolved_extensions": null
+}

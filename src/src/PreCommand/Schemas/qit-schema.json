@@ -302,6 +302,14 @@
                 "type": "string",
                 "pattern": "^[^:]+:[^:]+$"
               }
+            },
+            "php_extensions": {
+              "type": "array",
+              "description": "PHP extensions to enable in this environment",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              }
             }
           }
         },

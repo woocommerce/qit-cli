@@ -2,6 +2,10 @@
 
 use Symfony\Component\Process\Process;
 
+// Set up required global variables for integration tests
+$GLOBALS['qit-php'] = __DIR__ . '/../../../src/qit-cli.php';
+$GLOBALS['QIT_HOME'] = sys_get_temp_dir() . '/qit-test-' . uniqid();
+
 if ( ! is_dir( '/tmp/qit' ) ) {
 	mkdir( '/tmp/qit', 0755, true );
 }
@@ -135,10 +139,10 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
  *
  * @return string The raw output from the PreCommand phase.
  */
-function qit_precommand( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [] ) {
+function qit_precommand( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process{
 	// Add the QIT_SELF_TEST environment variable to trigger the early-return mechanism
 	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'precommand' ] );
 
 	// Pass all parameters to the qit function and return its output directly
-	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env );
+	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process );
 }

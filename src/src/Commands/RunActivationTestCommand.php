@@ -49,7 +49,6 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
-			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'Dependencies mode', 'activate' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false )
 			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated)', false )
 			->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Deprecated)', false );
@@ -99,7 +98,7 @@ class RunActivationTestCommand extends QITCommand implements LocalTestCommand {
 		}
 
 		// Pass through other options
-		foreach ( [ 'wp', 'woo', 'php', 'object_cache', 'dependencies_mode' ] as $option ) {
+		foreach ( [ 'wp', 'woo', 'php', 'object_cache' ] as $option ) {
 			$value = $input->getOption( $option );
 			if ( $value ) {
 				$run_e2e_options[ "--{$option}" ] = $value;

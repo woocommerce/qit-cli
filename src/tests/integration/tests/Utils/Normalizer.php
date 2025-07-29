@@ -87,9 +87,28 @@ final class Normalizer {
 
 	/* ──────────────────── public entry‑points ───────────────────── */
 
-	/** Normalise a decoded JSON payload (env:up, run:e2e …) */
-	public static function precommand( array $data ): array {
-		$envId    = $data['env_info']['env_id'] ?? null;
+	/**
+	 * Normalise a Pre‑Command payload so it can be snap‑shotted.
+	 *
+	 * @param string|array $payload  Raw JSON returned by qit_precommand()
+	 *                               **or** the already‑decoded array.
+	 * @return string|array          Same type that was passed in.
+	 */
+	public static function precommand( string|array $payload ): string|array {
+		// Step 1 – ensure we are working with an array.
+		$isJson  = is_string( $payload );
+		$data    = $isJson ? json_decode( $payload, true ) : $payload;
+
+		if ( ! is_array( $data ) ) {
+			throw new \InvalidArgumentException(
+				'Normalizer::precommand() expects JSON object or array.'
+			);
+		}
+
+		/* ─────────────────────── env‑id handling ─────────────────── */
+		$envId    = $data['env_id']               // top‑level (new)
+		           ?? $data['env_info']['env_id'] // legacy
+		           ?? null;
 		$repoRoot = realpath( __DIR__ . '/../../..' );
 
 		// 1. recurse over every scalar string
@@ -103,6 +122,11 @@ final class Normalizer {
 		$data['env_info']['created_at']    = 0;
 		$data['env_info']['nginx_port']    = 'PORT';
 		$data['env_info']['temporary_env'] = self::TMP_PLACEHOLDER . 'temporary-env/';
+
+		// Root‑level timestamp is also volatile
+		if ( isset( $data['created_at'] ) ) {
+			$data['created_at'] = 0;
+		}
 
 		// 3. cache dir & downloaded paths
 		if ( isset( $data['configuration']['cache_dir'] ) ) {
@@ -135,7 +159,18 @@ final class Normalizer {
 			$data['configuration']['sut_extension'] = $tmp[0];
 		}
 
-		return $data;
+		// Filter out built-in MU-plugin volume mapping from volumes array
+		if ( isset( $data['volumes'] ) && is_array( $data['volumes'] ) ) {
+			$data['volumes'] = array_filter( $data['volumes'], function( $volume ) {
+				// Filter out MU-plugin volume mappings (they contain 'mu-plugins' in the path)
+				return ! str_contains( $volume, 'mu-plugins' );
+			} );
+			// Re-index the array to maintain consistent ordering
+			$data['volumes'] = array_values( $data['volumes'] );
+		}
+
+		/* Step 3 – return in the same format we received */
+		return $isJson ? json_encode( $data, JSON_PRETTY_PRINT ) : $data;
 	}
 
 	/** Normalise raw CLI / stdout logs */

@@ -201,9 +201,23 @@ class ResolvedConfiguration {
 	public function validate(): array {
 		$errors = [];
 
-		// SUT is only required if test types are defined
+		// SUT is only required if test types are defined and actually used for test execution
+		// For configuration precedence testing, test_types can be defined without SUT
 		if ( ! empty( $this->test_types ) && empty( $this->sut ) ) {
-			$errors[] = 'System Under Test (SUT) is required when test types are defined';
+			// Only require SUT if test types reference test packages (indicating actual test execution)
+			$requires_sut = false;
+			foreach ( $this->test_types as $type => $profiles ) {
+				foreach ( $profiles as $profile => $config ) {
+					if ( ! empty( $config['test_packages'] ) ) {
+						$requires_sut = true;
+						break 2;
+					}
+				}
+			}
+			
+			if ( $requires_sut ) {
+				$errors[] = 'System Under Test (SUT) is required when test types define test packages';
+			}
 		}
 
 		// Validate environments exist for test configs that reference them
