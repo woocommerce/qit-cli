@@ -93,7 +93,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 
 		// Handle QIT_SELF_TEST=precommand early return
 		if ( getenv( 'QIT_SELF_TEST' ) === 'precommand' ) {
-			$output->writeln( json_encode( $env_info ) );
+			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 
 			return Command::SUCCESS;
 		}
@@ -116,7 +116,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 		}
 
 		if ( $output->isVeryVerbose() ) {
-			$output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT ) );
+			$output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		}
 
 		// Initialize and start the environment
@@ -125,7 +125,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 
 		// Output result
 		if ( $input->getOption( 'json' ) ) {
-			$output->write( json_encode( $env_info ) );
+			$output->write( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 		} else {
 			$output->writeln( '<info>Environment started successfully!</info>' );
 			$output->writeln( '' );
