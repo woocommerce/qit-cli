@@ -37,7 +37,7 @@ class EnvironmentDownloader {
 			$this->output->writeln( '<comment>Environment checksum not found in the Manager. Downloading the environment again as we don\'t have a checksum to compare.</comment>' );
 		}
 
-		$environments_dir = rtrim( Config::get_qit_dir(), '/' ) . '/environments';
+		$environments_dir = Config::get_qit_dir() . '/environments';
 		if ( ! file_exists( $environments_dir ) ) {
 			mkdir( $environments_dir );
 		}
@@ -58,36 +58,20 @@ class EnvironmentDownloader {
 			return;
 		}
 
-		// For unit tests, don't delete the file - just check if it exists and extract if needed
-		if ( defined( 'UNIT_TESTS' ) ) {
-			if ( ! file_exists( $final_zip_path ) ) {
-				throw new \RuntimeException( $env_name . ' environment not found for tests. Tried: ' . $final_zip_path );
-			}
-
-			// Extract the environment if the directory doesn't exist
-			$extracted_dir = $environments_dir . '/' . $env_name;
-			if ( ! file_exists( $extracted_dir ) ) {
-				$zip = new \ZipArchive();
-				if ( ! $zip->open( $final_zip_path ) ) {
-					throw new \RuntimeException( 'Could not open environment zip for tests.' );
-				}
-
-				if ( ! $zip->extractTo( $extracted_dir ) ) {
-					throw new \RuntimeException( 'Could not extract environment zip for tests.' );
-				}
-
-				$zip->close();
-			}
-
-			return;
-		}
-
 		if ( file_exists( $final_zip_path ) ) {
 			unlink( $final_zip_path );
 		}
 
 		if ( file_exists( $temp_zip_path ) ) {
 			unlink( $temp_zip_path );
+		}
+
+		if ( defined( 'UNIT_TESTS' ) ) {
+			if ( ! file_exists( $final_zip_path ) ) {
+				throw new \RuntimeException( $env_name . ' environment not found for tests. Tried: ' . $final_zip_path );
+			}
+
+			return;
 		}
 
 		$env_contents = @file_get_contents( $manager_hashes[ $env_name ]['url'] );

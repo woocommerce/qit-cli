@@ -118,14 +118,14 @@ final class TinyPreCommand implements PreCommandAware {
 	 * @param mixed $value
 	 */
 	private function normalizeKey( string $cli_name, $value ): string {
-		// Special case mappings for consistency (handle before pluralization)
-		if ( $cli_name === 'env' ) {
-			return 'env_vars';
-		}
-
 		// For array values, pluralize if not already plural
 		if ( is_array( $value ) ) {
 			return str_ends_with( $cli_name, 's' ) ? $cli_name : $cli_name . 's';
+		}
+
+		// Special case mappings for consistency
+		if ( $cli_name === 'env' ) {
+			return 'env_vars';
 		}
 
 		return $cli_name;

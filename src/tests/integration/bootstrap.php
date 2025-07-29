@@ -2,9 +2,6 @@
 
 use Symfony\Component\Process\Process;
 
-// Load the QITTestExtension class
-require_once __DIR__ . '/QITTestExtension.php';
-
 if ( ! is_dir( '/tmp/qit' ) ) {
 	mkdir( '/tmp/qit', 0755, true );
 }

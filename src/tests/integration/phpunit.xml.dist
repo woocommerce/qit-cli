@@ -6,7 +6,7 @@
         stopOnWarning="true"
 >
     <extensions>
-        <extension class="QITTestExtension"/>
+        <bootstrap class="QITTestExtension"/>
     </extensions>
     <testsuites>
         <testsuite name="QIT_Custom_Tests">
