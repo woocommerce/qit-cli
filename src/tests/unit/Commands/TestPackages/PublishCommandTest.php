@@ -416,24 +416,4 @@ class PublishCommandTest extends QITTestCase {
 		// Clean up
 		$this->recursive_rmdir( $temp_dir );
 	}
-
-	/**
-	 * Recursively remove directory
-	 */
-	private function recursive_rmdir( string $dir ): void {
-		if ( ! is_dir( $dir ) ) {
-			return;
-		}
-
-		$files = array_diff( scandir( $dir ), [ '.', '..' ] );
-		foreach ( $files as $file ) {
-			$path = $dir . '/' . $file;
-			if ( is_dir( $path ) ) {
-				$this->recursive_rmdir( $path );
-			} else {
-				unlink( $path );
-			}
-		}
-		rmdir( $dir );
-	}
 }

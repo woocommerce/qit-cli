@@ -230,7 +230,10 @@ function is_option_explicitly_provided( InputInterface $input, string $option_na
 		return false;
 	} elseif ( $input instanceof ArrayInput ) {
 		// For ArrayInput, check if the option is present using hasParameterOption
-		return $input->hasParameterOption( [ "--{$option_name}", '-p' ], true );
+		// Note: ArrayInput considers all provided options as "explicitly provided"
+		// since they were passed in the constructor array
+		$options = $input->getOptions();
+		return array_key_exists($option_name, $options) && $options[$option_name] !== null;
 	}
 
 	// Default to false for other input types

@@ -245,7 +245,6 @@ class RunActivationCommandTest extends QITTestCase {
 		$this->application_tester->run( [
 			'command'        => 'run:activation',
 			'woo_extension'  => 'woocommerce-amazon-s3-storage',
-			'--dependencies_mode' => 'bootstrap',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -281,7 +280,6 @@ class RunActivationCommandTest extends QITTestCase {
 		$this->application_tester->run( [
 			'command'        => 'run:activation',
 			'woo_extension'  => 'my-sut-plugin', // non-Woo SUT
-			'--dependencies_mode' => 'bootstrap',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
