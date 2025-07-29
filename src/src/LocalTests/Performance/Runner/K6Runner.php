@@ -138,7 +138,7 @@ class K6Runner {
 			$this->output->writeln( json_encode( $env_info->tests, JSON_PRETTY_PRINT ) );
 		}
 
-		$target_file = $env_info->k6_test_file ?? null;
+		$target_file = ! empty( $env_info->k6_test_file ) ? $env_info->k6_test_file : null;
 
 		foreach ( $env_info->tests as $test_info ) {
 			$test_file = $this->find_test_file_in_directory( $test_info, $target_file );
