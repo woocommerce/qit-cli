@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "399 total, 368 passed, 0 failed, 31 skipped.",
+            "test_summary": "399 total, 349 passed, 0 failed, 50 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -50,12 +50,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 88,
-                "numPendingTestSuites": 17,
+                "numPassedTestSuites": 84,
+                "numPendingTestSuites": 21,
                 "numTotalTestSuites": 105,
                 "numFailedTests": 0,
-                "numPassedTests": 368,
-                "numPendingTests": 31,
+                "numPassedTests": 349,
+                "numPendingTests": 50,
                 "numTotalTests": 399,
                 "testResults": [
                     {
@@ -1866,15 +1866,15 @@
                             "General tab > Create product": [
                                 {
                                     "title": "can create a simple product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can not create a product with duplicated SKU",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1912,20 +1912,20 @@
                     {
                         "file": "product\\/block-editor\\/disable-block-product-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Disable block product editor": [
                                 {
                                     "title": "is hooked up to sidebar \\"Add New\\"",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can be disabled from the header",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can be disabled from settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1979,30 +1979,30 @@
                     {
                         "file": "product\\/block-editor\\/product-attributes-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "add local attribute (with terms) to the Product": [
                                 {
                                     "title": "add local attribute (with terms) to the Product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can add existing attributes": [
                                 {
                                     "title": "can add existing attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can update product attributes": [
                                 {
                                     "title": "can update product attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can remove product attributes": [
                                 {
                                     "title": "can remove product attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2029,7 +2029,7 @@
                             "can update the general information of a product": [
                                 {
                                     "title": "can update the general information of a product",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2037,30 +2037,30 @@
                     {
                         "file": "product\\/block-editor\\/product-images-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can add images": [
                                 {
                                     "title": "can add images",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can replace an image": [
                                 {
                                     "title": "can replace an image",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can remove an image": [
                                 {
                                     "title": "can remove an image",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can set an image as cover": [
                                 {
                                     "title": "can set an image as cover",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2068,30 +2068,30 @@
                     {
                         "file": "product\\/block-editor\\/product-inventory-block-editor.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can update sku": [
                                 {
                                     "title": "can update sku",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can update stock status": [
                                 {
                                     "title": "can update stock status",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can track stock quantity": [
                                 {
                                     "title": "can track stock quantity",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can limit purchases": [
                                 {
                                     "title": "can limit purchases",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2799,7 +2799,7 @@
                         }
                     }
                 ],
-                "summary": "399 total, 368 passed, 0 failed, 31 skipped."
+                "summary": "399 total, 349 passed, 0 failed, 50 skipped."
             }
         },
         {
@@ -2810,10 +2810,10 @@
                     },
                     "summary": {
                         "tests": 399,
-                        "passed": 368,
+                        "passed": 349,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 31,
+                        "skipped": 50,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -8818,7 +8818,7 @@
                             "retryAttempts": [
                                 {
                                     "status": "failed",
-                                    "duration": 22718,
+                                    "duration": 22855,
                                     "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n",
                                     "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/add-product-task.spec.js:91:5",
                                     "snippet": "\\u001b[0m \\u001b[90m 89 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 90 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Physical product\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 91 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 92 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 93 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Variable product\'\\u001b[39m } )\\n \\u001b[90m 94 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m"
@@ -10250,6 +10250,14 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
                                             "line": 44,
                                             "column": 16
                                         }
@@ -10259,127 +10267,11 @@
                         },
                         {
                             "name": "can create a simple product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add simple product description",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add full product description",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify full product description",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product summary",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add custom fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add inventory details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add shipping details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the saved product in frontend",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can not create a product with duplicated SKU",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add product price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add inventory details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the product",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            }
-                        },
-                        {
-                            "name": "can a shopper add the simple product to the cart",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
@@ -10393,7 +10285,80 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "can not create a product with duplicated SKU",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            }
+                        },
+                        {
+                            "name": "can a shopper add the simple product to the cart",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -10558,11 +10523,11 @@
                         },
                         {
                             "name": "is hooked up to sidebar \\"Add New\\"",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
@@ -10576,16 +10541,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 25,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can be disabled from the header",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
@@ -10599,16 +10573,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 25,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can be disabled from settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
@@ -10622,7 +10605,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 25,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -10737,38 +10729,17 @@
                         },
                         {
                             "name": "add local attribute (with terms) to the Product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor -> Organization tab -> Click on `Add new`",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "create local attributes with terms",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10776,47 +10747,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 107,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can add existing attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, Organization tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add an existing attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor after product update",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10824,51 +10779,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 278,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, Organization tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"wait for the attribute\'s terms to load\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update product\'s attribute terms",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify attributes in product editor after product update",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10876,43 +10811,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 364,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can remove product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, Organization tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove product\'s attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor after update",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10920,39 +10843,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                                            "line": 460,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update the general information of a product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "edit the product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "edit the product description and summary",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the updated product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -10960,7 +10875,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
+                                            "line": 34,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
@@ -11061,34 +10985,17 @@
                         },
                         {
                             "name": "can add images",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add images",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11096,39 +11003,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 77,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can replace an image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "replace an image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11136,39 +11035,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 129,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can remove an image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove an image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11176,39 +11067,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 186,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can set an image as cover",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove an image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11216,43 +11099,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
+                                            "line": 237,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update sku",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sku value",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11260,43 +11131,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 52,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can update stock status",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sku value",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11304,67 +11163,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 88,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can track stock quantity",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "enable track stock quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update available quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "return to product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update available quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the change in product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11372,51 +11195,31 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 117,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "go to product editor, inventory tab",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "ensure limit purchases is disabled",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add 2 items to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "return to product editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "enable limit purchases",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify you cannot order more than 1 item",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -11424,7 +11227,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                                            "line": 195,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             }
                         },
                         {
