@@ -49,9 +49,9 @@ class TestPackageManifestParser extends BaseJsonParser {
 		// Keep paths relative - they should be relative to the manifest file
 		// No normalization needed for mu_plugins, test_results, or test_dir
 
-		// Convert env_vars to strings
-		if ( isset( $config['env_vars'] ) ) {
-			foreach ( $config['env_vars'] as $key => &$value ) {
+		// Convert env to strings
+		if ( isset( $config['envs'] ) ) {
+			foreach ( $config['envs'] as $key => &$value ) {
 				if ( is_bool( $value ) ) {
 					$value = $value ? 'true' : 'false';
 				} elseif ( is_numeric( $value ) ) {

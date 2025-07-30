@@ -23,12 +23,12 @@
     "tunnel_type": "no_tunnel",
     "site_url": "http://localhost:8080",
     "runner_args": [],
-    "wp": "6.1",
-    "object_cache": false,
-    "php": "8.0",
+    "wp": "stable",
+    "object_cache": true,
+    "php": "8.2",
     "nginx_port": "",
     "sut": {
-        "slug": "woocommerce",
+        "slug": "hello-dolly",
         "type": "plugin",
         "source": {
             "type": "wporg"

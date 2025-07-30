@@ -355,7 +355,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 	/* ================================================================
 	 * 6. Environment variables from CLI & file are both honoured
 	 * ============================================================== */
-	public function test_env_vars_and_files(): void {
+	public function test_env_and_files(): void {
 		// ---- 1. create an .env file -------------------------------
 		$envFilePath = tempnam( sys_get_temp_dir(), 'qit_env_' );
 		file_put_contents( $envFilePath, "API_KEY=from_file\nMODE=test\n" );
@@ -364,7 +364,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$raw = qit_run_env_up( [
 			'env:up',
 			'--json',
-			'--env_var',
+			'--env',
 			'DEBUG=true',
 			'--env_file',
 			$envFilePath,
@@ -373,7 +373,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		// ---- 3. targeted checks -----------------------------------
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
 
-		$this->assertContains( 'DEBUG=true', $payload['extra']['env_vars'] ?? [] );
+		$this->assertContains( 'DEBUG=true', $payload['extra']['env'] ?? [] );
 		$this->assertCount( 1, $payload['extra']['env_files'] ?? [] );
 
 		$this->assertMatchesEnvUpSnapshot( $raw );

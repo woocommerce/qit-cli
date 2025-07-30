@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\App;
+use QIT_CLI\OptionReuseTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -16,6 +17,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
 class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
+	use OptionReuseTrait;
+
 	/** @var E2EEnvironment */
 	protected $e2e_environment;
 
@@ -36,6 +39,31 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 		$this
 			->setDescription( 'Creates a temporary local test environment that is completely ephemeral' )
 			->setAliases( [ 'env:start' ] )
+
+			/* ─────────────── Environment Configuration ─────────────── */
+			// Override parent's --environment option with clearer help text
+			->addOption(
+				'environment', 'e',
+				InputOption::VALUE_OPTIONAL,
+				'Pick an <comment>environment block</comment> from qit.json (e.g. --environment=legacy)',
+				'default'
+			)
+
+			/* ─────────────── Runtime Variables ─────────────── */
+			->addOption(
+				'env', null,
+				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Set a <info>runtime variable</info> (repeatable)  --env KEY=VAL  --env FOO=BAR',
+				[]
+			)
+			->addOption(
+				'env_file', null,
+				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Load variables from file (repeatable)       --env-file ./prod.env',
+				[]
+			)
+
+			/* ─────────────── Environment Options ─────────────── */
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Output JSON format' )
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
 			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.0, 7.4)', '8.2' )
@@ -45,9 +73,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins to install', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes to install', [] )
 			->addOption( 'volume', '', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings (local:container)', [] )
-			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install', [] )
-			->addOption( 'env_var', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables (KEY=value)', [] )
-			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Load env vars from file', [] );
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install', [] );
 
 		$this->setHelp( $this->getHelpText() );
 	}
@@ -81,7 +107,7 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			'themes'         => $env_config['themes'] ?? [],
 			'volumes'        => $env_config['volumes'] ?? [],
 			'php_extensions' => $env_config['php_extensions'] ?? [],
-			'env_vars'       => $env_config['env_vars'] ?? [],
+			'envs'           => $env_config['envs'] ?? [],
 			'env_files'      => $env_config['env_files'] ?? [],
 			'object_cache'   => $env_config['object_cache'] ?? false,
 			'tunnel'         => ( $env_config['tunnel'] ?? false ) === true,

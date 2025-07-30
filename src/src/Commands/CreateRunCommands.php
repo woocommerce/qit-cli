@@ -76,25 +76,61 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$options = $test_config;
 
 				// Add/override with CLI-specific options
-				// Handle woo_extension argument
-				if ( is_numeric( $input->getArgument( 'woo_extension' ) ) ) {
-					$options['woo_id'] = $input->getArgument( 'woo_extension' );
-				} else {
-					$options['woo_id'] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $input->getArgument( 'woo_extension' ) );
+				/* ─────────────────── Resolve SUT ────────────────────── */
+				$sut_arg = $input->getArgument( 'sut' );
+				
+				// Check if SUT is provided either via CLI argument or config
+				if ( empty( $sut_arg ) && empty( $options['sut']['slug'] ?? '' ) ) {
+					$output->writeln(
+						'<error>No System‑Under‑Test (SUT) specified. '
+						. 'Provide a slug argument or define "sut" in test profile.</error>'
+					);
+					return Command::INVALID;
+				}
+				
+				// Handle SUT argument (slug or ID)
+				if ( ! empty( $sut_arg ) ) {
+					if ( is_numeric( $sut_arg ) ) {
+						$options['woo_id'] = $sut_arg;
+					} else {
+						$options['woo_id'] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $sut_arg );
+					}
+				} elseif ( ! empty( $options['sut']['slug'] ?? '' ) ) {
+					// Use SUT from config if no CLI argument provided
+					$sut_slug = $options['sut']['slug'];
+					if ( is_numeric( $sut_slug ) ) {
+						$options['woo_id'] = $sut_slug;
+					} else {
+						$options['woo_id'] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $sut_slug );
+					}
 				}
 
-				// Handle --zip without a value.
-				if ( is_null( $input->getParameterOption( '--zip', 'NOT_SET' ) ) ) {
-					$options['zip'] = $input->getArgument( 'woo_extension' ) . '.zip';
+				// Handle zip option with smart detection
+				$zip_opt = $input->getOption( 'zip' );
+				$zip_flag_alone = $input->getParameterOption( '--zip', 'NOT_SET' ) === null;
 
-					if ( ! file_exists( $options['zip'] ) ) {
+				if ( $zip_opt !== null || $zip_flag_alone ) {
+					// Determine the path/URL to use
+					if ( $zip_flag_alone ) {
+						$sut_for_zip = $sut_arg ?: ( $options['sut']['slug'] ?? 'extension' );
+						$options['zip'] = $sut_for_zip . '.zip';
+					} else {
+						$options['zip'] = $zip_opt;
+					}
+
+					// For bare --zip flag, check if file exists
+					if ( $zip_flag_alone && ! file_exists( $options['zip'] ) ) {
 						$output->writeln( sprintf(
 							"<error>Error: The specified ZIP file '%s' does not exist.</error>" .
 							"<info>\nTo run the command, use one of the following options:" .
 							"\n1. Provide the ZIP file name without an argument to infer from the slug or ID:" .
 							"\n   run:security my-extension --zip" .
 							"\n\n2. Provide the ZIP path as a parameter:" .
-							"\n   run:security my-extension --zip=/some/path/my-extension.zip</info>",
+							"\n   run:security my-extension --zip=/some/path/my-extension.zip" .
+							"\n\n3. Provide a URL:" .
+							"\n   run:security my-extension --zip=https://example.com/plugin.zip" .
+							"\n\n4. Provide a directory path:" .
+							"\n   run:security my-extension --zip=/path/to/plugin/directory</info>",
 							$options['zip']
 						) );
 
@@ -264,8 +300,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 		static::add_schema_to_command( $command, $schema );
 
 		// Add standard options
-		$command->addArgument( 'woo_extension', InputArgument::REQUIRED, 'A WooCommerce Extension Slug or Marketplace ID.' );
-		$command->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, '(Optional) Run the test using a local ZIP file of the plugin.' );
+		$command->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' );
+		$command->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, 'Use a custom ZIP (or directory/URL) as the SUT build' );
 		$command->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, '(Optional) Whether to return the JSON object of the test that was created.', false );
 		$command->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Optional) Wait for the test to finish before finishing command execution.', false );
 		$command->addOption( 'timeout', 't', InputOption::VALUE_OPTIONAL, '(Optional) Seconds to wait for a test to finish before failing the command.', null );

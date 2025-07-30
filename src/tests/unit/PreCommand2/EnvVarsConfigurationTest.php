@@ -73,7 +73,7 @@ class EnvVarsConfigurationTest extends PreCommandTestCase {
 		$this->assertMatchesJsonSnapshot( json_encode( $env_info, JSON_PRETTY_PRINT ) );
 	}
 
-	public function test_default_env_vars() {
+	public function test_default_env() {
 		$config = [
 			'environments' => [
 				'default' => [

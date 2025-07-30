@@ -139,7 +139,7 @@ abstract class BaseJsonParser {
 				// Keys that should be merged and deduplicated for extends inheritance
 				$merge_keys = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
 				// Keys that should still replace rather than merge
-				$replace_keys = [ 'env_vars', 'envs', 'secrets', 'test_packages' ];
+				$replace_keys = [ 'envs', 'secrets', 'test_packages' ];
 
 				if ( in_array( $key, $merge_keys, true ) ) {
 					// Merge and deduplicate arrays for list options

@@ -43,7 +43,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function __construct( array $payload ) {
 		if ( empty( $payload['test_type'] ) || empty( $payload['test'] ) ||
-			empty( $payload['namespace'] ) || empty( $payload['package'] ) ) {
+		     empty( $payload['namespace'] ) || empty( $payload['package'] ) ) {
 			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "namespace", or "package".' );
 		}
 
@@ -63,7 +63,7 @@ final class TestPackageManifest implements \JsonSerializable {
 		$this->phases       = $payload['test']['phases'] ?? [];
 		$this->test_results = $payload['test']['results'] ?? [];
 		$this->mu_plugins   = $payload['mu_plugins'] ?? [];
-		$this->env_vars     = $this->stringifyEnv( $payload['env_vars'] ?? [] );
+		$this->env_vars     = $this->stringifyEnv( $payload['envs'] ?? [] );
 		$this->timeout      = (int) ( $payload['timeout'] ?? 1800 );
 		$this->retry        = $payload['retry'] ?? [
 			'times' => 0,
@@ -134,7 +134,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	/**
 	 * @return array<string,string>
 	 */
-	public function getEnvVars(): array {
+	public function getEnv(): array {
 		return $this->env_vars;
 	}
 
@@ -197,7 +197,7 @@ final class TestPackageManifest implements \JsonSerializable {
 			$result['mu_plugins'] = $this->mu_plugins;
 		}
 		if ( ! empty( $this->env_vars ) ) {
-			$result['env_vars'] = $this->env_vars;
+			$result['envs'] = $this->env_vars;
 		}
 		if ( $this->timeout !== 1800 ) { // Only include if not default
 			$result['timeout'] = $this->timeout;
@@ -217,6 +217,7 @@ final class TestPackageManifest implements \JsonSerializable {
 
 	/**
 	 * @param array<string,string|int|bool> $env
+	 *
 	 * @return array<string,string>
 	 */
 	private function stringifyEnv( array $env ): array {

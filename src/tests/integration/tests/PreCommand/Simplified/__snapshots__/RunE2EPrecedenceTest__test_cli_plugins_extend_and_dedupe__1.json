@@ -14,7 +14,11 @@
     ],
     "docker_images": [],
     "php_extensions": [],
-    "plugins": [],
+    "plugins": [
+        "woocommerce",
+        "akismet",
+        "jetpack"
+    ],
     "themes": [],
     "env": [],
     "bootstrap_packages": [],
@@ -23,12 +27,12 @@
     "tunnel_type": "no_tunnel",
     "site_url": "http://localhost:8080",
     "runner_args": [],
-    "wp": "6.1",
+    "wp": "stable",
     "object_cache": false,
-    "php": "8.0",
+    "php": "8.2",
     "nginx_port": "",
     "sut": {
-        "slug": "woocommerce",
+        "slug": "hello-dolly",
         "type": "plugin",
         "source": {
             "type": "wporg"

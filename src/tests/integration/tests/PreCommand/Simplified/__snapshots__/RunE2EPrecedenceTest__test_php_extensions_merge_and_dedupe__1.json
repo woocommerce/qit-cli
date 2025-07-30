@@ -13,7 +13,11 @@
         "/repo/integration/helpers/CUSTOM_MU_PLUGIN.php:/var/www/html/wp-content/mu-plugins/CUSTOM_MU_PLUGIN.php"
     ],
     "docker_images": [],
-    "php_extensions": [],
+    "php_extensions": [
+        "xdebug",
+        "soap",
+        "imagick"
+    ],
     "plugins": [],
     "themes": [],
     "env": [],
@@ -23,12 +27,12 @@
     "tunnel_type": "no_tunnel",
     "site_url": "http://localhost:8080",
     "runner_args": [],
-    "wp": "6.1",
+    "wp": "stable",
     "object_cache": false,
-    "php": "8.0",
+    "php": "8.2",
     "nginx_port": "",
     "sut": {
-        "slug": "woocommerce",
+        "slug": "hello-dolly",
         "type": "plugin",
         "source": {
             "type": "wporg"

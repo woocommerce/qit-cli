@@ -169,7 +169,6 @@ abstract class EnvInfo implements \JsonSerializable {
 			'verbose',
 			'version',
 			'no-interaction', // Symfony boilerplate
-			'env',
 			'env_file', // Handled separately
 			'extension_set', // Handled elsewhere
 		];

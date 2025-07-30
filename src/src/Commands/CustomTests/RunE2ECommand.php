@@ -18,6 +18,7 @@ use QIT_CLI\Environment\PackagePhaseRunner;
 use QIT_CLI\Environment\ResultCollector;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
+use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -29,6 +30,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends QITCommand implements LocalTestCommand {
+	use OptionReuseTrait;
+
 	protected E2EEnvironment $e2e_environment;
 	protected WooExtensionsList $woo_extensions_list;
 	protected PackagePhaseRunner $package_phase_runner;
@@ -83,18 +86,30 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		parent::configure();
 
 		$this->setDescription( 'Run E2E tests' )
-			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'Extension slug or ID' )
+			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
 			->addArgument( 'test', InputArgument::OPTIONAL, 'Test tags or directory', 'default' )
 			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
 
-			// SUT options
-			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'Source of the extension' )
+			/* ─────────────── Shared Options (reused from env:up) ─────────────── */
+			->reuseOption( 'env:up', 'environment' )
+			->reuseOption( 'env:up', 'php' )
+			->reuseOption( 'env:up', 'wp' )
+			->reuseOption( 'env:up', 'woo' )
+			->reuseOption( 'env:up', 'plugin' )
+			->reuseOption( 'env:up', 'theme' )
+			->reuseOption( 'env:up', 'volume' )
+			->reuseOption( 'env:up', 'php_extension' )
+			->reuseOption( 'env:up', 'object_cache' )
+			->reuseOption( 'env:up', 'tunnel' )
+			->reuseOption( 'env:up', 'env' )
+			->reuseOption( 'env:up', 'env_file' )
+			->reuseOption( 'env:up', 'json' )
 
-			// Environment overrides
-			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
-			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
-			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+			/* ─────────────── SUT‑related options ─────────────── */
+			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, 
+				'Use a custom ZIP (or directory/URL) as the SUT build' )
+
+			/* ─────────────── E2E-specific options ─────────────── */
 			->addOption(
 				'test-package',
 				null,
@@ -102,15 +117,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 				'Test packages to include (multiple values allowed)',
 				[]
 			)
-			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
-			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )
-			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
-			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Object Cache' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
 			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
-			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling', 'no_tunnel' )
-			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
-			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment files', [] )
 
 			// Test options
 			->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'Playwright test tag', '' )
@@ -123,8 +131,7 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
-			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'JSON output', false );
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -144,7 +151,18 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		// By default we upload unless the user explicitly passes --no_upload_report.
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 
-		// Create proper E2EEnvInfo object from the merged configuration
+		/* ─────────────────── Resolve SUT ────────────────────── */
+		$resolved_sut = $this->tiny_pre_command->getResolvedSut();
+
+		if ( empty( $resolved_sut ) || empty( $resolved_sut['slug'] ) ) {
+			$output->writeln(
+				'<error>No System‑Under‑Test (SUT) specified. '
+				. 'Provide a slug argument or define "sut" in qit.json.</error>'
+			);
+			return Command::INVALID;
+		}
+
+		/* ─────────────────── EnvInfo build ───────────────────── */
 		$env_info_array = [
 			'environment'          => 'e2e',
 			'env_id'               => 'qitenv' . bin2hex( random_bytes( 8 ) ),
@@ -155,11 +173,13 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			'themes'               => $env_config['themes'] ?? [],
 			'volumes'              => $env_config['volumes'] ?? [],
 			'php_extensions'       => $env_config['php_extensions'] ?? [],
-			'env_vars'             => $env_config['env_vars'] ?? [],
+			'envs'                 => $env_config['envs'] ?? [],
 			'env_files'            => $env_config['env_files'] ?? [],
 			'object_cache'         => $env_config['object_cache'] ?? false,
+			'tunnel'               => ( $env_config['tunnel'] ?? false ) === true,
+			'tunnel_type'          => $env_config['tunnel_type'] ?? 'no_tunnel',
 			'site_url'             => 'http://localhost:8080', // This would be determined during setup
-			'sut'                  => $test_config['sut'] ?? [],
+			'sut'                  => $resolved_sut,
 			'is_development_build' => false, // This would be determined during SUT resolution
 		];
 
@@ -182,6 +202,12 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		// Set up globals and environment
 		$this->setupGlobals( $env_info, $input );
 		$this->handle_termination();
+
+		// Display warning if CLI overrides config (before test early return)
+		$sut_warning = $this->tiny_pre_command->getSutWarning();
+		if ( $sut_warning ) {
+			$output->getErrorOutput()->writeln( "<comment>$sut_warning</comment>" );
+		}
 
 		// For testing
 		if ( getenv( 'QIT_SELF_TEST' ) === 'run_e2e' ) {

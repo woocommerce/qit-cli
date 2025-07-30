@@ -39,15 +39,15 @@ JSON
 		new QITConfig( 'qit.json', $this->application );
 	}
 
-	public function test_invalid_custom_test_package_env_vars() {
+	public function test_invalid_custom_test_package_env() {
 		file_put_contents( 'qit.json', <<<'JSON'
 {
 	"slug": "awesome-plugin",
 	"type": "plugin",
 	"custom_test_packages": {
 		"foo": {
-			"bad_env_vars": {
-				"env_vars": "not_an_array"
+			"bad_env": {
+				"env": "not_an_array"
 			}
 		}
 	}
@@ -55,7 +55,7 @@ JSON
 JSON
 		);
 		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "env_vars in custom test package 'foo:bad_env_vars' must be an array." );
+		$this->expectExceptionMessage( "env in custom test package 'foo:bad_env' must be an array." );
 		new QITConfig( 'qit.json', $this->application );
 	}
 

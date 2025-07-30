@@ -249,7 +249,7 @@
               "type": "boolean",
               "description": "Enable object caching"
             },
-            "env_vars": {
+            "envs": {
               "type": "object",
               "description": "Environment variables",
               "additionalProperties": {

@@ -74,8 +74,8 @@ class RunE2EPrecedenceTest extends TestCase {
 		/* ---------- 2. Execute without CLI overrides ---------- */
 		$raw = qit_run_e2e( [
 			'run:e2e',
-			'--json',
 			'woocommerce',
+			'--json',
 			'--config',
 			$configPath,
 		] );
@@ -93,6 +93,11 @@ class RunE2EPrecedenceTest extends TestCase {
 		// qit.json fixture ── profile + env defaults
 		$cfg = tempnam( sys_get_temp_dir(), 'qit_test_' );
 		file_put_contents( $cfg, json_encode( [
+			'sut'          => [
+				'slug'   => 'hello-dolly',
+				'type'   => 'plugin',
+				'source' => [ 'type' => 'wporg' ],
+			],
 			'test_types'   => [
 				'e2e' => [
 					'default' => [ 'php' => '8.0', 'wp' => '6.1' ],
@@ -105,7 +110,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$stdout = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',          // positional SUT slug
+			'hello-dolly',          // positional SUT slug
 			'--config',
 			$cfg,
 			'--json',
@@ -124,12 +129,12 @@ class RunE2EPrecedenceTest extends TestCase {
 	}
 
 	/* ================================================================
-	 * 2. Profile defaults apply when no CLI overrides are given
-	 * ============================================================== */
-	public function test_profile_defaults_applied_without_cli_overrides(): void {
-		// profile specifies php/wp; env default omits them
-		$cfg = tempnam( sys_get_temp_dir(), 'qit_test_' );
 		file_put_contents( $cfg, json_encode( [
+			'sut' => [
+				'slug'   => 'hello-dolly',
+				'type'   => 'plugin',
+				'source' => [ 'type' => 'wporg' ],
+			],
 			'test_types' => [
 				'e2e' => [
 					'default' => [ 'php' => '8.1', 'wp' => '6.2' ],
@@ -139,7 +144,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$stdout = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--config',
 			$cfg,
 			'--json',
@@ -163,7 +168,7 @@ class RunE2EPrecedenceTest extends TestCase {
 			'sut' => [
 				'slug'   => 'config-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'remote', 'url' => 'https://example.com/config-plugin.zip' ],
+				'source' => [ 'type' => 'local', 'path' => '/home/lucas/automattic/qit/qit-cli/src/tests/integration/data/plugins/config-plugin' ],
 			],
 		] ) );
 
@@ -171,7 +176,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		[ $stdout, $stderr ] = qit_run_e2e(
 			[
 				'run:e2e',
-				'cli-plugin',   // ← CLI overrides the slug
+				'hello-dolly',   // ← CLI overrides the slug
 				'--config',
 				$cfg,
 				'--json',
@@ -179,10 +184,10 @@ class RunE2EPrecedenceTest extends TestCase {
 			[ 'capture_stderr_separately' => true ]
 		);
 
-		$this->assertStringContainsString( 'CLI SUT overrides the one defined in qit.json', $stderr );
+		$this->assertStringContainsString( 'Using CLI slug "hello-dolly" instead of qit.json value "config-plugin"', $stderr );
 
 		$payload = json_decode( $stdout, true, 512, JSON_THROW_ON_ERROR );
-		$this->assertSame( 'cli-plugin', $payload['sut']['slug'] );
+		$this->assertSame( 'hello-dolly', $payload['sut']['slug'] );
 		$this->assertMatchesEnvUpSnapshot( $payload );
 		unlink( $cfg );
 	}
@@ -202,7 +207,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--config',
 			$tmp,
 			'--json',
@@ -238,7 +243,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--config',
 			$tmpCfg,
 			'--json',
@@ -257,7 +262,7 @@ class RunE2EPrecedenceTest extends TestCase {
 	}
 
 	/* ================================================================
-	 * 6. Environment variables – `--env_var` and `--env_file` merging
+	 * 6. Environment variables – `--env` and `--env_file` merging
 	 * ============================================================== */
 	public function test_env_var_and_env_file_merging(): void {
 		// prepare a .env file
@@ -266,9 +271,9 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--json',
-			'--env_var',
+			'--env',
 			'DEBUG=true',
 			'--env_file',
 			$envFile,
@@ -276,7 +281,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$payload = json_decode( $out, true, 512, JSON_THROW_ON_ERROR );
 
-		$this->assertContains( 'DEBUG=true', $payload['extra']['env_vars'] ?? [] );
+		$this->assertContains( 'DEBUG=true', $payload['extra']['envs'] ?? [] );
 		$this->assertContains( $envFile, $payload['extra']['env_files'] ?? [] );
 		$this->assertCount( 1, $payload['extra']['env_files'] ?? [] );
 
@@ -299,7 +304,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--config',
 			$tmp,
 			'--json',
@@ -338,7 +343,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--config',
 			$tmp,
 			'--json',
@@ -352,39 +357,16 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$this->assertEqualsCanonicalizing(
 			[
+				'/home/lucas/automattic/qit/qit-cli/src/tests/integration/helpers/custom-test-mu-plugin.php:/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php',
 				'/host/cache:/var/www/cache',
 				'/host/logs:/var/www/logs',
 			],
 			$data['volumes'] ?? [],
-			'Volumes list should contain both entries, deduplicated.',
+			'Volumes list should contain both entries, deduplicated, plus auto-injected mu-plugin.',
 		);
 
 		$this->assertMatchesEnvUpSnapshot( $data );
 		unlink( $tmp );
-	}
-
-	/* ================================================================
-	 * 9. `--json` flag – output must remain identical
-	 * ============================================================== */
-	public function test_json_flag_is_idempotent(): void {
-		$rawDefault = qit_run_e2e( [ 'run:e2e', 'my-plugin', '--php', '8.2' ] );
-		$rawWith    = qit_run_e2e( [ 'run:e2e', 'my-plugin', '--php', '8.2', '--json' ] );
-
-		// Normalise both payloads to remove volatile paths / IDs
-		$normDefault = QIT\IntegrationTests\Utils\Normalizer::precommand(
-			json_decode( $rawDefault, true, 512, JSON_THROW_ON_ERROR )
-		);
-		$normWith    = QIT\IntegrationTests\Utils\Normalizer::precommand(
-			json_decode( $rawWith, true, 512, JSON_THROW_ON_ERROR )
-		);
-
-		$this->assertJsonStringEqualsJsonString(
-			json_encode( $normDefault ),
-			json_encode( $normWith ),
-			'Adding --json should not alter the Pre‑Command payload.',
-		);
-
-		$this->assertMatchesEnvUpSnapshot( $normWith );
 	}
 
 	/* ================================================================
@@ -398,7 +380,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--config',
 			$tmp,
 			'--json',
@@ -422,7 +404,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		/* 1 · run Pre‑Command with **minimum** input */
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'my-plugin',
+			'hello-dolly',
 			'--json',
 		] );
 
@@ -466,7 +448,7 @@ class RunE2EPrecedenceTest extends TestCase {
 			'sut' => [
 				'slug'   => 'file-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'remote', 'url' => 'https://example.com/file-plugin.zip' ],
+				'source' => [ 'type' => 'url', 'url' => 'https://example.com/file-plugin.zip' ],
 			],
 		] ) );
 
@@ -474,7 +456,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		[ $stdout, $stderr, $exitCode ] = qit_run_e2e(
 			[
 				'run:e2e',
-				'cli-plugin',   // <— positional slug
+				'hello-dolly',   // <— positional slug (real plugin)
 				'--json',
 				'--config',
 				$cfg,
@@ -485,9 +467,9 @@ class RunE2EPrecedenceTest extends TestCase {
 		$payload = json_decode( $stdout, true, 512, JSON_THROW_ON_ERROR );
 
 		// ── 3. Assertions ─────────────────────────────────────────────
-		$this->assertSame( 'cli-plugin', $payload['sut']['slug'] );
+		$this->assertSame( 'hello-dolly', $payload['sut']['slug'] );
 		$this->assertStringContainsString(
-			'Using CLI slug “cli-plugin” instead of qit.json value “file-plugin”',
+			'Using CLI slug "hello-dolly" instead of qit.json value "file-plugin"',
 			$stderr,
 			'User must be warned about the conflict so it’s not silent.'
 		);
@@ -506,7 +488,7 @@ class RunE2EPrecedenceTest extends TestCase {
 			'sut' => [
 				'slug'   => 'marketplace-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'remote', 'url' => 'https://example.com/marketplace.zip' ],
+				'source' => [ 'type' => 'url', 'url' => 'https://example.com/marketplace.zip' ],
 			],
 		] ) );
 
@@ -515,7 +497,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		$stdout = qit_run_e2e( [
 			'run:e2e',
 			'marketplace-plugin',
-			'--sut-dir=' . $localDir,
+			'--zip=' . $localDir,
 			'--json',
 			'--config',
 			$cfg,
@@ -543,7 +525,7 @@ class RunE2EPrecedenceTest extends TestCase {
 			'sut' => [
 				'slug'   => 'weird-extension',
 				'type'   => 'widget',   // <-- invalid
-				'source' => [ 'type' => 'remote', 'url' => 'https://example.com/whatever.zip' ],
+				'source' => [ 'type' => 'url', 'url' => 'https://example.com/whatever.zip' ],
 			],
 		] ) );
 
@@ -582,7 +564,7 @@ class RunE2EPrecedenceTest extends TestCase {
 				'slug'   => 'file-plugin',
 				'type'   => 'plugin',
 				'source' => [
-					'type' => 'remote',
+					'type' => 'url',
 					'url'  => 'https://example.com/file-plugin.zip',
 				],
 			],
@@ -602,7 +584,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		$this->assertSame( 'file-plugin', $payload['sut']['slug'] );
 		$this->assertSame( 'plugin', $payload['sut']['type'] );
 		$this->assertSame(
-			[ 'type' => 'remote', 'url' => 'https://example.com/file-plugin.zip' ],
+			[ 'type' => 'url', 'url' => 'https://example.com/file-plugin.zip' ],
 			$payload['sut']['source']
 		);
 

@@ -10,7 +10,13 @@ if ( ! is_dir( '/tmp/qit' ) ) {
 	mkdir( '/tmp/qit', 0755, true );
 }
 
-function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process {
+function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false, bool $capture_stderr_separately = false ): string|Process {
+	// Handle capture_stderr_separately option if it's in the config array
+	if ( is_array( $qit_env_json ) && isset( $qit_env_json['capture_stderr_separately'] ) ) {
+		$capture_stderr_separately = $qit_env_json['capture_stderr_separately'];
+		unset( $qit_env_json['capture_stderr_separately'] );
+	}
+	
 	if ( ! empty( $qit_env_json ) ) {
 		if ( is_array( $qit_env_json ) ) {
 			$qit_env_json = json_encode( $qit_env_json );
@@ -77,6 +83,11 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 			return $qit;
 		}
 
+		// Handle separate stderr capture for group:clear
+		if ( $capture_stderr_separately ) {
+			return [ $qit->getOutput(), $qit->getErrorOutput() ];
+		}
+
 		return $qit->getOutput();
 	}
 
@@ -86,6 +97,11 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 
 	if ( $return_process ) {
 		return $qit;
+	}
+
+	// Handle separate stderr capture
+	if ( $capture_stderr_separately ) {
+		return [ $qit->getOutput(), $qit->getErrorOutput() ];
 	}
 
 	return $qit->getOutput();
@@ -139,12 +155,18 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
  *
  * @return string The raw output from the PreCommand phase.
  */
-function qit_run_env_up( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process {
+function qit_run_env_up( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process|array {
 	// Add the QIT_SELF_TEST environment variable to trigger the early-return mechanism
 	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'env_up' ] );
 
+	// Handle capture_stderr_separately option if it's in the config array
+	$capture_stderr_separately = false;
+	if ( is_array( $qit_env_json ) && isset( $qit_env_json['capture_stderr_separately'] ) ) {
+		$capture_stderr_separately = $qit_env_json['capture_stderr_separately'];
+	}
+
 	// Pass all parameters to the qit function and return its output directly
-	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process );
+	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process, $capture_stderr_separately );
 }
 
 /**
@@ -162,10 +184,16 @@ function qit_run_env_up( array $command, $qit_env_json = [], int $expected_exit_
  *
  * @return string The raw JSON output from the env_info phase.
  */
-function qit_run_e2e( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process {
+function qit_run_e2e( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process|array {
 	// Add the QIT_SELF_TEST environment variable to trigger the env_info early-return mechanism
 	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'run_e2e' ] );
 
+	// Handle capture_stderr_separately option if it's in the config array
+	$capture_stderr_separately = false;
+	if ( is_array( $qit_env_json ) && isset( $qit_env_json['capture_stderr_separately'] ) ) {
+		$capture_stderr_separately = $qit_env_json['capture_stderr_separately'];
+	}
+
 	// Pass all parameters to the qit function and return its output directly
-	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process );
+	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process, $capture_stderr_separately );
 }

@@ -5,6 +5,7 @@ namespace QIT_CLI\PreCommand;
 use QIT_CLI\PreCommand\Configuration\ConfigMerger;
 use QIT_CLI\PreCommand\Configuration\ConfigurationResolver;
 use QIT_CLI\PreCommand\Configuration\ResolvedConfiguration;
+use QIT_CLI\PreCommand\Objects\SutInput;
 use Symfony\Component\Console\Input\InputInterface;
 use function QIT_CLI\is_option_explicitly_provided;
 
@@ -45,14 +46,15 @@ final class TinyPreCommand implements PreCommandAware {
 	 */
 	private function cfg(): ResolvedConfiguration {
 		if ( $this->cfg === null ) {
- 		// Debug: trace configuration loading
- 		file_put_contents( '/tmp/tiny_precommand_debug.json', json_encode( [
- 			'config_file' => $this->config_file,
- 			'file_exists' => $this->config_file ? file_exists( $this->config_file ) : false,
- 		], JSON_PRETTY_PRINT ) );
+			// Build CLI SUT to pass to resolver for proper precedence
+			$sut_cli = $this->buildCliSut();
 			
-			// Fix: ConfigurationResolver::resolve() requires 3 parameters
-			$this->cfg = $this->parser->resolve( $this->config_file, null, null );
+			// Pass CLI SUT parameters to resolver
+			$this->cfg = $this->parser->resolve( 
+				$this->config_file, 
+				$sut_cli?->slug ?? null, 
+				$sut_cli?->type ?? null 
+			);
 		}
 		return $this->cfg;
 	}
@@ -167,15 +169,13 @@ final class TinyPreCommand implements PreCommandAware {
 			return str_ends_with( $cli_name, 's' ) ? $cli_name : $cli_name . 's';
 		}
 
-		// Special case mappings for consistency
-		if ( $cli_name === 'env' ) {
-			return 'env_vars';
-		}
-
 		return $cli_name;
 	}
 
 	public function get_environment_config( string $env = 'default' ): array {
+		// Validate environment options at the point where they're actually processed
+		$this->validateEnvironmentOptions();
+		
 		$defaults = $this->extractDefaults();
 		$cli      = $this->extractExplicit();
 
@@ -234,5 +234,127 @@ final class TinyPreCommand implements PreCommandAware {
 		}
 
 		return $this->merger->merge( $cli, $json, $defaults );
+	}
+
+	/**
+	 * Build SUT configuration from CLI arguments.
+	 * 
+	 * @return SutInput|null Returns null if no SUT specified via CLI
+	 */
+	private function buildCliSut(): ?SutInput {
+		// 1. positional slug
+		$slug = $this->input->hasArgument('sut') ? trim((string) $this->input->getArgument('sut')) : '';
+		$zip  = $this->input->getOption('zip');          // may be null|string
+		
+		if ($slug === '' && $zip === null) {
+			return null; // user did not specify SUT via CLI
+		}
+
+		$sut = new SutInput();
+		$sut->from_cli = true;
+
+		// slug
+		if ($slug !== '') {
+			$sut->slug = $slug;
+			$sut->type = 'plugin'; // default – may adjust later with --type
+			$sut->source = ['type' => 'wporg'];          // default source
+		}
+
+		// --zip flag beats wporg source
+		if ($zip !== null || $this->input->getParameterOption('--zip') === null /*flag alone*/) {
+			$target = $zip ?? ($sut->slug ?? 'sut') . '.zip';
+			$sut->slug = $sut->slug ?? pathinfo($target, PATHINFO_FILENAME);
+			$sut->type = 'plugin';                      // still a plugin
+			$sut->source = preg_match('#^https?://#', $target)
+				? ['type' => 'url',   'url'  => $target]
+				: ['type' => 'local', 'path' => realpath($target) ?: $target];
+		}
+
+		// TODO: --sut-type|--theme etc.
+
+		return $sut;
+	}
+
+	/**
+	 * Get resolved SUT configuration with precedence handling.
+	 * 
+	 * @return array<string,mixed>|null Returns null if no SUT configured
+	 */
+	public function getResolvedSut(): ?array {
+		$sut_cli = $this->buildCliSut();
+		
+		// Check for SUT config at root level first, then test profile level
+		$sut_config = $this->cfg()->sut ?? [];
+		
+		// Fall back to test profile if no root-level SUT
+		if (empty($sut_config)) {
+			$sut_config = $this->cfg()->get_test_config('e2e', 'default')['sut'] ?? [];
+		}
+
+		// Apply precedence: CLI > config
+		if ($sut_cli) {
+			return $sut_cli->toArray();
+		}
+
+		return !empty($sut_config) ? $sut_config : null;
+	}
+
+	/**
+	 * Get SUT warning message if CLI overrides config.
+	 * 
+	 * @return string|null Warning message or null if no conflict
+	 */
+	public function getSutWarning(): ?string {
+		$sut_cli = $this->buildCliSut();
+		
+		// We need to get the original config SUT, not the resolved one
+		// Parse config directly without CLI SUT parameters to get original config
+		if (!$this->config_file || !file_exists($this->config_file)) {
+			return null;
+		}
+		
+		$original_config = json_decode(file_get_contents($this->config_file), true);
+		if (!$original_config) {
+			return null;
+		}
+		
+		$sut_config = $original_config['sut'] ?? [];
+
+		if ($sut_cli && !empty($sut_config) && ($sut_cli->slug !== ($sut_config['slug'] ?? ''))) {
+			return sprintf(
+				'Using CLI slug "%s" instead of qit.json value "%s"',
+				$sut_cli->slug,
+				$sut_config['slug'] ?? 'unknown'
+			);
+		}
+
+		return null;
+	}
+
+	/**
+	 * Validate environment-related CLI options.
+	 * 
+	 * @throws \InvalidArgumentException If validation fails
+	 */
+	public function validateEnvironmentOptions(): void {
+		// Validate --environment option
+		$envOpt = $this->input->getOption('environment');
+		if ($envOpt !== null && !preg_match('/^[A-Za-z0-9_-]+$/', $envOpt)) {
+			throw new \InvalidArgumentException(
+				"--environment expects a name like 'production' or 'php82', "
+				. "got '{$envOpt}'. Did you mean --env?"
+			);
+		}
+
+		// Validate each --env value
+		$envVars = $this->input->getOption('env') ?? [];
+		foreach ($envVars as $pair) {
+			if (!str_contains($pair, '=')) {
+				throw new \InvalidArgumentException(
+					"Invalid --env '{$pair}'. Expected KEY=VAL. "
+					. "Did you mean --environment={$pair} ?"
+				);
+			}
+		}
 	}
 }

@@ -88,7 +88,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		try {
 			$this->application_tester->run( [
 				'command'       => 'run:woo-e2e',
-				'woo_extension' => 'non-existing-extension',
+				'sut' => 'non-existing-extension',
 			], [ 'capture_stderr_separately' => true ] );
 		} catch ( \Exception $e ) {
 			$this->assertStringContainsString( 'Could not find Woo Extension with slug non-existing-extension.', $e->getMessage() );

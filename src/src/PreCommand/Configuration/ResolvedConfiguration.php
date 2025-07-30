@@ -60,15 +60,7 @@ class ResolvedConfiguration {
 	 * @return array<string,mixed>
 	 */
 	public function get_test_config( string $test_type, string $profile ): array {
-		if ( ! isset( $this->test_types[ $test_type ] ) ) {
-			throw new \InvalidArgumentException( "Test type '$test_type' is not defined." );
-		}
-
-		if ( ! isset( $this->test_types[ $test_type ][ $profile ] ) ) {
-			throw new \InvalidArgumentException( "Profile '$profile' is not defined for test type '$test_type'." );
-		}
-
-		return $this->test_types[ $test_type ][ $profile ];
+		return $this->test_types[ $test_type ][ $profile ] ?? [];
 	}
 
 	/**

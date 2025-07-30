@@ -31,7 +31,7 @@ class EnvironmentConfigurationTest extends PreCommandTestCase {
 		$this->mockDownloadUrl( 'https://downloads.wordpress.org/theme/twentytwentyone.1.0.0.zip', $twentytwentyone_zip_content );
 	}
 
-	public function test_environment_with_env_vars(): void {
+	public function test_environment_with_env(): void {
 		$config = [
 			'sut'          => [
 				'type'   => 'plugin',
@@ -43,8 +43,8 @@ class EnvironmentConfigurationTest extends PreCommandTestCase {
 			],
 			'environments' => [
 				'default' => [
-					'plugins'  => [ 'woocommerce' ],
-					'env_vars' => [
+					'plugins' => [ 'woocommerce' ],
+					'env'     => [
 						'QIT_DEBUG' => 'true',
 						'APP_ENV'   => 'test',
 					],

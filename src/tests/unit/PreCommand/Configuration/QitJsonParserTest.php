@@ -462,7 +462,7 @@ JSON;
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 	}
 
-	public function test_environment_with_env_vars(): void {
+	public function test_environment_with_env(): void {
 		$config_file = $this->temp_dir . '/qit.json';
 		$config      = <<<'JSON'
 {
@@ -477,7 +477,7 @@ JSON;
     "environments": {
         "default": {
             "php": "8.0",
-            "env_vars": {
+            "env": {
                 "QIT_DEBUG": "true",
                 "WP_DEBUG": "false"
             }
@@ -490,8 +490,8 @@ JSON;
 		$parser        = new QitJsonParser();
 		$parsed_config = $parser->parse( $config_file );
 
-		$this->assertArrayHasKey( 'env_vars', $parsed_config['environments']['default'] );
-		$this->assertEquals( 'true', $parsed_config['environments']['default']['env_vars']['QIT_DEBUG'] );
+		$this->assertArrayHasKey( 'env', $parsed_config['environments']['default'] );
+		$this->assertEquals( 'true', $parsed_config['environments']['default']['env']['QIT_DEBUG'] );
 		$this->assertMatchesJsonSnapshot( json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 	}
 

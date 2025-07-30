@@ -105,8 +105,23 @@ class ConfigurationResolver {
 			$resolved->sut_extension = $this->create_sut_extension( $parsed_config['sut'] );
 		}
 
+		// Apply default fallbacks before copying configuration
+		debug_log( 'Step 3: Applying default fallbacks...' );
+		
+		// Auto-create environments.default if absent
+		if ( ! isset( $parsed_config['environments']['default'] ) ) {
+			$parsed_config['environments']['default'] = [];
+			debug_log( 'Auto-created environments.default (empty)' );
+		}
+		
+		// Auto-materialize e2e.default test profile if e2e test type is missing
+		if ( ! isset( $parsed_config['test_types']['e2e']['default'] ) ) {
+			$parsed_config['test_types']['e2e']['default'] = [];
+			debug_log( 'Auto-created test_types.e2e.default (empty)' );
+		}
+
 		// Copy basic configuration
-		debug_log( 'Step 3: Copying basic configuration...' );
+		debug_log( 'Step 4: Copying basic configuration...' );
 		file_put_contents( '/tmp/parsed_config_debug.json', json_encode( $parsed_config, JSON_PRETTY_PRINT ) );
 		$resolved->environments = $parsed_config['environments'] ?? [];
 		$resolved->test_types   = $parsed_config['test_types'] ?? [];

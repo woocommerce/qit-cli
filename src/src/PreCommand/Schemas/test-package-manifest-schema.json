@@ -154,7 +154,7 @@
         "description": "Path to mu-plugin file"
       }
     },
-    "env_vars": {
+    "envs": {
       "type": "object",
       "description": "Environment variables to set during test execution",
       "additionalProperties": {

@@ -143,7 +143,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// Ensure the scenario-cli-only directory has a ./woocommerce-amazon-s3-storage plugin directory and tests.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--source'      => './woocommerce-amazon-s3-storage', // Local source
 			'--woo'         => '7.1',
 		], [ 'capture_stderr_separately' => true ] );
@@ -165,7 +165,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -185,7 +185,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'test'          => 'new-test-tag',
 			'--source'      => './overridden-source',
 		], [ 'capture_stderr_separately' => true ] );
@@ -206,7 +206,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--woo'         => '6.0',
 			'--plugin'      => [ 'woocommerce' ],
 		], [ 'capture_stderr_separately' => true ] );
@@ -226,7 +226,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'             => 'run:e2e',
-			'woo_extension'       => 'woocommerce-amazon-s3-storage',
+			'sut'       => 'woocommerce-amazon-s3-storage',
 			'--dependencies_mode' => 'bootstrap',
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -235,10 +235,10 @@ class RunE2ECommandTest extends QITTestCase {
 	}
 
 	/**
-	 * scenario-env-vars:
+	 * scenario-env:
 	 * Run with --env and ensure env vars appear in final config.
 	 */
-	public function test_env_vars() {
+	public function test_env() {
 		putenv( 'QIT_SELF_TEST=env_info' );
 
 		$fixture_dir = $this->scenarios_dir . 'scenario-env-vars';
@@ -246,7 +246,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--env'         => [ 'FOO=bar' ],
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -266,7 +266,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -285,7 +285,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--shard'       => '1/2',
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -305,7 +305,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--ui'          => true,
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -325,7 +325,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--codegen'     => true,
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -401,7 +401,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--source'      => './woocommerce-amazon-s3-storage',
 			'--tunnel'      => 'cloudflared-binary',
 			'--json'        => true,
@@ -418,7 +418,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// No additional mocks needed if no dependencies required.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--source'      => './woocommerce-amazon-s3-storage',
 			'--woo'         => '6.0',
 		], [ 'capture_stderr_separately' => true ] );
@@ -464,7 +464,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// We'll add a new plugin via CLI that isn't in qit.yml.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--plugin'      => [ 'woocommerce-new-plugin:bootstrap' ],
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -480,7 +480,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// We'll just specify the plugin in CLI with no action. It should default to 'test'.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--plugin'      => [ 'woocommerce-no-action' ], // no action specified
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -499,7 +499,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// "self-test-multiple-test-tags,self-test-multiple-test-tags-another"
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'test'          => 'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -523,7 +523,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// "woocommerce-progressive-discounts:test:self-test-extra-tag,self-test-extra-tag-2"
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'test'          => 'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
 			'--plugin'      => [
 				'woocommerce-progressive-discounts:test:self-test-extra-tag,self-test-extra-tag-2',
@@ -545,7 +545,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// We'll run run:e2e with woo_extension = 'storefront'.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'storefront', // This should now be detected as a theme SUT.
+			'sut' => 'storefront', // This should now be detected as a theme SUT.
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -562,7 +562,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// qit.yml has both plugins and themes, we pick 'deli-theme' as SUT.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'deli-theme',
+			'sut' => 'deli-theme',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -595,7 +595,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// deli-theme from qit.yml, add plugin via CLI
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'deli-theme',
+			'sut' => 'deli-theme',
 			'--plugin'      => [ 'woocommerce-extra-plugin:bootstrap' ],
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -612,7 +612,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// boutique in qit.yml, override source via CLI
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'boutique',
+			'sut' => 'boutique',
 			'--source'      => './custom-boutique-theme',
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -629,7 +629,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// hestia defined in qit.yml, no CLI overrides
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'hestia',
+			'sut' => 'hestia',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -645,7 +645,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// twentytwentyone is the theme in qit.yml, choose it as SUT
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'twentytwentyone',
+			'sut' => 'twentytwentyone',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -661,7 +661,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// blocksy defined in qit.yml, run with a tunnel
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'blocksy',
+			'sut' => 'blocksy',
 			'--tunnel'      => 'cloudflared-binary',
 			'--json'        => true,
 		], [ 'capture_stderr_separately' => true ] );
@@ -678,7 +678,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// Expected: SUT defaults to "test", additional plugins default to "bootstrap".
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage', // SUT
+			'sut' => 'woocommerce-amazon-s3-storage', // SUT
 			'--plugin'      => [ 'plugin-one', 'plugin-two' ],  // No actions specified
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -694,7 +694,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// One additional plugin with no action => defaults to bootstrap.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--plugin'      => [ 'extra-plugin' ], // No action specified
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -711,7 +711,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// default-plugin no action => bootstrap.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--plugin'      => [ 'explicit-test-plugin:test', 'default-plugin' ],
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -731,7 +731,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// If the bug is present, the slug in the JSON will remain "2165910" instead of a proper slug.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => '2165910', // numeric ID
+			'sut' => '2165910', // numeric ID
 			'--woo'         => '7.1',
 		] );
 
@@ -752,7 +752,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// If you fix the code, rerunning the test will fail snapshot matching, indicating the slug changed.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => '2165910', // numeric ID
+			'sut' => '2165910', // numeric ID
 			'--woo'         => '7.1',
 			'--source'      => './woocommerce-shipping.zip',
 		] );
@@ -766,7 +766,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--plugin'      => [ '2165910' ],
 			'--woo'         => '7.1'
 		] );
@@ -782,7 +782,7 @@ class RunE2ECommandTest extends QITTestCase {
 		// Run with qit.yml defined plus a numeric plugin ID from CLI.
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--woo'         => '7.1'
 		] );
 
@@ -798,7 +798,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'storefront', // a theme SUT
+			'sut' => 'storefront', // a theme SUT
 			'--plugin'      => [ 'woocommerce:test:activation' ], // triggers previous issue
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -814,7 +814,7 @@ class RunE2ECommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
-			'woo_extension' => 'storefront',
+			'sut' => 'storefront',
 			'--plugin'      => [ 'unknown-wporg-plugin:rc' ],
 		], [ 'capture_stderr_separately' => true ] );
 

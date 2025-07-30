@@ -1,7 +1,11 @@
 {
     "extra": {
-        "envs": [],
-        "env_files": []
+        "envs": [
+            "DEBUG=true"
+        ],
+        "env_files": [
+            "/tmp-normalised/qit_env_NORMALISED"
+        ]
     },
     "environment": "e2e",
     "dependencies_mode": "activate",
@@ -23,12 +27,12 @@
     "tunnel_type": "no_tunnel",
     "site_url": "http://localhost:8080",
     "runner_args": [],
-    "wp": "6.1",
+    "wp": "stable",
     "object_cache": false,
-    "php": "8.0",
+    "php": "8.2",
     "nginx_port": "",
     "sut": {
-        "slug": "woocommerce",
+        "slug": "hello-dolly",
         "type": "plugin",
         "source": {
             "type": "wporg"

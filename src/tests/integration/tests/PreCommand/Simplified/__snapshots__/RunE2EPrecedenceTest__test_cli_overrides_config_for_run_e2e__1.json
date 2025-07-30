@@ -1,6 +1,6 @@
 {
     "extra": {
-        "env_vars": [],
+        "envs": [],
         "env_files": []
     },
     "environment": "e2e",
@@ -31,11 +31,10 @@
     "php": "8.1",
     "nginx_port": "",
     "sut": {
-        "slug": "test-plugin",
+        "slug": "woocommerce",
         "type": "plugin",
         "source": {
-            "type": "local",
-            "path": "./"
+            "type": "wporg"
         }
     },
     "domain": "localhost",

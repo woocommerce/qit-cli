@@ -150,7 +150,7 @@ class RunActivationCommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:activation',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 			'--wp'          => '6.1',
 			'--source'      => './woocommerce-amazon-s3-storage',
 		], [ 'capture_stderr_separately' => true ] );
@@ -172,7 +172,7 @@ class RunActivationCommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:activation',
-			'woo_extension' => 'woocommerce-amazon-s3-storage',
+			'sut' => 'woocommerce-amazon-s3-storage',
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -192,7 +192,7 @@ class RunActivationCommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:activation',
-			'woo_extension' => 'woocommerce', // SUT is woocommerce
+			'sut' => 'woocommerce', // SUT is woocommerce
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -212,7 +212,7 @@ class RunActivationCommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:activation',
-			'woo_extension' => 'woocommerce-known-plugin',
+			'sut' => 'woocommerce-known-plugin',
 			'--plugin'      => [ 'extra-plugin' ],
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -307,7 +307,7 @@ class RunActivationCommandTest extends QITTestCase {
 		// Add a plugin without explicit test_tags
 		$this->application_tester->run( [
 			'command'       => 'run:activation',
-			'woo_extension' => 'woocommerce-known-plugin',
+			'sut' => 'woocommerce-known-plugin',
 			'--plugin'      => [ 'some-other-plugin' ],
 		], [ 'capture_stderr_separately' => true ] );
 
@@ -324,7 +324,7 @@ class RunActivationCommandTest extends QITTestCase {
 
 		$this->application_tester->run( [
 			'command'       => 'run:activation',
-			'woo_extension' => 'storefront', // This is a known theme slug from your mock.
+			'sut' => 'storefront', // This is a known theme slug from your mock.
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
