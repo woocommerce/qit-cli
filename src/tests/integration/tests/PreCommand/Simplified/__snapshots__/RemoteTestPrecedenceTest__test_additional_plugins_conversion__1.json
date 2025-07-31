@@ -2,8 +2,10 @@
     "profile": "default",
     "wordpress_version": "6.8.2",
     "woocommerce_version": "10.0.4",
-    "additional_woo_plugins": "27147,390890",
-    "additional_wordpress_plugins": [],
+    "additional_plugins": [
+        "woocommerce-subscriptions",
+        "woocommerce-bookings"
+    ],
     "phpstan_level": 2,
     "wait": false,
     "ignore-fail": false,

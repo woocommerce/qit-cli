@@ -147,28 +147,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$options['event'] = 'cli_published_extension_test';
 				}
 
-				// Convert "Additional Plugins" to "Additional Woo Plugins" if present
-				if ( ! empty( $options['additional_plugins'] ) ) {
-					// Handle array format from CLI
-					if ( is_array( $options['additional_plugins'] ) ) {
-						$options['additional_woo_plugins'] = implode( ',', $options['additional_plugins'] );
-					} else {
-						$options['additional_woo_plugins'] = $options['additional_plugins'];
-					}
-					unset( $options['additional_plugins'] );
-				}
-
-				// Convert "Additional Woo Plugins" Slugs to IDs.
-				if ( ! empty( $options['additional_woo_plugins'] ) ) {
-					$additional_woo_plugins = explode( ',', $options['additional_woo_plugins'] );
-					foreach ( $additional_woo_plugins as &$awp ) {
-						$awp = trim( $awp );
-						if ( ! is_numeric( $awp ) ) {
-							$awp = $this->woo_extensions_list->get_woo_extension_id_by_slug( $awp );
-						}
-					}
-					$options['additional_woo_plugins'] = implode( ',', $additional_woo_plugins );
-				}
 
 				// Handle group
 				if ( $input->getOption( 'group' ) ) {

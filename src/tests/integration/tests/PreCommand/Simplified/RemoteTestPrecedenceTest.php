@@ -4,6 +4,7 @@ namespace integration\tests\PreCommand\Simplified;
 
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\Traits\SnapshotHelpers;
+use function qit_run_remote_test;
 
 final class RemoteTestPrecedenceTest extends TestCase {
 	use SnapshotHelpers;
@@ -130,15 +131,13 @@ $zipPath,
 
 		$options = json_decode( $raw, true );
 
-		// Verify additional_plugins are present (they get converted internally)
-		$this->assertArrayHasKey( 'additional_woo_plugins', $options );
-		$this->assertIsString( $options['additional_woo_plugins'] );
+		// Verify additional_plugins are present and passed through directly
+		$this->assertArrayHasKey( 'additional_plugins', $options );
+		$this->assertIsArray( $options['additional_plugins'] );
 
-		// Should be comma-separated IDs
-		$ids = explode( ',', $options['additional_woo_plugins'] );
-		foreach ( $ids as $id ) {
-			$this->assertIsNumeric( trim( $id ) );
-		}
+		// Should contain the plugin slugs
+		$this->assertContains( 'woocommerce-subscriptions', $options['additional_plugins'] );
+		$this->assertContains( 'woocommerce-bookings', $options['additional_plugins'] );
 
 		$this->assertMatchesRemoteTestSnapshot( $options );
 	}
