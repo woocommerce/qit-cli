@@ -74,9 +74,6 @@ abstract class QITCommand extends Command implements PreCommandAware {
 			}
 
 			return $this->doExecute( $input, $output );
-		} catch ( \QIT_CLI\PreCommand\PrecommandEarlyReturn $e ) {
-			// This is normal in tests - just return success
-			return Command::SUCCESS;
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<e>{$e->getMessage()}</e>" );
 

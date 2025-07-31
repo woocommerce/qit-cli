@@ -150,8 +150,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		// By default we upload unless the user explicitly passes --no_upload_report.
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 
-		/* ─────────────────── Resolve SUT ────────────────────── */
-		$resolved_sut = $this->tiny_pre_command->getResolvedSut();
+ 	/* ─────────────────── Resolve SUT ────────────────────── */
+ 	$resolved_sut = $this->tiny_pre_command->get_resolved_sut();
 
 		if ( empty( $resolved_sut ) || empty( $resolved_sut['slug'] ) ) {
 			$output->writeln(
@@ -210,10 +210,10 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 		$this->setupGlobals( $env_info, $input );
 		$this->handle_termination();
 
-		// Display warning if CLI overrides config (before test early return)
-		$sut_warning = $this->tiny_pre_command->getSutWarning();
-		if ( $sut_warning ) {
-			$output->getErrorOutput()->writeln( "<comment>$sut_warning</comment>" );
+ 	// Display warning if CLI overrides config (before test early return)
+ 	$sut_warning = $this->tiny_pre_command->get_sut_warning();
+ 	if ( $sut_warning ) {
+			$output->writeln( "<comment>$sut_warning</comment>" );
 		}
 
 		// For testing

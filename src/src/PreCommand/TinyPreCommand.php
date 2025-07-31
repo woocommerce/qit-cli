@@ -47,13 +47,13 @@ final class TinyPreCommand implements PreCommandAware {
 	private function cfg(): ResolvedConfiguration {
 		if ( $this->cfg === null ) {
 			// Build CLI SUT to pass to resolver for proper precedence
-			$sut_cli = $this->buildCliSut();
+			$sut_cli = $this->build_cli_sut();
 
 			// Pass CLI SUT parameters to resolver
 			$this->cfg = $this->parser->resolve(
 				$this->config_file,
-				$sut_cli?->slug ?? null,
-				$sut_cli?->type ?? null
+				$sut_cli !== null ? $sut_cli->slug : null,
+				$sut_cli !== null ? $sut_cli->type : null
 			);
 		}
 		return $this->cfg;
@@ -65,7 +65,7 @@ final class TinyPreCommand implements PreCommandAware {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function extractDefaults(): array {
+	private function extract_defaults(): array {
 		$defaults = [];
 
 		// Get all options from input
@@ -75,14 +75,14 @@ final class TinyPreCommand implements PreCommandAware {
 				continue;
 			}
 
-			// Skip explicitly provided options - they should be handled by extractExplicit()
-			if ( $this->isExplicitlyProvided( $name ) ) {
-				continue;
-			}
+ 		// Skip explicitly provided options - they should be handled by extract_explicit()
+ 		if ( $this->is_explicitly_provided( $name ) ) {
+ 			continue;
+ 		}
 
-			// Use automatic pluralization for array options
-			$config_key              = $this->normalizeKey( $name, $value );
-			$defaults[ $config_key ] = $value;
+ 		// Use automatic pluralization for array options
+ 		$config_key              = $this->normalize_key( $name, $value );
+ 		$defaults[ $config_key ] = $value;
 		}
 
 		return $defaults;
@@ -93,7 +93,7 @@ final class TinyPreCommand implements PreCommandAware {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function extractExplicit(): array {
+	private function extract_explicit(): array {
 		$explicit = [];
 
 		// Get all options from input
@@ -103,18 +103,18 @@ final class TinyPreCommand implements PreCommandAware {
 				continue;
 			}
 
-			// Only include if explicitly provided (not just default value)
-			if ( $this->isExplicitlyProvided( $name ) ) {
-				$config_key = $this->normalizeKey( $name, $value );
+ 		// Only include if explicitly provided (not just default value)
+ 		if ( $this->is_explicitly_provided( $name ) ) {
+ 			$config_key = $this->normalize_key( $name, $value );
 
 				// Handle special cases
 				if ( $name === 'phpstan_level' && $value !== null ) {
 					$value = (int) $value;
 				}
 
-				// For boolean flags, treat explicitly provided null as true
-				// For boolean flags with values, set the flag to true but preserve the value
-				if ( $this->isBooleanFlag( $name ) ) {
+ 			// For boolean flags, treat explicitly provided null as true
+ 			// For boolean flags with values, set the flag to true but preserve the value
+ 			if ( $this->is_boolean_flag( $name ) ) {
 					if ( $value === null ) {
 						$value = true;
 					} else {
@@ -139,14 +139,14 @@ final class TinyPreCommand implements PreCommandAware {
 	/**
 	 * Check if an option was explicitly provided by the user.
 	 */
-	private function isExplicitlyProvided( string $option_name ): bool {
+	private function is_explicitly_provided( string $option_name ): bool {
 		return is_option_explicitly_provided( $this->input, $option_name );
 	}
 
 	/**
 	 * Check if an option is a boolean flag that should be treated as true when present.
 	 */
-	private function isBooleanFlag( string $option_name ): bool {
+	private function is_boolean_flag( string $option_name ): bool {
 		$boolean_flags = [
 			'object_cache',
 			'tunnel',
@@ -164,7 +164,7 @@ final class TinyPreCommand implements PreCommandAware {
 	 * @param string $cli_name The CLI option name to normalize.
 	 * @param mixed  $value    The value to check for pluralization logic.
 	 */
-	private function normalizeKey( string $cli_name, $value ): string {
+	private function normalize_key( string $cli_name, $value ): string {
 		// For array values, pluralize if not already plural
 		if ( is_array( $value ) ) {
 			return str_ends_with( $cli_name, 's' ) ? $cli_name : $cli_name . 's';
@@ -175,10 +175,10 @@ final class TinyPreCommand implements PreCommandAware {
 
 	public function get_environment_config( string $env = 'default' ): array {
 		// Validate environment options at the point where they're actually processed
-		$this->validateEnvironmentOptions();
+		$this->validate_environment_options();
 
-		$defaults = $this->extractDefaults();
-		$cli      = $this->extractExplicit();
+		$defaults = $this->extract_defaults();
+		$cli      = $this->extract_explicit();
 
 		try {
 			$json = $this->cfg()->get_environment( $env );
@@ -225,8 +225,8 @@ final class TinyPreCommand implements PreCommandAware {
 	}
 
 	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
-		$defaults = $this->extractDefaults();
-		$cli      = $this->extractExplicit();
+		$defaults = $this->extract_defaults();
+		$cli      = $this->extract_explicit();
 
 		try {
 			$json = $this->cfg()->get_test_config( $test_type, $profile );
@@ -242,7 +242,7 @@ final class TinyPreCommand implements PreCommandAware {
 	 *
 	 * @return SutInput|null Returns null if no SUT specified via CLI
 	 */
-	private function buildCliSut(): ?SutInput {
+	private function build_cli_sut(): ?SutInput {
 		// 1. positional slug
 		$slug = $this->input->hasArgument( 'sut' ) ? trim( (string) $this->input->getArgument( 'sut' ) ) : '';
 		$zip  = $this->input->getOption( 'zip' );          // may be null|string
@@ -253,18 +253,20 @@ final class TinyPreCommand implements PreCommandAware {
 
 		$sut           = new SutInput();
 		$sut->from_cli = true;
+		$sut->slug     = ''; // Initialize slug property
+		$sut->type     = 'plugin'; // default – may adjust later with --type
+		$sut->source   = null; // Let resolver determine actual source
 
 		// slug
 		if ( $slug !== '' ) {
-			$sut->slug   = $slug;
-			$sut->type   = 'plugin'; // default – may adjust later with --type
-			$sut->source = [ 'type' => 'wporg' ];          // default source
+			$sut->slug = $slug;
 		}
 
 		// --zip flag beats wporg source
 		if ( $zip !== null || $this->input->getParameterOption( '--zip' ) === null /*flag alone*/ ) {
-			$target      = $zip ?? ( $sut->slug ?? 'sut' ) . '.zip';
-			$sut->slug   = $sut->slug ?? pathinfo( $target, PATHINFO_FILENAME );
+			$fallback_name = $sut->slug !== '' ? $sut->slug : 'sut';
+			$target        = $zip ?? $fallback_name . '.zip';
+			$sut->slug     = $sut->slug !== '' ? $sut->slug : pathinfo( $target, PATHINFO_FILENAME );
 			$sut->type   = 'plugin';                      // still a plugin
 			$sut->source = preg_match( '#^https?://#', $target )
 				? [
@@ -287,8 +289,8 @@ final class TinyPreCommand implements PreCommandAware {
 	 *
 	 * @return array<string,mixed>|null Returns null if no SUT configured
 	 */
-	public function getResolvedSut(): ?array {
-		$sut_cli = $this->buildCliSut();
+	public function get_resolved_sut(): ?array {
+		$sut_cli = $this->build_cli_sut();
 
 		// Check for SUT config at root level first, then test profile level
 		$sut_config = $this->cfg()->sut ?? [];
@@ -311,8 +313,8 @@ final class TinyPreCommand implements PreCommandAware {
 	 *
 	 * @return string|null Warning message or null if no conflict
 	 */
-	public function getSutWarning(): ?string {
-		$sut_cli = $this->buildCliSut();
+	public function get_sut_warning(): ?string {
+		$sut_cli = $this->build_cli_sut();
 
 		// We need to get the original config SUT, not the resolved one
 		// Parse config directly without CLI SUT parameters to get original config
@@ -343,7 +345,7 @@ final class TinyPreCommand implements PreCommandAware {
 	 *
 	 * @throws \InvalidArgumentException If validation fails.
 	 */
-	public function validateEnvironmentOptions(): void {
+	public function validate_environment_options(): void {
 		// Validate --environment option
 		$env_opt = $this->input->getOption( 'environment' );
 		if ( $env_opt !== null && ! preg_match( '/^[A-Za-z0-9_-]+$/', $env_opt ) ) {
