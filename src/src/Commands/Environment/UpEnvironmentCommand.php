@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\PreCommand\Interfaces\EnvironmentCommand;
 use QIT_CLI\PreCommand\EnvBuilder;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
@@ -16,7 +15,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
-class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
+class UpEnvironmentCommand extends QITCommand {
 	use OptionReuseTrait;
 
 	/** @var E2EEnvironment */

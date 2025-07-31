@@ -3,9 +3,6 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
-use QIT_CLI\PreCommand\Interfaces\ConfigurableTestCommand;
-use QIT_CLI\PreCommand\Interfaces\EnvironmentCommand;
-use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\PreCommand\PreCommandAware;
 use QIT_CLI\PreCommand\TinyPreCommand;
 use QIT_CLI\PreCommand\Configuration\ConfigurationResolver;
@@ -21,17 +18,19 @@ abstract class QITCommand extends Command implements PreCommandAware {
 	protected ?TinyPreCommand $tiny_pre_command = null;
 
 	protected function configure(): void {
-		if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand || $this instanceof LocalTestCommand ) {
-			$this->addOption(
-				'config',
-				'',
-				InputOption::VALUE_OPTIONAL,
-				'Path to the qit.json configuration file',
-				null
-			);
-		}
+		// Always add config stuff
+		$this->addOption(
+			'config',
+			'',
+			InputOption::VALUE_OPTIONAL,
+			'Path to the qit.json configuration file',
+			null
+		);
 
-		if ( $this instanceof ConfigurableTestCommand || $this instanceof LocalTestCommand ) {
+		// If instance of RunE2ECommand, RunActivationCommand or DynamicCommand, add test profile stuff
+		if ( $this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand || 
+		     $this instanceof \QIT_CLI\Commands\RunActivationTestCommand ||
+		     $this instanceof \QIT_CLI\Commands\DynamicCommand ) {
 			$this->addOption(
 				'profile',
 				'',
@@ -41,7 +40,10 @@ abstract class QITCommand extends Command implements PreCommandAware {
 			);
 		}
 
-		if ( $this instanceof EnvironmentCommand || $this instanceof LocalTestCommand ) {
+		// If instance of UpEnvironmentCommand or RunE2ECommand or RunActivationCommand, add environment stuff
+		if ( $this instanceof \QIT_CLI\Commands\Environment\UpEnvironmentCommand ||
+		     $this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand ||
+		     $this instanceof \QIT_CLI\Commands\RunActivationTestCommand ) {
 			$this->addOption(
 				'environment',
 				'e',
@@ -57,7 +59,12 @@ abstract class QITCommand extends Command implements PreCommandAware {
 		$this->output = $output;
 
 		try {
-			if ( $this instanceof ConfigurableTestCommand || $this instanceof EnvironmentCommand || $this instanceof LocalTestCommand ) {
+			// Create TinyPreCommand for commands that need configuration capabilities
+			if ( $this instanceof \QIT_CLI\Commands\Environment\UpEnvironmentCommand ||
+			     $this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand ||
+			     $this instanceof \QIT_CLI\Commands\RunActivationTestCommand ||
+			     $this instanceof \QIT_CLI\Commands\DynamicCommand ) {
+				
 				// Use ./qit.json if it exists and --config is not set
 				$config_file = $input->getOption( 'config' );
 				if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {

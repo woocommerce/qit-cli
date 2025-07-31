@@ -19,7 +19,6 @@ use QIT_CLI\Environment\ResultCollector;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\OptionReuseTrait;
-use QIT_CLI\PreCommand\Interfaces\LocalTestCommand;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -29,7 +28,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\is_windows;
 
-class RunE2ECommand extends QITCommand implements LocalTestCommand {
+class RunE2ECommand extends QITCommand {
 	use OptionReuseTrait;
 
 	protected E2EEnvironment $e2e_environment;
