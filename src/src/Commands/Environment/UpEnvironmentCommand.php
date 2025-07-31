@@ -41,7 +41,8 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			->setAliases( [ 'env:start' ] )
 
 			/*
-			─────────────── Environment Configuration ─────────────── */
+			─────────────── Environment Configuration ───────────────
+			*/
 			// Override parent's --environment option with clearer help text
 			->addOption(
 				'environment', 'e',

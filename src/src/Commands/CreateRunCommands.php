@@ -147,7 +147,6 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$options['event'] = 'cli_published_extension_test';
 				}
 
-
 				// Handle group
 				if ( $input->getOption( 'group' ) ) {
 					try {

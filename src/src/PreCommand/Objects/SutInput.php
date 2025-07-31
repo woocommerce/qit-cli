@@ -23,7 +23,7 @@ final class SutInput {
 	 *
 	 * @return array<string,mixed>
 	 */
-	public function toArray(): array {
+	public function to_array(): array {
 		return [
 			'slug'   => $this->slug,
 			'type'   => $this->type,
@@ -36,7 +36,7 @@ final class SutInput {
 	 *
 	 * @param array<string,mixed> $data
 	 */
-	public static function fromArray( array $data ): self {
+	public static function from_array( array $data ): self {
 		$sut           = new self();
 		$sut->slug     = $data['slug'] ?? '';
 		$sut->type     = $data['type'] ?? 'plugin';

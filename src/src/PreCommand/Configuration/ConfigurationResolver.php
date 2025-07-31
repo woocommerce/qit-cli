@@ -42,7 +42,7 @@ class ConfigurationResolver {
 		file_put_contents( '/tmp/resolver_entry_debug.json', json_encode( [
 			'config_file' => $config_file,
 			'file_exists' => $config_file ? file_exists( $config_file ) : false,
-			'timestamp'   => date( 'Y-m-d H:i:s' ),
+			'timestamp'   => gmdate( 'Y-m-d H:i:s' ),
 		], JSON_PRETTY_PRINT ) );
 
 		$this->output->writeln( '<info>Resolving configuration...</info>' );

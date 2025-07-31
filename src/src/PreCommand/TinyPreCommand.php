@@ -161,7 +161,8 @@ final class TinyPreCommand implements PreCommandAware {
 	/**
 	 * Normalize CLI option name to config key using automatic pluralization.
 	 *
-	 * @param mixed $value
+	 * @param string $cli_name The CLI option name to normalize.
+	 * @param mixed  $value    The value to check for pluralization logic.
 	 */
 	private function normalizeKey( string $cli_name, $value ): string {
 		// For array values, pluralize if not already plural
@@ -299,7 +300,7 @@ final class TinyPreCommand implements PreCommandAware {
 
 		// Apply precedence: CLI > config
 		if ( $sut_cli ) {
-			return $sut_cli->toArray();
+			return $sut_cli->to_array();
 		}
 
 		return ! empty( $sut_config ) ? $sut_config : null;
@@ -340,21 +341,21 @@ final class TinyPreCommand implements PreCommandAware {
 	/**
 	 * Validate environment-related CLI options.
 	 *
-	 * @throws \InvalidArgumentException If validation fails
+	 * @throws \InvalidArgumentException If validation fails.
 	 */
 	public function validateEnvironmentOptions(): void {
 		// Validate --environment option
-		$envOpt = $this->input->getOption( 'environment' );
-		if ( $envOpt !== null && ! preg_match( '/^[A-Za-z0-9_-]+$/', $envOpt ) ) {
+		$env_opt = $this->input->getOption( 'environment' );
+		if ( $env_opt !== null && ! preg_match( '/^[A-Za-z0-9_-]+$/', $env_opt ) ) {
 			throw new \InvalidArgumentException(
 				"--environment expects a name like 'production' or 'php82', "
-				. "got '{$envOpt}'. Did you mean --env?"
+				. "got '{$env_opt}'. Did you mean --env?"
 			);
 		}
 
 		// Validate each --env value
-		$envVars = $this->input->getOption( 'env' ) ?? [];
-		foreach ( $envVars as $pair ) {
+		$env_vars = $this->input->getOption( 'env' ) ?? [];
+		foreach ( $env_vars as $pair ) {
 			if ( ! str_contains( $pair, '=' ) ) {
 				throw new \InvalidArgumentException(
 					"Invalid --env '{$pair}'. Expected KEY=VAL. "
