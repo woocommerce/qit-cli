@@ -3,7 +3,6 @@
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\PreCommand\EnvBuilder;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
@@ -96,6 +95,9 @@ class UpEnvironmentCommand extends QITCommand {
 
 		// Get the merged environment configuration using the simplified API
 		$env_config = $this->get_environment_config( $this->get_environment_name() );
+
+		// Explicitly download extensions for this environment (lazy loading)
+		$resolved_extensions = $this->tiny_pre_command->download_extensions( [ $this->get_environment_name() ] );
 
 		// Create proper E2EEnvInfo object from the config
 		$env_info_array = [

@@ -303,4 +303,14 @@ class ResolvedExtensions {
 	public function count(): int {
 		return count( $this->plugins ) + count( $this->themes );
 	}
+
+	public function merge( ResolvedExtensions $other ): void {
+		foreach ( $other->get_plugins() as $plugin ) {
+			$this->add_extension( $plugin );
+		}
+		foreach ( $other->get_themes() as $theme ) {
+			$this->add_extension( $theme );
+		}
+		$this->add_php_extensions( $other->get_php_extensions() );
+	}
 }

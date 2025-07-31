@@ -19,8 +19,10 @@ final class TinyPreCommand implements PreCommandAware {
 
 	private InputInterface $input;
 	private ?string $config_file;
-	private ConfigurationResolver $parser;
-	private ConfigMerger $merger;
+	private $parser_factory;
+	private $merger_factory;
+	private ?ConfigurationResolver $parser = null;
+	private ?ConfigMerger $merger = null;
 
 	/**
 	 * Lazy-memoised parse
@@ -32,13 +34,27 @@ final class TinyPreCommand implements PreCommandAware {
 	public function __construct(
 		InputInterface $input,
 		?string $config_file,
-		ConfigurationResolver $parser,
-		ConfigMerger $merger
+		callable $parser_factory,
+		callable $merger_factory
 	) {
-		$this->input       = $input;
-		$this->config_file = $config_file;
-		$this->parser      = $parser;
-		$this->merger      = $merger;
+		$this->input         = $input;
+		$this->config_file   = $config_file;
+		$this->parser_factory = $parser_factory;
+		$this->merger_factory = $merger_factory;
+	}
+
+	/**
+	 * Lazy service resolution for parser.
+	 */
+	private function parser(): ConfigurationResolver {
+		return $this->parser ??= ($this->parser_factory)();
+	}
+
+	/**
+	 * Lazy service resolution for merger.
+	 */
+	private function merger(): ConfigMerger {
+		return $this->merger ??= ($this->merger_factory)();
 	}
 
 	/**
@@ -50,7 +66,7 @@ final class TinyPreCommand implements PreCommandAware {
 			$sut_cli = $this->build_cli_sut();
 
 			// Pass CLI SUT parameters to resolver
-			$this->cfg = $this->parser->resolve(
+			$this->cfg = $this->parser()->resolve(
 				$this->config_file,
 				$sut_cli !== null ? $sut_cli->slug : null,
 				$sut_cli !== null ? $sut_cli->type : null
@@ -365,5 +381,149 @@ final class TinyPreCommand implements PreCommandAware {
 				);
 			}
 		}
+	}
+
+	// -------------------- NEW LAZY HELPERS -------------------- //
+	
+	/** @var \QIT_CLI\PreCommand\Extensions\ResolvedExtensions|null */
+	private ?\QIT_CLI\PreCommand\Extensions\ResolvedExtensions $resolved_extensions = null;
+
+	/** @var array<string> */
+	private array $resolved_envs = [];        // set<string>
+
+	/** @var array<string,\QIT_CLI\PreCommand\Objects\TestPackageManifest> */
+	private array $packages = [];             // ref => TestPackageManifest
+
+	/**
+	 * Get current CLI context with safe option access.
+	 */
+	private function currentContext(): array {
+		return [
+			'environment'   => $this->input->hasOption('environment')
+								? $this->input->getOption('environment') ?? 'default'
+								: 'default',
+			'test_type'     => 'e2e', // Fixed since test_type option doesn't exist
+			'test_profile'  => $this->input->hasOption('profile')
+								? $this->input->getOption('profile') ?? 'default'
+								: 'default',
+		];
+	}
+
+	/**
+	 * Lazily resolve and download only the extensions required by the given
+	 * environment names (defaults to the current environment if omitted).
+	 */
+	public function download_extensions(array $env_names = []): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions
+	{
+		if (empty($env_names)) {
+			$context = $this->currentContext();
+			$env_names = [$context['environment']];
+		}
+
+		// Calculate delta of new environments
+		$new = array_diff($env_names, $this->resolved_envs);
+		
+		if (empty($new)) {
+			// All requested environments already resolved
+			return $this->resolved_extensions ?? new \QIT_CLI\PreCommand\Extensions\ResolvedExtensions();
+		}
+
+		// 1) parse config (pure)
+		$cfg = $this->cfg();
+
+		// Validate environment names exist
+		foreach ($new as $env_name) {
+			if (!isset($cfg->environments[$env_name])) {
+				throw new \RuntimeException("download_extensions(): environment '$env_name' not found in configuration");
+			}
+		}
+
+		// 2) RESOLVE environments first (handle extends inheritance)
+		$resolved_envs = [];
+		foreach ($new as $env_name) {
+			$resolved_envs[$env_name] = $cfg->get_environment($env_name);
+		}
+
+		// 3) pick extensions from RESOLVED environments (pure)
+		$extensions = $this->parser()->collect_extensions_from_resolved_envs($resolved_envs, $new, $cfg);
+
+		// 4) resolve/download them (impure) – heavy
+		$delta = $this->parser()->resolve_extensions($extensions, $cfg);
+
+		// 5) merge with existing results
+		if ($this->resolved_extensions === null) {
+			$this->resolved_extensions = $delta;
+		} else {
+			$this->resolved_extensions->merge($delta);
+		}
+
+		// 5) update resolved environments tracking (avoid array_merge)
+		foreach ($new as $env) {
+			$this->resolved_envs[] = $env;
+		}
+
+		return $this->resolved_extensions;
+	}
+
+	/**
+	 * Lazily download test packages required by the given profiles.
+	 * Signature mirrors download_extensions().
+	 */
+	public function download_test_packages(array $profiles = []): array
+	{
+		// Handle default profile logic using currentContext()
+		if ($profiles === []) {
+			$context = $this->currentContext();
+			$profiles = [
+				['type' => $context['test_type'],
+				 'name' => $context['test_profile']]
+			];
+		}
+
+		$cfg = $this->cfg();
+		
+		// Validate test profile tuples exist
+		foreach ($profiles as $profile) {
+			if (!isset($profile['type']) || !isset($profile['name'])) {
+				throw new \RuntimeException("download_test_packages(): profile must have 'type' and 'name' keys");
+			}
+			
+			$test_type = $profile['type'];
+			$profile_name = $profile['name'];
+			
+			if (!isset($cfg->test_types[$test_type])) {
+				throw new \RuntimeException("download_test_packages(): test type '$test_type' not found in configuration");
+			}
+			
+			if (!isset($cfg->test_types[$test_type][$profile_name])) {
+				throw new \RuntimeException("download_test_packages(): profile '$test_type:$profile_name' not found in configuration");
+			}
+		}
+		
+		// Resolve test profiles first (handle extends inheritance)
+		$resolved_profiles = [];
+		foreach ($profiles as $profile) {
+			$resolved_profiles[] = $cfg->get_test_config($profile['type'], $profile['name']);
+		}
+		
+		$references = $this->parser()->collect_package_refs_from_resolved_profiles($resolved_profiles, $profiles);
+		
+		// Calculate delta of new package references
+		$new_refs = array_diff($references, array_keys($this->packages));
+		
+		if (empty($new_refs)) {
+			// All requested packages already downloaded
+			return $this->packages;
+		}
+
+		// Download only the new packages
+		$new_packages = $this->parser()->download_packages($new_refs);
+		
+		// Merge with existing packages (avoid array_merge)
+		foreach ($new_packages as $ref => $manifest) {
+			$this->packages[$ref] = $manifest;
+		}
+
+		return $this->packages;
 	}
 }

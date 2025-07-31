@@ -145,6 +145,14 @@ class RunE2ECommand extends QITCommand {
 		// Get test profile configuration using the simplified API
 		$test_config = $this->get_current_test_profile( $this->get_test_type(), $this->get_test_profile() );
 
+		// Explicitly download extensions for this environment (lazy loading)
+		$resolved_extensions = $this->tiny_pre_command->download_extensions( [ $this->get_environment_name() ] );
+
+		// Explicitly download test packages for this test profile (lazy loading)
+		$test_packages_manifests = $this->tiny_pre_command->download_test_packages( [
+			[ 'type' => $this->get_test_type(), 'name' => $this->get_test_profile() ]
+		] );
+
 		// Determine whether we should upload the Allure report.
 		// By default we upload unless the user explicitly passes --no_upload_report.
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );

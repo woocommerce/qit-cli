@@ -53,8 +53,6 @@ class QitJsonParser extends BaseJsonParser {
 	protected function apply_business_logic( array $config ): array {
 		$this->debug_log( '=== apply_business_logic called ===' );
 
-		// Resolve extends first
-		$config = $this->resolve_extends( $config, $this->current_file_path );
 
 		// Process SUT if it exists
 		if ( isset( $config['sut'] ) ) {
@@ -64,17 +62,7 @@ class QitJsonParser extends BaseJsonParser {
 			$this->debug_log( 'No SUT provided, skipping SUT processing' );
 		}
 
-		// Resolve environment extends
-		if ( isset( $config['environments'] ) ) {
-			$this->debug_log( 'Resolving environment extends' );
-			$config['environments'] = $this->resolve_environment_extends( $config['environments'] );
-		}
 
-		// Resolve test type extends
-		if ( isset( $config['test_types'] ) ) {
-			$this->debug_log( 'Resolving test type extends' );
-			$config['test_types'] = $this->resolve_test_type_extends( $config['test_types'] );
-		}
 
 		// Process test packages to load manifests
 		if ( isset( $config['test_types'] ) ) {

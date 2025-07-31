@@ -140,24 +140,11 @@ class ConfigurationResolver {
 		// Skip downloading remote test packages
 		debug_log( 'Step 5: Downloading remote test packages (skipped)...' );
 
-		// Collect all extensions
-		debug_log( 'Step 6: Collecting all extensions from configuration...' );
-		$all_extensions = $this->collect_all_extensions( $resolved );
-
-		// Resolve extensions
-		debug_log( 'Step 7: Resolving extensions and dependencies...' );
-		$resolved_extensions = $this->extension_resolver->resolve(
-			$all_extensions,
-			$this->create_temp_env_info( $resolved ),
-			$this->cache_dir
-		);
-
-		$resolved->resolved_plugins = $resolved_extensions->get_plugins();
-		$resolved->resolved_themes  = $resolved_extensions->get_themes();
-		$resolved->php_extensions   = $resolved_extensions->get_php_extensions();
+		// Skip extension collection and resolution - now handled lazily
+		debug_log( 'Step 6: Extension collection and resolution (now lazy)...' );
 
 		// Skip collecting test package requirements
-		debug_log( 'Step 8: Collecting requirements from test packages (skipped)...' );
+		debug_log( 'Step 7: Collecting requirements from test packages (skipped)...' );
 
 		// Validate configuration
 		debug_log( 'Step 9: Validating configuration...' );
@@ -221,79 +208,6 @@ class ConfigurationResolver {
 		return $extension;
 	}
 
-	/**
-	 * @return Extension[]
-	 */
-	protected function collect_all_extensions( ResolvedConfiguration $config ): array {
-		debug_log( 'Collecting all extensions from configuration' );
-		$extensions = [];
-
-		if ( $config->sut && $config->sut_extension ) {
-			$extensions[] = $config->sut_extension;
-			debug_log( "Added SUT extension: {$config->sut_extension->slug}" );
-		} else {
-			debug_log( 'No SUT extension to add' );
-		}
-
-		foreach ( $config->environments as $env_name => $env ) {
-			debug_log( "Processing environment: $env_name" );
-
-			if ( isset( $env['plugins'] ) ) {
-				debug_log( sprintf( '  Found %d plugins in environment', count( $env['plugins'] ) ) );
-				foreach ( $env['plugins'] as $plugin_config ) {
-					if ( is_string( $plugin_config ) ) {
-						debug_log( "    Processing string plugin: $plugin_config" );
-						$extension                      = new Extension( $plugin_config, 'plugin' );
-						$extension->from                = 'wporg';
-						$extension->version             = 'stable';
-						$extension->added_automatically = 'Added from environment configuration';
-						$extensions[]                   = $extension;
-					} else {
-						debug_log( "    Processing object plugin: {$plugin_config['slug']}" );
-						debug_dump( $plugin_config, '    Plugin config' );
-						$extension    = $this->create_extension_from_config( $plugin_config, 'plugin' );
-						$extensions[] = $extension;
-					}
-				}
-			}
-
-			if ( isset( $env['themes'] ) ) {
-				debug_log( sprintf( '  Found %d themes in environment', count( $env['themes'] ) ) );
-				foreach ( $env['themes'] as $theme_config ) {
-					if ( is_string( $theme_config ) ) {
-						debug_log( "    Processing string theme: $theme_config" );
-						$extension                      = new Extension( $theme_config, 'theme' );
-						$extension->from                = 'wporg';
-						$extension->version             = 'stable';
-						$extension->added_automatically = 'Added from environment configuration';
-						$extensions[]                   = $extension;
-					} else {
-						debug_log( "    Processing object theme: {$theme_config['slug']}" );
-						debug_dump( $theme_config, '    Theme config' );
-						$extension    = $this->create_extension_from_config( $theme_config, 'theme' );
-						$extensions[] = $extension;
-					}
-				}
-			}
-		}
-
-		// Remove duplicates by slug
-		debug_log( sprintf( 'Total extensions before deduplication: %d', count( $extensions ) ) );
-		$unique = [];
-		foreach ( $extensions as $ext ) {
-			$key = $ext->slug . '_' . $ext->type;
-			if ( ! isset( $unique[ $key ] ) ) {
-				$unique[ $key ] = $ext;
-			} else {
-				debug_log( "Duplicate extension removed: $key" );
-			}
-		}
-
-		$result = array_values( $unique );
-		debug_log( sprintf( 'Total unique extensions: %d', count( $result ) ) );
-
-		return $result;
-	}
 
 	/**
 	 * @param array<string, mixed> $config
@@ -421,5 +335,112 @@ class ConfigurationResolver {
 		$this->cache->set( $cache_key, $resolved->export(), HOUR_IN_SECONDS );
 
 		return $resolved;
+	}
+
+	// -------------------- NEW LAZY HELPERS -------------------- //
+
+	/**
+	 * PURE – no I/O
+	 * Collect extensions from already-resolved environment configurations.
+	 */
+	public function collect_extensions_from_resolved_envs(
+		array $resolved_envs,
+		array $env_names,
+		ResolvedConfiguration $cfg
+	): array {
+		$extensions = [];
+		
+		// Add SUT extension if it exists
+		if ($cfg->sut && $cfg->sut_extension) {
+			$extensions[] = $cfg->sut_extension;
+		}
+		
+		foreach ($env_names as $env_name) {
+			$env_config = $resolved_envs[$env_name] ?? [];
+			
+			// Process plugins
+			if (isset($env_config['plugins'])) {
+				foreach ($env_config['plugins'] as $plugin_config) {
+					if (is_string($plugin_config)) {
+						$extension = new Extension($plugin_config, 'plugin');
+						$extension->from = 'wporg';
+						$extension->version = 'stable';
+						$extension->added_automatically = 'Added from environment configuration';
+						$extensions[] = $extension;
+					} else {
+						$extension = $this->create_extension_from_config($plugin_config, 'plugin');
+						$extensions[] = $extension;
+					}
+				}
+			}
+			
+			// Process themes
+			if (isset($env_config['themes'])) {
+				foreach ($env_config['themes'] as $theme_config) {
+					if (is_string($theme_config)) {
+						$extension = new Extension($theme_config, 'theme');
+						$extension->from = 'wporg';
+						$extension->version = 'stable';
+						$extension->added_automatically = 'Added from environment configuration';
+						$extensions[] = $extension;
+					} else {
+						$extension = $this->create_extension_from_config($theme_config, 'theme');
+						$extensions[] = $extension;
+					}
+				}
+			}
+		}
+		
+		// Remove duplicates by slug
+		$unique = [];
+		foreach ($extensions as $ext) {
+			$key = $ext->slug . '_' . $ext->type;
+			if (!isset($unique[$key])) {
+				$unique[$key] = $ext;
+			}
+		}
+		
+		return array_values($unique);
+	}
+
+
+	/**
+	 * IMPURE – network / cache
+	 * Resolve extensions using the existing extension resolver.
+	 */
+	public function resolve_extensions(array $extensions, ResolvedConfiguration $cfg): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions
+	{
+		// Create temporary environment info for resolution
+		$env_info = $this->create_temp_env_info($cfg);
+		
+		return $this->extension_resolver->resolve($extensions, $env_info, $this->cache_dir);
+	}
+
+	/**
+	 * PURE – no I/O
+	 * Collect package references from already-resolved profile configurations.
+	 */
+	public function collect_package_refs_from_resolved_profiles(
+		array $resolved_profiles,
+		array $profiles
+	): array {
+		$refs = [];
+		foreach ($resolved_profiles as $test_config) {
+			$refs = array_merge(
+				$refs,
+				$test_config['test_packages'] ?? []
+			);
+		}
+		return $refs;
+	}
+
+
+	/**
+	 * IMPURE – network / cache
+	 * Download packages using the existing package downloader.
+	 */
+	public function download_packages(array $refs): array
+	{
+		return $this->package_downloader->download($refs, $this->cache_dir);
 	}
 }

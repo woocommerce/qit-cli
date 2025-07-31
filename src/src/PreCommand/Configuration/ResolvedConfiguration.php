@@ -47,20 +47,111 @@ class ResolvedConfiguration {
 		$this->raw_config = $raw_config;
 	}
 
+	/** @var array<string,array> */
+	private array $envCache = [];
+	/** @var array<string,array> */
+	private array $profileCache = [];
+
 	/**
+	 * Return env config with all `extends` ancestors recursively merged.
+	 * Result is memoised per env name.
+	 * 
 	 * @return array<string,mixed>
 	 */
 	public function get_environment( string $environment ): array {
-		return $this->environments[ $environment ] ?? [];
+		if (isset($this->envCache[$environment])) {
+			return $this->envCache[$environment];
+		}
+		
+		$raw = $this->environments[$environment] ?? [];
+		if (empty($raw)) {
+			return [];
+		}
+		
+		$merged = $this->resolveNestedExtends($raw, $this->environments);
+		return $this->envCache[$environment] = $merged;
 	}
 
 	/**
-	 * Get test configuration for a given test type and profile.
+	 * Get test configuration for a given test type and profile with inheritance resolved.
 	 *
 	 * @return array<string,mixed>
 	 */
 	public function get_test_config( string $test_type, string $profile ): array {
-		return $this->test_types[ $test_type ][ $profile ] ?? [];
+		$key = "$test_type:$profile";
+		if (isset($this->profileCache[$key])) {
+			return $this->profileCache[$key];
+		}
+		
+		$raw = $this->test_types[$test_type][$profile] ?? [];
+		if (empty($raw)) {
+			return [];
+		}
+		
+		// For test profiles, we need to look in the same test_type for extends
+		$context = $this->test_types[$test_type] ?? [];
+		$merged = $this->resolveNestedExtends($raw, $context);
+		return $this->profileCache[$key] = $merged;
+	}
+
+	/**
+	 * Recursively merge `extends` chain; pure helper
+	 * 
+	 * @param array<string,mixed> $node
+	 * @param array<string,array<string,mixed>> $context
+	 * @return array<string,mixed>
+	 */
+	private function resolveNestedExtends(array $node, array $context): array {
+		if (!isset($node['extends'])) {
+			return $node;
+		}
+		
+		$parentName = $node['extends'];
+		$parent = $context[$parentName] ?? null;
+		
+		if ($parent === null) {
+			throw new \RuntimeException("Parent '$parentName' not found in extends chain");
+		}
+		
+		// Remove extends from current node to avoid infinite recursion
+		unset($node['extends']);
+		
+		// Recursively resolve parent and merge with current node
+		$resolvedParent = $this->resolveNestedExtends($parent, $context);
+		return $this->deep_merge($resolvedParent, $node);
+	}
+
+	/**
+	 * Deep merge two arrays with special handling for certain keys
+	 * 
+	 * @param array<string,mixed> $base
+	 * @param array<string,mixed> $override
+	 * @return array<string,mixed>
+	 */
+	private function deep_merge(array $base, array $override): array {
+		$merged = $base;
+
+		foreach ($override as $key => $value) {
+			if (is_array($value) && isset($merged[$key]) && is_array($merged[$key])) {
+				// Keys that should be merged and deduplicated for extends inheritance
+				$merge_keys = ['plugins', 'themes', 'volumes', 'php_extensions'];
+				// Keys that should replace rather than merge
+				$replace_keys = ['envs', 'secrets', 'test_packages'];
+
+				if (in_array($key, $merge_keys, true)) {
+					// Merge and deduplicate arrays for list options
+					$merged[$key] = array_values(array_unique(array_merge($merged[$key], $value)));
+				} elseif (in_array($key, $replace_keys, true)) {
+					$merged[$key] = $value;
+				} else {
+					$merged[$key] = $this->deep_merge($merged[$key], $value);
+				}
+			} else {
+				$merged[$key] = $value;
+			}
+		}
+
+		return $merged;
 	}
 
 	/**

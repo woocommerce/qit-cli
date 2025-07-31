@@ -75,8 +75,8 @@ abstract class QITCommand extends Command implements PreCommandAware {
 				$this->tiny_pre_command = new TinyPreCommand(
 					$input,
 					$config_file,
-					App::make( ConfigurationResolver::class ),
-					App::make( ConfigMerger::class )
+					fn() => App::make( ConfigurationResolver::class ),
+					fn() => App::make( ConfigMerger::class )
 				);
 			}
 
