@@ -43,7 +43,7 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function __construct( array $payload ) {
 		if ( empty( $payload['test_type'] ) || empty( $payload['test'] ) ||
-		     empty( $payload['namespace'] ) || empty( $payload['package'] ) ) {
+			empty( $payload['namespace'] ) || empty( $payload['package'] ) ) {
 			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "namespace", or "package".' );
 		}
 

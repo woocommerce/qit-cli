@@ -206,7 +206,7 @@ class ResolvedConfiguration {
 					}
 				}
 			}
-			
+
 			if ( $requires_sut ) {
 				$errors[] = 'System Under Test (SUT) is required when test types define test packages';
 			}

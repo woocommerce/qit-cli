@@ -302,7 +302,7 @@ trait SnapshotHelpers {
 	 *                               might want to inject.
 	 */
 	protected function assertMatchesEnvUpSnapshot(
-		string|array $payload,
+		$payload,
 		array $extraReplacements = []
 	): void {
 		$data = is_string( $payload ) ? json_decode( $payload, true ) : $payload;
@@ -312,6 +312,39 @@ trait SnapshotHelpers {
 		}
 
 		$data = Normalizer::precommand( $data );
+		$this->assertMatchesSnapshot( $data, new \Spatie\Snapshots\Drivers\JsonDriver() );
+	}
+
+	/**
+	 * Assert that a remote test options result matches its snapshot.
+	 *
+	 * @param string|array $payload Raw JSON string returned by qit_run_remote_test()
+	 *                               **or** the already‑decoded array.
+	 */
+	protected function assertMatchesRemoteTestSnapshot(
+		$payload
+	): void {
+		$data = is_string( $payload ) ? json_decode( $payload, true ) : $payload;
+
+		if ( ! is_array( $data ) ) {
+			throw new \RuntimeException( 'Remote test payload is not valid JSON.' );
+		}
+
+		// Apply remote test specific normalizations
+		if ( isset( $data['config'] ) && is_string( $data['config'] ) ) {
+			// Normalize temporary config file paths
+			$data['config'] = preg_replace( '/\/tmp\/qit_test_[a-zA-Z0-9]+/', '/tmp/qit_test_NORMALIZED', $data['config'] );
+		}
+
+		// Normalize upload_id UUIDs
+		if ( isset( $data['upload_id'] ) && is_string( $data['upload_id'] ) ) {
+			// Normalize UUID patterns (8-4-4-4-12 format)
+			$data['upload_id'] = preg_replace( '/[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}/', 'NORMALIZED_UPLOAD_ID', $data['upload_id'] );
+		}
+
+		// Apply general precommand normalizations
+		$data = Normalizer::precommand( $data );
+		
 		$this->assertMatchesSnapshot( $data, new \Spatie\Snapshots\Drivers\JsonDriver() );
 	}
 

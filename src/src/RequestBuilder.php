@@ -162,12 +162,12 @@ class RequestBuilder {
 
 	public function request(): string {
 		retry_request: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
-		
+
 		// Integration test mocking - check this first to allow override of unit tests
 		if ( getenv( 'QIT_MOCK_DIR' ) ) {
 			return $this->handle_file_mock();
 		}
-		
+
 		if ( defined( 'UNIT_TESTS' ) ) {
 			$mocked = App::getVar( 'mock_' . $this->url );
 			if ( is_null( $mocked ) ) {
@@ -558,7 +558,7 @@ class RequestBuilder {
 		$this->record_request( $mock_dir );
 
 		// Return mock response
-		$url_hash = sha1( $this->url );
+		$url_hash  = sha1( $this->url );
 		$mock_file = $mock_dir . '/' . $url_hash . '.json';
 		if ( ! file_exists( $mock_file ) ) {
 			throw new \LogicException( 'No mock for: ' . $this->url );
@@ -579,8 +579,8 @@ class RequestBuilder {
 
 		// ➋ append to the chronological log
 		$log_file = $mock_dir . '/_requests.json';
-		$log = is_file( $log_file ) ? json_decode( file_get_contents( $log_file ), true ) : [];
-		$log[] = $entry;
+		$log      = is_file( $log_file ) ? json_decode( file_get_contents( $log_file ), true ) : [];
+		$log[]    = $entry;
 		file_put_contents( $log_file, json_encode( $log, JSON_PRETTY_PRINT ) );
 	}
 }

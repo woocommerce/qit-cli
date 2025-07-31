@@ -78,7 +78,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				// Add/override with CLI-specific options
 				/* ─────────────────── Resolve SUT ────────────────────── */
 				$sut_arg = $input->getArgument( 'sut' );
-				
+
 				// Check if SUT is provided either via CLI argument or config
 				if ( empty( $sut_arg ) && empty( $options['sut']['slug'] ?? '' ) ) {
 					$output->writeln(
@@ -87,7 +87,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 					);
 					return Command::INVALID;
 				}
-				
+
 				// Handle SUT argument (slug or ID)
 				if ( ! empty( $sut_arg ) ) {
 					if ( is_numeric( $sut_arg ) ) {
@@ -106,13 +106,13 @@ class CreateRunCommands extends DynamicCommandCreator {
 				}
 
 				// Handle zip option with smart detection
-				$zip_opt = $input->getOption( 'zip' );
+				$zip_opt        = $input->getOption( 'zip' );
 				$zip_flag_alone = $input->getParameterOption( '--zip', 'NOT_SET' ) === null;
 
 				if ( $zip_opt !== null || $zip_flag_alone ) {
 					// Determine the path/URL to use
 					if ( $zip_flag_alone ) {
-						$sut_for_zip = $sut_arg ?: ( $options['sut']['slug'] ?? 'extension' );
+						$sut_for_zip    = $sut_arg ?: ( $options['sut']['slug'] ?? 'extension' );
 						$options['zip'] = $sut_for_zip . '.zip';
 					} else {
 						$options['zip'] = $zip_opt;
@@ -147,6 +147,17 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$options['event'] = 'cli_published_extension_test';
 				}
 
+				// Convert "Additional Plugins" to "Additional Woo Plugins" if present
+				if ( ! empty( $options['additional_plugins'] ) ) {
+					// Handle array format from CLI
+					if ( is_array( $options['additional_plugins'] ) ) {
+						$options['additional_woo_plugins'] = implode( ',', $options['additional_plugins'] );
+					} else {
+						$options['additional_woo_plugins'] = $options['additional_plugins'];
+					}
+					unset( $options['additional_plugins'] );
+				}
+
 				// Convert "Additional Woo Plugins" Slugs to IDs.
 				if ( ! empty( $options['additional_woo_plugins'] ) ) {
 					$additional_woo_plugins = explode( ',', $options['additional_woo_plugins'] );
@@ -174,8 +185,8 @@ class CreateRunCommands extends DynamicCommandCreator {
 					return Command::SUCCESS;
 				}
 
-				// Handle QIT_SELF_TEST=options
-				if ( getenv( 'QIT_SELF_TEST' ) === 'options' ) {
+				// Handle QIT_SELF_TEST=remote_test
+				if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
 					$output->write( json_encode( $options, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 					return Command::SUCCESS;

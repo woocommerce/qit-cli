@@ -1,0 +1,25 @@
+{
+    "profile": "default",
+    "additional_plugins": [],
+    "additional_woo_plugins": [],
+    "additional_wordpress_plugins": [],
+    "phpstan_level": 2,
+    "wait": false,
+    "ignore-fail": false,
+    "group": false,
+    "wordpress_version": "6.2",
+    "woocommerce_version": "9.0.0",
+    "json": true,
+    "woo_id": 18734003134382,
+    "event": "cli_published_extension_test",
+    "env_info": {
+        "created_at": 0,
+        "nginx_port": "PORT",
+        "temporary_env": "/tmp-normalised/temporary-env/",
+        "plugins": null
+    },
+    "configuration": {
+        "resolved_plugins": null
+    },
+    "resolved_extensions": null
+}

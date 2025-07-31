@@ -24,15 +24,15 @@ final class ConfigMerger {
 	public function merge( array $cli_params, array $config_values, array $command_defaults ): array {
 		// Debug output to understand what's being passed
 		$debug_info = [
-			'cli_params' => $cli_params,
-			'config_values' => $config_values,
+			'cli_params'       => $cli_params,
+			'config_values'    => $config_values,
 			'command_defaults' => $command_defaults,
 		];
 		file_put_contents( '/tmp/config_merger_debug.json', json_encode( $debug_info, JSON_PRETTY_PRINT ) . "\n", FILE_APPEND );
-		
+
 		// List options that should be merged and deduplicated instead of replaced
 		$list_options = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
-		
+
 		// Start with command defaults
 		$result = $command_defaults;
 
@@ -59,7 +59,6 @@ final class ConfigMerger {
 				}
 			}
 		}
-
 
 		// Filter out any remaining null values from defaults
 		return array_filter( $result, static fn( $value ) => $value !== null );

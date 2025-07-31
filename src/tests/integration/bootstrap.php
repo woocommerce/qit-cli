@@ -197,3 +197,37 @@ function qit_run_e2e( array $command, $qit_env_json = [], int $expected_exit_cod
 	// Pass all parameters to the qit function and return its output directly
 	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process, $capture_stderr_separately );
 }
+
+/**
+ * Runs a QIT remote test command but only executes the configuration resolution phase.
+ * This is useful for testing remote test commands (run:security, run:phpstan, etc.)
+ * without actually sending requests to the QIT Manager API.
+ *
+ * This function uses the 'QIT_SELF_TEST' => 'remote_test' environment variable
+ * to trigger the early-return mechanism in CreateRunCommands.
+ *
+ * @param array $command Command line arguments to pass to QIT (should start with 'run:').
+ * @param string|array|null $qit_env_json Optional JSON configuration or array to use.
+ * @param int $expected_exit_code Expected exit code from the command.
+ * @param array $extra_env Additional environment variables to pass to the command.
+ *
+ * @return string The raw JSON output from the options resolution phase.
+ */
+function qit_run_remote_test( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process|array {
+	// Add --json flag to get clean JSON output without progress messages
+	if ( ! in_array( '--json', $command, true ) ) {
+		$command[] = '--json';
+	}
+	
+	// Add the QIT_SELF_TEST environment variable to trigger the remote_test early-return mechanism
+	$extra_env = array_merge( $extra_env, [ 'QIT_SELF_TEST' => 'remote_test' ] );
+
+	// Handle capture_stderr_separately option if it's in the config array
+	$capture_stderr_separately = false;
+	if ( is_array( $qit_env_json ) && isset( $qit_env_json['capture_stderr_separately'] ) ) {
+		$capture_stderr_separately = $qit_env_json['capture_stderr_separately'];
+	}
+
+	// Pass all parameters to the qit function and return its output directly
+	return qit( $command, $qit_env_json, $expected_exit_code, $extra_env, $return_process, $capture_stderr_separately );
+}

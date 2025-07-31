@@ -48,12 +48,12 @@ final class TinyPreCommand implements PreCommandAware {
 		if ( $this->cfg === null ) {
 			// Build CLI SUT to pass to resolver for proper precedence
 			$sut_cli = $this->buildCliSut();
-			
+
 			// Pass CLI SUT parameters to resolver
-			$this->cfg = $this->parser->resolve( 
-				$this->config_file, 
-				$sut_cli?->slug ?? null, 
-				$sut_cli?->type ?? null 
+			$this->cfg = $this->parser->resolve(
+				$this->config_file,
+				$sut_cli?->slug ?? null,
+				$sut_cli?->type ?? null
 			);
 		}
 		return $this->cfg;
@@ -120,7 +120,7 @@ final class TinyPreCommand implements PreCommandAware {
 					} else {
 						// For tunnel, we need both tunnel=true and tunnel_type=value
 						if ( $name === 'tunnel' && $value !== null ) {
-							$explicit['tunnel'] = true;
+							$explicit['tunnel']      = true;
 							$explicit['tunnel_type'] = $value;
 							continue; // Skip the normal assignment below
 						} else {
@@ -175,7 +175,7 @@ final class TinyPreCommand implements PreCommandAware {
 	public function get_environment_config( string $env = 'default' ): array {
 		// Validate environment options at the point where they're actually processed
 		$this->validateEnvironmentOptions();
-		
+
 		$defaults = $this->extractDefaults();
 		$cli      = $this->extractExplicit();
 
@@ -183,16 +183,16 @@ final class TinyPreCommand implements PreCommandAware {
 			$json = $this->cfg()->get_environment( $env );
 			// Debug: log what we got from environment
 			file_put_contents( '/tmp/environment_config_debug.json', json_encode( [
-				'env' => $env,
+				'env'  => $env,
 				'json' => $json,
 			], JSON_PRETTY_PRINT ) );
 		} catch ( \RuntimeException $e ) {
 			$json = [];
 			// Debug: log the exception
 			file_put_contents( '/tmp/environment_config_debug.json', json_encode( [
-				'env' => $env,
+				'env'   => $env,
 				'error' => $e->getMessage(),
-				'json' => [],
+				'json'  => [],
 			], JSON_PRETTY_PRINT ) );
 		}
 
@@ -203,13 +203,13 @@ final class TinyPreCommand implements PreCommandAware {
 			$profile_defaults = $this->cfg()->get_test_config( 'e2e', 'default' );
 			// Debug: log profile defaults
 			file_put_contents( '/tmp/profile_defaults_debug.json', json_encode( [
-				'profile_defaults' => $profile_defaults,
+				'profile_defaults'  => $profile_defaults,
 				'original_defaults' => $defaults,
 			], JSON_PRETTY_PRINT ) );
 		} catch ( \InvalidArgumentException $e ) {
 			// No profile defaults available, use empty array
 			file_put_contents( '/tmp/profile_defaults_debug.json', json_encode( [
-				'error' => $e->getMessage(),
+				'error'             => $e->getMessage(),
 				'original_defaults' => $defaults,
 			], JSON_PRETTY_PRINT ) );
 		}
@@ -238,36 +238,42 @@ final class TinyPreCommand implements PreCommandAware {
 
 	/**
 	 * Build SUT configuration from CLI arguments.
-	 * 
+	 *
 	 * @return SutInput|null Returns null if no SUT specified via CLI
 	 */
 	private function buildCliSut(): ?SutInput {
 		// 1. positional slug
-		$slug = $this->input->hasArgument('sut') ? trim((string) $this->input->getArgument('sut')) : '';
-		$zip  = $this->input->getOption('zip');          // may be null|string
-		
-		if ($slug === '' && $zip === null) {
+		$slug = $this->input->hasArgument( 'sut' ) ? trim( (string) $this->input->getArgument( 'sut' ) ) : '';
+		$zip  = $this->input->getOption( 'zip' );          // may be null|string
+
+		if ( $slug === '' && $zip === null ) {
 			return null; // user did not specify SUT via CLI
 		}
 
-		$sut = new SutInput();
+		$sut           = new SutInput();
 		$sut->from_cli = true;
 
 		// slug
-		if ($slug !== '') {
-			$sut->slug = $slug;
-			$sut->type = 'plugin'; // default – may adjust later with --type
-			$sut->source = ['type' => 'wporg'];          // default source
+		if ( $slug !== '' ) {
+			$sut->slug   = $slug;
+			$sut->type   = 'plugin'; // default – may adjust later with --type
+			$sut->source = [ 'type' => 'wporg' ];          // default source
 		}
 
 		// --zip flag beats wporg source
-		if ($zip !== null || $this->input->getParameterOption('--zip') === null /*flag alone*/) {
-			$target = $zip ?? ($sut->slug ?? 'sut') . '.zip';
-			$sut->slug = $sut->slug ?? pathinfo($target, PATHINFO_FILENAME);
-			$sut->type = 'plugin';                      // still a plugin
-			$sut->source = preg_match('#^https?://#', $target)
-				? ['type' => 'url',   'url'  => $target]
-				: ['type' => 'local', 'path' => realpath($target) ?: $target];
+		if ( $zip !== null || $this->input->getParameterOption( '--zip' ) === null /*flag alone*/ ) {
+			$target      = $zip ?? ( $sut->slug ?? 'sut' ) . '.zip';
+			$sut->slug   = $sut->slug ?? pathinfo( $target, PATHINFO_FILENAME );
+			$sut->type   = 'plugin';                      // still a plugin
+			$sut->source = preg_match( '#^https?://#', $target )
+				? [
+					'type' => 'url',
+					'url'  => $target,
+				]
+				: [
+					'type' => 'local',
+					'path' => realpath( $target ) ?: $target,
+				];
 		}
 
 		// TODO: --sut-type|--theme etc.
@@ -277,50 +283,50 @@ final class TinyPreCommand implements PreCommandAware {
 
 	/**
 	 * Get resolved SUT configuration with precedence handling.
-	 * 
+	 *
 	 * @return array<string,mixed>|null Returns null if no SUT configured
 	 */
 	public function getResolvedSut(): ?array {
 		$sut_cli = $this->buildCliSut();
-		
+
 		// Check for SUT config at root level first, then test profile level
 		$sut_config = $this->cfg()->sut ?? [];
-		
+
 		// Fall back to test profile if no root-level SUT
-		if (empty($sut_config)) {
-			$sut_config = $this->cfg()->get_test_config('e2e', 'default')['sut'] ?? [];
+		if ( empty( $sut_config ) ) {
+			$sut_config = $this->cfg()->get_test_config( 'e2e', 'default' )['sut'] ?? [];
 		}
 
 		// Apply precedence: CLI > config
-		if ($sut_cli) {
+		if ( $sut_cli ) {
 			return $sut_cli->toArray();
 		}
 
-		return !empty($sut_config) ? $sut_config : null;
+		return ! empty( $sut_config ) ? $sut_config : null;
 	}
 
 	/**
 	 * Get SUT warning message if CLI overrides config.
-	 * 
+	 *
 	 * @return string|null Warning message or null if no conflict
 	 */
 	public function getSutWarning(): ?string {
 		$sut_cli = $this->buildCliSut();
-		
+
 		// We need to get the original config SUT, not the resolved one
 		// Parse config directly without CLI SUT parameters to get original config
-		if (!$this->config_file || !file_exists($this->config_file)) {
+		if ( ! $this->config_file || ! file_exists( $this->config_file ) ) {
 			return null;
 		}
-		
-		$original_config = json_decode(file_get_contents($this->config_file), true);
-		if (!$original_config) {
+
+		$original_config = json_decode( file_get_contents( $this->config_file ), true );
+		if ( ! $original_config ) {
 			return null;
 		}
-		
+
 		$sut_config = $original_config['sut'] ?? [];
 
-		if ($sut_cli && !empty($sut_config) && ($sut_cli->slug !== ($sut_config['slug'] ?? ''))) {
+		if ( $sut_cli && ! empty( $sut_config ) && ( $sut_cli->slug !== ( $sut_config['slug'] ?? '' ) ) ) {
 			return sprintf(
 				'Using CLI slug "%s" instead of qit.json value "%s"',
 				$sut_cli->slug,
@@ -333,13 +339,13 @@ final class TinyPreCommand implements PreCommandAware {
 
 	/**
 	 * Validate environment-related CLI options.
-	 * 
+	 *
 	 * @throws \InvalidArgumentException If validation fails
 	 */
 	public function validateEnvironmentOptions(): void {
 		// Validate --environment option
-		$envOpt = $this->input->getOption('environment');
-		if ($envOpt !== null && !preg_match('/^[A-Za-z0-9_-]+$/', $envOpt)) {
+		$envOpt = $this->input->getOption( 'environment' );
+		if ( $envOpt !== null && ! preg_match( '/^[A-Za-z0-9_-]+$/', $envOpt ) ) {
 			throw new \InvalidArgumentException(
 				"--environment expects a name like 'production' or 'php82', "
 				. "got '{$envOpt}'. Did you mean --env?"
@@ -347,9 +353,9 @@ final class TinyPreCommand implements PreCommandAware {
 		}
 
 		// Validate each --env value
-		$envVars = $this->input->getOption('env') ?? [];
-		foreach ($envVars as $pair) {
-			if (!str_contains($pair, '=')) {
+		$envVars = $this->input->getOption( 'env' ) ?? [];
+		foreach ( $envVars as $pair ) {
+			if ( ! str_contains( $pair, '=' ) ) {
 				throw new \InvalidArgumentException(
 					"Invalid --env '{$pair}'. Expected KEY=VAL. "
 					. "Did you mean --environment={$pair} ?"

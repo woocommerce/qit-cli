@@ -134,7 +134,7 @@ class TestGroup {
 				'client' => 'qit_cli',
 				'hash'   => $hash,
 			],
-			'envs'           => $filtered_env_vars,
+			'envs'          => $filtered_env_vars,
 			'input_options' => is_null( $input ) ? [] : $input->getOptions(),
 			'input_args'    => is_null( $input ) ? [] : $input->getArguments(),
 		];

@@ -252,7 +252,7 @@ class ProfileTest extends \PHPUnit\Framework\TestCase {
 			'woocommerce',
 			'--json',
 			'--verbose',
-		], [], 0, [ 'QIT_SELF_TEST' => 'options', 'QIT_NON_JSON_OUTPUT' => $nonJsonLog ] );
+		], [], 0, [ 'QIT_SELF_TEST' => 'remote_test', 'QIT_NON_JSON_OUTPUT' => $nonJsonLog ] );
 
 		$options        = json_decode( $output, true );
 		$nonJsonMessage = $this->getNonJsonLogMessage( $nonJsonLog );

@@ -87,7 +87,6 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 		$this->setDescription( 'Run E2E tests' )
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
-			->addArgument( 'test', InputArgument::OPTIONAL, 'Test tags or directory', 'default' )
 			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
 
 			/* ─────────────── Shared Options (reused from env:up) ─────────────── */
@@ -106,8 +105,8 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 			->reuseOption( 'env:up', 'json' )
 
 			/* ─────────────── SUT‑related options ─────────────── */
-			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, 
-				'Use a custom ZIP (or directory/URL) as the SUT build' )
+			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
+			'Use a custom ZIP (or directory/URL) as the SUT build' )
 
 			/* ─────────────── E2E-specific options ─────────────── */
 			->addOption(
@@ -190,6 +189,14 @@ class RunE2ECommand extends QITCommand implements LocalTestCommand {
 
 		// Handle test packages from test configuration
 		$test_packages = $test_config['test_packages'] ?? [];
+
+		// Add test packages from --test-package option
+		$cli_test_packages = $input->getOption( 'test-package' );
+		if ( ! empty( $cli_test_packages ) ) {
+			foreach ( $cli_test_packages as $package ) {
+				$test_packages[] = $package;
+			}
+		}
 
 		// Validate shard format
 		$shard = $input->getOption( 'shard' );

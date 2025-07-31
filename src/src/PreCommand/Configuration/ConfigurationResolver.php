@@ -42,9 +42,9 @@ class ConfigurationResolver {
 		file_put_contents( '/tmp/resolver_entry_debug.json', json_encode( [
 			'config_file' => $config_file,
 			'file_exists' => $config_file ? file_exists( $config_file ) : false,
-			'timestamp' => date( 'Y-m-d H:i:s' ),
+			'timestamp'   => date( 'Y-m-d H:i:s' ),
 		], JSON_PRETTY_PRINT ) );
-		
+
 		$this->output->writeln( '<info>Resolving configuration...</info>' );
 		debug_log( 'Starting resolution of config file: ' . ( $config_file ?? 'none' ), 'info' );
 
@@ -73,9 +73,9 @@ class ConfigurationResolver {
 			} catch ( \Exception $e ) {
 				// Debug: capture parsing exception
 				file_put_contents( '/tmp/parser_exception_debug.json', json_encode( [
-					'error' => $e->getMessage(),
-					'file' => $e->getFile(),
-					'line' => $e->getLine(),
+					'error'       => $e->getMessage(),
+					'file'        => $e->getFile(),
+					'line'        => $e->getLine(),
 					'config_file' => $config_file,
 				], JSON_PRETTY_PRINT ) );
 				throw $e;
@@ -107,13 +107,13 @@ class ConfigurationResolver {
 
 		// Apply default fallbacks before copying configuration
 		debug_log( 'Step 3: Applying default fallbacks...' );
-		
+
 		// Auto-create environments.default if absent
 		if ( ! isset( $parsed_config['environments']['default'] ) ) {
 			$parsed_config['environments']['default'] = [];
 			debug_log( 'Auto-created environments.default (empty)' );
 		}
-		
+
 		// Auto-materialize e2e.default test profile if e2e test type is missing
 		if ( ! isset( $parsed_config['test_types']['e2e']['default'] ) ) {
 			$parsed_config['test_types']['e2e']['default'] = [];

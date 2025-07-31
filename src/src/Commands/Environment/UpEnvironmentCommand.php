@@ -40,7 +40,8 @@ class UpEnvironmentCommand extends QITCommand implements EnvironmentCommand {
 			->setDescription( 'Creates a temporary local test environment that is completely ephemeral' )
 			->setAliases( [ 'env:start' ] )
 
-			/* ─────────────── Environment Configuration ─────────────── */
+			/*
+			─────────────── Environment Configuration ─────────────── */
 			// Override parent's --environment option with clearer help text
 			->addOption(
 				'environment', 'e',
