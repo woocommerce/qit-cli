@@ -28,15 +28,15 @@ class QitJsonParser {
 	/** @var array<string, string> Track which directory each path came from. */
 	private array $path_contexts = [];
 
-	public function __construct() {
+	public function __construct(TestPackageManifestParser $package_parser) {
 		// Initialize validator and error formatter (from BaseJsonParser)
 		$this->validator = new Validator();
 		$this->validator->setMaxErrors( 10 );
 		$this->error_formatter = new ErrorFormatter();
 		$this->load_schemas();
 
-		// Initialize package parser
-		$this->package_parser = new TestPackageManifestParser();
+		// Initialize package parser via DI
+		$this->package_parser = $package_parser;
 	}
 
 	/**

@@ -17,7 +17,6 @@ class TestPackageManifestParser {
 	protected string $root_path;
 
 	public function __construct() {
-		// Initialize validator and error formatter (from BaseJsonParser)
 		$this->validator = new Validator();
 		$this->validator->setMaxErrors( 10 );
 		$this->error_formatter = new ErrorFormatter();

@@ -22,11 +22,11 @@ class ConfigResolver {
 	private array $schema_cache = [];
 	private TestPackageManifestParser $package_parser;
 
-	public function __construct(Validator $validator, ErrorFormatter $error_formatter, TestPackageManifestParser $package_parser) {
-		$this->validator = $validator;
+	public function __construct(TestPackageManifestParser $package_parser) {
+		$this->validator = new Validator();
 		$this->validator->setMaxErrors( 1 );
-		$this->error_formatter = $error_formatter;
-		$this->package_parser  = $package_parser;
+		$this->error_formatter = new ErrorFormatter();
+		$this->package_parser = $package_parser;
 		$this->load_schemas();
 	}
 

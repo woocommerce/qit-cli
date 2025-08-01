@@ -72,7 +72,7 @@ abstract class QITCommand extends Command {
 	 *
 	 * @return array<string,mixed>
 	 */
-	private function cfg(): array {
+	private function get_resolved_config(): array {
 		if ( $this->config === null ) {
 			$config_file   = $this->get_config_file();
 			$cli_overrides = $this->collect_cli_overrides();
@@ -117,7 +117,7 @@ abstract class QITCommand extends Command {
 	 * @return array<string, mixed>
 	 */
 	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
-		$config = $this->cfg();
+		$config = $this->get_resolved_config();
 		return $config['test_types'][ $test_type ][ $profile ] ?? [];
 	}
 
@@ -127,7 +127,7 @@ abstract class QITCommand extends Command {
 	 * @return array<string, mixed>
 	 */
 	public function get_environment_config( string $env = 'default' ): array {
-		$config = $this->cfg();
+		$config = $this->get_resolved_config();
 		return $config['environments'][ $env ] ?? [];
 	}
 
@@ -210,7 +210,7 @@ abstract class QITCommand extends Command {
 		}
 
 		// 1) parse config (pure)
-		$cfg = $this->cfg();
+		$cfg = $this->get_resolved_config();
 
 		// Validate environment names exist
 		foreach ( $new as $env_name ) {
@@ -450,7 +450,7 @@ abstract class QITCommand extends Command {
 			];
 		}
 
-		$cfg = $this->cfg();
+		$cfg = $this->get_resolved_config();
 
 		// Validate test profile tuples exist
 		foreach ( $profiles as $profile ) {
@@ -503,7 +503,7 @@ abstract class QITCommand extends Command {
 	 * @return array<string, mixed>|null
 	 */
 	public function get_resolved_sut(): ?array {
-		$cfg = $this->cfg();
+		$cfg = $this->get_resolved_config();
 		return $cfg['sut'] ?? null;
 	}
 
