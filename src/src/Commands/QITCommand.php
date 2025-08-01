@@ -211,11 +211,11 @@ abstract class QITCommand extends Command {
 		}
 
 		// 1) parse config (pure)
-		$cfg = $this->config();
+		$cfg = $this->cfg();
 
 		// Validate environment names exist
 		foreach ( $new as $env_name ) {
-			if ( ! isset( $cfg->environments[ $env_name ] ) ) {
+			if ( ! isset( $cfg['environments'][ $env_name ] ) ) {
 				throw new \RuntimeException( "download_extensions(): environment '$env_name' not found in configuration" );
 			}
 		}
@@ -223,18 +223,18 @@ abstract class QITCommand extends Command {
 		// 2) RESOLVE environments first (handle extends inheritance)
 		$resolved_envs = [];
 		foreach ( $new as $env_name ) {
-			$resolved_envs[ $env_name ] = $cfg->get_environment( $env_name );
+			$resolved_envs[ $env_name ] = $cfg['environments'][ $env_name ];
 		}
 
 		// 3) pick extensions from RESOLVED environments (pure)
-		$extracted = App::make( QitJsonParser::class )->extract_extensions_from_resolved_envs( $resolved_envs, $new );
+		$extracted = $this->extract_extensions_from_environments( $resolved_envs, $new );
 
 		// Create Extension objects from extracted configurations
 		$extensions = [];
 
 		// Add SUT extension if it exists
-		if ( $cfg->sut && $cfg->sut_extension ) {
-			$extensions[] = $cfg->sut_extension;
+		if ( isset( $cfg['sut_extension'] ) ) {
+			$extensions[] = $cfg['sut_extension'];
 		}
 
 		// Create Extension objects from plugins
@@ -292,6 +292,65 @@ abstract class QITCommand extends Command {
 		}
 
 		return $this->resolved_extensions;
+	}
+
+	/**
+	 * Extract plugin and theme configurations from resolved environments.
+	 * Returns raw configuration arrays without creating Extension objects.
+	 *
+	 * @param array<string,array<string,mixed>> $resolved_envs
+	 * @param array<string>                     $env_names
+	 * @return array{plugins: array<mixed>, themes: array<mixed>}
+	 */
+	private function extract_extensions_from_environments(
+		array $resolved_envs,
+		array $env_names
+	): array {
+		$plugins = [];
+		$themes  = [];
+
+		foreach ( $env_names as $env_name ) {
+			$env_config = $resolved_envs[ $env_name ] ?? [];
+
+			// Extract plugins
+			if ( isset( $env_config['plugins'] ) ) {
+				foreach ( $env_config['plugins'] as $plugin_config ) {
+					$plugins[] = $plugin_config;
+				}
+			}
+
+			// Extract themes
+			if ( isset( $env_config['themes'] ) ) {
+				foreach ( $env_config['themes'] as $theme_config ) {
+					$themes[] = $theme_config;
+				}
+			}
+		}
+
+		return [
+			'plugins' => $plugins,
+			'themes'  => $themes,
+		];
+	}
+
+	/**
+	 * Extract test package references from resolved profile configurations.
+	 * Returns raw package reference arrays.
+	 *
+	 * @param array<array<string,mixed>> $resolved_profiles
+	 * @return array<string>
+	 */
+	private function extract_package_refs_from_resolved_profiles(
+		array $resolved_profiles
+	): array {
+		$refs = [];
+		foreach ( $resolved_profiles as $test_config ) {
+			$refs = array_merge(
+				$refs,
+				$test_config['test_packages'] ?? []
+			);
+		}
+		return $refs;
 	}
 
 	/**
@@ -392,7 +451,7 @@ abstract class QITCommand extends Command {
 			];
 		}
 
-		$cfg = $this->config();
+		$cfg = $this->cfg();
 
 		// Validate test profile tuples exist
 		foreach ( $profiles as $profile ) {
@@ -403,11 +462,11 @@ abstract class QITCommand extends Command {
 			$test_type    = $profile['type'];
 			$profile_name = $profile['name'];
 
-			if ( ! isset( $cfg->test_types[ $test_type ] ) ) {
+			if ( ! isset( $cfg['test_types'][ $test_type ] ) ) {
 				throw new \RuntimeException( "download_test_packages(): test type '$test_type' not found in configuration" );
 			}
 
-			if ( ! isset( $cfg->test_types[ $test_type ][ $profile_name ] ) ) {
+			if ( ! isset( $cfg['test_types'][ $test_type ][ $profile_name ] ) ) {
 				throw new \RuntimeException( "download_test_packages(): profile '$test_type:$profile_name' not found in configuration" );
 			}
 		}
@@ -415,10 +474,10 @@ abstract class QITCommand extends Command {
 		// Resolve test profiles first (handle extends inheritance)
 		$resolved_profiles = [];
 		foreach ( $profiles as $profile ) {
-			$resolved_profiles[] = $cfg->get_test_config( $profile['type'], $profile['name'] );
+			$resolved_profiles[] = $cfg['test_types'][ $profile['type'] ][ $profile['name'] ];
 		}
 
-		$references = App::make( QitJsonParser::class )->extract_package_refs_from_resolved_profiles( $resolved_profiles );
+		$references = $this->extract_package_refs_from_resolved_profiles( $resolved_profiles );
 
 		// Calculate delta of new package references
 		$new_refs = array_diff( $references, array_keys( $this->packages ) );
@@ -445,8 +504,8 @@ abstract class QITCommand extends Command {
 	 * @return array<string, mixed>|null
 	 */
 	public function get_resolved_sut(): ?array {
-		$cfg = $this->config();
-		return $cfg->sut;
+		$cfg = $this->cfg();
+		return $cfg['sut'] ?? null;
 	}
 
 	/**

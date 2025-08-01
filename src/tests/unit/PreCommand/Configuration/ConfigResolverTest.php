@@ -119,9 +119,9 @@ class ConfigResolverTest extends TestCase {
 			$expected_plugins = [ 'woocommerce', 'custom-plugin' ];
 			$this->assertEquals( $expected_plugins, $resolved['plugins'] );
 			
-			// Environment should still have original values
-			$this->assertEquals( [ 'woocommerce' ], $resolved['environments']['default']['plugins'] );
-			$this->assertEquals( [ 'storefront' ], $resolved['environments']['default']['themes'] );
+			// Environment should have merged values (CLI overrides propagated back)
+			$this->assertEquals( [ 'woocommerce', 'custom-plugin' ], $resolved['environments']['default']['plugins'] );
+			$this->assertEquals( [ 'storefront', 'twentytwentyfour' ], $resolved['environments']['default']['themes'] );
 
 		} finally {
 			unlink( $temp_file );

@@ -178,12 +178,23 @@ final class ConfigResolver {
 		$parent = $pool[ $parent_name ];
 		unset( $node['extends'] );
 
-		// Recursively resolve parent and merge with child
-		// array_replace_recursive gives child precedence over parent
-		return array_replace_recursive(
-			$this->flatten_extends( $parent, $pool ),
-			$node
-		);
+		// Recursively resolve parent first
+		$resolved_parent = $this->flatten_extends( $parent, $pool );
+
+		// Merge with child - array_replace_recursive gives child precedence over parent
+		$result = array_replace_recursive( $resolved_parent, $node );
+
+		// Special handling for list keys - merge and deduplicate instead of replace
+		$list_keys = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
+		foreach ( $list_keys as $list_key ) {
+			if ( isset( $resolved_parent[ $list_key ] ) && isset( $node[ $list_key ] ) ) {
+				$result[ $list_key ] = array_values(
+					array_unique( array_merge( $resolved_parent[ $list_key ], $node[ $list_key ] ) )
+				);
+			}
+		}
+
+		return $result;
 	}
 
 	/**
@@ -256,7 +267,17 @@ final class ConfigResolver {
 			if ( in_array( $key, $list_options, true ) && is_array( $value ) ) {
 				// For list options, collect existing values from environments and merge with CLI
 				$existing = $this->collect_from_environments( $config, $key );
-				$config[ $key ] = array_values( array_unique( array_merge( $existing, $value ) ) );
+				$merged = array_values( array_unique( array_merge( $existing, $value ) ) );
+				
+				// Store at top level for backward compatibility
+				$config[ $key ] = $merged;
+				
+				// Also propagate back into environments that originally contained the key
+				foreach ( $config['environments'] as $env_name => $env ) {
+					if ( isset( $env[ $key ] ) ) {
+						$config['environments'][ $env_name ][ $key ] = $merged;
+					}
+				}
 			} else {
 				$config[ $key ] = $value;
 			}
@@ -520,5 +541,24 @@ final class ConfigResolver {
  * Helper function to check if path is absolute.
  */
 function is_absolute_path( string $path ): bool {
-	return $path[0] === '/' || ( PHP_OS_FAMILY === 'Windows' && preg_match( '/^[A-Za-z]:/', $path ) );
+	if ( empty( $path ) ) {
+		return false;
+	}
+	
+	// Unix-style absolute paths
+	if ( $path[0] === '/' ) {
+		return true;
+	}
+	
+	// Windows-style paths
+	if ( $path[0] === '\\' ) {
+		return true; // UNC paths like \\server\share
+	}
+	
+	// Drive letter paths like C:\ or device paths
+	if ( strlen( $path ) > 1 && $path[1] === ':' ) {
+		return true;
+	}
+	
+	return false;
 }
