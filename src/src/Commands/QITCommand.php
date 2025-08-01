@@ -76,9 +76,6 @@ abstract class QITCommand extends Command {
 	 */
 	private function config(): ResolvedConfiguration {
 		if ( $this->cfg === null ) {
-			// Build CLI SUT to pass to parser for proper precedence
-			$sut_cli = $this->build_cli_sut();
-
 			// Initialize parsed configuration
 			$parsed_config = [
 				'sut'           => null,
@@ -98,17 +95,8 @@ abstract class QITCommand extends Command {
 			$resolved                          = new ResolvedConfiguration( $parsed_config );
 			$resolved->metadata['config_file'] = $config_file;
 
-			// Process SUT
-			if ( $sut_cli ) {
-				// CLI-provided SUT takes precedence
-				$resolved->sut           = [
-					'slug'   => $sut_cli->slug,
-					'type'   => $sut_cli->type,
-					'source' => [ 'type' => 'wporg' ],
-				];
-				$resolved->sut_extension = App::make( ExtensionFactory::class )->for_sut( $resolved->sut );
-			} elseif ( isset( $parsed_config['sut'] ) ) {
-				// Fall back to qit.json SUT
+			// Process SUT from qit.json
+			if ( isset( $parsed_config['sut'] ) ) {
 				$resolved->sut           = $parsed_config['sut'];
 				$resolved->sut_extension = App::make( ExtensionFactory::class )->for_sut( $parsed_config['sut'] );
 			}
@@ -150,34 +138,6 @@ abstract class QITCommand extends Command {
 		return $config_file;
 	}
 
-	/**
-	 * Build CLI SUT input from command line options
-	 */
-	private function build_cli_sut(): ?SutInput {
-		$slug = null;
-		$type = null;
-
-		// Check for plugin slug
-		if ( $this->input->hasOption( 'plugin' ) ) {
-			$slug = $this->input->getOption( 'plugin' );
-			$type = 'plugin';
-		}
-
-		// Check for theme slug
-		if ( $this->input->hasOption( 'theme' ) ) {
-			if ( $slug !== null ) {
-				throw new \InvalidArgumentException( 'Cannot specify both --plugin and --theme options' );
-			}
-			$slug = $this->input->getOption( 'theme' );
-			$type = 'theme';
-		}
-
-		if ( $slug === null ) {
-			return null;
-		}
-
-		return new SutInput( $slug, $type );
-	}
 
 	/**
 	 * Get test profile configuration - simple helper method.
@@ -596,14 +556,8 @@ abstract class QITCommand extends Command {
 	 * Get SUT warning message if CLI overrides config.
 	 */
 	public function get_sut_warning(): ?string {
-		// Check if CLI SUT was provided
-		$cli_sut = $this->build_cli_sut();
-		$cfg     = $this->config();
-
-		if ( $cli_sut && isset( $cfg->metadata['config_file'] ) && ! empty( $cfg->metadata['config_file'] ) ) {
-			return 'CLI argument overrides SUT defined in configuration file.';
-		}
-
+		// Since CLI SUT resolution is now handled by individual commands,
+		// this method no longer needs to provide warnings
 		return null;
 	}
 
