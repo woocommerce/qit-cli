@@ -16,12 +16,6 @@ abstract class DynamicCommand extends QITCommand {
 		parent::__construct();
 	}
 
-	/**
-	 * ConfigurableTestCommand interface implementation.
-	 */
-	public function get_test_type(): string {
-		return $this->test_type;
-	}
 
 	public function get_test_profile(): string {
 		return $this->input->getOption( 'profile' ) ?? 'default';

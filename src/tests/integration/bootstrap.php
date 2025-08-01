@@ -108,38 +108,38 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 }
 
 /**
- * Runs a QIT command but only executes the PreCommand phase, returning the raw output.
+ * Runs a QIT env:up command but only executes the configuration resolution phase, returning the raw output.
  * This is much faster than running the full command, as it doesn't touch Docker or download anything.
  *
  * This function is useful for testing the configuration resolution phase without running the full command.
  * It allows tests to be split into different layers:
- * 1. Pre-Command tests (pure unit tests) - Only test the configuration resolution
+ * 1. Configuration tests (pure unit tests) - Only test the configuration resolution
  * 2. Command runtime tests (lightweight functional tests) - Test the command execution
  * 3. Full integration tests (slow, end-to-end scenarios) - Test the entire system
  *
- * This function has the same parameters as the `qit` function, but adds the 'QIT_SELF_TEST' => 'precommand'
- * environment variable to trigger the early-return mechanism in PreCommandHandler.
+ * This function has the same parameters as the `qit` function, but adds the 'QIT_SELF_TEST' => 'env_up'
+ * environment variable to trigger the early-return mechanism in UpEnvironmentCommand.
  *
  * Example usage:
  * ```php
  * // Basic usage:
- * $output = qit_precommand(
- *     ['env:up', '--wp_version', '6.1', '--json']
+ * $output = qit_run_env_up(
+ *     ['env:up', '--wp', '6.1', '--json']
  * );
  * $env = json_decode($output, true);
- * echo $env['wp_version']; // "6.1"
+ * echo $env['wp']; // "6.1"
  *
  * // With configuration:
- * $output = qit_precommand(
+ * $output = qit_run_env_up(
  *     ['env:up', '--json'],
  *     <<<'JSON'
- * { "environments": { "default": { "wp_version": "6.0" } } }
+ * { "environments": { "default": { "wp": "6.0" } } }
  * JSON
  * );
  * $env = json_decode($output, true);
  *
  * // With custom exit code and environment variables:
- * $output = qit_precommand(
+ * $output = qit_run_env_up(
  *     ['env:up', '--json'],
  *     null,
  *     0,
@@ -153,7 +153,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
  * @param int $expected_exit_code Expected exit code from the command.
  * @param array $extra_env Additional environment variables to pass to the command.
  *
- * @return string The raw output from the PreCommand phase.
+ * @return string The raw output from the configuration resolution phase.
  */
 function qit_run_env_up( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false ): string|Process|array {
 	// Add the QIT_SELF_TEST environment variable to trigger the early-return mechanism

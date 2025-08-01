@@ -12,10 +12,7 @@ use function QIT_CLI\is_windows;
 class RunActivationTestCommand extends RunE2ECommand {
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-
-	public function get_test_type(): string {
-		return 'activation';
-	}
+	protected string $test_type = 'activation';
 
 	protected function configure(): void {
 		parent::configure();
@@ -32,7 +29,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 		// Handle QIT_SELF_TEST for remote test configuration testing
 		if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
 			// Get resolved test configuration
-			$test_config = $this->get_current_test_profile( $this->get_test_type(), $this->get_test_profile() );
+			$test_config = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );
 			$output->write( json_encode( $test_config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			return self::SUCCESS;
 		}

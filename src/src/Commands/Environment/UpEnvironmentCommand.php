@@ -82,9 +82,6 @@ class UpEnvironmentCommand extends QITCommand {
 		return $this->input->getOption( 'environment' ) ?? 'default';
 	}
 
-	public function should_prepare_environment(): bool {
-		return true; // We need to download extensions
-	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {

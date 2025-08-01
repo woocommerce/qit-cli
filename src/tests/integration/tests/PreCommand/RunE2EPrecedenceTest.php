@@ -597,31 +597,27 @@ class RunE2EPrecedenceTest extends TestCase {
 	/* ================================================================
 	 * 15. Hard‑fail when neither CLI nor qit.json provide a SUT
 	 * ============================================================== */
-	public function test_missing_sut_causes_error(): void {
-		// 1 · Empty qit.json (no “sut” key)
-		$cfg = tempnam( sys_get_temp_dir(), 'qit_test_' );
-		file_put_contents( $cfg, '{}' );
+public function test_missing_sut_causes_error(): void {
+// 1 · Empty qit.json (no "sut" key)
+$cfg = tempnam( sys_get_temp_dir(), 'qit_test_' );
+file_put_contents( $cfg, '{}' );
 
-		// 2 · Run without positional slug  → must fail
-		[ , $stderr, $exitCode ] = qit_run_e2e(
-			[
-				'run:e2e',
-				'--json',
-				'--config',
-				$cfg,
-			],
-			[ 'capture_stderr_separately' => true ]
-		);
+// 2 · Expect RuntimeException when no SUT is provided
+$this->expectException( \RuntimeException::class );
+$this->expectExceptionMessageMatches( '/No System.*Under.*Test.*specified/' );
 
-		// 3 · Validation
-		$this->assertNotSame( 0, $exitCode, 'Missing SUT must make the command fail.' );
-		$this->assertStringContainsString(
-			'You must specify a System‑Under‑Test (SUT) either as a positional slug or via the “sut” section in qit.json',
-			$stderr
-		);
+// 3 · Run without positional slug  → must fail
+qit_run_e2e(
+[
+'run:e2e',
+'--json',
+'--config',
+$cfg,
+]
+);
 
-		unlink( $cfg );
-	}
+unlink( $cfg );
+}
 
 
 }

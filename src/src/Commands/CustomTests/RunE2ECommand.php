@@ -62,19 +62,10 @@ class RunE2ECommand extends QITCommand {
 		parent::__construct();
 	}
 
-	/**
-	 * LocalTestCommand interface implementation.
-	 */
+	protected string $test_type = 'e2e';
+
 	public function get_environment_name(): string {
 		return $this->input->getOption( 'environment' ) ?? 'default';
-	}
-
-	public function should_prepare_environment(): bool {
-		return true;
-	}
-
-	public function get_test_type(): string {
-		return 'e2e';
 	}
 
 	public function get_test_profile(): string {
@@ -166,7 +157,7 @@ class RunE2ECommand extends QITCommand {
 		$env_config = $this->get_environment_config( $this->get_environment_name() );
 
 		// Get test profile configuration using the simplified API
-		$test_config = $this->get_current_test_profile( $this->get_test_type(), $this->get_test_profile() );
+		$test_config = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );
 
 		// Explicitly download extensions for current environment (lazy loading)
 		$resolved_extensions = $this->download_extensions();
@@ -174,7 +165,7 @@ class RunE2ECommand extends QITCommand {
 		// Explicitly download test packages for this test profile (lazy loading)
 		$test_packages_manifests = $this->download_test_packages( [
 			[
-				'type' => $this->get_test_type(),
+				'type' => $this->test_type,
 				'name' => $this->get_test_profile(),
 			],
 		] );
