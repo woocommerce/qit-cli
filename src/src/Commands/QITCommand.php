@@ -3,12 +3,9 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
-use QIT_CLI\PreCommand\Configuration\ConfigMerger;
-use QIT_CLI\PreCommand\Configuration\Parser\QitJsonParser;
-use QIT_CLI\PreCommand\Configuration\ResolvedConfiguration;
+use QIT_CLI\PreCommand\Configuration\ConfigResolver;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;
-use QIT_CLI\PreCommand\Configuration\ExtensionFactory;
 use QIT_CLI\PreCommand\Objects\SutInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,8 +17,8 @@ abstract class QITCommand extends Command {
 	protected InputInterface $input;
 	protected OutputInterface $output;
 
-	/** @var ?ResolvedConfiguration Lazy-initialized configuration and services */
-	private ?ResolvedConfiguration $cfg = null;
+	/** @var array<string,mixed>|null Resolved configuration */
+	private ?array $config = null;
 	private ?\QIT_CLI\PreCommand\Extensions\ResolvedExtensions $resolved_extensions = null;
 	/** @var string[] */
 	private array $resolved_envs = [];
@@ -72,59 +69,17 @@ abstract class QITCommand extends Command {
 	}
 
 	/**
-	 * Lazy configuration parsing - only parse once when needed.
+	 * Get resolved configuration - single pass resolution.
+	 *
+	 * @return array<string,mixed>
 	 */
-	private function config(): ResolvedConfiguration {
-		if ( $this->cfg === null ) {
-			// Initialize parsed configuration
-			$parsed_config = [
-				'sut'           => null,
-				'environments'  => [],
-				'test_types'    => [],
-				'groups'        => [],
-				'test_packages' => [],
-			];
-
-			// Parse qit.json if provided
+	private function cfg(): array {
+		if ( $this->config === null ) {
 			$config_file = $this->get_config_file();
-			if ( $config_file ) {
-				$parsed_config = App::make( QitJsonParser::class )->parse( $config_file );
-			}
-
-			// Create resolved configuration
-			$resolved                          = new ResolvedConfiguration( $parsed_config );
-			$resolved->metadata['config_file'] = $config_file;
-
-			// Process SUT from qit.json
-			if ( isset( $parsed_config['sut'] ) ) {
-				$resolved->sut           = $parsed_config['sut'];
-				$resolved->sut_extension = App::make( ExtensionFactory::class )->for_sut( $parsed_config['sut'] );
-			}
-
-			// Apply default fallbacks
-			if ( ! isset( $parsed_config['environments']['default'] ) ) {
-				$parsed_config['environments']['default'] = [];
-			}
-			if ( ! isset( $parsed_config['test_types']['e2e']['default'] ) ) {
-				$parsed_config['test_types']['e2e']['default'] = [];
-			}
-
-			// Copy basic configuration
-			$resolved->environments          = $parsed_config['environments'] ?? [];
-			$resolved->test_types            = $parsed_config['test_types'] ?? [];
-			$resolved->groups                = $parsed_config['groups'] ?? [];
-			$resolved->test_packages         = $parsed_config['test_packages'] ?? [];
-			$resolved->test_package_metadata = $parsed_config['test_package_metadata'] ?? [];
-
-			// Validate configuration
-			$errors = $resolved->validate();
-			if ( ! empty( $errors ) ) {
-				throw new \RuntimeException( "Configuration validation failed:\n" . implode( "\n", array_map( fn( $e ) => "  - $e", $errors ) ) );
-			}
-
-			$this->cfg = $resolved;
+			$cli_overrides = $this->collect_cli_overrides();
+			$this->config = ConfigResolver::load( $config_file, $cli_overrides );
 		}
-		return $this->cfg;
+		return $this->config;
 	}
 
 	/**
@@ -138,6 +93,24 @@ abstract class QITCommand extends Command {
 		return $config_file;
 	}
 
+	/**
+	 * Collect CLI parameter overrides for configuration resolution.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function collect_cli_overrides(): array {
+		$overrides = [];
+
+		// Collect all explicitly provided options
+		foreach ( $this->input->getOptions() as $name => $value ) {
+			if ( is_option_explicitly_provided( $this->input, $name ) && $value !== null ) {
+				$overrides[ $name ] = $value;
+			}
+		}
+
+		return $overrides;
+	}
+
 
 	/**
 	 * Get test profile configuration - simple helper method.
@@ -145,16 +118,8 @@ abstract class QITCommand extends Command {
 	 * @return array<string, mixed>
 	 */
 	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
-		$defaults = $this->extract_defaults();
-		$cli      = $this->extract_explicit();
-
-		try {
-			$json = $this->config()->get_test_config( $test_type, $profile );
-		} catch ( \RuntimeException $e ) {
-			$json = [];
-		}
-
-		return $this->merger()->merge( $cli, $json, $defaults );
+		$config = $this->cfg();
+		return $config['test_types'][ $test_type ][ $profile ] ?? [];
 	}
 
 	/**
@@ -163,157 +128,10 @@ abstract class QITCommand extends Command {
 	 * @return array<string, mixed>
 	 */
 	public function get_environment_config( string $env = 'default' ): array {
-		// Validate environment options at the point where they're actually processed
-		$this->validate_environment_options();
-
-		$defaults = $this->extract_defaults();
-		$cli      = $this->extract_explicit();
-
-		try {
-			$json = $this->config()->get_environment( $env );
-		} catch ( \RuntimeException $e ) {
-			$json = [];
-		}
-
-		// Apply profile defaults for environment commands
-		// env:up is an e2e command, so apply e2e profile defaults
-		$profile_defaults = [];
-		try {
-			$profile_defaults = $this->config()->get_test_config( 'e2e', 'default' );
-		} catch ( \InvalidArgumentException $e ) {
-			// No profile defaults available, use empty array
-			$profile_defaults = [];
-		}
-
-		// Merge in correct precedence order: CLI > Profile Defaults > Environment Config > Command Defaults
-		// First merge command defaults with environment config (environment takes precedence over command defaults)
-		$base = $this->merger()->merge( [], $json, $defaults );
-		// Then merge with profile defaults (profile takes precedence over environment)
-		$base = $this->merger()->merge( [], $profile_defaults, $base );
-		// Finally merge with CLI (CLI takes precedence over everything)
-		return $this->merger()->merge( $cli, [], $base );
+		$config = $this->cfg();
+		return $config['environments'][ $env ] ?? [];
 	}
 
-	/**
-	 * Get merger service lazily
-	 */
-	private function merger(): ConfigMerger {
-		return App::make( ConfigMerger::class );
-	}
-
-	/**
-	 * Extract CLI defaults using the simplified approach.
-	 * Only includes options that were NOT explicitly provided by the user.
-	 *
-	 * @return array<string, mixed>
-	 */
-	private function extract_defaults(): array {
-		$defaults = [];
-
-		// Get all options from input
-		foreach ( $this->input->getOptions() as $name => $value ) {
-			// Skip framework options
-			if ( in_array( $name, [ 'help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction' ], true ) ) {
-				continue;
-			}
-
-			// Skip explicitly provided options - they should be handled by extract_explicit()
-			if ( $this->is_explicitly_provided( $name ) ) {
-				continue;
-			}
-
-			// Use automatic pluralization for array options
-			$config_key              = $this->normalize_key( $name, $value );
-			$defaults[ $config_key ] = $value;
-		}
-
-		return $defaults;
-	}
-
-	/**
-	 * Extract explicitly provided CLI options.
-	 *
-	 * @return array<string, mixed>
-	 */
-	private function extract_explicit(): array {
-		$explicit = [];
-
-		// Get all options from input
-		foreach ( $this->input->getOptions() as $name => $value ) {
-			// Skip framework options
-			if ( in_array( $name, [ 'help', 'quiet', 'verbose', 'version', 'ansi', 'no-ansi', 'no-interaction' ], true ) ) {
-				continue;
-			}
-
-			// Only include if explicitly provided (not just default value)
-			if ( $this->is_explicitly_provided( $name ) ) {
-				$config_key = $this->normalize_key( $name, $value );
-
-				// Handle special cases
-				if ( $name === 'phpstan_level' && $value !== null ) {
-					$value = (int) $value;
-				}
-
-				// For boolean flags, treat explicitly provided null as true
-				// For boolean flags with values, set the flag to true but preserve the value
-				if ( $this->is_boolean_flag( $name ) ) {
-					if ( $value === null ) {
-						$value = true;
-					} else {
-						// For tunnel, we need both tunnel=true and tunnel_type=value
-						if ( $name === 'tunnel' && $value !== null ) {
-							$explicit['tunnel']      = true;
-							$explicit['tunnel_type'] = $value;
-							continue; // Skip the normal assignment below
-						} else {
-							$value = true; // Other boolean flags with values still become true
-						}
-					}
-				}
-
-				$explicit[ $config_key ] = $value;
-			}
-		}
-
-		return $explicit;
-	}
-
-	/**
-	 * Check if an option was explicitly provided by the user.
-	 */
-	private function is_explicitly_provided( string $option_name ): bool {
-		return is_option_explicitly_provided( $this->input, $option_name );
-	}
-
-	/**
-	 * Check if an option is a boolean flag that should be treated as true when present.
-	 */
-	private function is_boolean_flag( string $option_name ): bool {
-		$boolean_flags = [
-			'object_cache',
-			'tunnel',
-			'json',
-			'skip_activating_plugins',
-			'skip_activating_themes',
-		];
-
-		return in_array( $option_name, $boolean_flags, true );
-	}
-
-	/**
-	 * Normalize CLI option name to config key using automatic pluralization.
-	 *
-	 * @param string $cli_name The CLI option name to normalize.
-	 * @param mixed  $value    The value to check for pluralization logic.
-	 */
-	private function normalize_key( string $cli_name, $value ): string {
-		// For array values, pluralize if not already plural
-		if ( is_array( $value ) ) {
-			return str_ends_with( $cli_name, 's' ) ? $cli_name : $cli_name . 's';
-		}
-
-		return $cli_name;
-	}
 
 	/**
 	 * Validate environment-related CLI options.
@@ -428,7 +246,7 @@ abstract class QITCommand extends Command {
 				$extension->added_automatically = 'Added from environment configuration';
 				$extensions[]                   = $extension;
 			} else {
-				$extension    = App::make( ExtensionFactory::class )->from_plugin_config( $plugin_config );
+				$extension = $this->create_extension_from_config( $plugin_config, 'plugin' );
 				$extensions[] = $extension;
 			}
 		}
@@ -442,7 +260,7 @@ abstract class QITCommand extends Command {
 				$extension->added_automatically = 'Added from environment configuration';
 				$extensions[]                   = $extension;
 			} else {
-				$extension    = App::make( ExtensionFactory::class )->from_theme_config( $theme_config );
+				$extension = $this->create_extension_from_config( $theme_config, 'theme' );
 				$extensions[] = $extension;
 			}
 		}
@@ -474,6 +292,85 @@ abstract class QITCommand extends Command {
 		}
 
 		return $this->resolved_extensions;
+	}
+
+	/**
+	 * Create Extension from configuration array (inlined from ExtensionFactory).
+	 *
+	 * @param array<string,mixed> $config
+	 * @param string $type
+	 * @return \QIT_CLI\PreCommand\Objects\Extension
+	 */
+	private function create_extension_from_config( array $config, string $type ): \QIT_CLI\PreCommand\Objects\Extension {
+		$extension = new \QIT_CLI\PreCommand\Objects\Extension( $config['slug'], $type );
+		$extension->added_automatically = 'Added from environment configuration';
+
+		if ( isset( $config['from'] ) ) {
+			$extension->from = $config['from'];
+
+			switch ( $config['from'] ) {
+				case 'wporg':
+					$extension->version = $config['version'] ?? 'stable';
+					break;
+
+				case 'wccom':
+					$extension->version = $config['version'] ?? 'stable';
+					break;
+
+				case 'local':
+					$extension->from = 'local';
+					$extension->directory = $config['path'];
+					$extension->source = $config['path'];
+					break;
+
+				case 'url':
+					$extension->source = $config['url'];
+					break;
+
+				case 'build':
+					$extension->source = [
+						'type' => 'build',
+						'command' => $config['command'],
+						'output' => $config['output'],
+					];
+					break;
+
+				default:
+					throw new \RuntimeException( "Unknown extension source type: {$config['from']}" );
+			}
+		} elseif ( isset( $config['source'] ) ) {
+			// Legacy source format support
+			$source = $config['source'];
+			switch ( $source['type'] ) {
+				case 'wporg':
+					$extension->from = 'wporg';
+					$extension->version = $source['version'] ?? 'stable';
+					break;
+
+				case 'wccom':
+					$extension->from = 'wccom';
+					$extension->version = $source['version'] ?? 'stable';
+					break;
+
+				case 'local':
+					$extension->from = 'local';
+					$extension->directory = $source['path'];
+					$extension->source = $source['path'];
+					break;
+
+				case 'url':
+					$extension->from = 'url';
+					$extension->source = $source['url'];
+					break;
+
+				default:
+					throw new \RuntimeException( "Unknown legacy source type: {$source['type']}" );
+			}
+		} else {
+			throw new \RuntimeException( "Extension config missing both 'from' and 'source' properties" );
+		}
+
+		return $extension;
 	}
 
 	/**
