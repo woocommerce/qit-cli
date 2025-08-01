@@ -1,6 +1,6 @@
 {
     "extra": {
-        "env_vars": [],
+        "envs": [],
         "env_files": []
     },
     "environment": "e2e",
