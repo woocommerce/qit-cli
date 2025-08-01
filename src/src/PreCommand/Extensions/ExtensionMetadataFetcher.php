@@ -16,17 +16,13 @@ use function QIT_CLI\get_manager_url;
  * Fetches metadata (version, download URLs) for extensions.
  */
 class ExtensionMetadataFetcher {
-	/** @var WooExtensionsList */
-	protected $woo_extensions_list;
+	protected WooExtensionsList $woo_extensions_list;
 
-	/** @var WPORGExtensionsList */
-	protected $wporg_extensions_list;
+	protected WPORGExtensionsList $wporg_extensions_list;
 
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
-	/** @var OutputInterface */
-	protected $output;
+	protected OutputInterface $output;
 
 	public function __construct(
 		WooExtensionsList $woo_extensions_list,

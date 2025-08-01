@@ -11,11 +11,9 @@ use Symfony\Component\Console\Output\OutputInterface;
 use ZipArchive;
 
 class EnvironmentDownloader {
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
-	/** @var OutputInterface */
-	protected $output;
+	protected OutputInterface $output;
 
 	public function __construct( Cache $cache, OutputInterface $output ) {
 		$this->cache  = $cache;

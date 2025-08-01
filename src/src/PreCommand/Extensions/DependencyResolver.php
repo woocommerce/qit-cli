@@ -14,17 +14,13 @@ use function QIT_CLI\get_manager_url;
  * Resolves dependencies for extensions.
  */
 class DependencyResolver {
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
-	/** @var WooExtensionsList */
-	protected $woo_extensions_list;
+	protected WooExtensionsList $woo_extensions_list;
 
-	/** @var WPORGExtensionsList */
-	protected $wporg_extensions_list;
+	protected WPORGExtensionsList $wporg_extensions_list;
 
-	/** @var PluginMetadataParser */
-	protected $plugin_metadata_parser;
+	protected PluginMetadataParser $plugin_metadata_parser;
 
 	public function __construct(
 		Cache $cache,

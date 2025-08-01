@@ -14,17 +14,13 @@ use function QIT_CLI\get_manager_url;
  * Downloads and caches remote test packages from the QIT repository
  */
 class TestPackageDownloader {
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
-	/** @var Zipper */
-	protected $zipper;
+	protected Zipper $zipper;
 
-	/** @var OutputInterface */
-	protected $output;
+	protected OutputInterface $output;
 
-	/** @var TestPackageManifestParser */
-	protected $manifest_parser;
+	protected TestPackageManifestParser $manifest_parser;
 
 	/** @var array<string,array<string,mixed>> */
 	protected array $package_metadata = [];

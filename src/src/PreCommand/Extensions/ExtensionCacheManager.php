@@ -17,14 +17,11 @@ use function QIT_CLI\debug_log;
  * Manages extension caching and downloads.
  */
 class ExtensionCacheManager {
-	/** @var Cache */
-	protected $cache;
+	protected Cache $cache;
 
-	/** @var Zipper */
-	protected $zipper;
+	protected Zipper $zipper;
 
-	/** @var OutputInterface */
-	protected $output;
+	protected OutputInterface $output;
 
 	protected EntrypointDetector $entrypoint_detector;
 

@@ -15,23 +15,17 @@ use function QIT_CLI\debug_dump;
  * Main extension resolver that orchestrates the resolution process.
  */
 class ExtensionResolver {
-	/** @var ExtensionMetadataFetcher */
-	protected $metadata_fetcher;
+	protected ExtensionMetadataFetcher $metadata_fetcher;
 
-	/** @var DependencyResolver */
-	protected $dependency_resolver;
+	protected DependencyResolver $dependency_resolver;
 
-	/** @var ExtensionCacheManager */
-	protected $cache_manager;
+	protected ExtensionCacheManager $cache_manager;
 
-	/** @var WooExtensionsList */
-	protected $woo_extensions_list;
+	protected WooExtensionsList $woo_extensions_list;
 
-	/** @var WPORGExtensionsList */
-	protected $wporg_extensions_list;
+	protected WPORGExtensionsList $wporg_extensions_list;
 
-	/** @var VersionResolver */
-	protected $version_resolver;
+	protected VersionResolver $version_resolver;
 
 	public function __construct(
 		ExtensionMetadataFetcher $metadata_fetcher,
@@ -268,13 +262,13 @@ class ExtensionResolver {
 // phpcs:ignore Generic.Files.OneObjectStructurePerFile.MultipleFound
 class ResolvedExtensions {
 	/** @var Extension[] */
-	protected $plugins = [];
+	protected array $plugins = [];
 
 	/** @var Extension[] */
-	protected $themes = [];
+	protected array $themes = [];
 
 	/** @var string[] */
-	protected $php_extensions = [];
+	protected array $php_extensions = [];
 
 	public function add_extension( Extension $extension ): void {
 		if ( $extension->type === 'plugin' ) {
