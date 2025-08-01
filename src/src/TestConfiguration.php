@@ -2,7 +2,7 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Objects\Extension;
 
 class TestConfiguration {
 	public Extension $extension;

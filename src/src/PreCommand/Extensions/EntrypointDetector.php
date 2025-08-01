@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\PreCommand\Extensions;
 
-use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Objects\Extension;
 use function QIT_CLI\debug_log;
 
 /**

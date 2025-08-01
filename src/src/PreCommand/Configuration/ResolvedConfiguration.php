@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\PreCommand\Configuration;
 
-use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 
 /**

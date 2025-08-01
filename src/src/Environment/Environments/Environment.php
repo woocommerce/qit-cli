@@ -7,7 +7,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\CustomTests\CustomTestsDownloader;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Environment\EnvironmentDownloader;
+use QIT_CLI\PreCommand\Download\EnvironmentDownloader;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\SafeRemove;
 use QIT_CLI\Tunnel\TunnelRunner;

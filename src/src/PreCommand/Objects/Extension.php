@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Environment;
+namespace QIT_CLI\PreCommand\Objects;
 
 use lucatume\DI52\App;
 use QIT_CLI\WooExtensionsList;

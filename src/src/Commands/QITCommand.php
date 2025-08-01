@@ -468,7 +468,7 @@ abstract class QITCommand extends Command {
 		// Create Extension objects from plugins
 		foreach ($extracted['plugins'] as $plugin_config) {
 			if (is_string($plugin_config)) {
-				$extension = new \QIT_CLI\Environment\Extension($plugin_config, 'plugin');
+				$extension = new \QIT_CLI\PreCommand\Objects\Extension($plugin_config, 'plugin');
 				$extension->from = 'wporg';
 				$extension->version = 'stable';
 				$extension->added_automatically = 'Added from environment configuration';
@@ -482,7 +482,7 @@ abstract class QITCommand extends Command {
 		// Create Extension objects from themes
 		foreach ($extracted['themes'] as $theme_config) {
 			if (is_string($theme_config)) {
-				$extension = new \QIT_CLI\Environment\Extension($theme_config, 'theme');
+				$extension = new \QIT_CLI\PreCommand\Objects\Extension($theme_config, 'theme');
 				$extension->from = 'wporg';
 				$extension->version = 'stable';
 				$extension->added_automatically = 'Added from environment configuration';

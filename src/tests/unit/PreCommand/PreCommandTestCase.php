@@ -4,7 +4,7 @@ namespace QIT_CLI_Tests\PreCommand;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Objects\Extension;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use PHPUnit\Framework\TestCase;
@@ -417,7 +417,7 @@ PHP;
 
 		if ( ! empty( $env_info['plugins'] ) && is_array( $env_info['plugins'] ) ) {
 			foreach ( $env_info['plugins'] as &$plugin ) {
-				if ( $plugin instanceof \QIT_CLI\Environment\Extension ) {
+				if ( $plugin instanceof \QIT_CLI\PreCommand\Objects\Extension ) {
 					$plugin = $plugin->jsonSerialize();
 				}
 				if ( is_array( $plugin ) ) {
@@ -466,7 +466,7 @@ PHP;
 
 		if ( ! empty( $env_info['themes'] ) && is_array( $env_info['themes'] ) ) {
 			foreach ( $env_info['themes'] as &$theme ) {
-				if ( $theme instanceof \QIT_CLI\Environment\Extension ) {
+				if ( $theme instanceof \QIT_CLI\PreCommand\Objects\Extension ) {
 					$theme = $theme->jsonSerialize();
 				}
 				if ( is_array( $theme ) ) {

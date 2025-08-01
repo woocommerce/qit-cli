@@ -4,7 +4,7 @@ namespace QIT_CLI\PreCommand\Extensions;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;

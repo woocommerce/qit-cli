@@ -4,7 +4,7 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Environment\Extension;
+use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\IO\Output;
 use function QIT_CLI\normalize_path;
 
