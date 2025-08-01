@@ -9,7 +9,7 @@ use QIT_CLI\PreCommand\Objects\TestPackageManifest;
  * Parser for test package manifest files
  */
 class TestPackageManifestParser {
-	// Properties from BaseJsonParser
+	/** @var Validator Properties from BaseJsonParser */
 	protected Validator $validator;
 	protected ErrorFormatter $error_formatter;
 	/** @var array<string, mixed> */
@@ -33,7 +33,7 @@ class TestPackageManifestParser {
 		// Only load the test-package schema - this parser is specialized for manifest files
 		$schema_file = $schema_dir . '/test-package-manifest-schema.json';
 		if ( file_exists( $schema_file ) ) {
-			$this->schema_cache[ 'test-package' ] = json_decode( file_get_contents( $schema_file ) );
+			$this->schema_cache['test-package'] = json_decode( file_get_contents( $schema_file ) );
 		}
 	}
 
@@ -77,7 +77,7 @@ class TestPackageManifestParser {
 	 *
 	 * @param mixed $errors
 	 */
-	protected function format_validation_errors( $errors, string $context ): string {
+	protected function format_validation_errors( $errors, string $context ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$output = '';
 
 		foreach ( $errors as $path => $messages ) {

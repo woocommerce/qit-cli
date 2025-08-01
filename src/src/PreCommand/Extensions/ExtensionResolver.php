@@ -263,11 +263,11 @@ class ExtensionResolver {
 
 	/**
 	 * Create temporary environment info for extension resolution.
-	 * 
+	 *
 	 * @param \QIT_CLI\PreCommand\Configuration\ResolvedConfiguration $config
 	 * @return \QIT_CLI\Environment\Environments\EnvInfo
 	 */
-	private function create_temp_env_info( $config ): \QIT_CLI\Environment\Environments\EnvInfo {
+	private function create_temp_env_info( $config ): \QIT_CLI\Environment\Environments\EnvInfo { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 		$env_info                = new \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo();
 		$env_info->env_id        = uniqid();
 		$env_info->temporary_env = \QIT_CLI\normalize_path( sys_get_temp_dir() . '/qit-resolve-' . $env_info->env_id );

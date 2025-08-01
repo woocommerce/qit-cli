@@ -8,7 +8,7 @@ use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
  * Enhanced Parser for qit.json configuration files with full feature support
  */
 class QitJsonParser {
-	// Properties from BaseJsonParser
+	/** @var Validator Properties from BaseJsonParser */
 	protected Validator $validator;
 	protected ErrorFormatter $error_formatter;
 	/** @var array<string, mixed> */
@@ -37,7 +37,7 @@ class QitJsonParser {
 		$this->validator->setMaxErrors( 10 );
 		$this->error_formatter = new ErrorFormatter();
 		$this->load_schemas();
-		
+
 		// Initialize package parser
 		$this->package_parser = new TestPackageManifestParser();
 	}
@@ -51,7 +51,7 @@ class QitJsonParser {
 		// Only load the QIT schema - this parser is specialized for qit.json files
 		$schema_file = $schema_dir . '/qit-schema.json';
 		if ( file_exists( $schema_file ) ) {
-			$this->schema_cache[ 'qit' ] = json_decode( file_get_contents( $schema_file ) );
+			$this->schema_cache['qit'] = json_decode( file_get_contents( $schema_file ) );
 		}
 	}
 
@@ -95,7 +95,7 @@ class QitJsonParser {
 	 *
 	 * @param mixed $errors
 	 */
-	protected function format_validation_errors( $errors, string $context ): string {
+	protected function format_validation_errors( $errors, string $context ): string { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$output = '';
 
 		foreach ( $errors as $path => $messages ) {
@@ -147,9 +147,9 @@ class QitJsonParser {
 	/**
 	 * Extract plugin and theme configurations from resolved environments.
 	 * Returns raw configuration arrays without creating Extension objects.
-	 * 
+	 *
 	 * @param array<string,array<string,mixed>> $resolved_envs
-	 * @param array<string> $env_names
+	 * @param array<string>                     $env_names
 	 * @return array{plugins: array<mixed>, themes: array<mixed>}
 	 */
 	public function extract_extensions_from_resolved_envs(
@@ -157,36 +157,36 @@ class QitJsonParser {
 		array $env_names
 	): array {
 		$plugins = [];
-		$themes = [];
-		
-		foreach ($env_names as $env_name) {
-			$env_config = $resolved_envs[$env_name] ?? [];
-			
+		$themes  = [];
+
+		foreach ( $env_names as $env_name ) {
+			$env_config = $resolved_envs[ $env_name ] ?? [];
+
 			// Extract plugins
-			if (isset($env_config['plugins'])) {
-				foreach ($env_config['plugins'] as $plugin_config) {
+			if ( isset( $env_config['plugins'] ) ) {
+				foreach ( $env_config['plugins'] as $plugin_config ) {
 					$plugins[] = $plugin_config;
 				}
 			}
-			
+
 			// Extract themes
-			if (isset($env_config['themes'])) {
-				foreach ($env_config['themes'] as $theme_config) {
+			if ( isset( $env_config['themes'] ) ) {
+				foreach ( $env_config['themes'] as $theme_config ) {
 					$themes[] = $theme_config;
 				}
 			}
 		}
-		
+
 		return [
 			'plugins' => $plugins,
-			'themes' => $themes
+			'themes'  => $themes,
 		];
 	}
 
 	/**
 	 * Extract test package references from resolved profile configurations.
 	 * Returns raw package reference arrays.
-	 * 
+	 *
 	 * @param array<array<string,mixed>> $resolved_profiles
 	 * @return array<string>
 	 */
@@ -194,7 +194,7 @@ class QitJsonParser {
 		array $resolved_profiles
 	): array {
 		$refs = [];
-		foreach ($resolved_profiles as $test_config) {
+		foreach ( $resolved_profiles as $test_config ) {
 			$refs = array_merge(
 				$refs,
 				$test_config['test_packages'] ?? []
@@ -226,7 +226,6 @@ class QitJsonParser {
 	protected function apply_business_logic( array $config ): array {
 		$this->debug_log( '=== apply_business_logic called ===' );
 
-
 		// Process SUT if it exists
 		if ( isset( $config['sut'] ) ) {
 			$this->debug_log( 'Processing SUT' );
@@ -234,8 +233,6 @@ class QitJsonParser {
 		} else {
 			$this->debug_log( 'No SUT provided, skipping SUT processing' );
 		}
-
-
 
 		// Process test packages to load manifests
 		if ( isset( $config['test_types'] ) ) {

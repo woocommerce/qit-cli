@@ -8,40 +8,40 @@ use function QIT_CLI\debug_dump;
 
 /**
  * Factory for creating Extension objects from configuration arrays.
- * 
+ *
  * This class handles the pure object construction logic that was previously
  * scattered in ConfigurationResolver. It converts parsed configuration arrays
  * into Extension domain objects without any side effects.
  */
 final class ExtensionFactory {
-	
+
 	/**
 	 * Create an Extension from a plugin configuration array.
 	 *
-	 * @param array<string, mixed> $config Plugin configuration
+	 * @param array<string, mixed> $config Plugin configuration.
 	 * @return Extension
 	 */
-	public function fromPluginConfig( array $config ): Extension {
+	public function from_plugin_config( array $config ): Extension {
 		return $this->create_extension_from_config( $config, 'plugin' );
 	}
-	
+
 	/**
 	 * Create an Extension from a theme configuration array.
 	 *
-	 * @param array<string, mixed> $config Theme configuration
+	 * @param array<string, mixed> $config Theme configuration.
 	 * @return Extension
 	 */
-	public function fromThemeConfig( array $config ): Extension {
+	public function from_theme_config( array $config ): Extension {
 		return $this->create_extension_from_config( $config, 'theme' );
 	}
-	
+
 	/**
 	 * Create an Extension for the System Under Test.
 	 *
-	 * @param array<string, mixed> $sut SUT configuration
+	 * @param array<string, mixed> $sut SUT configuration.
 	 * @return Extension
 	 */
-	public function forSut( array $sut ): Extension {
+	public function for_sut( array $sut ): Extension {
 		debug_log( "Creating SUT extension for: {$sut['slug']} ({$sut['type']})" );
 		debug_dump( $sut, 'SUT configuration' );
 
@@ -87,12 +87,12 @@ final class ExtensionFactory {
 
 		return $extension;
 	}
-	
+
 	/**
 	 * Create an Extension from a generic configuration array.
 	 *
-	 * @param array<string, mixed> $config Extension configuration
-	 * @param string $type Extension type ('plugin' or 'theme')
+	 * @param array<string, mixed> $config Extension configuration.
+	 * @param string               $type Extension type ('plugin' or 'theme').
 	 * @return Extension
 	 */
 	private function create_extension_from_config( array $config, string $type ): Extension {

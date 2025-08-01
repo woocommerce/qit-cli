@@ -150,15 +150,18 @@ class RunE2ECommand extends QITCommand {
 
 		// Explicitly download test packages for this test profile (lazy loading)
 		$test_packages_manifests = $this->download_test_packages( [
-			[ 'type' => $this->get_test_type(), 'name' => $this->get_test_profile() ]
+			[
+				'type' => $this->get_test_type(),
+				'name' => $this->get_test_profile(),
+			],
 		] );
 
 		// Determine whether we should upload the Allure report.
 		// By default we upload unless the user explicitly passes --no_upload_report.
 		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 
- 	/* ─────────────────── Resolve SUT ────────────────────── */
- 	$resolved_sut = $this->get_resolved_sut();
+		/* ─────────────────── Resolve SUT ────────────────────── */
+		$resolved_sut = $this->get_resolved_sut();
 
 		if ( empty( $resolved_sut ) || empty( $resolved_sut['slug'] ) ) {
 			$output->writeln(
@@ -217,9 +220,9 @@ class RunE2ECommand extends QITCommand {
 		$this->setupGlobals( $env_info, $input );
 		$this->handle_termination();
 
- 	// Display warning if CLI overrides config (before test early return)
- 	$sut_warning = $this->get_sut_warning();
- 	if ( $sut_warning ) {
+		// Display warning if CLI overrides config (before test early return)
+		$sut_warning = $this->get_sut_warning();
+		if ( $sut_warning ) {
 			$output->writeln( "<comment>$sut_warning</comment>" );
 		}
 

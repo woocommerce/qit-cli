@@ -19,8 +19,8 @@ use function QIT_CLI\is_option_explicitly_provided;
 abstract class QITCommand extends Command {
 	protected InputInterface $input;
 	protected OutputInterface $output;
-	
-	// Lazy-initialized configuration and services
+
+	/** @var ?ResolvedConfiguration Lazy-initialized configuration and services */
 	private ?ResolvedConfiguration $cfg = null;
 	private ?\QIT_CLI\PreCommand\Extensions\ResolvedExtensions $resolved_extensions = null;
 	/** @var string[] */
@@ -39,9 +39,9 @@ abstract class QITCommand extends Command {
 		);
 
 		// If instance of RunE2ECommand, RunActivationCommand or DynamicCommand, add test profile stuff
-		if ( $this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand || 
-		     $this instanceof \QIT_CLI\Commands\RunActivationTestCommand ||
-		     $this instanceof \QIT_CLI\Commands\DynamicCommand ) {
+		if ( $this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand ||
+			$this instanceof \QIT_CLI\Commands\RunActivationTestCommand ||
+			$this instanceof \QIT_CLI\Commands\DynamicCommand ) {
 			$this->addOption(
 				'profile',
 				'',
@@ -53,8 +53,8 @@ abstract class QITCommand extends Command {
 
 		// If instance of UpEnvironmentCommand or RunE2ECommand or RunActivationCommand, add environment stuff
 		if ( $this instanceof \QIT_CLI\Commands\Environment\UpEnvironmentCommand ||
-		     $this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand ||
-		     $this instanceof \QIT_CLI\Commands\RunActivationTestCommand ) {
+			$this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand ||
+			$this instanceof \QIT_CLI\Commands\RunActivationTestCommand ) {
 			$this->addOption(
 				'environment',
 				'e',
@@ -112,11 +112,11 @@ abstract class QITCommand extends Command {
 					'type'   => $sut_cli->type,
 					'source' => [ 'type' => 'wporg' ],
 				];
-				$resolved->sut_extension = App::make( ExtensionFactory::class )->forSut( $resolved->sut );
+				$resolved->sut_extension = App::make( ExtensionFactory::class )->for_sut( $resolved->sut );
 			} elseif ( isset( $parsed_config['sut'] ) ) {
 				// Fall back to qit.json SUT
 				$resolved->sut           = $parsed_config['sut'];
-				$resolved->sut_extension = App::make( ExtensionFactory::class )->forSut( $parsed_config['sut'] );
+				$resolved->sut_extension = App::make( ExtensionFactory::class )->for_sut( $parsed_config['sut'] );
 			}
 
 			// Apply default fallbacks
@@ -128,9 +128,9 @@ abstract class QITCommand extends Command {
 			}
 
 			// Copy basic configuration
-			$resolved->environments = $parsed_config['environments'] ?? [];
-			$resolved->test_types   = $parsed_config['test_types'] ?? [];
-			$resolved->groups       = $parsed_config['groups'] ?? [];
+			$resolved->environments          = $parsed_config['environments'] ?? [];
+			$resolved->test_types            = $parsed_config['test_types'] ?? [];
+			$resolved->groups                = $parsed_config['groups'] ?? [];
 			$resolved->test_packages         = $parsed_config['test_packages'] ?? [];
 			$resolved->test_package_metadata = $parsed_config['test_package_metadata'] ?? [];
 
@@ -187,7 +187,7 @@ abstract class QITCommand extends Command {
 
 	/**
 	 * Get test profile configuration - simple helper method.
-	 * 
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
@@ -205,7 +205,7 @@ abstract class QITCommand extends Command {
 
 	/**
 	 * Get environment configuration with proper CLI merging.
-	 * 
+	 *
 	 * @return array<string, mixed>
 	 */
 	public function get_environment_config( string $env = 'default' ): array {
@@ -228,6 +228,7 @@ abstract class QITCommand extends Command {
 			$profile_defaults = $this->config()->get_test_config( 'e2e', 'default' );
 		} catch ( \InvalidArgumentException $e ) {
 			// No profile defaults available, use empty array
+			$profile_defaults = [];
 		}
 
 		// Merge in correct precedence order: CLI > Profile Defaults > Environment Config > Command Defaults
@@ -389,17 +390,17 @@ abstract class QITCommand extends Command {
 
 	/**
 	 * Get current CLI context with safe option access.
-	 * 
+	 *
 	 * @return array<string, string>
 	 */
 	private function currentContext(): array {
 		return [
-			'environment'   => $this->input->hasOption('environment')
-								? $this->input->getOption('environment') ?? 'default'
+			'environment'  => $this->input->hasOption( 'environment' )
+								? $this->input->getOption( 'environment' ) ?? 'default'
 								: 'default',
-			'test_type'     => 'e2e', // Fixed since test_type option doesn't exist
-			'test_profile'  => $this->input->hasOption('profile')
-								? $this->input->getOption('profile') ?? 'default'
+			'test_type'    => 'e2e', // Fixed since test_type option doesn't exist
+			'test_profile' => $this->input->hasOption( 'profile' )
+								? $this->input->getOption( 'profile' ) ?? 'default'
 								: 'default',
 		];
 	}
@@ -420,20 +421,19 @@ abstract class QITCommand extends Command {
 	/**
 	 * Lazily resolve and download only the extensions required by the given
 	 * environment names (defaults to the current environment if omitted).
-	 * 
+	 *
 	 * @param string[] $env_names
 	 */
-	public function download_extensions(array $env_names = []): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions
-	{
-		if (empty($env_names)) {
-			$context = $this->currentContext();
-			$env_names = [$context['environment']];
+	public function download_extensions( array $env_names = [] ): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions {
+		if ( empty( $env_names ) ) {
+			$context   = $this->currentContext();
+			$env_names = [ $context['environment'] ];
 		}
 
 		// Calculate delta of new environments
-		$new = array_diff($env_names, $this->resolved_envs);
-		
-		if (empty($new)) {
+		$new = array_diff( $env_names, $this->resolved_envs );
+
+		if ( empty( $new ) ) {
 			// All requested environments already resolved
 			return $this->resolved_extensions ?? new \QIT_CLI\PreCommand\Extensions\ResolvedExtensions();
 		}
@@ -442,80 +442,80 @@ abstract class QITCommand extends Command {
 		$cfg = $this->config();
 
 		// Validate environment names exist
-		foreach ($new as $env_name) {
-			if (!isset($cfg->environments[$env_name])) {
-				throw new \RuntimeException("download_extensions(): environment '$env_name' not found in configuration");
+		foreach ( $new as $env_name ) {
+			if ( ! isset( $cfg->environments[ $env_name ] ) ) {
+				throw new \RuntimeException( "download_extensions(): environment '$env_name' not found in configuration" );
 			}
 		}
 
 		// 2) RESOLVE environments first (handle extends inheritance)
 		$resolved_envs = [];
-		foreach ($new as $env_name) {
-			$resolved_envs[$env_name] = $cfg->get_environment($env_name);
+		foreach ( $new as $env_name ) {
+			$resolved_envs[ $env_name ] = $cfg->get_environment( $env_name );
 		}
 
 		// 3) pick extensions from RESOLVED environments (pure)
-		$extracted = App::make( QitJsonParser::class )->extract_extensions_from_resolved_envs($resolved_envs, $new);
-		
+		$extracted = App::make( QitJsonParser::class )->extract_extensions_from_resolved_envs( $resolved_envs, $new );
+
 		// Create Extension objects from extracted configurations
 		$extensions = [];
-		
+
 		// Add SUT extension if it exists
-		if ($cfg->sut && $cfg->sut_extension) {
+		if ( $cfg->sut && $cfg->sut_extension ) {
 			$extensions[] = $cfg->sut_extension;
 		}
-		
+
 		// Create Extension objects from plugins
-		foreach ($extracted['plugins'] as $plugin_config) {
-			if (is_string($plugin_config)) {
-				$extension = new \QIT_CLI\PreCommand\Objects\Extension($plugin_config, 'plugin');
-				$extension->from = 'wporg';
-				$extension->version = 'stable';
+		foreach ( $extracted['plugins'] as $plugin_config ) {
+			if ( is_string( $plugin_config ) ) {
+				$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $plugin_config, 'plugin' );
+				$extension->from                = 'wporg';
+				$extension->version             = 'stable';
 				$extension->added_automatically = 'Added from environment configuration';
-				$extensions[] = $extension;
+				$extensions[]                   = $extension;
 			} else {
-				$extension = App::make( ExtensionFactory::class )->fromPluginConfig($plugin_config);
+				$extension    = App::make( ExtensionFactory::class )->from_plugin_config( $plugin_config );
 				$extensions[] = $extension;
 			}
 		}
-		
+
 		// Create Extension objects from themes
-		foreach ($extracted['themes'] as $theme_config) {
-			if (is_string($theme_config)) {
-				$extension = new \QIT_CLI\PreCommand\Objects\Extension($theme_config, 'theme');
-				$extension->from = 'wporg';
-				$extension->version = 'stable';
+		foreach ( $extracted['themes'] as $theme_config ) {
+			if ( is_string( $theme_config ) ) {
+				$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $theme_config, 'theme' );
+				$extension->from                = 'wporg';
+				$extension->version             = 'stable';
 				$extension->added_automatically = 'Added from environment configuration';
-				$extensions[] = $extension;
+				$extensions[]                   = $extension;
 			} else {
-				$extension = App::make( ExtensionFactory::class )->fromThemeConfig($theme_config);
+				$extension    = App::make( ExtensionFactory::class )->from_theme_config( $theme_config );
 				$extensions[] = $extension;
 			}
 		}
-		
+
 		// Remove duplicates by slug
 		$unique = [];
-		foreach ($extensions as $ext) {
+		foreach ( $extensions as $ext ) {
 			$key = $ext->slug . '_' . $ext->type;
-			if (!isset($unique[$key])) {
-				$unique[$key] = $ext;
+			if ( ! isset( $unique[ $key ] ) ) {
+				$unique[ $key ] = $ext;
 			}
 		}
-		$extensions = array_values($unique);
+		$extensions = array_values( $unique );
 
 		// 4) resolve/download them (impure) – heavy
 		$env_info = $this->create_temp_env_info();
-		$delta = App::make( ExtensionResolver::class )->resolve($extensions, $env_info, sys_get_temp_dir() . '/qit-cache');
+		$delta    = App::make( ExtensionResolver::class )->resolve( $extensions, $env_info, sys_get_temp_dir() . '/qit-cache' );
 
 		// 5) merge with existing results
-		if ($this->resolved_extensions === null) {
+		if ( $this->resolved_extensions === null ) {
 			$this->resolved_extensions = $delta;
 		} else {
-			$this->resolved_extensions->merge($delta);
+			$this->resolved_extensions->merge( $delta );
 		}
 
 		// 5) update resolved environments tracking (avoid array_merge)
-		foreach ($new as $env) {
+		foreach ( $new as $env ) {
 			$this->resolved_envs[] = $env;
 		}
 
@@ -525,63 +525,64 @@ abstract class QITCommand extends Command {
 	/**
 	 * Lazily download test packages required by the given profiles.
 	 * Signature mirrors download_extensions().
-	 * 
+	 *
 	 * @param array<array<string, string>> $profiles
 	 * @return array<string, mixed>
 	 */
-	public function download_test_packages(array $profiles = []): array
-	{
+	public function download_test_packages( array $profiles = [] ): array {
 		// Handle default profile logic using currentContext()
-		if ($profiles === []) {
-			$context = $this->currentContext();
+		if ( $profiles === [] ) {
+			$context  = $this->currentContext();
 			$profiles = [
-				['type' => $context['test_type'],
-				 'name' => $context['test_profile']]
+				[
+					'type' => $context['test_type'],
+					'name' => $context['test_profile'],
+				],
 			];
 		}
 
 		$cfg = $this->config();
-		
+
 		// Validate test profile tuples exist
-		foreach ($profiles as $profile) {
-			if (!isset($profile['type']) || !isset($profile['name'])) {
-				throw new \RuntimeException("download_test_packages(): profile must have 'type' and 'name' keys");
+		foreach ( $profiles as $profile ) {
+			if ( ! isset( $profile['type'] ) || ! isset( $profile['name'] ) ) {
+				throw new \RuntimeException( "download_test_packages(): profile must have 'type' and 'name' keys" );
 			}
-			
-			$test_type = $profile['type'];
+
+			$test_type    = $profile['type'];
 			$profile_name = $profile['name'];
-			
-			if (!isset($cfg->test_types[$test_type])) {
-				throw new \RuntimeException("download_test_packages(): test type '$test_type' not found in configuration");
+
+			if ( ! isset( $cfg->test_types[ $test_type ] ) ) {
+				throw new \RuntimeException( "download_test_packages(): test type '$test_type' not found in configuration" );
 			}
-			
-			if (!isset($cfg->test_types[$test_type][$profile_name])) {
-				throw new \RuntimeException("download_test_packages(): profile '$test_type:$profile_name' not found in configuration");
+
+			if ( ! isset( $cfg->test_types[ $test_type ][ $profile_name ] ) ) {
+				throw new \RuntimeException( "download_test_packages(): profile '$test_type:$profile_name' not found in configuration" );
 			}
 		}
-		
+
 		// Resolve test profiles first (handle extends inheritance)
 		$resolved_profiles = [];
-		foreach ($profiles as $profile) {
-			$resolved_profiles[] = $cfg->get_test_config($profile['type'], $profile['name']);
+		foreach ( $profiles as $profile ) {
+			$resolved_profiles[] = $cfg->get_test_config( $profile['type'], $profile['name'] );
 		}
-		
-		$references = App::make( QitJsonParser::class )->extract_package_refs_from_resolved_profiles($resolved_profiles);
-		
+
+		$references = App::make( QitJsonParser::class )->extract_package_refs_from_resolved_profiles( $resolved_profiles );
+
 		// Calculate delta of new package references
-		$new_refs = array_diff($references, array_keys($this->packages));
-		
-		if (empty($new_refs)) {
+		$new_refs = array_diff( $references, array_keys( $this->packages ) );
+
+		if ( empty( $new_refs ) ) {
 			// All requested packages already downloaded
 			return $this->packages;
 		}
 
 		// Download only the new packages
-		$new_packages = App::make( TestPackageDownloader::class )->download($new_refs, sys_get_temp_dir() . '/qit-cache');
-		
+		$new_packages = App::make( TestPackageDownloader::class )->download( $new_refs, sys_get_temp_dir() . '/qit-cache' );
+
 		// Merge with existing packages (avoid array_merge)
-		foreach ($new_packages as $ref => $manifest) {
-			$this->packages[$ref] = $manifest;
+		foreach ( $new_packages as $ref => $manifest ) {
+			$this->packages[ $ref ] = $manifest;
 		}
 
 		return $this->packages;
@@ -589,7 +590,7 @@ abstract class QITCommand extends Command {
 
 	/**
 	 * Get resolved SUT configuration.
-	 * 
+	 *
 	 * @return array<string, mixed>|null
 	 */
 	public function get_resolved_sut(): ?array {
@@ -603,12 +604,12 @@ abstract class QITCommand extends Command {
 	public function get_sut_warning(): ?string {
 		// Check if CLI SUT was provided
 		$cli_sut = $this->build_cli_sut();
-		$cfg = $this->config();
-		
-		if ($cli_sut && isset($cfg->metadata['config_file']) && !empty($cfg->metadata['config_file'])) {
-			return "CLI argument overrides SUT defined in configuration file.";
+		$cfg     = $this->config();
+
+		if ( $cli_sut && isset( $cfg->metadata['config_file'] ) && ! empty( $cfg->metadata['config_file'] ) ) {
+			return 'CLI argument overrides SUT defined in configuration file.';
 		}
-		
+
 		return null;
 	}
 

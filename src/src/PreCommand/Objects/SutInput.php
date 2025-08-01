@@ -22,9 +22,9 @@ final class SutInput {
 	 * Constructor for SutInput.
 	 */
 	public function __construct( string $slug = '', string $type = 'plugin' ) {
-		$this->slug = $slug;
-		$this->type = $type;
-		$this->source = [ 'type' => 'wporg' ];
+		$this->slug     = $slug;
+		$this->type     = $type;
+		$this->source   = [ 'type' => 'wporg' ];
 		$this->from_cli = true;
 	}
 
