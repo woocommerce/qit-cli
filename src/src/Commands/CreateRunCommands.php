@@ -65,6 +65,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$this->upload              = $upload;
 				$this->test_group          = $test_group;
 				parent::__construct( $test_type );
+				$this->setName( "run:$test_type" );
 			}
 
 			public function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -211,110 +212,29 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$table
 					->setHorizontal()
 					->setStyle( 'compact' )
-					->setHeaders( [ 'Test Run ID', 'Result URL' ] );
-				$table->addRow( [ $response['test_run_id'], $response['test_results_manager_url'] ] );
+					->setHeaders( [ 'Test Run ID', 'Test Results URL' ] )
+					->setRows( [
+						[ $response['test_run_id'], $response['test_results_manager_url'] ],
+					] );
 				$table->render();
-				$output->writeln( '' );
-
-				$bin = isset( $_SERVER['argv'][0] ) ? basename( $_SERVER['argv'][0] ) : '';
-				$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['test_run_id'] ) );
 
 				return Command::SUCCESS;
 			}
 
-			/**
-			 * @param array<string, mixed> $response
-			 */
-			protected function waitForTestCompletion( array $response, InputInterface $input, OutputInterface $output ): int {
-				// Show a message if user aborts waiting.
-				foreach ( [ \SIGINT, \SIGTERM ] as $signal ) {
-					$this->getApplication()->getSignalRegistry()->register( $signal, static function () use ( $output ) {
-						$output->writeln( sprintf( '<comment>The test is still executing on the QIT Servers, but we have skipped the wait. You can always check the status of the test by running the "%s" command.</comment>', GetCommand::getDefaultName() ) );
-						exit( 124 );
-					} );
-				}
+			private function waitForTestCompletion( array $response, InputInterface $input, OutputInterface $output ): int {
+				$output->writeln( '<info>Waiting for test completion...</info>' );
 
-				$timeout = $input->getOption( 'timeout' );
-				if ( is_null( $timeout ) ) {
-					$timeout = ( $this->test_type === 'woo-e2e' ) ? 3600 * 2 : 1800;
-				}
-				$timeout = min( 3600 * 2, max( 10, $timeout ) );
-
-				$start = time();
-				do {
-					$poll_interval = rand( 5, 15 );
-					if ( getenv( 'QIT_POLL_INTERVAL' ) && is_numeric( getenv( 'QIT_POLL_INTERVAL' ) ) ) {
-						$poll_interval = min( 300, max( 5, getenv( 'QIT_POLL_INTERVAL' ) ) );
-					}
-
-					sleep( $poll_interval );
-
-					$command  = $this->getApplication()->find( GetCommand::getDefaultName() );
-					$finished = $command->run( new ArrayInput( [
-						'test_run_id'      => $response['test_run_id'],
-						'--check_finished' => true,
-					] ), $output );
-
-					if ( $finished === 0 ) {
-						break;
-					}
-
-					if ( time() - $start > $timeout ) {
-						$output->writeln( '<comment>Timed out while waiting for test run to complete.</comment>' );
-						$output->writeln( '<comment>The test is still executing in QIT servers, but the timeout for waiting was reached.</comment>' );
-
-						return 124;
-					}
-				} while ( true );
-
-				$output->writeln( sprintf( '<info>Test run completed.</info>' ) );
-				$command   = $this->getApplication()->find( GetCommand::getDefaultName() );
-				$exit_code = $command->run( new ArrayInput( [
+				$get_command = App::make( GetCommand::class );
+				$get_input   = new ArrayInput( [
 					'test_run_id' => $response['test_run_id'],
-					'--json'      => $input->getOption( 'json' ),
-				] ), $output );
+					'--wait'      => true,
+				] );
 
-				if ( $input->getOption( 'ignore-fail' ) ) {
-					return 0;
-				} else {
-					return $exit_code;
-				}
+				return $get_command->run( $get_input, $output );
 			}
 		};
 
-		$command->setName( "run:$test_type" );
-
-		// Add schema-based options
-		static::add_schema_to_command( $command, $schema );
-
-		// Add standard options
-		$command->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' );
-		$command->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, 'Use a custom ZIP (or directory/URL) as the SUT build' );
-		$command->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, '(Optional) Whether to return the JSON object of the test that was created.', false );
-		$command->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Optional) Wait for the test to finish before finishing command execution.', false );
-		$command->addOption( 'timeout', 't', InputOption::VALUE_OPTIONAL, '(Optional) Seconds to wait for a test to finish before failing the command.', null );
-		$command->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Optional) If set, exit status code will be zero even if test fails.', false );
-		$command->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false );
-
-		$command->add_option_to_send( 'zip' );
-
-		if ( $test_type === 'api' ) {
-			$command->setHidden( true );
-		}
-
-		// This will be hidden while custom test type is in development, but kept as an alias to "woo-e2e".
-		if ( $test_type === 'e2e' ) {
-			try {
-				$hide_e2e = $this->cache->get_manager_sync_data( 'hide_e2e' );
-			} catch ( \Exception $e ) {
-				$hide_e2e = true;
-			}
-
-			if ( ! $hide_e2e ) {
-				$application->add( App::make( RunE2ECommand::class ) );
-			}
-		} else {
-			$application->add( $command );
-		}
+		self::add_schema_to_command( $command, $schema );
+		$application->add( $command );
 	}
 }

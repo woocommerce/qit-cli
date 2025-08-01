@@ -2,14 +2,95 @@
 
 namespace QIT_CLI\PreCommand\Configuration\Parser;
 
+use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 
 /**
  * Parser for test package manifest files
  */
-class TestPackageManifestParser extends BaseJsonParser {
-	protected function get_schema_type(): string {
-		return 'test-package';
+class TestPackageManifestParser {
+	// Properties from BaseJsonParser
+	protected Validator $validator;
+	protected ErrorFormatter $error_formatter;
+	/** @var array<string, mixed> */
+	protected array $schema_cache = [];
+	protected string $root_path;
+
+	public function __construct() {
+		// Initialize validator and error formatter (from BaseJsonParser)
+		$this->validator = new Validator();
+		$this->validator->setMaxErrors( 10 );
+		$this->error_formatter = new ErrorFormatter();
+		$this->load_schemas();
+	}
+
+	/**
+	 * Load test package schema into cache (specialized for test package manifest files)
+	 */
+	protected function load_schemas(): void {
+		$schema_dir = \QIT_CLI\App::getVar( 'src_dir' ) . '/PreCommand/Schemas';
+
+		// Only load the test-package schema - this parser is specialized for manifest files
+		$schema_file = $schema_dir . '/test-package-manifest-schema.json';
+		if ( file_exists( $schema_file ) ) {
+			$this->schema_cache[ 'test-package' ] = json_decode( file_get_contents( $schema_file ) );
+		}
+	}
+
+	/**
+	 * Load JSON file and validate against schema (from BaseJsonParser)
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function load_and_validate_json( string $file_path ): array {
+		if ( ! file_exists( $file_path ) ) {
+			throw new \RuntimeException( "File not found: $file_path" );
+		}
+
+		$contents = file_get_contents( $file_path );
+		$data     = json_decode( $contents );
+
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new \RuntimeException( "Invalid JSON in $file_path: " . json_last_error_msg() );
+		}
+
+		// Validate against schema
+		$schema_type = 'test-package'; // Fixed schema type for TestPackageManifestParser
+		if ( ! isset( $this->schema_cache[ $schema_type ] ) ) {
+			throw new \RuntimeException( "Unknown schema type: $schema_type" );
+		}
+
+		$result = $this->validator->validate( $data, $this->schema_cache[ $schema_type ] );
+
+		if ( ! $result->isValid() ) {
+			$errors    = $this->error_formatter->format( $result->error() );
+			$error_msg = $this->format_validation_errors( $errors, $file_path );
+			throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
+		}
+
+		// Return as array
+		return json_decode( $contents, true );
+	}
+
+	/**
+	 * Format validation errors for output (from BaseJsonParser)
+	 *
+	 * @param mixed $errors
+	 */
+	protected function format_validation_errors( $errors, string $context ): string {
+		$output = '';
+
+		foreach ( $errors as $path => $messages ) {
+			if ( is_string( $messages ) ) {
+				$messages = [ $messages ];
+			}
+
+			foreach ( $messages as $message ) {
+				$output .= "  - $path: $message\n";
+			}
+		}
+
+		return $output;
 	}
 
 	/**

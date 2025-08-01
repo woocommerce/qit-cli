@@ -19,6 +19,16 @@ final class SutInput {
 	public bool $from_cli = false;
 
 	/**
+	 * Constructor for SutInput.
+	 */
+	public function __construct( string $slug = '', string $type = 'plugin' ) {
+		$this->slug = $slug;
+		$this->type = $type;
+		$this->source = [ 'type' => 'wporg' ];
+		$this->from_cli = true;
+	}
+
+	/**
 	 * Convert to array format compatible with existing SUT configuration.
 	 *
 	 * @return array<string,mixed>

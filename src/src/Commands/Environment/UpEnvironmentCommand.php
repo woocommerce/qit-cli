@@ -96,8 +96,8 @@ class UpEnvironmentCommand extends QITCommand {
 		// Get the merged environment configuration using the simplified API
 		$env_config = $this->get_environment_config( $this->get_environment_name() );
 
-		// Explicitly download extensions for this environment (lazy loading)
-		$resolved_extensions = $this->tiny_pre_command->download_extensions( [ $this->get_environment_name() ] );
+		// Explicitly download extensions for current environment (lazy loading)
+		$resolved_extensions = $this->download_extensions();
 
 		// Create proper E2EEnvInfo object from the config
 		$env_info_array = [

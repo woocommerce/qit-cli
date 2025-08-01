@@ -2,10 +2,20 @@
 
 namespace QIT_CLI\PreCommand\Configuration\Parser;
 
+use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
+
 /**
  * Enhanced Parser for qit.json configuration files with full feature support
  */
-class QitJsonParser extends BaseJsonParser {
+class QitJsonParser {
+	// Properties from BaseJsonParser
+	protected Validator $validator;
+	protected ErrorFormatter $error_formatter;
+	/** @var array<string, mixed> */
+	protected array $schema_cache = [];
+	protected string $root_path;
+
+	// QitJsonParser specific properties
 	/** @var array<string, mixed> */
 	private array $parsed_config = [];
 	private TestPackageManifestParser $package_parser;
@@ -22,12 +32,175 @@ class QitJsonParser extends BaseJsonParser {
 	private ?string $url_extend_context = null; // Track context for URL extends
 
 	public function __construct() {
-		parent::__construct();
+		// Initialize validator and error formatter (from BaseJsonParser)
+		$this->validator = new Validator();
+		$this->validator->setMaxErrors( 10 );
+		$this->error_formatter = new ErrorFormatter();
+		$this->load_schemas();
+		
+		// Initialize package parser
 		$this->package_parser = new TestPackageManifestParser();
 	}
 
-	protected function get_schema_type(): string {
-		return 'qit';
+	/**
+	 * Load QIT schema into cache (specialized for qit.json files)
+	 */
+	protected function load_schemas(): void {
+		$schema_dir = \QIT_CLI\App::getVar( 'src_dir' ) . '/PreCommand/Schemas';
+
+		// Only load the QIT schema - this parser is specialized for qit.json files
+		$schema_file = $schema_dir . '/qit-schema.json';
+		if ( file_exists( $schema_file ) ) {
+			$this->schema_cache[ 'qit' ] = json_decode( file_get_contents( $schema_file ) );
+		}
+	}
+
+	/**
+	 * Load JSON file and validate against schema (from BaseJsonParser)
+	 *
+	 * @return array<string, mixed>
+	 */
+	protected function load_and_validate_json( string $file_path ): array {
+		if ( ! file_exists( $file_path ) ) {
+			throw new \RuntimeException( "File not found: $file_path" );
+		}
+
+		$contents = file_get_contents( $file_path );
+		$data     = json_decode( $contents );
+
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new \RuntimeException( "Invalid JSON in $file_path: " . json_last_error_msg() );
+		}
+
+		// Validate against schema
+		$schema_type = 'qit'; // Fixed schema type for QitJsonParser
+		if ( ! isset( $this->schema_cache[ $schema_type ] ) ) {
+			throw new \RuntimeException( "Unknown schema type: $schema_type" );
+		}
+
+		$result = $this->validator->validate( $data, $this->schema_cache[ $schema_type ] );
+
+		if ( ! $result->isValid() ) {
+			$errors    = $this->error_formatter->format( $result->error() );
+			$error_msg = $this->format_validation_errors( $errors, $file_path );
+			throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
+		}
+
+		// Return as array
+		return json_decode( $contents, true );
+	}
+
+	/**
+	 * Format validation errors for output (from BaseJsonParser)
+	 *
+	 * @param mixed $errors
+	 */
+	protected function format_validation_errors( $errors, string $context ): string {
+		$output = '';
+
+		foreach ( $errors as $path => $messages ) {
+			if ( is_string( $messages ) ) {
+				$messages = [ $messages ];
+			}
+
+			foreach ( $messages as $message ) {
+				$output .= "  - $path: $message\n";
+			}
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Deep merge two arrays (from BaseJsonParser)
+	 *
+	 * @param array<string, mixed> $base
+	 * @param array<string, mixed> $override
+	 * @return array<string, mixed>
+	 */
+	protected function deep_merge( array $base, array $override ): array {
+		$merged = $base;
+
+		foreach ( $override as $key => $value ) {
+			if ( is_array( $value ) && isset( $merged[ $key ] ) && is_array( $merged[ $key ] ) ) {
+				// Keys that should be merged and deduplicated for extends inheritance
+				$merge_keys = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
+				// Keys that should still replace rather than merge
+				$replace_keys = [ 'envs', 'secrets', 'test_packages' ];
+
+				if ( in_array( $key, $merge_keys, true ) ) {
+					// Merge and deduplicate arrays for list options
+					$merged[ $key ] = array_values( array_unique( array_merge( $merged[ $key ], $value ) ) );
+				} elseif ( in_array( $key, $replace_keys, true ) ) {
+					$merged[ $key ] = $value;
+				} else {
+					$merged[ $key ] = $this->deep_merge( $merged[ $key ], $value );
+				}
+			} else {
+				$merged[ $key ] = $value;
+			}
+		}
+
+		return $merged;
+	}
+
+	/**
+	 * Extract plugin and theme configurations from resolved environments.
+	 * Returns raw configuration arrays without creating Extension objects.
+	 * 
+	 * @param array<string,array<string,mixed>> $resolved_envs
+	 * @param array<string> $env_names
+	 * @return array{plugins: array<mixed>, themes: array<mixed>}
+	 */
+	public function extract_extensions_from_resolved_envs(
+		array $resolved_envs,
+		array $env_names
+	): array {
+		$plugins = [];
+		$themes = [];
+		
+		foreach ($env_names as $env_name) {
+			$env_config = $resolved_envs[$env_name] ?? [];
+			
+			// Extract plugins
+			if (isset($env_config['plugins'])) {
+				foreach ($env_config['plugins'] as $plugin_config) {
+					$plugins[] = $plugin_config;
+				}
+			}
+			
+			// Extract themes
+			if (isset($env_config['themes'])) {
+				foreach ($env_config['themes'] as $theme_config) {
+					$themes[] = $theme_config;
+				}
+			}
+		}
+		
+		return [
+			'plugins' => $plugins,
+			'themes' => $themes
+		];
+	}
+
+	/**
+	 * Extract test package references from resolved profile configurations.
+	 * Returns raw package reference arrays.
+	 * 
+	 * @param array<array<string,mixed>> $resolved_profiles
+	 * @return array<string>
+	 */
+	public function extract_package_refs_from_resolved_profiles(
+		array $resolved_profiles
+	): array {
+		$refs = [];
+		foreach ($resolved_profiles as $test_config) {
+			$refs = array_merge(
+				$refs,
+				$test_config['test_packages'] ?? []
+			);
+		}
+		return $refs;
 	}
 
 	/**
