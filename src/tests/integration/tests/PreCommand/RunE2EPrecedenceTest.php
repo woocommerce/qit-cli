@@ -1,5 +1,7 @@
 <?php
 
+namespace integration\tests\Simplified;
+
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\Traits\SnapshotHelpers;
 

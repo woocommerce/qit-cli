@@ -1,6 +1,6 @@
 <?php
 
-namespace integration\tests\PreCommand\Simplified;
+namespace integration\tests\Simplified;
 
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\Traits\SnapshotHelpers;
