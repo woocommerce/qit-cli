@@ -3,6 +3,7 @@
 namespace QIT_CLI\PreCommand\Configuration;
 
 use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
+use QIT_CLI\App;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\Extension;
 use Symfony\Component\Filesystem\Path;
@@ -14,18 +15,18 @@ use function QIT_CLI\debug_log;
  *
  * Replaces ResolvedConfiguration, ConfigMerger, ExtensionFactory, and parts of QitJsonParser.
  */
-final class ConfigResolver {
+class ConfigResolver {
 	private Validator $validator;
 	private ErrorFormatter $error_formatter;
 	/** @var array<string, mixed> */
 	private array $schema_cache = [];
 	private TestPackageManifestParser $package_parser;
 
-	public function __construct() {
-		$this->validator = new Validator();
+	public function __construct(Validator $validator, ErrorFormatter $error_formatter, TestPackageManifestParser $package_parser) {
+		$this->validator = $validator;
 		$this->validator->setMaxErrors( 1 );
-		$this->error_formatter = new ErrorFormatter();
-		$this->package_parser  = new TestPackageManifestParser();
+		$this->error_formatter = $error_formatter;
+		$this->package_parser  = $package_parser;
 		$this->load_schemas();
 	}
 
@@ -37,8 +38,7 @@ final class ConfigResolver {
 	 * @return array<string,mixed> Fully resolved configuration
 	 */
 	public static function load( ?string $config_file, array $cli_overrides = [] ): array {
-		$resolver = new self();
-		return $resolver->resolve( $config_file, $cli_overrides );
+		return App::make( ConfigResolver::class )->resolve( $config_file, $cli_overrides );
 	}
 
 	/**

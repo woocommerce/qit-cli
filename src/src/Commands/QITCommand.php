@@ -6,7 +6,6 @@ use QIT_CLI\App;
 use QIT_CLI\PreCommand\Configuration\ConfigResolver;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;
-use QIT_CLI\PreCommand\Objects\SutInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
