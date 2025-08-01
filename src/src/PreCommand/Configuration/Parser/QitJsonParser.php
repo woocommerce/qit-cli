@@ -25,11 +25,8 @@ class QitJsonParser {
 	private array $loaded_manifest_objects = [];
 	/** @var array<string,array<string,mixed>> Cache for test package metadata. */
 	private array $loaded_package_metadata = [];
-	/** @var string Track the current file being parsed. */
-	private string $current_file_path;
 	/** @var array<string, string> Track which directory each path came from. */
-	private array $path_contexts        = [];
-	private ?string $url_extend_context = null; // Track context for URL extends
+	private array $path_contexts = [];
 
 	public function __construct() {
 		// Initialize validator and error formatter (from BaseJsonParser)
@@ -211,9 +208,6 @@ class QitJsonParser {
 
 		// Load and validate JSON
 		$config = $this->load_and_validate_json( $file_path );
-
-		// Store the actual file path for extends resolution (without realpath)
-		$this->current_file_path = $file_path;
 
 		// Apply business logic
 		return $this->apply_business_logic( $config );
@@ -447,99 +441,7 @@ class QitJsonParser {
 		throw new \RuntimeException( "Invalid package reference format: $reference" );
 	}
 
-	/**
-	 * Resolve file-level extends
-	 */
-	private function resolve_extends( array $config, string $current_file = null, array $visited = [] ): array {
-		// Debug logging
-		$this->debug_log( '=== resolve_extends called ===' );
-		$this->debug_log( 'Current file: ' . ( $current_file ?? 'null' ) );
-		$this->debug_log( 'Config has extends: ' . ( isset( $config['extends'] ) ? $config['extends'] : 'no' ) );
-		$this->debug_log( 'Visited files: ' . json_encode( $visited ) );
 
-		if ( ! isset( $config['extends'] ) ) {
-			// Mark paths in this config with their context
-			$this->mark_path_contexts( $config, dirname( $current_file ?: $this->current_file_path ) );
-
-			return $config;
-		}
-
-		// Check for circular dependencies - normalize paths for comparison
-		if ( $current_file !== null ) {
-			$normalized_current = $this->normalize_path( $current_file );
-			if ( in_array( $normalized_current, $visited, true ) ) {
-				$this->debug_log( "ERROR: Circular dependency detected for file: $normalized_current" );
-				throw new \RuntimeException( 'Circular dependency detected in extends' );
-			}
-			$visited[] = $normalized_current;
-		}
-
-		// Resolve the path to the extended config
-		$base_path = $this->resolve_extends_path( $config['extends'] );
-		$this->debug_log( "Resolved extends path: $base_path" );
-
-		// Check if we're about to load a file we've already visited
-		$normalized_base = $this->normalize_path( $base_path );
-		if ( in_array( $normalized_base, $visited, true ) ) {
-			$this->debug_log( "ERROR: About to load already visited file: $normalized_base" );
-			throw new \RuntimeException( 'Circular dependency detected in extends' );
-		}
-
-		// Load base configuration
-		$base_config = $this->load_and_validate_json( $base_path );
-
-		// Temporarily change root path for base config processing
-		$original_root   = $this->root_path;
-		$this->root_path = dirname( $base_path );
-		$base_config     = $this->resolve_extends( $base_config, $base_path, $visited );
-		$this->root_path = $original_root;
-
-		// Mark paths in the current config before merging
-		$this->mark_path_contexts( $config, dirname( $current_file ?: $this->current_file_path ) );
-
-		// Merge configurations
-		unset( $config['extends'] );
-
-		return $this->deep_merge( $base_config, $config );
-	}
-
-	/**
-	 * Mark paths in configuration with their source directory context
-	 */
-	private function mark_path_contexts( array &$config, string $source_dir ): void {
-		// If we're processing content from a URL extend, use the URL extend context
-		$effective_context = $this->url_extend_context ?? $source_dir;
-
-		// Mark test package paths
-		if ( isset( $config['test_types'] ) ) {
-			foreach ( $config['test_types'] as $type => $profiles ) {
-				foreach ( $profiles as $profile => $settings ) {
-					if ( isset( $settings['test_packages'] ) ) {
-						foreach ( $settings['test_packages'] as $package ) {
-							if ( $this->is_local_package_reference( $package ) ) {
-								$this->path_contexts[ $package ] = $effective_context;
-								$this->debug_log( "Marked path context: '$package' => '$effective_context'" );
-							}
-						}
-					}
-				}
-			}
-		}
-
-		// Mark bootstrap_packages paths
-		if ( isset( $config['environments'] ) ) {
-			foreach ( $config['environments'] as $env_name => $env ) {
-				if ( isset( $env['bootstrap_packages'] ) ) {
-					foreach ( $env['bootstrap_packages'] as $package ) {
-						if ( $this->is_local_package_reference( $package ) ) {
-							$this->path_contexts[ $package ] = $effective_context;
-							$this->debug_log( "Marked path context: '$package' => '$effective_context'" );
-						}
-					}
-				}
-			}
-		}
-	}
 
 	/**
 	 * Get the source directory context for a path
@@ -568,85 +470,7 @@ class QitJsonParser {
 		return $resolved;
 	}
 
-	private function resolve_extends_path( string $extends_path ): string {
-		$this->debug_log( "Resolving extends path: $extends_path" );
 
-		// Special test flag to simulate URL extends
-		if ( strpos( $extends_path, './mimick-url-for-tests/' ) === 0 ) {
-			// Extract the actual file path after the test prefix
-			$actual_path   = str_replace( './mimick-url-for-tests/', './', $extends_path );
-			$resolved_path = $this->resolve_path( $actual_path );
-
-			if ( ! file_exists( $resolved_path ) ) {
-				throw new \RuntimeException( "Extended config file not found: $actual_path" );
-			}
-
-			// Read the file content and create a temp file to simulate URL behavior
-			$contents  = file_get_contents( $resolved_path );
-			$temp_file = tempnam( sys_get_temp_dir(), 'qit_extends_test_' );
-			file_put_contents( $temp_file, $contents );
-
-			// Mark that this is a URL-based extend (simulated)
-			$this->url_extend_context = $this->root_path;
-			$this->debug_log( 'Simulated URL extend detected, marking context as: ' . $this->root_path );
-
-			return $temp_file;
-		}
-
-		if ( filter_var( $extends_path, FILTER_VALIDATE_URL ) ) {
-			$temp_file = tempnam( sys_get_temp_dir(), 'qit_extends_' );
-			$contents  = file_get_contents( $extends_path );
-			file_put_contents( $temp_file, $contents );
-
-			// Mark that this is a URL-based extend
-			$this->url_extend_context = $this->root_path;
-			$this->debug_log( 'URL extend detected, marking context as: ' . $this->root_path );
-
-			return $temp_file;
-		}
-
-		// Reset URL extend context for non-URL extends
-		$this->url_extend_context = null;
-
-		// Check if extends is just the filename without path
-		if ( basename( $extends_path ) === $extends_path ) {
-			// It's just a filename, resolve from current directory
-			$path = $this->root_path . '/' . $extends_path;
-		} else {
-			// For relative paths, resolve from current root
-			$path = $this->resolve_path( $extends_path );
-		}
-
-		$this->debug_log( "Resolved path: $path" );
-
-		if ( ! file_exists( $path ) ) {
-			throw new \RuntimeException( "Extended config file not found: $extends_path" );
-		}
-
-		return $path;
-	}
-
-	/**
-	 * Normalize a path for comparison (remove . and .. components)
-	 * This is only used for circular dependency detection
-	 */
-	private function normalize_path( string $path ): string {
-		$parts      = explode( '/', str_replace( '\\', '/', $path ) );
-		$normalized = [];
-
-		foreach ( $parts as $part ) {
-			if ( $part === '.' ) {
-				continue;
-			}
-			if ( $part === '..' && count( $normalized ) > 0 && end( $normalized ) !== '..' ) {
-				array_pop( $normalized );
-			} else {
-				$normalized[] = $part;
-			}
-		}
-
-		return implode( '/', $normalized );
-	}
 
 	/**
 	 * Debug logging helper
@@ -750,48 +574,7 @@ class QitJsonParser {
 		}
 	}
 
-	private function resolve_environment_extends( array $environments ): array {
-		return $this->resolve_nested_extends( $environments, 'environments' );
-	}
 
-	private function resolve_test_type_extends( array $test_types ): array {
-		foreach ( $test_types as $type => &$profiles ) {
-			$profiles = $this->resolve_nested_extends( $profiles, "test type '$type'" );
-		}
-
-		return $test_types;
-	}
-
-	private function resolve_nested_extends( array $items, string $context ): array {
-		$resolved = [];
-		$pending  = $items;
-
-		while ( ! empty( $pending ) ) {
-			$progress = false;
-
-			foreach ( $pending as $name => $config ) {
-				if ( ! isset( $config['extends'] ) ) {
-					$resolved[ $name ] = $config;
-					unset( $pending[ $name ] );
-					$progress = true;
-				} elseif ( isset( $resolved[ $config['extends'] ] ) ) {
-					$base = $resolved[ $config['extends'] ];
-					unset( $config['extends'] );
-					$resolved[ $name ] = $this->deep_merge( $base, $config );
-					unset( $pending[ $name ] );
-					$progress = true;
-				}
-			}
-
-			if ( ! $progress && ! empty( $pending ) ) {
-				throw new \RuntimeException(
-					"Circular or missing extends in $context: " . implode( ', ', array_keys( $pending ) )
-				);
-			}
-		}
-
-		return $resolved;
-	}
 
 	private function validate_cross_references( array $config ): void {
 		$this->debug_log( '=== validate_cross_references called ===' );

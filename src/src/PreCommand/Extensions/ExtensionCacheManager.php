@@ -256,7 +256,7 @@ class ExtensionCacheManager {
 		// Create cache key components
 		$type        = $extension->type;
 		$slug        = $extension->slug;
-		$version     = $extension->version ?? 'unknown';
+		$version     = $extension->version;
 		$source_hash = md5( $extension->source ?? $extension->from );
 		$cache_burst = $this->get_cache_burst( $extension );
 

@@ -22,7 +22,7 @@ class Extension implements \JsonSerializable {
 	/** @var string|null The entrypoint file (e.g., main PHP file for plugins, style.css for themes). */
 	public $entrypoint;
 
-	/** @var string|int|null The source (slug, URL, directory, or zip file). */
+	/** @var string|int|array<string,mixed>|null The source (slug, URL, directory, zip file, or build config). */
 	public $source;
 
 	/** @var string|null The path to the local directory, if applicable. */
@@ -68,9 +68,9 @@ class Extension implements \JsonSerializable {
 	}
 
 	/**
-	 * @param string          $slug The extension slug.
-	 * @param string          $type The extension type ('plugin' or 'theme').
-	 * @param string|int|null $source Optional source (slug, URL, directory, or zip file).
+	 * @param string                              $slug The extension slug.
+	 * @param string                              $type The extension type ('plugin' or 'theme').
+	 * @param string|int|array<string,mixed>|null $source Optional source (slug, URL, directory, zip file, or build config).
 	 */
 	public function __construct( string $slug, string $type, $source = null ) {
 		if ( ! in_array( $type, self::TYPES, true ) ) {

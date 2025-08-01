@@ -47,9 +47,9 @@ class ResolvedConfiguration {
 		$this->raw_config = $raw_config;
 	}
 
-	/** @var array<string,array> */
+	/** @var array<string,array<string,mixed>> */
 	private array $env_cache = [];
-	/** @var array<string,array> */
+	/** @var array<string,array<string,mixed>> */
 	private array $profile_cache = [];
 
 	/**

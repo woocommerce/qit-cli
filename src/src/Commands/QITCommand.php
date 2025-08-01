@@ -38,31 +38,25 @@ abstract class QITCommand extends Command {
 			null
 		);
 
-		// If instance of RunE2ECommand, RunActivationCommand or DynamicCommand, add test profile stuff
-		if ( $this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand ||
-			$this instanceof \QIT_CLI\Commands\RunActivationTestCommand ||
-			$this instanceof \QIT_CLI\Commands\DynamicCommand ) {
-			$this->addOption(
-				'profile',
-				'',
-				InputOption::VALUE_OPTIONAL,
-				'Test profile to use',
-				'default'
-			);
-		}
+		// Add profile option if needed (overridden by subclasses)
+		$this->configureProfileOption();
 
-		// If instance of UpEnvironmentCommand or RunE2ECommand or RunActivationCommand, add environment stuff
-		if ( $this instanceof \QIT_CLI\Commands\Environment\UpEnvironmentCommand ||
-			$this instanceof \QIT_CLI\Commands\CustomTests\RunE2ECommand ||
-			$this instanceof \QIT_CLI\Commands\RunActivationTestCommand ) {
-			$this->addOption(
-				'environment',
-				'e',
-				InputOption::VALUE_OPTIONAL,
-				'Environment name from configuration',
-				'default'
-			);
-		}
+		// Add environment option if needed (overridden by subclasses)
+		$this->configureEnvironmentOption();
+	}
+
+	/**
+	 * Configure profile option - override in subclasses that need it
+	 */
+	protected function configureProfileOption(): void {
+		// Base implementation does nothing
+	}
+
+	/**
+	 * Configure environment option - override in subclasses that need it
+	 */
+	protected function configureEnvironmentOption(): void {
+		// Base implementation does nothing
 	}
 
 	public function execute( InputInterface $input, OutputInterface $output ): int {

@@ -221,6 +221,9 @@ class CreateRunCommands extends DynamicCommandCreator {
 				return Command::SUCCESS;
 			}
 
+			/**
+			 * @param array<string, mixed> $response
+			 */
 			private function waitForTestCompletion( array $response, InputInterface $input, OutputInterface $output ): int {
 				$output->writeln( '<info>Waiting for test completion...</info>' );
 

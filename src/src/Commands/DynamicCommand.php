@@ -27,6 +27,16 @@ abstract class DynamicCommand extends QITCommand {
 		return $this->input->getOption( 'profile' ) ?? 'default';
 	}
 
+	protected function configureProfileOption(): void {
+		$this->addOption(
+			'profile',
+			'',
+			\Symfony\Component\Console\Input\InputOption::VALUE_OPTIONAL,
+			'Test profile to use',
+			'default'
+		);
+	}
+
 	public function add_option_to_send( string $option_name ): void {
 		$this->options_to_send[ $option_name ] = '';
 	}

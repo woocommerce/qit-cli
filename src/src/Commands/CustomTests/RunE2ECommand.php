@@ -83,7 +83,30 @@ class RunE2ECommand extends QITCommand {
 
 	protected function configure(): void {
 		parent::configure();
+		$this->configureMainOptions();
+	}
 
+	protected function configureProfileOption(): void {
+		$this->addOption(
+			'profile',
+			'',
+			InputOption::VALUE_OPTIONAL,
+			'Test profile to use',
+			'default'
+		);
+	}
+
+	protected function configureEnvironmentOption(): void {
+		$this->addOption(
+			'environment',
+			'e',
+			InputOption::VALUE_OPTIONAL,
+			'Environment name from configuration',
+			'default'
+		);
+	}
+
+	protected function configureMainOptions(): void {
 		$this->setDescription( 'Run E2E tests' )
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
 			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
