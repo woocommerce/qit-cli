@@ -5,12 +5,13 @@ namespace QIT_CLI\PreCommand\Configuration;
 use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\Extension;
+use Symfony\Component\Filesystem\Path;
 use function QIT_CLI\debug_log;
 
 /**
  * Single-pass configuration resolver that handles JSON loading, validation,
  * extends resolution, CLI overrides, and extension creation.
- * 
+ *
  * Replaces ResolvedConfiguration, ConfigMerger, ExtensionFactory, and parts of QitJsonParser.
  */
 final class ConfigResolver {
@@ -22,17 +23,17 @@ final class ConfigResolver {
 
 	public function __construct() {
 		$this->validator = new Validator();
-		$this->validator->setMaxErrors( 10 );
+		$this->validator->setMaxErrors( 1 );
 		$this->error_formatter = new ErrorFormatter();
-		$this->package_parser = new TestPackageManifestParser();
+		$this->package_parser  = new TestPackageManifestParser();
 		$this->load_schemas();
 	}
 
 	/**
 	 * Load and resolve complete configuration from file and CLI overrides.
 	 *
-	 * @param string|null $config_file Path to qit.json file
-	 * @param array<string,mixed> $cli_overrides CLI parameter overrides
+	 * @param string|null         $config_file Path to qit.json file.
+	 * @param array<string,mixed> $cli_overrides CLI parameter overrides.
 	 * @return array<string,mixed> Fully resolved configuration
 	 */
 	public static function load( ?string $config_file, array $cli_overrides = [] ): array {
@@ -43,36 +44,36 @@ final class ConfigResolver {
 	/**
 	 * Main resolution method - single pass through all configuration.
 	 *
-	 * @param string|null $config_file
+	 * @param string|null         $config_file
 	 * @param array<string,mixed> $cli_overrides
 	 * @return array<string,mixed>
 	 */
 	private function resolve( ?string $config_file, array $cli_overrides ): array {
 		// Load and validate JSON
 		$config = $config_file ? $this->load_and_validate_json( $config_file ) : [];
-		
+
 		// Apply default fallbacks
 		$config = $this->apply_defaults( $config );
-		
+
 		// Resolve extends chains
 		$config = $this->resolve_all_extends( $config );
-		
+
 		// Load and resolve test packages
 		$config = $this->resolve_test_packages( $config, $config_file );
-		
+
 		// Apply CLI overrides
 		$config = $this->apply_cli_overrides( $config, $cli_overrides );
-		
+
 		// Create extension objects
 		$config = $this->create_extensions( $config );
-		
+
 		// Add metadata
 		$config['metadata'] = [
 			'config_file' => $config_file,
 			'resolved_at' => time(),
 		];
-		
-		debug_log( "Configuration resolved successfully" );
+
+		debug_log( 'Configuration resolved successfully' );
 		return $config;
 	}
 
@@ -88,7 +89,7 @@ final class ConfigResolver {
 		}
 
 		$contents = file_get_contents( $file_path );
-		$data = json_decode( $contents );
+		$data     = json_decode( $contents );
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new \RuntimeException( "Invalid JSON in $file_path: " . json_last_error_msg() );
@@ -96,13 +97,13 @@ final class ConfigResolver {
 
 		// Validate against schema
 		if ( ! isset( $this->schema_cache['qit'] ) ) {
-			throw new \RuntimeException( "QIT schema not loaded" );
+			throw new \RuntimeException( 'QIT schema not loaded' );
 		}
 
 		$result = $this->validator->validate( $data, $this->schema_cache['qit'] );
 
 		if ( ! $result->isValid() ) {
-			$errors = $this->error_formatter->format( $result->error() );
+			$errors    = $this->error_formatter->format( $result->error() );
 			$error_msg = $this->format_validation_errors( $errors );
 			throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
 		}
@@ -118,9 +119,9 @@ final class ConfigResolver {
 	 */
 	private function apply_defaults( array $config ): array {
 		// Ensure basic structure exists
-		$config['environments'] = $config['environments'] ?? [];
-		$config['test_types'] = $config['test_types'] ?? [];
-		$config['groups'] = $config['groups'] ?? [];
+		$config['environments']  = $config['environments'] ?? [];
+		$config['test_types']    = $config['test_types'] ?? [];
+		$config['groups']        = $config['groups'] ?? [];
 		$config['test_packages'] = $config['test_packages'] ?? [];
 
 		// Add default environment if missing
@@ -161,7 +162,7 @@ final class ConfigResolver {
 	/**
 	 * Recursively flatten extends chains.
 	 *
-	 * @param array<string,mixed> $node
+	 * @param array<string,mixed>               $node
 	 * @param array<string,array<string,mixed>> $pool
 	 * @return array<string,mixed>
 	 */
@@ -201,7 +202,7 @@ final class ConfigResolver {
 	 * Load and resolve test packages.
 	 *
 	 * @param array<string,mixed> $config
-	 * @param string|null $config_file
+	 * @param string|null         $config_file
 	 * @return array<string,mixed>
 	 */
 	private function resolve_test_packages( array $config, ?string $config_file ): array {
@@ -209,9 +210,9 @@ final class ConfigResolver {
 			return $config;
 		}
 
-		$base_dir = $config_file ? dirname( $config_file ) : getcwd();
+		$base_dir          = $config_file ? dirname( $config_file ) : getcwd();
 		$resolved_packages = [];
-		$package_metadata = [];
+		$package_metadata  = [];
 
 		foreach ( $config['test_packages'] as $package_config ) {
 			if ( is_string( $package_config ) ) {
@@ -219,27 +220,27 @@ final class ConfigResolver {
 			}
 
 			$reference = $package_config['reference'];
-			
+
 			// Resolve package path
 			$package_path = $this->resolve_package_path( $package_config, $base_dir );
-			
+
 			// Load package manifest
 			$manifest_path = $package_path . '/manifest.json';
 			if ( ! file_exists( $manifest_path ) ) {
 				throw new \RuntimeException( "Test package manifest not found: $manifest_path" );
 			}
 
-			$manifest = $this->package_parser->parse( $manifest_path );
+			$manifest                        = $this->package_parser->parse( $manifest_path );
 			$resolved_packages[ $reference ] = $manifest;
-			$package_metadata[ $reference ] = [
-				'reference' => $reference,
-				'path' => $package_path,
+			$package_metadata[ $reference ]  = [
+				'reference'     => $reference,
+				'path'          => $package_path,
 				'manifest_path' => $manifest_path,
 			];
 		}
 
 		$config['resolved_test_packages'] = $resolved_packages;
-		$config['test_package_metadata'] = $package_metadata;
+		$config['test_package_metadata']  = $package_metadata;
 
 		return $config;
 	}
@@ -267,11 +268,11 @@ final class ConfigResolver {
 			if ( in_array( $key, $list_options, true ) && is_array( $value ) ) {
 				// For list options, collect existing values from environments and merge with CLI
 				$existing = $this->collect_from_environments( $config, $key );
-				$merged = array_values( array_unique( array_merge( $existing, $value ) ) );
-				
+				$merged   = array_values( array_unique( array_merge( $existing, $value ) ) );
+
 				// Store at top level for backward compatibility
 				$config[ $key ] = $merged;
-				
+
 				// Also propagate back into environments that originally contained the key
 				foreach ( $config['environments'] as $env_name => $env ) {
 					if ( isset( $env[ $key ] ) ) {
@@ -290,18 +291,18 @@ final class ConfigResolver {
 	 * Collect values for a key from all environments.
 	 *
 	 * @param array<string,mixed> $config
-	 * @param string $key
+	 * @param string              $key
 	 * @return array<mixed>
 	 */
 	private function collect_from_environments( array $config, string $key ): array {
 		$collected = [];
-		
+
 		foreach ( $config['environments'] as $env ) {
 			if ( isset( $env[ $key ] ) && is_array( $env[ $key ] ) ) {
 				$collected = array_merge( $collected, $env[ $key ] );
 			}
 		}
-		
+
 		return array_unique( $collected );
 	}
 
@@ -313,7 +314,7 @@ final class ConfigResolver {
 	 */
 	private function create_extensions( array $config ): array {
 		$resolved_plugins = [];
-		$resolved_themes = [];
+		$resolved_themes  = [];
 
 		// Create SUT extension if present
 		if ( isset( $config['sut'] ) ) {
@@ -325,7 +326,10 @@ final class ConfigResolver {
 			if ( isset( $env['plugins'] ) && is_array( $env['plugins'] ) ) {
 				foreach ( $env['plugins'] as $plugin_config ) {
 					if ( is_string( $plugin_config ) ) {
-						$plugin_config = [ 'slug' => $plugin_config, 'from' => 'wporg' ];
+						$plugin_config = [
+							'slug' => $plugin_config,
+							'from' => 'wporg',
+						];
 					}
 					$slug = $plugin_config['slug'];
 					if ( ! isset( $resolved_plugins[ $slug ] ) ) {
@@ -337,7 +341,10 @@ final class ConfigResolver {
 			if ( isset( $env['themes'] ) && is_array( $env['themes'] ) ) {
 				foreach ( $env['themes'] as $theme_config ) {
 					if ( is_string( $theme_config ) ) {
-						$theme_config = [ 'slug' => $theme_config, 'from' => 'wporg' ];
+						$theme_config = [
+							'slug' => $theme_config,
+							'from' => 'wporg',
+						];
 					}
 					$slug = $theme_config['slug'];
 					if ( ! isset( $resolved_themes[ $slug ] ) ) {
@@ -348,7 +355,7 @@ final class ConfigResolver {
 		}
 
 		$config['resolved_plugins'] = $resolved_plugins;
-		$config['resolved_themes'] = $resolved_themes;
+		$config['resolved_themes']  = $resolved_themes;
 
 		return $config;
 	}
@@ -362,34 +369,34 @@ final class ConfigResolver {
 	private function create_sut_extension( array $sut ): Extension {
 		debug_log( "Creating SUT extension for: {$sut['slug']} ({$sut['type']})" );
 
-		$extension = new Extension( $sut['slug'], $sut['type'] );
+		$extension           = new Extension( $sut['slug'], $sut['type'] );
 		$extension->priority = Extension::PRIORITY_HIGH;
 
 		$source = $sut['source'];
 		switch ( $source['type'] ) {
 			case 'local':
-				$extension->from = 'local';
+				$extension->from      = 'local';
 				$extension->directory = $source['resolved_path'] ?? $source['path'];
-				$extension->source = $extension->directory;
+				$extension->source    = $extension->directory;
 				break;
 
 			case 'build':
-				$extension->from = 'build';
+				$extension->from   = 'build';
 				$extension->source = $source;
 				break;
 
 			case 'url':
-				$extension->from = 'url';
+				$extension->from   = 'url';
 				$extension->source = $source['url'];
 				break;
 
 			case 'wporg':
-				$extension->from = 'wporg';
+				$extension->from    = 'wporg';
 				$extension->version = $source['version'] ?? 'stable';
 				break;
 
 			case 'wccom':
-				$extension->from = 'wccom';
+				$extension->from    = 'wccom';
 				$extension->version = $source['version'] ?? 'stable';
 				break;
 
@@ -404,11 +411,11 @@ final class ConfigResolver {
 	 * Create Extension from configuration array.
 	 *
 	 * @param array<string,mixed> $config
-	 * @param string $type
+	 * @param string              $type
 	 * @return Extension
 	 */
 	private function create_extension( array $config, string $type ): Extension {
-		$extension = new Extension( $config['slug'], $type );
+		$extension                      = new Extension( $config['slug'], $type );
 		$extension->added_automatically = 'Added from environment configuration';
 
 		if ( isset( $config['from'] ) ) {
@@ -424,9 +431,9 @@ final class ConfigResolver {
 					break;
 
 				case 'local':
-					$extension->from = 'local';
+					$extension->from      = 'local';
 					$extension->directory = $config['path'];
-					$extension->source = $config['path'];
+					$extension->source    = $config['path'];
 					break;
 
 				case 'url':
@@ -435,9 +442,9 @@ final class ConfigResolver {
 
 				case 'build':
 					$extension->source = [
-						'type' => 'build',
+						'type'    => 'build',
 						'command' => $config['command'],
-						'output' => $config['output'],
+						'output'  => $config['output'],
 					];
 					break;
 
@@ -449,23 +456,23 @@ final class ConfigResolver {
 			$source = $config['source'];
 			switch ( $source['type'] ) {
 				case 'wporg':
-					$extension->from = 'wporg';
+					$extension->from    = 'wporg';
 					$extension->version = $source['version'] ?? 'stable';
 					break;
 
 				case 'wccom':
-					$extension->from = 'wccom';
+					$extension->from    = 'wccom';
 					$extension->version = $source['version'] ?? 'stable';
 					break;
 
 				case 'local':
-					$extension->from = 'local';
+					$extension->from      = 'local';
 					$extension->directory = $source['path'];
-					$extension->source = $source['path'];
+					$extension->source    = $source['path'];
 					break;
 
 				case 'url':
-					$extension->from = 'url';
+					$extension->from   = 'url';
 					$extension->source = $source['url'];
 					break;
 
@@ -483,13 +490,13 @@ final class ConfigResolver {
 	 * Resolve test package path from configuration.
 	 *
 	 * @param array<string,mixed> $package_config
-	 * @param string $base_dir
+	 * @param string              $base_dir
 	 * @return string
 	 */
 	private function resolve_package_path( array $package_config, string $base_dir ): string {
 		if ( isset( $package_config['local'] ) ) {
 			$path = $package_config['local'];
-			if ( ! is_absolute_path( $path ) ) {
+			if ( ! Path::isAbsolute( $path ) ) {
 				$path = $base_dir . '/' . $path;
 			}
 			return realpath( $path ) ?: $path;
@@ -497,16 +504,16 @@ final class ConfigResolver {
 
 		// For remote packages, we'd need to download them first
 		// This is a simplified implementation
-		throw new \RuntimeException( "Remote test packages not yet supported in ConfigResolver" );
+		throw new \RuntimeException( 'Remote test packages not yet supported in ConfigResolver' );
 	}
 
 	/**
 	 * Load QIT schema into cache.
 	 */
 	private function load_schemas(): void {
-		$schema_dir = \QIT_CLI\App::getVar( 'src_dir' ) . '/PreCommand/Schemas';
+		$schema_dir  = \QIT_CLI\App::getVar( 'src_dir' ) . '/PreCommand/Schemas';
 		$schema_file = $schema_dir . '/qit-schema.json';
-		
+
 		if ( file_exists( $schema_file ) ) {
 			$this->schema_cache['qit'] = json_decode( file_get_contents( $schema_file ) );
 		} else {
@@ -535,30 +542,4 @@ final class ConfigResolver {
 
 		return $output;
 	}
-}
-
-/**
- * Helper function to check if path is absolute.
- */
-function is_absolute_path( string $path ): bool {
-	if ( empty( $path ) ) {
-		return false;
-	}
-	
-	// Unix-style absolute paths
-	if ( $path[0] === '/' ) {
-		return true;
-	}
-	
-	// Windows-style paths
-	if ( $path[0] === '\\' ) {
-		return true; // UNC paths like \\server\share
-	}
-	
-	// Drive letter paths like C:\ or device paths
-	if ( strlen( $path ) > 1 && $path[1] === ':' ) {
-		return true;
-	}
-	
-	return false;
 }

@@ -12,7 +12,7 @@ use function QIT_CLI\is_windows;
 class RunActivationTestCommand extends RunE2ECommand {
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-	protected string $test_type = 'activation';
+	protected string $test_type   = 'activation';
 
 	protected function configure(): void {
 		parent::configure();

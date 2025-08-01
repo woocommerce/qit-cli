@@ -75,9 +75,9 @@ abstract class QITCommand extends Command {
 	 */
 	private function cfg(): array {
 		if ( $this->config === null ) {
-			$config_file = $this->get_config_file();
+			$config_file   = $this->get_config_file();
 			$cli_overrides = $this->collect_cli_overrides();
-			$this->config = ConfigResolver::load( $config_file, $cli_overrides );
+			$this->config  = ConfigResolver::load( $config_file, $cli_overrides );
 		}
 		return $this->config;
 	}
@@ -246,7 +246,7 @@ abstract class QITCommand extends Command {
 				$extension->added_automatically = 'Added from environment configuration';
 				$extensions[]                   = $extension;
 			} else {
-				$extension = $this->create_extension_from_config( $plugin_config, 'plugin' );
+				$extension    = $this->create_extension_from_config( $plugin_config, 'plugin' );
 				$extensions[] = $extension;
 			}
 		}
@@ -260,7 +260,7 @@ abstract class QITCommand extends Command {
 				$extension->added_automatically = 'Added from environment configuration';
 				$extensions[]                   = $extension;
 			} else {
-				$extension = $this->create_extension_from_config( $theme_config, 'theme' );
+				$extension    = $this->create_extension_from_config( $theme_config, 'theme' );
 				$extensions[] = $extension;
 			}
 		}
@@ -357,11 +357,11 @@ abstract class QITCommand extends Command {
 	 * Create Extension from configuration array (inlined from ExtensionFactory).
 	 *
 	 * @param array<string,mixed> $config
-	 * @param string $type
+	 * @param string              $type
 	 * @return \QIT_CLI\PreCommand\Objects\Extension
 	 */
 	private function create_extension_from_config( array $config, string $type ): \QIT_CLI\PreCommand\Objects\Extension {
-		$extension = new \QIT_CLI\PreCommand\Objects\Extension( $config['slug'], $type );
+		$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $config['slug'], $type );
 		$extension->added_automatically = 'Added from environment configuration';
 
 		if ( isset( $config['from'] ) ) {
@@ -377,9 +377,9 @@ abstract class QITCommand extends Command {
 					break;
 
 				case 'local':
-					$extension->from = 'local';
+					$extension->from      = 'local';
 					$extension->directory = $config['path'];
-					$extension->source = $config['path'];
+					$extension->source    = $config['path'];
 					break;
 
 				case 'url':
@@ -388,9 +388,9 @@ abstract class QITCommand extends Command {
 
 				case 'build':
 					$extension->source = [
-						'type' => 'build',
+						'type'    => 'build',
 						'command' => $config['command'],
-						'output' => $config['output'],
+						'output'  => $config['output'],
 					];
 					break;
 
@@ -402,23 +402,23 @@ abstract class QITCommand extends Command {
 			$source = $config['source'];
 			switch ( $source['type'] ) {
 				case 'wporg':
-					$extension->from = 'wporg';
+					$extension->from    = 'wporg';
 					$extension->version = $source['version'] ?? 'stable';
 					break;
 
 				case 'wccom':
-					$extension->from = 'wccom';
+					$extension->from    = 'wccom';
 					$extension->version = $source['version'] ?? 'stable';
 					break;
 
 				case 'local':
-					$extension->from = 'local';
+					$extension->from      = 'local';
 					$extension->directory = $source['path'];
-					$extension->source = $source['path'];
+					$extension->source    = $source['path'];
 					break;
 
 				case 'url':
-					$extension->from = 'url';
+					$extension->from   = 'url';
 					$extension->source = $source['url'];
 					break;
 
