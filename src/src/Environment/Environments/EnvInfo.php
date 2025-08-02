@@ -78,7 +78,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	/**
 	 * @var array<string> Array of environment variables to be passed to the test runner.
 	 */
-	public array $env = [];
+	public array $envs = [];
 
 	/** @var array<string,array{path:string}>  (package‑id => ['path' => dir]) */
 	public array $bootstrap_packages = [];
@@ -119,9 +119,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	 *
 	 * @param array<string,mixed> $env_info_array The array to deserialize.
 	 *
-	 * @return EnvInfo The deserialized EnvInfo object.
+	 * @return E2EEnvInfo The deserialized EnvInfo object.
 	 */
-	public static function from_array( array $env_info_array ): EnvInfo {
+	public static function from_array( array $env_info_array ): E2EEnvInfo {
 		$environment = $env_info_array['environment'] ?? 'e2e';
 
 		switch ( $environment ) {
@@ -181,7 +181,11 @@ abstract class EnvInfo implements \JsonSerializable {
 			if ( property_exists( $env_info, $key ) ) {
 				$env_info->$key = $value;
 			} else {
-				App::make( Output::class )->writeln( sprintf( '<comment>Warning: Key "%s" not found in environment info.</comment>', $key ) );
+				if ( App::make( Output::class )->isVeryVerbose() ) {
+					App::make( Output::class )->writeln(
+						sprintf( '<comment>Warning: Key "%s" not found in environment info.</comment>', $key )
+					);
+				}
 				$env_info->extra[ $key ] = $value;
 			}
 		}

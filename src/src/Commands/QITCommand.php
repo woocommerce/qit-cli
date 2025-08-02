@@ -176,18 +176,6 @@ abstract class QITCommand extends Command {
 		];
 	}
 
-	/**
-	 * Create temporary environment info for extension resolution.
-	 */
-	private function create_temp_env_info(): \QIT_CLI\Environment\Environments\EnvInfo {
-		$env_info                = new \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo();
-		$env_info->env_id        = uniqid();
-		$env_info->temporary_env = \QIT_CLI\normalize_path( sys_get_temp_dir() . '/qit-resolve-' . $env_info->env_id );
-		$env_info->created_at    = time();
-		$env_info->status        = 'resolving';
-
-		return $env_info;
-	}
 
 	/**
 	 * Lazily resolve and download only the extensions required by the given
@@ -275,8 +263,7 @@ abstract class QITCommand extends Command {
 		$extensions = array_values( $unique );
 
 		// 4) resolve/download them (impure) – heavy
-		$env_info = $this->create_temp_env_info();
-		$delta    = App::make( ExtensionResolver::class )->resolve( $extensions, $env_info, sys_get_temp_dir() . '/qit-cache' );
+		$delta = App::make( ExtensionResolver::class )->resolve( $extensions, sys_get_temp_dir() . '/qit-cache' );
 
 		// 5) merge with existing results
 		if ( $this->resolved_extensions === null ) {

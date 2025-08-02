@@ -57,6 +57,9 @@ abstract class Environment {
 
 	public function init( EnvInfo $env_info ): void {
 		$this->env_info = $env_info;
+
+		// Set environment variables for Docker containers
+		App::setVar( 'QIT_DOCKER_ENV_VARS', $env_info->envs ?? [] );
 	}
 
 	/**
