@@ -349,9 +349,9 @@ class RunE2ECommand extends QITCommand {
 	/*******************************************************************
 	 * Helper: merge **explicit** CLI overrides into env config
 	 *
-	 * @param array<string,mixed> $config
-	 * @param InputInterface      $input
-	 * @return array<string,mixed>
+	 * @param array<string,string|bool|array<int,string>> $config Environment configuration array with keys like 'php', 'wp', 'plugins', 'themes', etc.
+	 * @param InputInterface                              $input
+	 * @return array<string,string|bool|array<int,string>> Modified environment configuration with CLI overrides applied
 	 ******************************************************************/
 	private function applyEnvCliOverrides( array $config, InputInterface $input ): array {
 
@@ -397,9 +397,9 @@ class RunE2ECommand extends QITCommand {
 	/*******************************************************************
 	 * Helper: merge CLI overrides into *test‑profile* config
 	 *
-	 * @param array<string,mixed> $profile
-	 * @param InputInterface      $input
-	 * @return array<string,mixed>
+	 * @param array<string,array<int,string>|string> $profile Test profile configuration array with keys like 'test_packages', etc.
+	 * @param InputInterface                         $input
+	 * @return array<string,array<int,string>|string> Modified test profile configuration with CLI overrides applied
 	 ******************************************************************/
 	private function applyProfileCliOverrides( array $profile, InputInterface $input ): array {
 		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {

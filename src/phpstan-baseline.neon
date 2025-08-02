@@ -926,3 +926,23 @@ parameters:
 			message: "#^Property QIT_JSON_Filter\\:\\:\\$non_json_buffer has no type specified\\.$#"
 			count: 1
 			path: src/json-filter.php
+
+		-
+			message: "#^Method QIT_CLI\\\\Commands\\\\CustomTests\\\\RunE2ECommand\\:\\:applyEnvCliOverrides\\(\\) has parameter \\$config with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Commands/CustomTests/RunE2ECommand.php
+
+		-
+			message: "#^Method QIT_CLI\\\\Commands\\\\CustomTests\\\\RunE2ECommand\\:\\:applyEnvCliOverrides\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Commands/CustomTests/RunE2ECommand.php
+
+		-
+			message: "#^Method QIT_CLI\\\\Commands\\\\CustomTests\\\\RunE2ECommand\\:\\:applyProfileCliOverrides\\(\\) has parameter \\$profile with no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Commands/CustomTests/RunE2ECommand.php
+
+		-
+			message: "#^Method QIT_CLI\\\\Commands\\\\CustomTests\\\\RunE2ECommand\\:\\:applyProfileCliOverrides\\(\\) return type has no value type specified in iterable type array\\.$#"
+			count: 1
+			path: src/Commands/CustomTests/RunE2ECommand.php
