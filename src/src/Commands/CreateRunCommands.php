@@ -1,4 +1,5 @@
 <?php
+declare( strict_types=1 );
 
 namespace QIT_CLI\Commands;
 
@@ -6,7 +7,6 @@ use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
-use QIT_CLICommandsGetCommand;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Upload;
@@ -20,15 +20,35 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
+use function QIT_CLI\is_option_explicitly_provided;
 
+/**
+ * Dynamically registers remote test‑type commands (run:security, run:phpstan, …)
+ * based on schemas fetched from the Manager.
+ *
+ * – Merges profile‑level configuration from qit.json with CLI overrides
+ * – Supports SUT, ZIP uploads, groups, wait/timeout, etc.
+ */
 class CreateRunCommands extends DynamicCommandCreator {
+
+	/** @var Cache */
 	protected Cache $cache;
+	/** @var Auth */
 	protected Auth $auth;
+	/** @var Upload */
 	protected Upload $upload;
+	/** @var WooExtensionsList */
 	protected WooExtensionsList $woo_extensions_list;
+	/** @var TestGroup */
 	protected TestGroup $test_group;
 
-	public function __construct( Cache $cache, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, TestGroup $test_group ) {
+	public function __construct(
+		Cache $cache,
+		Auth $auth,
+		Upload $upload,
+		WooExtensionsList $woo_extensions_list,
+		TestGroup $test_group
+	) {
 		$this->cache               = $cache;
 		$this->auth                = $auth;
 		$this->upload              = $upload;
@@ -36,372 +56,360 @@ class CreateRunCommands extends DynamicCommandCreator {
 		$this->test_group          = $test_group;
 	}
 
+	/**
+	 * Public API
+	 */
 	public function register_commands( Application $application ): void {
-		$ignored_test_types = [ 'activation' ];
+		$ignored_test_types = [ 'activation' ];            // activation handled locally
+		$schemas            = $this->cache->get_manager_sync_data( 'schemas' );
+
 		foreach ( $this->cache->get_manager_sync_data( 'test_types' ) as $test_type ) {
-			if ( in_array( $test_type, $ignored_test_types, true ) ) {
+			if ( \in_array( $test_type, $ignored_test_types, true ) ) {
 				continue;
 			}
-			$this->register_command_by_schema( $application, $test_type, $this->cache->get_manager_sync_data( 'schemas' )[ $test_type ] );
+			$this->register_command_by_schema( $application, $test_type, $schemas[ $test_type ] ?? [] );
 		}
 	}
 
 	/**
-	 * @param Application  $application An instance of the current DI.
-	 * @param string       $test_type The test type.
-	 * @param array<mixed> $schema The test type schema.
+	 * Register a command by schema.
 	 *
-	 * @return void
+	 * @param Application  $application The application instance.
+	 * @param string       $test_type   The test type.
+	 * @param array<mixed> $schema      The schema configuration.
 	 */
 	protected function register_command_by_schema( Application $application, string $test_type, array $schema ): void {
-		$command = new class( $test_type, $this->auth, $this->upload, $this->woo_extensions_list, $this->test_group ) extends DynamicCommand {
-			protected Auth $auth;
-			protected WooExtensionsList $woo_extensions_list;
-			protected Upload $upload;
-			protected TestGroup $test_group;
 
-			public function __construct( string $test_type, Auth $auth, Upload $upload, WooExtensionsList $woo_extensions_list, TestGroup $test_group ) {
+		/**
+		 * Anonymous DynamicCommand – one per test‑type
+		 */
+		$command = new class(
+			$test_type,
+			$this->auth,
+			$this->upload,
+			$this->woo_extensions_list,
+			$this->test_group
+		) extends DynamicCommand {
+
+			/** @var Auth */
+			private Auth $auth;
+			/** @var Upload */
+			private Upload $upload;
+			/** @var WooExtensionsList */
+			private WooExtensionsList $woo_extensions_list;
+			/** @var TestGroup */
+			private TestGroup $test_group;
+
+			public function __construct(
+				string $test_type,
+				Auth $auth,
+				Upload $upload,
+				WooExtensionsList $woo_extensions_list,
+				TestGroup $test_group
+			) {
 				$this->auth                = $auth;
-				$this->woo_extensions_list = $woo_extensions_list;
 				$this->upload              = $upload;
+				$this->woo_extensions_list = $woo_extensions_list;
 				$this->test_group          = $test_group;
 				parent::__construct( $test_type );
 				$this->setName( "run:$test_type" );
+				$this->setDescription( "Run $test_type tests remotely on QIT" );
 			}
 
+			/**
+			 * Main execution
+			 */
 			public function doExecute( InputInterface $input, OutputInterface $output ): int {
-				// Get the test profile configuration using the simplified API
-				$profile_name = $input->getOption( 'profile' ) ?? 'default';
-				$test_config  = $this->get_current_test_profile( $this->test_type, $profile_name );
 
-				// Use the merged test configuration as the base for API options
-				$options = $test_config;
+				/****************************************************************
+				 * 1.  Base configuration comes from qit.json profile
+				 */
+				$profile_name = is_option_explicitly_provided( $input, 'profile' )
+					? (string) $input->getOption( 'profile' )
+					: 'default';
 
-				// Add/override with CLI-specific options
-				/* ─────────────────── Resolve SUT ────────────────────── */
-				$sut_arg = $input->getArgument( 'sut' );
+				$options = $this->get_current_test_profile( $this->test_type, $profile_name );
+				if ( ! \is_array( $options ) ) {
+					$options = [];
+				}
 
-				// Check if SUT is provided either via CLI argument or config
-				if ( empty( $sut_arg ) && empty( $options['sut']['slug'] ?? '' ) ) {
-					$output->writeln(
-						'<error>No System‑Under‑Test (SUT) specified. '
-						. 'Provide a slug argument or define "sut" in test profile.</error>'
-					);
+				/****************************************************************
+				 * 2.  Apply CLI overrides (only what user provided)
+				 */
+				foreach ( $this->options_to_send as $opt_name ) {
+
+					if ( ! is_option_explicitly_provided( $input, $opt_name ) ) {
+						continue;                               // not typed – keep profile value
+					}
+
+					$cli_value = $input->getOption( $opt_name );
+
+					// Merge list‑type options instead of replacing
+					if ( \is_array( $cli_value ) && isset( $options[ $opt_name ] ) && \is_array( $options[ $opt_name ] ) ) {
+						$options[ $opt_name ] = array_values( array_unique( array_merge(
+							$options[ $opt_name ],
+							$cli_value
+						) ) );
+					} else {
+						$options[ $opt_name ] = $cli_value;
+					}
+				}
+
+				/****************************************************************
+				 * 3.  Resolve SUT (CLI arg > profile)
+				 */
+				$sut_arg = $input->getArgument( 'sut' ) ?: ( $options['sut']['slug'] ?? '' );
+				if ( empty( $sut_arg ) ) {
+					$output->writeln( '<error>No System‑Under‑Test specified (argument or profile).</error>' );
+
 					return Command::INVALID;
 				}
 
-				// Handle SUT argument (slug or ID)
-				if ( ! empty( $sut_arg ) ) {
-					if ( is_numeric( $sut_arg ) ) {
-						$options['woo_id'] = $sut_arg;
-					} else {
-						$options['woo_id'] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $sut_arg );
-					}
-				} elseif ( ! empty( $options['sut']['slug'] ?? '' ) ) {
-					// Use SUT from config if no CLI argument provided
-					$sut_slug = $options['sut']['slug'];
-					if ( is_numeric( $sut_slug ) ) {
-						$options['woo_id'] = $sut_slug;
-					} else {
-						$options['woo_id'] = $this->woo_extensions_list->get_woo_extension_id_by_slug( $sut_slug );
-					}
-				}
+				$options['woo_id'] = $this->slug_or_id_to_id( $sut_arg );
 
-				// Handle zip option with smart detection (only if the option exists)
-				$zip_opt        = null;
-				$zip_flag_alone = false;
-				if ( $input->hasOption( 'zip' ) ) {
-					$zip_opt        = $input->getOption( 'zip' );
-					$zip_flag_alone = $input->getParameterOption( '--zip', 'NOT_SET' ) === null;
-				}
+				/****************************************************************
+				 * 4.  Handle --zip (build upload)
+				 */
+				$this->process_zip_option( $input, $output, $sut_arg, $options );
 
-				if ( $zip_opt !== null || $zip_flag_alone ) {
-					// Determine the path/URL to use
-					if ( $zip_flag_alone ) {
-						$sut_for_zip    = $sut_arg ?: ( $options['sut']['slug'] ?? 'extension' );
-						$options['zip'] = $sut_for_zip . '.zip';
-					} else {
-						$options['zip'] = $zip_opt;
-					}
-
-					// For bare --zip flag, check if file exists
-					if ( $zip_flag_alone && ! file_exists( $options['zip'] ) ) {
-						$output->writeln( sprintf(
-							"<error>Error: The specified ZIP file '%s' does not exist.</error>" .
-							"<info>\nTo run the command, use one of the following options:" .
-							"\n1. Provide the ZIP file name without an argument to infer from the slug or ID:" .
-							"\n   run:security my-extension --zip" .
-							"\n\n2. Provide the ZIP path as a parameter:" .
-							"\n   run:security my-extension --zip=/some/path/my-extension.zip" .
-							"\n\n3. Provide a URL:" .
-							"\n   run:security my-extension --zip=https://example.com/plugin.zip" .
-							"\n\n4. Provide a directory path:" .
-							"\n   run:security my-extension --zip=/path/to/plugin/directory</info>",
-							$options['zip']
-						) );
-
-						return Command::FAILURE;
-					}
-				}
-
-				// Upload zip if provided
-				if ( ! empty( $options['zip'] ) ) {
-					$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $options['zip'], $output );
-					$options['event']     = 'cli_development_extension_test';
-					unset( $options['zip'] );
-				} else {
-					$options['event'] = 'cli_published_extension_test';
-				}
-
-				// Convert "Additional Woo Plugins" Slugs to IDs.
+				/****************************************************************
+				 * 5.  Additional Woo plugins (comma‑separated slugs/IDs → IDs)
+				 */
 				if ( ! empty( $options['additional_woo_plugins'] ) ) {
-					$additional_woo_plugins = explode( ',', $options['additional_woo_plugins'] );
-					foreach ( $additional_woo_plugins as &$awp ) {
-						$awp = trim( $awp );
-						if ( ! is_numeric( $awp ) ) {
-							$awp = $this->woo_extensions_list->get_woo_extension_id_by_slug( $awp );
-						}
-					}
-
-					$options['additional_woo_plugins'] = implode( ',', $additional_woo_plugins );
+					$options['additional_woo_plugins'] = $this->map_multiple_slugs_to_ids(
+						$options['additional_woo_plugins']
+					);
 				}
 
-				// Handle group (only if the option exists)
-				if ( $input->hasOption( 'group' ) && $input->getOption( 'group' ) ) {
+				/****************************************************************
+				 * 6.  Group creation if requested
+				 */
+				if ( $input->getOption( 'group' ) ) {
 					try {
 						$this->test_group->create_or_update( $options, $this->test_type, $output, null );
-					} catch ( \Exception $e ) {
+						$output->writeln( '<info>Group item successfully added.</info>' );
+
+						return Command::SUCCESS;
+					} catch ( \Throwable $e ) {
 						$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
 						return Command::FAILURE;
 					}
-
-					$output->writeln( sprintf( '<info>Group item successfully added.</info>' ) );
-
-					return Command::SUCCESS;
 				}
 
-				// Handle QIT_SELF_TEST=remote_test
+				/****************************************************************
+				 * 7.  Self‑test shortcut
+				 */
 				if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
 					$output->write( json_encode( $options, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 					return Command::SUCCESS;
 				}
 
-				// Send to API
+				/****************************************************************
+				 * 8.  Send request to Manager
+				 */
 				try {
-					$output->writeln( sprintf( 'Running test...' ) );
+					$output->writeln( 'Running test on QIT servers…' );
 					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )
 						->with_post_body( $options )
 						->request();
-				} catch ( \Exception $e ) {
+				} catch ( \Throwable $e ) {
 					$output->writeln( "<error>{$e->getMessage()}</error>" );
 
 					return Command::FAILURE;
 				}
 
-				$response = json_decode( $json, true );
+				$response = json_decode( $json, true, 512, JSON_THROW_ON_ERROR );
 
-				if ( ! is_array( $response ) ) {
-					return Command::FAILURE;
+				/****************************************************************
+				 * 9.  --wait support (delegates to get command)
+				 */
+				if ( $input->getOption( 'wait' ) ) {
+					return $this->wait_for_completion( $input, $output, $response );
 				}
 
-				if ( ! isset( $response['test_run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
-					$output->writeln( 'Unexpected response. Missing "test_run_id" or "test_results_manager_url".' );
-
-					return Command::FAILURE;
-				}
-
-				// Handle --wait option (only if the option exists)
-				if ( $input->hasOption( 'wait' ) && $input->getOption( 'wait' ) ) {
-					// Show a message if user aborts waiting.
-					foreach ( [ \SIGINT, \SIGTERM ] as $signal ) {
-						$this->getApplication()->getSignalRegistry()->register( $signal, static function () use ( $output ) {
-							$output->writeln( sprintf( '<comment>The test is still executing on the QIT Servers, but we have skipped the wait. You can always check the status of the test by running the "%s" command.</comment>', GetCommand::getDefaultName() ) );
-							exit( 124 );
-						} );
-					}
-
-					$timeout = $input->getOption( 'timeout' );
-
-					if ( is_null( $timeout ) ) {
-						if ( $this->test_type === 'woo-e2e' ) {
-							$timeout = 3600 * 2; // 2 hours.
-						} else {
-							$timeout = 1800; // 30 minutes.
-						}
-					}
-
-					// Minimum timeout is 10 seconds.
-					$timeout = max( 10, $timeout );
-
-					// Maximum timeout is 2 hours.
-					$timeout = min( 3600 * 2, $timeout );
-
-					$start = time();
-					do {
-						$poll_interval = rand( 5, 15 );
-
-						// Search for wait time in "QIT_POLL_INTERVAL" env var if set.
-						if ( getenv( 'QIT_POLL_INTERVAL' ) && is_numeric( getenv( 'QIT_POLL_INTERVAL' ) ) ) {
-							// It must be between 5 and 300.
-							$poll_interval = min( 300, max( 5, getenv( 'QIT_POLL_INTERVAL' ) ) );
-						}
-
-						sleep( $poll_interval );
-
-						$command = $this->getApplication()->find( GetCommand::getDefaultName() );
-
-						// When checking for finished status, return status code is 0 if finished, 1 if not.
-						$finished = $command->run( new ArrayInput( [
-							'test_run_id'      => $response['test_run_id'],
-							'--check_finished' => true,
-						] ), $output );
-
-						if ( $finished === 0 ) {
-							break;
-						}
-
-						if ( time() - $start > $timeout ) {
-							$output->writeln( '<comment>Timed out while waiting for test run to complete.</comment>' );
-							$output->writeln( '<comment>The test is still executing in QIT servers, but the timeout for waiting was reached.</comment>' );
-
-							// Timeout.
-							return 124;
-						}
-					} while ( true );
-
-					$output->writeln( sprintf( '<info>Test run completed.</info>' ) );
-					$command = $this->getApplication()->find( GetCommand::getDefaultName() );
-
-					// If waiting, the exit status code will come from the GetCommand.
-					$exit_code = $command->run( new ArrayInput( [
-						'test_run_id' => $response['test_run_id'],
-						'--json'      => $input->getOption( 'json' ),
-					] ), $output );
-
-					if ( $input->getOption( 'ignore-fail' ) ) {
-						return 0;
-					} else {
-						return $exit_code;
-					}
-				} else {
-					if ( $input->getOption( 'ignore-fail' ) ) {
-						$output->writeln( '<error>"--ignore-fail" can only be used with "--wait".</error>' );
-					}
-				}
-
-				// Output result
-				if ( $input->hasOption( 'json' ) && $input->getOption( 'json' ) ) {
+				/****************************************************************
+				 * 10.  Standard non‑wait output
+				 */
+				if ( $input->getOption( 'json' ) ) {
 					$output->write( $json );
 
 					return Command::SUCCESS;
 				}
 
-				$output->writeln( sprintf( '<info>Test started on QIT servers!</info>' ) );
-				$table = new Table( $output );
-				$table
-					->setHorizontal()
-					->setStyle( 'compact' )
-					->setHeaders( [ 'Test Run ID', 'Result URL' ] );
-				$table->addRow( [ $response['test_run_id'], $response['test_results_manager_url'] ] );
-				$table->render();
-				$output->writeln( '' );
-
-				// Get the name of the script entrypoint.
-				$bin = isset( $_SERVER['argv'][0] ) ? basename( $_SERVER['argv'][0] ) : '';
-
-				$output->writeln( sprintf( '<info>You can follow up on the result of the test using the URL above, with the command "%s %s %d", or by passing the "--wait" option when running tests.</info>', $bin, GetCommand::getDefaultName(), $response['test_run_id'] ) );
+				$this->render_start_table( $output, $response );
 
 				return Command::SUCCESS;
 			}
+
+			/**
+			 * Helpers
+			 */
+
+			/** Slug or numeric Woo ID -> numeric Woo ID */
+			private function slug_or_id_to_id( string $slug_or_id ): int {
+				if ( ctype_digit( $slug_or_id ) ) {
+					return (int) $slug_or_id;
+				}
+
+				return $this->woo_extensions_list->get_woo_extension_id_by_slug( $slug_or_id );
+			}
+
+			/**
+			 * Handle --zip upload logic & mutate $options in‑place.
+			 *
+			 * @param InputInterface      $input          The input interface.
+			 * @param OutputInterface     $output         The output interface.
+			 * @param string              $sut_slug_or_id The SUT slug or ID.
+			 * @param array<string,mixed> $options        The options array.
+			 */
+			private function process_zip_option(
+				InputInterface $input,
+				OutputInterface $output,
+				string $sut_slug_or_id,
+				array &$options
+			): void {
+				if ( ! $input->hasOption( 'zip' ) || ! is_option_explicitly_provided( $input, 'zip' ) ) {
+					$options['event'] = 'cli_published_extension_test';
+
+					return;
+				}
+
+				$zip_opt        = $input->getOption( 'zip' );
+				$zip_flag_alone = $input->getParameterOption( '--zip', 'NOT_SET', true ) === null;
+
+				$zip_path = $zip_flag_alone
+					? $sut_slug_or_id . '.zip'
+					: (string) $zip_opt;
+
+				if ( $zip_flag_alone && ! file_exists( $zip_path ) ) {
+					$output->writeln( "<error>The ZIP file '{$zip_path}' does not exist.</error>" );
+					throw new \RuntimeException( 'ZIP not found', Command::FAILURE );
+				}
+
+				$upload_id            = $this->upload->upload_build( 'build', $options['woo_id'], $zip_path, $output );
+				$options['upload_id'] = $upload_id;
+				$options['event']     = 'cli_development_extension_test';
+			}
+
+			/** Convert comma‑/array list of slugs/IDs to comma‑separated IDs */
+			private function map_multiple_slugs_to_ids( $slugs_or_ids ): string {
+				$items = \is_array( $slugs_or_ids ) ? $slugs_or_ids : explode( ',', (string) $slugs_or_ids );
+				$ids   = array_map( function ( string $item ): int {
+					$item = trim( $item );
+
+					return ctype_digit( $item )
+						? (int) $item
+						: $this->woo_extensions_list->get_woo_extension_id_by_slug( $item );
+				}, $items );
+
+				return implode( ',', $ids );
+			}
+
+			/** Wait‑loop logic (moved verbatim, minor refactor) */
+			private function wait_for_completion(
+				InputInterface $input,
+				OutputInterface $output,
+				array $response
+			): int {
+				$test_run_id = $response['test_run_id'] ?? 0;
+				if ( ! $test_run_id ) {
+					$output->writeln( '<error>Unexpected Manager response – test_run_id missing.</error>' );
+					return Command::FAILURE;
+				}
+
+				$timeout = $input->getOption( 'timeout' ) ?? ( $this->test_type === 'woo-e2e' ? 7200 : 1800 );
+				$timeout = max( 10, min( 7200, (int) $timeout ) );
+
+				$start = time();
+				$get   = $this->getApplication()->find( GetCommand::getDefaultName() );
+
+				do {
+					sleep( (int) rand( 5, 15 ) );
+
+					$finished = $get->run(
+						new ArrayInput( [
+							'test_run_id'      => $test_run_id,
+							'--check_finished' => true,
+						] ),
+						$output
+					);
+
+					if ( $finished === 0 ) {
+						break;
+					}
+
+					if ( time() - $start > $timeout ) {
+						$output->writeln( '<comment>Timed out waiting for remote test.</comment>' );
+						return 124;
+					}
+				} while ( true );
+
+				$output->writeln( '<info>Test run completed.</info>' );
+
+				$exit = $get->run(
+					new ArrayInput( [
+						'test_run_id' => $test_run_id,
+						'--json'      => $input->getOption( 'json' ),
+					] ),
+					$output
+				);
+
+				return $input->getOption( 'ignore-fail' ) ? Command::SUCCESS : $exit;
+			}
+
+			/** Pretty table for non‑wait scenario */
+			private function render_start_table( OutputInterface $output, array $response ): void {
+				$table = ( new Table( $output ) )
+					->setHorizontal()
+					->setStyle( 'compact' )
+					->setHeaders( [ 'Test Run ID', 'Result URL' ] )
+					->addRow( [
+						$response['test_run_id'] ?? '–',
+						$response['test_results_manager_url'] ?? '–',
+					] );
+				$output->writeln( '<info>Test started on QIT servers!</info>' );
+				$table->render();
+				$output->writeln( '' );
+
+				$bin = basename( $_SERVER['argv'][0] ?? 'qit' );
+				$output->writeln( sprintf(
+					'<info>You can monitor the run with "%s %s %d" or add "--wait".</info>',
+					$bin,
+					GetCommand::getDefaultName(),
+					$response['test_run_id'] ?? 0
+				) );
+			}
 		};
 
-		$command
-			->setName( "run:$test_type" );
-
+		/**
+		 * CLI definition helpers (schema‑driven)
+		 */
 		self::add_schema_to_command( $command, $schema );
 
-		// Add the SUT argument (not handled by schema)
-		$command->addArgument(
-			'sut',
-			InputArgument::OPTIONAL,  // Optional since it can come from config
-			'Extension slug or ID (system‑under‑test)'
-		);
+		/* Standard non‑schema arguments / flags */
+		$command
+			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or WooCommerce.com ID' )
+			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, '(Optional) Local ZIP / dir / URL build to test' )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, '(Optional) Output raw JSON response', false )
+			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Optional) Wait until the test finishes', false )
+			->addOption( 'timeout', 't', InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null )
+			->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Optional) Exit 0 even if test fails', false )
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false );
 
-		// Upload zip.
-		$command->addOption(
-			'zip',
-			null,
-			InputOption::VALUE_OPTIONAL,
-			'(Optional) Run the test using a local ZIP file of the plugin. Useful for running the tests before publishing it to the Marketplace.'
-		);
-
-		// JSON Response.
-		$command->addOption(
-			'json',
-			'j',
-			InputOption::VALUE_NEGATABLE,
-			'(Optional) Whether to return the JSON object of the test that was created.',
-			false
-		);
-
-		// Wait for test to finish.
-		$command->addOption(
-			'wait',
-			'w',
-			InputOption::VALUE_NEGATABLE,
-			'(Optional) Wait for the test to finish before finishing command execution.',
-			false
-		);
-
-		// Timeout if waiting.
-		$command->addOption(
-			'timeout',
-			't',
-			InputOption::VALUE_OPTIONAL,
-			'(Optional) Seconds to wait for a test to finish before failing the command. Default is 60 minutes. Min 10 seconds. Max 2 hours. (requires "--wait")',
-			null
-		);
-
-		// If set, exit status code will be zero even if test fails.
-		$command->addOption(
-			'ignore-fail',
-			'i',
-			InputOption::VALUE_NEGATABLE,
-			'(Optional) If set, exit status code will be zero even if test fails. (requires "--wait")',
-			false
-		);
-
-		$command->addOption(
-			'group',
-			'g',
-			InputOption::VALUE_NEGATABLE,
-			'(Optional) Register the test run into a group.',
-			false
-		);
-
+		// Ensure zip gets forwarded
 		$command->add_option_to_send( 'zip' );
 
-		if ( $test_type === 'api' ) {
-			$command->setHidden( true );
-		}
-
-		// This will be hidden while custom test type is in development, but kept as an alias to "woo-e2e".
+		/* Hide old “e2e” alias if Manager says so */
 		if ( $test_type === 'e2e' ) {
-			try {
-				$hide_e2e = $this->cache->get_manager_sync_data( 'hide_e2e' );
-			} catch ( \Exception $e ) {
-				// If it throws it's because it's not set, so we hide it.
-				$hide_e2e = true;
-			}
-
-			if ( ! $hide_e2e ) {
+			$hide = $this->cache->get_manager_sync_data( 'hide_e2e' ) ?? true;
+			if ( ! $hide ) {
 				$application->add( App::make( RunE2ECommand::class ) );
 			}
-		} else {
-			$application->add( $command );
 		}
+
+		$application->add( $command );
 	}
 }

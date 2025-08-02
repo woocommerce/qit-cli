@@ -7,55 +7,74 @@ use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\is_windows;
 
+/**
+ * Runs the official activation test‑package against the current SUT.
+ *
+ * Behavioural differences compared with run:e2e:
+ *   • The test‑package is *always* `woocommerce/activation:stable`
+ *     (cannot be overridden – the CLI flag is injected programmatically).
+ *   • Plugins / themes are not activated inside the container.
+ *   • Playwright retries are disabled.
+ *   • Deprecated options --wait / --ignore-fail still exist for BC.
+ */
 class RunActivationTestCommand extends RunE2ECommand {
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 	protected string $test_type   = 'activation';
 
+	/******************************************************************
+	 * CLI definition
+	 *****************************************************************/
 	protected function configure(): void {
 		parent::configure();
-
-		// Override command-specific details
-		$this->setDescription( 'Run activation tests' );
-
-		// Add activation-specific deprecated options
-		$this->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated)', false )
+		$this->setDescription( 'Run activation tests' )
+			// Deprecated flags kept for backwards‑compat only
+			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated – ignored)', false )
 			->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Deprecated)', false );
 	}
 
+	/******************************************************************
+	 * Execution
+	 *****************************************************************/
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		// Handle QIT_SELF_TEST for remote test configuration testing
+
+		/* ─ special path for unit‑tests that only inspect config parsing ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
-			// Get resolved test configuration
-			$test_config = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );
-			$output->write( json_encode( $test_config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			$profile_cfg = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );
+			$output->write( json_encode( $profile_cfg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			return self::SUCCESS;
 		}
 
+		/* ─ platform guard ─ */
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To run Activation Tests on Windows, please use WSL.</comment>' );
 			return self::FAILURE;
 		}
 
-		// Force activation test package - users cannot override this
+		/****************************************************************
+		 * Inject activation‑specific defaults BEFORE delegating to parent
+		 */
 		$input->setOption( 'test-package', [ 'woocommerce/activation:stable' ] );
-
-		// Set activation-specific options
 		$input->setOption( 'skip_activating_plugins', true );
 		$input->setOption( 'skip_activating_themes', true );
 		$input->setOption( 'pw_options', '--retries=0' );
 
-		// Mark that we're running an activation test
+		// Flag for anything downstream that needs to know we are in activation mode
 		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 
-		// Call parent E2E execution
+		/****************************************************************
+		 * Delegate to parent implementation (now config‑aware)
+		 */
 		$exit_code = parent::doExecute( $input, $output );
 
-		// Handle deprecated --ignore-fail option
-		if ( $input->getOption( 'ignore-fail' ) ) {
-			return self::SUCCESS;
+		/****************************************************************
+		 * Handle deprecated --ignore-fail flag (only if user typed it)
+		 */
+		if ( is_option_explicitly_provided( $input, 'ignore-fail' ) && $input->getOption( 'ignore-fail' ) ) {
+			return self::SUCCESS;            // Treat any result as success
 		}
 
 		return $exit_code;

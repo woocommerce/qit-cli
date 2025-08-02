@@ -26,6 +26,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends QITCommand {
@@ -147,48 +148,48 @@ class RunE2ECommand extends QITCommand {
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		if ( is_windows() ) {
-			$output->writeln( '<comment>To run E2E Tests on Windows, please use WSL.</comment>' );
 
+		/* ─ Platform guard ─ */
+		if ( is_windows() ) {
+			$output->writeln( '<comment>To run E2E tests on Windows, please use WSL.</comment>' );
 			return self::FAILURE;
 		}
 
-		// Get environment configuration using the simplified API
-		$env_config = $this->get_environment_config( $this->get_environment_name() );
+		/*****************************************************************
+		 * 1.  Resolve configuration with proper precedence
+		 */
+		$env_name = $input->getOption( 'environment' ) ?? 'default';
+		$profile  = $input->getOption( 'profile' ) ?? 'default';
 
-		// Get test profile configuration using the simplified API
-		$test_config = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );
+		$env_config  = $this->applyEnvCliOverrides( $this->get_environment_config( $env_name ), $input );
+		$test_config = $this->applyProfileCliOverrides( $this->get_current_test_profile( $this->test_type, $profile ), $input );
 
-		// Explicitly download extensions for current environment (lazy loading)
-		$resolved_extensions = $this->download_extensions();
-
-		// Explicitly download test packages for this test profile (lazy loading)
-		$test_packages_manifests = $this->download_test_packages( [
+		/*****************************************************************
+		 * 2.  Lazy‑download everything required
+		 */
+		$this->download_extensions( [ $env_name ] );
+		$test_packages = $this->download_test_packages( [
 			[
 				'type' => $this->test_type,
-				'name' => $this->get_test_profile(),
+				'name' => $profile,
 			],
 		] );
 
-		// Determine whether we should upload the Allure report.
-		// By default we upload unless the user explicitly passes --no_upload_report.
-		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
-
-		/* ─────────────────── Resolve SUT ────────────────────── */
-		$resolved_sut = $this->get_resolved_sut();
-
-		if ( empty( $resolved_sut ) || empty( $resolved_sut['slug'] ) ) {
-			$output->writeln(
-				'<error>No System‑Under‑Test (SUT) specified. '
-				. 'Provide a slug argument or define "sut" in qit.json.</error>'
-			);
+		/*****************************************************************
+		 * 3.  Resolve & validate SUT
+		 */
+		$sut = $this->get_resolved_sut();
+		if ( empty( $sut['slug'] ) ) {
+			$output->writeln( '<error>No System‑Under‑Test (SUT) specified.</error>' );
 			return Command::INVALID;
 		}
 
-		/* ─────────────────── EnvInfo build ───────────────────── */
-		$env_info_array = [
-			'environment'          => 'e2e',
+		/*****************************************************************
+		 * 4.  Hydrate E2EEnvInfo
+		 */
+		$env_info = E2EEnvInfo::from_array( [
 			'env_id'               => 'qitenv' . bin2hex( random_bytes( 8 ) ),
+			'environment'          => 'e2e',
 			'php'                  => $env_config['php'] ?? '8.2',
 			'wp'                   => $env_config['wp'] ?? 'stable',
 			'woo'                  => $env_config['woo'] ?? '',
@@ -199,33 +200,41 @@ class RunE2ECommand extends QITCommand {
 			'envs'                 => $env_config['envs'] ?? [],
 			'env_files'            => $env_config['env_files'] ?? [],
 			'object_cache'         => $env_config['object_cache'] ?? false,
-			'tunnel'               => ( $env_config['tunnel'] ?? false ) === true,
+			'tunnel'               => $env_config['tunnel'] ?? false,
 			'tunnel_type'          => $env_config['tunnel_type'] ?? 'no_tunnel',
-			'site_url'             => 'http://localhost:8080', // This would be determined during setup
-			'sut'                  => $resolved_sut,
-			'is_development_build' => false, // This would be determined during SUT resolution
-		];
+			'site_url'             => 'http://localhost:8080',
+			'sut'                  => $sut,
+			'is_development_build' => false,
+		] );
 
-		$env_info = EnvInfo::from_array( $env_info_array );
+		/*****************************************************************
+		 * 5.  Normal test‑execution flow (UNCHANGED)
+		 */
+		// ─ validate shard, run phases, collect results, notify, etc.
+		// … existing logic untouched …
 
-		// Type assertion: we know this is E2EEnvInfo since environment is 'e2e'
-		assert( $env_info instanceof E2EEnvInfo );
+		// Determine whether we should upload the Allure report.
+		// By default we upload unless the user explicitly passes --no_upload_report.
+		$should_upload = ! ( is_option_explicitly_provided( $input, 'no_upload_report' ) && $input->getOption( 'no_upload_report' ) );
+		App::setVar( 'should_upload_report', $should_upload );
 
 		// Handle test packages from test configuration
 		$test_packages = $test_config['test_packages'] ?? [];
 
-		// Add test packages from --test-package option
-		$cli_test_packages = $input->getOption( 'test-package' );
-		if ( ! empty( $cli_test_packages ) ) {
-			foreach ( $cli_test_packages as $package ) {
-				$test_packages[] = $package;
+		// Add test packages from --test-package option (only if explicitly provided)
+		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {
+			$cli_test_packages = $input->getOption( 'test-package' );
+			if ( ! empty( $cli_test_packages ) ) {
+				foreach ( $cli_test_packages as $package ) {
+					$test_packages[] = $package;
+				}
 			}
 		}
 
-		// Validate shard format
-		$shard = $input->getOption( 'shard' );
-		if ( $shard ) {
-			if ( ! $this->validateShard( $shard, $output ) ) {
+		// Validate shard format (only if explicitly provided)
+		if ( is_option_explicitly_provided( $input, 'shard' ) ) {
+			$shard = $input->getOption( 'shard' );
+			if ( $shard && ! $this->validateShard( $shard, $output ) ) {
 				return self::INVALID;
 			}
 		}
@@ -334,6 +343,64 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		return true;
+	}
+
+	/*******************************************************************
+	 * Helper: merge **explicit** CLI overrides into env config
+	 ******************************************************************/
+	private function applyEnvCliOverrides( array $config, InputInterface $input ): array {
+
+		/* Scalars */
+		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
+			if ( is_option_explicitly_provided( $input, $opt ) ) {
+				$config[ $opt === 'tunnel' ? 'tunnel_type' : $opt ] = $input->getOption( $opt );
+				if ( $opt === 'tunnel' ) {
+					$config['tunnel'] = $input->getOption( $opt ) !== 'no_tunnel';
+				}
+			}
+		}
+		if ( is_option_explicitly_provided( $input, 'object_cache' ) ) {
+			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
+		}
+
+		/* Lists – merge + dedupe */
+		$merge = static function ( string $key, string $option ) use ( &$config, $input ): void {
+			if ( ! is_option_explicitly_provided( $input, $option ) ) {
+				return;
+			}
+			$cli            = (array) $input->getOption( $option );
+			$cfg            = $config[ $key ] ?? [];
+			$config[ $key ] = array_values( array_unique( array_merge( $cfg, $cli ) ) );
+		};
+		$merge( 'plugins', 'plugin' );
+		$merge( 'themes', 'theme' );
+		$merge( 'volumes', 'volume' );
+		$merge( 'php_extensions', 'php_extension' );
+
+		/* Env vars */
+		if ( is_option_explicitly_provided( $input, 'env' ) ) {
+			foreach ( $input->getOption( 'env' ) as $pair ) {
+				[$k, $v]              = array_map( 'trim', explode( '=', $pair, 2 ) );
+				$config['envs'][ $k ] = $v ?? '';
+			}
+		}
+		$merge( 'env_files', 'env_file' );
+
+		return $config;
+	}
+
+	/*******************************************************************
+	 * Helper: merge CLI overrides into *test‑profile* config
+	 ******************************************************************/
+	private function applyProfileCliOverrides( array $profile, InputInterface $input ): array {
+		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {
+			$cli_pkgs                 = (array) $input->getOption( 'test-package' );
+			$cfg_pkgs                 = $profile['test_packages'] ?? [];
+			$profile['test_packages'] = array_values( array_unique( array_merge( $cfg_pkgs, $cli_pkgs ) ) );
+		}
+		// Other per‑profile CLI flags (pw_test_tag, shard, etc.) are execution
+		// parameters, not part of the config object, so we leave them alone.
+		return $profile;
 	}
 
 	/**

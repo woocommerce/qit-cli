@@ -22,11 +22,11 @@ class ConfigResolver {
 	private array $schema_cache = [];
 	private TestPackageManifestParser $package_parser;
 
-	public function __construct(TestPackageManifestParser $package_parser) {
+	public function __construct( TestPackageManifestParser $package_parser ) {
 		$this->validator = new Validator();
 		$this->validator->setMaxErrors( 1 );
 		$this->error_formatter = new ErrorFormatter();
-		$this->package_parser = $package_parser;
+		$this->package_parser  = $package_parser;
 		$this->load_schemas();
 	}
 
@@ -38,7 +38,7 @@ class ConfigResolver {
 	 * @return array<string,mixed> Fully resolved configuration
 	 */
 	public static function load( ?string $config_file, array $cli_overrides = [] ): array {
-		return App::make( ConfigResolver::class )->resolve( $config_file, $cli_overrides );
+		return App::make( self::class )->resolve( $config_file, $cli_overrides );
 	}
 
 	/**

@@ -28,7 +28,7 @@ class QitJsonParser {
 	/** @var array<string, string> Track which directory each path came from. */
 	private array $path_contexts = [];
 
-	public function __construct(TestPackageManifestParser $package_parser) {
+	public function __construct( TestPackageManifestParser $package_parser ) {
 		// Initialize validator and error formatter (from BaseJsonParser)
 		$this->validator = new Validator();
 		$this->validator->setMaxErrors( 10 );
