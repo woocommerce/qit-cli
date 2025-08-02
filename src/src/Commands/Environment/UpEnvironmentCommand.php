@@ -4,6 +4,7 @@ declare( strict_types=1 );
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Commands\Environment\ExtensionSummary;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
@@ -345,6 +346,7 @@ class UpEnvironmentCommand extends QITCommand {
 		return $config;
 	}
 
+
 	/**
 	 * Nicely formatted human output.
 	 */
@@ -356,10 +358,9 @@ class UpEnvironmentCommand extends QITCommand {
 		if ( $info->woo ) {
 			$out->writeln( "WooCommerce: {$info->woo}" );
 		}
-		$out->writeln( 'Plugins:     ' . implode( ', ', array_map( fn( $p ) => $p->slug, $info->plugins ) ) );
-		if ( $info->themes ) {
-			$out->writeln( 'Themes:      ' . implode( ', ', array_map( fn( $t ) => $t->slug, $info->themes ) ) );
-		}
+		// Render extension tables using the dedicated ExtensionSummary class
+		$extension_summary = new ExtensionSummary( $this->e2e_environment );
+		$extension_summary->render_extension_tables( $out, $info );
 		if ( $info->tunnel ) {
 			$out->writeln( "Tunnel:      {$info->tunnel_type}" );
 		}
