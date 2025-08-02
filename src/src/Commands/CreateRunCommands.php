@@ -85,14 +85,11 @@ class CreateRunCommands extends DynamicCommandCreator {
 		 */
 		$command = new class(
 			$test_type,
-			$this->auth,
 			$this->upload,
 			$this->woo_extensions_list,
 			$this->test_group
 		) extends DynamicCommand {
 
-			/** @var Auth */
-			private Auth $auth;
 			/** @var Upload */
 			private Upload $upload;
 			/** @var WooExtensionsList */
@@ -102,12 +99,10 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 			public function __construct(
 				string $test_type,
-				Auth $auth,
 				Upload $upload,
 				WooExtensionsList $woo_extensions_list,
 				TestGroup $test_group
 			) {
-				$this->auth                = $auth;
 				$this->upload              = $upload;
 				$this->woo_extensions_list = $woo_extensions_list;
 				$this->test_group          = $test_group;
@@ -294,7 +289,12 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$options['event']     = 'cli_development_extension_test';
 			}
 
-			/** Convert comma‑/array list of slugs/IDs to comma‑separated IDs */
+			/**
+			 * Convert comma‑/array list of slugs/IDs to comma‑separated IDs
+			 *
+			 * @param string|array<string> $slugs_or_ids
+			 * @return string
+			 */
 			private function map_multiple_slugs_to_ids( $slugs_or_ids ): string {
 				$items = \is_array( $slugs_or_ids ) ? $slugs_or_ids : explode( ',', (string) $slugs_or_ids );
 				$ids   = array_map( function ( string $item ): int {
@@ -308,7 +308,14 @@ class CreateRunCommands extends DynamicCommandCreator {
 				return implode( ',', $ids );
 			}
 
-			/** Wait‑loop logic (moved verbatim, minor refactor) */
+			/**
+			 * Wait‑loop logic (moved verbatim, minor refactor)
+			 *
+			 * @param InputInterface      $input
+			 * @param OutputInterface     $output
+			 * @param array<string,mixed> $response
+			 * @return int
+			 */
 			private function wait_for_completion(
 				InputInterface $input,
 				OutputInterface $output,
@@ -327,7 +334,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$get   = $this->getApplication()->find( GetCommand::getDefaultName() );
 
 				do {
-					sleep( (int) rand( 5, 15 ) );
+					sleep( random_int( 5, 15 ) );
 
 					$finished = $get->run(
 						new ArrayInput( [
@@ -360,7 +367,13 @@ class CreateRunCommands extends DynamicCommandCreator {
 				return $input->getOption( 'ignore-fail' ) ? Command::SUCCESS : $exit;
 			}
 
-			/** Pretty table for non‑wait scenario */
+			/**
+			 * Pretty table for non‑wait scenario
+			 *
+			 * @param OutputInterface     $output
+			 * @param array<string,mixed> $response
+			 * @return void
+			 */
 			private function render_start_table( OutputInterface $output, array $response ): void {
 				$table = ( new Table( $output ) )
 					->setHorizontal()
@@ -404,7 +417,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 		/* Hide old “e2e” alias if Manager says so */
 		if ( $test_type === 'e2e' ) {
-			$hide = $this->cache->get_manager_sync_data( 'hide_e2e' ) ?? true;
+			$hide = $this->cache->get_manager_sync_data( 'hide_e2e' );
 			if ( ! $hide ) {
 				$application->add( App::make( RunE2ECommand::class ) );
 			}

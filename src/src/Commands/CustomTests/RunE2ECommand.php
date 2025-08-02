@@ -187,6 +187,7 @@ class RunE2ECommand extends QITCommand {
 		/*****************************************************************
 		 * 4.  Hydrate E2EEnvInfo
 		 */
+		/** @var E2EEnvInfo $env_info */
 		$env_info = E2EEnvInfo::from_array( [
 			'env_id'               => 'qitenv' . bin2hex( random_bytes( 8 ) ),
 			'environment'          => 'e2e',
@@ -347,6 +348,10 @@ class RunE2ECommand extends QITCommand {
 
 	/*******************************************************************
 	 * Helper: merge **explicit** CLI overrides into env config
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
 	 ******************************************************************/
 	private function applyEnvCliOverrides( array $config, InputInterface $input ): array {
 
@@ -381,7 +386,7 @@ class RunE2ECommand extends QITCommand {
 		if ( is_option_explicitly_provided( $input, 'env' ) ) {
 			foreach ( $input->getOption( 'env' ) as $pair ) {
 				[$k, $v]              = array_map( 'trim', explode( '=', $pair, 2 ) );
-				$config['envs'][ $k ] = $v ?? '';
+				$config['envs'][ $k ] = $v;
 			}
 		}
 		$merge( 'env_files', 'env_file' );
@@ -391,6 +396,10 @@ class RunE2ECommand extends QITCommand {
 
 	/*******************************************************************
 	 * Helper: merge CLI overrides into *test‑profile* config
+	 *
+	 * @param array<string,mixed> $profile
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
 	 ******************************************************************/
 	private function applyProfileCliOverrides( array $profile, InputInterface $input ): array {
 		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {
