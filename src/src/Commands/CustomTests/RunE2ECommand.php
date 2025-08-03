@@ -161,8 +161,8 @@ class RunE2ECommand extends QITCommand {
 		$env_name = $input->getOption( 'environment' ) ?? 'default';
 		$profile  = $input->getOption( 'profile' ) ?? 'default';
 
-		$env_config  = $this->env_config( $env_name, $input );
-		$test_config = $this->profile_config( $this->test_type, $profile, $input );
+		$env_config  = $this->applyEnvCliOverrides( $this->get_environment_config( $env_name ), $input );
+		$test_config = $this->applyProfileCliOverrides( $this->get_current_test_profile( $this->test_type, $profile ), $input );
 
 		/*****************************************************************
 		 * 2.  Lazy‑download everything required
@@ -346,6 +346,71 @@ class RunE2ECommand extends QITCommand {
 		return true;
 	}
 
+	/*******************************************************************
+	 * Helper: merge **explicit** CLI overrides into env config
+	 *
+	 * @param array<string,string|bool|array<int,string>> $config Environment configuration array with keys like 'php', 'wp', 'plugins', 'themes', etc.
+	 * @param InputInterface                              $input
+	 * @return array<string,string|bool|array<int,string>> Modified environment configuration with CLI overrides applied
+	 ******************************************************************/
+	private function applyEnvCliOverrides( array $config, InputInterface $input ): array {
+
+		/* Scalars */
+		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
+			if ( is_option_explicitly_provided( $input, $opt ) ) {
+				$config[ $opt === 'tunnel' ? 'tunnel_type' : $opt ] = $input->getOption( $opt );
+				if ( $opt === 'tunnel' ) {
+					$config['tunnel'] = $input->getOption( $opt ) !== 'no_tunnel';
+				}
+			}
+		}
+		if ( is_option_explicitly_provided( $input, 'object_cache' ) ) {
+			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
+		}
+
+		/* Lists – merge + dedupe */
+		$merge = static function ( string $key, string $option ) use ( &$config, $input ): void {
+			if ( ! is_option_explicitly_provided( $input, $option ) ) {
+				return;
+			}
+			$cli            = (array) $input->getOption( $option );
+			$cfg            = $config[ $key ] ?? [];
+			$config[ $key ] = array_values( array_unique( array_merge( $cfg, $cli ) ) );
+		};
+		$merge( 'plugins', 'plugin' );
+		$merge( 'themes', 'theme' );
+		$merge( 'volumes', 'volume' );
+		$merge( 'php_extensions', 'php_extension' );
+
+		/* Env vars */
+		if ( is_option_explicitly_provided( $input, 'env' ) ) {
+			foreach ( $input->getOption( 'env' ) as $pair ) {
+				[$k, $v]              = array_map( 'trim', explode( '=', $pair, 2 ) );
+				$config['envs'][ $k ] = $v;
+			}
+		}
+		$merge( 'env_files', 'env_file' );
+
+		return $config;
+	}
+
+	/*******************************************************************
+	 * Helper: merge CLI overrides into *test‑profile* config
+	 *
+	 * @param array<string,array<int,string>|string> $profile Test profile configuration array with keys like 'test_packages', etc.
+	 * @param InputInterface                         $input
+	 * @return array<string,array<int,string>|string> Modified test profile configuration with CLI overrides applied
+	 ******************************************************************/
+	private function applyProfileCliOverrides( array $profile, InputInterface $input ): array {
+		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {
+			$cli_pkgs                 = (array) $input->getOption( 'test-package' );
+			$cfg_pkgs                 = $profile['test_packages'] ?? [];
+			$profile['test_packages'] = array_values( array_unique( array_merge( $cfg_pkgs, $cli_pkgs ) ) );
+		}
+		// Other per‑profile CLI flags (pw_test_tag, shard, etc.) are execution
+		// parameters, not part of the config object, so we leave them alone.
+		return $profile;
+	}
 
 	/**
 	 * Clean test package results based on manifest declarations
