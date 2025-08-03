@@ -10,13 +10,13 @@ namespace QIT_CLI\Commands\CustomTests;
 use QIT_CLI\App;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
 use QIT_CLI\Environment\ResultCollector;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\WooExtensionsList;
@@ -37,6 +37,7 @@ class RunE2ECommand extends QITCommand {
 	protected PackagePhaseRunner $package_phase_runner;
 	protected ResultCollector $result_collector;
 	protected LocalTestRunNotifier $local_test_run_notifier;
+	protected EnvironmentRunner $environment_runner;
 
 	protected static $defaultName = 'run:e2e'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -53,13 +54,15 @@ class RunE2ECommand extends QITCommand {
 		WooExtensionsList $woo_extensions_list,
 		PackagePhaseRunner $package_phase_runner,
 		ResultCollector $result_collector,
-		LocalTestRunNotifier $local_test_run_notifier
+		LocalTestRunNotifier $local_test_run_notifier,
+		EnvironmentRunner $environment_runner
 	) {
 		$this->e2e_environment         = $e2e_environment;
 		$this->woo_extensions_list     = $woo_extensions_list;
 		$this->package_phase_runner    = $package_phase_runner;
 		$this->result_collector        = $result_collector;
 		$this->local_test_run_notifier = $local_test_run_notifier;
+		$this->environment_runner      = $environment_runner;
 		parent::__construct();
 	}
 
@@ -144,7 +147,7 @@ class RunE2ECommand extends QITCommand {
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false );
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
@@ -156,18 +159,112 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		/*****************************************************************
-		 * 1.  Resolve configuration with proper precedence
+		 * 1. Parse options and delegate environment setup to env:up
 		 */
-		$env_name = $input->getOption( 'environment' ) ?? 'default';
-		$profile  = $input->getOption( 'profile' ) ?? 'default';
+		$options = $this->parse_options( $input );
+		$env_up_options = $options['env_up'];
+		$test_options = $options['other'];
 
-		$env_config  = $this->applyEnvCliOverrides( $this->get_environment_config( $env_name ), $input );
-		$test_config = $this->applyProfileCliOverrides( $this->get_current_test_profile( $this->test_type, $profile ), $input );
+		// Handle activation test scenario
+		if ( $input->getArgument( 'sut' ) === 'woocommerce' &&
+		     ! empty( $input->getOption( 'test-package' ) ) &&
+		     in_array( 'woocommerce/activation:stable', (array) $input->getOption( 'test-package' ), true ) ) {
+			$output->writeln( '<info>Running activation test scenario.</info>' );
+			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
+			$input->setOption( 'skip_activating_plugins', true );
+			$input->setOption( 'skip_activating_themes', true );
+		}
+
+		// Determine test mode and wait behavior
+		try {
+			[ $test_mode, $wait ] = $this->determine_test_mode( $input );
+		} catch ( \RuntimeException $e ) {
+			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			return Command::INVALID;
+		}
+		App::setVar( 'TEST_MODE', $test_mode );
+
+		// Configure PW options
+		$this->configure_pw_options( $input );
+
+		// Parse environment variables
+		if ( $input->getOption( 'env' ) ) {
+			$this->parse_env_vars( $input->getOption( 'env' ) );
+		}
+
+		// Add SUT to env:up options if provided
+		$sut_slug = $input->getArgument( 'sut' );
+		$sut_id = null;
+		$sut_type = null;
+		if ( $sut_slug ) {
+			// Resolve SUT ID and type
+			try {
+				if ( is_numeric( $sut_slug ) ) {
+					$sut_id = (int) $sut_slug;
+					$sut_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( $sut_id );
+				} else {
+					$sut_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $sut_slug );
+				}
+				$sut_type = $this->woo_extensions_list->get_woo_extension_type( $sut_id );
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+				return Command::INVALID;
+			}
+
+			// Add SUT to env:up options using the complex format from old code
+			$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $sut_slug, $sut_type );
+		}
+
+		// Set additional options
+		if ( $output->isVerbose() ) {
+			$env_up_options['--verbose'] = true;
+		} elseif ( $output->isVeryVerbose() ) {
+			$env_up_options['--very-verbose'] = true;
+		}
+
+		// Set environment exposure based on wait mode
+		if ( $wait ) {
+			putenv( 'QIT_HIDE_SITE_INFO=0' );
+		} else {
+			putenv( 'QIT_HIDE_SITE_INFO=1' );
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
+		}
+		putenv( 'QIT_UP_AND_TEST=1' );
+
+		// Set global variables
+		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
+		if ( $sut_slug ) {
+			App::setVar( 'QIT_SUT', $sut_id );
+			App::setVar( 'QIT_SUT_SLUG', $sut_slug );
+		}
+
+		// Always output JSON for parsing
+		$env_up_options['--json'] = true;
+
+		// Run env:up and get the environment info
+		try {
+			/** @var E2EEnvInfo $env_info */
+			$env_info = $this->environment_runner->run_environment( $env_up_options );
+		} catch ( \Exception $e ) {
+			$output->writeln( sprintf( '<error>Failed to start environment: %s</error>', $e->getMessage() ) );
+			return Command::FAILURE;
+		} finally {
+			putenv( 'QIT_HIDE_SITE_INFO' );
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' );
+		}
+
+		// Add SUT info to env_info if provided
+		if ( $sut_slug ) {
+			$env_info->sut = [ 'slug' => $sut_slug, 'id' => $sut_id, 'type' => $sut_type ];
+		}
 
 		/*****************************************************************
-		 * 2.  Lazy‑download everything required
+		 * 2. Handle test configuration and packages
 		 */
-		$this->download_extensions( [ $env_name ] );
+		$profile = $input->getOption( 'profile' ) ?? 'default';
+		$test_config = $this->get_current_test_profile( $this->test_type, $profile );
+
+		// Get test packages from profile
 		$test_packages = $this->download_test_packages( [
 			[
 				'type' => $this->test_type,
@@ -176,40 +273,7 @@ class RunE2ECommand extends QITCommand {
 		] );
 
 		/*****************************************************************
-		 * 3.  Resolve & validate SUT
-		 */
-		$sut = $this->get_resolved_sut();
-		if ( empty( $sut['slug'] ) ) {
-			$output->writeln( '<error>No System‑Under‑Test (SUT) specified.</error>' );
-			return Command::INVALID;
-		}
-
-		/*****************************************************************
-		 * 4.  Hydrate E2EEnvInfo
-		 */
-		/** @var E2EEnvInfo $env_info */
-		$env_info = E2EEnvInfo::from_array( [
-			'env_id'               => 'qitenv' . bin2hex( random_bytes( 8 ) ),
-			'environment'          => 'e2e',
-			'php'                  => $env_config['php'] ?? '8.2',
-			'wp'                   => $env_config['wp'] ?? 'stable',
-			'woo'                  => $env_config['woo'] ?? '',
-			'plugins'              => $env_config['plugins'] ?? [],
-			'themes'               => $env_config['themes'] ?? [],
-			'volumes'              => $env_config['volumes'] ?? [],
-			'php_extensions'       => $env_config['php_extensions'] ?? [],
-			'envs'                 => $env_config['envs'] ?? [],
-			'env_files'            => $env_config['env_files'] ?? [],
-			'object_cache'         => $env_config['object_cache'] ?? false,
-			'tunnel'               => $env_config['tunnel'] ?? false,
-			'tunnel_type'          => $env_config['tunnel_type'] ?? 'no_tunnel',
-			'site_url'             => 'http://localhost:8080',
-			'sut'                  => $sut,
-			'is_development_build' => false,
-		] );
-
-		/*****************************************************************
-		 * 5.  Normal test‑execution flow (UNCHANGED)
+		 * 3. Normal test execution flow
 		 */
 		// ─ validate shard, run phases, collect results, notify, etc.
 		// … existing logic untouched …
@@ -219,15 +283,15 @@ class RunE2ECommand extends QITCommand {
 		$should_upload = ! ( is_option_explicitly_provided( $input, 'no_upload_report' ) && $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'should_upload_report', $should_upload );
 
-		// Handle test packages from test configuration
-		$test_packages = $test_config['test_packages'] ?? [];
-
-		// Add test packages from --test-package option (only if explicitly provided)
+		// CLI test packages override profile test packages if provided
 		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {
 			$cli_test_packages = $input->getOption( 'test-package' );
 			if ( ! empty( $cli_test_packages ) ) {
-				foreach ( $cli_test_packages as $package ) {
-					$test_packages[] = $package;
+				// Download additional test packages from CLI
+				$additional_packages = $this->download_test_packages( [], $cli_test_packages );
+				// Merge with existing packages
+				foreach ( $additional_packages as $pkg_id => $pkg_data ) {
+					$test_packages[ $pkg_id ] = $pkg_data;
 				}
 			}
 		}
@@ -244,17 +308,11 @@ class RunE2ECommand extends QITCommand {
 		$this->setupGlobals( $env_info, $input );
 		$this->handle_termination();
 
-		// Display warning if CLI overrides config (before test early return)
-		$sut_warning = $this->get_sut_warning();
-		if ( $sut_warning ) {
-			$output->writeln( "<comment>$sut_warning</comment>" );
-		}
 
 		// For testing
-		if ( getenv( 'QIT_SELF_TEST' ) === 'run_e2e' ) {
+		if ( getenv( 'QIT_SELF_TEST' ) === 'run_e2e' || getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->write( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
-
-			return self::SUCCESS;
+			return Command::SUCCESS;
 		}
 
 		// Populate test packages metadata for volume mounting
@@ -267,9 +325,8 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-		// Initialize environment
+		// Initialize e2e environment with the info from env:up
 		$this->e2e_environment->init( $env_info );
-		$this->e2e_environment->up();
 
 		// Notify test started
 		if ( isset( $env_info->sut['slug'] ) ) {
@@ -285,6 +342,11 @@ class RunE2ECommand extends QITCommand {
 				$is_development,
 				$notify
 			);
+		}
+
+		// If up_only or codegen mode, we're done
+		if ( $wait ) {
+			return Command::SUCCESS;
 		}
 
 		// Run tests with test packages
@@ -346,71 +408,6 @@ class RunE2ECommand extends QITCommand {
 		return true;
 	}
 
-	/*******************************************************************
-	 * Helper: merge **explicit** CLI overrides into env config
-	 *
-	 * @param array<string,string|bool|array<int,string>> $config Environment configuration array with keys like 'php', 'wp', 'plugins', 'themes', etc.
-	 * @param InputInterface                              $input
-	 * @return array<string,string|bool|array<int,string>> Modified environment configuration with CLI overrides applied
-	 ******************************************************************/
-	private function applyEnvCliOverrides( array $config, InputInterface $input ): array {
-
-		/* Scalars */
-		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
-			if ( is_option_explicitly_provided( $input, $opt ) ) {
-				$config[ $opt === 'tunnel' ? 'tunnel_type' : $opt ] = $input->getOption( $opt );
-				if ( $opt === 'tunnel' ) {
-					$config['tunnel'] = $input->getOption( $opt ) !== 'no_tunnel';
-				}
-			}
-		}
-		if ( is_option_explicitly_provided( $input, 'object_cache' ) ) {
-			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
-		}
-
-		/* Lists – merge + dedupe */
-		$merge = static function ( string $key, string $option ) use ( &$config, $input ): void {
-			if ( ! is_option_explicitly_provided( $input, $option ) ) {
-				return;
-			}
-			$cli            = (array) $input->getOption( $option );
-			$cfg            = $config[ $key ] ?? [];
-			$config[ $key ] = array_values( array_unique( array_merge( $cfg, $cli ) ) );
-		};
-		$merge( 'plugins', 'plugin' );
-		$merge( 'themes', 'theme' );
-		$merge( 'volumes', 'volume' );
-		$merge( 'php_extensions', 'php_extension' );
-
-		/* Env vars */
-		if ( is_option_explicitly_provided( $input, 'env' ) ) {
-			foreach ( $input->getOption( 'env' ) as $pair ) {
-				[$k, $v]              = array_map( 'trim', explode( '=', $pair, 2 ) );
-				$config['envs'][ $k ] = $v;
-			}
-		}
-		$merge( 'env_files', 'env_file' );
-
-		return $config;
-	}
-
-	/*******************************************************************
-	 * Helper: merge CLI overrides into *test‑profile* config
-	 *
-	 * @param array<string,array<int,string>|string> $profile Test profile configuration array with keys like 'test_packages', etc.
-	 * @param InputInterface                         $input
-	 * @return array<string,array<int,string>|string> Modified test profile configuration with CLI overrides applied
-	 ******************************************************************/
-	private function applyProfileCliOverrides( array $profile, InputInterface $input ): array {
-		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {
-			$cli_pkgs                 = (array) $input->getOption( 'test-package' );
-			$cfg_pkgs                 = $profile['test_packages'] ?? [];
-			$profile['test_packages'] = array_values( array_unique( array_merge( $cfg_pkgs, $cli_pkgs ) ) );
-		}
-		// Other per‑profile CLI flags (pw_test_tag, shard, etc.) are execution
-		// parameters, not part of the config object, so we leave them alone.
-		return $profile;
-	}
 
 	/**
 	 * Clean test package results based on manifest declarations
@@ -683,5 +680,139 @@ class RunE2ECommand extends QITCommand {
 				$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'] );
 			}
 		}
+	}
+
+	/**
+	 * Parse options and separate env:up options from test-specific options.
+	 *
+	 * @param InputInterface $input
+	 * @return array{env_up: array<string,mixed>, other: array<string,mixed>}
+	 */
+	protected function parse_options( InputInterface $input ): array {
+		// Get all option names that belong to env:up command
+		$up_command = $this->getApplication()->find( 'env:up' );
+		$up_command_option_names = array_map( function ( $option ) {
+			return $option->getName();
+		}, $up_command->getDefinition()->getOptions() );
+
+		$parsed_options = [
+			'env_up' => [],
+			'other'  => [],
+		];
+
+		// Separate options based on which command they belong to
+		foreach ( $input->getOptions() as $option_name => $option_value ) {
+			// Skip null values and default values
+			if ( $option_value === null || ! is_option_explicitly_provided( $input, $option_name ) ) {
+				continue;
+			}
+
+			if ( in_array( $option_name, $up_command_option_names, true ) ) {
+				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
+			} else {
+				$parsed_options['other'][ $option_name ] = $option_value;
+			}
+		}
+
+		return $parsed_options;
+	}
+
+	/**
+	 * Determine the test mode and whether to wait.
+	 *
+	 * @param InputInterface $input
+	 * @return array{0:string,1:bool} Returns [test_mode, wait]
+	 * @throws \RuntimeException If both ui and codegen are set.
+	 */
+	private function determine_test_mode( InputInterface $input ): array {
+		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
+			throw new \RuntimeException( 'Cannot run tests in both "UI" and "Codegen" mode at the same time.' );
+		}
+
+		if ( $input->getOption( 'ui' ) ) {
+			$test_mode = 'ui';
+		} elseif ( $input->getOption( 'codegen' ) ) {
+			putenv( 'QIT_CODEGEN=1' );
+			$test_mode = 'codegen';
+		} else {
+			$test_mode = 'headless';
+		}
+
+		$wait = $test_mode === 'codegen';
+
+		return [ $test_mode, $wait ];
+	}
+
+	/**
+	 * Configure Playwright options.
+	 *
+	 * @param InputInterface $input
+	 */
+	private function configure_pw_options( InputInterface $input ): void {
+		$pw_options = $input->getOption( 'pw_options' ) ?? '';
+		if ( ! empty( $pw_options ) ) {
+			// Strip surrounding quotes if present.
+			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, -1 ) === '"' ) {
+				$pw_options = substr( $pw_options, 1, -1 );
+			}
+		}
+
+		if ( $input->getOption( 'update_snapshots' ) ) {
+			$pw_options .= ' --update-snapshots';
+		}
+
+		App::setVar( 'pw_options', $pw_options );
+	}
+
+	/**
+	 * Parse environment variables.
+	 *
+	 * @param array<string> $env_vars
+	 * @throws \RuntimeException If invalid format.
+	 */
+	private function parse_env_vars( array $env_vars ): void {
+		$parsed_vars = [];
+		foreach ( $env_vars as $env_var ) {
+			$env_var = explode( '=', $env_var, 2 );
+			if ( count( $env_var ) !== 2 ) {
+				throw new \RuntimeException( 'Invalid environment variable format. Use "--env FOO=bar".' );
+			}
+
+			$key   = trim( $env_var[0] );
+			$value = trim( $env_var[1] );
+
+			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
+				throw new \RuntimeException( 'Invalid env var name. Letters, numbers, underscores only.' );
+			}
+
+			$parsed_vars[ $key ] = $value;
+		}
+
+		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
+	}
+
+	/**
+	 * Add SUT to env:up options.
+	 *
+	 * @param InputInterface $input
+	 * @param array<mixed>   $env_up_options
+	 * @param string         $woo_extension_slug
+	 * @param string|null    $sut_type
+	 * @return array<mixed>
+	 */
+	private function add_sut_to_env_up_options( InputInterface $input, array $env_up_options, string $woo_extension_slug, ?string $sut_type ): array {
+		if ( ! $sut_type ) {
+			$sut_type = 'plugin';
+		}
+
+		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
+
+		// Add to env:up options
+		if ( ! isset( $env_up_options[ $key ] ) ) {
+			$env_up_options[ $key ] = [];
+		}
+		$env_up_options[ $key ][] = $woo_extension_slug;
+
+		return $env_up_options;
 	}
 }
