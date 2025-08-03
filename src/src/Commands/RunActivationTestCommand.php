@@ -43,7 +43,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 
 		/* ─ special path for unit‑tests that only inspect config parsing ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
-			$profile_cfg = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );
+			$profile_cfg = $this->profile_config( $this->test_type, $this->get_test_profile(), $input );
 			$output->write( json_encode( $profile_cfg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			return self::SUCCESS;
 		}

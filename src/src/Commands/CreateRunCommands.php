@@ -117,19 +117,19 @@ class CreateRunCommands extends DynamicCommandCreator {
 			public function doExecute( InputInterface $input, OutputInterface $output ): int {
 
 				/****************************************************************
-				 * 1.  Base configuration comes from qit.json profile
+				 * 1.  Get merged profile configuration (profile + CLI overrides)
 				 */
 				$profile_name = is_option_explicitly_provided( $input, 'profile' )
 					? (string) $input->getOption( 'profile' )
 					: 'default';
 
-				$options = $this->get_current_test_profile( $this->test_type, $profile_name );
+				$options = $this->profile_config( $this->test_type, $profile_name, $input );
 				if ( ! \is_array( $options ) ) {
 					$options = [];
 				}
 
 				/****************************************************************
-				 * 2.  Apply CLI overrides (only what user provided)
+				 * 2.  Apply additional CLI overrides (remote-specific options)
 				 */
 				foreach ( $this->options_to_send as $opt_name ) {
 
