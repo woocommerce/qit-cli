@@ -544,7 +544,9 @@ abstract class QITCommand extends Command {
 			}
 		}
 
-		/* ─ Boolean flags ─ */
+		/* ─ Resolve special versions and add plugins explicitly ─ */
+		$cfg = $this->resolve_woo( $cfg, $in );
+		$cfg = $this->resolve_wp( $cfg, $in );
 		if ( is_option_explicitly_provided( $in, 'object_cache' ) ) {
 			$cfg['object_cache'] = (bool) $in->getOption( 'object_cache' );
 		}
@@ -612,12 +614,6 @@ abstract class QITCommand extends Command {
 		// Remove env_files - no longer needed
 		unset( $cfg['env_files'] );
 
-		/* ─ Apply WooCommerce precedence after plugin merge ─ */
-		$cfg = $this->apply_woocommerce_precedence( $cfg, $in );
-
-		/* ─ Resolve WordPress special versions ─ */
-		$cfg = $this->resolve_wp( $cfg, $in );
-
 		return $cfg;
 	}
 
@@ -635,108 +631,55 @@ abstract class QITCommand extends Command {
 	}
 
 	/**
-	 * Apply WooCommerce precedence logic and auto-injection.
-	 * This enforces the 4-level precedence ladder and ensures no duplicates.
+	 * Resolve --woo option explicitly.
+	 * Adds WooCommerce plugin with the specified version.
 	 *
-	 * @param array<string,mixed> $cfg
+	 * @param array<string,mixed> $config
 	 * @param InputInterface      $in
 	 * @return array<string,mixed>
 	 */
-	private function apply_woocommerce_precedence( array $cfg, InputInterface $in ): array {
-		$woo_plugin = null;
-		$is_cli_plugin = false;
-		
-		// Get CLI plugin slugs to distinguish Level 3 from Level 1
-		$cli_plugin_slugs = is_option_explicitly_provided( $in, 'plugin' ) ? (array) $in->getOption( 'plugin' ) : [];
-
-		// Level 1 & 3: Existing plugin entries (distinguish CLI vs config)
-		$existing_plugins = $cfg['plugins'] ?? [];
-		foreach ( $existing_plugins as $plugin_config ) {
-			$slug = is_string( $plugin_config ) ? $plugin_config : ( $plugin_config['slug'] ?? null );
-			if ( $slug === 'woocommerce' ) {
-				$is_cli_plugin = in_array( $slug, $cli_plugin_slugs, true );
-				$woo_plugin = $plugin_config;
-				break;
-			}
+	private function resolve_woo( array $config, InputInterface $in ): array {
+		if ( ! is_option_explicitly_provided( $in, 'woo' ) ) {
+			return $config;
 		}
 
-		// Level 2: Core "woo" block in config (only if no CLI plugin found)
-		if ( isset( $cfg['woo'] ) && ! empty( $cfg['woo'] ) && ! $is_cli_plugin ) {
-			$woo_version = $cfg['woo'];
-			$version_resolver = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Extensions\VersionResolver::class );
-			$resolved_source = $version_resolver->resolve_woo( $woo_version );
+		$woo_version = $in->getOption( 'woo' );
+		$vr = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Extensions\VersionResolver::class );
+		$resolved_source = $vr->resolve_woo( $woo_version );
 
-			if ( $resolved_source !== null ) {
-				// Special version (rc, nightly) - resolve to URL
-				$woo_plugin = [
-					'slug'                => 'woocommerce',
-					'from'                => 'url',
-					'source'              => $resolved_source,
-					'version'             => $woo_version,
-					'added_automatically' => 'Added from core woo config block',
-				];
-			} else {
-				// Regular version - add as wporg plugin
-				$woo_plugin = [
-					'slug'                => 'woocommerce',
-					'from'                => 'wporg',
-					'version'             => $woo_version === 'stable' ? 'stable' : $woo_version,
-					'added_automatically' => 'Added from core woo config block',
-				];
-			}
+		if ( $resolved_source !== null ) {
+			// Special version (rc, nightly) - resolve to URL
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'url',
+				'source'              => $resolved_source,
+				'version'             => $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
+		} else {
+			// Regular version - add as wporg plugin
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'wporg',
+				'version'             => $woo_version === 'stable' ? 'stable' : $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
 		}
 
-		// Level 4: CLI --woo flag (highest precedence - always wins)
-		if ( is_option_explicitly_provided( $in, 'woo' ) ) {
-			$woo_version = $in->getOption( 'woo' );
-			$version_resolver = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Extensions\VersionResolver::class );
-			$resolved_source = $version_resolver->resolve_woo( $woo_version );
+		// Add WooCommerce to plugins list, avoiding duplicates
+		$config['plugins'] = $config['plugins'] ?? [];
 
-			if ( $resolved_source !== null ) {
-				// Special version (rc, nightly) - resolve to URL
-				$woo_plugin = [
-					'slug'                => 'woocommerce',
-					'from'                => 'url',
-					'source'              => $resolved_source,
-					'version'             => $woo_version,
-					'added_automatically' => 'Added via --woo option',
-				];
-			} else {
-				// Regular version - add as wporg plugin
-				$woo_plugin = [
-					'slug'                => 'woocommerce',
-					'from'                => 'wporg',
-					'version'             => $woo_version === 'stable' ? 'stable' : $woo_version,
-					'added_automatically' => 'Added via --woo option',
-				];
-			}
+		// Remove any existing WooCommerce plugin to avoid conflicts
+		$config['plugins'] = array_filter( $config['plugins'], function ( $plugin ) {
+			$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+			return $slug !== 'woocommerce';
+		});
 
-			// Also set the woo config value for env info
-			$cfg['woo'] = $woo_version;
-		}
+		// Add the resolved WooCommerce plugin
+		$config['plugins'][] = $woo_plugin;
 
-		// Apply the winning WooCommerce configuration
-		if ( $woo_plugin !== null ) {
-			// Remove any existing WooCommerce plugins to avoid duplicates
-			$cfg['plugins'] = array_filter( $cfg['plugins'] ?? [], function ( $plugin ) {
-				$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
-				return $slug !== 'woocommerce';
-			});
-
-			// Add the resolved WooCommerce plugin
-			$cfg['plugins'][] = $woo_plugin;
-
-			// Keep woo scalar in sync with winning plugin version
-			$woo_plugin_version = is_array( $woo_plugin ) && isset( $woo_plugin['version'] )
-				? $woo_plugin['version']
-				: 'stable';
-
-			$cfg['woo'] = $woo_plugin_version;
-		}
-
-		return $cfg;
+		return $config;
 	}
-
 
 	/**
 	 * Resolve --wp option explicitly.
