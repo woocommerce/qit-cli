@@ -147,10 +147,11 @@ class RunE2ECommand extends QITCommand {
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false );
 	}
 
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		/** @var \QIT_CLI\QITInput $input */
 
 		/* ─ Platform guard ─ */
 		if ( is_windows() ) {
@@ -159,16 +160,14 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		/*****************************************************************
-		 * 1. Parse options and delegate environment setup to env:up
+		 * 1. Get environment options for delegation to env:up
 		 */
-		$options = $this->parse_options( $input );
-		$env_up_options = $options['env_up'];
-		$test_options = $options['other'];
+		$env_up_options = $input->getEnvironmentOptions();
 
 		// Handle activation test scenario
+		$testPackages = $input->getTestPackages();
 		if ( $input->getArgument( 'sut' ) === 'woocommerce' &&
-		     ! empty( $input->getOption( 'test-package' ) ) &&
-		     in_array( 'woocommerce/activation:stable', (array) $input->getOption( 'test-package' ), true ) ) {
+		     array_filter( $testPackages, fn($pkg) => str_starts_with($pkg, 'woocommerce/activation:') ) ) {
 			$output->writeln( '<info>Running activation test scenario.</info>' );
 			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 			$input->setOption( 'skip_activating_plugins', true );
@@ -188,12 +187,13 @@ class RunE2ECommand extends QITCommand {
 		$this->configure_pw_options( $input );
 
 		// Parse environment variables
-		if ( $input->getOption( 'env' ) ) {
+		if ( $input->hasOption( 'env' ) && $input->getOption( 'env' ) ) {
 			$this->parse_env_vars( $input->getOption( 'env' ) );
 		}
 
 		// Add SUT to env:up options if provided
-		$sut_slug = $input->getArgument( 'sut' );
+		$sutInfo = $input->getSut();
+		$sut_slug = $sutInfo['slug'] ?? null;
 		$sut_id = null;
 		$sut_type = null;
 		if ( $sut_slug ) {
@@ -213,13 +213,6 @@ class RunE2ECommand extends QITCommand {
 
 			// Add SUT to env:up options using the complex format from old code
 			$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $sut_slug, $sut_type );
-		}
-
-		// Set additional options
-		if ( $output->isVerbose() ) {
-			$env_up_options['--verbose'] = true;
-		} elseif ( $output->isVeryVerbose() ) {
-			$env_up_options['--very-verbose'] = true;
 		}
 
 		// Set environment exposure based on wait mode
@@ -261,16 +254,16 @@ class RunE2ECommand extends QITCommand {
 		/*****************************************************************
 		 * 2. Handle test configuration and packages
 		 */
-		$profile = $input->getOption( 'profile' ) ?? 'default';
-		$test_config = $this->get_current_test_profile( $this->test_type, $profile );
-
-		// Get test packages from profile
-		$test_packages = $this->download_test_packages( [
+		// Download test packages from profile and any additional CLI packages
+		$test_packages = $this->download_test_packages( 
 			[
-				'type' => $this->test_type,
-				'name' => $profile,
+				[
+					'type' => $this->test_type,
+					'name' => $input->getProfileName(),
+				],
 			],
-		] );
+			$input->getTestPackages() // This includes both profile and CLI packages
+		);
 
 		/*****************************************************************
 		 * 3. Normal test execution flow
@@ -280,24 +273,13 @@ class RunE2ECommand extends QITCommand {
 
 		// Determine whether we should upload the Allure report.
 		// By default we upload unless the user explicitly passes --no_upload_report.
-		$should_upload = ! ( is_option_explicitly_provided( $input, 'no_upload_report' ) && $input->getOption( 'no_upload_report' ) );
+		$should_upload = ! ( $input->hasOption( 'no_upload_report' ) && $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'should_upload_report', $should_upload );
 
-		// CLI test packages override profile test packages if provided
-		if ( is_option_explicitly_provided( $input, 'test-package' ) ) {
-			$cli_test_packages = $input->getOption( 'test-package' );
-			if ( ! empty( $cli_test_packages ) ) {
-				// Download additional test packages from CLI
-				$additional_packages = $this->download_test_packages( [], $cli_test_packages );
-				// Merge with existing packages
-				foreach ( $additional_packages as $pkg_id => $pkg_data ) {
-					$test_packages[ $pkg_id ] = $pkg_data;
-				}
-			}
-		}
+		// Test packages are already merged by QITInput
 
 		// Validate shard format (only if explicitly provided)
-		if ( is_option_explicitly_provided( $input, 'shard' ) ) {
+		if ( $input->hasOption( 'shard' ) ) {
 			$shard = $input->getOption( 'shard' );
 			if ( $shard && ! $this->validateShard( $shard, $output ) ) {
 				return self::INVALID;
@@ -682,40 +664,6 @@ class RunE2ECommand extends QITCommand {
 		}
 	}
 
-	/**
-	 * Parse options and separate env:up options from test-specific options.
-	 *
-	 * @param InputInterface $input
-	 * @return array{env_up: array<string,mixed>, other: array<string,mixed>}
-	 */
-	protected function parse_options( InputInterface $input ): array {
-		// Get all option names that belong to env:up command
-		$up_command = $this->getApplication()->find( 'env:up' );
-		$up_command_option_names = array_map( function ( $option ) {
-			return $option->getName();
-		}, $up_command->getDefinition()->getOptions() );
-
-		$parsed_options = [
-			'env_up' => [],
-			'other'  => [],
-		];
-
-		// Separate options based on which command they belong to
-		foreach ( $input->getOptions() as $option_name => $option_value ) {
-			// Skip null values and default values
-			if ( $option_value === null || ! is_option_explicitly_provided( $input, $option_name ) ) {
-				continue;
-			}
-
-			if ( in_array( $option_name, $up_command_option_names, true ) ) {
-				$parsed_options['env_up'][ "--$option_name" ] = $option_value;
-			} else {
-				$parsed_options['other'][ $option_name ] = $option_value;
-			}
-		}
-
-		return $parsed_options;
-	}
 
 	/**
 	 * Determine the test mode and whether to wait.

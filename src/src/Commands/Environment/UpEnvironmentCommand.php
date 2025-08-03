@@ -12,7 +12,6 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\is_windows;
 
 /**
@@ -73,6 +72,7 @@ class UpEnvironmentCommand extends QITCommand {
 	 * Execution
 	 ******************************************************************/
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		/** @var \QIT_CLI\QITInput $input */
 
 		/* ─ Safety guard ─ */
 		if ( is_windows() ) {
@@ -263,14 +263,15 @@ class UpEnvironmentCommand extends QITCommand {
 	 * Merge *explicit* CLI options into the resolved environment config.
 	 *
 	 * @param array<string,mixed> $config
-	 *
+	 * @param InputInterface      $input
 	 * @return array<string,mixed>
 	 */
 	private function applyCliOverrides( array $config, InputInterface $input ): array {
+		/** @var \QIT_CLI\QITInput $input */
 
 		/* ─ Scalars ─ */
 		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
-			if ( is_option_explicitly_provided( $input, $opt ) ) {
+			if ( $input->hasOption( $opt ) ) {
 				if ( $opt === 'tunnel' ) {
 					$tunnel_value          = $input->getOption( $opt );
 					$config['tunnel_type'] = $tunnel_value;
@@ -284,13 +285,13 @@ class UpEnvironmentCommand extends QITCommand {
 		/* ─ Resolve special versions and add plugins explicitly ─ */
 		$config = $this->resolve_woo( $config, $input );
 		$config = $this->resolve_wp( $config, $input );
-		if ( is_option_explicitly_provided( $input, 'object_cache' ) ) {
+		if ( $input->hasOption( 'object_cache' ) ) {
 			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
 		}
 
 		/* ─ Array‑merge helpers with slug-keyed deduplication ─ */
 		$merge_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
-			if ( ! is_option_explicitly_provided( $input, $opt_name ) ) {
+			if ( ! $input->hasOption( $opt_name ) ) {
 				return;
 			}
 			$cfg = $config[ $key ] ?? [];
@@ -321,7 +322,7 @@ class UpEnvironmentCommand extends QITCommand {
 
 		/* ─ Simple array merge for non-extension lists ─ */
 		$merge_simple_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
-			if ( ! is_option_explicitly_provided( $input, $opt_name ) ) {
+			if ( ! $input->hasOption( $opt_name ) ) {
 				return;
 			}
 			$cli            = (array) $input->getOption( $opt_name );
@@ -336,11 +337,11 @@ class UpEnvironmentCommand extends QITCommand {
 		$existing_env_vars = $config['envs'] ?? [];
 		$env_files         = array_merge(
 			$config['env_files'] ?? [],
-			is_option_explicitly_provided( $input, 'env_file' ) ? (array) $input->getOption( 'env_file' ) : []
+			$input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : []
 		);
 
 		// Get CLI env vars as array of key=value strings (EnvParser expects this format)
-		$cli_env_vars = is_option_explicitly_provided( $input, 'env' ) ? (array) $input->getOption( 'env' ) : [];
+		$cli_env_vars = $input->hasOption( 'env' ) ? (array) $input->getOption( 'env' ) : [];
 
 		// Parse and merge everything using EnvParser
 		$parsed_vars = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvParser::class )->parse( $cli_env_vars, $env_files );
@@ -363,7 +364,8 @@ class UpEnvironmentCommand extends QITCommand {
 	 * @return array<string,mixed>
 	 */
 	private function resolve_woo( array $config, InputInterface $input ): array {
-		if ( ! is_option_explicitly_provided( $input, 'woo' ) ) {
+		/** @var \QIT_CLI\QITInput $input */
+		if ( ! $input->hasOption( 'woo' ) ) {
 			return $config;
 		}
 
@@ -414,7 +416,8 @@ class UpEnvironmentCommand extends QITCommand {
 	 * @return array<string,mixed>
 	 */
 	private function resolve_wp( array $config, InputInterface $input ): array {
-		if ( ! is_option_explicitly_provided( $input, 'wp' ) ) {
+		/** @var \QIT_CLI\QITInput $input */
+		if ( ! $input->hasOption( 'wp' ) ) {
 			return $config;
 		}
 

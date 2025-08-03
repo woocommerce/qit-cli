@@ -218,6 +218,11 @@ function banner( SymfonyStyle $io, string $label, bool $line_before = true, bool
  * @return bool True if the option was explicitly provided, false otherwise.
  */
 function is_option_explicitly_provided( InputInterface $input, string $option_name ): bool {
+	// Handle QITInput wrapper
+	if ( $input instanceof \QIT_CLI\QITInput ) {
+		$input = $input->getSymfonyInput();
+	}
+	
 	if ( $input instanceof ArgvInput ) {
 		// For ArgvInput, check if the option appears in the raw argv array
 		$argv = $_SERVER['argv'] ?? [];

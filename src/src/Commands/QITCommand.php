@@ -6,6 +6,8 @@ use QIT_CLI\App;
 use QIT_CLI\PreCommand\Configuration\ConfigResolver;
 use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;
+use QIT_CLI\PreCommand\Extensions\ResolvedExtensions;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -15,10 +17,11 @@ use function QIT_CLI\is_option_explicitly_provided;
 abstract class QITCommand extends Command {
 	protected InputInterface $input;
 	protected OutputInterface $output;
+	protected string $test_type = 'e2e'; // Default test type, overridden by subclasses
 
 	/** @var array<string,mixed>|null Resolved configuration */
 	private ?array $config = null;
-	private ?\QIT_CLI\PreCommand\Extensions\ResolvedExtensions $resolved_extensions = null;
+	private ?ResolvedExtensions $resolved_extensions = null;
 	/** @var string[] */
 	private array $resolved_envs = [];
 	/** @var array<string, mixed> */
@@ -60,9 +63,18 @@ abstract class QITCommand extends Command {
 		$this->output = $output;
 
 		try {
-			return $this->doExecute( $input, $output );
+			// Create QITInput wrapper that implements InputInterface
+			$resolvedConfig = $this->get_resolved_config();
+			$qitInput       = new \QIT_CLI\QITInput( $input, $resolvedConfig, $this->test_type );
+
+			// Update stored input to be the QITInput
+			$this->input = $qitInput;
+
+			// Call doExecute with QITInput (which implements InputInterface)
+			return $this->doExecute( $qitInput, $output );
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
+
 			return Command::FAILURE;
 		}
 	}
@@ -78,6 +90,7 @@ abstract class QITCommand extends Command {
 			$cli_overrides = $this->collect_cli_overrides();
 			$this->config  = ConfigResolver::load( $config_file, $cli_overrides );
 		}
+
 		return $this->config;
 	}
 
@@ -89,6 +102,7 @@ abstract class QITCommand extends Command {
 		if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {
 			$config_file = getcwd() . '/qit.json';
 		}
+
 		return $config_file;
 	}
 
@@ -118,6 +132,7 @@ abstract class QITCommand extends Command {
 	 */
 	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
 		$config = $this->get_resolved_config();
+
 		return $config['test_types'][ $test_type ][ $profile ] ?? [];
 	}
 
@@ -128,6 +143,7 @@ abstract class QITCommand extends Command {
 	 */
 	public function get_environment_config( string $env = 'default' ): array {
 		$config = $this->get_resolved_config();
+
 		return $config['environments'][ $env ] ?? [];
 	}
 
@@ -167,12 +183,12 @@ abstract class QITCommand extends Command {
 	private function currentContext(): array {
 		return [
 			'environment'  => $this->input->hasOption( 'environment' )
-								? $this->input->getOption( 'environment' ) ?? 'default'
-								: 'default',
+				? $this->input->getOption( 'environment' ) ?? 'default'
+				: 'default',
 			'test_type'    => 'e2e', // Fixed since test_type option doesn't exist
 			'test_profile' => $this->input->hasOption( 'profile' )
-								? $this->input->getOption( 'profile' ) ?? 'default'
-								: 'default',
+				? $this->input->getOption( 'profile' ) ?? 'default'
+				: 'default',
 		];
 	}
 
@@ -183,7 +199,7 @@ abstract class QITCommand extends Command {
 	 *
 	 * @param string[] $env_names
 	 */
-	public function download_extensions( array $env_names = [] ): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions {
+	public function download_extensions( array $env_names = [] ): ResolvedExtensions {
 		if ( empty( $env_names ) ) {
 			$context   = $this->currentContext();
 			$env_names = [ $context['environment'] ];
@@ -194,7 +210,7 @@ abstract class QITCommand extends Command {
 
 		if ( empty( $new ) ) {
 			// All requested environments already resolved
-			return $this->resolved_extensions ?? new \QIT_CLI\PreCommand\Extensions\ResolvedExtensions();
+			return $this->resolved_extensions ?? new ResolvedExtensions();
 		}
 
 		// 1) parse config (pure)
@@ -285,7 +301,8 @@ abstract class QITCommand extends Command {
 	 * Returns raw configuration arrays without creating Extension objects.
 	 *
 	 * @param array<string,array<string,mixed>> $resolved_envs
-	 * @param array<string>                     $env_names
+	 * @param array<string> $env_names
+	 *
 	 * @return array{plugins: array<mixed>, themes: array<mixed>}
 	 */
 	private function extract_extensions_from_environments(
@@ -324,6 +341,7 @@ abstract class QITCommand extends Command {
 	 * Returns raw package reference arrays.
 	 *
 	 * @param array<array<string,mixed>> $resolved_profiles
+	 *
 	 * @return array<string>
 	 */
 	private function extract_package_refs_from_resolved_profiles(
@@ -336,6 +354,7 @@ abstract class QITCommand extends Command {
 				$test_config['test_packages'] ?? []
 			);
 		}
+
 		return $refs;
 	}
 
@@ -343,7 +362,8 @@ abstract class QITCommand extends Command {
 	 * Create Extension from configuration array (inlined from ExtensionFactory).
 	 *
 	 * @param array<string,mixed> $config
-	 * @param string              $type
+	 * @param string $type
+	 *
 	 * @return \QIT_CLI\PreCommand\Objects\Extension
 	 */
 	private function create_extension_from_config( array $config, string $type ): \QIT_CLI\PreCommand\Objects\Extension {
@@ -422,10 +442,12 @@ abstract class QITCommand extends Command {
 	 * Lazily download test packages required by the given profiles.
 	 * Signature mirrors download_extensions().
 	 *
-	 * @param array<array<string, string>> $profiles
-	 * @return array<string, mixed>
+	 * @param array<array<string, string>> $profiles Profile configurations with 'type' and 'name' keys
+	 * @param array<string> $extra_refs Additional package references to download (e.g., from CLI)
+	 *
+	 * @return array<string, array{manifest: TestPackageManifest, path: ?string, metadata: array<string,mixed>}> Map of reference to package data
 	 */
-	public function download_test_packages( array $profiles = [] ): array {
+	public function download_test_packages( array $profiles = [], array $extra_refs = [] ): array {
 		// Handle default profile logic using currentContext()
 		if ( $profiles === [] ) {
 			$context  = $this->currentContext();
@@ -465,6 +487,11 @@ abstract class QITCommand extends Command {
 
 		$references = $this->extract_package_refs_from_resolved_profiles( $resolved_profiles );
 
+		// Merge with extra refs if provided
+		if ( ! empty( $extra_refs ) ) {
+			$references = array_values( array_unique( array_merge( $references, $extra_refs ), SORT_STRING ) );
+		}
+
 		// Calculate delta of new package references
 		$new_refs = array_diff( $references, array_keys( $this->packages ) );
 
@@ -474,11 +501,37 @@ abstract class QITCommand extends Command {
 		}
 
 		// Download only the new packages
-		$new_packages = App::make( TestPackageDownloader::class )->download( $new_refs, sys_get_temp_dir() . '/qit-cache' );
+		$downloader   = App::make( TestPackageDownloader::class );
+		$new_packages = $downloader->download( $new_refs, sys_get_temp_dir() . '/qit-cache' );
 
-		// Merge with existing packages (avoid array_merge)
+		// Merge with existing packages, including metadata for path info
 		foreach ( $new_packages as $ref => $manifest ) {
-			$this->packages[ $ref ] = $manifest;
+			$metadata               = $downloader->get_package_metadata( $ref );
+			$this->packages[ $ref ] = [
+				'manifest' => $manifest,
+				'path'     => $metadata['downloaded_path'] ?? null,
+				'metadata' => $metadata,
+			];
+		}
+
+		// Normalize any old-style cached entries to the new structure
+		$cache_dir = sys_get_temp_dir() . '/qit-cache';
+		foreach ( $this->packages as $ref => $item ) {
+			if ( $item instanceof TestPackageManifest ) {
+				$metadata = $downloader->get_package_metadata( $ref );
+				// If metadata is missing, reconstruct the path
+				if ( empty( $metadata['downloaded_path'] ) ) {
+					$package_dir = $cache_dir . '/packages/' . md5( $ref );
+					$path        = is_dir( $package_dir ) ? $package_dir : null;
+				} else {
+					$path = $metadata['downloaded_path'];
+				}
+				$this->packages[ $ref ] = [
+					'manifest' => $item,
+					'path'     => $path,
+					'metadata' => $metadata ?: [],
+				];
+			}
 		}
 
 		return $this->packages;
@@ -491,6 +544,7 @@ abstract class QITCommand extends Command {
 	 */
 	public function get_resolved_sut(): ?array {
 		$cfg = $this->get_resolved_config();
+
 		return $cfg['sut'] ?? null;
 	}
 
@@ -503,5 +557,13 @@ abstract class QITCommand extends Command {
 		return null;
 	}
 
+	/**
+	 * Execute the command.
+	 *
+	 * @param InputInterface $input The input (will be QITInput when called from execute())
+	 * @param OutputInterface $output
+	 *
+	 * @return int
+	 */
 	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
 }

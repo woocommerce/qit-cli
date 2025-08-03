@@ -40,6 +40,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 	 * Execution
 	 *****************************************************************/
 	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		/** @var \QIT_CLI\QITInput $input */
 
 		/* ─ special path for unit‑tests that only inspect config parsing ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
@@ -59,7 +60,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 		 */
 		// Determine WooCommerce version to match test package version
 		$woo_version = 'stable';
-		if ( is_option_explicitly_provided( $input, 'woo' ) ) {
+		if ( $input->hasOption( 'woo' ) ) {
 			$woo_version = $input->getOption( 'woo' );
 		}
 		
@@ -80,7 +81,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 		/****************************************************************
 		 * Handle deprecated --ignore-fail flag (only if user typed it)
 		 */
-		if ( is_option_explicitly_provided( $input, 'ignore-fail' ) && $input->getOption( 'ignore-fail' ) ) {
+		if ( $input->hasOption( 'ignore-fail' ) && $input->getOption( 'ignore-fail' ) ) {
 			return self::SUCCESS;            // Treat any result as success
 		}
 
