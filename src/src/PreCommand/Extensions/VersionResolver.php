@@ -7,72 +7,36 @@ use QIT_CLI\Cache;
 
 class VersionResolver {
 	/**
-	 * Registry of version resolvers for specific extensions.
-	 *
-	 * @var array<string, array<string, callable>>
+	 * Resolve WooCommerce special versions (rc, nightly).
+	 * Only handles these specific cases - no fallbacks.
 	 */
-	private array $resolvers;
+	public function resolve_woo( string $version ): ?string {
+		switch ( $version ) {
+			case 'rc':
+				$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
+				if ( empty( $versions['woocommerce']['rc_unsynced'] ) ) {
+					throw new \RuntimeException( 'No WooCommerce RC version available.' );
+				}
+				return "https://github.com/woocommerce/woocommerce/releases/download/{$versions['woocommerce']['rc_unsynced']}/woocommerce.zip";
 
-	public function __construct() {
-		$this->resolvers = [
-			'woocommerce' => [
-				'rc'      => static function () {
-					$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
+			case 'nightly':
+				return 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
 
-					if ( empty( $versions['woocommerce']['rc_unsynced'] ) ) {
-						throw new \RuntimeException( 'No WooCommerce RC version available. Please specify a RC version, such as "1.2.3-rc.1".' );
-					}
-
-					return "https://github.com/woocommerce/woocommerce/releases/download/{$versions['woocommerce']['rc_unsynced']}/woocommerce.zip";
-				},
-				'nightly' => static function () {
-					return 'https://github.com/woocommerce/woocommerce/releases/download/nightly/woocommerce-trunk-nightly.zip';
-				},
-			],
-			'wordpress'   => [
-				'rc' => static function () {
-					$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
-
-					if ( empty( $versions['wordpress']['rc'] ) ) {
-						// No RC available, fall back to stable
-						return 'stable';
-					}
-
-					return $versions['wordpress']['rc'];
-				},
-			],
-			// PRs can add more plugins here.
-		];
+			default:
+				return null; // Not a special version we handle
+		}
 	}
 
 	/**
-	 * Check if a version needs special resolution.
+	 * Resolve WordPress special versions (rc only).
+	 * Only handles RC - no fallbacks.
 	 */
-	public function can_resolve( string $plugin, string $version ): bool {
-		return isset( $this->resolvers[ $plugin ][ $version ] );
-	}
-
-	/**
-	 * Resolve a version to a download URL or version string.
-	 */
-	public function resolve( string $plugin, string $version ): string {
-		if ( ! $this->can_resolve( $plugin, $version ) ) {
-			throw new \RuntimeException( "No resolver for $plugin:$version" );
+	public function resolve_wp( string $version ): ?string {
+		if ( $version === 'rc' ) {
+			$versions = App::make( Cache::class )->get_manager_sync_data( 'versions' );
+			return $versions['wordpress']['rc'] ?? 'stable';
 		}
 
-		return $this->resolvers[ $plugin ][ $version ]();
-	}
-
-	/**
-	 * Resolve WordPress core version (only handles RC)
-	 */
-	public function resolve_wordpress_version( string $version ): string {
-		// Use the resolver if available
-		if ( $this->can_resolve( 'WordPress', $version ) ) {
-			return $this->resolve( 'WordPress', $version );
-		}
-
-		// Pass through other versions unchanged
-		return $version;
+		return null; // Not a special version we handle
 	}
 }

@@ -428,6 +428,58 @@ class QITEnvUpTest extends TestCase {
 		$output = qit( [ 'env:up', '--json', '--woo', '8.5.1' ], $config );
 		$result = json_decode( $output, true );
 		$this->assertEquals( '8.5.1', $result['woo_version'] );
+		
+		// Verify WooCommerce is in plugins list with correct version
+		$wooPlugin = null;
+		foreach ( $result['plugins'] as $plugin ) {
+			if ( $plugin['slug'] === 'woocommerce' ) {
+				$wooPlugin = $plugin;
+				break;
+			}
+		}
+		$this->assertNotNull( $wooPlugin );
+		$this->assertEquals( '8.5.1', $wooPlugin['version'] );
+		$this->assertEquals( 'wporg', $wooPlugin['from'] );
+
+		qit( [ 'env:down' ] );
+
+		// Test RC version (special version resolved to URL)
+		$output = qit( [ 'env:up', '--json', '--woo', 'rc' ], $config );
+		$result = json_decode( $output, true );
+		$this->assertEquals( 'rc', $result['woo_version'] );
+		
+		// Verify WooCommerce is in plugins list with URL source
+		$wooPlugin = null;
+		foreach ( $result['plugins'] as $plugin ) {
+			if ( $plugin['slug'] === 'woocommerce' ) {
+				$wooPlugin = $plugin;
+				break;
+			}
+		}
+		$this->assertNotNull( $wooPlugin );
+		$this->assertEquals( 'rc', $wooPlugin['version'] );
+		$this->assertEquals( 'url', $wooPlugin['from'] );
+		$this->assertStringContains( 'github.com', $wooPlugin['source'] );
+
+		qit( [ 'env:down' ] );
+
+		// Test nightly version (special version resolved to URL)
+		$output = qit( [ 'env:up', '--json', '--woo', 'nightly' ], $config );
+		$result = json_decode( $output, true );
+		$this->assertEquals( 'nightly', $result['woo_version'] );
+		
+		// Verify WooCommerce is in plugins list with URL source
+		$wooPlugin = null;
+		foreach ( $result['plugins'] as $plugin ) {
+			if ( $plugin['slug'] === 'woocommerce' ) {
+				$wooPlugin = $plugin;
+				break;
+			}
+		}
+		$this->assertNotNull( $wooPlugin );
+		$this->assertEquals( 'nightly', $wooPlugin['version'] );
+		$this->assertEquals( 'url', $wooPlugin['from'] );
+		$this->assertStringContains( 'nightly', $wooPlugin['source'] );
 	}
 
 	/**

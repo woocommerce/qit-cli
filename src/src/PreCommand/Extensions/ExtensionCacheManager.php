@@ -215,8 +215,11 @@ class ExtensionCacheManager {
 		if ( ! empty( $extension->version ) && $extension->version !== 'local' && $extension->version !== 'url' ) {
 			$cache_age = time() - filemtime( $cache_file );
 
-			// NEW: Check if this is a special version that changes frequently
-			if ( App::make( VersionResolver::class )->can_resolve( $extension->slug, $extension->version ) ) {
+			// Check if this is a special version that changes frequently
+			$is_special_version = in_array( $extension->version, [ 'rc', 'nightly' ], true ) ||
+									( $extension->slug === 'woocommerce' && in_array( $extension->version, [ 'rc', 'nightly' ], true ) );
+
+			if ( $is_special_version ) {
 				// RC and nightly versions change frequently, so short cache
 				if ( $cache_age > 5 * MINUTE_IN_SECONDS ) {
 					return false;

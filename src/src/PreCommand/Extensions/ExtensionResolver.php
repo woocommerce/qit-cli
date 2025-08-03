@@ -174,14 +174,8 @@ class ExtensionResolver {
 			}
 		}
 
-		// NEW: Check version resolver first
-		if ( ! empty( $extension->version ) && $this->version_resolver->can_resolve( $extension->slug, $extension->version ) ) {
-			$extension->from   = 'url';  // These resolve to URLs
-			$extension->source = $this->version_resolver->resolve( $extension->slug, $extension->version );
-			debug_log( "  Resolved '{$extension->slug}:{$extension->version}' using version resolver" );
-
-			return;
-		}
+		// Version resolution is now handled explicitly in UpEnvironmentCommand
+		// ExtensionResolver only handles explicit sources - no magic resolution
 
 		// Infer source for unspecified or incomplete sources (e.g., SUT without source)
 		debug_log( '  Attempting to infer source from marketplaces' );

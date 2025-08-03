@@ -92,8 +92,11 @@ class ExtensionMetadataFetcher {
 					$info = $this->wporg_extensions_list->get_theme_download_info( $extension->slug );
 				}
 
-				$extension->source  = $info['url'];
-				$extension->version = $info['version'];
+				$extension->source = $info['url'];
+				// Only override version if it's not explicitly set or is 'stable'
+				if ( $extension->version === 'stable' || $extension->version === 'undefined' ) {
+					$extension->version = $info['version'];
+				}
 
 				file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionMetadataFetcher: WPORG metadata for '{$extension->slug}': version={$extension->version}, url={$extension->source}\n", FILE_APPEND );
 			} catch ( \Exception $e ) {

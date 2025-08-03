@@ -23,12 +23,15 @@ class UpEnvironmentCommand extends QITCommand {
 	private E2EEnvironment $e2e_environment;
 	/** @var TunnelRunner */
 	private TunnelRunner $tunnel_runner;
+	/** @var \QIT_CLI\PreCommand\Extensions\VersionResolver */
+	private \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner ) {
-		$this->e2e_environment = $e2e_environment;
-		$this->tunnel_runner   = $tunnel_runner;
+	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver ) {
+		$this->e2e_environment  = $e2e_environment;
+		$this->tunnel_runner    = $tunnel_runner;
+		$this->version_resolver = $version_resolver;
 		parent::__construct();
 	}
 
@@ -180,7 +183,8 @@ class UpEnvironmentCommand extends QITCommand {
 								$extension->source    = $plugin_config['source'] ?? null;
 								break;
 							case 'url':
-								$extension->source = $plugin_config['source'] ?? null;
+								$extension->source  = $plugin_config['source'] ?? null;
+								$extension->version = $plugin_config['version'] ?? 'stable';
 								break;
 						}
 					} else {
@@ -276,6 +280,10 @@ class UpEnvironmentCommand extends QITCommand {
 				}
 			}
 		}
+
+		/* ─ Resolve special versions and add plugins explicitly ─ */
+		$config = $this->resolve_woo( $config, $input );
+		$config = $this->resolve_wp( $config, $input );
 		if ( is_option_explicitly_provided( $input, 'object_cache' ) ) {
 			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
 		}
@@ -345,6 +353,82 @@ class UpEnvironmentCommand extends QITCommand {
 
 		return $config;
 	}
+
+	/**
+	 * Resolve --woo option explicitly.
+	 * Adds WooCommerce plugin with the specified version.
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function resolve_woo( array $config, InputInterface $input ): array {
+		if ( ! is_option_explicitly_provided( $input, 'woo' ) ) {
+			return $config;
+		}
+
+		$woo_version = $input->getOption( 'woo' );
+
+		$resolved_source = $this->version_resolver->resolve_woo( $woo_version );
+
+		if ( $resolved_source !== null ) {
+			// Special version (rc, nightly) - resolve to URL
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'url',
+				'source'              => $resolved_source,
+				'version'             => $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
+		} else {
+			// Regular version - add as wporg plugin
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'wporg',
+				'version'             => $woo_version === 'stable' ? 'stable' : $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
+		}
+
+		// Add WooCommerce to plugins list, avoiding duplicates
+		$config['plugins'] = $config['plugins'] ?? [];
+
+		// Remove any existing WooCommerce plugin to avoid conflicts
+		$config['plugins'] = array_filter( $config['plugins'], function ( $plugin ) {
+			$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+			return $slug !== 'woocommerce';
+		});
+
+		// Add the resolved WooCommerce plugin
+		$config['plugins'][] = $woo_plugin;
+
+		return $config;
+	}
+
+	/**
+	 * Resolve --wp option explicitly.
+	 * Resolves WordPress special versions (like rc).
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function resolve_wp( array $config, InputInterface $input ): array {
+		if ( ! is_option_explicitly_provided( $input, 'wp' ) ) {
+			return $config;
+		}
+
+		$wp_version = $input->getOption( 'wp' );
+
+		$resolved_wp = $this->version_resolver->resolve_wp( $wp_version );
+
+		if ( $resolved_wp !== null ) {
+			$config['wp'] = $resolved_wp;
+		}
+
+		return $config;
+	}
+
 
 
 	/**
