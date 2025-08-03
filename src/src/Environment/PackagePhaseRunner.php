@@ -273,6 +273,13 @@ class PackagePhaseRunner {
 
 		$workdir = '/qit/packages/' . basename( $package_id );
 		$this->output->writeln( "  <info>• {$package_id} ({$phase})</info>" );
+		
+		// Debug output
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( "    Package ID: {$package_id}" );
+			$this->output->writeln( "    Package path: {$package_path}" );
+			$this->output->writeln( "    Container workdir: {$workdir}" );
+		}
 
 		$executed = 0;
 		foreach ( $commands as $cmd ) {

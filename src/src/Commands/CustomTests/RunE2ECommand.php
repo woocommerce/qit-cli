@@ -220,7 +220,8 @@ class RunE2ECommand extends QITCommand {
 			putenv( 'QIT_HIDE_SITE_INFO=0' );
 		} else {
 			putenv( 'QIT_HIDE_SITE_INFO=1' );
-			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' );
+			// Don't set QIT_EXPOSE_ENVIRONMENT_TO=DOCKER for E2E tests
+			// because Playwright runs on the host and needs to access the site
 		}
 		putenv( 'QIT_UP_AND_TEST=1' );
 
@@ -229,6 +230,29 @@ class RunE2ECommand extends QITCommand {
 		if ( $sut_slug ) {
 			App::setVar( 'QIT_SUT', $sut_id );
 			App::setVar( 'QIT_SUT_SLUG', $sut_slug );
+		}
+
+		// Download test packages BEFORE env:up so we can mount them as volumes
+		$test_packages = $this->download_test_packages( 
+			[
+				[
+					'type' => $this->test_type,
+					'name' => $input->getProfileName(),
+				],
+			],
+			$input->getTestPackages() // This includes both profile and CLI packages
+		);
+
+		// Add local test packages as volumes
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) && strpos( $pkg_id, '/' ) !== false ) {
+				// This is a local path - add it as a volume
+				$container_path = '/qit/packages/' . basename( $pkg_id );
+				if ( ! isset( $env_up_options['--volume'] ) ) {
+					$env_up_options['--volume'] = [];
+				}
+				$env_up_options['--volume'][] = $meta['path'] . ':' . $container_path . ':ro';
+			}
 		}
 
 		// Always output JSON for parsing
@@ -252,20 +276,6 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		/*****************************************************************
-		 * 2. Handle test configuration and packages
-		 */
-		// Download test packages from profile and any additional CLI packages
-		$test_packages = $this->download_test_packages( 
-			[
-				[
-					'type' => $this->test_type,
-					'name' => $input->getProfileName(),
-				],
-			],
-			$input->getTestPackages() // This includes both profile and CLI packages
-		);
-
-		/*****************************************************************
 		 * 3. Normal test execution flow
 		 */
 		// ─ validate shard, run phases, collect results, notify, etc.
@@ -275,8 +285,6 @@ class RunE2ECommand extends QITCommand {
 		// By default we upload unless the user explicitly passes --no_upload_report.
 		$should_upload = ! ( $input->hasOption( 'no_upload_report' ) && $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'should_upload_report', $should_upload );
-
-		// Test packages are already merged by QITInput
 
 		// Validate shard format (only if explicitly provided)
 		if ( $input->hasOption( 'shard' ) ) {

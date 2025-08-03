@@ -52,25 +52,61 @@ class TestPackageDownloader {
 
 		$start     = microtime( true );
 		$manifests = [];
-
-		// Get download URLs from QIT Manager
-		$this->output->writeln( 'Fetching download URLs...' );
-		$download_urls = $this->fetch_download_urls( array_keys( $packages ) );
-
-		// Download each package
+		$remote_packages = [];
+		
+		// First, separate local paths from remote references
 		foreach ( $packages as $reference => $package_info ) {
-			if ( ! isset( $download_urls[ $reference ] ) ) {
-				throw new \RuntimeException( "No download URL found for package '$reference'" );
+			// Check if reference is a local path
+			if ( is_dir( $reference ) && file_exists( $reference . '/manifest.json' ) ) {
+				// Handle local package
+				$this->output->writeln( "Using local package: $reference" );
+				$manifest = $this->manifest_parser->parse( $reference . '/manifest.json' );
+				$manifests[ $reference ] = $manifest;
+				
+				// Store metadata for local package
+				$this->package_metadata[ $reference ] = [
+					'reference'       => $reference,
+					'remote'          => false,
+					'downloaded_path' => $reference,
+					'version'         => 'local',
+				];
+			} else {
+				// Queue for remote download
+				$remote_packages[ $reference ] = $package_info;
 			}
+		}
 
-			$this->output->writeln( "Downloading package: $reference" );
-			$manifests[ $reference ] = $this->download_package( $reference, $download_urls[ $reference ], $cache_dir );
+		// Download remote packages if any
+		if ( ! empty( $remote_packages ) ) {
+			// Get download URLs from QIT Manager
+			$this->output->writeln( 'Fetching download URLs...' );
+			$download_urls = $this->fetch_download_urls( array_keys( $remote_packages ) );
+
+			// Download each package
+			foreach ( $remote_packages as $reference => $package_info ) {
+				if ( ! isset( $download_urls[ $reference ] ) ) {
+					throw new \RuntimeException( "No download URL found for package '$reference'" );
+				}
+
+				$this->output->writeln( "Downloading package: $reference" );
+				$manifests[ $reference ] = $this->download_package( $reference, $download_urls[ $reference ], $cache_dir );
+			}
 		}
 
 		$elapsed = round( microtime( true ) - $start, 2 );
 		$this->output->writeln( 'Downloaded ' . count( $manifests ) . " packages in {$elapsed}s" );
 
 		return $manifests;
+	}
+
+	/**
+	 * Get package metadata for a reference.
+	 * 
+	 * @param string $reference The package reference.
+	 * @return array<string,mixed> The package metadata.
+	 */
+	public function get_package_metadata( string $reference ): array {
+		return $this->package_metadata[ $reference ] ?? [];
 	}
 
 	/**

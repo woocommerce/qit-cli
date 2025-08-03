@@ -502,7 +502,12 @@ abstract class QITCommand extends Command {
 
 		// Download only the new packages
 		$downloader   = App::make( TestPackageDownloader::class );
-		$new_packages = $downloader->download( $new_refs, sys_get_temp_dir() . '/qit-cache' );
+		// Convert refs array to the format expected by download method
+		$packages_to_download = [];
+		foreach ( $new_refs as $ref ) {
+			$packages_to_download[ $ref ] = [];
+		}
+		$new_packages = $downloader->download( $packages_to_download, sys_get_temp_dir() . '/qit-cache' );
 
 		// Merge with existing packages, including metadata for path info
 		foreach ( $new_packages as $ref => $manifest ) {
