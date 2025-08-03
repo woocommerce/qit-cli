@@ -62,6 +62,11 @@ class LocalTestRunNotifier {
 		$test_type = 'e2e';
 
 		foreach ( $env_info->plugins as $plugin ) {
+			// Ensure we have Extension objects
+			if ( ! $plugin instanceof \QIT_CLI\PreCommand\Objects\Extension ) {
+				throw new \TypeError( 'Expected Extension object in plugins array, got ' . gettype( $plugin ) );
+			}
+			
 			// Are we running an activation test?
 			if ( $plugin->type === 'plugin' && $plugin->slug === 'woocommerce' ) {
 				if ( ! empty( $plugin->test_tags ) && is_array( $plugin->test_tags ) ) {

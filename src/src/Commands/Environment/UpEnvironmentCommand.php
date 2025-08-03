@@ -163,11 +163,13 @@ class UpEnvironmentCommand extends QITCommand {
 		if ( isset( $env_config['plugins'] ) ) {
 			foreach ( $env_config['plugins'] as $plugin_config ) {
 				if ( is_string( $plugin_config ) ) {
-					$extension = new \QIT_CLI\PreCommand\Objects\Extension( $plugin_config, 'plugin' );
-					// Don't set $extension->from - let ExtensionResolver determine the correct source
-					$extension->version             = 'stable';
-					$extension->added_automatically = 'Added from CLI or environment configuration';
-					$extensions[]                   = $extension;
+					// Use the new parser for string inputs
+					try {
+						$extension = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $plugin_config, 'plugin' );
+						$extensions[] = $extension;
+					} catch ( \InvalidArgumentException $e ) {
+						throw new \RuntimeException( "Invalid plugin specification: " . $e->getMessage() );
+					}
 				} else {
 					// Handle array configuration
 					$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $plugin_config['slug'], 'plugin' );
@@ -207,11 +209,13 @@ class UpEnvironmentCommand extends QITCommand {
 		if ( isset( $env_config['themes'] ) ) {
 			foreach ( $env_config['themes'] as $theme_config ) {
 				if ( is_string( $theme_config ) ) {
-					$extension = new \QIT_CLI\PreCommand\Objects\Extension( $theme_config, 'theme' );
-					// Don't set $extension->from - let ExtensionResolver determine the correct source
-					$extension->version             = 'stable';
-					$extension->added_automatically = 'Added from CLI or environment configuration';
-					$extensions[]                   = $extension;
+					// Use the new parser for string inputs
+					try {
+						$extension = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $theme_config, 'theme' );
+						$extensions[] = $extension;
+					} catch ( \InvalidArgumentException $e ) {
+						throw new \RuntimeException( "Invalid theme specification: " . $e->getMessage() );
+					}
 				} else {
 					// Handle array configuration
 					$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $theme_config['slug'], 'theme' );
