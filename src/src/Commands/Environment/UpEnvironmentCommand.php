@@ -93,6 +93,12 @@ class UpEnvironmentCommand extends QITCommand {
 		$final_plugins = $resolved_ext->get_plugins();
 		$final_themes  = $resolved_ext->get_themes();
 
+		/* ─ 3.5. Parse volumes to get proper associative array structure ─ */
+		$parsed_volumes = [];
+		if ( ! empty( $env_config['volumes'] ) ) {
+			$parsed_volumes = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] );
+		}
+
 		/* ─ 4. Materialise E2EEnvInfo DTO ─ */
 		$env_info = E2EEnvInfo::from_array( [
 			'env_id'         => 'qitenv' . bin2hex( random_bytes( 8 ) ),
@@ -104,7 +110,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'plugins'        => $final_plugins,
 			'themes'         => $final_themes,
 			'php_extensions' => $env_config['php_extensions'] ?? [],
-			'volumes'        => $env_config['volumes'] ?? [],
+			'volumes'        => $parsed_volumes,
 			'envs'           => $env_config['envs'] ?? [],
 			'tunnel'         => $env_config['tunnel'] ?? false,
 			'tunnel_type'    => $env_config['tunnel_type'] ?? 'no_tunnel',
@@ -330,7 +336,14 @@ class UpEnvironmentCommand extends QITCommand {
 			$config[ $key ] = array_values( array_unique( array_merge( $cfg, $cli ) ) );
 		};
 
-		$merge_simple_list( 'volumes', 'volume' );
+		// Volumes should stay as simple arrays until parsed later
+		if ( $input->hasOption( 'volume' ) ) {
+			$cli_volumes = (array) $input->getOption( 'volume' );
+			$cfg_volumes = $config['volumes'] ?? [];
+			// Just merge the arrays without re-indexing
+			$config['volumes'] = array_merge( $cfg_volumes, $cli_volumes );
+		}
+		
 		$merge_simple_list( 'php_extensions', 'php_extension' );
 
 		/* ─ Runtime env vars - process files immediately ─ */

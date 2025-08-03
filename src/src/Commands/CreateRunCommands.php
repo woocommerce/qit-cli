@@ -20,7 +20,6 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
-use function QIT_CLI\is_option_explicitly_provided;
 
 /**
  * Dynamically registers remote test‑type commands (run:security, run:phpstan, …)
@@ -115,13 +114,12 @@ class CreateRunCommands extends DynamicCommandCreator {
 			 * Main execution
 			 */
 			public function doExecute( InputInterface $input, OutputInterface $output ): int {
+				/** @var \QIT_CLI\QITInput $input */
 
 				/****************************************************************
 				 * 1.  Base configuration comes from qit.json profile
 				 */
-				$profile_name = is_option_explicitly_provided( $input, 'profile' )
-					? (string) $input->getOption( 'profile' )
-					: 'default';
+				$profile_name = $input->getProfileName();
 
 				$options = $this->get_current_test_profile( $this->test_type, $profile_name );
 				if ( ! \is_array( $options ) ) {
@@ -133,7 +131,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				 */
 				foreach ( $this->options_to_send as $opt_name ) {
 
-					if ( ! is_option_explicitly_provided( $input, $opt_name ) ) {
+					if ( ! $input->hasOption( $opt_name ) ) {
 						continue;                               // not typed – keep profile value
 					}
 
@@ -266,7 +264,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				string $sut_slug_or_id,
 				array &$options
 			): void {
-				if ( ! $input->hasOption( 'zip' ) || ! is_option_explicitly_provided( $input, 'zip' ) ) {
+				if ( ! $input->hasOption( 'zip' ) ) {
 					$options['event'] = 'cli_published_extension_test';
 
 					return;
@@ -415,14 +413,14 @@ class CreateRunCommands extends DynamicCommandCreator {
 		// Ensure zip gets forwarded
 		$command->add_option_to_send( 'zip' );
 
-		/* Hide old “e2e” alias if Manager says so */
+		/* Hide old "e2e" alias if Manager says so */
 		if ( $test_type === 'e2e' ) {
 			$hide = $this->cache->get_manager_sync_data( 'hide_e2e' );
 			if ( ! $hide ) {
 				$application->add( App::make( RunE2ECommand::class ) );
 			}
+		} else {
+			$application->add( $command );
 		}
-
-		$application->add( $command );
 	}
 }

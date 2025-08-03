@@ -8,16 +8,20 @@ abstract class DynamicCommand extends QITCommand {
 	/** @var array<mixed> $options_to_send */
 	protected $options_to_send = [];
 
-	/** @var string $test_type The test type for this dynamic command */
-	protected $test_type;
-
 	public function __construct( string $test_type = null ) {
-		$this->test_type = $test_type;
+		// Set test_type before calling parent constructor
+		if ( $test_type !== null ) {
+			$this->test_type = $test_type;
+		}
 		parent::__construct();
 	}
 
 
 	public function get_test_profile(): string {
+		// Use QITInput's smart profile resolution if available
+		if ( $this->input instanceof \QIT_CLI\QITInput ) {
+			return $this->input->getProfileName();
+		}
 		return $this->input->getOption( 'profile' ) ?? 'default';
 	}
 
