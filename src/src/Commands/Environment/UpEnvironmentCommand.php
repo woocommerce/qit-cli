@@ -4,6 +4,7 @@ declare( strict_types=1 );
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Commands\Environment\ExtensionSummary;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
@@ -11,6 +12,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\is_windows;
 
 /**
@@ -37,31 +39,31 @@ class UpEnvironmentCommand extends QITCommand {
 		parent::configure(); // adds --config and --environment
 
 		$this->setDescription( 'Creates a temporary local test environment that is completely ephemeral' )
-		     ->setAliases( [ 'env:start' ] )
+			->setAliases( [ 'env:start' ] )
 			/* ─ Environment selection ─ */
-			 ->addOption(
+			->addOption(
 				'environment', 'e',
 				InputOption::VALUE_OPTIONAL,
 				'Pick an <comment>environment block</comment> from qit.json (e.g. --environment=legacy)',
 				'default'
 			)
 			/* ─ Runtime env‑vars ─ */
-			 ->addOption( 'env', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Set env var  --env KEY=VAL', [] )
-		     ->addOption( 'env_file', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load vars from file  --env_file ./prod.env', [] )
+			->addOption( 'env', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Set env var  --env KEY=VAL', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load vars from file  --env_file ./prod.env', [] )
 			/* ─ Scalars ─ */
-			 ->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3)', '8.2' )
-		     ->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6)', 'stable' )
-		     ->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version', null )
-		     ->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3)', '8.2' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6)', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version', null )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
 			/* ─ Lists ─ */
-			 ->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
-		     ->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
-		     ->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
-		     ->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
+			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
-			 ->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
-		     ->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
-		     ->setHelp( $this->getHelpText() );
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
+			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
+			->setHelp( $this->getHelpText() );
 	}
 
 	/*******************************************************************
