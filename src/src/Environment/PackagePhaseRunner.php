@@ -40,6 +40,60 @@ class PackagePhaseRunner {
 	}
 
 	/**
+	 * Prepare environment variables for test execution.
+	 *
+	 * @param EnvInfo $env_info Environment information.
+	 * @return array<string, string> Environment variables.
+	 */
+	private function prepare_test_env_vars( EnvInfo $env_info ): array {
+		$env_vars = [];
+		
+		// Pass QIT_SITE_URL for E2E environments
+		if ( $env_info instanceof E2EEnvInfo ) {
+			$env_vars['QIT_SITE_URL'] = $env_info->site_url;
+			
+			// Pass SUT info
+			if ( ! empty( $env_info->sut ) ) {
+				$env_vars['QIT_SUT_SLUG'] = $env_info->sut['slug'] ?? '';
+				$env_vars['QIT_SUT_TYPE'] = $env_info->sut['type'] ?? '';
+				
+				// Get SUT entrypoint from plugin or theme info
+				if ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'plugin' ) {
+					foreach ( $env_info->plugins as $plugin ) {
+						// Handle both object and array access
+						$slug = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
+						$entrypoint = is_array( $plugin ) ? ( $plugin['entrypoint'] ?? '' ) : ( $plugin->entrypoint ?? '' );
+						if ( $slug === ( $env_info->sut['slug'] ?? '' ) ) {
+							$env_vars['QIT_SUT_ENTRYPOINT'] = $entrypoint;
+							break;
+						}
+					}
+				} elseif ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'theme' ) {
+					foreach ( $env_info->themes as $theme ) {
+						// Handle both object and array access
+						$slug = is_array( $theme ) ? ( $theme['slug'] ?? '' ) : ( $theme->slug ?? '' );
+						$entrypoint = is_array( $theme ) ? ( $theme['entrypoint'] ?? '' ) : ( $theme->entrypoint ?? '' );
+						if ( $slug === ( $env_info->sut['slug'] ?? '' ) ) {
+							$env_vars['QIT_SUT_ENTRYPOINT'] = $entrypoint;
+							break;
+						}
+					}
+				}
+				
+				// Pass plugin activation stack as JSON
+				$plugin_activation_stack = [];
+				foreach ( array_reverse( $env_info->plugins ) as $plugin ) {
+					$slug = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
+					$plugin_activation_stack[] = $slug;
+				}
+				$env_vars['QIT_PLUGIN_ACTIVATION_STACK'] = json_encode( $plugin_activation_stack );
+			}
+		}
+		
+		return $env_vars;
+	}
+
+	/**
 	 * Execute a command on the host system
 	 *
 	 * @param string                $cmd Command to execute.
@@ -286,46 +340,14 @@ class PackagePhaseRunner {
 			$venue          = $this->determine_execution_venue( $cmd );
 			$is_bash_script = $venue === 'container'; // Bash scripts run in container
 
+			// Prepare environment variables for test execution
+			$env_vars = $this->prepare_test_env_vars( $env_info );
+
 			try {
 				if ( $venue === 'host' ) {
-					// Pass QIT_SITE_URL environment variable for host commands (e.g., Playwright tests)
-					$env_vars = [
-						'QIT_SITE_URL' => $env_info instanceof E2EEnvInfo ? $env_info->site_url : '',
-					];
-					
-					// Pass SUT info for E2E environments
-					if ( $env_info instanceof E2EEnvInfo && ! empty( $env_info->sut ) ) {
-						$env_vars['SUT_SLUG'] = $env_info->sut['slug'] ?? '';
-						$env_vars['SUT_TYPE'] = $env_info->sut['type'] ?? '';
-						
-						// Get SUT entrypoint from plugin or theme info
-						if ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'plugin' ) {
-							foreach ( $env_info->plugins as $plugin ) {
-								if ( $plugin->slug === ( $env_info->sut['slug'] ?? '' ) ) {
-									$env_vars['SUT_ENTRYPOINT'] = $plugin->source;
-									break;
-								}
-							}
-						} elseif ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'theme' ) {
-							foreach ( $env_info->themes as $theme ) {
-								if ( $theme->slug === ( $env_info->sut['slug'] ?? '' ) ) {
-									$env_vars['SUT_ENTRYPOINT'] = $theme->source;
-									break;
-								}
-							}
-						}
-						
-						// Pass plugin activation stack
-						$plugin_activation_stack = [];
-						foreach ( array_reverse( $env_info->plugins ) as $plugin ) {
-							$plugin_activation_stack[] = $plugin->slug;
-						}
-						$env_vars['PLUGIN_ACTIVATION_STACK'] = json_encode( $plugin_activation_stack );
-					}
-					
 					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars );
 				} else {
-					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, [] );
+					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars );
 				}
 
 				// Generate individual CTRF immediately for bash scripts

@@ -61,6 +61,11 @@ class QITInput implements InputInterface {
 			return $this->getOption( 'profile' );
 		}
 		
+		// If test type doesn't exist in config, return 'default'
+		if ( ! isset( $this->resolvedConfig['test_types'][ $this->testType ] ) ) {
+			return 'default';
+		}
+		
 		// Check if there's only one profile for this test type
 		$profiles = $this->resolvedConfig['test_types'][ $this->testType ] ?? [];
 		if ( count( $profiles ) === 1 ) {
@@ -75,8 +80,14 @@ class QITInput implements InputInterface {
 	 */
 	public function getTestProfile(): array {
 		if ( $this->currentTestProfile === null ) {
-			$profileName = $this->getProfileName();
-			$this->currentTestProfile = $this->resolvedConfig['test_types'][ $this->testType ][ $profileName ] ?? [];
+			// If test type doesn't exist in config, return empty array
+			// This allows commands to work without configuration when packages are provided explicitly
+			if ( ! isset( $this->resolvedConfig['test_types'][ $this->testType ] ) ) {
+				$this->currentTestProfile = [];
+			} else {
+				$profileName = $this->getProfileName();
+				$this->currentTestProfile = $this->resolvedConfig['test_types'][ $this->testType ][ $profileName ] ?? [];
+			}
 		}
 		
 		return $this->currentTestProfile;
@@ -107,9 +118,10 @@ class QITInput implements InputInterface {
 		$profile = $this->getTestProfile();
 		$packages = $profile['test_packages'] ?? [];
 		
-		// Add CLI test packages if provided
-		if ( $this->hasOption( 'test-package' ) ) {
-			$cliPackages = (array) $this->getOption( 'test-package' );
+		// Add CLI test packages if provided (or programmatically set)
+		$testPackageOption = $this->getOption( 'test-package' );
+		if ( ! empty( $testPackageOption ) ) {
+			$cliPackages = (array) $testPackageOption;
 			$packages = array_unique( array_merge( $packages, $cliPackages ) );
 		}
 		

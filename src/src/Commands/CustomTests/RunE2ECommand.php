@@ -245,9 +245,11 @@ class RunE2ECommand extends QITCommand {
 
 		// Add local test packages as volumes
 		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) && strpos( $pkg_id, '/' ) !== false ) {
+			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
 				// This is a local path - add it as a volume
-				$container_path = '/qit/packages/' . basename( $pkg_id );
+				// Create a safe container path by replacing special characters
+				$safe_pkg_id = str_replace( ['/', ':', '@'], '_', $pkg_id );
+				$container_path = '/qit/packages/' . $safe_pkg_id;
 				if ( ! isset( $env_up_options['--volume'] ) ) {
 					$env_up_options['--volume'] = [];
 				}

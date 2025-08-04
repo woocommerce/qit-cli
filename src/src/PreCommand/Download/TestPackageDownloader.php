@@ -134,7 +134,7 @@ class TestPackageDownloader {
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
-				'references' => array_values( $references ),
+				'package_ids' => array_values( $references ),
 			] )
 			->request();
 
@@ -171,16 +171,24 @@ class TestPackageDownloader {
 		$cached    = $this->cache->get( $cache_key );
 
 		if ( $cached && is_array( $cached ) && isset( $cached['manifest'] ) ) {
-			if ( $this->output->isVeryVerbose() ) {
-				$this->output->writeln( "Using cached test package '$reference'" );
-			}
+			// Verify the cached package still exists on disk
+			if ( isset( $cached['metadata']['downloaded_path'] ) && is_dir( $cached['metadata']['downloaded_path'] ) ) {
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( "Using cached test package '$reference'" );
+				}
 
-			// Restore metadata for caller access
-			if ( isset( $cached['metadata'] ) ) {
-				$this->package_metadata[ $reference ] = $cached['metadata'];
-			}
+				// Restore metadata for caller access
+				if ( isset( $cached['metadata'] ) ) {
+					$this->package_metadata[ $reference ] = $cached['metadata'];
+				}
 
-			return new TestPackageManifest( $cached['manifest'] );
+				return new TestPackageManifest( $cached['manifest'] );
+			} else {
+				// Cache is stale - package directory was cleaned up
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( "Cached package '$reference' no longer exists on disk, re-downloading..." );
+				}
+			}
 		}
 
 		// Download the package
@@ -206,6 +214,11 @@ class TestPackageDownloader {
 		}
 
 		$this->zipper->extract_zip( $zip_file, $package_dir );
+
+		// Install dependencies if package.json exists
+		if ( file_exists( $package_dir . '/package.json' ) ) {
+			$this->install_npm_dependencies( $package_dir );
+		}
 
 		// Find and parse manifest
 		$manifest_file = $this->find_manifest( $package_dir );
@@ -262,6 +275,36 @@ class TestPackageDownloader {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Install npm dependencies in the package directory.
+	 *
+	 * @param string $package_dir The directory containing package.json
+	 * @throws \RuntimeException If npm install fails
+	 */
+	protected function install_npm_dependencies( string $package_dir ): void {
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( "Installing npm dependencies in $package_dir" );
+		}
+
+		// Use npm ci if package-lock.json exists, otherwise use npm install
+		$use_ci = file_exists( $package_dir . '/package-lock.json' );
+		$npm_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
+		
+		$npm_output = [];
+		$npm_return_code = 0;
+		
+		exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
+		
+		if ( $npm_return_code !== 0 ) {
+			$command_used = $use_ci ? 'npm ci' : 'npm install';
+			throw new \RuntimeException( $command_used . ' failed: ' . implode( "\n", $npm_output ) );
+		}
+
+		if ( $this->output->isVerbose() ) {
+			$this->output->writeln( "npm dependencies installed successfully" );
+		}
 	}
 
 	/**

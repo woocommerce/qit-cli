@@ -64,8 +64,15 @@ class RunActivationTestCommand extends RunE2ECommand {
 			$woo_version = $input->getOption( 'woo' );
 		}
 		
-		// Set test package with matching WooCommerce version
-		$input->setOption( 'test-package', [ "woocommerce/activation:$woo_version" ] );
+		// Set test package - use local path for development
+		$local_test_package = '/home/lucas/automattic/qit/qit-manager/ci/tests/activation/test-package';
+		if ( is_dir( $local_test_package ) ) {
+			// Use local test package for development
+			$input->setOption( 'test-package', [ $local_test_package ] );
+		} else {
+			// Fall back to remote package
+			$input->setOption( 'test-package', [ "woocommerce/activation:$woo_version" ] );
+		}
 		$input->setOption( 'skip_activating_plugins', true );
 		$input->setOption( 'skip_activating_themes', true );
 		$input->setOption( 'pw_options', '--retries=0' );
