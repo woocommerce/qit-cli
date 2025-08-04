@@ -222,7 +222,7 @@ function is_option_explicitly_provided( InputInterface $input, string $option_na
 	if ( $input instanceof \QIT_CLI\QITInput ) {
 		$input = $input->getSymfonyInput();
 	}
-	
+
 	if ( $input instanceof ArgvInput ) {
 		// For ArgvInput, check if the option appears in the raw argv array
 		$argv = $_SERVER['argv'] ?? [];

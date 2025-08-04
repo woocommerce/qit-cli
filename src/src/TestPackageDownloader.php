@@ -24,14 +24,14 @@ class TestPackageDownloader {
 	 */
 	public function fetch_download_urls( array $package_ids ): array {
 		// Filter out local paths - they don't need download URLs
-		$remote_ids = array_filter( $package_ids, function( $id ) {
+		$remote_ids = array_filter( $package_ids, function ( $id ) {
 			return ! is_dir( $id );
 		});
-		
+
 		if ( empty( $remote_ids ) ) {
 			return [];
 		}
-		
+
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [ 'package_ids' => array_values( $remote_ids ) ] )

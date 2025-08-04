@@ -63,7 +63,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 		if ( $input->hasOption( 'woo' ) ) {
 			$woo_version = $input->getOption( 'woo' );
 		}
-		
+
 		// Set test package - use local path for development
 		$local_test_package = '/home/lucas/automattic/qit/qit-manager/ci/tests/activation/test-package';
 		if ( is_dir( $local_test_package ) ) {

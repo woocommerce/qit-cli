@@ -20,7 +20,7 @@ abstract class QITCommand extends Command {
 	protected string $test_type = 'e2e'; // Default test type, overridden by subclasses
 
 	/** @var array<string,mixed>|null Resolved configuration */
-	private ?array $config = null;
+	private ?array $config                           = null;
 	private ?ResolvedExtensions $resolved_extensions = null;
 	/** @var string[] */
 	private array $resolved_envs = [];
@@ -301,7 +301,7 @@ abstract class QITCommand extends Command {
 	 * Returns raw configuration arrays without creating Extension objects.
 	 *
 	 * @param array<string,array<string,mixed>> $resolved_envs
-	 * @param array<string> $env_names
+	 * @param array<string>                     $env_names
 	 *
 	 * @return array{plugins: array<mixed>, themes: array<mixed>}
 	 */
@@ -362,7 +362,7 @@ abstract class QITCommand extends Command {
 	 * Create Extension from configuration array (inlined from ExtensionFactory).
 	 *
 	 * @param array<string,mixed> $config
-	 * @param string $type
+	 * @param string              $type
 	 *
 	 * @return \QIT_CLI\PreCommand\Objects\Extension
 	 */
@@ -443,7 +443,7 @@ abstract class QITCommand extends Command {
 	 * Signature mirrors download_extensions().
 	 *
 	 * @param array<array<string, string>> $profiles Profile configurations with 'type' and 'name' keys
-	 * @param array<string> $extra_refs Additional package references to download (e.g., from CLI)
+	 * @param array<string>                $extra_refs Additional package references to download (e.g., from CLI)
 	 *
 	 * @return array<string, array{manifest: TestPackageManifest, path: ?string, metadata: array<string,mixed>}> Map of reference to package data
 	 */
@@ -507,7 +507,7 @@ abstract class QITCommand extends Command {
 		}
 
 		// Download only the new packages
-		$downloader   = App::make( TestPackageDownloader::class );
+		$downloader = App::make( TestPackageDownloader::class );
 		// Convert refs array to the format expected by download method
 		$packages_to_download = [];
 		foreach ( $new_refs as $ref ) {
@@ -571,7 +571,7 @@ abstract class QITCommand extends Command {
 	/**
 	 * Execute the command.
 	 *
-	 * @param InputInterface $input The input (will be QITInput when called from execute())
+	 * @param InputInterface  $input The input (will be QITInput when called from execute())
 	 * @param OutputInterface $output
 	 *
 	 * @return int

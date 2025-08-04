@@ -47,21 +47,21 @@ class PackagePhaseRunner {
 	 */
 	private function prepare_test_env_vars( EnvInfo $env_info ): array {
 		$env_vars = [];
-		
+
 		// Pass QIT_SITE_URL for E2E environments
 		if ( $env_info instanceof E2EEnvInfo ) {
 			$env_vars['QIT_SITE_URL'] = $env_info->site_url;
-			
+
 			// Pass SUT info
 			if ( ! empty( $env_info->sut ) ) {
 				$env_vars['QIT_SUT_SLUG'] = $env_info->sut['slug'] ?? '';
 				$env_vars['QIT_SUT_TYPE'] = $env_info->sut['type'] ?? '';
-				
+
 				// Get SUT entrypoint from plugin or theme info
 				if ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'plugin' ) {
 					foreach ( $env_info->plugins as $plugin ) {
 						// Handle both object and array access
-						$slug = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
+						$slug       = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
 						$entrypoint = is_array( $plugin ) ? ( $plugin['entrypoint'] ?? '' ) : ( $plugin->entrypoint ?? '' );
 						if ( $slug === ( $env_info->sut['slug'] ?? '' ) ) {
 							$env_vars['QIT_SUT_ENTRYPOINT'] = $entrypoint;
@@ -71,7 +71,7 @@ class PackagePhaseRunner {
 				} elseif ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'theme' ) {
 					foreach ( $env_info->themes as $theme ) {
 						// Handle both object and array access
-						$slug = is_array( $theme ) ? ( $theme['slug'] ?? '' ) : ( $theme->slug ?? '' );
+						$slug       = is_array( $theme ) ? ( $theme['slug'] ?? '' ) : ( $theme->slug ?? '' );
 						$entrypoint = is_array( $theme ) ? ( $theme['entrypoint'] ?? '' ) : ( $theme->entrypoint ?? '' );
 						if ( $slug === ( $env_info->sut['slug'] ?? '' ) ) {
 							$env_vars['QIT_SUT_ENTRYPOINT'] = $entrypoint;
@@ -79,17 +79,17 @@ class PackagePhaseRunner {
 						}
 					}
 				}
-				
+
 				// Pass plugin activation stack as JSON
 				$plugin_activation_stack = [];
 				foreach ( array_reverse( $env_info->plugins ) as $plugin ) {
-					$slug = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
+					$slug                      = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
 					$plugin_activation_stack[] = $slug;
 				}
 				$env_vars['QIT_PLUGIN_ACTIVATION_STACK'] = json_encode( $plugin_activation_stack );
 			}
 		}
-		
+
 		return $env_vars;
 	}
 
@@ -336,18 +336,18 @@ class PackagePhaseRunner {
 			// Use the same logic as before for backwards compatibility
 			$workdir = '/qit/packages/' . basename( $package_id );
 		}
-		
+
 		$this->output->writeln( "  <info>• {$package_id} ({$phase})</info>" );
-		
+
 		// Debug output
 		if ( $this->output->isVerbose() ) {
 			$this->output->writeln( "    Package ID: {$package_id}" );
 			$this->output->writeln( "    Host path: {$package_path}" );
 			$this->output->writeln( "    Container workdir: {$workdir}" );
 			if ( isset( $env_info->test_packages_metadata[ $package_id ]['container_path'] ) ) {
-				$this->output->writeln( "    Using volume mount" );
+				$this->output->writeln( '    Using volume mount' );
 			} else {
-				$this->output->writeln( "    Using extracted package" );
+				$this->output->writeln( '    Using extracted package' );
 			}
 		}
 

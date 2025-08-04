@@ -104,8 +104,8 @@ class PackagePublishCommand extends QITCommand {
 			 */
 			// Allow alphanumeric characters, dashes, underscores, and dots
 			if ( ! preg_match( '/^[a-zA-Z0-9._-]+$/', $version ) ) {
-				throw new \RuntimeException( 
-					'Version must contain only alphanumeric characters, dashes, underscores, and dots (e.g., 1.0.0, stable, rc-1, nightly_build)' 
+				throw new \RuntimeException(
+					'Version must contain only alphanumeric characters, dashes, underscores, and dots (e.g., 1.0.0, stable, rc-1, nightly_build)'
 				);
 			}
 

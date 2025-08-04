@@ -208,11 +208,11 @@ class E2EEnvironment extends Environment {
 				sprintf( 'PHP Version: %s', $this->env_info->php ),
 				sprintf( 'WordPress Version: %s', $this->env_info->wp ),
 			];
-			
+
 			if ( ! empty( $this->env_info->woo ) ) {
 				$listing[] = sprintf( 'WooCommerce: %s', $this->env_info->woo );
 			}
-			
+
 			$listing[] = sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' );
 			$listing[] = sprintf( 'Path: %s', $this->env_info->temporary_env );
 

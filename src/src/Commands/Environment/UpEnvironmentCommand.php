@@ -165,10 +165,10 @@ class UpEnvironmentCommand extends QITCommand {
 				if ( is_string( $plugin_config ) ) {
 					// Use the new parser for string inputs
 					try {
-						$extension = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $plugin_config, 'plugin' );
+						$extension    = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $plugin_config, 'plugin' );
 						$extensions[] = $extension;
 					} catch ( \InvalidArgumentException $e ) {
-						throw new \RuntimeException( "Invalid plugin specification: " . $e->getMessage() );
+						throw new \RuntimeException( 'Invalid plugin specification: ' . $e->getMessage() );
 					}
 				} else {
 					// Handle array configuration
@@ -211,10 +211,10 @@ class UpEnvironmentCommand extends QITCommand {
 				if ( is_string( $theme_config ) ) {
 					// Use the new parser for string inputs
 					try {
-						$extension = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $theme_config, 'theme' );
+						$extension    = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $theme_config, 'theme' );
 						$extensions[] = $extension;
 					} catch ( \InvalidArgumentException $e ) {
-						throw new \RuntimeException( "Invalid theme specification: " . $e->getMessage() );
+						throw new \RuntimeException( 'Invalid theme specification: ' . $e->getMessage() );
 					}
 				} else {
 					// Handle array configuration
@@ -347,7 +347,7 @@ class UpEnvironmentCommand extends QITCommand {
 			// Just merge the arrays without re-indexing
 			$config['volumes'] = array_merge( $cfg_volumes, $cli_volumes );
 		}
-		
+
 		$merge_simple_list( 'php_extensions', 'php_extension' );
 
 		/* ─ Runtime env vars - process files immediately ─ */

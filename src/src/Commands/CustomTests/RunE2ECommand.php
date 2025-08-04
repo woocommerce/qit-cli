@@ -167,7 +167,7 @@ class RunE2ECommand extends QITCommand {
 		// Handle activation test scenario
 		$testPackages = $input->getTestPackages();
 		if ( $input->getArgument( 'sut' ) === 'woocommerce' &&
-		     array_filter( $testPackages, fn($pkg) => str_starts_with($pkg, 'woocommerce/activation:') ) ) {
+			array_filter( $testPackages, fn( $pkg ) => str_starts_with( $pkg, 'woocommerce/activation:' ) ) ) {
 			$output->writeln( '<info>Running activation test scenario.</info>' );
 			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 			$input->setOption( 'skip_activating_plugins', true );
@@ -192,15 +192,15 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		// Add SUT to env:up options if provided
-		$sutInfo = $input->getSut();
+		$sutInfo  = $input->getSut();
 		$sut_slug = $sutInfo['slug'] ?? null;
-		$sut_id = null;
+		$sut_id   = null;
 		$sut_type = null;
 		if ( $sut_slug ) {
 			// Resolve SUT ID and type
 			try {
 				if ( is_numeric( $sut_slug ) ) {
-					$sut_id = (int) $sut_slug;
+					$sut_id   = (int) $sut_slug;
 					$sut_slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( $sut_id );
 				} else {
 					$sut_id = $this->woo_extensions_list->get_woo_extension_id_by_slug( $sut_slug );
@@ -233,7 +233,7 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		// Download test packages BEFORE env:up so we can mount them as volumes
-		$test_packages = $this->download_test_packages( 
+		$test_packages = $this->download_test_packages(
 			[
 				[
 					'type' => $this->test_type,
@@ -245,20 +245,20 @@ class RunE2ECommand extends QITCommand {
 
 		// Prepare test package metadata with container paths BEFORE env:up
 		$test_packages_metadata = [];
-		$seen_remote_packages = []; // Track remote packages for deduplication
-		$local_package_counter = []; // Track local packages with same namespace/package
-		
+		$seen_remote_packages   = []; // Track remote packages for deduplication
+		$local_package_counter  = []; // Track local packages with same namespace/package
+
 		foreach ( $test_packages as $pkg_id => $meta ) {
 			if ( isset( $meta['path'] ) ) {
 				$is_local = file_exists( $pkg_id ) && is_dir( $pkg_id );
-				
+
 				if ( $is_local ) {
 					// Local packages - never deduplicate, but need unique names
 					$container_name = $this->container_name_from_manifest( $pkg_id, $local_package_counter );
-					
-					$test_packages_metadata[ $pkg_id ] = [ 
-						'path' => $meta['path'],
-						'container_path' => '/qit/packages/' . $container_name
+
+					$test_packages_metadata[ $pkg_id ] = [
+						'path'           => $meta['path'],
+						'container_path' => '/qit/packages/' . $container_name,
 					];
 				} else {
 					// Remote packages - deduplicate by package ID
@@ -270,24 +270,24 @@ class RunE2ECommand extends QITCommand {
 						$test_packages_metadata[ $pkg_id ] = $seen_remote_packages[ $pkg_id ];
 						continue;
 					}
-					
+
 					// For remote packages, include version in container name to avoid conflicts
 					$container_name = $this->container_name_from_manifest( $pkg_id, null, true );
-					
+
 					$test_packages_metadata[ $pkg_id ] = [
-						'path' => $meta['path'],
-						'container_path' => '/qit/packages/' . $container_name
+						'path'           => $meta['path'],
+						'container_path' => '/qit/packages/' . $container_name,
 					];
-					
+
 					$seen_remote_packages[ $pkg_id ] = $test_packages_metadata[ $pkg_id ];
 				}
-				
+
 				if ( $output->isVeryVerbose() ) {
 					$output->writeln( "Package mapping: {$pkg_id} -> /qit/packages/{$container_name}" );
 				}
 			}
 		}
-		
+
 		// Add local test packages as volumes
 		foreach ( $test_packages as $pkg_id => $meta ) {
 			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
@@ -295,10 +295,10 @@ class RunE2ECommand extends QITCommand {
 				if ( ! isset( $test_packages_metadata[ $pkg_id ] ) ) {
 					continue;
 				}
-				
+
 				// This is a local path - add it as a volume
 				$container_path = $test_packages_metadata[ $pkg_id ]['container_path'];
-				
+
 				if ( ! isset( $env_up_options['--volume'] ) ) {
 					$env_up_options['--volume'] = [];
 				}
@@ -323,7 +323,11 @@ class RunE2ECommand extends QITCommand {
 
 		// Add SUT info to env_info if provided
 		if ( $sut_slug ) {
-			$env_info->sut = [ 'slug' => $sut_slug, 'id' => $sut_id, 'type' => $sut_type ];
+			$env_info->sut = [
+				'slug' => $sut_slug,
+				'id'   => $sut_id,
+				'type' => $sut_type,
+			];
 		}
 
 		/*****************************************************************
@@ -348,7 +352,6 @@ class RunE2ECommand extends QITCommand {
 		// Set up globals and environment
 		$this->setupGlobals( $env_info, $input );
 		$this->handle_termination();
-
 
 		// For testing
 		if ( getenv( 'QIT_SELF_TEST' ) === 'run_e2e' || getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
@@ -490,49 +493,49 @@ class RunE2ECommand extends QITCommand {
 
 	/**
 	 * Generate a container name from manifest.json or package reference.
-	 * 
+	 *
 	 * For local packages: reads namespace/package from manifest.json
 	 * For remote packages: parses namespace/package/version from reference
-	 * 
+	 *
 	 * @param string $package_id The package ID (local path or remote reference).
-	 * @param array &$counter Counter array for local packages to ensure uniqueness.
-	 * @param bool $include_version Whether to include version in the container name (for remote packages).
+	 * @param array  &$counter Counter array for local packages to ensure uniqueness.
+	 * @param bool   $include_version Whether to include version in the container name (for remote packages).
 	 * @return string The container-safe directory name.
 	 * @throws \InvalidArgumentException If manifest is missing or invalid.
 	 */
 	private function container_name_from_manifest( string $package_id, array &$counter = null, bool $include_version = false ): string {
 		$namespace = '';
-		$package = '';
-		
+		$package   = '';
+
 		// Check if this is a local path
 		if ( file_exists( $package_id ) && is_dir( $package_id ) ) {
 			// Local package - read manifest.json
 			$manifest_path = rtrim( $package_id, '/\\' ) . '/manifest.json';
-			
+
 			if ( ! file_exists( $manifest_path ) ) {
 				throw new \InvalidArgumentException(
 					"Test package directory must contain manifest.json: {$package_id}"
 				);
 			}
-			
+
 			$manifest_content = file_get_contents( $manifest_path );
-			$manifest = json_decode( $manifest_content, true );
-			
+			$manifest         = json_decode( $manifest_content, true );
+
 			if ( json_last_error() !== JSON_ERROR_NONE ) {
 				throw new \InvalidArgumentException(
 					"Invalid JSON in manifest.json: {$package_id} - " . json_last_error_msg()
 				);
 			}
-			
+
 			if ( empty( $manifest['namespace'] ) || empty( $manifest['package'] ) ) {
 				throw new \InvalidArgumentException(
 					"Manifest must contain 'namespace' and 'package' fields: {$package_id}"
 				);
 			}
-			
+
 			$namespace = $manifest['namespace'];
-			$package = $manifest['package'];
-			$version = null; // Local packages don't have versions
+			$package   = $manifest['package'];
+			$version   = null; // Local packages don't have versions
 		} else {
 			// Remote package reference - parse the format
 			// Expected formats:
@@ -543,36 +546,36 @@ class RunE2ECommand extends QITCommand {
 					"Invalid package reference format. Expected 'namespace/package[:version]', got: {$package_id}"
 				);
 			}
-			
+
 			$namespace = $matches[1];
-			$package = $matches[2];
-			$version = isset( $matches[3] ) ? $matches[3] : null;
+			$package   = $matches[2];
+			$version   = isset( $matches[3] ) ? $matches[3] : null;
 		}
-		
+
 		// Sanitize for container safety
 		$safe_namespace = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $namespace ) );
-		$safe_package = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $package ) );
-		$base_name = trim( "{$safe_namespace}-{$safe_package}", '-' );
-		
+		$safe_package   = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $package ) );
+		$base_name      = trim( "{$safe_namespace}-{$safe_package}", '-' );
+
 		// Add version to container name if requested (for remote packages that need version distinction)
 		if ( $include_version && $version !== null ) {
 			$safe_version = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $version ) );
-			$base_name .= '-' . $safe_version;
+			$base_name   .= '-' . $safe_version;
 		}
-		
+
 		// For local packages, add counter if needed to ensure uniqueness
 		if ( $counter !== null ) {
 			$key = $base_name;
 			if ( ! isset( $counter[ $key ] ) ) {
 				$counter[ $key ] = 0;
 			}
-			$counter[ $key ]++;
-			
+			++$counter[ $key ];
+
 			if ( $counter[ $key ] > 1 ) {
 				$base_name .= '-' . $counter[ $key ];
 			}
 		}
-		
+
 		return $base_name;
 	}
 

@@ -15,7 +15,7 @@ class PackageListCommand extends QITCommand {
 
 	protected function configure(): void {
 		parent::configure();
-		
+
 		$this
 			->setName( 'package:list' )
 			->setDescription( 'List all test packages available to the current partner' )

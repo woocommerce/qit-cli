@@ -50,19 +50,19 @@ class TestPackageDownloader {
 			return [];
 		}
 
-		$start     = microtime( true );
-		$manifests = [];
+		$start           = microtime( true );
+		$manifests       = [];
 		$remote_packages = [];
-		
+
 		// First, separate local paths from remote references
 		foreach ( $packages as $reference => $package_info ) {
 			// Check if reference is a local path
 			if ( is_dir( $reference ) && file_exists( $reference . '/manifest.json' ) ) {
 				// Handle local package
 				$this->output->writeln( "Using local package: $reference" );
-				$manifest = $this->manifest_parser->parse( $reference . '/manifest.json' );
+				$manifest                = $this->manifest_parser->parse( $reference . '/manifest.json' );
 				$manifests[ $reference ] = $manifest;
-				
+
 				// Store metadata for local package
 				$this->package_metadata[ $reference ] = [
 					'reference'       => $reference,
@@ -101,7 +101,7 @@ class TestPackageDownloader {
 
 	/**
 	 * Get package metadata for a reference.
-	 * 
+	 *
 	 * @param string $reference The package reference.
 	 * @return array<string,mixed> The package metadata.
 	 */
@@ -289,21 +289,21 @@ class TestPackageDownloader {
 		}
 
 		// Use npm ci if package-lock.json exists, otherwise use npm install
-		$use_ci = file_exists( $package_dir . '/package-lock.json' );
+		$use_ci      = file_exists( $package_dir . '/package-lock.json' );
 		$npm_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
-		
-		$npm_output = [];
+
+		$npm_output      = [];
 		$npm_return_code = 0;
-		
+
 		exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
-		
+
 		if ( $npm_return_code !== 0 ) {
 			$command_used = $use_ci ? 'npm ci' : 'npm install';
 			throw new \RuntimeException( $command_used . ' failed: ' . implode( "\n", $npm_output ) );
 		}
 
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( "npm dependencies installed successfully" );
+			$this->output->writeln( 'npm dependencies installed successfully' );
 		}
 	}
 
