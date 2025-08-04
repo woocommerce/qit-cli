@@ -43,8 +43,7 @@ class K6DockerConfig {
 			"--network={$env_info->docker_network}",
 			'--rm',
 			'--init',
-			'--add-host=host.docker.internal:host-gateway',
-			'--cap-add=SYS_ADMIN',
+			'--add-host=host.docker.internal:host-gateway'
 		];
 	}
 
