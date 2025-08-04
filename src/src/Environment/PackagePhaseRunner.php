@@ -289,9 +289,40 @@ class PackagePhaseRunner {
 			try {
 				if ( $venue === 'host' ) {
 					// Pass QIT_SITE_URL environment variable for host commands (e.g., Playwright tests)
-					$env_vars       = [
+					$env_vars = [
 						'QIT_SITE_URL' => $env_info instanceof E2EEnvInfo ? $env_info->site_url : '',
 					];
+					
+					// Pass SUT info for E2E environments
+					if ( $env_info instanceof E2EEnvInfo && ! empty( $env_info->sut ) ) {
+						$env_vars['SUT_SLUG'] = $env_info->sut['slug'] ?? '';
+						$env_vars['SUT_TYPE'] = $env_info->sut['type'] ?? '';
+						
+						// Get SUT entrypoint from plugin or theme info
+						if ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'plugin' ) {
+							foreach ( $env_info->plugins as $plugin ) {
+								if ( $plugin->slug === ( $env_info->sut['slug'] ?? '' ) ) {
+									$env_vars['SUT_ENTRYPOINT'] = $plugin->source;
+									break;
+								}
+							}
+						} elseif ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'theme' ) {
+							foreach ( $env_info->themes as $theme ) {
+								if ( $theme->slug === ( $env_info->sut['slug'] ?? '' ) ) {
+									$env_vars['SUT_ENTRYPOINT'] = $theme->source;
+									break;
+								}
+							}
+						}
+						
+						// Pass plugin activation stack
+						$plugin_activation_stack = [];
+						foreach ( array_reverse( $env_info->plugins ) as $plugin ) {
+							$plugin_activation_stack[] = $plugin->slug;
+						}
+						$env_vars['PLUGIN_ACTIVATION_STACK'] = json_encode( $plugin_activation_stack );
+					}
+					
 					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars );
 				} else {
 					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, [] );

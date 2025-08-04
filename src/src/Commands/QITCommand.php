@@ -470,19 +470,25 @@ abstract class QITCommand extends Command {
 			$test_type    = $profile['type'];
 			$profile_name = $profile['name'];
 
-			if ( ! isset( $cfg['test_types'][ $test_type ] ) ) {
-				throw new \RuntimeException( "download_test_packages(): test type '$test_type' not found in configuration" );
+			// If test type or profile doesn't exist in config, that's OK if we have explicit packages
+			// This allows commands to work without configuration when packages are provided
+			if ( ! isset( $cfg['test_types'][ $test_type ] ) && empty( $extra_refs ) ) {
+				throw new \RuntimeException( "download_test_packages(): test type '$test_type' not found in configuration and no test packages specified" );
 			}
 
-			if ( ! isset( $cfg['test_types'][ $test_type ][ $profile_name ] ) ) {
-				throw new \RuntimeException( "download_test_packages(): profile '$test_type:$profile_name' not found in configuration" );
+			if ( ! isset( $cfg['test_types'][ $test_type ][ $profile_name ] ) && empty( $extra_refs ) ) {
+				// For missing profiles, just skip - don't fail if we have explicit packages
+				continue;
 			}
 		}
 
 		// Resolve test profiles first (handle extends inheritance)
 		$resolved_profiles = [];
 		foreach ( $profiles as $profile ) {
-			$resolved_profiles[] = $cfg['test_types'][ $profile['type'] ][ $profile['name'] ];
+			// Skip if profile doesn't exist in config
+			if ( isset( $cfg['test_types'][ $profile['type'] ][ $profile['name'] ] ) ) {
+				$resolved_profiles[] = $cfg['test_types'][ $profile['type'] ][ $profile['name'] ];
+			}
 		}
 
 		$references = $this->extract_package_refs_from_resolved_profiles( $resolved_profiles );

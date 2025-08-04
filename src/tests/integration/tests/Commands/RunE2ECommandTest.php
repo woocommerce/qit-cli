@@ -526,10 +526,10 @@ test('can add product to cart', async ({ page }) => {
 			mkdir( $tempDir, 0755, true );
 			$packageDir = $tempDir . '/test-package';
 			
-			// Create a local plugin with version in name
-			$pluginDir = $tempDir . '/my-awesome-plugin-1.2.3';
-			mkdir( $pluginDir, 0755, true );
-			file_put_contents( $pluginDir . '/my-plugin.php', '<?php
+			// Test 1: Invalid slug inference (directory with dots)
+			$invalidPluginDir = $tempDir . '/my-awesome-plugin-1.2.3';
+			mkdir( $invalidPluginDir, 0755, true );
+			file_put_contents( $invalidPluginDir . '/my-plugin.php', '<?php
 /**
  * Plugin Name: My Awesome Plugin
  * Version: 1.2.3
@@ -546,19 +546,43 @@ test('can add product to cart', async ({ page }) => {
 				'--framework=playwright',
 			] );
 			
-			// Run with local plugin path
+			// This should fail with invalid slug error
+			try {
+				qit( [
+					'run:e2e',
+					'woocommerce',
+					'--plugin', $invalidPluginDir,  // Invalid slug due to dots
+					'--test-package', $packageDir,
+				] );
+				$this->fail( 'Expected exception for invalid slug' );
+			} catch ( \RuntimeException $e ) {
+				$this->assertStringContainsString( 'Inferred slug \'my-awesome-plugin-1.2.3\' is not valid', $e->getMessage() );
+				$this->assertStringContainsString( 'Please use explicit format: slug@path', $e->getMessage() );
+			}
+			
+			// Test 2: Valid slug inference (directory without dots)
+			$validPluginDir = $tempDir . '/my-awesome-plugin';
+			mkdir( $validPluginDir, 0755, true );
+			file_put_contents( $validPluginDir . '/my-plugin.php', '<?php
+/**
+ * Plugin Name: My Awesome Plugin
+ * Version: 1.2.3
+ */
+' );
+			
+			// Run with valid local plugin path
 			$proc = qit( [
 				'run:e2e',
 				'woocommerce',
-				'--plugin', $pluginDir,  // Local path with version
+				'--plugin', $validPluginDir,  // Valid slug
 				'--test-package', $packageDir,
 			], return_process: true );
 			
 			$output = $proc->getOutput();
 			$exitCode = $proc->getExitCode();
 			
-			// Should complete - slug should be inferred as 'my-awesome-plugin'
-			$this->assertContains( $exitCode, [0, 1], 'Test should complete. Output: ' . $output );
+			// Should complete with warning about inferred slug
+			$this->assertEquals( 0, $exitCode, 'Test should succeed with valid slug. Output: ' . $output );
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
 			
 		} finally {
@@ -745,6 +769,180 @@ test('can add product to cart', async ({ page }) => {
 			// Should use config settings
 			$this->assertContains( $exitCode, [0, 1], 'Test should complete. Output: ' . $output );
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
+			
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
+
+	/**
+	 * Test that run:e2e works without qit.json configuration.
+	 * 
+	 * This test ensures QIT commands can work without requiring a qit.json file
+	 * when test packages are explicitly provided via --test-package.
+	 * 
+	 * This test would catch the bug where download_test_packages() threw an exception
+	 * "test type 'e2e' not found in configuration" even when test packages
+	 * were explicitly provided via the --test-package option.
+	 */
+	public function test_run_e2e_without_config_full(): void {
+		$tempDir = sys_get_temp_dir() . '/qit-test-' . uniqid();
+		
+		try {
+			mkdir( $tempDir, 0755, true );
+			
+			// Create a local test package
+			$packageDir = $tempDir . '/test-package';
+			qit( [
+				'package:scaffold',
+				$packageDir,
+				'--namespace=woocommerce',
+				'--package=no-config-test',
+				'--test-type=e2e',
+				'--framework=playwright',
+			] );
+			
+			// No config at all - this should work because we provide test package explicitly
+			// This would fail before the fix with:
+			// "download_test_packages(): test type 'e2e' not found in configuration and no test packages specified"
+			$proc = qit( [
+				'run:e2e',
+				'woocommerce',
+				'--test-package', $packageDir,
+			], [], 0, [], true ); // return_process = true
+			
+			$output = $proc->getOutput();
+			$exitCode = $proc->getExitCode();
+			
+			// Should complete successfully without requiring configuration
+			$this->assertEquals( 0, $exitCode, 'Test should succeed without config file. Output: ' . $output );
+			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
+			$this->assertStringContainsString( 'Running Test Packages', $output );
+			$this->assertStringContainsString( '1 passed', $output );
+			
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
+
+	/**
+	 * Test that run:e2e works with minimal config (no test_types section).
+	 * 
+	 * This ensures the command can work when only environments are configured
+	 * and test packages are provided via CLI.
+	 */
+	public function test_run_e2e_with_minimal_config_full(): void {
+		$tempDir = sys_get_temp_dir() . '/qit-test-' . uniqid();
+		
+		try {
+			mkdir( $tempDir, 0755, true );
+			
+			// Create a local test package
+			$packageDir = $tempDir . '/test-package';
+			qit( [
+				'package:scaffold',
+				$packageDir,
+				'--namespace=woocommerce',
+				'--package=minimal-config-test',
+				'--test-type=e2e',
+				'--framework=playwright',
+			] );
+			
+			// Create minimal config with only environments (no test_types)
+			$config = [
+				'environments' => [
+					'default' => [
+						'php' => '8.0',
+						'wp' => '6.4',
+					],
+				],
+				// No test_types section at all
+			];
+			
+			$configPath = $tempDir . '/qit.json';
+			file_put_contents( $configPath, json_encode( $config, JSON_PRETTY_PRINT ) );
+			
+			// This would fail before the fix with:
+			// "download_test_packages(): test type 'e2e' not found in configuration and no test packages specified"
+			$proc = qit( [
+				'run:e2e',
+				'woocommerce',
+				'--config', $configPath,
+				'--test-package', $packageDir,
+			], [], 0, [], true );
+			
+			$output = $proc->getOutput();
+			$exitCode = $proc->getExitCode();
+			
+			// Should work with test package provided via CLI
+			$this->assertEquals( 0, $exitCode, 'Test should succeed with minimal config. Output: ' . $output );
+			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
+			// The environment config should be respected even without test_types section
+			$this->assertStringContainsString( 'Running Test Packages', $output );
+			$this->assertStringContainsString( '1 passed', $output );
+			
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
+
+	/**
+	 * Test that run:e2e with multiple test packages works without config.
+	 * 
+	 * This specifically tests the edge case where multiple test packages are provided
+	 * but no configuration exists.
+	 */
+	public function test_run_e2e_multiple_packages_no_config_full(): void {
+		$tempDir = sys_get_temp_dir() . '/qit-test-' . uniqid();
+		
+		try {
+			mkdir( $tempDir, 0755, true );
+			
+			// Create two local test packages
+			$package1Dir = $tempDir . '/test-package-1';
+			qit( [
+				'package:scaffold',
+				$package1Dir,
+				'--namespace=woocommerce',
+				'--package=test1',
+				'--test-type=e2e',
+				'--framework=playwright',
+			] );
+			
+			$package2Dir = $tempDir . '/test-package-2';
+			qit( [
+				'package:scaffold',
+				$package2Dir,
+				'--namespace=woocommerce',
+				'--package=test2',
+				'--test-type=e2e',
+				'--framework=playwright',
+			] );
+			
+			// No config at all
+			// This would fail before the fix with:
+			// "download_test_packages(): test type 'e2e' not found in configuration and no test packages specified"
+			$proc = qit( [
+				'run:e2e',
+				'woocommerce',
+				'--test-package', $package1Dir,
+				'--test-package', $package2Dir,
+			], [], 0, [], true );
+			
+			$output = $proc->getOutput();
+			$exitCode = $proc->getExitCode();
+			
+			// Should handle multiple packages without config
+			$this->assertEquals( 0, $exitCode, 'Test should succeed with multiple packages and no config. Output: ' . $output );
+			$this->assertStringContainsString( 'Using local package: ' . $package1Dir, $output );
+			$this->assertStringContainsString( 'Using local package: ' . $package2Dir, $output );
+			$this->assertStringContainsString( 'Running Test Packages', $output );
 			
 		} finally {
 			if ( is_dir( $tempDir ) ) {

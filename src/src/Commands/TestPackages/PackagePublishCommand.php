@@ -31,6 +31,7 @@ class PackagePublishCommand extends QITCommand {
 	}
 
 	protected function configure(): void {
+		parent::configure();
 		$this
 			->setName( 'package:publish' )
 			->setDescription( 'Publish a test package to QIT' )
@@ -101,8 +102,11 @@ class PackagePublishCommand extends QITCommand {
 			 * Step 3: Validate version format
 			 * -------------------------------------------------------------------
 			 */
-			if ( $version !== 'latest' && ! preg_match( '/^\d+\.\d+\.\d+(-.+)?$/', $version ) ) {
-				throw new \RuntimeException( 'Version must be semantic version (e.g., 1.0.0, 1.0.0-beta.1) or "latest"' );
+			// Allow alphanumeric characters, dashes, underscores, and dots
+			if ( ! preg_match( '/^[a-zA-Z0-9._-]+$/', $version ) ) {
+				throw new \RuntimeException( 
+					'Version must contain only alphanumeric characters, dashes, underscores, and dots (e.g., 1.0.0, stable, rc-1, nightly_build)' 
+				);
 			}
 
 			/*

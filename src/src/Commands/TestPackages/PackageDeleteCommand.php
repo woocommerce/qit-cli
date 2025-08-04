@@ -15,6 +15,8 @@ use function QIT_CLI\get_manager_url;
 class PackageDeleteCommand extends QITCommand {
 
 	protected function configure(): void {
+		parent::configure();
+		
 		$this
 			->setName( 'package:delete' )
 			->setDescription( 'Delete a test package from the QIT registry' )

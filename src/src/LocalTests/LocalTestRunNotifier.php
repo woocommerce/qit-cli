@@ -62,9 +62,12 @@ class LocalTestRunNotifier {
 		$test_type = 'e2e';
 
 		foreach ( $env_info->plugins as $plugin ) {
-			// Ensure we have Extension objects
-			if ( ! $plugin instanceof \QIT_CLI\PreCommand\Objects\Extension ) {
-				throw new \TypeError( 'Expected Extension object in plugins array, got ' . gettype( $plugin ) );
+			// Handle both Extension objects and arrays (from JSON deserialization)
+			if ( is_array( $plugin ) ) {
+				// Convert array to Extension object
+				$plugin = \QIT_CLI\PreCommand\Objects\Extension::fromArray( $plugin );
+			} elseif ( ! $plugin instanceof \QIT_CLI\PreCommand\Objects\Extension ) {
+				throw new \TypeError( 'Expected Extension object or array in plugins array, got ' . gettype( $plugin ) );
 			}
 			
 			// Are we running an activation test?

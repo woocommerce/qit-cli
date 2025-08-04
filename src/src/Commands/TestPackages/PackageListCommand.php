@@ -14,6 +14,8 @@ use function QIT_CLI\get_manager_url;
 class PackageListCommand extends QITCommand {
 
 	protected function configure(): void {
+		parent::configure();
+		
 		$this
 			->setName( 'package:list' )
 			->setDescription( 'List all test packages available to the current partner' )
