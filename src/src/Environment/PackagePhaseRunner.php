@@ -60,9 +60,8 @@ class PackagePhaseRunner {
 				// Get SUT entrypoint from plugin or theme info
 				if ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'plugin' ) {
 					foreach ( $env_info->plugins as $plugin ) {
-						// Handle both object and array access
-						$slug       = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
-						$entrypoint = is_array( $plugin ) ? ( $plugin['entrypoint'] ?? '' ) : ( $plugin->entrypoint ?? '' );
+						$slug       = $plugin->slug;
+						$entrypoint = $plugin->entrypoint;
 						if ( $slug === ( $env_info->sut['slug'] ?? '' ) ) {
 							$env_vars['QIT_SUT_ENTRYPOINT'] = $entrypoint;
 							break;
@@ -70,9 +69,8 @@ class PackagePhaseRunner {
 					}
 				} elseif ( isset( $env_info->sut['type'] ) && $env_info->sut['type'] === 'theme' ) {
 					foreach ( $env_info->themes as $theme ) {
-						// Handle both object and array access
-						$slug       = is_array( $theme ) ? ( $theme['slug'] ?? '' ) : ( $theme->slug ?? '' );
-						$entrypoint = is_array( $theme ) ? ( $theme['entrypoint'] ?? '' ) : ( $theme->entrypoint ?? '' );
+						$slug       = $theme->slug;
+						$entrypoint = $theme->entrypoint;
 						if ( $slug === ( $env_info->sut['slug'] ?? '' ) ) {
 							$env_vars['QIT_SUT_ENTRYPOINT'] = $entrypoint;
 							break;
@@ -83,7 +81,7 @@ class PackagePhaseRunner {
 				// Pass plugin activation stack as JSON
 				$plugin_activation_stack = [];
 				foreach ( array_reverse( $env_info->plugins ) as $plugin ) {
-					$slug                      = is_array( $plugin ) ? ( $plugin['slug'] ?? '' ) : ( $plugin->slug ?? '' );
+					$slug                      = $plugin->slug;
 					$plugin_activation_stack[] = $slug;
 				}
 				$env_vars['QIT_PLUGIN_ACTIVATION_STACK'] = json_encode( $plugin_activation_stack );

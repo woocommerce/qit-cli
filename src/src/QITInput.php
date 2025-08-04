@@ -16,15 +16,18 @@ use Symfony\Component\Console\Input\InputDefinition;
  */
 class QITInput implements InputInterface {
 	private InputInterface $symfony_input;
+	/** @var array<string,scalar|array<string,scalar|array<string,scalar>>> */
 	private array $resolved_config;
-	private ?array $current_test_profile       = null;
+	/** @var array<string,string|array<string>>|null */
+	private ?array $current_test_profile = null;
+	/** @var array<string,string|bool|array<string>>|null */
 	private ?array $current_environment_config = null;
 	private string $test_type;
 
 	/**
-	 * @param InputInterface $input The raw Symfony input.
-	 * @param array          $resolved_config The resolved configuration from qit.json.
-	 * @param string         $test_type The test type (e2e, activation, etc.).
+	 * @param InputInterface                                                 $input The raw Symfony input.
+	 * @param array<string,scalar|array<string,scalar|array<string,scalar>>> $resolved_config The resolved configuration from qit.json.
+	 * @param string                                                         $test_type The test type (e2e, activation, etc.).
 	 */
 	public function __construct( InputInterface $input, array $resolved_config, string $test_type = 'e2e' ) {
 		$this->symfony_input   = $input;
@@ -77,6 +80,8 @@ class QITInput implements InputInterface {
 
 	/**
 	 * Get resolved test profile configuration.
+	 *
+	 * @return array<string,string|array<string>>
 	 */
 	public function getTestProfile(): array {
 		if ( $this->current_test_profile === null ) {
@@ -96,6 +101,8 @@ class QITInput implements InputInterface {
 	/**
 	 * Get fully resolved environment configuration.
 	 * This includes all inheritance, CLI overrides, and special resolution.
+	 *
+	 * @return array<string,string|bool|array<string>>
 	 */
 	public function getEnvironmentConfig(): array {
 		if ( $this->current_environment_config === null ) {
@@ -113,6 +120,8 @@ class QITInput implements InputInterface {
 
 	/**
 	 * Get test packages with proper merging of profile and CLI options.
+	 *
+	 * @return array<string>
 	 */
 	public function getTestPackages(): array {
 		$profile  = $this->getTestProfile();
@@ -130,6 +139,8 @@ class QITInput implements InputInterface {
 
 	/**
 	 * Get SUT (System Under Test) information.
+	 *
+	 * @return array<string,string>|null
 	 */
 	public function getSut(): ?array {
 		// CLI argument takes precedence
@@ -140,17 +151,37 @@ class QITInput implements InputInterface {
 
 		// Check test profile
 		$profile = $this->getTestProfile();
-		if ( isset( $profile['sut'] ) ) {
-			return $profile['sut'];
+		if ( isset( $profile['sut'] ) && is_array( $profile['sut'] ) ) {
+			// Ensure it's a flat array of strings
+			$sut = [];
+			foreach ( $profile['sut'] as $key => $value ) {
+				if ( is_string( $key ) && is_string( $value ) ) {
+					$sut[ $key ] = $value;
+				}
+			}
+			return $sut;
 		}
 
 		// Check global config
-		return $this->resolved_config['sut'] ?? null;
+		if ( isset( $this->resolved_config['sut'] ) && is_array( $this->resolved_config['sut'] ) ) {
+			// Ensure it's a flat array of strings
+			$sut = [];
+			foreach ( $this->resolved_config['sut'] as $key => $value ) {
+				if ( is_string( $key ) && is_string( $value ) ) {
+					$sut[ $key ] = $value;
+				}
+			}
+			return $sut;
+		}
+
+		return null;
 	}
 
 	/**
 	 * Get all environment-related options formatted for env:up command.
 	 * This is what RunE2E passes to EnvironmentRunner.
+	 *
+	 * @return array<string,string|bool|array<string>>
 	 */
 	public function getEnvironmentOptions(): array {
 		$options = [];
@@ -206,15 +237,19 @@ class QITInput implements InputInterface {
 
 	/**
 	 * Get option value.
+	 *
+	 * @return string|bool|array<string>|null
 	 */
-	public function getOption( string $name ): mixed {
+	public function getOption( string $name ) {
 		return $this->symfony_input->getOption( $name );
 	}
 
 	/**
 	 * Get argument value.
+	 *
+	 * @return string|null
 	 */
-	public function getArgument( string $name ): mixed {
+	public function getArgument( string $name ) {
 		return $this->symfony_input->getArgument( $name );
 	}
 
@@ -228,8 +263,11 @@ class QITInput implements InputInterface {
 
 	/**
 	 * Set an option value (used by RunActivationTestCommand).
+	 *
+	 * @param string                    $name The option name.
+	 * @param string|bool|array<string> $value The option value.
 	 */
-	public function setOption( string $name, mixed $value ): void {
+	public function setOption( string $name, $value ): void {
 		$this->symfony_input->setOption( $name, $value );
 	}
 
@@ -254,6 +292,8 @@ class QITInput implements InputInterface {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param string|array<string> $values
 	 */
 	public function hasParameterOption( $values, bool $only_params = false ): bool {
 		return $this->symfony_input->hasParameterOption( $values, $only_params );
@@ -261,6 +301,10 @@ class QITInput implements InputInterface {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @param string|array<string>       $values
+	 * @param scalar|array<scalar>|false $default_value
+	 * @return scalar|array<scalar>|false
 	 */
 	public function getParameterOption( $values, $default_value = false, bool $only_params = false ) {
 		return $this->symfony_input->getParameterOption( $values, $default_value, $only_params );
@@ -282,6 +326,8 @@ class QITInput implements InputInterface {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @return array<string,string|null>
 	 */
 	public function getArguments(): array {
 		return $this->symfony_input->getArguments();
@@ -296,6 +342,8 @@ class QITInput implements InputInterface {
 
 	/**
 	 * {@inheritdoc}
+	 *
+	 * @return array<string,string|bool|array<string>|null>
 	 */
 	public function getOptions(): array {
 		return $this->symfony_input->getOptions();
@@ -316,9 +364,16 @@ class QITInput implements InputInterface {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Convert to string representation.
+	 *
+	 * @return string
 	 */
 	public function __toString(): string {
-		return $this->symfony_input->__toString();
+		// Check if underlying input supports __toString
+		if ( method_exists( $this->symfony_input, '__toString' ) ) {
+			return (string) $this->symfony_input;
+		}
+		// Fallback to a basic string representation
+		return sprintf( 'QITInput[test_type=%s]', $this->test_type );
 	}
 }

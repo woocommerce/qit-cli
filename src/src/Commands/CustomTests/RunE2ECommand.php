@@ -272,7 +272,7 @@ class RunE2ECommand extends QITCommand {
 					}
 
 					// For remote packages, include version in container name to avoid conflicts
-					$container_name = $this->container_name_from_manifest( $pkg_id, null, true );
+					$container_name = $this->container_name_for_remote_package( $pkg_id );
 
 					$test_packages_metadata[ $pkg_id ] = [
 						'path'           => $meta['path'],
@@ -492,18 +492,30 @@ class RunE2ECommand extends QITCommand {
 	}
 
 	/**
+	 * Generate a container name for a remote package.
+	 *
+	 * @param string $package_id The remote package reference.
+	 * @return string The container-safe directory name.
+	 * @throws \InvalidArgumentException If package reference is invalid.
+	 */
+	private function container_name_for_remote_package( string $package_id ): string {
+		$counter = null; // Not used for remote packages
+		return $this->container_name_from_manifest( $package_id, $counter, true );
+	}
+
+	/**
 	 * Generate a container name from manifest.json or package reference.
 	 *
 	 * For local packages: reads namespace/package from manifest.json
 	 * For remote packages: parses namespace/package/version from reference
 	 *
-	 * @param string $package_id The package ID (local path or remote reference).
-	 * @param array  &$counter Counter array for local packages to ensure uniqueness.
-	 * @param bool   $include_version Whether to include version in the container name (for remote packages).
+	 * @param string                 $package_id The package ID (local path or remote reference).
+	 * @param array<string,int>|null &$counter Counter array for local packages to ensure uniqueness.
+	 * @param bool                   $include_version Whether to include version in the container name (for remote packages).
 	 * @return string The container-safe directory name.
 	 * @throws \InvalidArgumentException If manifest is missing or invalid.
 	 */
-	private function container_name_from_manifest( string $package_id, array &$counter = null, bool $include_version = false ): string {
+	private function container_name_from_manifest( string $package_id, ?array &$counter = null, bool $include_version = false ): string {
 		$namespace = '';
 		$package   = '';
 

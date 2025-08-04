@@ -178,9 +178,7 @@ class TestPackageDownloader {
 				}
 
 				// Restore metadata for caller access
-				if ( isset( $cached['metadata'] ) ) {
-					$this->package_metadata[ $reference ] = $cached['metadata'];
-				}
+				$this->package_metadata[ $reference ] = $cached['metadata'];
 
 				return new TestPackageManifest( $cached['manifest'] );
 			} else {

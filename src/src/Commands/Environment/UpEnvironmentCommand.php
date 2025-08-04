@@ -277,7 +277,7 @@ class UpEnvironmentCommand extends QITCommand {
 	 * @return array<string,mixed>
 	 */
 	private function applyCliOverrides( array $config, InputInterface $input ): array {
-		/** @var \QIT_CLI\QITInput $input */
+		// $input is actually a QITInput instance when called from our commands
 
 		/* ─ Scalars ─ */
 		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
