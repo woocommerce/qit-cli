@@ -280,8 +280,8 @@ class TestPackageDownloader {
 	/**
 	 * Install npm dependencies in the package directory.
 	 *
-	 * @param string $package_dir The directory containing package.json
-	 * @throws \RuntimeException If npm install fails
+	 * @param string $package_dir The directory containing package.json.
+	 * @throws \RuntimeException If npm install fails.
 	 */
 	protected function install_npm_dependencies( string $package_dir ): void {
 		if ( $this->output->isVerbose() ) {

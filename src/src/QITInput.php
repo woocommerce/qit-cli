@@ -15,21 +15,21 @@ use Symfony\Component\Console\Input\InputDefinition;
  * - Environment configuration merging
  */
 class QITInput implements InputInterface {
-	private InputInterface $symfonyInput;
-	private array $resolvedConfig;
-	private ?array $currentTestProfile       = null;
-	private ?array $currentEnvironmentConfig = null;
-	private string $testType;
+	private InputInterface $symfony_input;
+	private array $resolved_config;
+	private ?array $current_test_profile       = null;
+	private ?array $current_environment_config = null;
+	private string $test_type;
 
 	/**
-	 * @param InputInterface $input The raw Symfony input
-	 * @param array          $resolvedConfig The resolved configuration from qit.json
-	 * @param string         $testType The test type (e2e, activation, etc.)
+	 * @param InputInterface $input The raw Symfony input.
+	 * @param array          $resolved_config The resolved configuration from qit.json.
+	 * @param string         $test_type The test type (e2e, activation, etc.).
 	 */
-	public function __construct( InputInterface $input, array $resolvedConfig, string $testType = 'e2e' ) {
-		$this->symfonyInput   = $input;
-		$this->resolvedConfig = $resolvedConfig;
-		$this->testType       = $testType;
+	public function __construct( InputInterface $input, array $resolved_config, string $test_type = 'e2e' ) {
+		$this->symfony_input   = $input;
+		$this->resolved_config = $resolved_config;
+		$this->test_type       = $test_type;
 	}
 
 	/**
@@ -62,12 +62,12 @@ class QITInput implements InputInterface {
 		}
 
 		// If test type doesn't exist in config, return 'default'
-		if ( ! isset( $this->resolvedConfig['test_types'][ $this->testType ] ) ) {
+		if ( ! isset( $this->resolved_config['test_types'][ $this->test_type ] ) ) {
 			return 'default';
 		}
 
 		// Check if there's only one profile for this test type
-		$profiles = $this->resolvedConfig['test_types'][ $this->testType ] ?? [];
+		$profiles = $this->resolved_config['test_types'][ $this->test_type ] ?? [];
 		if ( count( $profiles ) === 1 ) {
 			return array_key_first( $profiles );
 		}
@@ -79,18 +79,18 @@ class QITInput implements InputInterface {
 	 * Get resolved test profile configuration.
 	 */
 	public function getTestProfile(): array {
-		if ( $this->currentTestProfile === null ) {
+		if ( $this->current_test_profile === null ) {
 			// If test type doesn't exist in config, return empty array
 			// This allows commands to work without configuration when packages are provided explicitly
-			if ( ! isset( $this->resolvedConfig['test_types'][ $this->testType ] ) ) {
-				$this->currentTestProfile = [];
+			if ( ! isset( $this->resolved_config['test_types'][ $this->test_type ] ) ) {
+				$this->current_test_profile = [];
 			} else {
-				$profileName              = $this->getProfileName();
-				$this->currentTestProfile = $this->resolvedConfig['test_types'][ $this->testType ][ $profileName ] ?? [];
+				$profile_name               = $this->getProfileName();
+				$this->current_test_profile = $this->resolved_config['test_types'][ $this->test_type ][ $profile_name ] ?? [];
 			}
 		}
 
-		return $this->currentTestProfile;
+		return $this->current_test_profile;
 	}
 
 	/**
@@ -98,17 +98,17 @@ class QITInput implements InputInterface {
 	 * This includes all inheritance, CLI overrides, and special resolution.
 	 */
 	public function getEnvironmentConfig(): array {
-		if ( $this->currentEnvironmentConfig === null ) {
-			$envName = $this->getEnvironment();
-			$config  = $this->resolvedConfig['environments'][ $envName ] ?? [];
+		if ( $this->current_environment_config === null ) {
+			$env_name = $this->getEnvironment();
+			$config   = $this->resolved_config['environments'][ $env_name ] ?? [];
 
 			// Apply CLI overrides - but we don't do this here anymore!
 			// This should be handled by env:up when we pass options to it
 
-			$this->currentEnvironmentConfig = $config;
+			$this->current_environment_config = $config;
 		}
 
-		return $this->currentEnvironmentConfig;
+		return $this->current_environment_config;
 	}
 
 	/**
@@ -119,10 +119,10 @@ class QITInput implements InputInterface {
 		$packages = $profile['test_packages'] ?? [];
 
 		// Add CLI test packages if provided (or programmatically set)
-		$testPackageOption = $this->getOption( 'test-package' );
-		if ( ! empty( $testPackageOption ) ) {
-			$cliPackages = (array) $testPackageOption;
-			$packages    = array_unique( array_merge( $packages, $cliPackages ) );
+		$test_package_option = $this->getOption( 'test-package' );
+		if ( ! empty( $test_package_option ) ) {
+			$cli_packages = (array) $test_package_option;
+			$packages     = array_unique( array_merge( $packages, $cli_packages ) );
 		}
 
 		return $packages;
@@ -133,9 +133,9 @@ class QITInput implements InputInterface {
 	 */
 	public function getSut(): ?array {
 		// CLI argument takes precedence
-		$sutArg = $this->getArgument( 'sut' );
-		if ( $sutArg ) {
-			return [ 'slug' => $sutArg ];
+		$sut_arg = $this->getArgument( 'sut' );
+		if ( $sut_arg ) {
+			return [ 'slug' => $sut_arg ];
 		}
 
 		// Check test profile
@@ -145,7 +145,7 @@ class QITInput implements InputInterface {
 		}
 
 		// Check global config
-		return $this->resolvedConfig['sut'] ?? null;
+		return $this->resolved_config['sut'] ?? null;
 	}
 
 	/**
@@ -156,7 +156,7 @@ class QITInput implements InputInterface {
 		$options = [];
 
 		// List of options that env:up understands
-		$envUpOptions = [
+		$env_up_options = [
 			'environment',
 			'php',
 			'wp',
@@ -175,7 +175,7 @@ class QITInput implements InputInterface {
 		];
 
 		// Pass through explicitly provided CLI options
-		foreach ( $envUpOptions as $opt ) {
+		foreach ( $env_up_options as $opt ) {
 			if ( $this->hasOption( $opt ) ) {
 				$value = $this->getOption( $opt );
 				if ( $value !== null && $value !== false ) {
@@ -199,30 +199,30 @@ class QITInput implements InputInterface {
 		// For ArrayInput or when the function is not available,
 		// check if the option has a non-null value
 		if ( ! function_exists( 'QIT_CLI\is_option_explicitly_provided' ) ) {
-			return $this->symfonyInput->hasParameterOption( "--$name" );
+			return $this->symfony_input->hasParameterOption( "--$name" );
 		}
-		return is_option_explicitly_provided( $this->symfonyInput, $name );
+		return is_option_explicitly_provided( $this->symfony_input, $name );
 	}
 
 	/**
 	 * Get option value.
 	 */
 	public function getOption( string $name ): mixed {
-		return $this->symfonyInput->getOption( $name );
+		return $this->symfony_input->getOption( $name );
 	}
 
 	/**
 	 * Get argument value.
 	 */
 	public function getArgument( string $name ): mixed {
-		return $this->symfonyInput->getArgument( $name );
+		return $this->symfony_input->getArgument( $name );
 	}
 
 	/**
 	 * Check if argument exists and has value.
 	 */
 	public function hasArgument( string $name ): bool {
-		$value = $this->symfonyInput->getArgument( $name );
+		$value = $this->symfony_input->getArgument( $name );
 		return $value !== null && $value !== '';
 	}
 
@@ -230,14 +230,14 @@ class QITInput implements InputInterface {
 	 * Set an option value (used by RunActivationTestCommand).
 	 */
 	public function setOption( string $name, mixed $value ): void {
-		$this->symfonyInput->setOption( $name, $value );
+		$this->symfony_input->setOption( $name, $value );
 	}
 
 	/**
 	 * Get the underlying Symfony input for legacy compatibility.
 	 */
 	public function getSymfonyInput(): InputInterface {
-		return $this->symfonyInput;
+		return $this->symfony_input;
 	}
 
 
@@ -249,76 +249,76 @@ class QITInput implements InputInterface {
 	 * {@inheritdoc}
 	 */
 	public function getFirstArgument(): ?string {
-		return $this->symfonyInput->getFirstArgument();
+		return $this->symfony_input->getFirstArgument();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function hasParameterOption( $values, bool $onlyParams = false ): bool {
-		return $this->symfonyInput->hasParameterOption( $values, $onlyParams );
+	public function hasParameterOption( $values, bool $only_params = false ): bool {
+		return $this->symfony_input->hasParameterOption( $values, $only_params );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
-	public function getParameterOption( $values, $default = false, bool $onlyParams = false ) {
-		return $this->symfonyInput->getParameterOption( $values, $default, $onlyParams );
+	public function getParameterOption( $values, $default_value = false, bool $only_params = false ) {
+		return $this->symfony_input->getParameterOption( $values, $default_value, $only_params );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function bind( InputDefinition $definition ): void {
-		$this->symfonyInput->bind( $definition );
+		$this->symfony_input->bind( $definition );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function validate(): void {
-		$this->symfonyInput->validate();
+		$this->symfony_input->validate();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function getArguments(): array {
-		return $this->symfonyInput->getArguments();
+		return $this->symfony_input->getArguments();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function setArgument( string $name, $value ): void {
-		$this->symfonyInput->setArgument( $name, $value );
+		$this->symfony_input->setArgument( $name, $value );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function getOptions(): array {
-		return $this->symfonyInput->getOptions();
+		return $this->symfony_input->getOptions();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function isInteractive(): bool {
-		return $this->symfonyInput->isInteractive();
+		return $this->symfony_input->isInteractive();
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function setInteractive( bool $interactive ): void {
-		$this->symfonyInput->setInteractive( $interactive );
+		$this->symfony_input->setInteractive( $interactive );
 	}
 
 	/**
 	 * {@inheritdoc}
 	 */
 	public function __toString(): string {
-		return $this->symfonyInput->__toString();
+		return $this->symfony_input->__toString();
 	}
 }

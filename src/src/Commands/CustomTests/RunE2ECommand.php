@@ -165,9 +165,9 @@ class RunE2ECommand extends QITCommand {
 		$env_up_options = $input->getEnvironmentOptions();
 
 		// Handle activation test scenario
-		$testPackages = $input->getTestPackages();
+		$test_packages = $input->getTestPackages();
 		if ( $input->getArgument( 'sut' ) === 'woocommerce' &&
-			array_filter( $testPackages, fn( $pkg ) => str_starts_with( $pkg, 'woocommerce/activation:' ) ) ) {
+			array_filter( $test_packages, fn( $pkg ) => str_starts_with( $pkg, 'woocommerce/activation:' ) ) ) {
 			$output->writeln( '<info>Running activation test scenario.</info>' );
 			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 			$input->setOption( 'skip_activating_plugins', true );
@@ -192,8 +192,8 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		// Add SUT to env:up options if provided
-		$sutInfo  = $input->getSut();
-		$sut_slug = $sutInfo['slug'] ?? null;
+		$sut_info = $input->getSut();
+		$sut_slug = $sut_info['slug'] ?? null;
 		$sut_id   = null;
 		$sut_type = null;
 		if ( $sut_slug ) {

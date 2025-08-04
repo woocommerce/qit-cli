@@ -64,14 +64,14 @@ abstract class QITCommand extends Command {
 
 		try {
 			// Create QITInput wrapper that implements InputInterface
-			$resolvedConfig = $this->get_resolved_config();
-			$qitInput       = new \QIT_CLI\QITInput( $input, $resolvedConfig, $this->test_type );
+			$resolved_config = $this->get_resolved_config();
+			$qit_input       = new \QIT_CLI\QITInput( $input, $resolved_config, $this->test_type );
 
 			// Update stored input to be the QITInput
-			$this->input = $qitInput;
+			$this->input = $qit_input;
 
 			// Call doExecute with QITInput (which implements InputInterface)
-			return $this->doExecute( $qitInput, $output );
+			return $this->doExecute( $qit_input, $output );
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
@@ -442,8 +442,8 @@ abstract class QITCommand extends Command {
 	 * Lazily download test packages required by the given profiles.
 	 * Signature mirrors download_extensions().
 	 *
-	 * @param array<array<string, string>> $profiles Profile configurations with 'type' and 'name' keys
-	 * @param array<string>                $extra_refs Additional package references to download (e.g., from CLI)
+	 * @param array<array<string, string>> $profiles Profile configurations with 'type' and 'name' keys.
+	 * @param array<string>                $extra_refs Additional package references to download (e.g., from CLI).
 	 *
 	 * @return array<string, array{manifest: TestPackageManifest, path: ?string, metadata: array<string,mixed>}> Map of reference to package data
 	 */
@@ -571,8 +571,8 @@ abstract class QITCommand extends Command {
 	/**
 	 * Execute the command.
 	 *
-	 * @param InputInterface  $input The input (will be QITInput when called from execute())
-	 * @param OutputInterface $output
+	 * @param InputInterface  $input The input (will be QITInput when called from execute()).
+	 * @param OutputInterface $output The output.
 	 *
 	 * @return int
 	 */

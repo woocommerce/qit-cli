@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\is_windows;
 
 /**
- * qit env:up  – create a disposable local E2E environment.
+ * Qit env:up  – create a disposable local E2E environment.
  */
 class UpEnvironmentCommand extends QITCommand {
 	/** @var E2EEnvironment */

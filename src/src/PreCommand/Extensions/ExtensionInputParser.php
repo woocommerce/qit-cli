@@ -18,10 +18,10 @@ class ExtensionInputParser {
 	/**
 	 * Parse a single extension input value from CLI.
 	 *
-	 * @param string $input The raw input value from --plugin or --theme
-	 * @param string $type Either 'plugin' or 'theme'
-	 * @return Extension The parsed extension object
-	 * @throws \InvalidArgumentException If input cannot be parsed
+	 * @param string $input The raw input value from --plugin or --theme.
+	 * @param string $type Either 'plugin' or 'theme'.
+	 * @return Extension The parsed extension object.
+	 * @throws \InvalidArgumentException If input cannot be parsed.
 	 */
 	public static function parse( string $input, string $type ): Extension {
 		$input = trim( $input );
@@ -131,9 +131,9 @@ class ExtensionInputParser {
 	/**
 	 * Parse a local path into an Extension.
 	 *
-	 * @param string      $path The local path
-	 * @param string      $type Extension type
-	 * @param string|null $explicit_slug Explicitly provided slug, if any
+	 * @param string      $path The local path.
+	 * @param string      $type Extension type.
+	 * @param string|null $explicit_slug Explicitly provided slug, if any.
 	 */
 	private static function parse_local_path( string $path, string $type, ?string $explicit_slug = null ): Extension {
 		$realpath = realpath( $path ) ?: $path;
@@ -180,9 +180,9 @@ class ExtensionInputParser {
 	/**
 	 * Parse a URL into an Extension.
 	 *
-	 * @param string      $url The URL
-	 * @param string      $type Extension type
-	 * @param string|null $explicit_slug Explicitly provided slug, if any
+	 * @param string      $url The URL.
+	 * @param string      $type Extension type.
+	 * @param string|null $explicit_slug Explicitly provided slug, if any.
 	 */
 	private static function parse_url( string $url, string $type, ?string $explicit_slug = null ): Extension {
 		// Use explicit slug if provided, otherwise infer from URL
@@ -231,9 +231,9 @@ class ExtensionInputParser {
 	/**
 	 * Infer a slug from a local path.
 	 *
-	 * @param string $path Absolute path to file or directory
-	 * @return string The inferred slug
-	 * @throws \InvalidArgumentException If inferred slug is not valid
+	 * @param string $path Absolute path to file or directory.
+	 * @return string The inferred slug.
+	 * @throws \InvalidArgumentException If inferred slug is not valid.
 	 */
 	private static function infer_slug_from_path( string $path ): string {
 		// Get the basename (filename or directory name)
@@ -251,9 +251,9 @@ class ExtensionInputParser {
 	/**
 	 * Infer a slug from a URL.
 	 *
-	 * @param string $url The URL
-	 * @return string The inferred slug
-	 * @throws \InvalidArgumentException If inferred slug is not valid
+	 * @param string $url The URL.
+	 * @return string The inferred slug.
+	 * @throws \InvalidArgumentException If inferred slug is not valid.
 	 */
 	private static function infer_slug_from_url( string $url ): string {
 		// Get the filename from URL
@@ -287,24 +287,24 @@ class ExtensionInputParser {
 	 * Validate that a string is a valid slug.
 	 * Don't modify it - just check if it's valid.
 	 *
-	 * @param string $string Raw string
-	 * @return string The string if valid
-	 * @throws \InvalidArgumentException If string is not a valid slug
+	 * @param string $slug_string Raw string.
+	 * @return string The string if valid.
+	 * @throws \InvalidArgumentException If string is not a valid slug.
 	 */
-	private static function validate_slug( string $string ): string {
-		if ( empty( $string ) ) {
+	private static function validate_slug( string $slug_string ): string {
+		if ( empty( $slug_string ) ) {
 			throw new \InvalidArgumentException(
 				'Cannot infer slug from empty name. Please use explicit format: slug@path'
 			);
 		}
 
-		if ( ! self::is_valid_slug( $string ) ) {
+		if ( ! self::is_valid_slug( $slug_string ) ) {
 			throw new \InvalidArgumentException(
-				"Inferred slug '{$string}' is not valid. Slugs must contain only letters, numbers, hyphens, and underscores. " .
+				"Inferred slug '{$slug_string}' is not valid. Slugs must contain only letters, numbers, hyphens, and underscores. " .
 				'Please use explicit format: slug@path'
 			);
 		}
 
-		return $string;
+		return $slug_string;
 	}
 }
