@@ -243,13 +243,62 @@ class RunE2ECommand extends QITCommand {
 			$input->getTestPackages() // This includes both profile and CLI packages
 		);
 
+		// Prepare test package metadata with container paths BEFORE env:up
+		$test_packages_metadata = [];
+		$seen_remote_packages = []; // Track remote packages for deduplication
+		$local_package_counter = []; // Track local packages with same namespace/package
+		
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( isset( $meta['path'] ) ) {
+				$is_local = file_exists( $pkg_id ) && is_dir( $pkg_id );
+				
+				if ( $is_local ) {
+					// Local packages - never deduplicate, but need unique names
+					$container_name = $this->container_name_from_manifest( $pkg_id, $local_package_counter );
+					
+					$test_packages_metadata[ $pkg_id ] = [ 
+						'path' => $meta['path'],
+						'container_path' => '/qit/packages/' . $container_name
+					];
+				} else {
+					// Remote packages - deduplicate by package ID
+					if ( isset( $seen_remote_packages[ $pkg_id ] ) ) {
+						if ( $output->isVerbose() ) {
+							$output->writeln( "<comment>Reusing existing mount for remote package: {$pkg_id}</comment>" );
+						}
+						// Reuse the existing metadata
+						$test_packages_metadata[ $pkg_id ] = $seen_remote_packages[ $pkg_id ];
+						continue;
+					}
+					
+					// For remote packages, include version in container name to avoid conflicts
+					$container_name = $this->container_name_from_manifest( $pkg_id, null, true );
+					
+					$test_packages_metadata[ $pkg_id ] = [
+						'path' => $meta['path'],
+						'container_path' => '/qit/packages/' . $container_name
+					];
+					
+					$seen_remote_packages[ $pkg_id ] = $test_packages_metadata[ $pkg_id ];
+				}
+				
+				if ( $output->isVeryVerbose() ) {
+					$output->writeln( "Package mapping: {$pkg_id} -> /qit/packages/{$container_name}" );
+				}
+			}
+		}
+		
 		// Add local test packages as volumes
 		foreach ( $test_packages as $pkg_id => $meta ) {
 			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
+				// Skip if this was a duplicate that we already processed
+				if ( ! isset( $test_packages_metadata[ $pkg_id ] ) ) {
+					continue;
+				}
+				
 				// This is a local path - add it as a volume
-				// Create a safe container path by replacing special characters
-				$safe_pkg_id = str_replace( ['/', ':', '@'], '_', $pkg_id );
-				$container_path = '/qit/packages/' . $safe_pkg_id;
+				$container_path = $test_packages_metadata[ $pkg_id ]['container_path'];
+				
 				if ( ! isset( $env_up_options['--volume'] ) ) {
 					$env_up_options['--volume'] = [];
 				}
@@ -307,15 +356,8 @@ class RunE2ECommand extends QITCommand {
 			return Command::SUCCESS;
 		}
 
-		// Populate test packages metadata for volume mounting
-		$env_info->test_packages_metadata = [];
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			/** @phpstan-ignore-next-line offsetAccess.nonOffsetAccessible */
-			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
-				/** @phpstan-ignore-next-line offsetAccess.nonOffsetAccessible */
-				$env_info->test_packages_metadata[ $pkg_id ] = [ 'path' => $meta['path'] ];
-			}
-		}
+		// Use the pre-calculated test packages metadata
+		$env_info->test_packages_metadata = $test_packages_metadata;
 
 		// Initialize e2e environment with the info from env:up
 		$this->e2e_environment->init( $env_info );
@@ -444,6 +486,94 @@ class RunE2ECommand extends QITCommand {
 					break;
 			}
 		}
+	}
+
+	/**
+	 * Generate a container name from manifest.json or package reference.
+	 * 
+	 * For local packages: reads namespace/package from manifest.json
+	 * For remote packages: parses namespace/package/version from reference
+	 * 
+	 * @param string $package_id The package ID (local path or remote reference).
+	 * @param array &$counter Counter array for local packages to ensure uniqueness.
+	 * @param bool $include_version Whether to include version in the container name (for remote packages).
+	 * @return string The container-safe directory name.
+	 * @throws \InvalidArgumentException If manifest is missing or invalid.
+	 */
+	private function container_name_from_manifest( string $package_id, array &$counter = null, bool $include_version = false ): string {
+		$namespace = '';
+		$package = '';
+		
+		// Check if this is a local path
+		if ( file_exists( $package_id ) && is_dir( $package_id ) ) {
+			// Local package - read manifest.json
+			$manifest_path = rtrim( $package_id, '/\\' ) . '/manifest.json';
+			
+			if ( ! file_exists( $manifest_path ) ) {
+				throw new \InvalidArgumentException(
+					"Test package directory must contain manifest.json: {$package_id}"
+				);
+			}
+			
+			$manifest_content = file_get_contents( $manifest_path );
+			$manifest = json_decode( $manifest_content, true );
+			
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				throw new \InvalidArgumentException(
+					"Invalid JSON in manifest.json: {$package_id} - " . json_last_error_msg()
+				);
+			}
+			
+			if ( empty( $manifest['namespace'] ) || empty( $manifest['package'] ) ) {
+				throw new \InvalidArgumentException(
+					"Manifest must contain 'namespace' and 'package' fields: {$package_id}"
+				);
+			}
+			
+			$namespace = $manifest['namespace'];
+			$package = $manifest['package'];
+			$version = null; // Local packages don't have versions
+		} else {
+			// Remote package reference - parse the format
+			// Expected formats:
+			// - namespace/package:version
+			// - namespace/package
+			if ( ! preg_match( '/^([^\/]+)\/([^:]+)(?::(.+))?$/', $package_id, $matches ) ) {
+				throw new \InvalidArgumentException(
+					"Invalid package reference format. Expected 'namespace/package[:version]', got: {$package_id}"
+				);
+			}
+			
+			$namespace = $matches[1];
+			$package = $matches[2];
+			$version = isset( $matches[3] ) ? $matches[3] : null;
+		}
+		
+		// Sanitize for container safety
+		$safe_namespace = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $namespace ) );
+		$safe_package = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $package ) );
+		$base_name = trim( "{$safe_namespace}-{$safe_package}", '-' );
+		
+		// Add version to container name if requested (for remote packages that need version distinction)
+		if ( $include_version && $version !== null ) {
+			$safe_version = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $version ) );
+			$base_name .= '-' . $safe_version;
+		}
+		
+		// For local packages, add counter if needed to ensure uniqueness
+		if ( $counter !== null ) {
+			$key = $base_name;
+			if ( ! isset( $counter[ $key ] ) ) {
+				$counter[ $key ] = 0;
+			}
+			$counter[ $key ]++;
+			
+			if ( $counter[ $key ] > 1 ) {
+				$base_name .= '-' . $counter[ $key ];
+			}
+		}
+		
+		return $base_name;
 	}
 
 	private function handle_termination(): void {

@@ -325,14 +325,30 @@ class PackagePhaseRunner {
 			return 0;
 		}
 
-		$workdir = '/qit/packages/' . basename( $package_id );
+		// Determine the container workdir
+		// For local packages mounted as volumes, use the container path from metadata
+		// For downloaded packages, they're extracted directly to the container, so use the package path
+		if ( isset( $env_info->test_packages_metadata[ $package_id ]['container_path'] ) ) {
+			// This is a volume-mounted package
+			$workdir = $env_info->test_packages_metadata[ $package_id ]['container_path'];
+		} else {
+			// This is a downloaded package extracted in the container
+			// Use the same logic as before for backwards compatibility
+			$workdir = '/qit/packages/' . basename( $package_id );
+		}
+		
 		$this->output->writeln( "  <info>• {$package_id} ({$phase})</info>" );
 		
 		// Debug output
 		if ( $this->output->isVerbose() ) {
 			$this->output->writeln( "    Package ID: {$package_id}" );
-			$this->output->writeln( "    Package path: {$package_path}" );
+			$this->output->writeln( "    Host path: {$package_path}" );
 			$this->output->writeln( "    Container workdir: {$workdir}" );
+			if ( isset( $env_info->test_packages_metadata[ $package_id ]['container_path'] ) ) {
+				$this->output->writeln( "    Using volume mount" );
+			} else {
+				$this->output->writeln( "    Using extracted package" );
+			}
 		}
 
 		$executed = 0;
