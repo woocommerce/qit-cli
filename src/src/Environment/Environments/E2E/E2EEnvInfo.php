@@ -9,7 +9,7 @@ class E2EEnvInfo extends EnvInfo {
 	public string $environment = 'e2e';
 
 	/** @var string */
-	public $site_url = '';
+	public string $site_url = '';
 
 	/** @var array<string,string> */
 	public array $runner_args = [];

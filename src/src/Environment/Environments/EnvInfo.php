@@ -95,7 +95,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	public string $tunnel_type = 'no_tunnel';
 
 	/** @var string The site URL, if any. */
-	public $site_url;
+	public string $site_url = '';
 
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
