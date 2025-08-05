@@ -1507,7 +1507,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "authenticate admin",
@@ -1528,7 +1529,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "authenticate customer",
@@ -1549,7 +1551,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "configure HPOS",
@@ -1573,7 +1576,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "disable coming soon",
@@ -1594,7 +1598,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "disable onboarding wizard",
@@ -1615,7 +1620,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "determine if multisite",
@@ -1636,7 +1642,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "general settings",
@@ -1657,7 +1664,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a coupon",
@@ -1678,7 +1686,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a coupon",
@@ -1699,7 +1708,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a coupon",
@@ -1720,7 +1730,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a coupon",
@@ -1741,7 +1752,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch create coupons",
@@ -1762,7 +1774,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update coupons",
@@ -1783,7 +1796,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch delete coupons",
@@ -1804,7 +1818,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can list all coupons by default",
@@ -1825,7 +1840,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can limit result set to matching code",
@@ -1846,7 +1862,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can paginate results",
@@ -1867,7 +1884,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can limit results to matching string",
@@ -1888,7 +1906,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add coupon to an order",
@@ -1909,7 +1928,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve admin user",
@@ -1930,7 +1950,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve subscriber user",
@@ -1951,7 +1972,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "retrieve user with id 0 is invalid",
@@ -1972,7 +1994,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve customers",
@@ -1993,7 +2016,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all customers",
@@ -2014,7 +2038,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a customer",
@@ -2035,7 +2060,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a customer",
@@ -2056,7 +2082,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all customers after create",
@@ -2077,7 +2104,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update the admin user\\/customer",
@@ -2098,7 +2126,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "retrieve after update admin",
@@ -2119,7 +2148,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update the subscriber user\\/customer",
@@ -2140,7 +2170,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "retrieve after update subscriber",
@@ -2161,7 +2192,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a customer",
@@ -2182,7 +2214,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "retrieve after update customer",
@@ -2203,7 +2236,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete an customer",
@@ -2224,7 +2258,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch create customers",
@@ -2245,7 +2280,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update customers",
@@ -2266,7 +2302,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch delete customers",
@@ -2287,7 +2324,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can list all data",
@@ -2308,7 +2346,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view country data",
@@ -2338,7 +2377,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view currency data",
@@ -2359,7 +2399,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view current currency",
@@ -2380,7 +2421,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can access a non-authenticated endpoint",
@@ -2401,7 +2443,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can access an authenticated endpoint",
@@ -2422,7 +2465,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add complex order",
@@ -2443,7 +2487,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by billing first name",
@@ -2464,7 +2509,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by billing company name",
@@ -2485,7 +2531,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by billing address 2",
@@ -2506,7 +2553,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by billing city name",
@@ -2527,7 +2575,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by billing post code",
@@ -2548,7 +2597,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by billing phone",
@@ -2569,7 +2619,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by billing state",
@@ -2590,7 +2641,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by shipping first name",
@@ -2611,7 +2663,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by shipping last name",
@@ -2632,7 +2685,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by shipping address 2",
@@ -2653,7 +2707,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by shipping city",
@@ -2674,7 +2729,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by shipping post code",
@@ -2695,7 +2751,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by shipping state",
@@ -2716,7 +2773,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can search by orderId",
@@ -2737,7 +2795,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can return an empty result set when no matches were found",
@@ -2758,7 +2817,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a pending order by default",
@@ -2779,7 +2839,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order with status pending",
@@ -2800,7 +2861,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order with status processing",
@@ -2821,7 +2883,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order with status on-hold",
@@ -2842,7 +2905,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order with status completed",
@@ -2863,7 +2927,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order with status cancelled",
@@ -2884,7 +2949,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order with status refunded",
@@ -2905,7 +2971,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order with status failed",
@@ -2926,7 +2993,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a order note",
@@ -2947,7 +3015,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve an order note",
@@ -2968,7 +3037,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all order notes",
@@ -2989,7 +3059,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot update an order note",
@@ -3010,7 +3081,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete an order note",
@@ -3031,7 +3103,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve an order",
@@ -3052,7 +3125,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update status of an order to pending",
@@ -3073,7 +3147,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update status of an order to processing",
@@ -3094,7 +3169,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update status of an order to on-hold",
@@ -3115,7 +3191,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update status of an order to completed",
@@ -3136,7 +3213,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update status of an order to cancelled",
@@ -3157,7 +3235,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update status of an order to refunded",
@@ -3178,7 +3257,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update status of an order to failed",
@@ -3199,7 +3279,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add shipping and billing contacts to an order",
@@ -3220,7 +3301,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product to an order",
@@ -3241,7 +3323,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can pay for an order",
@@ -3262,7 +3345,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete an order",
@@ -3283,7 +3367,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order",
@@ -3304,7 +3389,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve an order",
@@ -3325,7 +3411,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add shipping and billing contacts to an order",
@@ -3346,7 +3433,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete an order",
@@ -3367,7 +3455,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "pagination",
@@ -3388,7 +3477,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "inclusion \\/ exclusion",
@@ -3409,7 +3499,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "parent",
@@ -3430,7 +3521,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "status",
@@ -3451,7 +3543,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "customer",
@@ -3472,7 +3565,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "product",
@@ -3493,7 +3587,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "dp (precision)",
@@ -3514,7 +3609,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "search",
@@ -3535,7 +3631,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "default",
@@ -3556,7 +3653,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "date",
@@ -3577,7 +3675,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "id",
@@ -3598,7 +3697,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "include",
@@ -3619,7 +3719,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view all payment gateways",
@@ -3640,7 +3741,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view a payment gateway",
@@ -3661,7 +3763,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a payment gateway",
@@ -3682,7 +3785,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "defaults",
@@ -3703,7 +3807,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "pagination",
@@ -3724,7 +3829,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "search",
@@ -3745,7 +3851,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "inclusion \\/ exclusion",
@@ -3766,7 +3873,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "slug",
@@ -3787,7 +3895,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "sku",
@@ -3808,7 +3917,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "type",
@@ -3829,7 +3939,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "featured",
@@ -3850,7 +3961,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "categories",
@@ -3871,7 +3983,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "on sale",
@@ -3892,7 +4005,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "price",
@@ -3913,7 +4027,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "before \\/ after",
@@ -3934,7 +4049,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "attributes",
@@ -3955,7 +4071,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "status",
@@ -3976,7 +4093,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "shipping class",
@@ -3997,7 +4115,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "tax class",
@@ -4018,7 +4137,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "stock status",
@@ -4039,7 +4159,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "tags",
@@ -4060,7 +4181,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "parent",
@@ -4081,7 +4203,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "default",
@@ -4102,7 +4225,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "date",
@@ -4123,7 +4247,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "id",
@@ -4144,7 +4269,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "title",
@@ -4165,7 +4291,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "slug orderby",
@@ -4186,7 +4313,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "price orderby",
@@ -4207,7 +4335,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "include",
@@ -4228,7 +4357,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "rating (desc)",
@@ -4249,7 +4379,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "rating (asc)",
@@ -4279,7 +4410,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "popularity (asc)",
@@ -4309,7 +4441,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "popularity (desc)",
@@ -4330,7 +4463,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a simple product",
@@ -4351,7 +4485,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a virtual product",
@@ -4372,7 +4507,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view a single product",
@@ -4393,7 +4529,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a single product",
@@ -4414,7 +4551,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a product",
@@ -4435,7 +4573,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product attribute",
@@ -4456,7 +4595,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a product attribute",
@@ -4477,7 +4617,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all product attribute",
@@ -4498,7 +4639,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product attribute",
@@ -4519,7 +4661,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product attribute",
@@ -4540,7 +4683,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update product attributes",
@@ -4561,7 +4705,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product attribute term",
@@ -4582,7 +4727,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a product attribute term",
@@ -4603,7 +4749,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all product attribute terms",
@@ -4624,7 +4771,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product attribute term",
@@ -4645,7 +4793,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product attribute term",
@@ -4666,7 +4815,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update product attribute terms",
@@ -4687,7 +4837,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product category",
@@ -4708,7 +4859,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a product category",
@@ -4729,7 +4881,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all product categories",
@@ -4750,7 +4903,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product category",
@@ -4771,7 +4925,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product category",
@@ -4792,7 +4947,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update product categories",
@@ -4813,7 +4969,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product review",
@@ -4834,7 +4991,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot add a product review with invalid product_id",
@@ -4855,7 +5013,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot add a duplicate product review",
@@ -4876,7 +5035,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a product review",
@@ -4897,7 +5057,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all product reviews",
@@ -4918,7 +5079,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product review",
@@ -4939,7 +5101,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product review",
@@ -4960,7 +5123,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update product reviews",
@@ -4981,7 +5145,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product shipping class",
@@ -5002,7 +5167,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a product shipping class",
@@ -5023,7 +5189,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all product shipping classes",
@@ -5044,7 +5211,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product shipping class",
@@ -5065,7 +5233,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product shipping class",
@@ -5086,7 +5255,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update product shipping classes",
@@ -5107,7 +5277,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product tag",
@@ -5128,7 +5299,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a product tag",
@@ -5149,7 +5321,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all product tags",
@@ -5170,7 +5343,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product tag",
@@ -5191,7 +5365,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product tag",
@@ -5212,7 +5387,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update product tags",
@@ -5233,7 +5409,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a variable product",
@@ -5254,7 +5431,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a product variation",
@@ -5275,7 +5453,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a product variation",
@@ -5296,7 +5475,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all product variations",
@@ -5317,7 +5497,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product variation",
@@ -5338,7 +5519,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product variation",
@@ -5359,7 +5541,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update product variations",
@@ -5380,7 +5563,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch create products",
@@ -5401,7 +5585,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update products",
@@ -5422,7 +5607,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch delete products",
@@ -5443,7 +5629,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a refund",
@@ -5464,7 +5651,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a refund",
@@ -5485,7 +5673,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve refund info from refund endpoint",
@@ -5506,7 +5695,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can list all refunds",
@@ -5527,7 +5717,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a refund",
@@ -5548,7 +5739,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view all reports",
@@ -5569,7 +5761,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view sales reports",
@@ -5590,7 +5783,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view top sellers reports",
@@ -5611,7 +5805,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view coupons totals",
@@ -5632,7 +5827,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view customers totals",
@@ -5653,7 +5849,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view orders totals",
@@ -5674,7 +5871,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view products totals",
@@ -5695,7 +5893,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view reviews totals",
@@ -5716,7 +5915,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all settings groups",
@@ -5737,7 +5937,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all general settings",
@@ -5758,7 +5959,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a settings option",
@@ -5779,7 +5981,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a settings option",
@@ -5800,7 +6003,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update settings options",
@@ -5821,7 +6025,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all products settings",
@@ -5842,7 +6047,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all tax settings",
@@ -5863,7 +6069,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all shipping settings",
@@ -5884,7 +6091,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all checkout settings",
@@ -5905,7 +6113,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all account settings",
@@ -5926,7 +6135,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email settings",
@@ -5956,7 +6166,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all advanced settings",
@@ -5977,7 +6188,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email new order settings",
@@ -5998,7 +6210,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email failed order settings",
@@ -6019,7 +6232,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer on hold order settings",
@@ -6040,7 +6254,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer processing order settings",
@@ -6061,7 +6276,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer completed order settings",
@@ -6082,7 +6298,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer refunded order settings",
@@ -6103,7 +6320,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer invoice settings",
@@ -6124,7 +6342,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer note settings",
@@ -6145,7 +6364,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer reset password settings",
@@ -6166,7 +6386,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all email customer new account settings",
@@ -6187,7 +6408,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot create a shipping method",
@@ -6208,7 +6430,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all shipping methods",
@@ -6229,7 +6452,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a shipping method",
@@ -6250,7 +6474,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot update a shipping method",
@@ -6271,7 +6496,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot delete a shipping method",
@@ -6292,7 +6518,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a Flat rate shipping method",
@@ -6313,7 +6540,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a Free shipping shipping method",
@@ -6334,7 +6562,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a Local pickup shipping method",
@@ -6355,7 +6584,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot delete the default shipping zone \\"Locations not covered by your other zones\\"",
@@ -6376,7 +6606,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot update the default shipping zone",
@@ -6397,7 +6628,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a shipping zone",
@@ -6418,7 +6650,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a shipping zone",
@@ -6439,7 +6672,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can list all shipping zones",
@@ -6460,7 +6694,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a shipping zone",
@@ -6481,7 +6716,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a shipping region to a shipping zone",
@@ -6502,7 +6738,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a shipping region on a shipping zone",
@@ -6523,7 +6760,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can clear\\/delete a shipping region on a shipping zone",
@@ -6544,7 +6782,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a shipping zone",
@@ -6565,7 +6804,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view all system status tools",
@@ -6586,7 +6826,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a system status tool",
@@ -6607,7 +6848,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can run a tool from system status",
@@ -6628,7 +6870,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can enable tax calculations",
@@ -6649,7 +6892,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a tax class",
@@ -6670,7 +6914,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a tax class",
@@ -6691,7 +6936,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all tax classes",
@@ -6712,7 +6958,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "cannot update a tax class",
@@ -6733,7 +6980,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a tax class",
@@ -6754,7 +7002,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a tax rate",
@@ -6775,7 +7024,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a tax rate",
@@ -6796,7 +7046,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all tax rates",
@@ -6817,7 +7068,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a tax rate",
@@ -6838,7 +7090,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "retrieve after update tax rate",
@@ -6859,7 +7112,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a tax rate",
@@ -6880,7 +7134,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch create tax rates",
@@ -6901,7 +7156,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update tax rates",
@@ -6922,7 +7178,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch delete tax rates",
@@ -6943,7 +7200,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a webhook",
@@ -6964,7 +7222,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve a webhook",
@@ -6985,7 +7244,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can retrieve all webhooks",
@@ -7006,7 +7266,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a web hook",
@@ -7027,7 +7288,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a webhook",
@@ -7048,7 +7310,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch create webhooks",
@@ -7069,7 +7332,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch update webhooks",
@@ -7090,7 +7354,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can batch delete webhooks",
@@ -7111,7 +7376,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         }
                     ]
                 }
