@@ -255,6 +255,9 @@ class QITE2ETestCase extends TestCase {
 					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
 					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 						foreach ( $value['results']['tests'] as &$test ) {
+							// Ignore retries.
+							$test['retryAttempts'] = [];
+
 							/* -----------------------------------------------------------------
 							 * Playwright hook-step normalisation
 							 * -----------------------------------------------------------------

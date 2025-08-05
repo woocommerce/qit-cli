@@ -2851,7 +2851,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "authenticate admin",
@@ -2874,7 +2875,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "authenticate customer",
@@ -2897,7 +2899,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "configure HPOS",
@@ -2920,7 +2923,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "disable coming soon",
@@ -2943,7 +2947,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "disable onboarding wizard",
@@ -2966,7 +2971,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "determine if multisite",
@@ -2989,7 +2995,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "general settings",
@@ -3012,7 +3019,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can access Analytics Reports from Stats Overview",
@@ -3052,7 +3060,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "confirms correct summary numbers on overview page",
@@ -3075,7 +3084,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "downloads revenue report as CSV",
@@ -3098,7 +3108,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "use date filter on overview page",
@@ -3121,7 +3132,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "set custom date range on revenue report",
@@ -3144,7 +3156,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "use advanced filters on orders report",
@@ -3167,7 +3180,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "use filter by single product on products report",
@@ -3190,7 +3204,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "analytics settings",
@@ -3213,7 +3228,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "a user should see 3 sections by default - Performance, Charts, and Leaderboards",
@@ -3253,7 +3269,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should allow a user to remove a section",
@@ -3289,7 +3306,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should allow a user to add a section back in",
@@ -3333,7 +3351,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should not display move up for the top, or move down for the bottom section",
@@ -3369,7 +3388,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should allow a user to move a section down",
@@ -3405,7 +3425,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should allow a user to move a section up",
@@ -3441,7 +3462,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Load the home page",
@@ -3464,7 +3486,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Load wp-admin as admin",
@@ -3487,7 +3510,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Load my account page as customer",
@@ -3510,7 +3534,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Customer is redirected from WP Admin home back to the My Account page.",
@@ -3533,7 +3558,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Customer is redirected from WP Admin profile page back to the My Account page.",
@@ -3556,7 +3582,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
@@ -3579,7 +3606,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Home page",
@@ -3602,7 +3630,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Orders page",
@@ -3625,7 +3654,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Customers page",
@@ -3648,7 +3678,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Reports page",
@@ -3671,7 +3702,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Settings page",
@@ -3694,7 +3726,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Status page",
@@ -3717,7 +3750,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Products > All Products page",
@@ -3740,7 +3774,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Add new product page",
@@ -3763,7 +3798,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Categories page",
@@ -3786,7 +3822,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Tags page",
@@ -3809,7 +3846,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Attributes page",
@@ -3832,7 +3870,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Overview page",
@@ -3855,7 +3894,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Products page",
@@ -3878,7 +3918,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Revenue page",
@@ -3901,7 +3942,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Orders page",
@@ -3924,7 +3966,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Variations page",
@@ -3947,7 +3990,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Categories page",
@@ -3970,7 +4014,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Coupons page",
@@ -3993,7 +4038,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Taxes page",
@@ -4016,7 +4062,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Downloads page",
@@ -4039,7 +4086,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Stock page",
@@ -4062,7 +4110,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Settings page",
@@ -4085,7 +4134,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Marketing > Overview page",
@@ -4108,7 +4158,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load Marketing > Coupons page",
@@ -4131,7 +4182,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Merchant can add brands",
@@ -4154,7 +4206,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
@@ -4177,7 +4230,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should be able to navigate and remove item from mini cart using keyboard",
@@ -4213,7 +4267,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
@@ -4265,7 +4320,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add and remove products, increase quantity and proceed to checkout - classic cart",
@@ -4317,7 +4373,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Guest user redirected to checkout with correct cart",
@@ -4340,7 +4397,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid coupon is applied",
@@ -4363,7 +4421,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid products are provided",
@@ -4386,7 +4445,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid product is provided",
@@ -4409,7 +4469,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid link is provided",
@@ -4432,7 +4493,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user redirected to checkout with correct cart",
@@ -4455,7 +4517,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid coupon is applied",
@@ -4478,7 +4541,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid products are provided",
@@ -4501,7 +4565,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid product is provided",
@@ -4524,7 +4589,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid link is provided",
@@ -4547,7 +4613,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "guest can checkout paying with cash on delivery on blocks checkout",
@@ -4570,7 +4637,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "guest can checkout paying with cash on delivery on classic checkout",
@@ -4593,7 +4661,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "guest can create an account at checkout on blocks checkout",
@@ -4616,7 +4685,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "guest can create an account at checkout on classic checkout",
@@ -4639,7 +4709,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "logged in customer can checkout with default addresses and direct bank transfer on blocks checkout",
@@ -4662,7 +4733,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "logged in customer can checkout with default addresses and direct bank transfer on classic checkout",
@@ -4685,7 +4757,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
@@ -4708,7 +4781,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
@@ -4731,7 +4805,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout",
@@ -4754,7 +4829,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "existing customer can update the billing address and place the order with direct bank transfer on classic checkout",
@@ -4777,7 +4853,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows cart block to apply coupon of any type",
@@ -4800,7 +4877,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows cart block to apply multiple coupons",
@@ -4823,7 +4901,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "prevents cart block applying same coupon twice",
@@ -4846,7 +4925,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "prevents cart block applying coupon with usage limit",
@@ -4869,7 +4949,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows applying coupon of type fixed_cart",
@@ -4901,7 +4982,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows applying coupon of type percent",
@@ -4933,7 +5015,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows applying coupon of type fixed_product",
@@ -4965,7 +5048,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "prevents applying same coupon twice",
@@ -4997,7 +5081,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows applying multiple coupons",
@@ -5029,7 +5114,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "restores total when coupons are removed",
@@ -5061,7 +5147,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "expired coupon cannot be used",
@@ -5093,7 +5180,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon requiring min and max amounts and can only be used alone can only be used within limits",
@@ -5125,7 +5213,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon cannot be used on sale item",
@@ -5157,7 +5246,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon can only be used twice",
@@ -5189,7 +5279,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon cannot be used on certain products\\/categories (included product\\/category)",
@@ -5221,7 +5312,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon can be used on certain products\\/categories",
@@ -5253,7 +5345,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon cannot be used on specific products\\/categories (excluded product\\/category)",
@@ -5285,7 +5378,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon can be used on other products\\/categories",
@@ -5317,7 +5411,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon cannot be used by any customer on cart (email restricted)",
@@ -5340,7 +5435,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon cannot be used by any customer on checkout (email restricted)",
@@ -5363,7 +5459,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "coupon can be used by the right customer (email restricted) but only once",
@@ -5386,7 +5483,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows checkout block to apply coupon of any type",
@@ -5409,7 +5507,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows checkout block to apply multiple coupons",
@@ -5432,7 +5531,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "prevents checkout block applying same coupon twice",
@@ -5455,7 +5555,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "prevents checkout block applying coupon with usage limit",
@@ -5478,7 +5579,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new fixedCart coupon",
@@ -5514,7 +5616,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new fixedProduct coupon",
@@ -5550,7 +5653,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new percentage coupon",
@@ -5586,7 +5690,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new expiryDate coupon",
@@ -5626,7 +5731,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new freeShipping coupon",
@@ -5666,7 +5772,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new minimumSpend coupon",
@@ -5710,7 +5817,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new maximumSpend coupon",
@@ -5754,7 +5862,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new individualUse coupon",
@@ -5798,7 +5907,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new excludeSaleItems coupon",
@@ -5842,7 +5952,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new productCategories coupon",
@@ -5886,7 +5997,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new excludeProductCategories coupon",
@@ -5930,7 +6042,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new excludeProductBrands coupon",
@@ -5970,7 +6083,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new products coupon",
@@ -6014,7 +6128,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new excludeProducts coupon",
@@ -6058,7 +6173,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new allowedEmails coupon",
@@ -6102,7 +6218,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new usageLimitPerCoupon coupon",
@@ -6146,7 +6263,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new usageLimitPerUser coupon",
@@ -6190,7 +6308,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Merchant can view a list of all customers, filter and download",
@@ -6222,7 +6341,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Merchant can view a single customer",
@@ -6254,7 +6374,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Merchant can use advanced filters",
@@ -6298,7 +6419,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Color pickers should be displayed",
@@ -6321,7 +6443,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Color palette Slate should be applied",
@@ -6344,7 +6467,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Color picker should be focused when a color is picked",
@@ -6367,7 +6491,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Font pickers should be displayed",
@@ -6390,7 +6515,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Picking a font should trigger an update of fonts on the site preview",
@@ -6413,7 +6539,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Font pickers should be focused when a font is picked",
@@ -6436,7 +6563,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Selected font palette should be applied on the frontend",
@@ -6459,7 +6587,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking opt-in new fonts should be available",
@@ -6487,7 +6616,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Available footers should be displayed",
@@ -6510,7 +6640,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "The selected footer should be focused when is clicked",
@@ -6533,7 +6664,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "The selected footer should be applied on the frontend",
@@ -6556,7 +6688,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Picking a footer should trigger an update on the site preview",
@@ -6579,7 +6712,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Design your homepage\\" should open the Intro sidebar by default",
@@ -6602,7 +6736,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking on a category should open the sidebar for it",
@@ -6650,7 +6785,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking on a pattern should insert it in the preview",
@@ -6673,7 +6809,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking on a pattern should always scroll the page to the inserted pattern",
@@ -6696,7 +6833,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking the \\"Move up\\/down\\" buttons should change the pattern order in the preview",
@@ -6719,7 +6857,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking the \\"Shuffle\\" button on a patterns should replace it for another one",
@@ -6742,7 +6881,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking the \\"Delete\\" button on a pattern should remove it from the preview",
@@ -6765,7 +6905,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking the \\"Add patterns\\" button on the No Blocks view should add a default pattern",
@@ -6788,7 +6929,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Available headers should be displayed",
@@ -6811,7 +6953,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "The selected header should be focused when is clicked",
@@ -6834,7 +6977,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "The selected header should be applied on the frontend",
@@ -6857,7 +7001,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Picking a header should trigger an update on the site preview",
@@ -6880,7 +7025,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "The selected homepage should be focused when is clicked",
@@ -6912,7 +7058,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "The selected homepage should be visible on the site preview",
@@ -6944,7 +7091,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Selected homepage should be applied on the frontend",
@@ -6976,7 +7124,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
@@ -6999,7 +7148,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
@@ -7022,7 +7172,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Logo Picker should be empty initially",
@@ -7045,7 +7196,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Selecting an image should update the site preview",
@@ -7068,7 +7220,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Changing the image width should update the site preview and the frontend",
@@ -7091,7 +7244,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking the Delete button should remove the selected image",
@@ -7114,7 +7268,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking the replace image should open the media gallery",
@@ -7137,7 +7292,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Logo should be visible after header update",
@@ -7160,7 +7316,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "The selected image should be visible on the frontend",
@@ -7183,7 +7340,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can not access the Assembler Hub page when the theme is not customized",
@@ -7206,7 +7364,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can access the Assembler Hub page when the theme is already customized",
@@ -7229,7 +7388,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Visiting change header should show a list of block patterns to choose from",
@@ -7252,7 +7412,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "it shows the \\"offline banner\\" when the network is offline",
@@ -7275,7 +7436,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "it shows the \\"no AI\\" banner on Core when the task is not completed",
@@ -7298,7 +7460,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "it shows the \\"no AI customize theme\\" banner when the task is completed",
@@ -7321,7 +7484,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4 and redirects to the editor",
@@ -7344,7 +7508,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "clicking on \\"Go to the Customizer\\" with a classic theme should go to the customizer",
@@ -7367,7 +7532,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should display loading screen and steps on first run",
@@ -7390,7 +7556,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should redirect to intro page in case of errors",
@@ -7413,7 +7580,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
@@ -7436,7 +7604,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
@@ -7459,7 +7628,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"View store\\" should go to the store home page",
@@ -7482,7 +7652,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Share feedback\\" should open the survey modal",
@@ -7505,7 +7676,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can use the \\"Add new product\\" command",
@@ -7528,7 +7700,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can use the \\"Add new order\\" command",
@@ -7551,7 +7724,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can use the \\"Products\\" command",
@@ -7574,7 +7748,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can use the \\"Orders\\" command",
@@ -7597,7 +7772,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can use the product search command",
@@ -7620,7 +7796,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can use a settings command",
@@ -7643,7 +7820,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can use an analytics command",
@@ -7666,7 +7844,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can insert all WooCommerce blocks into page",
@@ -7766,7 +7945,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can insert WooCommerce patterns into page",
@@ -7798,7 +7978,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "New customer should receive an email with login details",
@@ -7830,7 +8011,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Customer should receive an email when initiating a password reset",
@@ -7866,7 +8048,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Customer should receive an email when password reset initiated from admin",
@@ -7902,7 +8085,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Check selectors for tracking events",
@@ -7925,7 +8109,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "customer receives email for processing order",
@@ -7957,7 +8142,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "admin receives email for processing order",
@@ -7989,7 +8175,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "customer receives email for completed order",
@@ -8021,7 +8208,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "admin receives email for cancelled order",
@@ -8053,7 +8241,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Merchant can resend order details to customer",
@@ -8076,7 +8265,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Email settings list view renders correctly and allows to edit email status and search",
@@ -8099,7 +8289,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Auto-sync toggle in email settings works correctly",
@@ -8122,7 +8313,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "See email preview",
@@ -8145,7 +8337,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Email sender options live change in email preview",
@@ -8168,7 +8361,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Live preview when changing email settings",
@@ -8191,7 +8385,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Send email preview",
@@ -8223,7 +8418,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "See specific email preview",
@@ -8246,7 +8442,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Choose image in email image url field",
@@ -8269,7 +8466,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "See color palette settings",
@@ -8292,7 +8490,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "See font family setting",
@@ -8315,7 +8514,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "See updated footer text field",
@@ -8338,7 +8538,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Reset color palette with a feature flag",
@@ -8361,7 +8562,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can enable the email editor",
@@ -8393,7 +8595,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can access the email editor",
@@ -8425,7 +8628,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can preview in new tab",
@@ -8457,7 +8661,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can send test email",
@@ -8489,7 +8694,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can edit and save content",
@@ -8521,7 +8727,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can update email status",
@@ -8544,7 +8751,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can update email subject and preview text",
@@ -8567,7 +8775,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can update email recipients",
@@ -8590,7 +8799,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Marketing Overview page have relevant content",
@@ -8613,7 +8823,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Learning section can be expanded",
@@ -8636,7 +8847,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add billing address from my account",
@@ -8659,7 +8871,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add shipping address from my account",
@@ -8682,7 +8895,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a new account via my account",
@@ -8705,7 +8919,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can see downloadable file and click to download it",
@@ -8728,7 +8943,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows customer to pay for their order in My Account",
@@ -8751,7 +8967,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "allows customer to login and navigate",
@@ -8791,7 +9008,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Add product task displays options for different product types",
@@ -8815,15 +9033,7 @@
                             "extra": {
                                 "annotations": []
                             },
-                            "retryAttempts": [
-                                {
-                                    "status": "failed",
-                                    "duration": 22898,
-                                    "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n",
-                                    "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/add-product-task.spec.js:91:5",
-                                    "snippet": "\\u001b[0m \\u001b[90m 89 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 90 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Physical product\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 91 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 92 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 93 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Variable product\'\\u001b[39m } )\\n \\u001b[90m 94 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m"
-                                }
-                            ]
+                            "retryAttempts": []
                         },
                         {
                             "name": "Products page redirects to add product task when no products exist",
@@ -8846,7 +9056,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Products page shows products table when products exist",
@@ -8869,7 +9080,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Products page redirects to add product task when no products exist and task list is hidden",
@@ -8892,7 +9104,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Entire site coming soon mode frontend",
@@ -8915,7 +9128,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Store only coming soon mode frontend",
@@ -8938,7 +9152,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Site visibility settings",
@@ -8961,7 +9176,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Homescreen badge coming soon store only",
@@ -8984,7 +9200,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Homescreen badge coming soon entire store",
@@ -9007,7 +9224,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Homescreen badge live",
@@ -9030,7 +9248,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Entire site coming soon mode (Block Theme (Twenty Twenty Four))",
@@ -9053,7 +9272,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Store only coming soon mode (Block Theme (Twenty Twenty Four))",
@@ -9076,7 +9296,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Entire site coming soon mode (Classic Theme (Storefront))",
@@ -9099,7 +9320,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Store only coming soon mode (Classic Theme (Storefront))",
@@ -9122,7 +9344,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can complete the core profiler skipping extension install",
@@ -9170,7 +9393,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can complete the core profiler installing default extensions",
@@ -9202,7 +9426,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can skip the guided setup",
@@ -9230,7 +9455,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can hide the task list",
@@ -9262,7 +9488,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Payments task list item links to Payments settings page",
@@ -9285,7 +9512,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can connect to WooCommerce.com",
@@ -9317,7 +9545,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a simple guest order",
@@ -9340,7 +9569,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create an order for an existing customer",
@@ -9363,7 +9593,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new order",
@@ -9386,7 +9617,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new complex order with multiple product types & tax classes",
@@ -9409,7 +9641,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should show the customer payment page link on a pending order",
@@ -9432,7 +9665,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should load the customer payment page",
@@ -9455,7 +9689,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can pay for the order through the customer payment page",
@@ -9491,7 +9726,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can bulk update order status",
@@ -9514,7 +9750,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can apply a coupon",
@@ -9537,7 +9774,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can remove a coupon",
@@ -9560,7 +9798,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view single order",
@@ -9583,7 +9822,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update order status",
@@ -9606,7 +9846,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update order status to cancelled",
@@ -9629,7 +9870,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update order details",
@@ -9652,7 +9894,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add and delete order notes",
@@ -9675,7 +9918,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can load billing and shipping details",
@@ -9711,7 +9955,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can copy billing address to shipping address",
@@ -9747,7 +9992,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add downloadable product permissions to order without product",
@@ -9770,7 +10016,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add downloadable product permissions to order with product",
@@ -9793,7 +10040,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can edit downloadable product permissions",
@@ -9816,7 +10064,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can revoke downloadable product permissions",
@@ -9839,7 +10088,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should not allow downloading a product if download attempts are exceeded",
@@ -9862,7 +10112,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should not allow downloading a product if expiration date has passed",
@@ -9885,7 +10136,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "guest shopper can verify their email address after the grace period",
@@ -9929,7 +10181,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can issue a refund by quantity",
@@ -9952,7 +10205,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete an issued refund",
@@ -9984,7 +10238,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update order after refunding item without automatic stock adjustment",
@@ -10007,7 +10262,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by All",
@@ -10030,7 +10286,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by Pending payment",
@@ -10053,7 +10310,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by Processing",
@@ -10076,7 +10334,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by On hold",
@@ -10099,7 +10358,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by Completed",
@@ -10122,7 +10382,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by Cancelled",
@@ -10145,7 +10406,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by Refunded",
@@ -10168,7 +10430,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should filter by Failed",
@@ -10191,7 +10454,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a grouped product",
@@ -10223,7 +10487,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "renders each block without error",
@@ -10263,7 +10528,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a simple product",
@@ -10295,7 +10561,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can not create a product with duplicated SKU",
@@ -10327,7 +10594,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can a shopper add the simple product to the cart",
@@ -10359,7 +10627,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a variation option and publish the product",
@@ -10391,7 +10660,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can edit a variation",
@@ -10423,7 +10693,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a variation",
@@ -10455,7 +10726,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can see variations warning and click the CTA",
@@ -10487,7 +10759,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can see single variation warning and click the CTA",
@@ -10519,7 +10792,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "is hooked up to sidebar \\"Add New\\"",
@@ -10551,7 +10825,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can be disabled from the header",
@@ -10583,7 +10858,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can be disabled from settings",
@@ -10615,7 +10891,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "is not hooked up to sidebar \\"Add New\\"",
@@ -10638,7 +10915,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can enable the block product editor",
@@ -10661,7 +10939,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a product with linked products",
@@ -10693,7 +10972,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a simple product with categories, tags and with password required",
@@ -10725,7 +11005,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "add local attribute (with terms) to the Product",
@@ -10757,7 +11038,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add existing attributes",
@@ -10789,7 +11071,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update product attributes",
@@ -10821,7 +11104,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can remove product attributes",
@@ -10853,7 +11137,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update the general information of a product",
@@ -10885,7 +11170,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can schedule a product publication",
@@ -10917,7 +11203,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can duplicate a product",
@@ -10949,7 +11236,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a product",
@@ -10981,7 +11269,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add images",
@@ -11013,7 +11302,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can replace an image",
@@ -11045,7 +11335,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can remove an image",
@@ -11077,7 +11368,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can set an image as cover",
@@ -11109,7 +11401,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update sku",
@@ -11141,7 +11434,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update stock status",
@@ -11173,7 +11467,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can track stock quantity",
@@ -11205,7 +11500,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can limit purchases",
@@ -11237,7 +11533,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add custom product attributes",
@@ -11269,7 +11566,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a variable product",
@@ -11341,7 +11639,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can generate variations from product attributes",
@@ -11413,7 +11712,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can manually add a variation",
@@ -11525,7 +11825,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a simple virtual product",
@@ -11593,7 +11894,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a simple non virtual product",
@@ -11661,7 +11963,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a simple downloadable product",
@@ -11725,7 +12028,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a product from edit view",
@@ -11761,7 +12065,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can quick delete a product from product list",
@@ -11797,7 +12102,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can permanently delete a product from trash list",
@@ -11833,7 +12139,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can edit a product and save the changes",
@@ -11877,7 +12184,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can bulk edit products",
@@ -11925,7 +12233,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can restore regular price when bulk editing products",
@@ -11973,7 +12282,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can decrease the sale price if the product was not previously in sale when bulk editing products",
@@ -12005,7 +12315,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "increasing the sale price from 0 does not change the sale price when bulk editing products",
@@ -12037,7 +12348,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should allow exporting a single selected simple product",
@@ -12073,7 +12385,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should allow exporting multiple selected products (simple and variable)",
@@ -12109,7 +12422,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should allow clearing selection from the export page",
@@ -12149,7 +12463,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should show the default export screen when no products are selected",
@@ -12185,7 +12500,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should be able to add grouped products to the cart",
@@ -12208,7 +12524,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should be able to remove grouped products from the cart",
@@ -12231,7 +12548,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can set product image",
@@ -12267,7 +12585,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update the product image",
@@ -12303,7 +12622,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete the product image",
@@ -12339,7 +12659,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a product gallery",
@@ -12375,7 +12696,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update a product gallery",
@@ -12411,7 +12733,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
@@ -12443,7 +12766,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can upload the CSV file and import products",
@@ -12475,7 +12799,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can override the existing products via CSV import",
@@ -12507,7 +12832,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "add up-sells",
@@ -12559,7 +12885,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "remove up-sells",
@@ -12611,7 +12938,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "add cross-sells",
@@ -12663,7 +12991,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "remove cross-sells",
@@ -12711,7 +13040,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view products reviews list",
@@ -12734,7 +13064,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can filter the reviews by product",
@@ -12757,7 +13088,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can quick edit a product review",
@@ -12780,7 +13112,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can edit a product review",
@@ -12803,7 +13136,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can approve a product review",
@@ -12826,7 +13160,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can mark a product review as spam",
@@ -12849,7 +13184,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can reply to a product review",
@@ -12881,7 +13217,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a product review",
@@ -12904,7 +13241,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "shopper can post a review",
@@ -12927,7 +13265,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can do a partial search for a product",
@@ -12950,7 +13289,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can view a product\'s details after search",
@@ -12973,7 +13313,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "returns no results for non-existent product search",
@@ -12996,7 +13337,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update settings",
@@ -13019,7 +13361,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should see shop catalog with all its products",
@@ -13042,7 +13385,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should see and sort tags page with all the products",
@@ -13065,7 +13409,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should see and sort attributes page with all its products",
@@ -13088,7 +13433,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can see products showcase",
@@ -13111,7 +13457,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should be able to add variation products to the cart",
@@ -13134,7 +13481,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should be able to remove variation products from the cart",
@@ -13157,7 +13505,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Shopper can change variable attributes to the same value",
@@ -13180,7 +13529,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Shopper can change attributes to combination with dimensions and weight",
@@ -13203,7 +13553,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Shopper can change variable product attributes to variation with a different price",
@@ -13226,7 +13577,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Shopper can reset variations",
@@ -13249,7 +13601,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can individually edit variations",
@@ -13373,7 +13726,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can bulk edit variations",
@@ -13421,7 +13775,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete all variations",
@@ -13465,7 +13820,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can manage stock levels",
@@ -13549,7 +13905,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can set variation defaults",
@@ -13617,7 +13974,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can remove a variation",
@@ -13661,7 +14019,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "admin can manage consumer keys",
@@ -13701,7 +14060,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Save Changes button is disabled by default and enabled only after changes.",
@@ -13724,7 +14084,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update settings",
@@ -13747,7 +14108,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can enable tax calculation",
@@ -13770,7 +14132,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can set tax options",
@@ -13793,7 +14156,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add tax classes",
@@ -13816,7 +14180,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can set rate settings",
@@ -13839,7 +14204,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can remove tax classes",
@@ -13862,7 +14228,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can enable analytics tracking",
@@ -13885,7 +14252,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can enable marketplace suggestions",
@@ -13908,7 +14276,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Webhook cannot be bulk deleted without nonce",
@@ -13931,7 +14300,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a shipping class with an unique slug",
@@ -13954,7 +14324,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can add a shipping class with an auto-generated slug",
@@ -13977,7 +14348,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete the shipping zone region",
@@ -14000,7 +14372,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete the shipping zone method",
@@ -14023,7 +14396,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can redirect user to cart from shop page",
@@ -14046,7 +14420,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can redirect user to cart from detail page",
@@ -14069,7 +14444,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should let user search the store",
@@ -14097,7 +14473,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should let user browse products by categories",
@@ -14129,7 +14506,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "should let user sort the products in the shop",
@@ -14161,7 +14539,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Check the title of the shop page after the page has been deleted",
@@ -14184,7 +14563,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can visit the lost password page from the login page",
@@ -14207,7 +14587,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can submit the lost password form",
@@ -14230,7 +14611,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create a new Customer",
@@ -14270,7 +14652,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update customer data",
@@ -14314,7 +14697,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can update shop manager data",
@@ -14342,7 +14726,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a customer",
@@ -14378,7 +14763,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can delete a shop manager",
@@ -14414,7 +14800,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new page",
@@ -14437,7 +14824,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "can create new post",
@@ -14460,7 +14848,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "logged-in customer can comment on a post",
@@ -14488,7 +14877,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         }
                     ]
                 }
