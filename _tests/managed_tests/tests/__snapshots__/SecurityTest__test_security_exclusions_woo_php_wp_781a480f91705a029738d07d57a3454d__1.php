@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 15 Warnings: 8",
+            "test_summary": "Errors: 15 Warnings: 9",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -168,6 +168,11 @@
                                         "column": 1
                                     }
                                 ]
+                            },
+                            "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/src\\/PluginCode.php": {
+                                "errors": 0,
+                                "warnings": 0,
+                                "messages": []
                             },
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
@@ -312,6 +317,11 @@
                                     }
                                 ]
                             },
+                            "\\/woocommerce-product-feeds\\/src\\/PluginCode.php": {
+                                "errors": 0,
+                                "warnings": 0,
+                                "messages": []
+                            },
                             "\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
                                 "errors": 2,
                                 "warnings": 0,
@@ -343,7 +353,28 @@
                     "composer_audit": [],
                     "npm_audit": [],
                     "wpscan_audit": [],
-                    "gitleaks": []
+                    "gitleaks": [
+                        {
+                            "RuleID": "aws-access-token",
+                            "Description": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms.",
+                            "StartLine": 11,
+                            "EndLine": 11,
+                            "StartColumn": 33,
+                            "EndColumn": 52,
+                            "Match": "AKIA234567ABCDEF2345",
+                            "Secret": "AKIA234567ABCDEF2345",
+                            "File": "\\/woocommerce-product-feeds\\/src\\/PluginCode.php",
+                            "SymlinkFile": "",
+                            "Commit": "",
+                            "Entropy": 3.6841838,
+                            "Author": "",
+                            "Email": "",
+                            "Date": "",
+                            "Message": "",
+                            "Tags": [],
+                            "Fingerprint": "\\/woocommerce-product-feeds\\/src\\/PluginCode.php:aws-access-token:11"
+                        }
+                    ]
                 }
             }
         }
