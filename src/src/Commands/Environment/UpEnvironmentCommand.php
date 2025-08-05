@@ -31,24 +31,20 @@ class UpEnvironmentCommand extends DynamicCommand {
 	/** @var Cache */
 	protected $cache;
 
-	/** @var OutputInterface */
-	protected $output;
-
 	/** @var TunnelRunner */
 	protected $tunnel_runner;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
+	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, Cache $cache, TunnelRunner $tunnel_runner ) {
 		$this->e2e_environment         = $e2e_environment;
 		$this->performance_environment = $performance_environment;
 		$this->cache                   = $cache;
-		$this->output                  = $output;
 		$this->tunnel_runner           = $tunnel_runner;
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$schemas = $this->cache->get_manager_sync_data( 'schemas' );
 
 		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
@@ -213,7 +209,7 @@ HELP
 		}
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
 

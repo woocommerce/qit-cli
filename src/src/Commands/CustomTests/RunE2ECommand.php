@@ -106,20 +106,20 @@ class RunE2ECommand extends QITCommand {
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
 			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
 
-			/* ─────────────── Shared Options (reused from env:up) ─────────────── */
-			->reuseOption( 'env:up', 'environment' )
-			->reuseOption( 'env:up', 'php' )
-			->reuseOption( 'env:up', 'wp' )
-			->reuseOption( 'env:up', 'woo' )
-			->reuseOption( 'env:up', 'plugin' )
-			->reuseOption( 'env:up', 'theme' )
-			->reuseOption( 'env:up', 'volume' )
-			->reuseOption( 'env:up', 'php_extension' )
-			->reuseOption( 'env:up', 'object_cache' )
-			->reuseOption( 'env:up', 'tunnel' )
-			->reuseOption( 'env:up', 'env' )
-			->reuseOption( 'env:up', 'env_file' )
-			->reuseOption( 'env:up', 'json' )
+			/* ─────────────── Shared Options ─────────────── */
+			->addOption( 'environment', 'e', InputOption::VALUE_OPTIONAL, 'Environment name from configuration', 'default' )
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version' )
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Plugins to install', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Themes to install', [] )
+			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volume mappings', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable object cache' )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling' )
+			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variable files', [] )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Output JSON', false )
 
 			/* ─────────────── SUT‑related options ─────────────── */
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,

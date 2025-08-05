@@ -17,11 +17,6 @@ class PerformanceEnvironment extends Environment {
 	/** @var string */
 	protected $description = 'Performance Test Environment';
 
-	/**
-	 * @var PerformanceEnvInfo
-	 */
-	protected $env_info;
-
 	/** @var bool */
 	protected $skip_activating_plugins = false;
 
