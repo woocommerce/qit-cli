@@ -4,6 +4,7 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\IO\Output;
 use function QIT_CLI\normalize_path;
@@ -93,6 +94,9 @@ abstract class EnvInfo implements \JsonSerializable {
 
 	public string $tunnel_type = 'no_tunnel';
 
+	/** @var string The site URL, if any. */
+	public $site_url;
+
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return get_object_vars( $this );
@@ -119,23 +123,31 @@ abstract class EnvInfo implements \JsonSerializable {
 	 *
 	 * @param array<string,mixed> $env_info_array The array to deserialize.
 	 *
-	 * @return E2EEnvInfo The deserialized EnvInfo object.
+	 * @return EnvInfo The deserialized EnvInfo object.
 	 */
-	public static function from_array( array $env_info_array ): E2EEnvInfo {
-		$environment = $env_info_array['environment'] ?? 'e2e';
+	public static function from_array( array $env_info_array ): EnvInfo {
+		$environment_type = $env_info_array['environment'] ?? 'e2e';
 
-		switch ( $environment ) {
+		switch ( $environment_type ) {
 			case 'e2e':
 				$env_info = new E2EEnvInfo();
 				break;
+			case 'performance':
+				$env_info = new PerformanceEnvInfo();
+				break;
 			default:
-				throw new \RuntimeException( "Invalid environment type: $environment" );
+				// Fallback to e2e for unknown environment types.
+				App::make( Output::class )->writeln( sprintf( '<warning>Warning: Unknown environment type "%s" found in cache. Falling back to "e2e" environment type.</warning>', $environment_type ) );
+				$env_info = new E2EEnvInfo();
+				// Override the environment type to e2e to prevent future issues.
+				$env_info_array['environment'] = 'e2e';
+				break;
 		}
 
 		// Set basic properties
-		$env_info->environment   = $environment;
+		$env_info->environment   = $environment_type;
 		$env_info->env_id        = $env_info_array['env_id'] ?? ( 'qitenv' . bin2hex( random_bytes( 8 ) ) );
-		$env_info->temporary_env = $env_info_array['temporary_env'] ?? normalize_path( Environment::get_temp_envs_dir() . $environment . '-' . $env_info->env_id );
+		$env_info->temporary_env = $env_info_array['temporary_env'] ?? normalize_path( Environment::get_temp_envs_dir() . $environment_type . '-' . $env_info->env_id );
 		$env_info->created_at    = $env_info_array['created_at'] ?? time();
 		$env_info->status        = $env_info_array['status'] ?? 'pending';
 
@@ -143,9 +155,15 @@ abstract class EnvInfo implements \JsonSerializable {
 		$env_info->tunnel      = ! empty( $env_info_array['tunnel'] );
 		$env_info->tunnel_type = $env_info_array['tunnel_type'] ?? 'no_tunnel';
 
-		// Set domain for E2E environments
-		if ( $env_info instanceof E2EEnvInfo ) {
-			$env_info->domain = $env_info_array['domain'] ?? ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ? "qitenvnginx{$env_info->env_id}" : ( getenv( 'QIT_DOMAIN' ) ?: 'localhost' ) );
+		// Set domain based on environment exposure
+		if ( isset( $env_info_array['domain'] ) ) {
+			$env_info->domain = $env_info_array['domain'];
+		} elseif ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+			// Environment accessible from inside Docker containers.
+			$env_info->domain = "qitenvnginx{$env_info->env_id}";
+		} else {
+			// Environment accessible from host.
+			$env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
 		}
 
 		// Handle plugins and themes

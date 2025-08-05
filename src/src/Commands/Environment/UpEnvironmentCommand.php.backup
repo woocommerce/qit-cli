@@ -1,0 +1,767 @@
+<?php
+declare( strict_types=1 );
+
+namespace QIT_CLI\Commands\Environment;
+
+use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Commands\Environment\ExtensionSummary;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
+<<<<<<< HEAD
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+=======
+use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\EnvironmentVersionResolver;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
+use QIT_CLI\PluginDependencies;
+>>>>>>> origin/trunk
+use QIT_CLI\Tunnel\TunnelRunner;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\is_windows;
+
+/**
+ * Qit env:up  – create a disposable local E2E environment.
+ */
+class UpEnvironmentCommand extends QITCommand {
+	/** @var E2EEnvironment */
+<<<<<<< HEAD
+	private E2EEnvironment $e2e_environment;
+=======
+	protected $e2e_environment;
+
+	/** @var PerformanceEnvironment */
+	protected $performance_environment;
+
+	/** @var Cache */
+	protected $cache;
+
+	/** @var OutputInterface */
+	protected $output;
+
+>>>>>>> origin/trunk
+	/** @var TunnelRunner */
+	private TunnelRunner $tunnel_runner;
+	/** @var \QIT_CLI\PreCommand\Extensions\VersionResolver */
+	private \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver;
+
+	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+
+<<<<<<< HEAD
+	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver ) {
+		$this->e2e_environment  = $e2e_environment;
+		$this->tunnel_runner    = $tunnel_runner;
+		$this->version_resolver = $version_resolver;
+		parent::__construct();
+=======
+	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
+		$this->e2e_environment         = $e2e_environment;
+		$this->performance_environment = $performance_environment;
+		$this->cache                   = $cache;
+		$this->output                  = $output;
+		$this->tunnel_runner           = $tunnel_runner;
+		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+>>>>>>> origin/trunk
+	}
+
+	/*******************************************************************
+	 * CLI definition
+	 ******************************************************************/
+	protected function configure(): void {
+		parent::configure(); // adds --config and --environment
+
+<<<<<<< HEAD
+		$this->setDescription( 'Creates a temporary local test environment that is completely ephemeral' )
+			->setAliases( [ 'env:start' ] )
+			/* ─ Environment selection ─ */
+			->addOption(
+				'environment', 'e',
+				InputOption::VALUE_OPTIONAL,
+				'Pick an <comment>environment block</comment> from qit.json (e.g. --environment=legacy)',
+				'default'
+			)
+			/* ─ Runtime env‑vars ─ */
+			->addOption( 'env', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Set env var  --env KEY=VAL', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load vars from file  --env_file ./prod.env', [] )
+			/* ─ Scalars ─ */
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3)', '8.2' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6)', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version', null )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
+			/* ─ Lists ─ */
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
+			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			/* ─ Misc ─ */
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
+			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
+			->setHelp( $this->getHelpText() );
+	}
+
+	/*******************************************************************
+	 * Execution
+	 ******************************************************************/
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+		/** @var \QIT_CLI\QITInput $input */
+
+		/* ─ Safety guard ─ */
+=======
+		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
+			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
+		}
+
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
+			'php_version',
+		] );
+
+		$this
+			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
+			->addOption( 'environment_type', null, InputOption::VALUE_OPTIONAL, 'The type of environment to create. Valid values: "e2e", "performance".', 'e2e' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", "rc", or a version number.', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", "rc", or a GitHub Tag (eg: 8.6.1).' )
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
+			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
+			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
+			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
+			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
+			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes in the environment.' )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
+			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
+			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_only'] ), PluginDependencies::DEPENDENCY_MODES['env_only']['activate'] )
+			->setAliases( [ 'env:start' ]
+			);
+
+		DynamicCommandCreator::add_schema_to_command( $this, $schemas['activation'], [], [
+			'extension_set',
+		] );
+
+		$options_example = [];
+
+		foreach ( $this->options_to_send as $option => $value ) {
+			$opt = $this->getDefinition()->getOption( $option );
+
+			switch ( $opt->getName() ) {
+				case 'plugin':
+					$options_example[ $opt->getName() ] = [
+						'woocommerce',
+						'wordpress-importer',
+						'automatewoo',
+					];
+					break;
+				case 'theme':
+					$options_example[ $opt->getName() ] = [
+						'storefront',
+					];
+					break;
+				case 'volume':
+					$options_example[ $opt->getName() ] = [
+						'/home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin',
+					];
+					break;
+				case 'php_extension':
+					$options_example[ $opt->getName() ] = [
+						'gd',
+						'imagick',
+					];
+					break;
+				case 'wp':
+					$options_example[ $opt->getName() ] = 'nightly';
+					break;
+				default:
+					$options_example[ $opt->getName() ] = $opt->getDefault();
+					break;
+			}
+		}
+
+		$possible_options = implode( "\n- ", array_keys( $options_example ) );
+		$json_example     = json_encode( $options_example, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+		$yml_example      = App::make( \Symfony\Component\Yaml\Yaml::class )->dump( $options_example, 2, 2 );
+
+		$this
+			->setHelp( <<<HELP
+Creates a configurable, temporary, disposable test environment.
+
+<comment>Usage</comment>
+<info>qit env:up</info>
+
+<comment>Config File:</comment>
+Create a config file (JSON or YML) to set default environment options.
+Valid names include qit.json, qit.yml, .qit.json, and .qit.yml.
+Override defaults with qit.override.json, qit.override.yml, etc., typically ignored in version control.
+
+The possible options are:
+
+- $possible_options
+
+<comment>Example JSON file</comment>
+$json_example
+
+<comment>Example YML file</comment>
+$yml_example
+
+<comment>Where to Place Config:</comment>
+The command searches for a config file in the current directory from which it's executed. For example:
+A config file located at /home/mycomputer/my-plugin/qit.json is detected when you run <info>cd /home/mycomputer/my-plugin && qit env:up</info>.
+If the config file is placed in the root directory of your plugin, the command automatically includes that plugin in the environment.
+
+You can also pass a "--config" parameter and point it to a file path.
+
+<comment>Parameters:</comment>
+Parameters specified at runtime override config file settings.
+Example: <info>qit env:up --php_version 8.3</info> forces PHP version 8.3 regardless of config files.
+
+<comment>Plugins and Themes</comment>
+Install additional plugins in the environment using the --plugins and --themes flag.
+Repeat multiple times to install many, e.g:
+<info>qit env:up --plugin automatewoo --plugin contact-form-7</info>
+
+PS: To install premium plugins from the Woo.com Marketplace, you need to have access to them.
+PS 2: Plugins are activated automatically in the test environment. Themes are only installed.
+
+<comment>PHP Version</comment>
+To set the PHP version, use the --php_version flag, e.g.:
+<info>qit env:up --php_version=8.3</info>
+
+<comment>WordPress Version</comment>
+To set the WordPress version, use the --wp flag, e.g.:
+<info>qit env:up --wp 6.5.2</info>
+
+<comment>Object Cache</comment>
+To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
+<info>qit env:up --object_cache</info>
+
+<comment>Volumes</comment>
+To map a local directory to the test environment, use the --volume flag, e.g.:
+<info>qit env:up --volume /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
+This will map the local directory /home/mycomputer/my-plugin to the test environment at /var/www/html/wp-content/plugins/my-plugin.
+
+<comment>PHP Extensions</comment>
+To install PHP extensions in the test environment, use the --php_extension flag, e.g.:
+<info>qit env:up --php_extension gd --php_extension imagick</info>
+
+<comment>Accessing the Test Website:</comment>
+- URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
+
+<comment>Example:</comment>
+<info>qit env:up --wp nightly --php_version=8.3 --php_extension gd --object_cache --plugin gutenberg --plugin automatewoo --theme storefront</info>
+
+This will create a disposable test environment with the nightly version of WordPress, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
+HELP
+			);
+	}
+
+	/**
+	 * Get the appropriate environment instance based on the environment type.
+	 */
+	protected function get_environment( string $environment_type ): Environment {
+		switch ( $environment_type ) {
+			case 'performance':
+				return $this->performance_environment;
+			case 'e2e':
+			default:
+				return $this->e2e_environment;
+		}
+	}
+
+	protected function execute( InputInterface $input, OutputInterface $output ): int {
+>>>>>>> origin/trunk
+		if ( is_windows() ) {
+			$output->writeln( '<comment>QIT environments require WSL on Windows.</comment>' );
+
+			return Command::FAILURE;
+		}
+
+<<<<<<< HEAD
+		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
+		$env_name   = $input->getOption( 'environment' ) ?? 'default';
+		$env_config = $this->get_environment_config( $env_name );
+		$env_config = $this->applyCliOverrides( $env_config, $input );
+
+		/* ─ 2. Resolve extensions using the merged config (includes CLI overrides) ─ */
+		$resolved_ext = $this->download_extensions_from_config( $env_config );
+=======
+		$environment_type        = $input->getOption( 'environment_type' );
+		$woo                     = $input->getOption( 'woo' );
+		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
+		$skip_activating_themes  = $input->getOption( 'skip_activating_themes' );
+		$input->setOption( 'woo', null );
+		$input->setOption( 'skip_activating_plugins', null );
+		$input->setOption( 'skip_activating_themes', null );
+		$input->setOption( 'environment_type', null );
+		$this->parse_env_vars( $input->getOption( 'env' ), $input->getOption( 'env_file' ) );
+
+		// Set the environment type for EnvConfigLoader.
+		putenv( "QIT_ENVIRONMENT_TYPE=$environment_type" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+
+		$environment = $this->get_environment( $environment_type );
+		$tunnel      = TunnelRunner::get_tunnel_value( $input );
+>>>>>>> origin/trunk
+
+		/* ─ 3. Use the fully-resolved extension lists ─ */
+		$final_plugins = $resolved_ext->get_plugins();
+		$final_themes  = $resolved_ext->get_themes();
+
+		/* ─ 3.5. Parse volumes to get proper associative array structure ─ */
+		$parsed_volumes = [];
+		if ( ! empty( $env_config['volumes'] ) ) {
+			$parsed_volumes = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] );
+		}
+
+		/* ─ 4. Materialise E2EEnvInfo DTO ─ */
+		$env_info = E2EEnvInfo::from_array( [
+			'env_id'         => 'qitenv' . bin2hex( random_bytes( 8 ) ),
+			'environment'    => 'e2e',
+			'php'            => $env_config['php'] ?? '8.2',
+			'wp'             => $env_config['wp'] ?? 'stable',
+			'woo'            => $env_config['woo'] ?? '',
+			'object_cache'   => $env_config['object_cache'] ?? false,
+			'plugins'        => $final_plugins,
+			'themes'         => $final_themes,
+			'php_extensions' => $env_config['php_extensions'] ?? [],
+			'volumes'        => $parsed_volumes,
+			'envs'           => $env_config['envs'] ?? [],
+			'tunnel'         => $env_config['tunnel'] ?? false,
+			'tunnel_type'    => $env_config['tunnel_type'] ?? 'no_tunnel',
+			'site_url'       => 'http://localhost:8080',
+		] );
+
+		/* ─ 5. Honour --tunnel (validated against TunnelRunner) ─ */
+		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
+			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
+			$env_info->tunnel = true;
+		}
+
+<<<<<<< HEAD
+		/* ─ 6. SELF‑TEST shortcut ─ */
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
+			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
+
+			return Command::SUCCESS;
+		}
+
+		/* ─ 7. Bring the environment up ─ */
+		$this->e2e_environment->init( $env_info );
+		$this->e2e_environment->up();
+
+		/* ─ 8. Print result ─ */
+=======
+		if ( $skip_activating_plugins ) {
+			if ( $environment instanceof E2EEnvironment || $environment instanceof PerformanceEnvironment ) {
+				$environment->set_skip_activating_plugins( true );
+			}
+		}
+
+		if ( $skip_activating_themes ) {
+			if ( $environment instanceof E2EEnvironment || $environment instanceof PerformanceEnvironment ) {
+				$environment->set_skip_activating_themes( true );
+			}
+		}
+
+		if ( ! empty( $input->getOption( 'config' ) ) ) {
+			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
+		}
+
+		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
+
+		// Parse the extension set here.
+		if ( ! empty( $options_to_env_info['overrides']['extension_set'] ) ) {
+			$env_info = App::make( ExtensionSetResolver::class )->resolve( $env_info, $options_to_env_info );
+		}
+
+		if ( $tunnel !== 'no_tunnel' ) {
+			try {
+				$this->tunnel_runner->check_tunnel_support( $tunnel );
+				$env_info->tunnel = true;
+			} catch ( \Exception $e ) {
+				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
+				return Command::FAILURE;
+			}
+		} else {
+			// Tunneling is disabled.
+			$env_info->tunnel = false;
+		}
+
+		if ( $output->isVeryVerbose() ) {
+			$this->output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT ) );
+		}
+
+		$environment->init( $env_info );
+
+		// Helper utility to test the environment.
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
+			$output->write( json_encode( $env_info ) );
+
+			return 137;
+		}
+
+		// "up_and_test" is when we are using an environment to run a custom test. "up" is spinning up the environment on-demand.
+		$environment->up( getenv( 'QIT_UP_AND_TEST' ) ? 'up_and_test' : 'up' );
+
+>>>>>>> origin/trunk
+		if ( $input->getOption( 'json' ) ) {
+			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
+		} else {
+			$this->renderHumanSummary( $output, $env_info );
+		}
+
+		return Command::SUCCESS;
+	}
+
+	/*******************************************************************
+	 * Helpers
+	 ******************************************************************/
+
+	/**
+	 * Download extensions from the given environment configuration.
+	 * This method processes the merged config that includes CLI overrides.
+	 *
+	 * @param array<string,mixed> $env_config
+	 *
+	 * @return \QIT_CLI\PreCommand\Extensions\ResolvedExtensions
+	 */
+	private function download_extensions_from_config( array $env_config ): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions {
+		$extensions = [];
+
+		// Create Extension objects from plugins in the merged config
+		if ( isset( $env_config['plugins'] ) ) {
+			foreach ( $env_config['plugins'] as $plugin_config ) {
+				if ( is_string( $plugin_config ) ) {
+					// Use the new parser for string inputs
+					try {
+						$extension    = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $plugin_config, 'plugin' );
+						$extensions[] = $extension;
+					} catch ( \InvalidArgumentException $e ) {
+						throw new \RuntimeException( 'Invalid plugin specification: ' . $e->getMessage() );
+					}
+				} else {
+					// Handle array configuration
+					$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $plugin_config['slug'], 'plugin' );
+					$extension->added_automatically = 'Added from CLI or environment configuration';
+
+					if ( isset( $plugin_config['from'] ) ) {
+						$extension->from = $plugin_config['from'];
+
+						switch ( $plugin_config['from'] ) {
+							case 'wporg':
+								$extension->version = $plugin_config['version'] ?? 'stable';
+								break;
+							case 'wccom':
+								$extension->version  = $plugin_config['version'] ?? 'stable';
+								$extension->wccom_id = $plugin_config['wccom_id'] ?? null;
+								break;
+							case 'local':
+								$extension->directory = $plugin_config['directory'] ?? null;
+								$extension->source    = $plugin_config['source'] ?? null;
+								break;
+							case 'url':
+								$extension->source  = $plugin_config['source'] ?? null;
+								$extension->version = $plugin_config['version'] ?? 'stable';
+								break;
+						}
+					} else {
+						// Don't set $extension->from - let ExtensionResolver determine the correct source
+						$extension->version = 'stable';
+					}
+
+					$extensions[] = $extension;
+				}
+			}
+		}
+
+		// Create Extension objects from themes in the merged config
+		if ( isset( $env_config['themes'] ) ) {
+			foreach ( $env_config['themes'] as $theme_config ) {
+				if ( is_string( $theme_config ) ) {
+					// Use the new parser for string inputs
+					try {
+						$extension    = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $theme_config, 'theme' );
+						$extensions[] = $extension;
+					} catch ( \InvalidArgumentException $e ) {
+						throw new \RuntimeException( 'Invalid theme specification: ' . $e->getMessage() );
+					}
+				} else {
+					// Handle array configuration
+					$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $theme_config['slug'], 'theme' );
+					$extension->added_automatically = 'Added from CLI or environment configuration';
+
+					if ( isset( $theme_config['from'] ) ) {
+						$extension->from = $theme_config['from'];
+
+						switch ( $theme_config['from'] ) {
+							case 'wporg':
+								$extension->version = $theme_config['version'] ?? 'stable';
+								break;
+							case 'local':
+								$extension->directory = $theme_config['directory'] ?? null;
+								$extension->source    = $theme_config['source'] ?? null;
+								break;
+							case 'url':
+								$extension->source = $theme_config['source'] ?? null;
+								break;
+						}
+					} else {
+						// Don't set $extension->from - let ExtensionResolver determine the correct source
+						$extension->version = 'stable';
+					}
+
+					$extensions[] = $extension;
+				}
+			}
+		}
+
+		// Remove duplicates by slug
+		$unique = [];
+		foreach ( $extensions as $ext ) {
+			$key = $ext->slug . '_' . $ext->type;
+			if ( ! isset( $unique[ $key ] ) ) {
+				$unique[ $key ] = $ext;
+			}
+		}
+		$extensions = array_values( $unique );
+
+		// Resolve/download them using ExtensionResolver
+		$env_info = \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo::from_array( [
+			'env_id'      => 'temp_' . bin2hex( random_bytes( 4 ) ),
+			'environment' => 'e2e',
+		] );
+		$resolver = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Extensions\ExtensionResolver::class );
+
+		// Use the proper QIT cache directory
+		$cache_dir = \QIT_CLI\Config::get_qit_dir() . 'cache';
+
+		return $resolver->resolve( $extensions, $cache_dir );
+	}
+
+	/**
+	 * Merge *explicit* CLI options into the resolved environment config.
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function applyCliOverrides( array $config, InputInterface $input ): array {
+		// $input is actually a QITInput instance when called from our commands
+
+		/* ─ Scalars ─ */
+		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
+			if ( $input->hasOption( $opt ) ) {
+				if ( $opt === 'tunnel' ) {
+					$tunnel_value          = $input->getOption( $opt );
+					$config['tunnel_type'] = $tunnel_value;
+					$config['tunnel']      = $tunnel_value !== 'no_tunnel';
+				} else {
+					$config[ $opt ] = $input->getOption( $opt );
+				}
+			}
+		}
+
+		/* ─ Resolve special versions and add plugins explicitly ─ */
+		$config = $this->resolve_woo( $config, $input );
+		$config = $this->resolve_wp( $config, $input );
+		if ( $input->hasOption( 'object_cache' ) ) {
+			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
+		}
+
+		/* ─ Array‑merge helpers with slug-keyed deduplication ─ */
+		$merge_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
+			if ( ! $input->hasOption( $opt_name ) ) {
+				return;
+			}
+			$cfg = $config[ $key ] ?? [];
+			$cli = (array) $input->getOption( $opt_name );
+
+			// Use slug-keyed merge to handle mixed string/array entries properly
+			$index = [];
+			foreach ( array_merge( $cfg, $cli ) as $entry ) {
+				$slug = is_string( $entry ) ? $entry : ( $entry['slug'] ?? null );
+				if ( ! $slug ) {
+					continue;
+				}
+
+				/**
+				 * Precedence: later entries override earlier ones.
+				 * We iterate            →   first config, then CLI.
+				 * Therefore:            →   anything from the CLI wins ‑
+				 *                          regardless of whether it is a string
+				 *                          or a rich object.
+				 */
+				$index[ $slug ] = $entry;
+			}
+			$config[ $key ] = array_values( $index );
+		};
+
+		$merge_list( 'plugins', 'plugin' );
+		$merge_list( 'themes', 'theme' );
+
+		/* ─ Simple array merge for non-extension lists ─ */
+		$merge_simple_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
+			if ( ! $input->hasOption( $opt_name ) ) {
+				return;
+			}
+			$cli            = (array) $input->getOption( $opt_name );
+			$cfg            = $config[ $key ] ?? [];
+			$config[ $key ] = array_values( array_unique( array_merge( $cfg, $cli ) ) );
+		};
+
+		// Volumes should stay as simple arrays until parsed later
+		if ( $input->hasOption( 'volume' ) ) {
+			$cli_volumes = (array) $input->getOption( 'volume' );
+			$cfg_volumes = $config['volumes'] ?? [];
+			// Just merge the arrays without re-indexing
+			$config['volumes'] = array_merge( $cfg_volumes, $cli_volumes );
+		}
+
+		$merge_simple_list( 'php_extensions', 'php_extension' );
+
+		/* ─ Runtime env vars - process files immediately ─ */
+		$existing_env_vars = $config['envs'] ?? [];
+		$env_files         = array_merge(
+			$config['env_files'] ?? [],
+			$input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : []
+		);
+
+		// Get CLI env vars as array of key=value strings (EnvParser expects this format)
+		$cli_env_vars = $input->hasOption( 'env' ) ? (array) $input->getOption( 'env' ) : [];
+
+		// Parse and merge everything using EnvParser
+		$parsed_vars = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvParser::class )->parse( $cli_env_vars, $env_files );
+
+		// Merge with existing env vars (existing takes precedence, then parsed)
+		$config['envs'] = array_merge( $existing_env_vars, $parsed_vars );
+
+		// Remove env_files - no longer needed
+		unset( $config['env_files'] );
+
+		return $config;
+	}
+
+	/**
+	 * Resolve --woo option explicitly.
+	 * Adds WooCommerce plugin with the specified version.
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function resolve_woo( array $config, InputInterface $input ): array {
+		/** @var \QIT_CLI\QITInput $input */
+		if ( ! $input->hasOption( 'woo' ) ) {
+			return $config;
+		}
+
+		$woo_version = $input->getOption( 'woo' );
+
+		$resolved_source = $this->version_resolver->resolve_woo( $woo_version );
+
+		if ( $resolved_source !== null ) {
+			// Special version (rc, nightly) - resolve to URL
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'url',
+				'source'              => $resolved_source,
+				'version'             => $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
+		} else {
+			// Regular version - add as wporg plugin
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'wporg',
+				'version'             => $woo_version === 'stable' ? 'stable' : $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
+		}
+
+		// Add WooCommerce to plugins list, avoiding duplicates
+		$config['plugins'] = $config['plugins'] ?? [];
+
+		// Remove any existing WooCommerce plugin to avoid conflicts
+		$config['plugins'] = array_filter( $config['plugins'], function ( $plugin ) {
+			$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+			return $slug !== 'woocommerce';
+		});
+
+		// Add the resolved WooCommerce plugin
+		$config['plugins'][] = $woo_plugin;
+
+		return $config;
+	}
+
+	/**
+	 * Resolve --wp option explicitly.
+	 * Resolves WordPress special versions (like rc).
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function resolve_wp( array $config, InputInterface $input ): array {
+		/** @var \QIT_CLI\QITInput $input */
+		if ( ! $input->hasOption( 'wp' ) ) {
+			return $config;
+		}
+
+		$wp_version = $input->getOption( 'wp' );
+
+		$resolved_wp = $this->version_resolver->resolve_wp( $wp_version );
+
+		if ( $resolved_wp !== null ) {
+			$config['wp'] = $resolved_wp;
+		}
+
+		return $config;
+	}
+
+
+
+	/**
+	 * Nicely formatted human output.
+	 */
+	private function renderHumanSummary( OutputInterface $out, E2EEnvInfo $info ): void {
+		$out->writeln( '<info>Environment started ✔</info>' );
+		$out->writeln( "ID:          <comment>{$info->env_id}</comment>" );
+		$out->writeln( "PHP:         {$info->php}" );
+		$out->writeln( "WordPress:   {$info->wp}" );
+		if ( $info->woo ) {
+			$out->writeln( "WooCommerce: {$info->woo}" );
+		}
+		// Render extension tables using the dedicated ExtensionSummary class
+		$extension_summary = new ExtensionSummary( $this->e2e_environment );
+		$extension_summary->render_extension_tables( $out, $info );
+		if ( $info->tunnel ) {
+			$out->writeln( "Tunnel:      {$info->tunnel_type}" );
+		}
+		$out->writeln( "Site URL:    {$info->site_url}" );
+	}
+
+	/*******************************************************************
+	 * Long help text
+	 ******************************************************************/
+	private function getHelpText(): string {
+		return <<<'HELP'
+Creates a fully‑configured, disposable local environment.
+
+Precedence: CLI defaults → qit.json → explicit CLI overrides.
+
+Examples
+  <info>qit env:up</info>
+      Uses the "default" environment from qit.json
+
+  <info>qit env:up --environment=legacy</info>
+      Spins up the "legacy" block from qit.json
+
+  <info>qit env:up --php=8.3 --plugin=gutenberg</info>
+      Overrides PHP version and adds Gutenberg, leaving the rest untouched
+
+  <info>qit env:up --tunnel=cloudflare</info>
+      Exposes the site publicly through Cloudflare Tunnel
+HELP;
+	}
+}

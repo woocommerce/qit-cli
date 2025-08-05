@@ -37,7 +37,6 @@
             "test_summary": "Test Suites: 0 skipped, 1 failed, 1 passed, 2 total | Tests: 3 skipped, 1 failed, 8 passed, 12 total.",
             "version": "",
             "update_complete": true,
-            "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "",
             "runner": "",
@@ -179,8 +178,6 @@
                                 "Installing the theme...\\n",
                                 "Theme installed successfully.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
-                                "Plugin \'woocommerce\' activated.\\n",
-                                "Success: Activated 1 of 1 plugins.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
                             "stderr": [],
@@ -191,7 +188,8 @@
                                         "description": "Running bash script for plugin: woocommerce"
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Activate Plugins",
@@ -205,23 +203,40 @@
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Expect \\"The plugin \\"WooCommerce\\" never appeared active in the UI.\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"The plugin \\"Activation - Plugin A\\" never appeared active in the UI.\\"",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
+                                "[TIMING NORMALIZED] Starting plugin activation test\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"Query Monitor\\" (Dependencies: [])\\n",
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
                                 " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
-                                "Activated \\"Activation - Plugin A\\" successfully.\\n"
+                                "[TIMING NORMALIZED] Found 3 plugins to process\\n",
+                                "[TIMING NORMALIZED] Starting activation loop\\n",
+                                "[TIMING NORMALIZED] Navigating to the activation link for \\"WooCommerce\\".\\n",
+                                "[TIMING NORMALIZED] Activated \\"WooCommerce\\" successfully.\\n",
+                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
+                                "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 2\\n"
                             ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Visit wp-admin pages added by the plugin",
@@ -242,7 +257,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Activate Theme",
@@ -263,7 +279,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Setup Local Pickup",
@@ -284,7 +301,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Set up Cash On Delivery Payment Method",
@@ -301,11 +319,16 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "isAlreadyChecked: false\\n",
+                                "Setting up Cash on Delivery\\n",
+                                "Cash on Delivery setup complete\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Create a Product",
@@ -326,7 +349,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Create a Simple Order",
@@ -348,10 +372,16 @@
                             "extra": {
                                 "annotations": [
                                     {
-                                        "type": "slow"
+                                        "type": "slow",
+                                        "location": {
+                                            "file": "\\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js",
+                                            "line": 674,
+                                            "column": 10
+                                        }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Add Product Cart",
@@ -359,8 +389,9 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - expect.toContainText with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:756:69",
+                            "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:784:69",
+                            "snippet": "  782 |\\n  783 |     await page.goto(\'\\/cart\');\\n> 784 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  785 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  786 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  787 | });",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -390,7 +421,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can Place Order",
@@ -411,7 +443,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Deactivate Plugin",
@@ -432,7 +465,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Activate Other Theme",
@@ -453,7 +487,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         }
                     ]
                 }

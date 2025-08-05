@@ -40,5 +40,4 @@ _tests/managed_tests/last-self-test.log
 
 src/tests/unit/data/sync.json
 
-
 src/tests/integration/cache/

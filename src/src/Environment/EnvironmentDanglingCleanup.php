@@ -161,6 +161,7 @@ class EnvironmentDanglingCleanup {
 			'mu-plugins',
 			'tests',
 			'playwright',
+			'k6',
 		];
 
 		/*

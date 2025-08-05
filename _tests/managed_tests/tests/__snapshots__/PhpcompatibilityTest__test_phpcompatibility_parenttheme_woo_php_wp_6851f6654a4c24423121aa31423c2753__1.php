@@ -37,7 +37,6 @@
             "debug_log": "",
             "version": "1.0.15",
             "update_complete": true,
-            "ai_suggestion_status": "none",
             "malware_whitelist_paths": [],
             "workflow_id": "1234567890",
             "runner": "normalized",
