@@ -160,10 +160,11 @@ class PackagePhaseRunner {
 	 * @param string                $package_id Package identifier.
 	 * @param string                $workdir Working directory inside container.
 	 * @param array<string, string> $env_vars Environment variables.
+	 * @param string                $phase The phase being executed (globalSetup, setup, run, etc).
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [] ): array {
+	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [], string $phase = 'run' ): array {
 		$wrapped    = [ '/bin/bash', '-c', "cd {$workdir} && {$cmd}" ];
 		$start_time = microtime( true );
 		$stdout     = '';
@@ -176,7 +177,7 @@ class PackagePhaseRunner {
 				$wrapped,
 				$env_vars,      // extra env‑vars
 				null,           // user
-				300,            // timeout
+				$this->get_timeout_for_phase( $phase ),            // timeout
 				'php',          // container
 				true            // force_output  → always stream
 			);
@@ -384,7 +385,7 @@ class PackagePhaseRunner {
 				if ( $venue === 'host' ) {
 					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars );
 				} else {
-					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars );
+					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase );
 				}
 
 				// Generate individual CTRF immediately for bash scripts
