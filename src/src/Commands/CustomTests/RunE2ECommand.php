@@ -738,7 +738,10 @@ class RunE2ECommand extends QITCommand {
 							try {
 								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 							} catch ( \Throwable $collector_err ) {
-								$io->writeln( "<comment>CTRF collection after failure failed: {$collector_err->getMessage()}</comment>" );
+								// CTRF is mandatory for the run phase - if collection fails, the test is invalid
+								$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
+								$io->writeln( "<error>Test terminated abnormally - CTRF output is required</error>" );
+								throw new \RuntimeException( "Test failed to produce required CTRF output: " . $collector_err->getMessage() );
 							}
 						}
 						// Re-throw to maintain failure status
