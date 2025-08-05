@@ -11,9 +11,7 @@ use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\Environment;
-use QIT_CLI\Environment\EnvironmentVersionResolver;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
-use QIT_CLI\PluginDependencies;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -57,7 +55,9 @@ class UpEnvironmentCommand extends DynamicCommand {
 
 		$this
 			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
+			->addOption( 'environment', 'e', InputOption::VALUE_OPTIONAL, 'Environment name from configuration', 'default' )
 			->addOption( 'environment_type', null, InputOption::VALUE_OPTIONAL, 'The type of environment to create. Valid values: "e2e", "performance".', 'e2e' )
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version', '8.0' )
 			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", "rc", or a version number.', 'stable' )
 			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", "rc", or a GitHub Tag (eg: 8.6.1).' )
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
@@ -73,7 +73,7 @@ class UpEnvironmentCommand extends DynamicCommand {
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
 			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
-			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_only'] ), PluginDependencies::DEPENDENCY_MODES['env_only']['activate'] )
+			// ->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_only'] ), PluginDependencies::DEPENDENCY_MODES['env_only']['activate'] )
 			->setAliases( [ 'env:start' ]
 			);
 
@@ -254,7 +254,7 @@ HELP
 		if ( ! empty( $woo ) ) {
 			// Resolve the WooCommerce version or build based on the "--woo" option.
 			// Example of 'plugin' option before resolution: ["woocommerce:test:activation"].
-			$options_to_env_info['overrides']['plugin'][] = EnvironmentVersionResolver::resolve_woo( $woo, $input->getOption( 'plugin' ) );
+			// $options_to_env_info['overrides']['plugin'][] = EnvironmentVersionResolver::resolve_woo( $woo, $input->getOption( 'plugin' ) );
 
 			// In the case a Woo Test tag was also requested, remove duplicated WooCommerce plugin entries in the environment settings.
 			// At this point, we have this: ["woocommerce:test:activation", {"slug":"woocommerce", "source":"https:\/\/downloads.wordpress.org\/plugin\/woocommerce.latest-stable.zip", "action":"test", "test_tags":["activation"]}]

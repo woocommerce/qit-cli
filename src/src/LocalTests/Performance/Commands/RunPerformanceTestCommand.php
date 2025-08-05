@@ -6,7 +6,6 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
-use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\EnvironmentRunner;
@@ -14,7 +13,6 @@ use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
-use QIT_CLI\PluginDependencies;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
@@ -42,8 +40,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	/** @var WooExtensionsList */
 	protected $woo_extensions_list;
 
-	/** @var PluginDependencies */
-	protected $dependencies;
 
 	/** @var TestGroup */
 	protected $test_group;
@@ -56,7 +52,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		EnvironmentRunner $environment_runner,
 		LocalTestRunNotifier $test_run_notifier,
 		WooExtensionsList $woo_extensions_list,
-		PluginDependencies $dependencies,
 		TestGroup $test_group
 	) {
 		$this->cache                    = $cache;
@@ -64,7 +59,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$this->environment_runner       = $environment_runner;
 		$this->test_run_notifier        = $test_run_notifier;
 		$this->woo_extensions_list      = $woo_extensions_list;
-		$this->dependencies             = $dependencies;
 		$this->test_group               = $test_group;
 
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
@@ -83,7 +77,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'The slug or WooCommerce ID of the main extension under test.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
-			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
+			// ->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
@@ -103,7 +97,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'extension_set' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
-			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
+			// ->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
