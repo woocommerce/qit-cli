@@ -178,8 +178,6 @@
                                 "Installing the theme...\\n",
                                 "Theme installed successfully.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
-                                "Plugin \'woocommerce\' activated.\\n",
-                                "Success: Activated 1 of 1 plugins.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
                             "stderr": [],
@@ -204,7 +202,12 @@
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Expect \\"The plugin \\"WooCommerce\\" never appeared active in the UI.\\"",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
                             "stdout": [
@@ -217,7 +220,9 @@
                                 " 2. \\"WooCommerce\\" (Dependencies: [])\\n",
                                 "[TIMING NORMALIZED] Found 2 plugins to process\\n",
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
-                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 0\\n"
+                                "[TIMING NORMALIZED] Navigating to the activation link for \\"WooCommerce\\".\\n",
+                                "[TIMING NORMALIZED] Activated \\"WooCommerce\\" successfully.\\n",
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
                             ],
                             "stderr": [],
                             "extra": {

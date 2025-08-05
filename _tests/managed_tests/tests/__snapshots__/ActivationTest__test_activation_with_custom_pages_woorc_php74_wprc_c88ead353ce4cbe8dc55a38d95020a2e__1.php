@@ -235,8 +235,6 @@
                                 "Installing the theme...\\n",
                                 "Theme installed successfully.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
-                                "Plugin \'woocommerce\' activated.\\n",
-                                "Success: Activated 1 of 1 plugins.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
                             "stderr": [],
@@ -263,6 +261,10 @@
                             "flaky": false,
                             "steps": [
                                 {
+                                    "name": "Expect \\"The plugin \\"WooCommerce\\" never appeared active in the UI.\\"",
+                                    "status": "passed"
+                                },
+                                {
                                     "name": "Expect \\"The plugin \\"Activation - Plugin A\\" never appeared active in the UI.\\"",
                                     "status": "passed"
                                 }
@@ -280,9 +282,11 @@
                                 " 3. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
                                 "[TIMING NORMALIZED] Found 3 plugins to process\\n",
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
+                                "[TIMING NORMALIZED] Navigating to the activation link for \\"WooCommerce\\".\\n",
+                                "[TIMING NORMALIZED] Activated \\"WooCommerce\\" successfully.\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 2\\n"
                             ],
                             "stderr": [],
                             "extra": {
