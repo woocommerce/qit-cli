@@ -60,7 +60,7 @@ class EnvironmentRunner {
 		if ( isset( $env_json['environment'] ) && $env_json['environment'] === 'e2e' ) {
 			return \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo::from_array( $env_json );
 		}
-		
+
 		return EnvInfo::from_array( $env_json );
 	}
 }

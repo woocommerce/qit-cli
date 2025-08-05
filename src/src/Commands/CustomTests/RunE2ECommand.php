@@ -740,8 +740,8 @@ class RunE2ECommand extends QITCommand {
 							} catch ( \Throwable $collector_err ) {
 								// CTRF is mandatory for the run phase - if collection fails, the test is invalid
 								$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
-								$io->writeln( "<error>Test terminated abnormally - CTRF output is required</error>" );
-								throw new \RuntimeException( "Test failed to produce required CTRF output: " . $collector_err->getMessage() );
+								$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
+								throw new \RuntimeException( 'Test failed to produce required CTRF output: ' . $collector_err->getMessage() );
 							}
 						}
 						// Re-throw to maintain failure status
@@ -802,11 +802,11 @@ class RunE2ECommand extends QITCommand {
 			if ( file_exists( $final_html_report ) ) {
 				$io->writeln( "<info>HTML report → {$final_html_report}</info>" );
 				$io->writeln( "<info>Open in browser: file://{$final_html_report}</info>" );
-				
+
 				// Show how to open the report with a simple PHP server
 				$report_dir = dirname( $final_html_report );
 				$io->writeln( "<info>Or serve with: php -S localhost:8000 -t {$report_dir}</info>" );
-				$io->writeln( "<info>Then open: http://localhost:8000</info>" );
+				$io->writeln( '<info>Then open: http://localhost:8000</info>' );
 			}
 
 			// Summary

@@ -31,10 +31,10 @@ class UpEnvironmentCommand extends QITCommand {
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver ) {
-		$this->e2e_environment  = $e2e_environment;
+		$this->e2e_environment         = $e2e_environment;
 		$this->performance_environment = $performance_environment;
-		$this->tunnel_runner    = $tunnel_runner;
-		$this->version_resolver = $version_resolver;
+		$this->tunnel_runner           = $tunnel_runner;
+		$this->version_resolver        = $version_resolver;
 		parent::__construct();
 	}
 
@@ -137,7 +137,7 @@ class UpEnvironmentCommand extends QITCommand {
 
 		/* ─ 7. Bring the environment up ─ */
 		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
-		$environment = $this->get_environment( $environment_type );
+		$environment      = $this->get_environment( $environment_type );
 		$environment->init( $env_info );
 		$environment->up();
 
@@ -483,7 +483,7 @@ class UpEnvironmentCommand extends QITCommand {
 			$out->writeln( "WooCommerce: {$info->woo}" );
 		}
 		// Render extension tables using the dedicated ExtensionSummary class
-		$environment_type = $this->get_environment( $info->environment ?? 'e2e' );
+		$environment_type  = $this->get_environment( $info->environment ?? 'e2e' );
 		$extension_summary = new ExtensionSummary( $environment_type );
 		$extension_summary->render_extension_tables( $out, $info );
 		if ( $info->tunnel ) {

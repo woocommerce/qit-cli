@@ -165,7 +165,7 @@ class ResultCollector {
 		if ( is_dir( $host_src ) ) {
 			// Validate blob directory structure
 			$this->validate_blob_directory( $host_src );
-			
+
 			// Use Symfony Filesystem mirror instead of custom implementation
 			$fs = new Filesystem();
 			$fs->mirror( $host_src, $dst );
@@ -196,7 +196,7 @@ class ResultCollector {
 
 		// Check for required blob reporter files
 		$has_blob_files = false;
-		$files = scandir( $blob_dir );
+		$files          = scandir( $blob_dir );
 		foreach ( $files as $file ) {
 			// Playwright blob reporter creates .zip files with specific naming pattern
 			if ( preg_match( '/\.zip$/', $file ) ) {
@@ -275,15 +275,15 @@ class ResultCollector {
 			$cmd_parts[] = $input_dir;
 		}
 		$cmd_parts[] = '--reporter=html';
-		
+
 		$proc = new Process( $cmd_parts );
-		$proc->setEnv( [ 
-			'PLAYWRIGHT_HTML_REPORT' => $merged_dir,
-			'PW_TEST_HTML_REPORT_OPEN' => 'never'  // Don't auto-open the report
+		$proc->setEnv( [
+			'PLAYWRIGHT_HTML_REPORT'   => $merged_dir,
+			'PW_TEST_HTML_REPORT_OPEN' => 'never',  // Don't auto-open the report
 		] );
 		$proc->setTimeout( 600 ); // 10 minutes timeout
 		$proc->setWorkingDirectory( $artifacts_dir );
-		
+
 		$proc->run( function ( $type, $buf ) use ( $io ) {
 			if ( ! $io->isQuiet() ) {
 				$io->write( $buf );
