@@ -189,6 +189,8 @@ abstract class EnvInfo implements \JsonSerializable {
 			'no-interaction', // Symfony boilerplate
 			'env_file', // Handled separately
 			'extension_set', // Handled elsewhere
+			'plugins', // Already handled above and converted to Extension objects
+			'themes', // Already handled above and converted to Extension objects
 		];
 
 		foreach ( $env_info_array as $key => $value ) {
