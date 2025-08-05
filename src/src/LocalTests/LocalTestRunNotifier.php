@@ -345,7 +345,7 @@ class LocalTestRunNotifier {
 			! isset( $ctrf['results']['summary'] ) ||
 			! is_array( $ctrf['results']['summary'] )
 		) {
-			// If we can’t verify, we assume failed, to be safe.
+			// If we can't verify, we assume failed, to be safe.
 			return true;
 		}
 
@@ -359,7 +359,7 @@ class LocalTestRunNotifier {
 		}
 
 		$failed_count = (int) $ctrf['results']['summary']['failed'];
-		// 3. If the number of failed tests is > 0, it’s a fail.
+		// 3. If the number of failed tests is > 0, it's a fail.
 		if ( $failed_count > 0 ) {
 			return true;
 		}

@@ -7,6 +7,7 @@ use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Commands\Environment\ExtensionSummary;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,6 +21,8 @@ use function QIT_CLI\is_windows;
 class UpEnvironmentCommand extends QITCommand {
 	/** @var E2EEnvironment */
 	private E2EEnvironment $e2e_environment;
+	/** @var PerformanceEnvironment */
+	private PerformanceEnvironment $performance_environment;
 	/** @var TunnelRunner */
 	private TunnelRunner $tunnel_runner;
 	/** @var \QIT_CLI\PreCommand\Extensions\VersionResolver */
@@ -27,8 +30,9 @@ class UpEnvironmentCommand extends QITCommand {
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver ) {
+	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver ) {
 		$this->e2e_environment  = $e2e_environment;
+		$this->performance_environment = $performance_environment;
 		$this->tunnel_runner    = $tunnel_runner;
 		$this->version_resolver = $version_resolver;
 		parent::__construct();
@@ -49,6 +53,7 @@ class UpEnvironmentCommand extends QITCommand {
 				'Pick an <comment>environment block</comment> from qit.json (e.g. --environment=legacy)',
 				'default'
 			)
+			->addOption( 'environment_type', null, InputOption::VALUE_OPTIONAL, 'The type of environment to create. Valid values: "e2e", "performance".', 'e2e' )
 			/* ─ Runtime env‑vars ─ */
 			->addOption( 'env', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Set env var  --env KEY=VAL', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load vars from file  --env_file ./prod.env', [] )
@@ -131,8 +136,10 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/* ─ 7. Bring the environment up ─ */
-		$this->e2e_environment->init( $env_info );
-		$this->e2e_environment->up();
+		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
+		$environment = $this->get_environment( $environment_type );
+		$environment->init( $env_info );
+		$environment->up();
 
 		/* ─ 8. Print result ─ */
 		if ( $input->getOption( 'json' ) ) {
@@ -147,6 +154,19 @@ class UpEnvironmentCommand extends QITCommand {
 	/*******************************************************************
 	 * Helpers
 	 ******************************************************************/
+
+	/**
+	 * Get the appropriate environment instance based on the environment type.
+	 */
+	protected function get_environment( string $environment_type ): \QIT_CLI\Environment\Environments\Environment {
+		switch ( $environment_type ) {
+			case 'performance':
+				return $this->performance_environment;
+			case 'e2e':
+			default:
+				return $this->e2e_environment;
+		}
+	}
 
 	/**
 	 * Download extensions from the given environment configuration.
@@ -463,7 +483,8 @@ class UpEnvironmentCommand extends QITCommand {
 			$out->writeln( "WooCommerce: {$info->woo}" );
 		}
 		// Render extension tables using the dedicated ExtensionSummary class
-		$extension_summary = new ExtensionSummary( $this->e2e_environment );
+		$environment_type = $this->get_environment( $info->environment ?? 'e2e' );
+		$extension_summary = new ExtensionSummary( $environment_type );
 		$extension_summary->render_extension_tables( $out, $info );
 		if ( $info->tunnel ) {
 			$out->writeln( "Tunnel:      {$info->tunnel_type}" );
