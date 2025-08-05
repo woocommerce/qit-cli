@@ -130,6 +130,29 @@ class PackagePhaseRunner {
 	}
 
 	/**
+	 * Get timeout for a specific phase
+	 *
+	 * @param string $phase The phase name (globalSetup, setup, run, teardown, globalTeardown)
+	 * @return int Timeout in seconds
+	 */
+	private function get_timeout_for_phase( string $phase ): int {
+		switch ( $phase ) {
+			case 'run':
+				// Test execution phase - 30 minutes
+				return 1800;
+			case 'globalSetup':
+			case 'setup':
+			case 'teardown':
+			case 'globalTeardown':
+				// Setup/teardown phases - 5 minutes
+				return 300;
+			default:
+				// Default fallback - 5 minutes
+				return 300;
+		}
+	}
+
+	/**
 	 * Execute a command inside Docker container
 	 *
 	 * @param string                $cmd Command to execute.

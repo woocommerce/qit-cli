@@ -277,7 +277,10 @@ class ResultCollector {
 		$cmd_parts[] = '--reporter=html';
 		
 		$proc = new Process( $cmd_parts );
-		$proc->setEnv( [ 'PLAYWRIGHT_HTML_REPORT' => $merged_dir ] );
+		$proc->setEnv( [ 
+			'PLAYWRIGHT_HTML_REPORT' => $merged_dir,
+			'PW_TEST_HTML_REPORT_OPEN' => 'never'  // Don't auto-open the report
+		] );
 		$proc->setTimeout( 600 ); // 10 minutes timeout
 		$proc->setWorkingDirectory( $artifacts_dir );
 		
