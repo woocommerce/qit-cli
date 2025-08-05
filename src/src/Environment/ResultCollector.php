@@ -300,22 +300,8 @@ class ResultCollector {
 	public function merge_ctrf( string $artifacts_dir, SymfonyStyle $io ): void {
 		$ctrf_dir = $artifacts_dir . '/ctrf';
 
-		$debug_msg = "DEBUG: merge_ctrf called with artifacts_dir: $artifacts_dir, ctrf_dir: $ctrf_dir";
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
-
-		$debug_msg = 'DEBUG: ctrf_dir exists: ' . ( is_dir( $ctrf_dir ) ? 'YES' : 'NO' );
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
-
-		if ( is_dir( $ctrf_dir ) ) {
-			$files     = glob( $ctrf_dir . '/*.json' );
-			$debug_msg = 'DEBUG: Found ' . count( $files ) . ' JSON files in ctrf_dir: ' . implode( ', ', $files );
-			file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
-		}
-
 		// Skip if no CTRF files
 		if ( ! is_dir( $ctrf_dir ) || empty( glob( $ctrf_dir . '/*.json' ) ) ) {
-			$debug_msg = 'DEBUG: Skipping CTRF merge - no directory or no files';
-			file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 			return;
 		}
 

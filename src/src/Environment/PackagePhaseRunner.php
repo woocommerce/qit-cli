@@ -219,19 +219,11 @@ class PackagePhaseRunner {
 		array $script_execution,
 		?string $artifacts_dir = null
 	): void {
-		$debug_msg = "DEBUG: generate_individual_bash_script_ctrf called for phase: $phase, script: " . $script_execution['script'];
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
-
 		// Get CTRF file path from manifest
 		$test_results = $manifest->getTestResults();
 		$ctrf_path    = $test_results['ctrf-json'] ?? null;
 
-		$debug_msg = 'DEBUG: CTRF path from manifest: ' . ( $ctrf_path ?? 'null' );
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
-
 		if ( ! $ctrf_path ) {
-			$debug_msg = 'DEBUG: No CTRF configuration, returning early';
-			file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 			return; // No CTRF configuration
 		}
 
@@ -249,8 +241,6 @@ class PackagePhaseRunner {
 			$individual_ctrf_path = $ctrf_dir . '/' . $unique_filename;
 		}
 
-		$debug_msg = "DEBUG: Individual CTRF path: $individual_ctrf_path (artifacts_dir: " . ( $artifacts_dir ?? 'null' ) . ')';
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
 
 		// Ensure directory exists
 		if ( ! is_dir( $ctrf_dir ) ) {
@@ -298,20 +288,7 @@ class PackagePhaseRunner {
 		];
 
 		// Save individual CTRF file
-		$debug_msg = "DEBUG: About to write CTRF file to: $individual_ctrf_path";
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
-
-		$result = file_put_contents( $individual_ctrf_path, json_encode( $ctrf_data, JSON_PRETTY_PRINT ) );
-
-		$debug_msg = 'DEBUG: File write result: ' . ( $result !== false ? "SUCCESS ($result bytes)" : 'FAILED' );
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
-
-		if ( file_exists( $individual_ctrf_path ) ) {
-			$debug_msg = 'DEBUG: File exists after write: YES';
-		} else {
-			$debug_msg = 'DEBUG: File exists after write: NO';
-		}
-		file_put_contents( '/tmp/qit_debug.log', $debug_msg . "\n", FILE_APPEND );
+		file_put_contents( $individual_ctrf_path, json_encode( $ctrf_data, JSON_PRETTY_PRINT ) );
 	}
 
 	/**
