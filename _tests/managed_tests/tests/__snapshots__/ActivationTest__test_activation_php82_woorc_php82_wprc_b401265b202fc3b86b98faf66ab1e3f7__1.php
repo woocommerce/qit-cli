@@ -188,7 +188,8 @@
                                         "description": "Running bash script for plugin: woocommerce"
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Activate Plugins",
@@ -234,7 +235,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Visit wp-admin pages added by the plugin",
@@ -255,7 +257,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Activate Theme",
@@ -276,7 +279,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Setup Local Pickup",
@@ -297,7 +301,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Set up Cash On Delivery Payment Method",
@@ -322,7 +327,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Create a Product",
@@ -343,7 +349,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Create a Simple Order",
@@ -373,7 +380,8 @@
                                         }
                                     }
                                 ]
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Add Product Cart",
@@ -394,7 +402,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Can Place Order",
@@ -415,7 +424,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Deactivate Plugin",
@@ -436,7 +446,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         },
                         {
                             "name": "Activate Other Theme",
@@ -457,7 +468,8 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": []
                         }
                     ]
                 }
