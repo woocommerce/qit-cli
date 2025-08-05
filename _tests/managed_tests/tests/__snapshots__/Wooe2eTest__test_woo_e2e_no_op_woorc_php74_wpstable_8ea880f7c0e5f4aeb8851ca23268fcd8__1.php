@@ -8542,7 +8542,7 @@
                             "retryAttempts": [
                                 {
                                     "status": "failed",
-                                    "duration": 22924,
+                                    "duration": 22856,
                                     "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n",
                                     "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: getByRole(\'menuitem\', { name: \'Physical product\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Physical product\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/add-product-task.spec.js:98:5",
                                     "snippet": "\\u001b[0m \\u001b[90m  96 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m  97 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Physical product\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m  98 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m  99 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 100 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Variable product\'\\u001b[39m } )\\n \\u001b[90m 101 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m"
@@ -10045,14 +10045,6 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
                                             "line": 44,
                                             "column": 16
                                         }
@@ -10085,8 +10077,8 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "line": 62,
+                                            "column": 16
                                         }
                                     }
                                 ]
@@ -10117,8 +10109,8 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "line": 62,
+                                            "column": 16
                                         }
                                     }
                                 ]
@@ -10149,8 +10141,8 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "line": 62,
+                                            "column": 16
                                         }
                                     }
                                 ]
@@ -10344,6 +10336,14 @@
                                             "line": 20,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 44,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             }
@@ -10407,6 +10407,14 @@
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
                                             "line": 20,
                                             "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 77,
+                                            "column": 8
                                         }
                                     }
                                 ]
@@ -13853,7 +13861,16 @@
                             ],
                             "extra": {
                                 "annotations": []
-                            }
+                            },
+                            "retryAttempts": [
+                                {
+                                    "status": "failed",
+                                    "duration": 23027,
+                                    "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#submit\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <button disabled id=\\"submit\\" type=\\"submit\\" name=\\"submit\\" value=\\"Save changes\\" class=\\"button-primary button-large wc-shipping-zone-method-save components-button is-primary\\">Save changes<\\/button>\\u001b[22m\\n\\u001b[2m  - attempting click action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible, enabled and stable\\u001b[22m\\n\\u001b[2m      - element is not enabled\\u001b[22m\\n\\u001b[2m    - retrying click action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible, enabled and stable\\u001b[22m\\n\\u001b[2m      - element is not enabled\\u001b[22m\\n\\u001b[2m    - retrying click action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible, enabled and stable\\u001b[22m\\n\\u001b[2m       - element is not enabled\\u001b[22m\\n\\u001b[2m     - retrying click action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
+                                    "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#submit\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <button disabled id=\\"submit\\" type=\\"submit\\" name=\\"submit\\" value=\\"Save changes\\" class=\\"button-primary button-large wc-shipping-zone-method-save components-button is-primary\\">Save changes<\\/button>\\u001b[22m\\n\\u001b[2m  - attempting click action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible, enabled and stable\\u001b[22m\\n\\u001b[2m      - element is not enabled\\u001b[22m\\n\\u001b[2m    - retrying click action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible, enabled and stable\\u001b[22m\\n\\u001b[2m      - element is not enabled\\u001b[22m\\n\\u001b[2m    - retrying click action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible, enabled and stable\\u001b[22m\\n\\u001b[2m       - element is not enabled\\u001b[22m\\n\\u001b[2m     - retrying click action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/shipping\\/shipping-zones.spec.js:70:34",
+                                    "snippet": "\\u001b[0m \\u001b[90m 68 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Remove\'\\u001b[39m } )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 69 |\\u001b[39m \\t\\u001b[90m\\/\\/save changes\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 70 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#submit\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                                \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 71 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mwaitForFunction( () \\u001b[33m=>\\u001b[39m {\\n \\u001b[90m 72 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m button \\u001b[33m=\\u001b[39m document\\u001b[33m.\\u001b[39mquerySelector( \\u001b[32m\'#submit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 73 |\\u001b[39m \\t\\t\\u001b[36mreturn\\u001b[39m button \\u001b[33m&&\\u001b[39m button\\u001b[33m.\\u001b[39mdisabled\\u001b[33m;\\u001b[39m\\u001b[0m"
+                                }
+                            ]
                         },
                         {
                             "name": "can delete the shipping zone method",
