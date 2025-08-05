@@ -264,6 +264,7 @@ BASH;
 				'results' => [
 					'ctrf-json'  => './results/ctrf.json',
 					'allure-dir' => './results/allure',
+					'blob-dir'   => './results/blob',
 				],
 			],
 		];
@@ -394,6 +395,9 @@ export default defineConfig({
     }],
     ['allure-playwright', {
       resultsDir: './results/allure',
+    }],
+    ['blob', {
+      outputDir: './results/blob',
     }],
   ],
   use: {

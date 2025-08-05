@@ -138,6 +138,10 @@
             "allure-dir": {
               "type": "string",
               "description": "Relative path for Allure directory result artefact"
+            },
+            "blob-dir": {
+              "type": "string",
+              "description": "Relative path for Playwright blob reporter output directory"
             }
           },
           "required": ["ctrf-json"],

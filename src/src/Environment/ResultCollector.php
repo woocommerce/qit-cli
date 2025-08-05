@@ -47,6 +47,9 @@ class ResultCollector {
 
 		// --------- 2️⃣  collect Allure (never mandatory) ----------------------
 		$this->collect_allure( $env, $slug, $mf, $dir );
+
+		// --------- 3️⃣  collect Blob (never mandatory) ------------------------
+		$this->collect_blob( $env, $slug, $mf, $dir );
 	}
 
 	private function collect_ctrf(
@@ -137,6 +140,75 @@ class ResultCollector {
 		}
 	}
 
+	private function collect_blob(
+		E2EEnvInfo $env,
+		string $slug,
+		TestPackageManifest $mf,
+		string $dir
+	): void {
+
+		$rel = $mf->getTestResults()['blob-dir'] ?? null;
+		if ( ! $rel ) {
+			return;
+		}                     // no declaration → skip
+
+		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
+		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
+
+		$dst      = $dir . '/blob/' . basename( $slug );
+		$dir_path = dirname( $dst );
+		if ( ! is_dir( $dir_path ) ) {
+			mkdir( $dir_path, 0755, true );
+		}
+
+		/* host first */
+		if ( is_dir( $host_src ) ) {
+			// Validate blob directory structure
+			$this->validate_blob_directory( $host_src );
+			
+			// Use Symfony Filesystem mirror instead of custom implementation
+			$fs = new Filesystem();
+			$fs->mirror( $host_src, $dst );
+
+			return;
+		}
+
+		/* container fallback */
+		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . trim( $rel, '/' );
+		try {
+			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
+			// Validate after copying from container
+			$this->validate_blob_directory( $dst );
+		} catch ( \RuntimeException $e ) {
+			// Never mandatory for blob collection - silently ignore failures
+			unset( $e ); // Explicitly acknowledge the exception is not used
+		}
+	}
+
+
+	/**
+	 * Validate blob directory structure
+	 */
+	private function validate_blob_directory( string $blob_dir ): void {
+		if ( ! is_dir( $blob_dir ) ) {
+			throw new RuntimeException( "Blob directory does not exist: $blob_dir" );
+		}
+
+		// Check for required blob reporter files
+		$has_blob_files = false;
+		$files = scandir( $blob_dir );
+		foreach ( $files as $file ) {
+			// Playwright blob reporter creates .zip files with specific naming pattern
+			if ( preg_match( '/\.zip$/', $file ) ) {
+				$has_blob_files = true;
+				break;
+			}
+		}
+
+		if ( ! $has_blob_files ) {
+			throw new RuntimeException( "No blob reporter files found in directory: $blob_dir. Expected .zip files from Playwright blob reporter." );
+		}
+	}
 
 	/**
 	 * Tag CTRF file with package metadata (host version)
@@ -159,6 +231,67 @@ class ResultCollector {
 			}
 			file_put_contents( $ctrf_path, json_encode( $data, JSON_PRETTY_PRINT ) );
 		}
+	}
+
+	public function merge_blob( string $artifacts_dir, SymfonyStyle $io ): void {
+		$blob_dir = $artifacts_dir . '/blob';
+
+		// Skip if no blob directories
+		if ( ! is_dir( $blob_dir ) || empty( glob( $blob_dir . '/*', GLOB_ONLYDIR ) ) ) {
+			return;
+		}
+
+		// Ensure playwright is available via npx
+		$npx_path = shell_exec( 'which npx' );
+		if ( empty( $npx_path ) ) {
+			throw new RuntimeException( 'npx not found. Please ensure Node.js and npm are installed.' );
+		}
+
+		$io->text( 'Merging blob reports into HTML...' );
+
+		// Create a temporary directory for merged output
+		$merged_dir = $artifacts_dir . '/final/html-report';
+		if ( ! is_dir( $merged_dir ) ) {
+			mkdir( $merged_dir, 0755, true );
+		}
+
+		// Collect all blob directories from different packages
+		$blob_inputs = [];
+		foreach ( glob( $blob_dir . '/*', GLOB_ONLYDIR ) as $package_blob_dir ) {
+			// Check if it contains blob files
+			if ( ! empty( glob( $package_blob_dir . '/*.zip' ) ) ) {
+				$blob_inputs[] = $package_blob_dir;
+			}
+		}
+
+		if ( empty( $blob_inputs ) ) {
+			$io->text( 'No blob reports found to merge.' );
+			return;
+		}
+
+		// Build the merge command
+		$cmd_parts = [ 'npx', 'playwright', 'merge-reports' ];
+		foreach ( $blob_inputs as $input_dir ) {
+			$cmd_parts[] = $input_dir;
+		}
+		$cmd_parts[] = '--reporter=html';
+		
+		$proc = new Process( $cmd_parts );
+		$proc->setEnv( [ 'PLAYWRIGHT_HTML_REPORT' => $merged_dir ] );
+		$proc->setTimeout( 600 ); // 10 minutes timeout
+		$proc->setWorkingDirectory( $artifacts_dir );
+		
+		$proc->run( function ( $type, $buf ) use ( $io ) {
+			if ( ! $io->isQuiet() ) {
+				$io->write( $buf );
+			}
+		} );
+
+		if ( ! $proc->isSuccessful() ) {
+			throw new RuntimeException( 'Blob merge failed: ' . $proc->getErrorOutput() );
+		}
+
+		$io->success( "HTML report generated at: $merged_dir/index.html" );
 	}
 
 	public function merge_ctrf( string $artifacts_dir, SymfonyStyle $io ): void {

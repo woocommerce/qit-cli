@@ -772,6 +772,9 @@ class RunE2ECommand extends QITCommand {
 			// Merge CTRF artifacts
 			$this->result_collector->merge_ctrf( $artifacts_dir, $io );
 
+			// Merge blob reports into HTML
+			$this->result_collector->merge_blob( $artifacts_dir, $io );
+
 			// Try to save Allure reports to final location
 			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io );
 
@@ -789,6 +792,18 @@ class RunE2ECommand extends QITCommand {
 			}
 			if ( file_exists( $final_ctrf_path ) ) {
 				$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
+			}
+
+			// Check for merged HTML report
+			$final_html_report = $artifacts_dir . '/final/html-report/index.html';
+			if ( file_exists( $final_html_report ) ) {
+				$io->writeln( "<info>HTML report → {$final_html_report}</info>" );
+				$io->writeln( "<info>Open in browser: file://{$final_html_report}</info>" );
+				
+				// Show how to open the report with a simple PHP server
+				$report_dir = dirname( $final_html_report );
+				$io->writeln( "<info>Or serve with: php -S localhost:8000 -t {$report_dir}</info>" );
+				$io->writeln( "<info>Then open: http://localhost:8000</info>" );
 			}
 
 			// Summary
