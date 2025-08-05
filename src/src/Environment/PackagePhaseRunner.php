@@ -132,7 +132,7 @@ class PackagePhaseRunner {
 	/**
 	 * Get timeout for a specific phase
 	 *
-	 * @param string $phase The phase name (globalSetup, setup, run, teardown, globalTeardown)
+	 * @param string $phase The phase name (globalSetup, setup, run, teardown, globalTeardown).
 	 * @return int Timeout in seconds
 	 */
 	private function get_timeout_for_phase( string $phase ): int {
@@ -240,7 +240,6 @@ class PackagePhaseRunner {
 			$ctrf_dir             = dirname( $package_path . '/' . ltrim( $ctrf_path, './' ) );
 			$individual_ctrf_path = $ctrf_dir . '/' . $unique_filename;
 		}
-
 
 		// Ensure directory exists
 		if ( ! is_dir( $ctrf_dir ) ) {

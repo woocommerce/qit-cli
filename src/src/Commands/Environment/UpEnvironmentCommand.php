@@ -7,7 +7,9 @@ use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Commands\Environment\ExtensionSummary;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -474,18 +476,28 @@ class UpEnvironmentCommand extends QITCommand {
 	/**
 	 * Nicely formatted human output.
 	 */
-	private function renderHumanSummary( OutputInterface $out, E2EEnvInfo $info ): void {
+	private function renderHumanSummary( OutputInterface $out, EnvInfo $info ): void {
 		$out->writeln( '<info>Environment started ✔</info>' );
 		$out->writeln( "ID:          <comment>{$info->env_id}</comment>" );
-		$out->writeln( "PHP:         {$info->php}" );
-		$out->writeln( "WordPress:   {$info->wp}" );
-		if ( $info->woo ) {
-			$out->writeln( "WooCommerce: {$info->woo}" );
+
+		// Handle properties that exist on E2EEnvInfo
+		if ( $info instanceof E2EEnvInfo ) {
+			$out->writeln( "PHP:         {$info->php}" );
+			$out->writeln( "WordPress:   {$info->wp}" );
+			if ( property_exists( $info, 'woo' ) && $info->woo ) {
+				$out->writeln( "WooCommerce: {$info->woo}" );
+			}
+			// Render extension tables using the dedicated ExtensionSummary class
+			$extension_summary = new ExtensionSummary( $this->e2e_environment );
+			$extension_summary->render_extension_tables( $out, $info );
+		} elseif ( $info instanceof PerformanceEnvInfo ) {
+			$out->writeln( "PHP:         {$info->php_version}" );
+			$out->writeln( "WordPress:   {$info->wp}" );
+			if ( property_exists( $info, 'woo' ) && $info->woo ) {
+				$out->writeln( "WooCommerce: {$info->woo}" );
+			}
 		}
-		// Render extension tables using the dedicated ExtensionSummary class
-		$environment_type  = $this->get_environment( $info->environment ?? 'e2e' );
-		$extension_summary = new ExtensionSummary( $environment_type );
-		$extension_summary->render_extension_tables( $out, $info );
+
 		if ( $info->tunnel ) {
 			$out->writeln( "Tunnel:      {$info->tunnel_type}" );
 		}

@@ -6,7 +6,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 
 class PerformanceEnvInfo extends EnvInfo {
 	/** @var string */
-	public $environment = 'performance';
+	public string $environment = 'performance';
 
 	/** @var string */
 	public $wp = '';

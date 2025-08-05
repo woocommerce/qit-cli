@@ -242,7 +242,7 @@ class ResultCollector {
 		}
 
 		// Ensure playwright is available via npx
-		$npx_path = shell_exec( 'which npx' );
+		$npx_path = shell_exec( 'which npx' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 		if ( empty( $npx_path ) ) {
 			throw new RuntimeException( 'npx not found. Please ensure Node.js and npm are installed.' );
 		}

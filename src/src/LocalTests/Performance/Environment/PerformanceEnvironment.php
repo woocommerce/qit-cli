@@ -17,6 +17,11 @@ class PerformanceEnvironment extends Environment {
 	/** @var string */
 	protected $description = 'Performance Test Environment';
 
+	/**
+	 * @var PerformanceEnvInfo
+	 */
+	protected \QIT_CLI\Environment\Environments\EnvInfo $env_info;
+
 	/** @var bool */
 	protected $skip_activating_plugins = false;
 
@@ -91,11 +96,8 @@ class PerformanceEnvironment extends Environment {
 		$this->copy_environment();
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
-		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
-			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
-		}
-
-		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+		// Extensions will be installed by parent class up() method
+		// Skip manual installation here since install_extensions() is private
 
 		if ( $type === 'up_and_test' ) {
 			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes, 'performance' );
