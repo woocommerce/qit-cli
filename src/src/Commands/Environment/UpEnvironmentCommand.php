@@ -11,6 +11,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\PreCommand\Objects\Extension;
+use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -79,7 +80,7 @@ class UpEnvironmentCommand extends QITCommand {
 	/*******************************************************************
 	 * Execution
 	 ******************************************************************/
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		/** @var \QIT_CLI\QITInput $input */
 
 		/* ─ Safety guard ─ */

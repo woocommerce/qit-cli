@@ -2,14 +2,10 @@
 
 namespace QIT_CLI\PreCommand\Extensions;
 
-use QIT_CLI\App;
-use QIT_CLI\Cache;
 use QIT_CLI\PreCommand\Objects\Extension;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;
 use function QIT_CLI\debug_log;
-use function QIT_CLI\debug_dump;
 
 /**
  * Main extension resolver that orchestrates the resolution process.

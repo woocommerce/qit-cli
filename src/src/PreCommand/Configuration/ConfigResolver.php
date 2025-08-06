@@ -322,6 +322,7 @@ class ConfigResolver {
 		}
 
 		// Process plugins from environments
+		// @phan-suppress-next-line PhanTypeSuspiciousNonTraversableForeach - False positive
 		foreach ( $config['environments'] as $env_name => $env ) {
 			if ( isset( $env['plugins'] ) && is_array( $env['plugins'] ) ) {
 				foreach ( $env['plugins'] as $plugin_config ) {

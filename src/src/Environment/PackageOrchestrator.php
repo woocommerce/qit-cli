@@ -225,7 +225,7 @@ class PackageOrchestrator {
 	/**
 	 * End current package
 	 */
-	public function package_end( bool $success = true, bool $has_more_packages = false ): void {
+	public function package_end(): void {
 		$out = $this->package_section ?? $this->output;
 
 		// Increment completed count

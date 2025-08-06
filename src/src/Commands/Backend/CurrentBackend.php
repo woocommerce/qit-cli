@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands\Backend;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Config;
-use Symfony\Component\Console\Input\InputInterface;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class CurrentBackend extends QITCommand {
@@ -16,7 +16,7 @@ class CurrentBackend extends QITCommand {
 			->setDescription( 'Prints the current environment.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$output->writeln( Config::get_current_manager_backend() );
 
 		return self::SUCCESS;

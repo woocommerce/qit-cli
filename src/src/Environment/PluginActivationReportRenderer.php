@@ -3,7 +3,6 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\Environment\Environments\EnvInfo;
-use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PluginActivationReportRenderer {

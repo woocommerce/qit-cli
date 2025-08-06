@@ -8,7 +8,6 @@ use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\WPORGExtensionsList;
-use QIT_CLI\IO\Output;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 

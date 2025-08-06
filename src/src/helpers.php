@@ -7,7 +7,6 @@ use Symfony\Component\Console\Input\ArgvInput;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Console\Output\OutputInterface;
 
 function is_windows(): bool {
 	if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {

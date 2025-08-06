@@ -8,7 +8,7 @@ abstract class DynamicCommand extends QITCommand {
 	/** @var array<mixed> $options_to_send */
 	protected $options_to_send = [];
 
-	public function __construct( string $test_type = null ) {
+	public function __construct( ?string $test_type = null ) {
 		// Set test_type before calling parent constructor
 		if ( $test_type !== null ) {
 			$this->test_type = $test_type;

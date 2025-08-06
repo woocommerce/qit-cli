@@ -4,10 +4,9 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
-use Symfony\Component\Console\Input\InputInterface;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\is_windows;
 
 /**
@@ -39,7 +38,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 	/******************************************************************
 	 * Execution
 	 *****************************************************************/
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		/** @var \QIT_CLI\QITInput $input */
 
 		/* ─ special path for unit‑tests that only inspect config parsing ─ */

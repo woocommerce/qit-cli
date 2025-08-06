@@ -41,7 +41,6 @@ use QIT_CLI\Commands\TestPackages\PackageDownloadCommand;
 use QIT_CLI\Commands\TestPackages\PackageListCommand;
 use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
 use QIT_CLI\Commands\TestPackages\PackagePublishCommand;
-use QIT_CLI\Commands\TestE2ECommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;

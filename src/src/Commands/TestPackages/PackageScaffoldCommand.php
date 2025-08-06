@@ -6,10 +6,10 @@
 namespace QIT_CLI\Commands\TestPackages;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\QITInput;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -84,14 +84,14 @@ class PackageScaffoldCommand extends QITCommand {
 			);
 	}
 
-	protected function doExecute( InputInterface $in, OutputInterface $out ): int {
-		$io           = new SymfonyStyle( $in, $out );
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		$io           = new SymfonyStyle( $input, $output );
 		$fs           = new Filesystem();
-		$target_dir   = normalize_path( $in->getArgument( 'target_dir' ) );
-		$namespace    = (string) $in->getOption( 'namespace' );
-		$package_name = (string) $in->getOption( 'package' );
-		$framework    = strtolower( (string) $in->getOption( 'framework' ) );
-		$test_type    = strtolower( (string) $in->getOption( 'test-type' ) );
+		$target_dir   = normalize_path( $input->getArgument( 'target_dir' ) );
+		$namespace    = (string) $input->getOption( 'namespace' );
+		$package_name = (string) $input->getOption( 'package' );
+		$framework    = strtolower( (string) $input->getOption( 'framework' ) );
+		$test_type    = strtolower( (string) $input->getOption( 'test-type' ) );
 
 		/*
 		---------------------------------------------------------------------
@@ -141,7 +141,7 @@ class PackageScaffoldCommand extends QITCommand {
 			$q->setValidator( function ( $answer ) {
 				return $this->validate_namespace( $answer );
 			} );
-			$namespace = (string) $helper->ask( $in, $out, $q );
+			$namespace = (string) $helper->ask( $input, $output, $q );
 		} else {
 			$this->validate_namespace( $namespace ); // throws on failure
 		}
@@ -163,7 +163,7 @@ class PackageScaffoldCommand extends QITCommand {
 			$q->setValidator( function ( $a ) {
 				return $this->validate_slug( $a, 'Package name' );
 			} );
-			$package_name = (string) $helper->ask( $in, $out, $q );
+			$package_name = (string) $helper->ask( $input, $output, $q );
 		} else {
 			$this->validate_slug( $package_name, 'Package name' );
 		}
@@ -284,7 +284,7 @@ BASH;
 			return Command::FAILURE;
 		}
 
-		if ( $in->getOption( 'only-manifest' ) ) {
+		if ( $input->getOption( 'only-manifest' ) ) {
 			$io->success( 'manifest.json created at ' . $target_dir . '/manifest.json' );
 
 			return Command::SUCCESS;
@@ -300,7 +300,7 @@ BASH;
 			$this->write_package_json( $target_dir );
 			$this->write_playwright_config( $target_dir );
 			$this->write_sample_test( $target_dir );
-			$this->install_dev_dependencies( $target_dir, $out );
+			$this->install_dev_dependencies( $target_dir, $output );
 		} catch ( \Throwable $e ) {
 			$fs->remove( $target_dir );
 			$io->error( $e->getMessage() );

@@ -8,6 +8,7 @@ use QIT_CLI\PreCommand\Extensions\ExtensionResolver;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;
 use QIT_CLI\PreCommand\Extensions\ResolvedExtensions;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -571,10 +572,10 @@ abstract class QITCommand extends Command {
 	/**
 	 * Execute the command.
 	 *
-	 * @param InputInterface  $input The input (will be QITInput when called from execute()).
+	 * @param QITInput        $input The input (will be QITInput when called from execute()).
 	 * @param OutputInterface $output The output.
 	 *
 	 * @return int
 	 */
-	abstract protected function doExecute( InputInterface $input, OutputInterface $output ): int;
+	abstract protected function doExecute( QITInput $input, OutputInterface $output ): int;
 }

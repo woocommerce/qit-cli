@@ -5,12 +5,11 @@ namespace QIT_CLI\Commands\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\EnvironmentSelectorTrait;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -37,7 +36,7 @@ class ListEnvironmentCommand extends QITCommand {
 			->addOption( 'field', 'f', InputOption::VALUE_OPTIONAL, 'Show just a specific field.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$io      = new SymfonyStyle( $input, $output );
 		$running = $this->environment_monitor->get();
 		$env_id  = $input->getArgument( 'env_id' );
@@ -82,6 +81,7 @@ class ListEnvironmentCommand extends QITCommand {
 		// Find the longest header name (we do exactly like your original code)
 		foreach ( $running as $environment ) {
 			// @phpstan-ignore-next-line
+			// @phan-suppress-next-line PhanTypeSuspiciousNonTraversableForeach - EnvInfo properties are accessible
 			foreach ( $environment as $k => $v ) {
 				if ( strlen( $k ) > $longest_header ) {
 					$longest_header = strlen( $k );
@@ -94,6 +94,7 @@ class ListEnvironmentCommand extends QITCommand {
 			$elapsed = format_elapsed_time( time() - $environment->created_at );
 
 			// @phpstan-ignore-next-line
+			// @phan-suppress-next-line PhanTypeSuspiciousNonTraversableForeach - EnvInfo properties are accessible
 			foreach ( $environment as $k => $v ) {
 				if ( $k === 'created_at' ) {
 					$v = $elapsed;

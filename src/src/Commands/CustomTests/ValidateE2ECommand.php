@@ -3,9 +3,9 @@
 namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\QITInput;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Yaml\Yaml;
 
@@ -20,7 +20,7 @@ class ValidateE2ECommand extends QITCommand {
 			->addArgument( 'directory', InputArgument::REQUIRED, 'The test directory to validate' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$directory = rtrim( $input->getArgument( 'directory' ), '/' );
 
 		$checks = [];

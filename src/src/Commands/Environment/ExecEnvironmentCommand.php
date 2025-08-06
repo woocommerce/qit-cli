@@ -8,9 +8,9 @@ use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvParser;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -49,7 +49,7 @@ class ExecEnvironmentCommand extends QITCommand {
 			->addOption( 'image', null, InputOption::VALUE_OPTIONAL, 'The Docker image to use', 'php' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {

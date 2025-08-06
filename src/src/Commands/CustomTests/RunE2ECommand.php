@@ -12,7 +12,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo; // @phan-suppress-current-line PhanUnreferencedUseNormal - Used in PHPDoc
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
 use QIT_CLI\Environment\ResultCollector;
@@ -20,6 +20,7 @@ use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\OptionReuseTrait;
+use QIT_CLI\QITInput;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -28,7 +29,6 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
-use function QIT_CLI\is_option_explicitly_provided;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends QITCommand {
@@ -152,8 +152,15 @@ class RunE2ECommand extends QITCommand {
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		/** @var \QIT_CLI\QITInput $input */
+	/**
+	 * Execute the command.
+	 *
+	 * @param QITInput        $input
+	 * @param OutputInterface $output
+	 *
+	 * @return int
+	 */
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 
 		/* ─ Platform guard ─ */
 		if ( is_windows() ) {
@@ -933,6 +940,7 @@ class RunE2ECommand extends QITCommand {
 					if ( ! isset( $env_info->test_packages_metadata[ $pkg_id ]['manifest'] ) ) {
 						throw new \RuntimeException( "Manifest not loaded for package {$pkg_id}" );
 					}
+					// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset - We check it exists above
 					$manifest = $env_info->test_packages_metadata[ $pkg_id ]['manifest'];
 
 					// Clean previous test results before running
@@ -1002,9 +1010,8 @@ class RunE2ECommand extends QITCommand {
 					$total_executed += $package_total;
 
 					// Command count is tracked internally, no need to display here
-					// End package in orchestrator - check if there are more packages
-					$has_more_packages = $package_index < count( $test_packages );
-					$orchestrator->package_end( true, $has_more_packages );
+					// End package in orchestrator
+					$orchestrator->package_end();
 
 					// Mark that we've processed the first package
 					$is_first_package = false;
@@ -1014,9 +1021,8 @@ class RunE2ECommand extends QITCommand {
 					// Just track the failed package using its display name
 					$failed_packages[] = $package_display_names[ $pkg_id ] ?? $pkg_id;
 
-					// End package with failure status - check if there are more packages
-					$has_more_packages = $package_index < count( $test_packages );
-					$orchestrator->package_end( false, $has_more_packages );
+					// End package with failure status
+					$orchestrator->package_end();
 
 					// Still mark as processed to maintain the sequence for subsequent packages
 					$is_first_package = false;

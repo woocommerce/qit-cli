@@ -5,10 +5,10 @@ namespace QIT_CLI\Commands\Partner;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\ManagerBackend;
+use QIT_CLI\QITInput;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
@@ -43,7 +43,7 @@ class AddPartner extends QITCommand {
 			->addOption( 'application_password', 'p', InputOption::VALUE_OPTIONAL, '(DEPRECATED) This has been renamed to "QIT Token" and will be removed. A regular application password will not work.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		// User.
 		if ( ! empty( $input->getOption( 'user' ) ) ) {
 			$user = $input->getOption( 'user' );

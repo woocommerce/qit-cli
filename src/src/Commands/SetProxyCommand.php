@@ -3,8 +3,8 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Config;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
@@ -19,7 +19,7 @@ class SetProxyCommand extends QITCommand {
 			->addArgument( 'proxy_url', InputArgument::OPTIONAL, 'The URL to use to connect to the proxy.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		if ( empty( $input->getArgument( 'proxy_url' ) ) ) {
 			if ( ! $this->getHelper( 'question' )->ask( $input, $output, new ConfirmationQuestion( '<question>The proxy comes pre-configured with default values (127.0.0.1:8080). Are you sure you want to change the URL we use to connect to the local Automattic Proxy? (y/n)</question>', false ) ) ) {
 				$output->writeln( 'Operation cancelled.' );

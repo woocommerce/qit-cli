@@ -7,6 +7,7 @@ use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Upload;
@@ -112,9 +113,13 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 			/**
 			 * Main execution
+			 *
+			 * @param QITInput        $input
+			 * @param OutputInterface $output
+			 *
+			 * @return int
 			 */
-			public function doExecute( InputInterface $input, OutputInterface $output ): int {
-				/** @var \QIT_CLI\QITInput $input */
+			public function doExecute( QITInput $input, OutputInterface $output ): int {
 
 				/****************************************************************
 				 * 1.  Base configuration comes from qit.json profile

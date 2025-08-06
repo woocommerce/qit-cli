@@ -4,10 +4,10 @@ namespace QIT_CLI\Commands\CustomTests;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Process\Process;
@@ -32,7 +32,7 @@ class ShowReportCommand extends QITCommand {
 			->setDescription( 'Shows a test report.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		// Determine the report directories.
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
 			$local_report  = $input->getArgument( 'report_dir' );

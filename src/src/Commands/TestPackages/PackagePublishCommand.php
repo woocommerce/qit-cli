@@ -3,18 +3,15 @@
 namespace QIT_CLI\Commands\TestPackages;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Config;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
+use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\get_manager_url;
 
@@ -49,7 +46,7 @@ class PackagePublishCommand extends QITCommand {
 			->addOption( 'skip-validate', null, InputOption::VALUE_NONE, 'Skip manifest validation' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$io            = new SymfonyStyle( $input, $output );
 		$path          = $input->getArgument( 'path' );
 		$version       = $input->getArgument( 'version' );

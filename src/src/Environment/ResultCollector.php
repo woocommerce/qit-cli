@@ -269,12 +269,9 @@ class ResultCollector {
 			mkdir( $merged_dir, 0755, true );
 		}
 
-		// Check if there are blob reports to merge
+		// Get all package directories containing blob reports
+		// We already checked that the directory exists and has contents
 		$package_dirs = glob( $blob_dir . '/*', GLOB_ONLYDIR );
-		if ( empty( $package_dirs ) ) {
-			$io->text( 'No blob reports found to merge.' );
-			return;
-		}
 
 		// Playwright merge-reports expects blob files in a single directory
 		// We need to copy all blob files from package subdirectories to a temp directory

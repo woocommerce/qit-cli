@@ -3,9 +3,9 @@
 namespace QIT_CLI\Commands\TestPackages;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\QITInput;
 use QIT_CLI\TestPackageDownloader;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -90,10 +90,15 @@ class PackageDownloadCommand extends QITCommand {
 			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$io = new SymfonyStyle( $input, $output );
 
-		$packages     = $input->getArgument( 'packages' );
+		/** @var array<string>|string|null $packages */
+		$packages = $input->getArgument( 'packages' );
+		// Ensure packages is always an array (it's defined as IS_ARRAY)
+		if ( ! is_array( $packages ) ) {
+			$packages = empty( $packages ) ? [] : [ $packages ];
+		}
 		$output_dir   = rtrim( $input->getOption( 'output-dir' ), '/' ) . '/';
 		$verify       = $input->getOption( 'verify' );
 		$extract      = ! $input->getOption( 'no-extract' ); // Extract by default unless --no-extract.

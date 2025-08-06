@@ -6,9 +6,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
 /**
@@ -433,6 +431,7 @@ class PackagePhaseRunner {
 		// For downloaded packages, they're extracted directly to the container, so use the package path
 		if ( isset( $env_info->test_packages_metadata[ $package_id ]['container_path'] ) ) {
 			// This is a volume-mounted package
+			// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset - We check it exists above
 			$workdir = $env_info->test_packages_metadata[ $package_id ]['container_path'];
 		} else {
 			// This is a downloaded package extracted in the container

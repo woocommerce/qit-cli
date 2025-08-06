@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Config;
-use Symfony\Component\Console\Input\InputInterface;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class DevModeCommand extends QITCommand {
@@ -16,7 +16,7 @@ class DevModeCommand extends QITCommand {
 			->setHidden( true );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		if ( Config::is_development_mode() ) {
 			$output->writeln( '<info>QIT CLI is already in development mode.</info>' );
 			return self::SUCCESS;

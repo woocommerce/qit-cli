@@ -3,8 +3,8 @@
 namespace QIT_CLI\Commands\Group;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\QITInput;
 use QIT_CLI\TestGroup;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class GroupShowCommand extends QITCommand {
@@ -23,7 +23,7 @@ class GroupShowCommand extends QITCommand {
 			->setDescription( 'Show the currently cached group' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$group = $this->test_group->get();
 
 		if ( empty( $group ) ) {

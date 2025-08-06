@@ -5,8 +5,8 @@ namespace QIT_CLI\Commands\Partner;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Config;
 use QIT_CLI\ManagerBackend;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -27,7 +27,7 @@ class SwitchPartner extends QITCommand {
 			->addArgument( 'user', InputArgument::OPTIONAL, '(Optional) The partner user to switch to.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		// Optionaly allow the Partner to be passed as an argument.
 		if ( ! empty( $input->getArgument( 'user' ) ) ) {
 			$this->manager_backend->switch_to_partner( $input->getArgument( 'user' ) );

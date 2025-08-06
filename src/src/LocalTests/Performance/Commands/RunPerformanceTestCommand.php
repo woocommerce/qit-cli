@@ -14,6 +14,7 @@ use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PreCommand\Objects\Extension;
+use QIT_CLI\QITInput;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\WooExtensionsList;
@@ -100,7 +101,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		try {
 			$options                    = $this->parse_options( $input );
 			$env_up_options             = $options['env_up'];
