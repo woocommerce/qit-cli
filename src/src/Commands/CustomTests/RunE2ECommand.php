@@ -430,11 +430,20 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-		// Output results
+		// Output results with enhanced report information
 		if ( $exit_status === Command::SUCCESS ) {
-			$io->success( "Tests passed. Run 'qit e2e-report' to view the report." );
+			$io->success( 'Tests passed' );
 		} else {
-			$io->error( "Tests failed. Run 'qit e2e-report' to view the report." );
+			$io->error( 'Tests failed' );
+		}
+		
+		// Show report information in a clean format
+		$io->writeln( '' );
+		$io->writeln( '<info>View full Playwright report:</info>  <comment>qit e2e-report</comment>' );
+		
+		// If we have a report URL from the manager, show it
+		if ( ! empty( $report_url ) ) {
+			$io->writeln( '<info>Remote URL (CI):</info>             <comment>' . $report_url . '</comment>' );
 		}
 
 		return $exit_status;
@@ -615,6 +624,9 @@ class RunE2ECommand extends QITCommand {
 			$signal_handler = static function ( $signo ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
 				echo "\n\nTest interrupted by user (Ctrl+C). Cleaning up...\n";
 
+				// Mark that we were interrupted
+				App::setVar( 'qit_test_interrupted', true );
+
 				// Terminate the current test process if it exists
 				$current_process = App::getVar( 'qit_current_test_process' );
 				if ( $current_process instanceof Process ) {
@@ -651,9 +663,13 @@ class RunE2ECommand extends QITCommand {
 
 		// Don't show "Shutting down" message here - show it after our info
 
+		// Only show report information if we're in an abnormal shutdown
+		// (normal flow already shows this information)
+		$show_summary = App::getVar( 'qit_test_interrupted', false );
+		
 		// Show report information before shutting down
 		$artifacts_dir = App::getVar( 'qit_test_artifacts_dir' );
-		if ( ! empty( $artifacts_dir ) && is_dir( $artifacts_dir ) ) {
+		if ( $show_summary && ! empty( $artifacts_dir ) && is_dir( $artifacts_dir ) ) {
 			// Wait a moment for any final output from Playwright
 			usleep( 500000 ); // 0.5 seconds
 
@@ -716,8 +732,7 @@ class RunE2ECommand extends QITCommand {
 			}
 
 			if ( $report_found ) {
-				echo "\nView test report with:\n";
-				echo "  qit e2e-report\n";
+				echo "\nView full Playwright report:  qit e2e-report\n";
 			} else {
 				echo "\nNo HTML reports generated yet. Check the artifacts directory.\n";
 
@@ -911,34 +926,13 @@ class RunE2ECommand extends QITCommand {
 			/** @phpstan-ignore-next-line property.notFound */
 			$env_info->artifacts_dir = $artifacts_dir;
 
-			// Output artifact locations
-			$final_ctrf_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
-
-			// Check for final Allure location
-			$final_allure_path = $artifacts_dir . '/final/allure';
-			if ( is_dir( $final_allure_path ) && ! empty( glob( $final_allure_path . '/*', GLOB_ONLYDIR ) ) ) {
-				$io->writeln( "<info>Allure reports saved → {$final_allure_path}</info>" );
-			}
-			if ( file_exists( $final_ctrf_path ) ) {
-				$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
-			}
-
-			// Check for merged HTML report
+			// Store HTML report location in cache for e2e-report command
 			$final_html_report = $artifacts_dir . '/final/html-report/index.html';
 			if ( file_exists( $final_html_report ) ) {
-				$io->writeln( "<info>HTML report → {$final_html_report}</info>" );
-				$io->writeln( "<info>Open in browser: file://{$final_html_report}</info>" );
-
-				// Show how to open the report with a simple PHP server
 				$report_dir = dirname( $final_html_report );
-				$io->writeln( "<info>Or serve with: php -S localhost:8000 -t {$report_dir}</info>" );
-				$io->writeln( '<info>Then open: http://localhost:8000</info>' );
-
-				// Store in cache for e2e-report command
 				$this->cache->set( 'last_e2e_report', json_encode( [
 					'local_playwright' => $report_dir,
 				] ), DAY_IN_SECONDS );
-				$io->writeln( '<info>Or use: qit e2e-report</info>' );
 			}
 
 			// Summary
@@ -973,7 +967,8 @@ class RunE2ECommand extends QITCommand {
 			}
 
 			// Always try to generate and show reports, even if tests were interrupted
-			if ( is_dir( $artifacts_dir ) ) {
+			// But skip if we already generated reports in the normal flow
+			if ( is_dir( $artifacts_dir ) && ! file_exists( $artifacts_dir . '/final/html-report/index.html' ) ) {
 				$io->writeln( "\n<info>Test Artifacts:</info>" );
 				$io->writeln( "Location: <comment>{$artifacts_dir}</comment>" );
 

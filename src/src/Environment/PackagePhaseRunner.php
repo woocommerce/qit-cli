@@ -109,12 +109,15 @@ class PackagePhaseRunner {
 		// Buffer to accumulate incomplete lines across chunks
 		$line_buffer = '';
 		$skip_mode   = false;
+		
+		// Create QIT reporter parser for potential QIT reporter output
+		$qit_parser = new QITReporterParser( $this->output );
 
 		// Store process in DI container so signal handler can terminate it
 		App::setVar( 'qit_current_test_process', $process );
 
 		try {
-			$process->run( function ( $type, $buffer ) use ( &$line_buffer, &$skip_mode ) {
+			$process->run( function ( $type, $buffer ) use ( &$line_buffer, &$skip_mode, $qit_parser ) {
 				if ( ! $this->output->isQuiet() ) {
 					// Append new buffer to any incomplete line from previous chunk
 					$full_buffer = $line_buffer . $buffer;
@@ -124,28 +127,30 @@ class PackagePhaseRunner {
 					$line_buffer = array_pop( $lines );
 
 					foreach ( $lines as $line ) {
-						// Check if we should start skipping
+						// First, try to parse with QIT reporter parser
+						if ( $qit_parser->parseLine( $line ) ) {
+							continue; // Line was handled by parser
+						}
+						
+						// Skip any line containing playwright show-report command
+						if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
+							continue;
+						}
+						
+						// Skip "To open last HTML report run:" and the line after it
 						if ( strpos( $line, 'To open last HTML report run:' ) !== false ) {
 							$skip_mode = true;
 							continue;
 						}
 
-						// If in skip mode, check for the npx command
+						// If in skip mode, skip the next non-empty line (which should be the npx command)
 						if ( $skip_mode ) {
-							if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
-								$skip_mode = false;
-								continue;
-							}
 							// Skip empty lines while in skip mode
 							if ( trim( $line ) === '' ) {
 								continue;
 							}
-							// Non-empty, non-npx line - exit skip mode
+							// Found non-empty line, skip it and exit skip mode
 							$skip_mode = false;
-						}
-
-						// Also check for standalone npx playwright show-report line
-						if ( trim( $line ) === 'npx playwright show-report' ) {
 							continue;
 						}
 
