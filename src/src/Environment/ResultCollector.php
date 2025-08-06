@@ -48,8 +48,15 @@ class ResultCollector {
 		// --------- 2️⃣  collect Allure (never mandatory) ----------------------
 		$this->collect_allure( $env, $slug, $mf, $dir );
 
-		// --------- 3️⃣  collect Blob (never mandatory) ------------------------
-		$this->collect_blob( $env, $slug, $mf, $dir );
+		// --------- 3️⃣  collect Blob (mandatory for run phase) ----------------
+		$this->collect_blob(
+			$env,
+			$slug,
+			$mf,
+			$dir,
+			/* mandatory = */ $phase === 'run',   // ← only "run" is mandatory
+			$phase
+		);
 	}
 
 	private function collect_ctrf(
@@ -144,13 +151,18 @@ class ResultCollector {
 		E2EEnvInfo $env,
 		string $slug,
 		TestPackageManifest $mf,
-		string $dir
+		string $dir,
+		bool $mandatory,
+		string $phase
 	): void {
 
 		$rel = $mf->getTestResults()['blob-dir'] ?? null;
 		if ( ! $rel ) {
-			return;
-		}                     // no declaration → skip
+			if ( $mandatory ) {
+				throw new RuntimeException( "manifest lacks blob-dir for phase '{$phase}'" );
+			}
+			return;                 // optional → skip
+		}
 
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
@@ -180,8 +192,10 @@ class ResultCollector {
 			// Validate after copying from container
 			$this->validate_blob_directory( $dst );
 		} catch ( \RuntimeException $e ) {
-			// Never mandatory for blob collection - silently ignore failures
-			unset( $e ); // Explicitly acknowledge the exception is not used
+			if ( $mandatory ) {
+				throw $e;           // only fail for "run"
+			}
+			// optional → do nothing
 		}
 	}
 
@@ -255,26 +269,51 @@ class ResultCollector {
 			mkdir( $merged_dir, 0755, true );
 		}
 
-		// Collect all blob directories from different packages
-		$blob_inputs = [];
-		foreach ( glob( $blob_dir . '/*', GLOB_ONLYDIR ) as $package_blob_dir ) {
-			// Check if it contains blob files
-			if ( ! empty( glob( $package_blob_dir . '/*.zip' ) ) ) {
-				$blob_inputs[] = $package_blob_dir;
-			}
-		}
-
-		if ( empty( $blob_inputs ) ) {
+		// Check if there are blob reports to merge
+		$package_dirs = glob( $blob_dir . '/*', GLOB_ONLYDIR );
+		if ( empty( $package_dirs ) ) {
 			$io->text( 'No blob reports found to merge.' );
 			return;
 		}
 
-		// Build the merge command
-		$cmd_parts = [ 'npx', 'playwright', 'merge-reports' ];
-		foreach ( $blob_inputs as $input_dir ) {
-			$cmd_parts[] = $input_dir;
+		// Playwright merge-reports expects blob files in a single directory
+		// We need to copy all blob files from package subdirectories to a temp directory
+		$merge_input_dir = $artifacts_dir . '/blob-merge-temp';
+		if ( ! is_dir( $merge_input_dir ) ) {
+			mkdir( $merge_input_dir, 0755, true );
 		}
-		$cmd_parts[] = '--reporter=html';
+
+		// Copy all blob .zip files to the merge directory
+		$has_blob_files = false;
+		foreach ( $package_dirs as $package_dir ) {
+			$blob_files = glob( $package_dir . '/*.zip' );
+			foreach ( $blob_files as $blob_file ) {
+				$package_name = basename( $package_dir );
+				$dest_file    = $merge_input_dir . '/' . $package_name . '-' . basename( $blob_file );
+				copy( $blob_file, $dest_file );
+				$has_blob_files = true;
+			}
+		}
+
+		if ( ! $has_blob_files ) {
+			$io->text( 'No blob report files found to merge.' );
+			return;
+		}
+
+		// Create a merge config to handle different test directories
+		$merge_config = [
+			'reporter' => [ [ 'html' ] ],
+			// Use a generic testDir to avoid conflicts
+			'testDir'  => '.',
+		];
+		$merge_config_file = $merge_input_dir . '/merge.config.js';
+		file_put_contents(
+			$merge_config_file,
+			'module.exports = ' . json_encode( $merge_config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . ';'
+		);
+		
+		// Build the merge command with config
+		$cmd_parts = [ 'npx', 'playwright', 'merge-reports', '--config', $merge_config_file, $merge_input_dir ];
 
 		$proc = new Process( $cmd_parts );
 		$proc->setEnv( [

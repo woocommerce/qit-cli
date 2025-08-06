@@ -444,6 +444,15 @@ class RunE2ECommand extends QITCommand {
 			// Try to save Allure reports to final location
 			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io, $orchestrator );
 
+			// Update cache with final HTML report location for e2e-report command
+			$final_html_report = $artifacts_dir . '/final/html-report/index.html';
+			if ( file_exists( $final_html_report ) ) {
+				$report_dir = dirname( $final_html_report );
+				$this->cache->set( 'last_e2e_report', json_encode( [
+					'local_playwright' => $report_dir,
+				] ), DAY_IN_SECONDS );
+			}
+
 			// Pass orchestrator to notify_test_finished for upload progress (still in POST-PROCESSING)
 			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result, $orchestrator );
 
@@ -812,9 +821,16 @@ class RunE2ECommand extends QITCommand {
 	 */
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): array {
 		// Create orchestrator early so it's available in catch/finally blocks
-		$orchestrator          = new \QIT_CLI\Environment\PackageOrchestrator( $io );
-		$artifacts_dir         = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
+		$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
+		// Use unique artifacts directory per run to avoid mixing results
+		$run_id                = uniqid( 'run-', true );
+		$artifacts_dir         = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id . '-' . $run_id;
 		$normal_flow_completed = false;
+
+		// Create fresh artifacts directory for this run
+		if ( ! is_dir( $artifacts_dir ) ) {
+			mkdir( $artifacts_dir, 0755, true );
+		}
 
 		try {
 			$total_executed  = 0;
@@ -938,17 +954,36 @@ class RunE2ECommand extends QITCommand {
 						try {
 							$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 						} catch ( \Throwable $collector_err ) {
-							// CTRF is mandatory for the run phase - if collection fails, the test is invalid
-							$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
-							$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
-							$io->writeln( '' );
-							$io->writeln( '<comment>To fix this issue, ensure your test package generates CTRF reports:</comment>' );
-							$io->writeln( '  1. Install the CTRF reporter: npm install --save-dev playwright-ctrf-json-reporter' );
-							$io->writeln( '  2. Configure it in playwright.config.js:' );
-							$io->writeln( "     reporter: [['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]]" );
-							$io->writeln( '  3. Update manifest.json to point to the CTRF file:' );
-							$io->writeln( '     "results": {"ctrf-json": "./results/ctrf.json"}' );
-							throw new \RuntimeException( 'Test failed to produce required CTRF output: ' . $collector_err->getMessage() );
+							$error_msg = $collector_err->getMessage();
+							$io->writeln( "<error>Result collection failed: {$error_msg}</error>" );
+							
+							// Check if it's a blob reporter error
+							if ( strpos( $error_msg, 'blob-dir' ) !== false ) {
+								$io->writeln( '<error>Test terminated abnormally - Blob reporter output is required</error>' );
+								$io->writeln( '' );
+								$io->writeln( '<comment>To fix this issue, ensure your test package generates blob reports:</comment>' );
+								$io->writeln( '  1. Configure blob reporter in playwright.config.js:' );
+								$io->writeln( "     reporter: [" );
+								$io->writeln( "       ['list']," );
+								$io->writeln( "       ['blob', {outputDir: './blob-report'}]," );
+								$io->writeln( "       ['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]" );
+								$io->writeln( "     ]" );
+								$io->writeln( '  2. Update manifest.json to point to both report directories:' );
+								$io->writeln( '     "results": {' );
+								$io->writeln( '       "ctrf-json": "./results/ctrf.json",' );
+								$io->writeln( '       "blob-dir": "./blob-report"' );
+								$io->writeln( '     }' );
+							} elseif ( strpos( $error_msg, 'ctrf-json' ) !== false ) {
+								$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
+								$io->writeln( '' );
+								$io->writeln( '<comment>To fix this issue, ensure your test package generates CTRF reports:</comment>' );
+								$io->writeln( '  1. Install the CTRF reporter: npm install --save-dev playwright-ctrf-json-reporter' );
+								$io->writeln( '  2. Configure it in playwright.config.js:' );
+								$io->writeln( "     reporter: [['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]]" );
+								$io->writeln( '  3. Update manifest.json to point to the CTRF file:' );
+								$io->writeln( '     "results": {"ctrf-json": "./results/ctrf.json"}' );
+							}
+							throw new \RuntimeException( 'Test failed to produce required output: ' . $collector_err->getMessage() );
 						}
 						// Re-throw to maintain failure status
 						throw $e;
@@ -993,15 +1028,6 @@ class RunE2ECommand extends QITCommand {
 			// Store artifacts directory in env_info for later use by Manager
 			/** @phpstan-ignore-next-line property.notFound */
 			$env_info->artifacts_dir = $artifacts_dir;
-
-			// Store HTML report location in cache for e2e-report command
-			$final_html_report = $artifacts_dir . '/final/html-report/index.html';
-			if ( file_exists( $final_html_report ) ) {
-				$report_dir = dirname( $final_html_report );
-				$this->cache->set( 'last_e2e_report', json_encode( [
-					'local_playwright' => $report_dir,
-				] ), DAY_IN_SECONDS );
-			}
 
 			// Mark that normal flow completed successfully
 			$normal_flow_completed = true;
@@ -1209,4 +1235,5 @@ class RunE2ECommand extends QITCommand {
 
 		return $env_up_options;
 	}
+
 }
