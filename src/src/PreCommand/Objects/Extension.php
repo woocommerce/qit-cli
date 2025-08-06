@@ -112,21 +112,21 @@ class Extension implements \JsonSerializable {
 	public static function fromArray( array $data ): Extension {
 		// Slug is required - fail loudly if missing
 		if ( ! isset( $data['slug'] ) || $data['slug'] === '' ) {
-			$e = new \InvalidArgumentException( 
-				'Extension slug is required but missing or empty. Data: ' . json_encode( $data ) 
+			$e = new \InvalidArgumentException(
+				'Extension slug is required but missing or empty. Data: ' . json_encode( $data )
 			);
 			// Add stack trace to help debug
 			error_log( "Extension::fromArray called with empty slug. Stack trace:\n" . $e->getTraceAsString() );
 			throw $e;
 		}
-		
+
 		// Type is required - fail loudly if missing
 		if ( ! isset( $data['type'] ) || ! in_array( $data['type'], self::TYPES, true ) ) {
-			throw new \InvalidArgumentException( 
-				'Extension type must be "plugin" or "theme". Got: ' . ( $data['type'] ?? 'null' ) 
+			throw new \InvalidArgumentException(
+				'Extension type must be "plugin" or "theme". Got: ' . ( $data['type'] ?? 'null' )
 			);
 		}
-		
+
 		$extension                      = new Extension(
 			$data['slug'],
 			$data['type'],

@@ -234,11 +234,11 @@ class TestPackageDownloader {
 			// Extract version from reference format namespace/package:version
 			$version = $matches[1];
 		}
-		
+
 		if ( ! $version ) {
 			throw new \RuntimeException( "Cannot determine version for remote package '{$reference}'" );
 		}
-		
+
 		// Prepare metadata separately
 		$metadata                             = [
 			'reference'       => $reference,

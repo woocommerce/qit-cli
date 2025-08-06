@@ -200,8 +200,7 @@ class RunE2ECommand extends QITCommand {
 		$sut_slug = $sut_info['slug'] ?? null;
 		$sut_id   = null;
 		$sut_type = null;
-		
-		
+
 		if ( $sut_slug ) {
 			// Resolve SUT ID and type
 			try {
@@ -316,7 +315,6 @@ class RunE2ECommand extends QITCommand {
 
 		// Always output JSON for parsing
 		$env_up_options['--json'] = true;
-		
 
 		// Run env:up and get the environment info
 		try {
@@ -398,7 +396,7 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		// Run tests with test packages
-		$io          = new SymfonyStyle( $input, $output );
+		$io = new SymfonyStyle( $input, $output );
 		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io );
 
 		// Notify test finished
@@ -424,12 +422,12 @@ class RunE2ECommand extends QITCommand {
 			// Post-processing section - merging reports and uploading
 			// Use orchestrator from runTestPackages
 			$orchestrator = $orchestrator_from_run;
-			
+
 			$orchestrator->postProcessingStart();
-			
+
 			// Merge CTRF artifacts
 			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
-			
+
 			// Read merged CTRF report to get accurate test counts
 			$ctrf_report_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
 			if ( file_exists( $ctrf_report_path ) ) {
@@ -444,10 +442,10 @@ class RunE2ECommand extends QITCommand {
 
 			// Try to save Allure reports to final location
 			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io, $orchestrator );
-			
+
 			// Pass orchestrator to notify_test_finished for upload progress (still in POST-PROCESSING)
 			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result, $orchestrator );
-			
+
 			// End post-processing after upload
 			$orchestrator->postProcessingEnd();
 
@@ -463,11 +461,11 @@ class RunE2ECommand extends QITCommand {
 			$orchestrator_from_run = new \QIT_CLI\Environment\PackageOrchestrator( $io );
 		}
 		$orchestrator = $orchestrator_from_run;
-		
+
 		$summary_data = [
-			'status' => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
+			'status'        => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
 			'local_command' => 'qit e2e-report',
-			'remote_url' => $report_url ?? '',
+			'remote_url'    => $report_url ?? '',
 		];
 		$orchestrator->summary( $summary_data );
 
@@ -691,7 +689,7 @@ class RunE2ECommand extends QITCommand {
 		// Only show report information if we're in an abnormal shutdown
 		// (normal flow already shows this information)
 		$show_summary = App::getVar( 'qit_test_interrupted', false );
-		
+
 		// Show report information before shutting down
 		$artifacts_dir = App::getVar( 'qit_test_artifacts_dir' );
 		if ( $show_summary && ! empty( $artifacts_dir ) && is_dir( $artifacts_dir ) ) {
@@ -817,10 +815,10 @@ class RunE2ECommand extends QITCommand {
 	 */
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): array {
 		// Create orchestrator early so it's available in catch/finally blocks
-		$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
-		$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
+		$orchestrator          = new \QIT_CLI\Environment\PackageOrchestrator( $io );
+		$artifacts_dir         = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
 		$normal_flow_completed = false;
-		
+
 		try {
 			$total_executed  = 0;
 			$failed_packages = [];
@@ -832,7 +830,7 @@ class RunE2ECommand extends QITCommand {
 			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
 
 			$io->section( 'Running Test Packages' );
-			
+
 			// Count non-bootstrap packages
 			$test_package_count = count( array_diff( array_keys( $test_packages ), $bootstrap_package_ids ) );
 			$orchestrator->start( $env_info->env_id, $test_package_count );
@@ -856,8 +854,8 @@ class RunE2ECommand extends QITCommand {
 			}
 			$orchestrator->globalSetupEnd();
 
-			$package_index = 0;
-			$is_first_package = true;
+			$package_index         = 0;
+			$is_first_package      = true;
 			$package_display_names = []; // Track display names for error messages
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				// Skip packages that are in bootstrap_packages (they only run globalSetup)
@@ -865,9 +863,9 @@ class RunE2ECommand extends QITCommand {
 					$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
 					continue;
 				}
-				
+
 				// Increment package index for non-bootstrap packages
-				$package_index++;
+				++$package_index;
 
 				$package_path = $meta['path'] ?? '';
 				if ( empty( $package_path ) || ! is_dir( $package_path ) ) {
@@ -880,27 +878,27 @@ class RunE2ECommand extends QITCommand {
 				if ( ! isset( $meta['manifest'] ) ) {
 					throw new \RuntimeException( "No manifest found for package {$pkg_id}" );
 				}
-				
-				$manifest = $meta['manifest'];
-				$metadata = $meta['metadata'] ?? [];
+
+				$manifest     = $meta['manifest'];
+				$metadata     = $meta['metadata'] ?? [];
 				$package_path = $meta['path'];
-				
+
 				// Build display name from manifest - this is the canonical package identifier
 				$display_name = $manifest->getNamespace() . '/' . $manifest->getPackage();
-				
+
 				// Version MUST be set in metadata - either 'local' or a specific version
 				if ( ! isset( $metadata['version'] ) ) {
 					throw new \RuntimeException( "Package {$pkg_id} is missing version information in metadata" );
 				}
-				
-				$display_name .= ':' . $metadata['version'];
+
+				$display_name                    .= ':' . $metadata['version'];
 				$package_display_names[ $pkg_id ] = $display_name; // Store for error messages
-				
+
 				// Store manifest in test_packages_metadata for later use
 				if ( isset( $env_info->test_packages_metadata[ $pkg_id ] ) ) {
 					$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
 				}
-				
+
 				// Determine package type from metadata
 				$package_type = ( isset( $metadata['remote'] ) && $metadata['remote'] === false ) ? 'Local Package' : 'Remote Package';
 				$orchestrator->packageStart( $package_index, $display_name, $package_type );
@@ -922,7 +920,7 @@ class RunE2ECommand extends QITCommand {
 						throw new \RuntimeException( "Manifest not loaded for package {$pkg_id}" );
 					}
 					$manifest = $env_info->test_packages_metadata[ $pkg_id ]['manifest'];
-					
+
 					// Clean previous test results before running
 					$this->cleanup_test_package_results( $package_path, $manifest );
 
@@ -964,7 +962,7 @@ class RunE2ECommand extends QITCommand {
 
 					$package_total   = $setup_count + $run_count + $teardown_count;
 					$total_executed += $package_total;
-					
+
 					// Command count is tracked internally, no need to display here
 					// End package in orchestrator - check if there are more packages
 					$has_more_packages = $package_index < count( $test_packages );
@@ -977,11 +975,11 @@ class RunE2ECommand extends QITCommand {
 					// Don't show the error here - it's already shown in the orchestrator output
 					// Just track the failed package using its display name
 					$failed_packages[] = $package_display_names[ $pkg_id ] ?? $pkg_id;
-					
-					// End package with failure status - check if there are more packages  
+
+					// End package with failure status - check if there are more packages
 					$has_more_packages = $package_index < count( $test_packages );
 					$orchestrator->packageEnd( false, $has_more_packages );
-					
+
 					// Still mark as processed to maintain the sequence for subsequent packages
 					$is_first_package = false;
 				}
@@ -1004,7 +1002,7 @@ class RunE2ECommand extends QITCommand {
 
 			// Mark that normal flow completed successfully
 			$normal_flow_completed = true;
-			
+
 			// Return appropriate exit code - error message already shown
 			if ( empty( $failed_packages ) ) {
 				return [ Command::SUCCESS, $orchestrator, $artifacts_dir ];
@@ -1033,7 +1031,7 @@ class RunE2ECommand extends QITCommand {
 					$io->writeln( "<comment>Warning: globalTeardown failed for {$pkg_id}: {$e->getMessage()}</comment>" );
 				}
 			}
-			
+
 			// Close global teardown section
 			$orchestrator->globalTeardownEnd();
 

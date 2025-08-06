@@ -138,7 +138,7 @@ class LocalTestRunNotifier {
 
 	/**
 	 * @param TestResult|PerformanceTestResult $test_result
-	 * @param PackageOrchestrator|null $orchestrator Optional orchestrator for progress display
+	 * @param PackageOrchestrator|null         $orchestrator Optional orchestrator for progress display
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */

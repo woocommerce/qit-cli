@@ -100,7 +100,7 @@ class UpEnvironmentCommand extends QITCommand {
 		/* ─ 3. Use the fully-resolved extension lists ─ */
 		$final_plugins = $resolved_ext->get_plugins();
 		$final_themes  = $resolved_ext->get_themes();
-		
+
 		// Convert Extension objects to arrays for serialization
 		$plugin_arrays = [];
 		foreach ( $final_plugins as $plugin ) {
@@ -111,7 +111,7 @@ class UpEnvironmentCommand extends QITCommand {
 				$plugin_arrays[] = $plugin;
 			}
 		}
-		
+
 		$theme_arrays = [];
 		foreach ( $final_themes as $theme ) {
 			if ( $theme instanceof Extension ) {

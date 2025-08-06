@@ -98,7 +98,7 @@ class PackagePhaseRunner {
 	 * @param string                $package_path Working directory for the command.
 	 * @param array<string, string> $env_vars Environment variables.
 	 * @param string                $phase The phase being executed (for timeout calculation).
-	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
+	 * @param PackageOrchestrator   $orchestrator Orchestrator for output formatting.
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
@@ -108,14 +108,14 @@ class PackagePhaseRunner {
 		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, $timeout );
 
 		// if on 'run' phase, add 'DEBUG=pw:api' env var
-		//if ( $phase === 'run' && strpos( $cmd, 'playwright test' ) !== false && ! array_key_exists( 'DEBUG', $env_vars ) ) {
-		//	$process->setEnv( array_merge( $env_vars, [ 'DEBUG' => 'pw:api' ] ) );
-		//}
+		// if ( $phase === 'run' && strpos( $cmd, 'playwright test' ) !== false && ! array_key_exists( 'DEBUG', $env_vars ) ) {
+		// $process->setEnv( array_merge( $env_vars, [ 'DEBUG' => 'pw:api' ] ) );
+		// }
 
 		// Buffer to accumulate incomplete lines across chunks
 		$line_buffer = '';
 		$skip_mode   = false;
-		
+
 		// Use orchestrator for parsing
 		$use_orchestrator = true;
 
@@ -187,7 +187,6 @@ class PackagePhaseRunner {
 			'stderr'    => $process->getErrorOutput(),
 		];
 
-
 		if ( ! $process->isSuccessful() ) {
 			throw new \RuntimeException(
 				"Host command failed:\n{$cmd}\nExit code: {$process->getExitCode()}"
@@ -229,7 +228,7 @@ class PackagePhaseRunner {
 	 * @param string                $workdir Working directory inside container.
 	 * @param array<string, string> $env_vars Environment variables.
 	 * @param string                $phase The phase being executed (globalSetup, setup, run, etc).
-	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
+	 * @param PackageOrchestrator   $orchestrator Orchestrator for output formatting.
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
@@ -246,15 +245,15 @@ class PackagePhaseRunner {
 		// Create output callback for orchestrator
 		$output_callback = null;
 		if ( $use_orchestrator ) {
-			$line_buffer = '';
+			$line_buffer     = '';
 			$output_callback = function ( $type, $buffer ) use ( &$line_buffer, &$stdout, $orchestrator ) {
 				$stdout .= $buffer;
-				
+
 				// Parse line by line for orchestrator
 				$full_buffer = $line_buffer . $buffer;
-				$lines = explode( "\n", $full_buffer );
+				$lines       = explode( "\n", $full_buffer );
 				$line_buffer = array_pop( $lines );
-				
+
 				foreach ( $lines as $line ) {
 					if ( $orchestrator->parseLine( $line ) ) {
 						continue; // Line was handled by orchestrator
@@ -408,11 +407,11 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a specific phase for a test package
 	 *
-	 * @param EnvInfo     $env_info Environment information.
-	 * @param string      $phase Phase name (setup, run, teardown, globalSetup, globalTeardown).
-	 * @param string      $package_id Package identifier.
-	 * @param string      $package_path Package directory path.
-	 * @param string|null $artifacts_dir Artifacts directory for CTRF files.
+	 * @param EnvInfo             $env_info Environment information.
+	 * @param string              $phase Phase name (setup, run, teardown, globalSetup, globalTeardown).
+	 * @param string              $package_id Package identifier.
+	 * @param string              $package_path Package directory path.
+	 * @param string|null         $artifacts_dir Artifacts directory for CTRF files.
 	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
 	 * @return int Number of commands that were actually executed.
 	 * @throws \RuntimeException On command failure.
@@ -452,7 +451,7 @@ class PackagePhaseRunner {
 			$workdir = '/qit/packages/' . basename( $package_id );
 		}
 
-		$phase_timeout   = $this->get_timeout_for_phase( $phase );
+		$phase_timeout = $this->get_timeout_for_phase( $phase );
 		// Timeout info is now handled by the orchestrator's command display
 
 		// Debug output
