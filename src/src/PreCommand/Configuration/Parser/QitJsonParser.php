@@ -479,12 +479,12 @@ class QitJsonParser {
 		if ( getenv( 'QIT_DEBUG' ) ) {
 			$log_dir = '/tmp/qit';
 			if ( ! is_dir( $log_dir ) ) {
-				mkdir( $log_dir, 0777, true );
+				@mkdir( $log_dir, 0777, true );
 			}
 
 			$log_file  = $log_dir . '/qit_debug.log';
 			$timestamp = gmdate( 'Y-m-d H:i:s' );
-			file_put_contents( $log_file, "[$timestamp] $message\n", FILE_APPEND );
+			@file_put_contents( $log_file, "[$timestamp] $message\n", FILE_APPEND );
 		}
 	}
 

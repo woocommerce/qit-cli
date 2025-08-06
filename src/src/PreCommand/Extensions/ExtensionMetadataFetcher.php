@@ -97,8 +97,6 @@ class ExtensionMetadataFetcher {
 				if ( $extension->version === 'stable' || $extension->version === 'undefined' ) {
 					$extension->version = $info['version'];
 				}
-
-				file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionMetadataFetcher: WPORG metadata for '{$extension->slug}': version={$extension->version}, url={$extension->source}\n", FILE_APPEND );
 			} catch ( \Exception $e ) {
 				throw new \RuntimeException( "Failed to fetch WPORG metadata for '{$extension->slug}': " . $e->getMessage() );
 			}
@@ -151,8 +149,6 @@ class ExtensionMetadataFetcher {
 					$extension->slug    = $info['slug']; // May be different from requested
 					$extension->version = $info['version'];
 					$extension->source  = $info['url'];
-
-					file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionMetadataFetcher: WCCOM metadata for '{$extension->slug}': version={$extension->version}\n", FILE_APPEND );
 				} else {
 					// Fallback for extensions not found
 					$extension->version = 'stable';

@@ -106,55 +106,62 @@ class PackagePhaseRunner {
 		$timeout    = $this->get_timeout_for_phase( $phase );
 		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, $timeout );
 
+		// if on 'run' phase, add 'DEBUG=pw:api' env var
+		//if ( $phase === 'run' && strpos( $cmd, 'playwright test' ) !== false && ! array_key_exists( 'DEBUG', $env_vars ) ) {
+		//	$process->setEnv( array_merge( $env_vars, [ 'DEBUG' => 'pw:api' ] ) );
+		//}
+
 		// Buffer to accumulate incomplete lines across chunks
 		$line_buffer = '';
 		$skip_mode   = false;
 		
-		// Create QIT reporter parser for potential QIT reporter output
-		$qit_parser = new QITReporterParser( $this->output );
+		// Get orchestrator for beautiful output (always available)
+		$orchestrator = App::getVar( 'package_orchestrator' );
+		// Use orchestrator for parsing if available
+		$use_orchestrator = $orchestrator !== null;
 
 		// Store process in DI container so signal handler can terminate it
 		App::setVar( 'qit_current_test_process', $process );
 
 		try {
-			$process->run( function ( $type, $buffer ) use ( &$line_buffer, &$skip_mode, $qit_parser ) {
-				if ( ! $this->output->isQuiet() ) {
-					// Append new buffer to any incomplete line from previous chunk
-					$full_buffer = $line_buffer . $buffer;
-					$lines       = explode( "\n", $full_buffer );
+			$process->run( function ( $type, $buffer ) use ( &$line_buffer, &$skip_mode, $use_orchestrator, $orchestrator ) {
+				// Append new buffer to any incomplete line from previous chunk
+				$full_buffer = $line_buffer . $buffer;
+				$lines       = explode( "\n", $full_buffer );
 
-					// The last element might be an incomplete line
-					$line_buffer = array_pop( $lines );
+				// The last element might be an incomplete line
+				$line_buffer = array_pop( $lines );
 
-					foreach ( $lines as $line ) {
-						// First, try to parse with QIT reporter parser
-						if ( $qit_parser->parseLine( $line ) ) {
-							continue; // Line was handled by parser
-						}
-						
-						// Skip any line containing playwright show-report command
-						if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
+				foreach ( $lines as $line ) {
+					// If orchestrator is available and in run phase, let it parse
+					if ( $use_orchestrator && $orchestrator->parseLine( $line ) ) {
+						continue; // Line was handled by orchestrator
+					}
+
+					// Skip any line containing playwright show-report command
+					if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
+						continue;
+					}
+
+					// Skip "To open last HTML report run:" and the line after it
+					if ( strpos( $line, 'To open last HTML report run:' ) !== false ) {
+						$skip_mode = true;
+						continue;
+					}
+
+					// If in skip mode, skip the next non-empty line (which should be the npx command)
+					if ( $skip_mode ) {
+						// Skip empty lines while in skip mode
+						if ( trim( $line ) === '' ) {
 							continue;
 						}
-						
-						// Skip "To open last HTML report run:" and the line after it
-						if ( strpos( $line, 'To open last HTML report run:' ) !== false ) {
-							$skip_mode = true;
-							continue;
-						}
+						// Found non-empty line, skip it and exit skip mode
+						$skip_mode = false;
+						continue;
+					}
 
-						// If in skip mode, skip the next non-empty line (which should be the npx command)
-						if ( $skip_mode ) {
-							// Skip empty lines while in skip mode
-							if ( trim( $line ) === '' ) {
-								continue;
-							}
-							// Found non-empty line, skip it and exit skip mode
-							$skip_mode = false;
-							continue;
-						}
-
-						// Output the line with newline
+					// Output the line with newline (only if not using orchestrator)
+					if ( ! $use_orchestrator ) {
 						$this->output->writeln( $line );
 					}
 				}
@@ -180,6 +187,7 @@ class PackagePhaseRunner {
 			'stdout'    => $process->getOutput(),
 			'stderr'    => $process->getErrorOutput(),
 		];
+
 
 		if ( ! $process->isSuccessful() ) {
 			throw new \RuntimeException(
@@ -232,6 +240,38 @@ class PackagePhaseRunner {
 		$stderr     = '';
 		$exit_code  = 0;
 
+		// Get orchestrator for beautiful output
+		$orchestrator = App::getVar( 'package_orchestrator' );
+		$use_orchestrator = $orchestrator !== null;
+
+		// Create output callback for orchestrator
+		$output_callback = null;
+		if ( $use_orchestrator ) {
+			$line_buffer = '';
+			$output_callback = function ( $type, $buffer ) use ( &$line_buffer, &$stdout, $orchestrator ) {
+				$stdout .= $buffer;
+				
+				// Parse line by line for orchestrator
+				$full_buffer = $line_buffer . $buffer;
+				$lines = explode( "\n", $full_buffer );
+				$line_buffer = array_pop( $lines );
+				
+				foreach ( $lines as $line ) {
+					if ( $orchestrator->parseLine( $line ) ) {
+						continue; // Line was handled by orchestrator
+					}
+					// Skip playwright show-report lines
+					if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
+						continue;
+					}
+					// Default output if not handled
+					if ( trim( $line ) !== '' ) {
+						echo $line . PHP_EOL;
+					}
+				}
+			};
+		}
+
 		try {
 			$stdout = $this->docker->run_inside_docker(
 				$env_info,
@@ -240,7 +280,8 @@ class PackagePhaseRunner {
 				null,           // user
 				$this->get_timeout_for_phase( $phase ),            // timeout
 				'php',          // container
-				true            // force_output  → always stream
+				true,           // force_output  → always stream
+				$output_callback // custom output callback
 			);
 		} catch ( \RuntimeException $e ) {
 			// Extract exit code from exception message if possible
@@ -411,8 +452,7 @@ class PackagePhaseRunner {
 		}
 
 		$phase_timeout   = $this->get_timeout_for_phase( $phase );
-		$timeout_display = $phase_timeout >= 60 ? ( $phase_timeout / 60 ) . ' minutes' : $phase_timeout . ' seconds';
-		$this->output->writeln( "  <info>• {$package_id} ({$phase}) - timeout: {$timeout_display}</info>" );
+		// Timeout info is now handled by the orchestrator's command display
 
 		// Debug output
 		if ( $this->output->isVerbose() ) {
@@ -433,6 +473,13 @@ class PackagePhaseRunner {
 
 			// Prepare environment variables for test execution
 			$env_vars = $this->prepare_test_env_vars( $env_info );
+
+			// Show command in orchestrator if available
+			$orchestrator = App::getVar( 'package_orchestrator' );
+			if ( $orchestrator !== null ) {
+				$context = $venue === 'host' ? 'host' : 'docker';
+				$orchestrator->showCommand( $cmd, $context );
+			}
 
 			try {
 				if ( $venue === 'host' ) {

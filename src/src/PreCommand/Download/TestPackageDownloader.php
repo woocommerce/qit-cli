@@ -226,12 +226,25 @@ class TestPackageDownloader {
 
 		$manifest_object = $this->manifest_parser->parse( $manifest_file );
 
+		// Extract version from reference or url_info
+		$version = null;
+		if ( isset( $url_info['version'] ) ) {
+			$version = $url_info['version'];
+		} elseif ( preg_match( '/:([^:]+)$/', $reference, $matches ) ) {
+			// Extract version from reference format namespace/package:version
+			$version = $matches[1];
+		}
+		
+		if ( ! $version ) {
+			throw new \RuntimeException( "Cannot determine version for remote package '{$reference}'" );
+		}
+		
 		// Prepare metadata separately
 		$metadata                             = [
 			'reference'       => $reference,
 			'remote'          => true,
 			'downloaded_path' => $package_dir,
-			'version'         => $url_info['version'] ?? 'unknown',
+			'version'         => $version,
 		];
 		$this->package_metadata[ $reference ] = $metadata;
 

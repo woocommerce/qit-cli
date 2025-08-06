@@ -25,15 +25,12 @@ class WPORGExtensionsList {
 	 */
 	public function is_wporg_plugin( string $slug ): bool {
 		try {
-			file_put_contents( '/tmp/qit/qit_debug.log', "is_wporg_plugin: Checking if $slug is a WordPress.org plugin\n", FILE_APPEND );
 			$info = $this->get_plugin_download_info( $slug );
 
 			// If no exception thrown => we found it.
 			$result = ! empty( $info['slug'] );
-			file_put_contents( '/tmp/qit/qit_debug.log', "is_wporg_plugin: $slug is " . ( $result ? 'a WordPress.org plugin' : 'not a WordPress.org plugin' ) . "\n", FILE_APPEND );
 			return $result;
 		} catch ( \Exception $e ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "is_wporg_plugin: $slug is not a WordPress.org plugin: " . $e->getMessage() . "\n", FILE_APPEND );
 			return false;
 		}
 	}
@@ -62,29 +59,23 @@ class WPORGExtensionsList {
 		$cached    = $this->cache->get( $cache_key );
 
 		if ( $cached ) {
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Debug logging in CLI tool
-			file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Using cached info for $slug: " . print_r( $cached, true ) . "\n", FILE_APPEND );
 			return $cached;
 		}
 
 		// Example: https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}
 		$url = sprintf( $this->plugin_api_url, rawurlencode( $slug ) );
-		file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Fetching info for $slug from $url\n", FILE_APPEND );
 
 		try {
 			$response_body = ( new RequestBuilder( $url ) )
 				->with_method( 'GET' )
 				->with_expected_status_codes( [ 200 ] )
 				->request();
-			// file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Response for $slug: " . substr( $response_body, 0, 1000 ) . "...\n", FILE_APPEND );
 		} catch ( \Exception $e ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: HTTP error fetching plugin info for '$slug': " . $e->getMessage() . "\n", FILE_APPEND );
 			throw new \RuntimeException( "HTTP error fetching plugin info for '$slug': " . $e->getMessage() );
 		}
 
 		$json = json_decode( $response_body, true );
 		if ( ! is_array( $json ) || empty( $json['download_link'] ) ) {
-			file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Could not parse plugin info for slug '$slug' from WP.org.\n", FILE_APPEND );
 			throw new \RuntimeException( "Could not parse plugin info for slug '$slug' from WP.org." );
 		}
 
@@ -94,8 +85,6 @@ class WPORGExtensionsList {
 			'url'     => $json['download_link'],
 		];
 
-		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Debug logging in CLI tool
-		file_put_contents( '/tmp/qit/qit_debug.log', "get_plugin_download_info: Info for $slug: " . print_r( $info, true ) . "\n", FILE_APPEND );
 		$this->cache->set( $cache_key, $info, 300 );
 
 		return $info;

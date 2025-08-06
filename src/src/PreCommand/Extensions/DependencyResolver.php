@@ -280,9 +280,6 @@ class DependencyResolver {
 				$dependencies[]           = $ext;
 			}
 
-			// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- Debug logging in CLI tool
-			file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: Resolved WPORG deps for $slug: " . print_r( array_map( fn( $e ) => $e->slug, $dependencies ), true ) . "\n", FILE_APPEND );
-
 			// Cache the Extension objects, not arrays
 			$this->cache->set( $cache_key, $dependencies, HOUR_IN_SECONDS );
 

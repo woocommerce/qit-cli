@@ -430,6 +430,16 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
+		// Show orchestrator summary if available
+		$orchestrator = App::getVar( 'package_orchestrator' );
+		if ( $orchestrator ) {
+			$summary_data = [
+				'local_url' => '',
+				'remote_url' => $report_url ?? '',
+			];
+			$orchestrator->summary( $summary_data );
+		}
+		
 		// Output results with enhanced report information
 		if ( $exit_status === Command::SUCCESS ) {
 			$io->success( 'Tests passed' );
@@ -804,21 +814,32 @@ class RunE2ECommand extends QITCommand {
 			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
 
 			$io->section( 'Running Test Packages' );
+			
+			// Create orchestrator for beautiful output (always used)
+			$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
+			App::setVar( 'package_orchestrator', $orchestrator );
+			
+			// Count non-bootstrap packages
+			$test_package_count = count( array_diff( array_keys( $test_packages ), $bootstrap_package_ids ) );
+			$orchestrator->start( $env_info->env_id, $test_package_count );
 
 			// Store test packages in DI container for signal handler access
 			App::setVar( 'qit_test_packages', $test_packages );
 
 			// Run globalSetup phase for all packages
-			$io->writeln( '<info>Running globalSetup phase for all packages...</info>' );
+			$orchestrator->globalSetupStart();
+			$orchestrator->globalSetupMessage( 'Running globalSetup phase for all packages...' );
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir );
 			}
 
 			// Export baseline database snapshot after all globalSetup scripts ran
-			$io->writeln( '<info>Exporting baseline database snapshot...</info>' );
+			$orchestrator->globalSetupMessage( 'Exporting baseline database snapshot...' );
 			$docker = App::make( Docker::class );
 			$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql', '--defaults' ] );
+			$orchestrator->globalSetupEnd();
 
+			$package_index = 0;
 			$is_first_package = true;
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				// Skip packages that are in bootstrap_packages (they only run globalSetup)
@@ -826,6 +847,9 @@ class RunE2ECommand extends QITCommand {
 					$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
 					continue;
 				}
+				
+				// Increment package index for non-bootstrap packages
+				$package_index++;
 
 				$package_path = $meta['path'] ?? '';
 				if ( empty( $package_path ) || ! is_dir( $package_path ) ) {
@@ -834,7 +858,33 @@ class RunE2ECommand extends QITCommand {
 					continue;
 				}
 
-				$io->writeln( "<info>Processing package: {$pkg_id}</info>" );
+				// Get the manifest and metadata from the downloaded packages
+				if ( ! isset( $meta['manifest'] ) ) {
+					throw new \RuntimeException( "No manifest found for package {$pkg_id}" );
+				}
+				
+				$manifest = $meta['manifest'];
+				$metadata = $meta['metadata'] ?? [];
+				$package_path = $meta['path'];
+				
+				// Build display name from manifest - this is the canonical package identifier
+				$display_name = $manifest->getNamespace() . '/' . $manifest->getPackage();
+				
+				// Version MUST be set in metadata - either 'local' or a specific version
+				if ( ! isset( $metadata['version'] ) ) {
+					throw new \RuntimeException( "Package {$pkg_id} is missing version information in metadata" );
+				}
+				
+				$display_name .= ':' . $metadata['version'];
+				
+				// Store manifest in test_packages_metadata for later use
+				if ( isset( $env_info->test_packages_metadata[ $pkg_id ] ) ) {
+					$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
+				}
+				
+				// Determine package type from metadata
+				$package_type = ( isset( $metadata['remote'] ) && $metadata['remote'] === false ) ? 'Local Package' : 'Remote Package';
+				$orchestrator->packageStart( $package_index, $display_name, $package_type );
 
 				// Import database snapshot before each non-first package
 				if ( ! $is_first_package ) {
@@ -848,23 +898,17 @@ class RunE2ECommand extends QITCommand {
 				}
 
 				try {
-					// Parse manifest for result collection
-					$manifest_path = $package_path . '/manifest.json';
-					$manifest      = null;
-					if ( file_exists( $manifest_path ) ) {
-						$parser   = App::make( \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser::class );
-						$manifest = $parser->parse( $manifest_path );
-
-						// Clean previous test results before running
-						$this->cleanup_test_package_results( $package_path, $manifest );
-
-						// Store manifest in test_packages_metadata for later use
-						if ( isset( $env_info->test_packages_metadata[ $pkg_id ] ) ) {
-							$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
-						}
+					// Manifest was already loaded above and stored in metadata
+					if ( ! isset( $env_info->test_packages_metadata[ $pkg_id ]['manifest'] ) ) {
+						throw new \RuntimeException( "Manifest not loaded for package {$pkg_id}" );
 					}
+					$manifest = $env_info->test_packages_metadata[ $pkg_id ]['manifest'];
+					
+					// Clean previous test results before running
+					$this->cleanup_test_package_results( $package_path, $manifest );
 
 					// Run full lifecycle for test packages: setup -> run -> teardown
+					$orchestrator->phaseStart( 'setup' );
 					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir );
 					if ( $manifest && $setup_count > 0 ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
@@ -872,6 +916,7 @@ class RunE2ECommand extends QITCommand {
 
 					// Run phase with CTRF collection even on test failures
 					try {
+						$orchestrator->phaseStart( 'run' );
 						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir );
 					} catch ( \RuntimeException $e ) {
 						// Collect CTRF even if tests failed (exit code 1 from test failures)
@@ -894,13 +939,16 @@ class RunE2ECommand extends QITCommand {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 					}
 
+					$orchestrator->phaseStart( 'teardown' );
 					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir );
 					// Note: teardown phase is for cleanup only - no result collection needed
 
 					$package_total   = $setup_count + $run_count + $teardown_count;
 					$total_executed += $package_total;
-
-					$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
+					
+					// Command count is tracked internally, no need to display here
+					// End package in orchestrator
+					$orchestrator->packageEnd( true );
 
 					// Mark that we've processed the first package
 					$is_first_package = false;
@@ -908,6 +956,10 @@ class RunE2ECommand extends QITCommand {
 				} catch ( \Exception $e ) {
 					$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
 					$failed_packages[] = $pkg_id;
+					
+					// End package with failure status
+					$orchestrator->packageEnd( false );
+					
 					// Still mark as processed to maintain the sequence for subsequent packages
 					$is_first_package = false;
 				}
@@ -956,7 +1008,10 @@ class RunE2ECommand extends QITCommand {
 			throw $e;
 		} finally {
 			// Run globalTeardown phase for all packages
-			$io->writeln( '<info>Running globalTeardown phase for all packages...</info>' );
+			if ( $orchestrator ) {
+				$orchestrator->globalTeardownStart();
+				$orchestrator->globalTeardownMessage( 'Running globalTeardown phase for all packages...' );
+			}
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				try {
 					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'] );
@@ -964,6 +1019,11 @@ class RunE2ECommand extends QITCommand {
 					// Continue with other teardowns even if one fails
 					$io->writeln( "<comment>Warning: globalTeardown failed for {$pkg_id}: {$e->getMessage()}</comment>" );
 				}
+			}
+			
+			// Close global teardown section
+			if ( $orchestrator ) {
+				$orchestrator->globalTeardownEnd();
 			}
 
 			// Always try to generate and show reports, even if tests were interrupted
