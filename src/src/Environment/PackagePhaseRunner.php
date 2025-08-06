@@ -133,7 +133,7 @@ class PackagePhaseRunner {
 
 				foreach ( $lines as $line ) {
 					// If orchestrator is available and in run phase, let it parse
-					if ( $use_orchestrator && $orchestrator->parseLine( $line ) ) {
+					if ( $use_orchestrator && $orchestrator->parse_line( $line ) ) {
 						continue; // Line was handled by orchestrator
 					}
 
@@ -255,7 +255,7 @@ class PackagePhaseRunner {
 				$line_buffer = array_pop( $lines );
 
 				foreach ( $lines as $line ) {
-					if ( $orchestrator->parseLine( $line ) ) {
+					if ( $orchestrator->parse_line( $line ) ) {
 						continue; // Line was handled by orchestrator
 					}
 					// Skip playwright show-report lines
@@ -264,6 +264,7 @@ class PackagePhaseRunner {
 					}
 					// Default output if not handled
 					if ( trim( $line ) !== '' ) {
+						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw test output
 						echo $line . PHP_EOL;
 					}
 				}
@@ -476,7 +477,7 @@ class PackagePhaseRunner {
 
 			// Show command in orchestrator
 			$context = $venue === 'host' ? 'host' : 'docker';
-			$orchestrator->showCommand( $cmd, $context );
+			$orchestrator->show_command( $cmd, $context );
 
 			try {
 				if ( $venue === 'host' ) {

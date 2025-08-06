@@ -219,8 +219,8 @@ class RunE2ECommand extends QITCommand {
 
 			// Add SUT to env:up options using the complex format from old code
 			$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $sut_slug, $sut_type );
-		} else {
 		}
+		// else: No SUT provided - run without SUT
 
 		// Set environment exposure based on wait mode
 		if ( $wait ) {
@@ -414,7 +414,8 @@ class RunE2ECommand extends QITCommand {
 				);
 				$io->writeln( '<info>✓ Debug log copied from container</info>' );
 			} catch ( \RuntimeException $e ) {
-				// Debug log might not exist if no errors occurred - this is normal, don't show message
+				// Debug log might not exist if no errors occurred - this is normal
+				unset( $e ); // Unused but expected
 			}
 
 			$test_result->set_status( $exit_status === Command::SUCCESS ? 'success' : 'failed' );
@@ -423,7 +424,7 @@ class RunE2ECommand extends QITCommand {
 			// Use orchestrator from runTestPackages
 			$orchestrator = $orchestrator_from_run;
 
-			$orchestrator->postProcessingStart();
+			$orchestrator->post_processing_start();
 
 			// Merge CTRF artifacts
 			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
@@ -433,7 +434,7 @@ class RunE2ECommand extends QITCommand {
 			if ( file_exists( $ctrf_report_path ) ) {
 				$ctrf_data = json_decode( file_get_contents( $ctrf_report_path ), true );
 				if ( isset( $ctrf_data['results']['summary'] ) ) {
-					$orchestrator->updateTestStats( $ctrf_data['results']['summary'] );
+					$orchestrator->update_test_stats( $ctrf_data['results']['summary'] );
 				}
 			}
 
@@ -447,7 +448,7 @@ class RunE2ECommand extends QITCommand {
 			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result, $orchestrator );
 
 			// End post-processing after upload
-			$orchestrator->postProcessingEnd();
+			$orchestrator->post_processing_end();
 
 			// Use exit status override if provided
 			if ( $exit_status_override !== null ) {
@@ -839,8 +840,8 @@ class RunE2ECommand extends QITCommand {
 			App::setVar( 'qit_test_packages', $test_packages );
 
 			// Run globalSetup phase for all packages
-			$orchestrator->globalSetupStart();
-			$orchestrator->globalSetupMessage( 'Running globalSetup phase for all packages...' );
+			$orchestrator->global_setup_start();
+			$orchestrator->global_setup_message( 'Running globalSetup phase for all packages...' );
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir, $orchestrator );
 			}
@@ -848,11 +849,11 @@ class RunE2ECommand extends QITCommand {
 			// Export baseline database snapshot only if we have multiple test packages
 			$has_multiple_packages = count( $test_packages ) > 1;
 			if ( $has_multiple_packages ) {
-				$orchestrator->globalSetupMessage( 'Exporting baseline database snapshot...' );
+				$orchestrator->global_setup_message( 'Exporting baseline database snapshot...' );
 				$docker = App::make( Docker::class );
 				$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql', '--defaults' ] );
 			}
-			$orchestrator->globalSetupEnd();
+			$orchestrator->global_setup_end();
 
 			$package_index         = 0;
 			$is_first_package      = true;
@@ -901,7 +902,7 @@ class RunE2ECommand extends QITCommand {
 
 				// Determine package type from metadata
 				$package_type = ( isset( $metadata['remote'] ) && $metadata['remote'] === false ) ? 'Local Package' : 'Remote Package';
-				$orchestrator->packageStart( $package_index, $display_name, $package_type );
+				$orchestrator->package_start( $package_index, $display_name, $package_type );
 
 				// Import database snapshot before each non-first package
 				if ( ! $is_first_package ) {
@@ -925,7 +926,7 @@ class RunE2ECommand extends QITCommand {
 					$this->cleanup_test_package_results( $package_path, $manifest );
 
 					// Run full lifecycle for test packages: setup -> run -> teardown
-					$orchestrator->phaseStart( 'setup' );
+					$orchestrator->phase_start( 'setup' );
 					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
 					if ( $manifest && $setup_count > 0 ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
@@ -933,7 +934,7 @@ class RunE2ECommand extends QITCommand {
 
 					// Run phase with CTRF collection even on test failures
 					try {
-						$orchestrator->phaseStart( 'run' );
+						$orchestrator->phase_start( 'run' );
 						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
 					} catch ( \RuntimeException $e ) {
 						// Collect CTRF even if tests failed (exit code 1 from test failures)
@@ -956,7 +957,7 @@ class RunE2ECommand extends QITCommand {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 					}
 
-					$orchestrator->phaseStart( 'teardown' );
+					$orchestrator->phase_start( 'teardown' );
 					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
 					// Note: teardown phase is for cleanup only - no result collection needed
 
@@ -966,7 +967,7 @@ class RunE2ECommand extends QITCommand {
 					// Command count is tracked internally, no need to display here
 					// End package in orchestrator - check if there are more packages
 					$has_more_packages = $package_index < count( $test_packages );
-					$orchestrator->packageEnd( true, $has_more_packages );
+					$orchestrator->package_end( true, $has_more_packages );
 
 					// Mark that we've processed the first package
 					$is_first_package = false;
@@ -978,7 +979,7 @@ class RunE2ECommand extends QITCommand {
 
 					// End package with failure status - check if there are more packages
 					$has_more_packages = $package_index < count( $test_packages );
-					$orchestrator->packageEnd( false, $has_more_packages );
+					$orchestrator->package_end( false, $has_more_packages );
 
 					// Still mark as processed to maintain the sequence for subsequent packages
 					$is_first_package = false;
@@ -1021,8 +1022,8 @@ class RunE2ECommand extends QITCommand {
 			throw $e;
 		} finally {
 			// Run globalTeardown phase for all packages
-			$orchestrator->globalTeardownStart();
-			$orchestrator->globalTeardownMessage( 'Running globalTeardown phase for all packages...' );
+			$orchestrator->global_teardown_start();
+			$orchestrator->global_teardown_message( 'Running globalTeardown phase for all packages...' );
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				try {
 					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'], null, $orchestrator );
@@ -1033,7 +1034,7 @@ class RunE2ECommand extends QITCommand {
 			}
 
 			// Close global teardown section
-			$orchestrator->globalTeardownEnd();
+			$orchestrator->global_teardown_end();
 
 			// Only try to generate reports if the normal flow didn't complete (e.g., on exception)
 			if ( ! $normal_flow_completed && is_dir( $artifacts_dir ) ) {

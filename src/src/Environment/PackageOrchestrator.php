@@ -15,12 +15,12 @@ use Symfony\Component\Console\Terminal;
  */
 class PackageOrchestrator {
 	private OutputInterface $output;
-	private ?ConsoleSectionOutput $headerSection  = null;
-	private ?ConsoleSectionOutput $packageSection = null;
-	private ?ConsoleSectionOutput $statusSection  = null;
-	private ?ProgressBar $progressBar             = null;
-	private ?Table $currentTable                  = null;
-	private int $terminalWidth;
+	private ?ConsoleSectionOutput $header_section  = null;
+	private ?ConsoleSectionOutput $package_section = null;
+	private ?ConsoleSectionOutput $status_section  = null;
+	private ?ProgressBar $progress_bar             = null;
+	private ?Table $current_table                  = null;
+	private int $terminal_width;
 
 	private array $state = [
 		'current_package'    => null,
@@ -48,14 +48,14 @@ class PackageOrchestrator {
 		$this->output = $output;
 
 		// Get terminal width for dynamic sizing
-		$terminal            = new Terminal();
-		$this->terminalWidth = min( $terminal->getWidth(), 120 ); // Cap at 120 for readability
+		$terminal             = new Terminal();
+		$this->terminal_width = min( $terminal->getWidth(), 120 ); // Cap at 120 for readability
 
 		// Create sections if output supports it
 		if ( $output instanceof ConsoleOutputInterface ) {
-			$this->headerSection  = $output->section();
-			$this->packageSection = $output->section();
-			$this->statusSection  = $output->section();
+			$this->header_section  = $output->section();
+			$this->package_section = $output->section();
+			$this->status_section  = $output->section();
 		}
 	}
 
@@ -71,49 +71,49 @@ class PackageOrchestrator {
 	/**
 	 * Display global setup phase
 	 */
-	public function globalSetupStart(): void {
-		$out       = $this->packageSection ?? $this->output;
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '┌─ GLOBAL SETUP ' . str_repeat( '─', max( 0, $lineWidth - 16 ) ) );
+	public function global_setup_start(): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '┌─ GLOBAL SETUP ' . str_repeat( '─', max( 0, $line_width - 16 ) ) );
 		$this->state['phase_start_time'] = microtime( true );
 		$this->state['current_phase']    = 'GLOBAL_SETUP';
 	}
 
-	public function globalSetupMessage( string $message ): void {
-		$out = $this->packageSection ?? $this->output;
+	public function global_setup_message( string $message ): void {
+		$out = $this->package_section ?? $this->output;
 		$out->writeln( '│ ' . $message );
 	}
 
-	public function globalSetupEnd(): void {
-		$out       = $this->packageSection ?? $this->output;
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '└' . str_repeat( '─', $lineWidth ) );
+	public function global_setup_end(): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '└' . str_repeat( '─', $line_width ) );
 		$out->writeln( '' );
 	}
 
 	/**
 	 * Start a new package
 	 */
-	public function packageStart( int $index, string $package_id, string $type = 'Local Package' ): void {
+	public function package_start( int $index, string $package_id, string $type = 'Local Package' ): void {
 		$this->state['packages_completed'] = $index - 1;
 		$this->state['current_package']    = $package_id;
 		$this->state['test_results']       = [];
 		$this->state['current_command']    = null;
 
-		$out = $this->packageSection ?? $this->output;
+		$out = $this->package_section ?? $this->output;
 
 		// Package header with box drawing (no right border)
-		$header    = sprintf( 'PACKAGE [%d/%d]: %s', $index, $this->state['packages_total'], $package_id );
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '┌─ ' . $header . ' ' . str_repeat( '─', max( 0, $lineWidth - strlen( $header ) - 3 ) ) );
+		$header     = sprintf( 'PACKAGE [%d/%d]: %s', $index, $this->state['packages_total'], $package_id );
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '┌─ ' . $header . ' ' . str_repeat( '─', max( 0, $line_width - strlen( $header ) - 3 ) ) );
 		$out->writeln( '│ Type: ' . $type );
-		$out->writeln( '├' . str_repeat( '─', $lineWidth ) );
+		$out->writeln( '├' . str_repeat( '─', $line_width ) );
 	}
 
 	/**
 	 * Display phase start
 	 */
-	public function phaseStart( string $phase ): void {
+	public function phase_start( string $phase ): void {
 		$this->state['current_phase']    = strtoupper( $phase );
 		$this->state['phase_start_time'] = microtime( true );
 		// No phase headers - commands will be shown directly
@@ -122,8 +122,8 @@ class PackageOrchestrator {
 	/**
 	 * Show command being executed
 	 */
-	public function showCommand( string $command, string $context = 'docker' ): void {
-		$out                            = $this->packageSection ?? $this->output;
+	public function show_command( string $command, string $context = 'docker' ): void {
+		$out                            = $this->package_section ?? $this->output;
 		$this->state['current_command'] = $command;
 
 		// Add spacing before new command (except first)
@@ -138,8 +138,8 @@ class PackageOrchestrator {
 	/**
 	 * Parse and beautify line output
 	 */
-	public function parseLine( string $line ): bool {
-		$out = $this->packageSection ?? $this->output;
+	public function parse_line( string $line ): bool {
+		$out = $this->package_section ?? $this->output;
 
 		// Skip empty lines
 		if ( trim( $line ) === '' ) {
@@ -174,14 +174,14 @@ class PackageOrchestrator {
 	/**
 	 * Get current orchestrator state
 	 */
-	public function getState(): array {
+	public function get_state(): array {
 		return $this->state;
 	}
 
 	/**
 	 * Update test statistics from CTRF data
 	 */
-	public function updateTestStats( array $ctrf_summary ): void {
+	public function update_test_stats( array $ctrf_summary ): void {
 		if ( isset( $ctrf_summary['tests'] ) ) {
 			$this->state['test_totals']['total']   = $ctrf_summary['tests'] ?? 0;
 			$this->state['test_totals']['passed']  = $ctrf_summary['passed'] ?? 0;
@@ -193,15 +193,15 @@ class PackageOrchestrator {
 	/**
 	 * End current package
 	 */
-	public function packageEnd( bool $success = true, bool $has_more_packages = false ): void {
-		$out = $this->packageSection ?? $this->output;
+	public function package_end( bool $success = true, bool $has_more_packages = false ): void {
+		$out = $this->package_section ?? $this->output;
 
 		// Increment completed count
 		++$this->state['packages_completed'];
 
 		// Package footer (no right border)
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '└' . str_repeat( '─', $lineWidth ) );
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '└' . str_repeat( '─', $line_width ) );
 		$out->writeln( '' );
 
 		// Only show database restore message if there are more packages
@@ -218,47 +218,47 @@ class PackageOrchestrator {
 	/**
 	 * Display post-processing section
 	 */
-	public function postProcessingStart(): void {
-		$out       = $this->packageSection ?? $this->output;
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '┌─ POST-PROCESSING ' . str_repeat( '─', max( 0, $lineWidth - 19 ) ) );
+	public function post_processing_start(): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '┌─ POST-PROCESSING ' . str_repeat( '─', max( 0, $line_width - 19 ) ) );
 		$this->state['phase_start_time'] = microtime( true );
 		$this->state['current_phase']    = 'POST_PROCESSING';
 	}
 
-	public function postProcessingMessage( string $message, bool $success = true ): void {
-		$out    = $this->packageSection ?? $this->output;
+	public function post_processing_message( string $message, bool $success = true ): void {
+		$out    = $this->package_section ?? $this->output;
 		$symbol = $success ? '✓' : '✗';
 		$out->writeln( "│ $symbol $message" );
 	}
 
-	public function postProcessingEnd(): void {
-		$out       = $this->packageSection ?? $this->output;
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '└' . str_repeat( '─', $lineWidth ) );
+	public function post_processing_end(): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '└' . str_repeat( '─', $line_width ) );
 		$out->writeln( '' );
 	}
 
 	/**
 	 * Display global teardown
 	 */
-	public function globalTeardownStart(): void {
-		$out       = $this->packageSection ?? $this->output;
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '┌─ GLOBAL TEARDOWN ' . str_repeat( '─', max( 0, $lineWidth - 19 ) ) );
+	public function global_teardown_start(): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '┌─ GLOBAL TEARDOWN ' . str_repeat( '─', max( 0, $line_width - 19 ) ) );
 		$this->state['phase_start_time'] = microtime( true );
 		$this->state['current_phase']    = 'GLOBAL_TEARDOWN';
 	}
 
-	public function globalTeardownMessage( string $message ): void {
-		$out = $this->packageSection ?? $this->output;
+	public function global_teardown_message( string $message ): void {
+		$out = $this->package_section ?? $this->output;
 		$out->writeln( '│ ' . $message );
 	}
 
-	public function globalTeardownEnd(): void {
-		$out       = $this->packageSection ?? $this->output;
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '└' . str_repeat( '─', $lineWidth ) );
+	public function global_teardown_end(): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '└' . str_repeat( '─', $line_width ) );
 		$out->writeln( '' );
 	}
 
@@ -267,18 +267,18 @@ class PackageOrchestrator {
 	 */
 	public function summary( array $results ): void {
 		$duration = microtime( true ) - $this->state['start_time'];
-		$out      = $this->statusSection ?? $this->output;
+		$out      = $this->status_section ?? $this->output;
 
-		$lineWidth = min( $this->terminalWidth - 5, 75 );
+		$line_width = min( $this->terminal_width - 5, 75 );
 		$out->writeln( '' );
-		$out->writeln( str_repeat( '═', $lineWidth ) );
+		$out->writeln( str_repeat( '═', $line_width ) );
 		$out->writeln( 'TEST RESULTS SUMMARY' );
-		$out->writeln( str_repeat( '═', $lineWidth ) );
+		$out->writeln( str_repeat( '═', $line_width ) );
 
 		// Status
-		$status      = isset( $results['status'] ) && $results['status'] === 'passed' ? '✓ PASSED' : '✗ FAILED';
-		$statusColor = isset( $results['status'] ) && $results['status'] === 'passed' ? 'info' : 'error';
-		$out->writeln( sprintf( '<' . $statusColor . '>Status:        %s</' . $statusColor . '>', $status ) );
+		$status       = isset( $results['status'] ) && $results['status'] === 'passed' ? '✓ PASSED' : '✗ FAILED';
+		$status_color = isset( $results['status'] ) && $results['status'] === 'passed' ? 'info' : 'error';
+		$out->writeln( sprintf( '<' . $status_color . '>Status:        %s</' . $status_color . '>', $status ) );
 
 		// Package stats
 		$out->writeln( sprintf( 'Packages:      %d/%d executed', $this->state['packages_completed'], $this->state['packages_total'] ) );
@@ -292,7 +292,7 @@ class PackageOrchestrator {
 			$out->writeln( sprintf( 'Tests:         %d passed, %d failed, %d skipped', $passed, $failed, $skipped ) );
 		}
 
-		$out->writeln( sprintf( 'Duration:      %s', $this->formatDuration( $duration ) ) );
+		$out->writeln( sprintf( 'Duration:      %s', $this->format_duration( $duration ) ) );
 
 		// View results section
 		if ( ! empty( $results['local_command'] ) || ! empty( $results['remote_url'] ) ) {
@@ -305,13 +305,13 @@ class PackageOrchestrator {
 				$out->writeln( '• Remote URL:    <comment>' . $results['remote_url'] . '</comment>' );
 			}
 		}
-		$out->writeln( str_repeat( '═', $lineWidth ) );
+		$out->writeln( str_repeat( '═', $line_width ) );
 	}
 
 	/**
 	 * Format duration in human readable format
 	 */
-	private function formatDuration( float $seconds ): string {
+	private function format_duration( float $seconds ): string {
 		if ( $seconds < 1 ) {
 			return round( $seconds * 1000 ) . 'ms';
 		} elseif ( $seconds < 60 ) {

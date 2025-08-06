@@ -247,7 +247,7 @@ class ResultCollector {
 			throw new RuntimeException( 'npx not found. Please ensure Node.js and npm are installed.' );
 		}
 
-		$orchestrator->postProcessingMessage( 'Merging blob reports into HTML...' );
+		$orchestrator->post_processing_message( 'Merging blob reports into HTML...' );
 
 		// Create a temporary directory for merged output
 		$merged_dir = $artifacts_dir . '/final/html-report';
@@ -292,11 +292,11 @@ class ResultCollector {
 		} );
 
 		if ( ! $proc->isSuccessful() ) {
-			$orchestrator->postProcessingMessage( 'Blob merge failed', false );
+			$orchestrator->post_processing_message( 'Blob merge failed', false );
 			throw new RuntimeException( 'Blob merge failed: ' . $proc->getErrorOutput() );
 		}
 
-		$orchestrator->postProcessingMessage( 'HTML report generated' );
+		$orchestrator->post_processing_message( 'HTML report generated' );
 	}
 
 	public function merge_ctrf( string $artifacts_dir, SymfonyStyle $io, PackageOrchestrator $orchestrator ): void {
@@ -311,7 +311,7 @@ class ResultCollector {
 		$bin_dir  = $this->node_deps->ensure_packages( [ 'ctrf-cli' ], $io );
 		$ctrf_bin = $bin_dir . '/ctrf';
 
-		$orchestrator->postProcessingMessage( 'Merging CTRF reports...' );
+		$orchestrator->post_processing_message( 'Merging CTRF reports...' );
 
 		$proc = new Process( [ $ctrf_bin, 'merge', $ctrf_dir ] );
 		$proc->setTimeout( 300 );
@@ -323,7 +323,7 @@ class ResultCollector {
 		} );
 
 		if ( ! $proc->isSuccessful() ) {
-			$orchestrator->postProcessingMessage( 'CTRF merge failed', false );
+			$orchestrator->post_processing_message( 'CTRF merge failed', false );
 			throw new RuntimeException( 'CTRF merge failed: ' . $proc->getErrorOutput() );
 		}
 
@@ -340,7 +340,7 @@ class ResultCollector {
 				unlink( $target_file );
 			}
 			rename( $ctrf_dir . '/ctrf-report.json', $final_dir . '/ctrf-report.json' );
-			$orchestrator->postProcessingMessage( 'CTRF reports merged' );
+			$orchestrator->post_processing_message( 'CTRF reports merged' );
 		}
 	}
 
@@ -355,7 +355,7 @@ class ResultCollector {
 			return;
 		}
 
-		$orchestrator->postProcessingMessage( 'Saving Allure reports...' );
+		$orchestrator->post_processing_message( 'Saving Allure reports...' );
 
 		try {
 			// Try to save to final location using Symfony Filesystem mirror
@@ -367,7 +367,7 @@ class ResultCollector {
 			$fs = new Filesystem();
 			$fs->mirror( $allure_dir, $final_dir );
 
-			$orchestrator->postProcessingMessage( 'Allure reports saved' );
+			$orchestrator->post_processing_message( 'Allure reports saved' );
 
 		} catch ( \Exception $e ) {
 			// If saving to final location fails, reports remain in original location

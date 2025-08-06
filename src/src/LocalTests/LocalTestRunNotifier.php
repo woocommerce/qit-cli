@@ -138,7 +138,7 @@ class LocalTestRunNotifier {
 
 	/**
 	 * @param TestResult|PerformanceTestResult $test_result
-	 * @param PackageOrchestrator|null         $orchestrator Optional orchestrator for progress display
+	 * @param PackageOrchestrator|null         $orchestrator Optional orchestrator for progress display.
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
@@ -230,13 +230,13 @@ class LocalTestRunNotifier {
 
 			if ( filesize( $zip_path ) > 200 * 1024 * 1024 ) {
 				if ( $orchestrator ) {
-					$orchestrator->postProcessingMessage( 'Allure results too large to upload', false );
+					$orchestrator->post_processing_message( 'Allure results too large to upload', false );
 				} else {
 					$this->output->writeln( '<error>Allure raw results are too large to upload. Skipping...</error>' );
 				}
 			} else {
 				if ( $orchestrator ) {
-					$orchestrator->postProcessingMessage( 'Uploading results to QIT Manager...' );
+					$orchestrator->post_processing_message( 'Uploading results to QIT Manager...' );
 				}
 				$this->uploader->upload_build(
 					'test-report',
@@ -246,7 +246,7 @@ class LocalTestRunNotifier {
 					'e2e'
 				);
 				if ( $orchestrator ) {
-					$orchestrator->postProcessingMessage( 'Results uploaded' );
+					$orchestrator->post_processing_message( 'Results uploaded' );
 				}
 			}
 		}

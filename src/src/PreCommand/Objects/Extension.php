@@ -115,8 +115,6 @@ class Extension implements \JsonSerializable {
 			$e = new \InvalidArgumentException(
 				'Extension slug is required but missing or empty. Data: ' . json_encode( $data )
 			);
-			// Add stack trace to help debug
-			error_log( "Extension::fromArray called with empty slug. Stack trace:\n" . $e->getTraceAsString() );
 			throw $e;
 		}
 
