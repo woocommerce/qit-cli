@@ -12,8 +12,9 @@ class QITReporterParser {
 		'passed' => 0,
 		'failed' => 0,
 		'skipped' => 0,
+		'flaky' => 0,
+		'startTime' => null,
 		'running' => [],
-		'lastProgressLine' => null,
 	];
 	private bool $useQITReporter = false;
 
@@ -36,7 +37,7 @@ class QITReporterParser {
 			
 			try {
 				$event = json_decode( trim( $json_str ), true );
-				if ( $event ) {
+				if ( $event && isset( $event['event'] ) ) {
 					$this->handleEvent( $event );
 					return true; // Suppress the raw JSON line
 				}
@@ -57,42 +58,53 @@ class QITReporterParser {
 	}
 
 	private function handleEvent( array $event ): void {
-		switch ( $event['type'] ) {
-			case 'session:start':
-				$this->handleSessionStart( $event['data'] );
+		$eventType = $event['event'];
+		$data = $event['data'] ?? [];
+		
+		switch ( $eventType ) {
+			case 'begin':
+				$this->handleBegin( $data );
 				break;
-			case 'test:start':
-				$this->handleTestStart( $event['data'] );
+			case 'testBegin':
+				$this->handleTestBegin( $data );
 				break;
-			case 'test:end':
-				$this->handleTestEnd( $event['data'] );
+			case 'testEnd':
+				$this->handleTestEnd( $data );
 				break;
-			case 'progress':
-				$this->handleProgress( $event['data'] );
-				break;
-			case 'session:end':
-				$this->handleSessionEnd( $event['data'] );
+			case 'end':
+				$this->handleEnd( $data );
 				break;
 			case 'error':
-				$this->handleError( $event['data'] );
+				$this->handleError( $data );
+				break;
+			case 'stdout':
+			case 'stderr':
+				// We can handle these if needed, for now ignore
+				break;
+			case 'stepBegin':
+			case 'stepEnd':
+				// We can handle test steps if needed, for now ignore
 				break;
 		}
 	}
 
-	private function handleSessionStart( array $data ): void {
+	private function handleBegin( array $data ): void {
 		$this->state['totalTests'] = $data['totalTests'];
+		$this->state['startTime'] = microtime( true );
 		$this->output->writeln( '' );
 		$this->output->writeln( '<comment>Running ' . $data['totalTests'] . ' tests using ' . $data['workers'] . ' worker(s)</comment>' );
 		$this->output->writeln( '' );
 	}
 
-	private function handleTestStart( array $data ): void {
+	private function handleTestBegin( array $data ): void {
 		// Store in state but don't output anything to avoid line overwrites
-		$this->state['running'][$data['id']] = $data;
+		$testId = $data['file'] . ':' . $data['line'] . ':' . $data['title'];
+		$this->state['running'][$testId] = $data;
 	}
 
 	private function handleTestEnd( array $data ): void {
-		unset( $this->state['running'][$data['id']] );
+		$testId = $data['file'] . ':' . $data['line'] . ':' . $data['title'];
+		unset( $this->state['running'][$testId] );
 		$this->state['completed']++;
 
 		$icon = '✓';
@@ -104,6 +116,7 @@ class QITReporterParser {
 				if ( $data['retry'] > 0 ) {
 					$icon = '⚡';
 					$color = 'comment';
+					$this->state['flaky']++;
 				}
 				break;
 			case 'failed':
@@ -131,69 +144,31 @@ class QITReporterParser {
 		}
 	}
 
-	private function handleProgress( array $data ): void {
-		// Update internal state
-		$this->state = array_merge( $this->state, $data );
-		// Don't render progress bar - it causes line overwrite issues
-	}
-
-	private function handleSessionEnd( array $data ): void {
+	private function handleEnd( array $data ): void {
 		$this->output->writeln( '' );
 		
-		$summary = $data['summary'];
+		$duration = $this->state['startTime'] ? (int)((microtime( true ) - $this->state['startTime']) * 1000) : $data['duration'];
 		$status = $data['status'] === 'passed' ? '<info>✓</info>' : '<error>✗</error>';
 		
-		$this->output->writeln( "{$status} {$summary['passed']}/{$summary['total']} tests passed" );
+		$this->output->writeln( "{$status} {$this->state['passed']}/{$this->state['totalTests']} tests passed" );
 		
-		if ( $summary['failed'] > 0 ) {
-			$this->output->writeln( "  <error>{$summary['failed']} failed</error>" );
+		if ( $this->state['failed'] > 0 ) {
+			$this->output->writeln( "  <error>{$this->state['failed']} failed</error>" );
 		}
-		if ( $summary['flaky'] > 0 ) {
-			$this->output->writeln( "  <comment>{$summary['flaky']} flaky</comment>" );
+		if ( $this->state['flaky'] > 0 ) {
+			$this->output->writeln( "  <comment>{$this->state['flaky']} flaky</comment>" );
 		}
-		if ( $summary['skipped'] > 0 ) {
-			$this->output->writeln( "  <comment>{$summary['skipped']} skipped</comment>" );
+		if ( $this->state['skipped'] > 0 ) {
+			$this->output->writeln( "  <comment>{$this->state['skipped']} skipped</comment>" );
 		}
 		
-		$this->output->writeln( "  <comment>Duration: " . $this->formatDuration( $data['duration'] ) . "</comment>" );
+		$this->output->writeln( "  <comment>Duration: " . $this->formatDuration( $duration ) . "</comment>" );
 	}
 
 	private function handleError( array $data ): void {
 		$this->output->writeln( "<error>Error: {$data['message']}</error>" );
 	}
 
-	private function renderProgressBar(): void {
-		if ( $this->state['totalTests'] === 0 ) {
-			return;
-		}
-
-		$percentage = round( ( $this->state['completed'] / $this->state['totalTests'] ) * 100 );
-		$bar_length = 30;
-		$filled = round( ( $percentage / 100 ) * $bar_length );
-		$empty = $bar_length - $filled;
-
-		$bar = str_repeat( '█', $filled ) . str_repeat( '░', $empty );
-		
-		$progress_line = sprintf(
-			"  [%s] %d/%d (%d%%) ✓%d ✗%d -%d",
-			$bar,
-			$this->state['completed'],
-			$this->state['totalTests'],
-			$percentage,
-			$this->state['passed'],
-			$this->state['failed'],
-			$this->state['skipped']
-		);
-
-		// Clear previous progress line and write new one
-		if ( $this->state['lastProgressLine'] !== null ) {
-			// Move cursor up and clear line
-			$this->output->write( "\x1B[1A\x1B[2K" );
-		}
-		
-		$this->output->writeln( "<comment>{$progress_line}</comment>" );
-		$this->state['lastProgressLine'] = $progress_line;
-	}
 
 	private function shouldSuppressLine( string $line ): bool {
 		// Suppress duplicate information when using QIT reporter

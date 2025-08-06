@@ -1,125 +1,137 @@
 /**
- * QIT Playwright Reporter
- * Outputs structured JSON Lines format for real-time parsing by QIT
+ * QIT JSONL Reporter
+ * Emits all Playwright events as JSON Lines for flexible processing by QIT
  */
 class QITReporter {
   constructor(options = {}) {
     this.options = options;
-    this.totalTests = 0;
-    this.testResults = new Map();
-    this.startTime = Date.now();
   }
 
   onBegin(config, suite) {
-    this.totalTests = suite.allTests().length;
-    this.emit({
-      type: 'session:start',
-      timestamp: new Date().toISOString(),
-      data: {
-        totalTests: this.totalTests,
-        workers: config.workers,
-        projects: config.projects.map(p => ({ name: p.name }))
-      }
+    this.emit('begin', {
+      totalTests: suite.allTests().length,
+      workers: config.workers,
+      projects: config.projects.map(p => ({
+        name: p.name,
+        testDir: p.testDir
+      })),
+      version: config.version,
+      rootDir: config.rootDir,
+      configFile: config.configFile
     });
   }
 
   onTestBegin(test, result) {
-    // Don't emit test:start to avoid line overwrites
-    // We'll show the test info when it completes
+    this.emit('testBegin', {
+      title: test.title,
+      titlePath: test.titlePath(),
+      file: test.location.file,
+      line: test.location.line,
+      column: test.location.column,
+      workerIndex: result.workerIndex,
+      parallelIndex: result.parallelIndex,
+      retry: result.retry,
+      expectedDuration: test.expectedStatus === 'skipped' ? 0 : undefined,
+      annotations: test.annotations,
+      tags: test.tags
+    });
+  }
+
+  onStepBegin(test, result, step) {
+    this.emit('stepBegin', {
+      title: step.title,
+      category: step.category,
+      testTitle: test.title,
+      testFile: test.location.file,
+      location: step.location
+    });
+  }
+
+  onStepEnd(test, result, step) {
+    this.emit('stepEnd', {
+      title: step.title,
+      category: step.category,
+      duration: step.duration,
+      error: step.error ? {
+        message: step.error.message || String(step.error),
+        stack: step.error.stack
+      } : null
+    });
   }
 
   onTestEnd(test, result) {
-    const testId = this.getTestId(test);
-    this.testResults.set(testId, result);
-
-    this.emit({
-      type: 'test:end',
-      timestamp: new Date().toISOString(),
-      data: {
-        id: testId,
-        title: test.title,
-        status: result.status,
-        duration: result.duration,
-        errors: result.errors.map(e => ({
-          message: e.message || String(e),
-          stack: e.stack
-        })),
-        retry: result.retry,
-        workerIndex: result.workerIndex
-      }
+    this.emit('testEnd', {
+      title: test.title,
+      titlePath: test.titlePath(),
+      file: test.location.file,
+      line: test.location.line,
+      status: result.status,
+      duration: result.duration,
+      errors: result.errors.map(e => ({
+        message: e.message || String(e),
+        stack: e.stack,
+        value: e.value
+      })),
+      retry: result.retry,
+      workerIndex: result.workerIndex,
+      parallelIndex: result.parallelIndex,
+      stdout: result.stdout,
+      stderr: result.stderr,
+      attachments: result.attachments.map(a => ({
+        name: a.name,
+        contentType: a.contentType,
+        path: a.path,
+        body: a.body
+      }))
     });
-
-    // Don't emit progress updates - they cause line overwrite issues
   }
 
   onEnd(result) {
-    const duration = Date.now() - this.startTime;
-    const summary = this.calculateSummary();
-
-    this.emit({
-      type: 'session:end',
-      timestamp: new Date().toISOString(),
-      data: {
-        status: result.status,
-        duration: duration,
-        summary: summary
-      }
+    this.emit('end', {
+      status: result.status,
+      startTime: result.startTime,
+      duration: result.duration
     });
   }
 
   onError(error) {
-    this.emit({
-      type: 'error',
-      timestamp: new Date().toISOString(),
-      data: {
-        message: error.message || String(error),
-        stack: error.stack
-      }
+    this.emit('error', {
+      message: error.message || String(error),
+      stack: error.stack,
+      value: error.value
     });
   }
 
-  // Helper methods
-  emit(event) {
-    // Output as JSONL with QIT marker
-    const line = `::QIT::${JSON.stringify(event)}\n`;
-    process.stdout.write(line);
-  }
-
-  getTestId(test) {
-    const file = test.location.file;
-    const line = test.location.line;
-    return `${file}:${line}:${test.title}`;
-  }
-
-  emitProgress() {
-    const completed = this.testResults.size;
-    const passed = Array.from(this.testResults.values()).filter(r => r.status === 'passed').length;
-    const failed = Array.from(this.testResults.values()).filter(r => r.status === 'failed').length;
-    const skipped = Array.from(this.testResults.values()).filter(r => r.status === 'skipped').length;
-
-    this.emit({
-      type: 'progress',
-      timestamp: new Date().toISOString(),
-      data: {
-        completed,
-        total: this.totalTests,
-        passed,
-        failed,
-        skipped,
-        percentage: Math.round((completed / this.totalTests) * 100)
-      }
+  onStdOut(chunk, test, result) {
+    this.emit('stdout', {
+      text: chunk.toString(),
+      test: test ? {
+        title: test.title,
+        file: test.location.file
+      } : null,
+      workerIndex: result?.workerIndex
     });
   }
 
-  calculateSummary() {
-    const results = Array.from(this.testResults.values());
-    return {
-      total: this.totalTests,
-      passed: results.filter(r => r.status === 'passed').length,
-      failed: results.filter(r => r.status === 'failed' || r.status === 'timedOut').length,
-      skipped: results.filter(r => r.status === 'skipped').length,
-      flaky: results.filter(r => r.status === 'passed' && r.retry > 0).length
-    };
+  onStdErr(chunk, test, result) {
+    this.emit('stderr', {
+      text: chunk.toString(),
+      test: test ? {
+        title: test.title,
+        file: test.location.file
+      } : null,
+      workerIndex: result?.workerIndex
+    });
+  }
+
+  // Simple emit function - just outputs JSONL
+  emit(event, data) {
+    const line = JSON.stringify({
+      event,
+      timestamp: Date.now(),
+      data
+    });
+    process.stdout.write(`::QIT::${line}\n`);
   }
 }
 
