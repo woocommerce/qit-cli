@@ -896,20 +896,21 @@ class RunE2ECommand extends QITCommand {
 					$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
 				}
 
-				// Determine package type from metadata
-				$package_type = ( isset( $metadata['remote'] ) && $metadata['remote'] === false ) ? 'Local Package' : 'Remote Package';
-				$orchestrator->package_start( $package_index, $display_name, $package_type );
-
-				// Import database snapshot before each non-first package
+				// Import database snapshot before each non-first package (show BEFORE package header)
 				if ( ! $is_first_package ) {
-					$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
+					$orchestrator->database_restore_start();
 					try {
 						App::make( Docker::class )->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql', '--defaults' ] );
-						$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
+						$orchestrator->database_restore_end( true );
 					} catch ( \Exception $e ) {
+						$orchestrator->database_restore_end( false );
 						throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
 					}
 				}
+
+				// Determine package type from metadata
+				$package_type = ( isset( $metadata['remote'] ) && $metadata['remote'] === false ) ? 'Local Package' : 'Remote Package';
+				$orchestrator->package_start( $package_index, $display_name, $package_type );
 
 				try {
 					// Manifest was already loaded above and stored in metadata

@@ -235,13 +235,28 @@ class PackageOrchestrator {
 		$line_width = min( $this->terminal_width - 5, 75 );
 		$out->writeln( '└' . str_repeat( '─', $line_width ) );
 		$out->writeln( '' );
+	}
 
-		// Only show database restore message if there are more packages
-		if ( $has_more_packages ) {
-			// Database is always restored for the next package, regardless of success/failure
-			$out->writeln( '[Database will be restored to snapshot for next package]' );
-			$out->writeln( '' );
+	/**
+	 * Display database restore section
+	 */
+	public function database_restore_start(): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		$out->writeln( '┌─ DATABASE RESTORE ───────────────────────────────────────────────────────' );
+		$out->writeln( '│ Restoring database snapshot for test isolation...' );
+	}
+
+	public function database_restore_end( bool $success = true ): void {
+		$out        = $this->package_section ?? $this->output;
+		$line_width = min( $this->terminal_width - 5, 75 );
+		if ( $success ) {
+			$out->writeln( '│ ✓ Database snapshot restored successfully' );
+		} else {
+			$out->writeln( '│ ✗ Database restore failed' );
 		}
+		$out->writeln( '└' . str_repeat( '─', $line_width ) );
+		$out->writeln( '' );
 	}
 
 	/**
