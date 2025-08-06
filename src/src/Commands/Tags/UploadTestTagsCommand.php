@@ -182,7 +182,7 @@ class UploadTestTagsCommand extends Command {
 	 * @throws \RuntimeException If validation fails.
 	 */
 	private function validate_performance_tests( string $test_path ): void {
-		// Check if at least one ".k6.js" file exists.
+		// Check if at least one ".js" file exists.
 		$possible_k6_files = [];
 
 		foreach ( new RecursiveIteratorIterator( new RecursiveDirectoryIterator( $test_path ) ) as $file ) {
@@ -190,15 +190,15 @@ class UploadTestTagsCommand extends Command {
 				continue;
 			}
 
-			// Look for k6 test files (*.k6.js).
-			if ( preg_match( '/\.k6\.js$/', $file->getFilename() ) ) {
+			// Look for k6 test files (*.js).
+			if ( preg_match( '/\.js$/', $file->getFilename() ) ) {
 				$possible_k6_files[] = $file->getPathname();
 			}
 		}
 
 		// Fail: No k6 files found.
 		if ( empty( $possible_k6_files ) ) {
-			throw new \RuntimeException( 'No ".k6.js" file found.' );
+			throw new \RuntimeException( 'No ".js" files found.' );
 		}
 
 		// Check that at least one of these files is actually a k6 test.
@@ -209,6 +209,9 @@ class UploadTestTagsCommand extends Command {
 			return str_contains( $contents, 'from "k6"' ) ||
 					str_contains( $contents, 'from \'k6\'' ) ||
 					str_contains( $contents, 'import http from "k6/http"' ) ||
+					str_contains( $contents, 'import http from \'k6/http\'' ) ||
+					str_contains( $contents, 'import { browser } from "k6/browser"' ) ||
+					str_contains( $contents, 'import { browser } from \'k6/browser\'' ) ||
 					str_contains( $contents, 'import { check' ) ||
 					str_contains( $contents, 'export let options' ) ||
 					str_contains( $contents, 'export default function' );

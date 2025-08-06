@@ -84,6 +84,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
+			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run.', '' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
@@ -228,12 +229,14 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		$test_tag = $input->getArgument( 'test' ) ?? '';
+		$test_tag     = $input->getArgument( 'test' ) ?? '';
+		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
 
 		if ( $env_info instanceof PerformanceEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut_slug = $woo_extension_slug;
-			$env_info->sut_type = $sut_type;
-			$env_info->test_tag = $test_tag;
+			$env_info->sut_slug     = $woo_extension_slug;
+			$env_info->sut_type     = $sut_type;
+			$env_info->test_tag     = $test_tag;
+			$env_info->k6_test_file = $k6_test_file;
 
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,

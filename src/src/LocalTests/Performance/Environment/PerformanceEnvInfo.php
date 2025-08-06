@@ -41,6 +41,9 @@ class PerformanceEnvInfo extends EnvInfo {
 	/** @var string The performance test tag to be executed */
 	public $test_tag = '';
 
+	/** @var string The k6 test file to run */
+	public $k6_test_file = '';
+
 	/** @var array<int,array{
 	 *     slug:string,
 	 *     test_tag:string,
