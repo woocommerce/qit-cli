@@ -41,7 +41,8 @@ class TestPackageManifestParserTest extends TestCase {
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     }
 }
@@ -94,7 +95,8 @@ JSON;
         },
         "results": {
             "ctrf-json": "./results/ctrf-json/results.json",
-            "allure-dir": "./results/allure"
+            "allure-dir": "./results/allure",
+            "blob-dir": "./blob-report"
         }
     },
     "mu_plugins": [
@@ -206,7 +208,8 @@ JSON;
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     }
 }
@@ -261,7 +264,8 @@ JSON;
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     },
     "env_vars": {
@@ -315,7 +319,8 @@ JSON;
         },
         "results": {
             "ctrf-json": "./output/ctrf-json/results.json",
-            "allure-dir": "./output/allure"
+            "allure-dir": "./output/allure",
+            "blob-dir": "./blob-report"
         }
     },
     "mu_plugins": [
@@ -380,7 +385,8 @@ JSON;
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     },
     "invalid_field": "This field is not in the schema"
@@ -412,7 +418,8 @@ JSON;
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     }
 }
@@ -444,7 +451,8 @@ JSON;
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     }
 }
@@ -474,7 +482,8 @@ JSON;
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     }
 }
@@ -530,7 +539,8 @@ JSON;
             "afterAllPlugins": []
         },
         "results": {
-            "ctrf-json": "./test-results/ctrf-json/results.json"
+            "ctrf-json": "./test-results/ctrf-json/results.json",
+            "blob-dir": "./blob-report"
         }
     }
 }

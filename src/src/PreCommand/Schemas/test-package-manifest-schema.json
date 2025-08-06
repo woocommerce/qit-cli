@@ -144,7 +144,7 @@
               "description": "Relative path for Playwright blob reporter output directory"
             }
           },
-          "required": ["ctrf-json"],
+          "required": ["ctrf-json", "blob-dir"],
           "additionalProperties": false
         }
       },

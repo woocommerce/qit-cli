@@ -311,7 +311,7 @@ class ResultCollector {
 			$merge_config_file,
 			'module.exports = ' . json_encode( $merge_config, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . ';'
 		);
-		
+
 		// Build the merge command with config
 		$cmd_parts = [ 'npx', 'playwright', 'merge-reports', '--config', $merge_config_file, $merge_input_dir ];
 

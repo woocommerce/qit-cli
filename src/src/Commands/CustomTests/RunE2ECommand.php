@@ -956,18 +956,18 @@ class RunE2ECommand extends QITCommand {
 						} catch ( \Throwable $collector_err ) {
 							$error_msg = $collector_err->getMessage();
 							$io->writeln( "<error>Result collection failed: {$error_msg}</error>" );
-							
+
 							// Check if it's a blob reporter error
 							if ( strpos( $error_msg, 'blob-dir' ) !== false ) {
 								$io->writeln( '<error>Test terminated abnormally - Blob reporter output is required</error>' );
 								$io->writeln( '' );
 								$io->writeln( '<comment>To fix this issue, ensure your test package generates blob reports:</comment>' );
 								$io->writeln( '  1. Configure blob reporter in playwright.config.js:' );
-								$io->writeln( "     reporter: [" );
+								$io->writeln( '     reporter: [' );
 								$io->writeln( "       ['list']," );
 								$io->writeln( "       ['blob', {outputDir: './blob-report'}]," );
 								$io->writeln( "       ['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]" );
-								$io->writeln( "     ]" );
+								$io->writeln( '     ]' );
 								$io->writeln( '  2. Update manifest.json to point to both report directories:' );
 								$io->writeln( '     "results": {' );
 								$io->writeln( '       "ctrf-json": "./results/ctrf.json",' );
@@ -1235,5 +1235,4 @@ class RunE2ECommand extends QITCommand {
 
 		return $env_up_options;
 	}
-
 }
