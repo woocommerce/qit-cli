@@ -98,10 +98,11 @@ class PackagePhaseRunner {
 	 * @param string                $package_path Working directory for the command.
 	 * @param array<string, string> $env_vars Environment variables.
 	 * @param string                $phase The phase being executed (for timeout calculation).
+	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_on_host( string $cmd, string $package_path, array $env_vars = [], string $phase = 'run' ): array {
+	private function run_on_host( string $cmd, string $package_path, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator ): array {
 		$start_time = microtime( true );
 		$timeout    = $this->get_timeout_for_phase( $phase );
 		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, $timeout );
@@ -115,10 +116,8 @@ class PackagePhaseRunner {
 		$line_buffer = '';
 		$skip_mode   = false;
 		
-		// Get orchestrator for beautiful output (always available)
-		$orchestrator = App::getVar( 'package_orchestrator' );
-		// Use orchestrator for parsing if available
-		$use_orchestrator = $orchestrator !== null;
+		// Use orchestrator for parsing
+		$use_orchestrator = true;
 
 		// Store process in DI container so signal handler can terminate it
 		App::setVar( 'qit_current_test_process', $process );
@@ -230,19 +229,19 @@ class PackagePhaseRunner {
 	 * @param string                $workdir Working directory inside container.
 	 * @param array<string, string> $env_vars Environment variables.
 	 * @param string                $phase The phase being executed (globalSetup, setup, run, etc).
+	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [], string $phase = 'run' ): array {
+	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator ): array {
 		$wrapped    = [ '/bin/bash', '-c', "cd {$workdir} && {$cmd}" ];
 		$start_time = microtime( true );
 		$stdout     = '';
 		$stderr     = '';
 		$exit_code  = 0;
 
-		// Get orchestrator for beautiful output
-		$orchestrator = App::getVar( 'package_orchestrator' );
-		$use_orchestrator = $orchestrator !== null;
+		// Use orchestrator for beautiful output
+		$use_orchestrator = true;
 
 		// Create output callback for orchestrator
 		$output_callback = null;
@@ -414,6 +413,7 @@ class PackagePhaseRunner {
 	 * @param string      $package_id Package identifier.
 	 * @param string      $package_path Package directory path.
 	 * @param string|null $artifacts_dir Artifacts directory for CTRF files.
+	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
 	 * @return int Number of commands that were actually executed.
 	 * @throws \RuntimeException On command failure.
 	 */
@@ -422,7 +422,8 @@ class PackagePhaseRunner {
 		string $phase,
 		string $package_id,
 		string $package_path,
-		?string $artifacts_dir = null
+		?string $artifacts_dir,
+		PackageOrchestrator $orchestrator
 	): int {
 		$manifest_path = $package_path . '/manifest.json';
 		if ( ! file_exists( $manifest_path ) ) {
@@ -474,18 +475,15 @@ class PackagePhaseRunner {
 			// Prepare environment variables for test execution
 			$env_vars = $this->prepare_test_env_vars( $env_info );
 
-			// Show command in orchestrator if available
-			$orchestrator = App::getVar( 'package_orchestrator' );
-			if ( $orchestrator !== null ) {
-				$context = $venue === 'host' ? 'host' : 'docker';
-				$orchestrator->showCommand( $cmd, $context );
-			}
+			// Show command in orchestrator
+			$context = $venue === 'host' ? 'host' : 'docker';
+			$orchestrator->showCommand( $cmd, $context );
 
 			try {
 				if ( $venue === 'host' ) {
-					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars, $phase );
+					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars, $phase, $orchestrator );
 				} else {
-					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase );
+					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase, $orchestrator );
 				}
 
 				// Generate individual CTRF immediately for bash scripts

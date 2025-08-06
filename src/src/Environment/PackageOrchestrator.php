@@ -172,6 +172,13 @@ class PackageOrchestrator {
 	}
 	
 	/**
+	 * Get current orchestrator state
+	 */
+	public function getState(): array {
+		return $this->state;
+	}
+	
+	/**
 	 * Update test statistics from CTRF data
 	 */
 	public function updateTestStats( array $ctrf_summary ): void {

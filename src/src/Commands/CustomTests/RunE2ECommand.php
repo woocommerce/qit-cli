@@ -399,7 +399,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Run tests with test packages
 		$io          = new SymfonyStyle( $input, $output );
-		$exit_status = $this->runTestPackages( $env_info, $test_packages, $io );
+		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io );
 
 		// Notify test finished
 		if ( isset( $env_info->sut['slug'] ) ) {
@@ -421,9 +421,35 @@ class RunE2ECommand extends QITCommand {
 
 			$test_result->set_status( $exit_status === Command::SUCCESS ? 'success' : 'failed' );
 
-			// Pass orchestrator to notify_test_finished for upload progress
-			$orchestrator = App::getVar( 'package_orchestrator' );
+			// Post-processing section - merging reports and uploading
+			// Use orchestrator from runTestPackages
+			$orchestrator = $orchestrator_from_run;
+			
+			$orchestrator->postProcessingStart();
+			
+			// Merge CTRF artifacts
+			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
+			
+			// Read merged CTRF report to get accurate test counts
+			$ctrf_report_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
+			if ( file_exists( $ctrf_report_path ) ) {
+				$ctrf_data = json_decode( file_get_contents( $ctrf_report_path ), true );
+				if ( isset( $ctrf_data['results']['summary'] ) ) {
+					$orchestrator->updateTestStats( $ctrf_data['results']['summary'] );
+				}
+			}
+
+			// Merge blob reports into HTML
+			$this->result_collector->merge_blob( $artifacts_dir, $io, $orchestrator );
+
+			// Try to save Allure reports to final location
+			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io, $orchestrator );
+			
+			// Pass orchestrator to notify_test_finished for upload progress (still in POST-PROCESSING)
 			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result, $orchestrator );
+			
+			// End post-processing after upload
+			$orchestrator->postProcessingEnd();
 
 			// Use exit status override if provided
 			if ( $exit_status_override !== null ) {
@@ -431,30 +457,19 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-		// Show orchestrator summary if available
-		$orchestrator = App::getVar( 'package_orchestrator' );
-		if ( $orchestrator ) {
-			$summary_data = [
-				'status' => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
-				'local_command' => 'qit e2e-report',
-				'remote_url' => $report_url ?? '',
-			];
-			$orchestrator->summary( $summary_data );
-		} else {
-			// Fallback if no orchestrator (shouldn't happen in normal flow)
-			if ( $exit_status === Command::SUCCESS ) {
-				$io->success( 'Tests passed' );
-			} else {
-				$io->error( 'Tests failed' );
-			}
-			
-			$io->writeln( '' );
-			$io->writeln( '<info>View full Playwright report:</info>  <comment>qit e2e-report</comment>' );
-			
-			if ( ! empty( $report_url ) ) {
-				$io->writeln( '<info>Remote URL (CI):</info>             <comment>' . $report_url . '</comment>' );
-			}
+		// Show orchestrator summary (use the one from runTestPackages if available)
+		if ( ! isset( $orchestrator_from_run ) ) {
+			// Create one as fallback if not from runTestPackages
+			$orchestrator_from_run = new \QIT_CLI\Environment\PackageOrchestrator( $io );
 		}
+		$orchestrator = $orchestrator_from_run;
+		
+		$summary_data = [
+			'status' => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
+			'local_command' => 'qit e2e-report',
+			'remote_url' => $report_url ?? '',
+		];
+		$orchestrator->summary( $summary_data );
 
 		return $exit_status;
 	}
@@ -759,14 +774,8 @@ class RunE2ECommand extends QITCommand {
 			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 		}
 
-		// Show environment shutdown message in orchestrator if available
-		$orchestrator = App::getVar( 'package_orchestrator' );
-		if ( $orchestrator ) {
-			// Already in teardown, just add the message
-			$orchestrator->globalTeardownMessage( 'Shutting down environment...' );
-		} else {
-			echo "\nShutting down environment...\n";
-		}
+		// Show environment shutdown message
+		echo "\nShutting down environment...\n";
 
 		$env_to_shutdown = App::getVar( 'env_to_shutdown' );
 		if ( ! empty( $env_to_shutdown ) ) {
@@ -804,15 +813,17 @@ class RunE2ECommand extends QITCommand {
 	 * @param array<string,mixed>                              $test_packages The test packages to run.
 	 * @param SymfonyStyle                                     $io The IO interface.
 	 *
-	 * @return int The exit status.
+	 * @return array{int, \QIT_CLI\Environment\PackageOrchestrator, string} Returns [exit_status, orchestrator, artifacts_dir].
 	 */
-	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
+	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): array {
+		// Create orchestrator early so it's available in catch/finally blocks
+		$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
+		$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
+		$normal_flow_completed = false;
+		
 		try {
 			$total_executed  = 0;
 			$failed_packages = [];
-
-			// Set up artifacts directory using env_id for consistency
-			$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
 
 			// Store in DI container for signal handler access
 			App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
@@ -821,10 +832,6 @@ class RunE2ECommand extends QITCommand {
 			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
 
 			$io->section( 'Running Test Packages' );
-			
-			// Create orchestrator for beautiful output (always used)
-			$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
-			App::setVar( 'package_orchestrator', $orchestrator );
 			
 			// Count non-bootstrap packages
 			$test_package_count = count( array_diff( array_keys( $test_packages ), $bootstrap_package_ids ) );
@@ -837,7 +844,7 @@ class RunE2ECommand extends QITCommand {
 			$orchestrator->globalSetupStart();
 			$orchestrator->globalSetupMessage( 'Running globalSetup phase for all packages...' );
 			foreach ( $test_packages as $pkg_id => $meta ) {
-				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir );
+				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir, $orchestrator );
 			}
 
 			// Export baseline database snapshot only if we have multiple test packages
@@ -921,7 +928,7 @@ class RunE2ECommand extends QITCommand {
 
 					// Run full lifecycle for test packages: setup -> run -> teardown
 					$orchestrator->phaseStart( 'setup' );
-					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir );
+					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
 					if ( $manifest && $setup_count > 0 ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
 					}
@@ -929,7 +936,7 @@ class RunE2ECommand extends QITCommand {
 					// Run phase with CTRF collection even on test failures
 					try {
 						$orchestrator->phaseStart( 'run' );
-						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir );
+						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
 					} catch ( \RuntimeException $e ) {
 						// Collect CTRF even if tests failed (exit code 1 from test failures)
 						if ( $manifest ) {
@@ -952,7 +959,7 @@ class RunE2ECommand extends QITCommand {
 					}
 
 					$orchestrator->phaseStart( 'teardown' );
-					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir );
+					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
 					// Note: teardown phase is for cleanup only - no result collection needed
 
 					$package_total   = $setup_count + $run_count + $teardown_count;
@@ -980,28 +987,7 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 
-			// Post-processing section
-			$orchestrator->postProcessingStart();
-			
-			// Merge CTRF artifacts
-			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
-			
-			// Read merged CTRF report to get accurate test counts
-			$ctrf_report_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
-			if ( file_exists( $ctrf_report_path ) ) {
-				$ctrf_data = json_decode( file_get_contents( $ctrf_report_path ), true );
-				if ( isset( $ctrf_data['results']['summary'] ) ) {
-					$orchestrator->updateTestStats( $ctrf_data['results']['summary'] );
-				}
-			}
-
-			// Merge blob reports into HTML
-			$this->result_collector->merge_blob( $artifacts_dir, $io, $orchestrator );
-
-			// Try to save Allure reports to final location
-			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io, $orchestrator );
-			
-			$orchestrator->postProcessingEnd();
+			// Reports merging will happen after test_runner completes
 
 			// Store artifacts directory in env_info for later use by Manager
 			/** @phpstan-ignore-next-line property.notFound */
@@ -1016,31 +1002,32 @@ class RunE2ECommand extends QITCommand {
 				] ), DAY_IN_SECONDS );
 			}
 
+			// Mark that normal flow completed successfully
+			$normal_flow_completed = true;
+			
 			// Return appropriate exit code - error message already shown
 			if ( empty( $failed_packages ) ) {
-				return Command::SUCCESS;
+				return [ Command::SUCCESS, $orchestrator, $artifacts_dir ];
 			} else {
 				// Don't show redundant error message - already shown in output
-				return Command::FAILURE;
+				return [ Command::FAILURE, $orchestrator, $artifacts_dir ];
 			}
 		} catch ( \RuntimeException $e ) {
 			// Handle infrastructure failures (code 3)
 			if ( $e->getCode() === 3 ) {
 				$io->error( $e->getMessage() );
 
-				return 3;
+				return [ 3, $orchestrator, $artifacts_dir ];
 			}
 			// Re-throw other RuntimeExceptions
 			throw $e;
 		} finally {
 			// Run globalTeardown phase for all packages
-			if ( $orchestrator ) {
-				$orchestrator->globalTeardownStart();
-				$orchestrator->globalTeardownMessage( 'Running globalTeardown phase for all packages...' );
-			}
+			$orchestrator->globalTeardownStart();
+			$orchestrator->globalTeardownMessage( 'Running globalTeardown phase for all packages...' );
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				try {
-					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'] );
+					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'], null, $orchestrator );
 				} catch ( \Throwable $e ) {
 					// Continue with other teardowns even if one fails
 					$io->writeln( "<comment>Warning: globalTeardown failed for {$pkg_id}: {$e->getMessage()}</comment>" );
@@ -1048,20 +1035,17 @@ class RunE2ECommand extends QITCommand {
 			}
 			
 			// Close global teardown section
-			if ( $orchestrator ) {
-				$orchestrator->globalTeardownEnd();
-			}
+			$orchestrator->globalTeardownEnd();
 
-			// Always try to generate and show reports, even if tests were interrupted
-			// But skip if we already generated reports in the normal flow
-			if ( is_dir( $artifacts_dir ) && ! file_exists( $artifacts_dir . '/final/html-report/index.html' ) ) {
+			// Only try to generate reports if the normal flow didn't complete (e.g., on exception)
+			if ( ! $normal_flow_completed && is_dir( $artifacts_dir ) ) {
 				$io->writeln( "\n<info>Test Artifacts:</info>" );
 				$io->writeln( "Location: <comment>{$artifacts_dir}</comment>" );
 
 				try {
 					// Try to merge any partial results
-					$this->result_collector->merge_ctrf( $artifacts_dir, $io );
-					$this->result_collector->merge_blob( $artifacts_dir, $io );
+					$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
+					$this->result_collector->merge_blob( $artifacts_dir, $io, $orchestrator );
 
 					// Look for any HTML reports (individual or merged)
 					$report_found = false;

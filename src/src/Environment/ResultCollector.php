@@ -233,7 +233,7 @@ class ResultCollector {
 		}
 	}
 
-	public function merge_blob( string $artifacts_dir, SymfonyStyle $io, ?PackageOrchestrator $orchestrator = null ): void {
+	public function merge_blob( string $artifacts_dir, SymfonyStyle $io, PackageOrchestrator $orchestrator ): void {
 		$blob_dir = $artifacts_dir . '/blob';
 
 		// Skip if no blob directories
@@ -247,11 +247,7 @@ class ResultCollector {
 			throw new RuntimeException( 'npx not found. Please ensure Node.js and npm are installed.' );
 		}
 
-		if ( $orchestrator ) {
-			$orchestrator->postProcessingMessage( 'Merging blob reports into HTML...' );
-		} else {
-			$io->text( 'Merging blob reports into HTML...' );
-		}
+		$orchestrator->postProcessingMessage( 'Merging blob reports into HTML...' );
 
 		// Create a temporary directory for merged output
 		$merged_dir = $artifacts_dir . '/final/html-report';
@@ -288,28 +284,22 @@ class ResultCollector {
 		$proc->setTimeout( 600 ); // 10 minutes timeout
 		$proc->setWorkingDirectory( $artifacts_dir );
 
-		$proc->run( function ( $type, $buf ) use ( $io, $orchestrator ) {
-			// Suppress verbose output when orchestrator is active
-			if ( ! $orchestrator && ! $io->isQuiet() ) {
+		$proc->run( function ( $type, $buf ) use ( $io ) {
+			// Show output only in very verbose mode (-vvv)
+			if ( $io->isVeryVerbose() ) {
 				$io->write( $buf );
 			}
 		} );
 
 		if ( ! $proc->isSuccessful() ) {
-			if ( $orchestrator ) {
-				$orchestrator->postProcessingMessage( 'Blob merge failed', false );
-			}
+			$orchestrator->postProcessingMessage( 'Blob merge failed', false );
 			throw new RuntimeException( 'Blob merge failed: ' . $proc->getErrorOutput() );
 		}
 
-		if ( $orchestrator ) {
-			$orchestrator->postProcessingMessage( 'HTML report generated' );
-		} else {
-			$io->success( "HTML report generated at: $merged_dir/index.html" );
-		}
+		$orchestrator->postProcessingMessage( 'HTML report generated' );
 	}
 
-	public function merge_ctrf( string $artifacts_dir, SymfonyStyle $io, ?PackageOrchestrator $orchestrator = null ): void {
+	public function merge_ctrf( string $artifacts_dir, SymfonyStyle $io, PackageOrchestrator $orchestrator ): void {
 		$ctrf_dir = $artifacts_dir . '/ctrf';
 
 		// Skip if no CTRF files
@@ -321,25 +311,19 @@ class ResultCollector {
 		$bin_dir  = $this->node_deps->ensure_packages( [ 'ctrf-cli' ], $io );
 		$ctrf_bin = $bin_dir . '/ctrf';
 
-		if ( $orchestrator ) {
-			$orchestrator->postProcessingMessage( 'Merging CTRF reports...' );
-		} else {
-			$io->text( 'Merging CTRF reports...' );
-		}
+		$orchestrator->postProcessingMessage( 'Merging CTRF reports...' );
 
 		$proc = new Process( [ $ctrf_bin, 'merge', $ctrf_dir ] );
 		$proc->setTimeout( 300 );
-		$proc->run( function ( $type, $buf ) use ( $io, $orchestrator ) {
-			// Suppress verbose output when orchestrator is active
-			if ( ! $orchestrator && ! $io->isQuiet() ) {
+		$proc->run( function ( $type, $buf ) use ( $io ) {
+			// Show output only in very verbose mode (-vvv)
+			if ( $io->isVeryVerbose() ) {
 				$io->write( $buf );
 			}
 		} );
 
 		if ( ! $proc->isSuccessful() ) {
-			if ( $orchestrator ) {
-				$orchestrator->postProcessingMessage( 'CTRF merge failed', false );
-			}
+			$orchestrator->postProcessingMessage( 'CTRF merge failed', false );
 			throw new RuntimeException( 'CTRF merge failed: ' . $proc->getErrorOutput() );
 		}
 
@@ -356,16 +340,14 @@ class ResultCollector {
 				unlink( $target_file );
 			}
 			rename( $ctrf_dir . '/ctrf-report.json', $final_dir . '/ctrf-report.json' );
-			if ( $orchestrator ) {
-				$orchestrator->postProcessingMessage( 'CTRF reports merged' );
-			}
+			$orchestrator->postProcessingMessage( 'CTRF reports merged' );
 		}
 	}
 
 	/**
 	 * Save Allure reports to final location, preserving per-package structure
 	 */
-	public function save_allure_to_final_location( string $artifacts_dir, SymfonyStyle $io, ?PackageOrchestrator $orchestrator = null ): void {
+	public function save_allure_to_final_location( string $artifacts_dir, SymfonyStyle $io, PackageOrchestrator $orchestrator ): void {
 		$allure_dir = $artifacts_dir . '/allure';
 
 		// Skip if no Allure directories
@@ -373,11 +355,7 @@ class ResultCollector {
 			return;
 		}
 
-		if ( $orchestrator ) {
-			$orchestrator->postProcessingMessage( 'Saving Allure reports...' );
-		} else {
-			$io->text( 'Saving Allure reports to final location...' );
-		}
+		$orchestrator->postProcessingMessage( 'Saving Allure reports...' );
 
 		try {
 			// Try to save to final location using Symfony Filesystem mirror
@@ -389,11 +367,7 @@ class ResultCollector {
 			$fs = new Filesystem();
 			$fs->mirror( $allure_dir, $final_dir );
 
-			if ( $orchestrator ) {
-				$orchestrator->postProcessingMessage( 'Allure reports saved' );
-			} else {
-				$io->text( "Allure reports saved to final location: {$final_dir}" );
-			}
+			$orchestrator->postProcessingMessage( 'Allure reports saved' );
 
 		} catch ( \Exception $e ) {
 			// If saving to final location fails, reports remain in original location
