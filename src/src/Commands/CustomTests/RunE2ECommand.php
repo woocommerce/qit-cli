@@ -940,6 +940,13 @@ class RunE2ECommand extends QITCommand {
 							// CTRF is mandatory for the run phase - if collection fails, the test is invalid
 							$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
 							$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
+							$io->writeln( '' );
+							$io->writeln( '<comment>To fix this issue, ensure your test package generates CTRF reports:</comment>' );
+							$io->writeln( '  1. Install the CTRF reporter: npm install --save-dev playwright-ctrf-json-reporter' );
+							$io->writeln( '  2. Configure it in playwright.config.js:' );
+							$io->writeln( "     reporter: [['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]]" );
+							$io->writeln( '  3. Update manifest.json to point to the CTRF file:' );
+							$io->writeln( '     "results": {"ctrf-json": "./results/ctrf.json"}' );
 							throw new \RuntimeException( 'Test failed to produce required CTRF output: ' . $collector_err->getMessage() );
 						}
 						// Re-throw to maintain failure status

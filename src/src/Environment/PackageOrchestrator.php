@@ -238,11 +238,8 @@ class PackageOrchestrator {
 
 		// Only show database restore message if there are more packages
 		if ( $has_more_packages ) {
-			if ( ! $success ) {
-				$out->writeln( '[Package failed - Database restore skipped]' );
-			} else {
-				$out->writeln( '[Database restored to snapshot for next package]' );
-			}
+			// Database is always restored for the next package, regardless of success/failure
+			$out->writeln( '[Database will be restored to snapshot for next package]' );
 			$out->writeln( '' );
 		}
 	}
