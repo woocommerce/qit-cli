@@ -186,11 +186,16 @@ abstract class EnvInfo implements \JsonSerializable {
 		// Handle plugins and themes
 		if ( isset( $env_info_array['plugins'] ) && is_array( $env_info_array['plugins'] ) ) {
 			$env_info->plugins = array_map( function ( $plugin_data ) {
+				// Handle non-array data
+				if ( ! is_array( $plugin_data ) ) {
+					return Extension::fromArray( [] );
+				}
 				// Skip invalid plugins with empty slugs (cleanup bad cached data)
-				if ( is_array( $plugin_data ) && empty( $plugin_data['slug'] ) ) {
+				if ( empty( $plugin_data['slug'] ) ) {
 					return null;
 				}
-				return Extension::fromArray( is_array( $plugin_data ) ? $plugin_data : [] );
+				// Valid plugin data
+				return Extension::fromArray( $plugin_data );
 			}, $env_info_array['plugins'] );
 			// Filter out null values
 			$env_info->plugins = array_filter( $env_info->plugins );
@@ -198,11 +203,16 @@ abstract class EnvInfo implements \JsonSerializable {
 
 		if ( isset( $env_info_array['themes'] ) && is_array( $env_info_array['themes'] ) ) {
 			$env_info->themes = array_map( function ( $theme_data ) {
+				// Handle non-array data
+				if ( ! is_array( $theme_data ) ) {
+					return Extension::fromArray( [] );
+				}
 				// Skip invalid themes with empty slugs (cleanup bad cached data)
-				if ( is_array( $theme_data ) && empty( $theme_data['slug'] ) ) {
+				if ( empty( $theme_data['slug'] ) ) {
 					return null;
 				}
-				return Extension::fromArray( is_array( $theme_data ) ? $theme_data : [] );
+				// Valid theme data
+				return Extension::fromArray( $theme_data );
 			}, $env_info_array['themes'] );
 			// Filter out null values
 			$env_info->themes = array_filter( $env_info->themes );

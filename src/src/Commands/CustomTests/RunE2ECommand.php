@@ -456,11 +456,7 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-		// Show orchestrator summary (use the one from runTestPackages if available)
-		if ( ! isset( $orchestrator_from_run ) ) {
-			// Create one as fallback if not from runTestPackages
-			$orchestrator_from_run = new \QIT_CLI\Environment\PackageOrchestrator( $io );
-		}
+		// Show orchestrator summary (always available from runTestPackages)
 		$orchestrator = $orchestrator_from_run;
 
 		$summary_data = [
@@ -928,7 +924,7 @@ class RunE2ECommand extends QITCommand {
 					// Run full lifecycle for test packages: setup -> run -> teardown
 					$orchestrator->phase_start( 'setup' );
 					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
-					if ( $manifest && $setup_count > 0 ) {
+					if ( $setup_count > 0 ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
 					}
 
@@ -938,22 +934,20 @@ class RunE2ECommand extends QITCommand {
 						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
 					} catch ( \RuntimeException $e ) {
 						// Collect CTRF even if tests failed (exit code 1 from test failures)
-						if ( $manifest ) {
-							try {
-								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
-							} catch ( \Throwable $collector_err ) {
-								// CTRF is mandatory for the run phase - if collection fails, the test is invalid
-								$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
-								$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
-								throw new \RuntimeException( 'Test failed to produce required CTRF output: ' . $collector_err->getMessage() );
-							}
+						try {
+							$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
+						} catch ( \Throwable $collector_err ) {
+							// CTRF is mandatory for the run phase - if collection fails, the test is invalid
+							$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
+							$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
+							throw new \RuntimeException( 'Test failed to produce required CTRF output: ' . $collector_err->getMessage() );
 						}
 						// Re-throw to maintain failure status
 						throw $e;
 					}
 
 					// Normal CTRF collection for successful runs
-					if ( $manifest && $run_count > 0 ) {
+					if ( $run_count > 0 ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 					}
 

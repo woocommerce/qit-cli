@@ -123,12 +123,17 @@ class E2EEnvironment extends Environment {
 			$this->output->writeln( "\n<comment>🔧  Test‑package bootstrap phase</comment>" );
 			$this->output->writeln( '<comment>----------------------------</comment>' );
 
+			// Create a null orchestrator for bootstrap phase (non-test packages)
+			$null_orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( new \Symfony\Component\Console\Output\NullOutput() );
+
 			foreach ( $this->env_info->bootstrap_packages as $pkg_id => $info ) {
 				$total_cmds += $runner->run_phase(
 					$this->env_info,
 					'globalSetup',
 					$pkg_id,
-					$info['path']
+					$info['path'],
+					null,  // No artifacts_dir for bootstrap packages
+					$null_orchestrator
 				);
 			}
 

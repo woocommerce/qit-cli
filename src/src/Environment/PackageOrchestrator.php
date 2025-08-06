@@ -2,9 +2,6 @@
 
 namespace QIT_CLI\Environment;
 
-use Symfony\Component\Console\Helper\ProgressBar;
-use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Helper\TableSeparator;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,13 +12,29 @@ use Symfony\Component\Console\Terminal;
  */
 class PackageOrchestrator {
 	private OutputInterface $output;
-	private ?ConsoleSectionOutput $header_section  = null;
 	private ?ConsoleSectionOutput $package_section = null;
 	private ?ConsoleSectionOutput $status_section  = null;
-	private ?ProgressBar $progress_bar             = null;
-	private ?Table $current_table                  = null;
 	private int $terminal_width;
 
+	/**
+	 * @var array{
+	 *   current_package: string|null,
+	 *   current_phase: string|null,
+	 *   packages_total: int,
+	 *   packages_completed: int,
+	 *   test_totals: array{total: int, passed: int, failed: int, skipped: int, flaky: int},
+	 *   current_tests: array<string>,
+	 *   test_results: array<array{name: string, status: string, duration: int}>,
+	 *   start_time: float|null,
+	 *   phase_start_time: float|null,
+	 *   test_count: int,
+	 *   tests_completed: int,
+	 *   phase_lines: array<string>,
+	 *   suppress_output: bool,
+	 *   current_command?: string|null,
+	 *   has_output?: bool
+	 * }
+	 */
 	private array $state = [
 		'current_package'    => null,
 		'current_phase'      => null,
@@ -53,7 +66,6 @@ class PackageOrchestrator {
 
 		// Create sections if output supports it
 		if ( $output instanceof ConsoleOutputInterface ) {
-			$this->header_section  = $output->section();
 			$this->package_section = $output->section();
 			$this->status_section  = $output->section();
 		}
@@ -173,6 +185,24 @@ class PackageOrchestrator {
 
 	/**
 	 * Get current orchestrator state
+	 *
+	 * @return array{
+	 *   current_package: string|null,
+	 *   current_phase: string|null,
+	 *   packages_total: int,
+	 *   packages_completed: int,
+	 *   test_totals: array{total: int, passed: int, failed: int, skipped: int, flaky: int},
+	 *   current_tests: array<string>,
+	 *   test_results: array<array{name: string, status: string, duration: int}>,
+	 *   start_time: float|null,
+	 *   phase_start_time: float|null,
+	 *   test_count: int,
+	 *   tests_completed: int,
+	 *   phase_lines: array<string>,
+	 *   suppress_output: bool,
+	 *   current_command?: string|null,
+	 *   has_output?: bool
+	 * }
 	 */
 	public function get_state(): array {
 		return $this->state;
@@ -180,10 +210,12 @@ class PackageOrchestrator {
 
 	/**
 	 * Update test statistics from CTRF data
+	 *
+	 * @param array{tests?: int, passed?: int, failed?: int, skipped?: int} $ctrf_summary
 	 */
 	public function update_test_stats( array $ctrf_summary ): void {
 		if ( isset( $ctrf_summary['tests'] ) ) {
-			$this->state['test_totals']['total']   = $ctrf_summary['tests'] ?? 0;
+			$this->state['test_totals']['total']   = $ctrf_summary['tests'];
 			$this->state['test_totals']['passed']  = $ctrf_summary['passed'] ?? 0;
 			$this->state['test_totals']['failed']  = $ctrf_summary['failed'] ?? 0;
 			$this->state['test_totals']['skipped'] = $ctrf_summary['skipped'] ?? 0;
@@ -264,6 +296,8 @@ class PackageOrchestrator {
 
 	/**
 	 * Display final summary
+	 *
+	 * @param array{status?: string, local_command?: string, remote_url?: string} $results
 	 */
 	public function summary( array $results ): void {
 		$duration = microtime( true ) - $this->state['start_time'];

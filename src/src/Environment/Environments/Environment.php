@@ -377,13 +377,18 @@ abstract class Environment {
 			$output->writeln( "\n<comment>🧹  Test‑package globalTeardown phase</comment>" );
 			$output->writeln( '<comment>-----------------------------------</comment>' );
 
+			// Create a null orchestrator for teardown phase (non-test packages)
+			$null_orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( new \Symfony\Component\Console\Output\NullOutput() );
+
 			foreach ( $env_info->bootstrap_packages as $pkg_id => $info ) {
 				try {
 					$teardown_cmds = $runner->run_phase(
 						$env_info,
 						'globalTeardown',
 						$pkg_id,
-						$info['path']
+						$info['path'],
+						null,  // No artifacts_dir for bootstrap packages
+						$null_orchestrator
 					);
 
 					if ( $teardown_cmds > 0 ) {

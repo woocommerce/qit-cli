@@ -116,14 +116,11 @@ class PackagePhaseRunner {
 		$line_buffer = '';
 		$skip_mode   = false;
 
-		// Use orchestrator for parsing
-		$use_orchestrator = true;
-
 		// Store process in DI container so signal handler can terminate it
 		App::setVar( 'qit_current_test_process', $process );
 
 		try {
-			$process->run( function ( $type, $buffer ) use ( &$line_buffer, &$skip_mode, $use_orchestrator, $orchestrator ) {
+			$process->run( function ( $type, $buffer ) use ( &$line_buffer, &$skip_mode, $orchestrator ) {
 				// Append new buffer to any incomplete line from previous chunk
 				$full_buffer = $line_buffer . $buffer;
 				$lines       = explode( "\n", $full_buffer );
@@ -132,8 +129,8 @@ class PackagePhaseRunner {
 				$line_buffer = array_pop( $lines );
 
 				foreach ( $lines as $line ) {
-					// If orchestrator is available and in run phase, let it parse
-					if ( $use_orchestrator && $orchestrator->parse_line( $line ) ) {
+					// Let orchestrator parse the line
+					if ( $orchestrator->parse_line( $line ) ) {
 						continue; // Line was handled by orchestrator
 					}
 
@@ -159,10 +156,7 @@ class PackagePhaseRunner {
 						continue;
 					}
 
-					// Output the line with newline (only if not using orchestrator)
-					if ( ! $use_orchestrator ) {
-						$this->output->writeln( $line );
-					}
+					// Note: All output is handled by orchestrator, no fallback output needed
 				}
 			} );
 		} finally {
@@ -239,14 +233,9 @@ class PackagePhaseRunner {
 		$stderr     = '';
 		$exit_code  = 0;
 
-		// Use orchestrator for beautiful output
-		$use_orchestrator = true;
-
 		// Create output callback for orchestrator
-		$output_callback = null;
-		if ( $use_orchestrator ) {
-			$line_buffer     = '';
-			$output_callback = function ( $type, $buffer ) use ( &$line_buffer, &$stdout, $orchestrator ) {
+		$line_buffer     = '';
+		$output_callback = function ( $type, $buffer ) use ( &$line_buffer, &$stdout, $orchestrator ) {
 				$stdout .= $buffer;
 
 				// Parse line by line for orchestrator
@@ -254,22 +243,21 @@ class PackagePhaseRunner {
 				$lines       = explode( "\n", $full_buffer );
 				$line_buffer = array_pop( $lines );
 
-				foreach ( $lines as $line ) {
-					if ( $orchestrator->parse_line( $line ) ) {
-						continue; // Line was handled by orchestrator
-					}
-					// Skip playwright show-report lines
-					if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
-						continue;
-					}
-					// Default output if not handled
-					if ( trim( $line ) !== '' ) {
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw test output
-						echo $line . PHP_EOL;
-					}
+			foreach ( $lines as $line ) {
+				if ( $orchestrator->parse_line( $line ) ) {
+					continue; // Line was handled by orchestrator
 				}
-			};
-		}
+				// Skip playwright show-report lines
+				if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
+					continue;
+				}
+				// Default output if not handled
+				if ( trim( $line ) !== '' ) {
+					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw test output
+					echo $line . PHP_EOL;
+				}
+			}
+		};
 
 		try {
 			$stdout = $this->docker->run_inside_docker(
