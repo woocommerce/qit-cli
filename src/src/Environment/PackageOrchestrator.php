@@ -168,19 +168,19 @@ class PackageOrchestrator {
 		$out->writeln( '│   ' . $line );
 		$this->state['has_output'] = true;
 		
-		// Track test stats if it's a test result line
-		if ( preg_match( '/^\s*(✓|✗|○|-)\s+/', $line ) ) {
-			$this->state['test_totals']['total']++;
-			if ( strpos( $line, '✓' ) !== false ) {
-				$this->state['test_totals']['passed']++;
-			} elseif ( strpos( $line, '✗' ) !== false ) {
-				$this->state['test_totals']['failed']++;
-			} elseif ( strpos( $line, '○' ) !== false || strpos( $line, '-' ) !== false ) {
-				$this->state['test_totals']['skipped']++;
-			}
-		}
-		
 		return true;
+	}
+	
+	/**
+	 * Update test statistics from CTRF data
+	 */
+	public function updateTestStats( array $ctrf_summary ): void {
+		if ( isset( $ctrf_summary['tests'] ) ) {
+			$this->state['test_totals']['total'] = $ctrf_summary['tests'] ?? 0;
+			$this->state['test_totals']['passed'] = $ctrf_summary['passed'] ?? 0;
+			$this->state['test_totals']['failed'] = $ctrf_summary['failed'] ?? 0;
+			$this->state['test_totals']['skipped'] = $ctrf_summary['skipped'] ?? 0;
+		}
 	}
 	
 	/**
@@ -214,7 +214,6 @@ class PackageOrchestrator {
 	public function postProcessingStart(): void {
 		$out = $this->packageSection ?? $this->output;
 		$lineWidth = min( $this->terminalWidth - 5, 75 );
-		$out->writeln( '' );
 		$out->writeln( '┌─ POST-PROCESSING ' . str_repeat( '─', max( 0, $lineWidth - 19 ) ) );
 		$this->state['phase_start_time'] = microtime( true );
 		$this->state['current_phase'] = 'POST_PROCESSING';

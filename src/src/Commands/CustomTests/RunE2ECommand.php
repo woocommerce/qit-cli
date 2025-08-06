@@ -851,6 +851,7 @@ class RunE2ECommand extends QITCommand {
 
 			$package_index = 0;
 			$is_first_package = true;
+			$package_display_names = []; // Track display names for error messages
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				// Skip packages that are in bootstrap_packages (they only run globalSetup)
 				if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
@@ -886,6 +887,7 @@ class RunE2ECommand extends QITCommand {
 				}
 				
 				$display_name .= ':' . $metadata['version'];
+				$package_display_names[ $pkg_id ] = $display_name; // Store for error messages
 				
 				// Store manifest in test_packages_metadata for later use
 				if ( isset( $env_info->test_packages_metadata[ $pkg_id ] ) ) {
@@ -965,8 +967,9 @@ class RunE2ECommand extends QITCommand {
 					$is_first_package = false;
 
 				} catch ( \Exception $e ) {
-					$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
-					$failed_packages[] = $pkg_id;
+					// Don't show the error here - it's already shown in the orchestrator output
+					// Just track the failed package using its display name
+					$failed_packages[] = $package_display_names[ $pkg_id ] ?? $pkg_id;
 					
 					// End package with failure status - check if there are more packages  
 					$has_more_packages = $package_index < count( $test_packages );
@@ -982,6 +985,15 @@ class RunE2ECommand extends QITCommand {
 			
 			// Merge CTRF artifacts
 			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
+			
+			// Read merged CTRF report to get accurate test counts
+			$ctrf_report_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
+			if ( file_exists( $ctrf_report_path ) ) {
+				$ctrf_data = json_decode( file_get_contents( $ctrf_report_path ), true );
+				if ( isset( $ctrf_data['results']['summary'] ) ) {
+					$orchestrator->updateTestStats( $ctrf_data['results']['summary'] );
+				}
+			}
 
 			// Merge blob reports into HTML
 			$this->result_collector->merge_blob( $artifacts_dir, $io, $orchestrator );
@@ -1004,11 +1016,11 @@ class RunE2ECommand extends QITCommand {
 				] ), DAY_IN_SECONDS );
 			}
 
-			// Return appropriate exit code without redundant message
+			// Return appropriate exit code - error message already shown
 			if ( empty( $failed_packages ) ) {
 				return Command::SUCCESS;
 			} else {
-				$io->error( 'Failed packages: ' . implode( ', ', $failed_packages ) );
+				// Don't show redundant error message - already shown in output
 				return Command::FAILURE;
 			}
 		} catch ( \RuntimeException $e ) {
