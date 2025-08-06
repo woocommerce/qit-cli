@@ -10,6 +10,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -99,6 +100,27 @@ class UpEnvironmentCommand extends QITCommand {
 		/* ─ 3. Use the fully-resolved extension lists ─ */
 		$final_plugins = $resolved_ext->get_plugins();
 		$final_themes  = $resolved_ext->get_themes();
+		
+		// Convert Extension objects to arrays for serialization
+		$plugin_arrays = [];
+		foreach ( $final_plugins as $plugin ) {
+			if ( $plugin instanceof Extension ) {
+				// Use jsonSerialize to get the array representation
+				$plugin_arrays[] = $plugin->jsonSerialize();
+			} else {
+				$plugin_arrays[] = $plugin;
+			}
+		}
+		
+		$theme_arrays = [];
+		foreach ( $final_themes as $theme ) {
+			if ( $theme instanceof Extension ) {
+				// Use jsonSerialize to get the array representation
+				$theme_arrays[] = $theme->jsonSerialize();
+			} else {
+				$theme_arrays[] = $theme;
+			}
+		}
 
 		/* ─ 3.5. Parse volumes to get proper associative array structure ─ */
 		$parsed_volumes = [];
@@ -114,8 +136,8 @@ class UpEnvironmentCommand extends QITCommand {
 			'wp'             => $env_config['wp'] ?? 'stable',
 			'woo'            => $env_config['woo'] ?? '',
 			'object_cache'   => $env_config['object_cache'] ?? false,
-			'plugins'        => $final_plugins,
-			'themes'         => $final_themes,
+			'plugins'        => $plugin_arrays,
+			'themes'         => $theme_arrays,
 			'php_extensions' => $env_config['php_extensions'] ?? [],
 			'volumes'        => $parsed_volumes,
 			'envs'           => $env_config['envs'] ?? [],

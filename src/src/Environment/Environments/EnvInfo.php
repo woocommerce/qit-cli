@@ -186,14 +186,26 @@ abstract class EnvInfo implements \JsonSerializable {
 		// Handle plugins and themes
 		if ( isset( $env_info_array['plugins'] ) && is_array( $env_info_array['plugins'] ) ) {
 			$env_info->plugins = array_map( function ( $plugin_data ) {
+				// Skip invalid plugins with empty slugs (cleanup bad cached data)
+				if ( is_array( $plugin_data ) && empty( $plugin_data['slug'] ) ) {
+					return null;
+				}
 				return Extension::fromArray( is_array( $plugin_data ) ? $plugin_data : [] );
 			}, $env_info_array['plugins'] );
+			// Filter out null values
+			$env_info->plugins = array_filter( $env_info->plugins );
 		}
 
 		if ( isset( $env_info_array['themes'] ) && is_array( $env_info_array['themes'] ) ) {
 			$env_info->themes = array_map( function ( $theme_data ) {
+				// Skip invalid themes with empty slugs (cleanup bad cached data)
+				if ( is_array( $theme_data ) && empty( $theme_data['slug'] ) ) {
+					return null;
+				}
 				return Extension::fromArray( is_array( $theme_data ) ? $theme_data : [] );
 			}, $env_info_array['themes'] );
+			// Filter out null values
+			$env_info->themes = array_filter( $env_info->themes );
 		}
 
 		// Set other properties dynamically
@@ -218,19 +230,13 @@ abstract class EnvInfo implements \JsonSerializable {
 
 			if ( property_exists( $env_info, $key ) ) {
 				// Prevent a plain array from overwriting a freshly-instantiated object
-				// Check if property is initialized before accessing it
-				$property_initialized = false;
-				$current_value        = null;
-				try {
-					$current_value        = $env_info->$key;
-					$property_initialized = true;
-				} catch ( \Error $e ) {
-					// Property not initialized, we can safely set it
-					unset( $e ); // Mark as intentionally unused
-				}
-
-				if ( $property_initialized && is_object( $current_value ) && ! is_object( $value ) ) {
-					continue;
+				// Use reflection to check if property is initialized
+				$reflection = new \ReflectionProperty( $env_info, $key );
+				if ( $reflection->isInitialized( $env_info ) ) {
+					$current_value = $env_info->$key;
+					if ( is_object( $current_value ) && ! is_object( $value ) ) {
+						continue;
+					}
 				}
 				$env_info->$key = $value;
 			} else {

@@ -178,7 +178,7 @@ class PackagePhaseRunner {
 
 		if ( ! $process->isSuccessful() ) {
 			throw new \RuntimeException(
-				"Host command failed: {$cmd}\nExit code: {$process->getExitCode()}\nOutput: {$process->getOutput()}\nError: {$process->getErrorOutput()}"
+				"Host command failed:\n{$cmd}\nExit code: {$process->getExitCode()}"
 			);
 		}
 

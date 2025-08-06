@@ -110,7 +110,6 @@ class RunE2ECommand extends QITCommand {
 		$this->setDescription( 'Run E2E tests' )
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
 			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
-
 			/* ─────────────── Shared Options (reused from env:up) ─────────────── */
 			->reuseOption( 'env:up', 'environment' )
 			->reuseOption( 'env:up', 'php' )
@@ -125,11 +124,9 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'env' )
 			->reuseOption( 'env:up', 'env_file' )
 			->reuseOption( 'env:up', 'json' )
-
 			/* ─────────────── SUT‑related options ─────────────── */
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
 			'Use a custom ZIP (or directory/URL) as the SUT build' )
-
 			/* ─────────────── E2E-specific options ─────────────── */
 			->addOption(
 				'test-package',
@@ -161,6 +158,7 @@ class RunE2ECommand extends QITCommand {
 		/* ─ Platform guard ─ */
 		if ( is_windows() ) {
 			$output->writeln( '<comment>To run E2E tests on Windows, please use WSL.</comment>' );
+
 			return self::FAILURE;
 		}
 
@@ -184,6 +182,7 @@ class RunE2ECommand extends QITCommand {
 			[ $test_mode, $wait ] = $this->determine_test_mode( $input );
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
 			return Command::INVALID;
 		}
 		App::setVar( 'TEST_MODE', $test_mode );
@@ -201,6 +200,8 @@ class RunE2ECommand extends QITCommand {
 		$sut_slug = $sut_info['slug'] ?? null;
 		$sut_id   = null;
 		$sut_type = null;
+		
+		
 		if ( $sut_slug ) {
 			// Resolve SUT ID and type
 			try {
@@ -213,11 +214,13 @@ class RunE2ECommand extends QITCommand {
 				$sut_type = $this->woo_extensions_list->get_woo_extension_type( $sut_id );
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+
 				return Command::INVALID;
 			}
 
 			// Add SUT to env:up options using the complex format from old code
 			$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $sut_slug, $sut_type );
+		} else {
 		}
 
 		// Set environment exposure based on wait mode
@@ -313,6 +316,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Always output JSON for parsing
 		$env_up_options['--json'] = true;
+		
 
 		// Run env:up and get the environment info
 		try {
@@ -320,6 +324,7 @@ class RunE2ECommand extends QITCommand {
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>Failed to start environment: %s</error>', $e->getMessage() ) );
+
 			return Command::FAILURE;
 		} finally {
 			putenv( 'QIT_HIDE_SITE_INFO' );
@@ -361,6 +366,7 @@ class RunE2ECommand extends QITCommand {
 		// For testing
 		if ( getenv( 'QIT_SELF_TEST' ) === 'run_e2e' || getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->write( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
+
 			return Command::SUCCESS;
 		}
 
@@ -456,6 +462,7 @@ class RunE2ECommand extends QITCommand {
 	 *
 	 * @param string                                          $package_path Path to the test package.
 	 * @param \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest Parsed manifest.
+	 *
 	 * @throws \RuntimeException On cleanup failures.
 	 */
 	private function cleanup_test_package_results( string $package_path, \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest ): void {
@@ -500,11 +507,13 @@ class RunE2ECommand extends QITCommand {
 	 * Generate a container name for a remote package.
 	 *
 	 * @param string $package_id The remote package reference.
+	 *
 	 * @return string The container-safe directory name.
 	 * @throws \InvalidArgumentException If package reference is invalid.
 	 */
 	private function container_name_for_remote_package( string $package_id ): string {
 		$counter = null; // Not used for remote packages
+
 		return $this->container_name_from_manifest( $package_id, $counter, true );
 	}
 
@@ -517,6 +526,7 @@ class RunE2ECommand extends QITCommand {
 	 * @param string                 $package_id The package ID (local path or remote reference).
 	 * @param array<string,int>|null &$counter Counter array for local packages to ensure uniqueness.
 	 * @param bool                   $include_version Whether to include version in the container name (for remote packages).
+	 *
 	 * @return string The container-safe directory name.
 	 * @throws \InvalidArgumentException If manifest is missing or invalid.
 	 */
@@ -657,13 +667,11 @@ class RunE2ECommand extends QITCommand {
 			// Try to find HTML reports in multiple locations
 			$html_reports = [];
 
-				// Look in artifacts directory
-			if ( is_dir( $artifacts_dir ) ) {
-				$html_reports = array_merge( $html_reports, glob( $artifacts_dir . '/**/index.html', GLOB_BRACE ) );
-			}
+			// Look in artifacts directory
+			$html_reports = array_merge( $html_reports, glob( $artifacts_dir . '/**/index.html', GLOB_BRACE ) );
 
-				// Also check if there are test package results directories
-				$test_packages = App::getVar( 'qit_test_packages' );
+			// Also check if there are test package results directories
+			$test_packages = App::getVar( 'qit_test_packages' );
 			if ( ! empty( $test_packages ) ) {
 				foreach ( $test_packages as $pkg_id => $meta ) {
 					if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
@@ -680,7 +688,7 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 
-				$report_found = false;
+			$report_found = false;
 			if ( ! empty( $html_reports ) ) {
 				// Find the best report (prefer playwright-report directories)
 				$best_report = null;
@@ -723,29 +731,28 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 
-				echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 		}
-	}
 
-	echo "\nShutting down environment...\n";
+		echo "\nShutting down environment...\n";
 
 		$env_to_shutdown = App::getVar( 'env_to_shutdown' );
-	if ( ! empty( $env_to_shutdown ) ) {
-		try {
-			// Get the environment info from the environment monitor
-			$env_monitor = App::make( \QIT_CLI\Environment\EnvironmentMonitor::class );
+		if ( ! empty( $env_to_shutdown ) ) {
 			try {
-				$env_info = $env_monitor->get_env_info_by_id( $env_to_shutdown );
-				Environment::down( $env_info );
+				// Get the environment info from the environment monitor
+				$env_monitor = App::make( \QIT_CLI\Environment\EnvironmentMonitor::class );
+				try {
+					$env_info = $env_monitor->get_env_info_by_id( $env_to_shutdown );
+					Environment::down( $env_info );
+				} catch ( \Exception $e ) {
+					\QIT_CLI\debug_log( 'Failed to find environment info for shutdown: ' . $env_to_shutdown . ' - ' . $e->getMessage(), 'comment' );
+				}
 			} catch ( \Exception $e ) {
-				\QIT_CLI\debug_log( 'Failed to find environment info for shutdown: ' . $env_to_shutdown . ' - ' . $e->getMessage(), 'comment' );
+				// Silent fail - environment cleanup errors are non-critical
+				\QIT_CLI\debug_log( 'Failed to shutdown environment: ' . $e->getMessage(), 'comment' );
 			}
-		} catch ( \Exception $e ) {
-			// Silent fail - environment cleanup errors are non-critical
-			\QIT_CLI\debug_log( 'Failed to shutdown environment: ' . $e->getMessage(), 'comment' );
 		}
 	}
-}
 
 	/**
 	 * Set up global variables needed for the test run.
@@ -753,10 +760,10 @@ class RunE2ECommand extends QITCommand {
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
 	 * @param InputInterface                                   $input The input interface.
 	 */
-protected function setupGlobals( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, InputInterface $input ): void {
-	// Set up the DI container variable for environment shutdown
-	App::setVar( 'env_to_shutdown', $env_info->env_id );
-}
+	protected function setupGlobals( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, InputInterface $input ): void {
+		// Set up the DI container variable for environment shutdown
+		App::setVar( 'env_to_shutdown', $env_info->env_id );
+	}
 
 	/**
 	 * Run test packages using manifest-based approach with PackagePhaseRunner.
@@ -767,347 +774,349 @@ protected function setupGlobals( \QIT_CLI\Environment\Environments\E2E\E2EEnvInf
 	 *
 	 * @return int The exit status.
 	 */
-protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
-	try {
-		$total_executed  = 0;
-		$failed_packages = [];
+	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): int {
+		try {
+			$total_executed  = 0;
+			$failed_packages = [];
 
-		// Set up artifacts directory using env_id for consistency
-		$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
+			// Set up artifacts directory using env_id for consistency
+			$artifacts_dir = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id;
 
-		// Store in DI container for signal handler access
-		App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
+			// Store in DI container for signal handler access
+			App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
 
-		// Get bootstrap package IDs to skip them (they only run globalSetup)
-		$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
+			// Get bootstrap package IDs to skip them (they only run globalSetup)
+			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
 
-		$io->section( 'Running Test Packages' );
+			$io->section( 'Running Test Packages' );
 
-		// Store test packages in DI container for signal handler access
-		App::setVar( 'qit_test_packages', $test_packages );
+			// Store test packages in DI container for signal handler access
+			App::setVar( 'qit_test_packages', $test_packages );
 
-		// Run globalSetup phase for all packages
-		$io->writeln( '<info>Running globalSetup phase for all packages...</info>' );
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir );
-		}
-
-		// Export baseline database snapshot after all globalSetup scripts ran
-		$io->writeln( '<info>Exporting baseline database snapshot...</info>' );
-		$docker = App::make( Docker::class );
-		$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql', '--defaults' ] );
-
-		$is_first_package = true;
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			// Skip packages that are in bootstrap_packages (they only run globalSetup)
-			if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
-				$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
-				continue;
+			// Run globalSetup phase for all packages
+			$io->writeln( '<info>Running globalSetup phase for all packages...</info>' );
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir );
 			}
 
-			$package_path = $meta['path'] ?? '';
-			if ( empty( $package_path ) || ! is_dir( $package_path ) ) {
-				$io->error( "Invalid package path for {$pkg_id}: {$package_path}" );
-				$failed_packages[] = $pkg_id;
-				continue;
-			}
+			// Export baseline database snapshot after all globalSetup scripts ran
+			$io->writeln( '<info>Exporting baseline database snapshot...</info>' );
+			$docker = App::make( Docker::class );
+			$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql', '--defaults' ] );
 
-			$io->writeln( "<info>Processing package: {$pkg_id}</info>" );
-
-			// Import database snapshot before each non-first package
-			if ( ! $is_first_package ) {
-				$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
-				try {
-					App::make( Docker::class )->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql', '--defaults' ] );
-					$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
-				} catch ( \Exception $e ) {
-					throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
+			$is_first_package = true;
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				// Skip packages that are in bootstrap_packages (they only run globalSetup)
+				if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
+					$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
+					continue;
 				}
-			}
 
-			try {
-				// Parse manifest for result collection
-				$manifest_path = $package_path . '/manifest.json';
-				$manifest      = null;
-				if ( file_exists( $manifest_path ) ) {
-					$parser   = App::make( \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser::class );
-					$manifest = $parser->parse( $manifest_path );
+				$package_path = $meta['path'] ?? '';
+				if ( empty( $package_path ) || ! is_dir( $package_path ) ) {
+					$io->error( "Invalid package path for {$pkg_id}: {$package_path}" );
+					$failed_packages[] = $pkg_id;
+					continue;
+				}
 
-					// Clean previous test results before running
-					$this->cleanup_test_package_results( $package_path, $manifest );
+				$io->writeln( "<info>Processing package: {$pkg_id}</info>" );
 
-					// Store manifest in test_packages_metadata for later use
-					if ( isset( $env_info->test_packages_metadata[ $pkg_id ] ) ) {
-						$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
+				// Import database snapshot before each non-first package
+				if ( ! $is_first_package ) {
+					$io->writeln( '<info>Restoring database snapshot before isolated phases...</info>' );
+					try {
+						App::make( Docker::class )->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql', '--defaults' ] );
+						$io->writeln( '<info>✓ Database snapshot restored successfully</info>' );
+					} catch ( \Exception $e ) {
+						throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
 					}
 				}
 
-				// Run full lifecycle for test packages: setup -> run -> teardown
-				$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir );
-				if ( $manifest && $setup_count > 0 ) {
-					$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
-				}
-
-				// Run phase with CTRF collection even on test failures
 				try {
-					$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir );
-				} catch ( \RuntimeException $e ) {
-					// Collect CTRF even if tests failed (exit code 1 from test failures)
-					if ( $manifest ) {
-						try {
-							$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
-						} catch ( \Throwable $collector_err ) {
-							// CTRF is mandatory for the run phase - if collection fails, the test is invalid
-							$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
-							$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
-							throw new \RuntimeException( 'Test failed to produce required CTRF output: ' . $collector_err->getMessage() );
+					// Parse manifest for result collection
+					$manifest_path = $package_path . '/manifest.json';
+					$manifest      = null;
+					if ( file_exists( $manifest_path ) ) {
+						$parser   = App::make( \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser::class );
+						$manifest = $parser->parse( $manifest_path );
+
+						// Clean previous test results before running
+						$this->cleanup_test_package_results( $package_path, $manifest );
+
+						// Store manifest in test_packages_metadata for later use
+						if ( isset( $env_info->test_packages_metadata[ $pkg_id ] ) ) {
+							$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
 						}
 					}
-					// Re-throw to maintain failure status
-					throw $e;
-				}
 
-				// Normal CTRF collection for successful runs
-				if ( $manifest && $run_count > 0 ) {
-					$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
-				}
+					// Run full lifecycle for test packages: setup -> run -> teardown
+					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir );
+					if ( $manifest && $setup_count > 0 ) {
+						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
+					}
 
-				$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir );
-				// Note: teardown phase is for cleanup only - no result collection needed
-
-				$package_total   = $setup_count + $run_count + $teardown_count;
-				$total_executed += $package_total;
-
-				$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
-
-				// Mark that we've processed the first package
-				$is_first_package = false;
-
-			} catch ( \Exception $e ) {
-				$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
-				$failed_packages[] = $pkg_id;
-				// Still mark as processed to maintain the sequence for subsequent packages
-				$is_first_package = false;
-			}
-		}
-
-		// Merge CTRF artifacts
-		$this->result_collector->merge_ctrf( $artifacts_dir, $io );
-
-		// Merge blob reports into HTML
-		$this->result_collector->merge_blob( $artifacts_dir, $io );
-
-		// Try to save Allure reports to final location
-		$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io );
-
-		// Store artifacts directory in env_info for later use by Manager
-		/** @phpstan-ignore-next-line property.notFound */
-		$env_info->artifacts_dir = $artifacts_dir;
-
-		// Output artifact locations
-		$final_ctrf_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
-
-		// Check for final Allure location
-		$final_allure_path = $artifacts_dir . '/final/allure';
-		if ( is_dir( $final_allure_path ) && ! empty( glob( $final_allure_path . '/*', GLOB_ONLYDIR ) ) ) {
-			$io->writeln( "<info>Allure reports saved → {$final_allure_path}</info>" );
-		}
-		if ( file_exists( $final_ctrf_path ) ) {
-			$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
-		}
-
-		// Check for merged HTML report
-		$final_html_report = $artifacts_dir . '/final/html-report/index.html';
-		if ( file_exists( $final_html_report ) ) {
-			$io->writeln( "<info>HTML report → {$final_html_report}</info>" );
-			$io->writeln( "<info>Open in browser: file://{$final_html_report}</info>" );
-
-			// Show how to open the report with a simple PHP server
-			$report_dir = dirname( $final_html_report );
-			$io->writeln( "<info>Or serve with: php -S localhost:8000 -t {$report_dir}</info>" );
-			$io->writeln( '<info>Then open: http://localhost:8000</info>' );
-
-			// Store in cache for e2e-report command
-			$this->cache->set( 'last_e2e_report', json_encode( [
-				'local_playwright' => $report_dir,
-			] ), DAY_IN_SECONDS );
-			$io->writeln( '<info>Or use: qit e2e-report</info>' );
-		}
-
-		// Summary
-		if ( empty( $failed_packages ) ) {
-			$io->success( "All test packages completed successfully. Total commands executed: {$total_executed}" );
-
-			return Command::SUCCESS;
-		} else {
-			$io->error( 'Failed packages: ' . implode( ', ', $failed_packages ) . ". Total commands executed: {$total_executed}" );
-
-			return Command::FAILURE;
-		}
-	} catch ( \RuntimeException $e ) {
-		// Handle infrastructure failures (code 3)
-		if ( $e->getCode() === 3 ) {
-			$io->error( $e->getMessage() );
-
-			return 3;
-		}
-		// Re-throw other RuntimeExceptions
-		throw $e;
-	} finally {
-		// Run globalTeardown phase for all packages
-		$io->writeln( '<info>Running globalTeardown phase for all packages...</info>' );
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			try {
-				$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'] );
-			} catch ( \Throwable $e ) {
-				// Continue with other teardowns even if one fails
-				$io->writeln( "<comment>Warning: globalTeardown failed for {$pkg_id}: {$e->getMessage()}</comment>" );
-			}
-		}
-
-		// Always try to generate and show reports, even if tests were interrupted
-		if ( is_dir( $artifacts_dir ) ) {
-			$io->writeln( "\n<info>Test Artifacts:</info>" );
-			$io->writeln( "Location: <comment>{$artifacts_dir}</comment>" );
-
-			try {
-				// Try to merge any partial results
-				$this->result_collector->merge_ctrf( $artifacts_dir, $io );
-				$this->result_collector->merge_blob( $artifacts_dir, $io );
-
-				// Look for any HTML reports (individual or merged)
-				$report_found = false;
-
-				// Check for merged HTML report first
-				$final_html_report = $artifacts_dir . '/final/html-report/index.html';
-				if ( file_exists( $final_html_report ) ) {
-					$report_dir = dirname( $final_html_report );
-					$this->cache->set( 'last_e2e_report', json_encode( [
-						'local_playwright' => $report_dir,
-					] ), DAY_IN_SECONDS );
-					$report_found = true;
-				} else {
-					// Check for individual package HTML reports
-					$html_reports = glob( $artifacts_dir . '/**/index.html', GLOB_BRACE );
-					if ( ! empty( $html_reports ) ) {
-						// Find the most relevant report (prefer playwright-report directories)
-						$best_report = null;
-						foreach ( $html_reports as $report ) {
-							if ( strpos( $report, 'playwright-report' ) !== false || strpos( $report, 'html-report' ) !== false ) {
-								$best_report = $report;
-								break;
+					// Run phase with CTRF collection even on test failures
+					try {
+						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir );
+					} catch ( \RuntimeException $e ) {
+						// Collect CTRF even if tests failed (exit code 1 from test failures)
+						if ( $manifest ) {
+							try {
+								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
+							} catch ( \Throwable $collector_err ) {
+								// CTRF is mandatory for the run phase - if collection fails, the test is invalid
+								$io->writeln( "<error>CTRF collection failed: {$collector_err->getMessage()}</error>" );
+								$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
+								throw new \RuntimeException( 'Test failed to produce required CTRF output: ' . $collector_err->getMessage() );
 							}
 						}
-						if ( ! $best_report ) {
-							$best_report = reset( $html_reports );
-						}
+						// Re-throw to maintain failure status
+						throw $e;
+					}
 
-						$report_dir = dirname( $best_report );
+					// Normal CTRF collection for successful runs
+					if ( $manifest && $run_count > 0 ) {
+						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
+					}
+
+					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir );
+					// Note: teardown phase is for cleanup only - no result collection needed
+
+					$package_total   = $setup_count + $run_count + $teardown_count;
+					$total_executed += $package_total;
+
+					$io->writeln( "<info>✓ {$pkg_id}: {$setup_count} setup, {$run_count} run, {$teardown_count} teardown commands executed</info>" );
+
+					// Mark that we've processed the first package
+					$is_first_package = false;
+
+				} catch ( \Exception $e ) {
+					$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
+					$failed_packages[] = $pkg_id;
+					// Still mark as processed to maintain the sequence for subsequent packages
+					$is_first_package = false;
+				}
+			}
+
+			// Merge CTRF artifacts
+			$this->result_collector->merge_ctrf( $artifacts_dir, $io );
+
+			// Merge blob reports into HTML
+			$this->result_collector->merge_blob( $artifacts_dir, $io );
+
+			// Try to save Allure reports to final location
+			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io );
+
+			// Store artifacts directory in env_info for later use by Manager
+			/** @phpstan-ignore-next-line property.notFound */
+			$env_info->artifacts_dir = $artifacts_dir;
+
+			// Output artifact locations
+			$final_ctrf_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
+
+			// Check for final Allure location
+			$final_allure_path = $artifacts_dir . '/final/allure';
+			if ( is_dir( $final_allure_path ) && ! empty( glob( $final_allure_path . '/*', GLOB_ONLYDIR ) ) ) {
+				$io->writeln( "<info>Allure reports saved → {$final_allure_path}</info>" );
+			}
+			if ( file_exists( $final_ctrf_path ) ) {
+				$io->writeln( "<info>CTRF merged → {$final_ctrf_path}</info>" );
+			}
+
+			// Check for merged HTML report
+			$final_html_report = $artifacts_dir . '/final/html-report/index.html';
+			if ( file_exists( $final_html_report ) ) {
+				$io->writeln( "<info>HTML report → {$final_html_report}</info>" );
+				$io->writeln( "<info>Open in browser: file://{$final_html_report}</info>" );
+
+				// Show how to open the report with a simple PHP server
+				$report_dir = dirname( $final_html_report );
+				$io->writeln( "<info>Or serve with: php -S localhost:8000 -t {$report_dir}</info>" );
+				$io->writeln( '<info>Then open: http://localhost:8000</info>' );
+
+				// Store in cache for e2e-report command
+				$this->cache->set( 'last_e2e_report', json_encode( [
+					'local_playwright' => $report_dir,
+				] ), DAY_IN_SECONDS );
+				$io->writeln( '<info>Or use: qit e2e-report</info>' );
+			}
+
+			// Summary
+			if ( empty( $failed_packages ) ) {
+				$io->success( "All test packages completed successfully. Total commands executed: {$total_executed}" );
+
+				return Command::SUCCESS;
+			} else {
+				$io->error( 'Failed packages: ' . implode( ', ', $failed_packages ) . ". Total commands executed: {$total_executed}" );
+
+				return Command::FAILURE;
+			}
+		} catch ( \RuntimeException $e ) {
+			// Handle infrastructure failures (code 3)
+			if ( $e->getCode() === 3 ) {
+				$io->error( $e->getMessage() );
+
+				return 3;
+			}
+			// Re-throw other RuntimeExceptions
+			throw $e;
+		} finally {
+			// Run globalTeardown phase for all packages
+			$io->writeln( '<info>Running globalTeardown phase for all packages...</info>' );
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				try {
+					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'] );
+				} catch ( \Throwable $e ) {
+					// Continue with other teardowns even if one fails
+					$io->writeln( "<comment>Warning: globalTeardown failed for {$pkg_id}: {$e->getMessage()}</comment>" );
+				}
+			}
+
+			// Always try to generate and show reports, even if tests were interrupted
+			if ( is_dir( $artifacts_dir ) ) {
+				$io->writeln( "\n<info>Test Artifacts:</info>" );
+				$io->writeln( "Location: <comment>{$artifacts_dir}</comment>" );
+
+				try {
+					// Try to merge any partial results
+					$this->result_collector->merge_ctrf( $artifacts_dir, $io );
+					$this->result_collector->merge_blob( $artifacts_dir, $io );
+
+					// Look for any HTML reports (individual or merged)
+					$report_found = false;
+
+					// Check for merged HTML report first
+					$final_html_report = $artifacts_dir . '/final/html-report/index.html';
+					if ( file_exists( $final_html_report ) ) {
+						$report_dir = dirname( $final_html_report );
 						$this->cache->set( 'last_e2e_report', json_encode( [
 							'local_playwright' => $report_dir,
 						] ), DAY_IN_SECONDS );
 						$report_found = true;
-					}
-				}
+					} else {
+						// Check for individual package HTML reports
+						$html_reports = glob( $artifacts_dir . '/**/index.html', GLOB_BRACE );
+						if ( ! empty( $html_reports ) ) {
+							// Find the most relevant report (prefer playwright-report directories)
+							$best_report = null;
+							foreach ( $html_reports as $report ) {
+								if ( strpos( $report, 'playwright-report' ) !== false || strpos( $report, 'html-report' ) !== false ) {
+									$best_report = $report;
+									break;
+								}
+							}
+							if ( ! $best_report ) {
+								$best_report = reset( $html_reports );
+							}
 
-				if ( $report_found ) {
-					$io->writeln( "\n<info>View test report with:</info>" );
-					$io->writeln( '  <comment>qit e2e-report</comment>' );
-				}
+							$report_dir = dirname( $best_report );
+							$this->cache->set( 'last_e2e_report', json_encode( [
+								'local_playwright' => $report_dir,
+							] ), DAY_IN_SECONDS );
+							$report_found = true;
+						}
+					}
 
-				// Also show other useful artifacts
-				$ctrf_reports = glob( $artifacts_dir . '/**/*ctrf*.json', GLOB_BRACE );
-				if ( ! empty( $ctrf_reports ) ) {
-					$io->writeln( "\n<info>CTRF reports found:</info>" );
-					foreach ( array_slice( $ctrf_reports, 0, 3 ) as $ctrf ) {
-						$io->writeln( '  - ' . basename( dirname( $ctrf ) ) . '/' . basename( $ctrf ) );
+					if ( $report_found ) {
+						$io->writeln( "\n<info>View test report with:</info>" );
+						$io->writeln( '  <comment>qit e2e-report</comment>' );
 					}
-					if ( count( $ctrf_reports ) > 3 ) {
-						$io->writeln( '  ... and ' . ( count( $ctrf_reports ) - 3 ) . ' more' );
+
+					// Also show other useful artifacts
+					$ctrf_reports = glob( $artifacts_dir . '/**/*ctrf*.json', GLOB_BRACE );
+					if ( ! empty( $ctrf_reports ) ) {
+						$io->writeln( "\n<info>CTRF reports found:</info>" );
+						foreach ( array_slice( $ctrf_reports, 0, 3 ) as $ctrf ) {
+							$io->writeln( '  - ' . basename( dirname( $ctrf ) ) . '/' . basename( $ctrf ) );
+						}
+						if ( count( $ctrf_reports ) > 3 ) {
+							$io->writeln( '  ... and ' . ( count( $ctrf_reports ) - 3 ) . ' more' );
+						}
 					}
+				} catch ( \Throwable $e ) {
+					$io->writeln( "<comment>Warning: Could not process test reports: {$e->getMessage()}</comment>" );
+					$io->writeln( "<info>Raw artifacts available at: {$artifacts_dir}</info>" );
 				}
-			} catch ( \Throwable $e ) {
-				$io->writeln( "<comment>Warning: Could not process test reports: {$e->getMessage()}</comment>" );
-				$io->writeln( "<info>Raw artifacts available at: {$artifacts_dir}</info>" );
 			}
 		}
 	}
-}
 
 
 	/**
 	 * Determine the test mode and whether to wait.
 	 *
 	 * @param InputInterface $input
+	 *
 	 * @return array{0:string,1:bool} Returns [test_mode, wait]
 	 * @throws \RuntimeException If both ui and codegen are set.
 	 */
-private function determine_test_mode( InputInterface $input ): array {
-	if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
-		throw new \RuntimeException( 'Cannot run tests in both "UI" and "Codegen" mode at the same time.' );
+	private function determine_test_mode( InputInterface $input ): array {
+		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
+			throw new \RuntimeException( 'Cannot run tests in both "UI" and "Codegen" mode at the same time.' );
+		}
+
+		if ( $input->getOption( 'ui' ) ) {
+			$test_mode = 'ui';
+		} elseif ( $input->getOption( 'codegen' ) ) {
+			putenv( 'QIT_CODEGEN=1' );
+			$test_mode = 'codegen';
+		} else {
+			$test_mode = 'headless';
+		}
+
+		$wait = $test_mode === 'codegen';
+
+		return [ $test_mode, $wait ];
 	}
-
-	if ( $input->getOption( 'ui' ) ) {
-		$test_mode = 'ui';
-	} elseif ( $input->getOption( 'codegen' ) ) {
-		putenv( 'QIT_CODEGEN=1' );
-		$test_mode = 'codegen';
-	} else {
-		$test_mode = 'headless';
-	}
-
-	$wait = $test_mode === 'codegen';
-
-	return [ $test_mode, $wait ];
-}
 
 	/**
 	 * Configure Playwright options.
 	 *
 	 * @param InputInterface $input
 	 */
-private function configure_pw_options( InputInterface $input ): void {
-	$pw_options = $input->getOption( 'pw_options' ) ?? '';
-	if ( ! empty( $pw_options ) ) {
-		// Strip surrounding quotes if present.
-		if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, -1 ) === '"' ) {
-			$pw_options = substr( $pw_options, 1, -1 );
+	private function configure_pw_options( InputInterface $input ): void {
+		$pw_options = $input->getOption( 'pw_options' ) ?? '';
+		if ( ! empty( $pw_options ) ) {
+			// Strip surrounding quotes if present.
+			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {
+				$pw_options = substr( $pw_options, 1, - 1 );
+			}
 		}
-	}
 
-	if ( $input->getOption( 'update_snapshots' ) ) {
-		$pw_options .= ' --update-snapshots';
-	}
+		if ( $input->getOption( 'update_snapshots' ) ) {
+			$pw_options .= ' --update-snapshots';
+		}
 
-	App::setVar( 'pw_options', $pw_options );
-}
+		App::setVar( 'pw_options', $pw_options );
+	}
 
 	/**
 	 * Parse environment variables.
 	 *
 	 * @param array<string> $env_vars
+	 *
 	 * @throws \RuntimeException If invalid format.
 	 */
-private function parse_env_vars( array $env_vars ): void {
-	$parsed_vars = [];
-	foreach ( $env_vars as $env_var ) {
-		$env_var = explode( '=', $env_var, 2 );
-		if ( count( $env_var ) !== 2 ) {
-			throw new \RuntimeException( 'Invalid environment variable format. Use "--env FOO=bar".' );
+	private function parse_env_vars( array $env_vars ): void {
+		$parsed_vars = [];
+		foreach ( $env_vars as $env_var ) {
+			$env_var = explode( '=', $env_var, 2 );
+			if ( count( $env_var ) !== 2 ) {
+				throw new \RuntimeException( 'Invalid environment variable format. Use "--env FOO=bar".' );
+			}
+
+			$key   = trim( $env_var[0] );
+			$value = trim( $env_var[1] );
+
+			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
+				throw new \RuntimeException( 'Invalid env var name. Letters, numbers, underscores only.' );
+			}
+
+			$parsed_vars[ $key ] = $value;
 		}
 
-		$key   = trim( $env_var[0] );
-		$value = trim( $env_var[1] );
-
-		if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
-			throw new \RuntimeException( 'Invalid env var name. Letters, numbers, underscores only.' );
-		}
-
-		$parsed_vars[ $key ] = $value;
+		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
 	}
-
-	App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
-}
 
 	/**
 	 * Add SUT to env:up options.
@@ -1116,21 +1125,22 @@ private function parse_env_vars( array $env_vars ): void {
 	 * @param array<mixed>   $env_up_options
 	 * @param string         $woo_extension_slug
 	 * @param string|null    $sut_type
+	 *
 	 * @return array<mixed>
 	 */
-private function add_sut_to_env_up_options( InputInterface $input, array $env_up_options, string $woo_extension_slug, ?string $sut_type ): array {
-	if ( ! $sut_type ) {
-		$sut_type = 'plugin';
+	private function add_sut_to_env_up_options( InputInterface $input, array $env_up_options, string $woo_extension_slug, ?string $sut_type ): array {
+		if ( ! $sut_type ) {
+			$sut_type = 'plugin';
+		}
+
+		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
+
+		// Add to env:up options
+		if ( ! isset( $env_up_options[ $key ] ) ) {
+			$env_up_options[ $key ] = [];
+		}
+		$env_up_options[ $key ][] = $woo_extension_slug;
+
+		return $env_up_options;
 	}
-
-	$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
-
-	// Add to env:up options
-	if ( ! isset( $env_up_options[ $key ] ) ) {
-		$env_up_options[ $key ] = [];
-	}
-	$env_up_options[ $key ][] = $woo_extension_slug;
-
-	return $env_up_options;
-}
 }

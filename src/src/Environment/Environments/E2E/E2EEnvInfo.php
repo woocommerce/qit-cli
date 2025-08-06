@@ -61,4 +61,7 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var array<string,array<string,array>> */
 	public array $test_packages = [];
+	
+	/** @var string|null */
+	public ?string $artifacts_dir = null;
 }
