@@ -19,9 +19,30 @@ class ResultCollector {
 	private NodeDependencyManager $node_deps;
 	private Docker $docker;
 
+	/**
+	 * @var array{total_packages: int, packages_with_allure: int, packages_without_allure: array<string>}|null
+	 */
+	private ?array $allure_tracking = null;
+
 	public function __construct( Docker $docker, NodeDependencyManager $node_deps ) {
 		$this->node_deps = $node_deps;
 		$this->docker    = $docker;
+	}
+
+	/**
+	 * Get Allure configuration tracking data
+	 *
+	 * @return array{total_packages: int, packages_with_allure: int, packages_without_allure: array<string>}|null
+	 */
+	public function get_allure_tracking(): ?array {
+		return $this->allure_tracking;
+	}
+
+	/**
+	 * Reset Allure tracking for new test run
+	 */
+	public function reset_allure_tracking(): void {
+		$this->allure_tracking = null;
 	}
 
 	/**
@@ -46,7 +67,23 @@ class ResultCollector {
 		);
 
 		// --------- 2️⃣  collect Allure (never mandatory) ----------------------
-		$this->collect_allure( $env, $slug, $mf, $dir );
+		$has_allure = $this->collect_allure( $env, $slug, $mf, $dir );
+
+		// Track Allure configuration status
+		if ( ! isset( $this->allure_tracking ) ) {
+			$this->allure_tracking = [
+				'total_packages'          => 0,
+				'packages_with_allure'    => 0,
+				'packages_without_allure' => [],
+			];
+		}
+
+		++$this->allure_tracking['total_packages'];
+		if ( $has_allure ) {
+			++$this->allure_tracking['packages_with_allure'];
+		} else {
+			$this->allure_tracking['packages_without_allure'][] = basename( $slug );
+		}
 
 		// --------- 3️⃣  collect Blob (mandatory for run phase) ----------------
 		$this->collect_blob(
@@ -107,16 +144,19 @@ class ResultCollector {
 		}
 	}
 
+	/**
+	 * @return bool True if package has Allure configured, false otherwise
+	 */
 	private function collect_allure(
 		E2EEnvInfo $env,
 		string $slug,
 		TestPackageManifest $mf,
 		string $dir
-	): void {
+	): bool {
 
 		$rel = $mf->getTestResults()['allure-dir'] ?? null;
 		if ( ! $rel ) {
-			return;
+			return false;
 		}                     // no declaration → skip
 
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
@@ -134,16 +174,18 @@ class ResultCollector {
 			$fs = new Filesystem();
 			$fs->mirror( $host_src, $dst );
 
-			return;
+			return true;
 		}
 
 		/* container fallback */
 		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . trim( $rel, '/' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
+			return true;
 		} catch ( \RuntimeException $e ) {
 			// Never mandatory for allure collection - silently ignore failures
 			unset( $e ); // Explicitly acknowledge the exception is not used
+			return false;
 		}
 	}
 
@@ -382,14 +424,26 @@ class ResultCollector {
 
 	/**
 	 * Save Allure reports to final location, preserving per-package structure
+	 *
+	 * @return array{has_allure: bool, packages_with_allure: int, packages_without_allure: array<string>}
 	 */
-	public function save_allure_to_final_location( string $artifacts_dir, SymfonyStyle $io, PackageOrchestrator $orchestrator ): void {
+	public function save_allure_to_final_location( string $artifacts_dir, SymfonyStyle $io, PackageOrchestrator $orchestrator ): array {
 		$allure_dir = $artifacts_dir . '/allure';
+
+		// Track Allure configuration status
+		$allure_status = [
+			'has_allure'              => false,
+			'packages_with_allure'    => 0,
+			'packages_without_allure' => [],
+		];
 
 		// Skip if no Allure directories
 		if ( ! is_dir( $allure_dir ) || empty( glob( $allure_dir . '/*', GLOB_ONLYDIR ) ) ) {
-			return;
+			return $allure_status;
 		}
+
+		$allure_status['has_allure']           = true;
+		$allure_status['packages_with_allure'] = count( glob( $allure_dir . '/*', GLOB_ONLYDIR ) );
 
 		$orchestrator->post_processing_message( 'Saving Allure reports...' );
 
@@ -411,6 +465,8 @@ class ResultCollector {
 			$io->text( "Allure reports remain available in original location: {$allure_dir}" );
 			$io->text( 'Reports will be zipped from original location for CI processing' );
 		}
+
+		return $allure_status;
 	}
 
 	/**

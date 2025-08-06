@@ -449,7 +449,45 @@ class RunE2ECommand extends QITCommand {
 			$this->result_collector->merge_blob( $artifacts_dir, $io, $orchestrator );
 
 			// Try to save Allure reports to final location
-			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io, $orchestrator );
+			$allure_status = $this->result_collector->save_allure_to_final_location( $artifacts_dir, $io, $orchestrator );
+
+			// Get Allure tracking data to determine if we should upload
+			$allure_tracking = $this->result_collector->get_allure_tracking();
+
+			// Validate Allure configuration completeness
+			$should_skip_allure_upload = false;
+			if ( $allure_tracking && App::getVar( 'should_upload_report' ) ) {
+				$total_packages          = $allure_tracking['total_packages'];
+				$packages_with_allure    = $allure_tracking['packages_with_allure'];
+				$packages_without_allure = $allure_tracking['packages_without_allure'];
+
+				if ( $packages_with_allure > 0 && $packages_with_allure < $total_packages ) {
+					// Mixed state - some packages have Allure, some don't
+					$should_skip_allure_upload = true;
+
+					$orchestrator->post_processing_message( '⚠ Allure incomplete (will not upload)', false );
+					$orchestrator->post_processing_message( sprintf( '  %d of %d packages have Allure configured', $packages_with_allure, $total_packages ), false );
+					if ( count( $packages_without_allure ) <= 3 ) {
+						$orchestrator->post_processing_message( '  Missing: ' . implode( ', ', $packages_without_allure ), false );
+					} else {
+						$orchestrator->post_processing_message( sprintf( '  Missing: %s and %d more',
+							implode( ', ', array_slice( $packages_without_allure, 0, 3 ) ),
+							count( $packages_without_allure ) - 3
+						), false );
+					}
+					$orchestrator->post_processing_message( '  All packages must have Allure for remote reports', false );
+
+					// Set flag to prevent upload
+					App::setVar( 'skip_allure_upload', true );
+				} elseif ( $packages_with_allure === 0 && $total_packages > 0 ) {
+					// No packages have Allure configured
+					$orchestrator->post_processing_message( 'ℹ No Allure configuration found', false );
+					$orchestrator->post_processing_message( '  Add "allure-dir" to manifest.json for failure debugging', false );
+				} elseif ( $packages_with_allure === $total_packages && $total_packages > 0 ) {
+					// All packages have Allure configured - perfect!
+					$orchestrator->post_processing_message( '✓ Allure configured (uploads on test failure)', false );
+				}
+			}
 
 			// Update cache with final HTML report location for e2e-report command
 			$final_html_report = $artifacts_dir . '/final/html-report/index.html';
@@ -857,6 +895,10 @@ class RunE2ECommand extends QITCommand {
 
 			// Store test packages in DI container for signal handler access
 			App::setVar( 'qit_test_packages', $test_packages );
+
+			// Reset Allure tracking for this test run
+			$this->result_collector->reset_allure_tracking();
+			App::setVar( 'skip_allure_upload', false );
 
 			// Run globalSetup phase for all packages
 			$orchestrator->global_setup_start();

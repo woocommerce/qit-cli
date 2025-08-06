@@ -224,29 +224,48 @@ class LocalTestRunNotifier {
 			$allure_dir = $results_dir . '/allure';
 		}
 
-		if ( is_dir( $allure_dir ) && App::getVar( 'should_upload_report' ) ) {
-			$zip_path = $results_dir . '/allure-raw.zip';
-			$this->zipper->zip_directory( $allure_dir, $zip_path );
+		// Check if Allure directory exists and we're not skipping
+		$has_allure = is_dir( $allure_dir )
+			&& App::getVar( 'should_upload_report' )
+			&& ! App::getVar( 'skip_allure_upload' );
 
-			if ( filesize( $zip_path ) > 200 * 1024 * 1024 ) {
+		// Determine if tests failed (we'll know after processing CTRF)
+		$tests_failed = false;
+		if ( $test_result instanceof TestResult ) {
+			$tests_failed = $this->ctrf_has_failed( $result_json );
+		}
+
+		if ( $has_allure ) {
+			if ( ! $tests_failed ) {
+				// Tests passed - don't upload Allure to save bandwidth
 				if ( $orchestrator ) {
-					$orchestrator->post_processing_message( 'Allure results too large to upload', false );
-				} else {
-					$this->output->writeln( '<error>Allure raw results are too large to upload. Skipping...</error>' );
+					$orchestrator->post_processing_message( 'Allure report available locally (not uploaded - tests passed)', false );
 				}
 			} else {
-				if ( $orchestrator ) {
-					$orchestrator->post_processing_message( 'Uploading results to QIT Manager...' );
-				}
-				$this->uploader->upload_build(
-					'test-report',
-					$test_run_id,
-					$zip_path,
-					$orchestrator ? new \Symfony\Component\Console\Output\NullOutput() : $this->output,
-					'e2e'
-				);
-				if ( $orchestrator ) {
-					$orchestrator->post_processing_message( 'Results uploaded' );
+				// Tests failed - upload Allure for debugging
+				$zip_path = $results_dir . '/allure-raw.zip';
+				$this->zipper->zip_directory( $allure_dir, $zip_path );
+
+				if ( filesize( $zip_path ) > 200 * 1024 * 1024 ) {
+					if ( $orchestrator ) {
+						$orchestrator->post_processing_message( 'Allure results too large to upload', false );
+					} else {
+						$this->output->writeln( '<error>Allure raw results are too large to upload. Skipping...</error>' );
+					}
+				} else {
+					if ( $orchestrator ) {
+						$orchestrator->post_processing_message( 'Uploading Allure report (tests failed)...' );
+					}
+					$this->uploader->upload_build(
+						'test-report',
+						$test_run_id,
+						$zip_path,
+						$orchestrator ? new \Symfony\Component\Console\Output\NullOutput() : $this->output,
+						'e2e'
+					);
+					if ( $orchestrator ) {
+						$orchestrator->post_processing_message( 'Allure report uploaded for debugging' );
+					}
 				}
 			}
 		}
