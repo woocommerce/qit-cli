@@ -97,18 +97,74 @@ class PackagePhaseRunner {
 	 * @param string                $cmd Command to execute.
 	 * @param string                $package_path Working directory for the command.
 	 * @param array<string, string> $env_vars Environment variables.
+	 * @param string                $phase The phase being executed (for timeout calculation).
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_on_host( string $cmd, string $package_path, array $env_vars = [] ): array {
+	private function run_on_host( string $cmd, string $package_path, array $env_vars = [], string $phase = 'run' ): array {
 		$start_time = microtime( true );
-		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, 300 );
+		$timeout    = $this->get_timeout_for_phase( $phase );
+		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, $timeout );
 
-		$process->run( function ( $type, $buffer ) {
-			if ( ! $this->output->isQuiet() ) {
-				$this->output->write( $buffer );
+		// Buffer to accumulate incomplete lines across chunks
+		$line_buffer = '';
+		$skip_mode   = false;
+
+		// Store process in DI container so signal handler can terminate it
+		App::setVar( 'qit_current_test_process', $process );
+
+		try {
+			$process->run( function ( $type, $buffer ) use ( &$line_buffer, &$skip_mode ) {
+				if ( ! $this->output->isQuiet() ) {
+					// Append new buffer to any incomplete line from previous chunk
+					$full_buffer = $line_buffer . $buffer;
+					$lines       = explode( "\n", $full_buffer );
+
+					// The last element might be an incomplete line
+					$line_buffer = array_pop( $lines );
+
+					foreach ( $lines as $line ) {
+						// Check if we should start skipping
+						if ( strpos( $line, 'To open last HTML report run:' ) !== false ) {
+							$skip_mode = true;
+							continue;
+						}
+
+						// If in skip mode, check for the npx command
+						if ( $skip_mode ) {
+							if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
+								$skip_mode = false;
+								continue;
+							}
+							// Skip empty lines while in skip mode
+							if ( trim( $line ) === '' ) {
+								continue;
+							}
+							// Non-empty, non-npx line - exit skip mode
+							$skip_mode = false;
+						}
+
+						// Also check for standalone npx playwright show-report line
+						if ( trim( $line ) === 'npx playwright show-report' ) {
+							continue;
+						}
+
+						// Output the line with newline
+						$this->output->writeln( $line );
+					}
+				}
+			} );
+		} finally {
+			// Clear the process reference from DI container
+			App::setVar( 'qit_current_test_process', null );
+		}
+
+		// Process any remaining content in the buffer
+		if ( ! $this->output->isQuiet() && ! empty( $line_buffer ) ) {
+			if ( ! $skip_mode || ( strpos( $line_buffer, 'npx playwright show-report' ) === false ) ) {
+				$this->output->write( $line_buffer );
 			}
-		} );
+		}
 
 		$end_time = microtime( true );
 		$duration = ( $end_time - $start_time ) * 1000; // Convert to milliseconds
@@ -189,6 +245,20 @@ class PackagePhaseRunner {
 				$exit_code = 1; // Default non-zero exit code
 			}
 			$stderr = $e->getMessage();
+
+			// Add more context for timeout errors
+			if ( strpos( $e->getMessage(), 'timed out' ) !== false || strpos( $e->getMessage(), 'timeout' ) !== false ) {
+				$timeout_seconds = $this->get_timeout_for_phase( $phase );
+				$timeout_display = $timeout_seconds >= 60 ? ( $timeout_seconds / 60 ) . ' minutes' : $timeout_seconds . ' seconds';
+				throw new \RuntimeException(
+					"Command timed out after {$timeout_display} in {$phase} phase.\n" .
+					"Command: {$cmd}\n" .
+					"This may indicate the test is hanging. Check the test logs for more details.\n" .
+					'Original error: ' . $e->getMessage(),
+					$e->getCode()
+				);
+			}
+
 			// Re-throw to maintain existing behavior
 			throw $e;
 		}
@@ -335,7 +405,9 @@ class PackagePhaseRunner {
 			$workdir = '/qit/packages/' . basename( $package_id );
 		}
 
-		$this->output->writeln( "  <info>• {$package_id} ({$phase})</info>" );
+		$phase_timeout   = $this->get_timeout_for_phase( $phase );
+		$timeout_display = $phase_timeout >= 60 ? ( $phase_timeout / 60 ) . ' minutes' : $phase_timeout . ' seconds';
+		$this->output->writeln( "  <info>• {$package_id} ({$phase}) - timeout: {$timeout_display}</info>" );
 
 		// Debug output
 		if ( $this->output->isVerbose() ) {
@@ -359,7 +431,7 @@ class PackagePhaseRunner {
 
 			try {
 				if ( $venue === 'host' ) {
-					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars );
+					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars, $phase );
 				} else {
 					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase );
 				}

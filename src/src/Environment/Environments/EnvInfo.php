@@ -97,6 +97,23 @@ abstract class EnvInfo implements \JsonSerializable {
 	/** @var string The site URL, if any. */
 	public string $site_url = '';
 
+	/** @var string The domain for accessing the environment. */
+	public string $domain = '';
+
+	/**
+	 * Prevent dynamic property assignment to catch typos and ensure type safety.
+	 *
+	 * @param string $name  The property name being set.
+	 * @param mixed  $value The value being assigned.
+	 *
+	 * @throws \LogicException When attempting to set an undeclared property.
+	 */
+	final public function __set( string $name, $value ): void {
+		throw new \LogicException(
+			sprintf( 'Unknown property "%s" assigned to %s', $name, static::class )
+		);
+	}
+
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return get_object_vars( $this );
@@ -191,6 +208,7 @@ abstract class EnvInfo implements \JsonSerializable {
 			'extension_set', // Handled elsewhere
 			'plugins', // Already handled above and converted to Extension objects
 			'themes', // Already handled above and converted to Extension objects
+			'domain', // Already handled above for environments that support it
 		];
 
 		foreach ( $env_info_array as $key => $value ) {
@@ -199,6 +217,21 @@ abstract class EnvInfo implements \JsonSerializable {
 			}
 
 			if ( property_exists( $env_info, $key ) ) {
+				// Prevent a plain array from overwriting a freshly-instantiated object
+				// Check if property is initialized before accessing it
+				$property_initialized = false;
+				$current_value        = null;
+				try {
+					$current_value        = $env_info->$key;
+					$property_initialized = true;
+				} catch ( \Error $e ) {
+					// Property not initialized, we can safely set it
+					unset( $e ); // Mark as intentionally unused
+				}
+
+				if ( $property_initialized && is_object( $current_value ) && ! is_object( $value ) ) {
+					continue;
+				}
 				$env_info->$key = $value;
 			} else {
 				if ( App::make( Output::class )->isVeryVerbose() ) {

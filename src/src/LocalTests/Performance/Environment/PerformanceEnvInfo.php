@@ -35,9 +35,6 @@ class PerformanceEnvInfo extends EnvInfo {
 	/** @var int The Woo ID of the extension under test. */
 	public $sut_id;
 
-	/** @var string The domain being used. */
-	public $domain;
-
 	/** @var string The performance test tag to be executed */
 	public $test_tag = '';
 

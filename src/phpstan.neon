@@ -18,6 +18,7 @@ parameters:
     minimumNumberOfJobsPerProcess: 2
   inferPrivatePropertyTypeFromConstructor: true
   reportUnmatchedIgnoredErrors: false
+  checkDynamicProperties: true
   ignoreErrors:
     # Can't set this, as we are extending Symfony Console command class.
     - '#.*::configure\(\) has no return type specified.$#'

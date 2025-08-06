@@ -29,9 +29,6 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var array<string,mixed> */
 	public array $sut = [];
 
-	/** @var string */
-	public string $domain = '';
-
 	public bool $skip_activating_plugins = false;
 
 	public bool $skip_activating_themes = false;
