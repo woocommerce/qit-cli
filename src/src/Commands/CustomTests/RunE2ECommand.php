@@ -416,13 +416,14 @@ class RunE2ECommand extends QITCommand {
 				);
 				$io->writeln( '<info>✓ Debug log copied from container</info>' );
 			} catch ( \RuntimeException $e ) {
-				// Debug log might not exist if no errors occurred - this is normal
-				$io->writeln( '<comment>No debug log found in container (this is normal if no PHP errors occurred)</comment>' );
+				// Debug log might not exist if no errors occurred - this is normal, don't show message
 			}
 
 			$test_result->set_status( $exit_status === Command::SUCCESS ? 'success' : 'failed' );
 
-			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result );
+			// Pass orchestrator to notify_test_finished for upload progress
+			$orchestrator = App::getVar( 'package_orchestrator' );
+			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result, $orchestrator );
 
 			// Use exit status override if provided
 			if ( $exit_status_override !== null ) {
@@ -434,26 +435,25 @@ class RunE2ECommand extends QITCommand {
 		$orchestrator = App::getVar( 'package_orchestrator' );
 		if ( $orchestrator ) {
 			$summary_data = [
-				'local_url' => '',
+				'status' => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
+				'local_command' => 'qit e2e-report',
 				'remote_url' => $report_url ?? '',
 			];
 			$orchestrator->summary( $summary_data );
-		}
-		
-		// Output results with enhanced report information
-		if ( $exit_status === Command::SUCCESS ) {
-			$io->success( 'Tests passed' );
 		} else {
-			$io->error( 'Tests failed' );
-		}
-		
-		// Show report information in a clean format
-		$io->writeln( '' );
-		$io->writeln( '<info>View full Playwright report:</info>  <comment>qit e2e-report</comment>' );
-		
-		// If we have a report URL from the manager, show it
-		if ( ! empty( $report_url ) ) {
-			$io->writeln( '<info>Remote URL (CI):</info>             <comment>' . $report_url . '</comment>' );
+			// Fallback if no orchestrator (shouldn't happen in normal flow)
+			if ( $exit_status === Command::SUCCESS ) {
+				$io->success( 'Tests passed' );
+			} else {
+				$io->error( 'Tests failed' );
+			}
+			
+			$io->writeln( '' );
+			$io->writeln( '<info>View full Playwright report:</info>  <comment>qit e2e-report</comment>' );
+			
+			if ( ! empty( $report_url ) ) {
+				$io->writeln( '<info>Remote URL (CI):</info>             <comment>' . $report_url . '</comment>' );
+			}
 		}
 
 		return $exit_status;
@@ -759,7 +759,14 @@ class RunE2ECommand extends QITCommand {
 			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 		}
 
-		echo "\nShutting down environment...\n";
+		// Show environment shutdown message in orchestrator if available
+		$orchestrator = App::getVar( 'package_orchestrator' );
+		if ( $orchestrator ) {
+			// Already in teardown, just add the message
+			$orchestrator->globalTeardownMessage( 'Shutting down environment...' );
+		} else {
+			echo "\nShutting down environment...\n";
+		}
 
 		$env_to_shutdown = App::getVar( 'env_to_shutdown' );
 		if ( ! empty( $env_to_shutdown ) ) {
@@ -965,14 +972,19 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 
+			// Post-processing section
+			$orchestrator->postProcessingStart();
+			
 			// Merge CTRF artifacts
-			$this->result_collector->merge_ctrf( $artifacts_dir, $io );
+			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
 
 			// Merge blob reports into HTML
-			$this->result_collector->merge_blob( $artifacts_dir, $io );
+			$this->result_collector->merge_blob( $artifacts_dir, $io, $orchestrator );
 
 			// Try to save Allure reports to final location
-			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io );
+			$this->result_collector->save_allure_to_final_location( $artifacts_dir, $io, $orchestrator );
+			
+			$orchestrator->postProcessingEnd();
 
 			// Store artifacts directory in env_info for later use by Manager
 			/** @phpstan-ignore-next-line property.notFound */
@@ -987,14 +999,11 @@ class RunE2ECommand extends QITCommand {
 				] ), DAY_IN_SECONDS );
 			}
 
-			// Summary
+			// Return appropriate exit code without redundant message
 			if ( empty( $failed_packages ) ) {
-				$io->success( "All test packages completed successfully. Total commands executed: {$total_executed}" );
-
 				return Command::SUCCESS;
 			} else {
-				$io->error( 'Failed packages: ' . implode( ', ', $failed_packages ) . ". Total commands executed: {$total_executed}" );
-
+				$io->error( 'Failed packages: ' . implode( ', ', $failed_packages ) );
 				return Command::FAILURE;
 			}
 		} catch ( \RuntimeException $e ) {

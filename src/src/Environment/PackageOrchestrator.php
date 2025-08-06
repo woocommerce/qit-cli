@@ -206,6 +206,31 @@ class PackageOrchestrator {
 	}
 	
 	/**
+	 * Display post-processing section
+	 */
+	public function postProcessingStart(): void {
+		$out = $this->packageSection ?? $this->output;
+		$lineWidth = min( $this->terminalWidth - 5, 75 );
+		$out->writeln( '' );
+		$out->writeln( '┌─ POST-PROCESSING ' . str_repeat( '─', max( 0, $lineWidth - 19 ) ) );
+		$this->state['phase_start_time'] = microtime( true );
+		$this->state['current_phase'] = 'POST_PROCESSING';
+	}
+	
+	public function postProcessingMessage( string $message, bool $success = true ): void {
+		$out = $this->packageSection ?? $this->output;
+		$symbol = $success ? '✓' : '✗';
+		$out->writeln( "│ $symbol $message" );
+	}
+	
+	public function postProcessingEnd(): void {
+		$out = $this->packageSection ?? $this->output;
+		$lineWidth = min( $this->terminalWidth - 5, 75 );
+		$out->writeln( '└' . str_repeat( '─', $lineWidth ) );
+		$out->writeln( '' );
+	}
+	
+	/**
 	 * Display global teardown
 	 */
 	public function globalTeardownStart(): void {
@@ -236,21 +261,39 @@ class PackageOrchestrator {
 		$out = $this->statusSection ?? $this->output;
 		
 		$lineWidth = min( $this->terminalWidth - 5, 75 );
+		$out->writeln( '' );
 		$out->writeln( str_repeat( '═', $lineWidth ) );
-		$out->writeln( 'ORCHESTRATION SUMMARY' );
+		$out->writeln( 'TEST RESULTS SUMMARY' );
 		$out->writeln( str_repeat( '═', $lineWidth ) );
-		$out->writeln( sprintf( 'Packages Executed:  %d/%d', $this->state['packages_completed'], $this->state['packages_total'] ) );
-		$out->writeln( sprintf( 'Total Time:         %s', $this->formatDuration( $duration ) ) );
 		
-		// URLs if available
-		if ( ! empty( $results['local_url'] ) || ! empty( $results['remote_url'] ) ) {
+		// Status
+		$status = isset( $results['status'] ) && $results['status'] === 'passed' ? '✓ PASSED' : '✗ FAILED';
+		$statusColor = isset( $results['status'] ) && $results['status'] === 'passed' ? 'info' : 'error';
+		$out->writeln( sprintf( '<' . $statusColor . '>Status:        %s</' . $statusColor . '>', $status ) );
+		
+		// Package stats
+		$out->writeln( sprintf( 'Packages:      %d/%d executed', $this->state['packages_completed'], $this->state['packages_total'] ) );
+		
+		// Test stats if available
+		$passed = $this->state['test_totals']['passed'] ?? 0;
+		$failed = $this->state['test_totals']['failed'] ?? 0;
+		$skipped = $this->state['test_totals']['skipped'] ?? 0;
+		$total = $this->state['test_totals']['total'] ?? 0;
+		if ( $total > 0 ) {
+			$out->writeln( sprintf( 'Tests:         %d passed, %d failed, %d skipped', $passed, $failed, $skipped ) );
+		}
+		
+		$out->writeln( sprintf( 'Duration:      %s', $this->formatDuration( $duration ) ) );
+		
+		// View results section
+		if ( ! empty( $results['local_command'] ) || ! empty( $results['remote_url'] ) ) {
 			$out->writeln( '' );
 			$out->writeln( 'View Results:' );
-			if ( ! empty( $results['local_url'] ) ) {
-				$out->writeln( '  Local:  ' . $results['local_url'] );
+			if ( ! empty( $results['local_command'] ) ) {
+				$out->writeln( '• Local Report:  <comment>' . $results['local_command'] . '</comment>' );
 			}
 			if ( ! empty( $results['remote_url'] ) ) {
-				$out->writeln( '  Remote: ' . $results['remote_url'] );
+				$out->writeln( '• Remote URL:    <comment>' . $results['remote_url'] . '</comment>' );
 			}
 		}
 		$out->writeln( str_repeat( '═', $lineWidth ) );

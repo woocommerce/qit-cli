@@ -7,6 +7,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
+use QIT_CLI\Environment\PackageOrchestrator;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
@@ -137,10 +138,11 @@ class LocalTestRunNotifier {
 
 	/**
 	 * @param TestResult|PerformanceTestResult $test_result
+	 * @param PackageOrchestrator|null $orchestrator Optional orchestrator for progress display
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
-	public function notify_test_finished( $test_result ): array {
+	public function notify_test_finished( $test_result, $orchestrator = null ): array {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {
@@ -227,15 +229,25 @@ class LocalTestRunNotifier {
 			$this->zipper->zip_directory( $allure_dir, $zip_path );
 
 			if ( filesize( $zip_path ) > 200 * 1024 * 1024 ) {
-				$this->output->writeln( '<error>Allure raw results are too large to upload. Skipping...</error>' );
+				if ( $orchestrator ) {
+					$orchestrator->postProcessingMessage( 'Allure results too large to upload', false );
+				} else {
+					$this->output->writeln( '<error>Allure raw results are too large to upload. Skipping...</error>' );
+				}
 			} else {
+				if ( $orchestrator ) {
+					$orchestrator->postProcessingMessage( 'Uploading results to QIT Manager...' );
+				}
 				$this->uploader->upload_build(
 					'test-report',
 					$test_run_id,
 					$zip_path,
-					$this->output,
+					$orchestrator ? new \Symfony\Component\Console\Output\NullOutput() : $this->output,
 					'e2e'
 				);
+				if ( $orchestrator ) {
+					$orchestrator->postProcessingMessage( 'Results uploaded' );
+				}
 			}
 		}
 
