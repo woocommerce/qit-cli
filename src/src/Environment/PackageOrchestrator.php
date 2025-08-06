@@ -186,7 +186,7 @@ class PackageOrchestrator {
 	/**
 	 * End current package
 	 */
-	public function packageEnd( bool $success = true ): void {
+	public function packageEnd( bool $success = true, bool $has_more_packages = false ): void {
 		$out = $this->packageSection ?? $this->output;
 		
 		// Increment completed count
@@ -197,12 +197,15 @@ class PackageOrchestrator {
 		$out->writeln( '└' . str_repeat( '─', $lineWidth ) );
 		$out->writeln( '' );
 		
-		if ( ! $success ) {
-			$out->writeln( '[Package failed - Database restore skipped]' );
-		} else {
-			$out->writeln( '[Database restored to snapshot for next package]' );
+		// Only show database restore message if there are more packages
+		if ( $has_more_packages ) {
+			if ( ! $success ) {
+				$out->writeln( '[Package failed - Database restore skipped]' );
+			} else {
+				$out->writeln( '[Database restored to snapshot for next package]' );
+			}
+			$out->writeln( '' );
 		}
-		$out->writeln( '' );
 	}
 	
 	/**

@@ -840,10 +840,13 @@ class RunE2ECommand extends QITCommand {
 				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir );
 			}
 
-			// Export baseline database snapshot after all globalSetup scripts ran
-			$orchestrator->globalSetupMessage( 'Exporting baseline database snapshot...' );
-			$docker = App::make( Docker::class );
-			$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql', '--defaults' ] );
+			// Export baseline database snapshot only if we have multiple test packages
+			$has_multiple_packages = count( $test_packages ) > 1;
+			if ( $has_multiple_packages ) {
+				$orchestrator->globalSetupMessage( 'Exporting baseline database snapshot...' );
+				$docker = App::make( Docker::class );
+				$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'export', '/qit/snapshot.sql', '--defaults' ] );
+			}
 			$orchestrator->globalSetupEnd();
 
 			$package_index = 0;
@@ -954,8 +957,9 @@ class RunE2ECommand extends QITCommand {
 					$total_executed += $package_total;
 					
 					// Command count is tracked internally, no need to display here
-					// End package in orchestrator
-					$orchestrator->packageEnd( true );
+					// End package in orchestrator - check if there are more packages
+					$has_more_packages = $package_index < count( $test_packages );
+					$orchestrator->packageEnd( true, $has_more_packages );
 
 					// Mark that we've processed the first package
 					$is_first_package = false;
@@ -964,8 +968,9 @@ class RunE2ECommand extends QITCommand {
 					$io->error( "Failed to execute package {$pkg_id}: " . $e->getMessage() );
 					$failed_packages[] = $pkg_id;
 					
-					// End package with failure status
-					$orchestrator->packageEnd( false );
+					// End package with failure status - check if there are more packages  
+					$has_more_packages = $package_index < count( $test_packages );
+					$orchestrator->packageEnd( false, $has_more_packages );
 					
 					// Still mark as processed to maintain the sequence for subsequent packages
 					$is_first_package = false;
