@@ -82,7 +82,7 @@ class EnvironmentVars {
 
 		$content  = "#!/bin/bash\n";
 		$content .= "# QIT Environment Variables\n";
-		$content .= '# Generated: ' . date( 'Y-m-d H:i:s' ) . "\n";
+		$content .= '# Generated: ' . gmdate( 'Y-m-d H:i:s' ) . "\n";
 		$content .= "# Environment: {$env_info->env_id}\n";
 		$content .= "#\n";
 		$content .= "# This file is auto-generated. Do not edit manually.\n";
@@ -127,7 +127,7 @@ class EnvironmentVars {
 	 * Save environment file for a given environment.
 	 *
 	 * @param E2EEnvInfo $env_info The environment information.
-	 * @return array Paths to the created files.
+	 * @return array<string> Paths to the created files.
 	 */
 	public function save_environment_file( E2EEnvInfo $env_info ): array {
 		$dir = $this->get_env_directory();

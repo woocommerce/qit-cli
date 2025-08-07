@@ -9,8 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class GlobalSetupOrchestrator extends PackageOrchestrator {
 	private OutputInterface $output;
-	private bool $in_frame          = false;
-	private string $current_package = '';
+	private bool $in_frame = false;
 
 	public function __construct( OutputInterface $output ) {
 		parent::__construct( $output );
@@ -20,12 +19,11 @@ class GlobalSetupOrchestrator extends PackageOrchestrator {
 	/**
 	 * Start output for a global setup package.
 	 *
-	 * @param string $package_id Package identifier (e.g., vendor/package:version).
-	 * @param array  $info Package information.
+	 * @param string                            $package_id Package identifier (e.g., vendor/package:version).
+	 * @param array{path:string,source?:string} $info Package information.
 	 */
 	public function start_package( string $package_id, array $info ): void {
-		$this->current_package = $package_id;
-		$this->in_frame        = true;
+		$this->in_frame = true;
 
 		// Start the frame
 		$header  = '┌─ ' . $package_id . ' ';
@@ -63,8 +61,7 @@ class GlobalSetupOrchestrator extends PackageOrchestrator {
 		$this->output->writeln( $footer );
 		$this->output->writeln( '' );
 
-		$this->in_frame        = false;
-		$this->current_package = '';
+		$this->in_frame = false;
 	}
 
 	/**

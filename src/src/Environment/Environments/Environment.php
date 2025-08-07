@@ -370,8 +370,9 @@ abstract class Environment {
 
 		// Execute globalTeardown phase for global setup packages - always executed, even on failure
 		if ( ! empty( $env_info->global_setup_packages ) ) {
-			$docker = App::make( Docker::class );
-			$runner = new \QIT_CLI\Environment\PackagePhaseRunner( $docker, $output );
+			$docker           = App::make( Docker::class );
+			$environment_vars = App::make( \QIT_CLI\Environment\EnvironmentVars::class );
+			$runner           = new \QIT_CLI\Environment\PackagePhaseRunner( $docker, $output, $environment_vars );
 
 			$output->writeln( "\n<comment>🧹  Test‑package globalTeardown phase</comment>" );
 			$output->writeln( '<comment>-----------------------------------</comment>' );

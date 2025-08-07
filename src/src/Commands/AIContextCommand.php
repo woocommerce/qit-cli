@@ -352,9 +352,9 @@ HELP
 
 		// Get quick failure summary first if failed
 		$failure_summary = null;
+		$ctrf_file       = ( $run_data['artifacts']['directory'] ?? '' ) . '/final/ctrf/ctrf-report.json';
 		if ( $run_data['status'] === 'failed' ) {
 			// Try to load CTRF report for failure details
-			$ctrf_file = ( $run_data['artifacts']['directory'] ?? '' ) . '/final/ctrf/ctrf-report.json';
 			if ( file_exists( $ctrf_file ) ) {
 				$ctrf_data = json_decode( file_get_contents( $ctrf_file ), true );
 				if ( isset( $ctrf_data['results']['tests'] ) ) {
@@ -575,11 +575,11 @@ HELP
 			$output->writeln( '<comment>FAILING TEST LOCATION:</comment>' );
 			if ( $failure_summary && $failed_package_index !== null ) {
 				$pkg_path = $packages[ $failed_package_index ]['path'] ?? '';
-				if ( $pkg_path && $failure_summary['file'] ) {
+				if ( $pkg_path && isset( $failure_summary['file'] ) && $failure_summary['file'] ) {
 					$test_file_path = $pkg_path . '/tests/' . $failure_summary['file'];
 					$output->writeln( sprintf( 'Full path: <info>%s</info>', $test_file_path ) );
 					$output->writeln( sprintf( 'Read test: <info>cat %s</info>', $test_file_path ) );
-					if ( $failure_summary['line'] ) {
+					if ( isset( $failure_summary['line'] ) && $failure_summary['line'] ) {
 						$output->writeln( sprintf( 'At line %d: <info>sed -n "%d,%dp" %s</info>',
 							$failure_summary['line'],
 							max( 1, $failure_summary['line'] - 5 ),
@@ -714,13 +714,13 @@ HELP
 	/**
 	 * Show directory structure fallback when tree command is not available.
 	 *
-	 * @param OutputInterface $output
-	 * @param string          $dir Directory to show
-	 * @param int             $depth Current depth
-	 * @param int             $max_depth Maximum depth to show
-	 * @param int             $max_files Maximum files to show
-	 * @param string          $prefix Prefix for tree display
-	 * @param int             &$file_count Current file count
+	 * @param OutputInterface $output The output interface.
+	 * @param string          $dir Directory to show.
+	 * @param int             $depth Current depth.
+	 * @param int             $max_depth Maximum depth to show.
+	 * @param int             $max_files Maximum files to show.
+	 * @param string          $prefix Prefix for tree display.
+	 * @param int             &$file_count Current file count.
 	 */
 	private function showDirectoryStructureFallback(
 		OutputInterface $output,

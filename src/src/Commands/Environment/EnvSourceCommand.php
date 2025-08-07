@@ -133,9 +133,11 @@ class EnvSourceCommand extends QITCommand {
 
 		// Try to reconstruct from running containers
 		// This is a fallback for environments started before this feature
+		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 		$containers = shell_exec( 'docker ps --format "{{.Names}}"' );
 		if ( strpos( $containers, $env_id ) !== false ) {
 			// Try to determine port from docker inspect
+			// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.system_calls_shell_exec
 			$inspect = shell_exec( sprintf(
 				'docker inspect %s_php_%s --format "{{(index .NetworkSettings.Ports \"80/tcp\" 0).HostPort}}"',
 				'qit_env',

@@ -21,6 +21,7 @@ use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\OptionReuseTrait;
+use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\QITInput;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -532,7 +533,8 @@ class RunE2ECommand extends QITCommand {
 				$output->writeln( '<info>✓ WordPress debug log saved to artifacts</info>' );
 			}
 		} catch ( \RuntimeException $e ) {
-			// Debug log might not exist if no errors occurred - this is normal
+			// Debug log might not exist if no errors occurred - this is normal.
+			unset( $e );
 		}
 
 		// Save run information for qit ai-context failed-e2e command
@@ -563,7 +565,7 @@ class RunE2ECommand extends QITCommand {
 	 * 6. AI can now analyze the failure, read logs, and provide specific fixes
 	 *
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info Environment information.
-	 * @param array                                            $test_packages Test packages that were run.
+	 * @param array<string,array{path?:string}>                $test_packages Test packages that were run.
 	 * @param int                                              $exit_status Exit status of the test run.
 	 * @param string                                           $artifacts_dir Path to artifacts directory.
 	 * @param string|null                                      $report_url Remote report URL if available.
@@ -608,7 +610,7 @@ class RunE2ECommand extends QITCommand {
 		// Build the run info data
 		$run_info = [
 			'run_id'         => $run_id,
-			'timestamp'      => date( 'c' ),
+			'timestamp'      => gmdate( 'c' ),
 			'status'         => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
 			'environment'    => [
 				'id'          => $env_info->env_id,
@@ -621,16 +623,16 @@ class RunE2ECommand extends QITCommand {
 					'id'   => $env_info->sut['id'] ?? null,
 					'type' => $env_info->sut['type'] ?? 'plugin',
 				] : null,
-				'plugins'     => array_map( function ( $plugin ) {
+				'plugins'     => array_map( function ( Extension $plugin ) {
 					return [
-						'slug'    => $plugin->slug ?? $plugin['slug'] ?? null,
-						'version' => $plugin->version ?? $plugin['version'] ?? null,
+						'slug'    => $plugin->slug,
+						'version' => $plugin->version,
 					];
 				}, $env_info->plugins ),
-				'themes'      => array_map( function ( $theme ) {
+				'themes'      => array_map( function ( Extension $theme ) {
 					return [
-						'slug'    => $theme->slug ?? $theme['slug'] ?? null,
-						'version' => $theme->version ?? $theme['version'] ?? null,
+						'slug'    => $theme->slug,
+						'version' => $theme->version,
 					];
 				}, $env_info->themes ),
 			],
@@ -1473,7 +1475,7 @@ class RunE2ECommand extends QITCommand {
 	 *
 	 * @param OutputInterface                                  $output
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info
-	 * @param array<string,array>                              $test_packages
+	 * @param array<string,array{path?:string}>                $test_packages
 	 */
 	private function renderEnvironmentSummary( OutputInterface $output, \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages ): void {
 		$output->writeln( '' );

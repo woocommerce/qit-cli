@@ -4,7 +4,6 @@ declare( strict_types=1 );
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
-use QIT_CLI\Commands\Environment\ExtensionSummary;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
@@ -137,14 +136,15 @@ class UpEnvironmentCommand extends QITCommand {
 		$global_setup_packages = [];
 		if ( ! empty( $env_config['global_setup'] ) ) {
 			// Download and prepare global setup packages
-			$package_downloader = \QIT_CLI\App::make( \QIT_CLI\Environment\PackageDownloader::class );
+			$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
 			foreach ( $env_config['global_setup'] as $package_ref ) {
 				try {
-					$package_info = $package_downloader->download_package( $package_ref );
-					if ( $package_info ) {
+					$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
+					if ( $manifest ) {
+						$metadata                              = $package_downloader->get_package_metadata( $package_ref );
 						$global_setup_packages[ $package_ref ] = [
-							'path'   => $package_info['path'],
-							'source' => $package_info['source'] ?? 'registry',
+							'path'   => $metadata['downloaded_path'] ?? '',
+							'source' => 'registry',
 						];
 					}
 				} catch ( \Exception $e ) {
@@ -154,6 +154,7 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/* ─ 4. Materialise E2EEnvInfo DTO ─ */
+		/** @var E2EEnvInfo $env_info */
 		$env_info = E2EEnvInfo::from_array( [
 			'env_id'                => 'qitenv' . bin2hex( random_bytes( 8 ) ),
 			'environment'           => 'e2e',
@@ -587,7 +588,7 @@ class UpEnvironmentCommand extends QITCommand {
 				if ( $plugin->slug === 'woocommerce' && $info->woo ) {
 					$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
 				} elseif ( $plugin->slug !== 'woocommerce' ) {
-					$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version ?? '' );
+					$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version );
 				}
 			}
 			if ( ! empty( $plugin_names ) ) {
@@ -599,7 +600,7 @@ class UpEnvironmentCommand extends QITCommand {
 			foreach ( $info->themes as $theme ) {
 				// Skip default themes
 				if ( ! in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
-					$theme_names[] = sprintf( '%s %s', $this->format_plugin_name( $theme->slug ), $theme->version ?? '' );
+					$theme_names[] = sprintf( '%s %s', $this->format_plugin_name( $theme->slug ), $theme->version );
 				}
 			}
 			if ( ! empty( $theme_names ) ) {
