@@ -92,7 +92,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' )
-			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			// ->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
 			->addOption( 'extension_set', null, InputOption::VALUE_OPTIONAL, 'The extension set to use for the test.' )
@@ -184,7 +183,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $woo_extension_slug, $sut_type );
 
-		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
 
 		if ( $wait ) {

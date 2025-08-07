@@ -94,7 +94,7 @@ class LocalTestRunNotifier {
 			'wp'                      => $env_info->wp,
 			'php'                     => $env_info->php,
 			'additional_plugins'      => $additional_plugins,
-			'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
+			'will_have_allure_report' => 'true', // Always true now, Allure uploads only on failure
 			'test_type'               => $test_type,
 			'event'                   => $event,
 			'is_development_build'    => $is_development ? 'true' : 'false',
@@ -226,7 +226,6 @@ class LocalTestRunNotifier {
 
 		// Check if Allure directory exists and we're not skipping
 		$has_allure = is_dir( $allure_dir )
-			&& App::getVar( 'should_upload_report' )
 			&& ! App::getVar( 'skip_allure_upload' );
 
 		// Determine if tests failed (we'll know after processing CTRF)

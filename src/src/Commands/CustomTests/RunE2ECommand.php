@@ -147,7 +147,6 @@ class RunE2ECommand extends QITCommand {
 			// Execution options
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
 			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
-			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Skip report upload' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false );
 	}
@@ -240,7 +239,6 @@ class RunE2ECommand extends QITCommand {
 		putenv( 'QIT_UP_AND_TEST=1' );
 
 		// Set global variables
-		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
 		if ( $sut_slug ) {
 			App::setVar( 'QIT_SUT', $sut_id );
 			App::setVar( 'QIT_SUT_SLUG', $sut_slug );
@@ -351,11 +349,6 @@ class RunE2ECommand extends QITCommand {
 		// ─ validate shard, run phases, collect results, notify, etc.
 		// … existing logic untouched …
 
-		// Determine whether we should upload the Allure report.
-		// By default we upload unless the user explicitly passes --no_upload_report.
-		$should_upload = ! ( $input->hasOption( 'no_upload_report' ) && $input->getOption( 'no_upload_report' ) );
-		App::setVar( 'should_upload_report', $should_upload );
-
 		// Validate shard format (only if explicitly provided)
 		if ( $input->hasOption( 'shard' ) ) {
 			$shard = $input->getOption( 'shard' );
@@ -456,7 +449,7 @@ class RunE2ECommand extends QITCommand {
 
 			// Validate Allure configuration completeness
 			$should_skip_allure_upload = false;
-			if ( $allure_tracking && App::getVar( 'should_upload_report' ) ) {
+			if ( $allure_tracking ) {
 				$total_packages          = $allure_tracking['total_packages'];
 				$packages_with_allure    = $allure_tracking['packages_with_allure'];
 				$packages_without_allure = $allure_tracking['packages_without_allure'];
