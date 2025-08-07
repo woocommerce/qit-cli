@@ -11,14 +11,14 @@ use Symfony\Component\Console\Output\OutputInterface;
 class AIContextCommand extends QITCommand {
 	/** @var Config */
 	private Config $config;
-	
+
 	protected static $defaultName = 'ai-context'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-	
+
 	public function __construct( Config $config ) {
 		$this->config = $config;
 		parent::__construct();
 	}
-	
+
 	protected function configure(): void {
 		parent::configure();
 		$this
@@ -82,15 +82,15 @@ that allows plugins to test compatibility without knowing each other's internals
 HELP
 			);
 	}
-	
+
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$type = $input->getArgument( 'type' );
-		
+
 		// If no type specified, list available contexts
 		if ( empty( $type ) ) {
 			return $this->listContextTypes( $output );
 		}
-		
+
 		// Route to appropriate context handler
 		switch ( $type ) {
 			case 'failed-e2e':
@@ -112,7 +112,7 @@ HELP
 				return $this->listContextTypes( $output );
 		}
 	}
-	
+
 	/**
 	 * List available context types
 	 */
@@ -121,32 +121,32 @@ HELP
 		$output->writeln( '<info>AVAILABLE AI CONTEXT TYPES</info>' );
 		$output->writeln( '<info>═══════════════════════════════════════════════════════════════════</info>' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>failed-e2e</comment>' );
 		$output->writeln( '  Investigation context for debugging E2E test failures' );
 		$output->writeln( '  Usage: <info>qit ai-context failed-e2e [run_id]</info>' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>qit-basics</comment>' );
 		$output->writeln( '  Understanding QIT\'s orchestration model and architecture' );
 		$output->writeln( '  Usage: <info>qit ai-context qit-basics</info>' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>understanding-test-packages</comment>' );
 		$output->writeln( '  Test package lifecycle: global setup, setup, teardown phases' );
 		$output->writeln( '  Usage: <info>qit ai-context understanding-test-packages</info>' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>writing-test-packages</comment> <fg=gray>(coming soon)</>' );
 		$output->writeln( '  Best practices for creating QIT test packages' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<info>TIP:</info> Start with <comment>qit ai-context qit-basics</comment> if you\'re new to QIT' );
 		$output->writeln( '' );
-		
+
 		return Command::SUCCESS;
 	}
-	
+
 	/**
 	 * Show QIT basics context
 	 */
@@ -156,14 +156,14 @@ HELP
 		$output->writeln( '<info>QIT BASICS - AGENTIC AI CONTEXT</info>' );
 		$output->writeln( '<info>═══════════════════════════════════════════════════════════════════</info>' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>WHAT IS QIT?</comment>' );
 		$output->writeln( '• QIT (Quality Insights Toolkit) is a test orchestration system for WooCommerce' );
 		$output->writeln( '• Tests plugins/themes for cross-compatibility with WordPress & WooCommerce' );
 		$output->writeln( '• Used by 60,000+ plugins in the ecosystem for quality assurance' );
 		$output->writeln( '• Tests run in isolated Docker containers with Playwright' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>QIT\'S UNIQUE ORCHESTRATION MODEL:</comment>' );
 		$output->writeln( '• Unlike standard test runners (Jest, PHPUnit), QIT orchestrates MULTIPLE' );
 		$output->writeln( '  independent Playwright instances that share a WordPress environment' );
@@ -176,7 +176,7 @@ HELP
 		$output->writeln( '  [Package 2 Playwright] → [Shared WordPress] → [Merged Reports]' );
 		$output->writeln( '  [Package N Playwright] ↗' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>KEY ARCHITECTURAL DECISIONS:</comment>' );
 		$output->writeln( '1. <info>Multiple Playwright Instances</info>' );
 		$output->writeln( '   • Each test package runs in its OWN Playwright process' );
@@ -194,24 +194,24 @@ HELP
 		$output->writeln( '   • Multiple Playwright reports → Single unified report' );
 		$output->writeln( '   • Videos, screenshots, traces all combined' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>WHY THIS ARCHITECTURE?</comment>' );
 		$output->writeln( '• <info>Scalability</info>: Any plugin in the ecosystem can test compatibility' );
 		$output->writeln( '• <info>Isolation</info>: Test failures don\'t cascade between packages' );
 		$output->writeln( '• <info>Realism</info>: Tests run in actual WordPress environment' );
 		$output->writeln( '• <info>Flexibility</info>: Packages can have different test strategies' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>NEXT STEP:</comment>' );
 		$output->writeln( '• <info>STRONGLY RECOMMENDED (if not already run):</info> <info>qit ai-context understanding-test-packages</info>' );
 		$output->writeln( '  → Learn how test packages work with this architecture' );
 		$output->writeln( '' );
 		$output->writeln( '• For all available contexts: Run <info>qit ai-context --help</info>' );
 		$output->writeln( '' );
-		
+
 		return Command::SUCCESS;
 	}
-	
+
 	/**
 	 * Show test packages context
 	 */
@@ -221,10 +221,10 @@ HELP
 		$output->writeln( '<info>UNDERSTANDING TEST PACKAGES - AGENTIC AI CONTEXT</info>' );
 		$output->writeln( '<info>═══════════════════════════════════════════════════════════════════</info>' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>EXECUTION PHASES IN DETAIL:</comment>' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '1. <info>GLOBAL SETUP</info> (Runs ONCE for all packages)' );
 		$output->writeln( '   Purpose: Create a ready-to-test baseline that ALL packages benefit from' );
 		$output->writeln( '' );
@@ -236,7 +236,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( '   RESULT: Baseline snapshot with all plugins configured' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '2. <info>FOR EACH TEST PACKAGE:</info>' );
 		$output->writeln( '' );
 		$output->writeln( '   a. <info>PACKAGE SETUP</info> (Isolated preparation)' );
@@ -263,18 +263,18 @@ HELP
 		$output->writeln( '      • Database returns to global baseline' );
 		$output->writeln( '      • Filesystem persists (uploaded files remain!)' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '3. <info>GLOBAL TEARDOWN</info> (Runs ONCE after all packages)' );
 		$output->writeln( '   • Final cleanup operations' );
 		$output->writeln( '   • Collect global metrics' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '4. <info>POST-PROCESSING</info>' );
 		$output->writeln( '   • Merge all Playwright reports' );
 		$output->writeln( '   • Combine videos, screenshots, traces' );
 		$output->writeln( '   • Generate unified test report' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>THE POWER OF KNOWLEDGE DECOUPLING:</comment>' );
 		$output->writeln( '' );
 		$output->writeln( 'Key Insight: <info>Plugins don\'t need to know about each other!</info>' );
@@ -297,7 +297,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'This decoupling enables the entire ecosystem to test compatibility!' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>STATE MANAGEMENT SUMMARY:</comment>' );
 		$output->writeln( '┌─────────────────┬──────────────────┬─────────────────┐' );
 		$output->writeln( '│ State Type      │ Scope            │ Persistence     │' );
@@ -308,30 +308,30 @@ HELP
 		$output->writeln( '│ Filesystem      │ All packages     │ Entire run      │' );
 		$output->writeln( '└─────────────────┴──────────────────┴─────────────────┘' );
 		$output->writeln( '' );
-		
+
 		$output->writeln( '<comment>NEXT STEPS:</comment>' );
 		$output->writeln( '• Currently debugging a test failure? Run <info>qit ai-context failed-e2e</info>' );
 		$output->writeln( '  → Provides specific investigation commands and context' );
 		$output->writeln( '' );
 		$output->writeln( '• For all available contexts: Run <info>qit ai-context --help</info>' );
 		$output->writeln( '' );
-		
+
 		return Command::SUCCESS;
 	}
-	
+
 	/**
 	 * Show failed E2E context (the original investigate functionality)
 	 */
 	private function showFailedE2EContext( QITInput $input, OutputInterface $output ): int {
 		$run_id = $input->getArgument( 'run_id' );
-		
+
 		// Determine which run file to load
 		if ( empty( $run_id ) ) {
 			$run_file = $this->config::get_qit_dir() . '/last-run.json';
 		} else {
 			$run_file = $this->config::get_qit_dir() . '/runs/' . $run_id . '.json';
 		}
-		
+
 		// Check if the file exists
 		if ( ! file_exists( $run_file ) ) {
 			if ( empty( $run_id ) ) {
@@ -341,15 +341,15 @@ HELP
 			}
 			return Command::FAILURE;
 		}
-		
+
 		// Load the run data
 		$run_data = json_decode( file_get_contents( $run_file ), true );
-		
+
 		if ( ! $run_data ) {
 			$output->writeln( '<error>Failed to parse run data</error>' );
 			return Command::FAILURE;
 		}
-		
+
 		// Get quick failure summary first if failed
 		$failure_summary = null;
 		if ( $run_data['status'] === 'failed' ) {
@@ -361,51 +361,51 @@ HELP
 					foreach ( $ctrf_data['results']['tests'] as $test ) {
 						if ( $test['status'] === 'failed' ) {
 							$failure_summary = [
-								'name' => $test['name'] ?? 'Unknown test',
-								'suite' => $test['suite'] ?? 'Unknown suite',
+								'name'    => $test['name'] ?? 'Unknown test',
+								'suite'   => $test['suite'] ?? 'Unknown suite',
 								'message' => $test['message'] ?? 'No error message',
-								'file' => basename( $test['filePath'] ?? 'unknown' ),
-								'line' => $this->extractLineNumber( $test['trace'] ?? '' ),
+								'file'    => basename( $test['filePath'] ?? 'unknown' ),
+								'line'    => $this->extractLineNumber( $test['trace'] ?? '' ),
 							];
-						break;
+							break;
 						}
 					}
 				}
 			}
 		}
-		
+
 		// Output human-readable explanation
 		$output->writeln( '' );
 		$output->writeln( '<info>═══════════════════════════════════════════════════════════════════</info>' );
 		$output->writeln( '<info>FAILED E2E TEST - AGENTIC AI INVESTIGATION CONTEXT</info>' );
 		$output->writeln( '<info>═══════════════════════════════════════════════════════════════════</info>' );
 		$output->writeln( '' );
-		
+
 		// Show failure summary first if available
 		if ( $failure_summary ) {
 			$output->writeln( '<error>⚠ FAILURE SUMMARY:</error>' );
 			$output->writeln( sprintf( '• Test: "%s"', $failure_summary['name'] ) );
 			$output->writeln( sprintf( '• Suite: %s', $failure_summary['suite'] ) );
 			$output->writeln( sprintf( '• Location: %s%s', $failure_summary['file'], $failure_summary['line'] ? ':' . $failure_summary['line'] : '' ) );
-			
+
 			// Show raw error message - let AI analyze it
-			$error_msg = $failure_summary['message'];
+			$error_msg  = $failure_summary['message'];
 			$first_line = strtok( $error_msg, "\n" );
 			$output->writeln( sprintf( '• Error: %s', $first_line ) );
-			
+
 			// If it's multi-line, indicate there's more
 			if ( strpos( $error_msg, "\n" ) !== false ) {
 				$output->writeln( '  (Full error available in investigation commands below)' );
 			}
 			$output->writeln( '' );
 		}
-		
+
 		// Show the specific run details
 		$output->writeln( sprintf( '<comment>TEST RUN DETAILS (%s):</comment>', $run_data['run_id'] ?? 'unknown' ) );
 		$output->writeln( sprintf( '• Status: %s', $run_data['status'] === 'passed' ? '<info>✓ PASSED</info>' : '<error>✗ FAILED</error>' ) );
 		$output->writeln( sprintf( '• Timestamp: %s', $run_data['timestamp'] ?? 'unknown' ) );
 		$output->writeln( '' );
-		
+
 		// Environment details
 		$output->writeln( '<comment>ENVIRONMENT CONFIGURATION:</comment>' );
 		$env = $run_data['environment'] ?? [];
@@ -416,7 +416,7 @@ HELP
 			$output->writeln( sprintf( '• WooCommerce: %s', $env['woocommerce'] ) );
 		}
 		$output->writeln( sprintf( '• Site URL: %s', $env['url'] ?? 'unknown' ) );
-		
+
 		// Show System Under Test if present
 		if ( ! empty( $env['sut'] ) ) {
 			$output->writeln( '' );
@@ -428,37 +428,37 @@ HELP
 				$output->writeln( sprintf( '• ID: %s', $env['sut']['id'] ) );
 			}
 		}
-		
+
 		// Show active plugins
 		if ( ! empty( $env['plugins'] ) ) {
 			$output->writeln( '' );
 			$output->writeln( 'Active Plugins:' );
 			foreach ( $env['plugins'] as $plugin ) {
-				$output->writeln( sprintf( '  • %s %s', 
-					$plugin['slug'] ?? 'unknown', 
+				$output->writeln( sprintf( '  • %s %s',
+					$plugin['slug'] ?? 'unknown',
 					! empty( $plugin['version'] ) ? '(' . $plugin['version'] . ')' : ''
 				) );
 			}
 		}
-		
+
 		// Show active themes
 		if ( ! empty( $env['themes'] ) ) {
 			$output->writeln( '' );
 			$output->writeln( 'Active Themes:' );
 			foreach ( $env['themes'] as $theme ) {
-				$output->writeln( sprintf( '  • %s %s', 
+				$output->writeln( sprintf( '  • %s %s',
 					$theme['slug'] ?? 'unknown',
 					! empty( $theme['version'] ) ? '(' . $theme['version'] . ')' : ''
 				) );
 			}
 		}
 		$output->writeln( '' );
-		
+
 		// Test packages executed with status
 		$output->writeln( '<comment>PACKAGE EXECUTION ORDER:</comment>' );
-		$packages = $run_data['test_packages'] ?? [];
+		$packages             = $run_data['test_packages'] ?? [];
 		$failed_package_index = null;
-		
+
 		// Try to determine which package failed from CTRF data
 		if ( $failure_summary && file_exists( $ctrf_file ?? '' ) ) {
 			$ctrf_data = json_decode( file_get_contents( $ctrf_file ), true );
@@ -476,12 +476,12 @@ HELP
 				}
 			}
 		}
-		
+
 		foreach ( $packages as $i => $package ) {
-			$pkg_id = $package['id'] ?? 'unknown';
-			$is_local = strpos( $pkg_id, '/' ) === 0; // Local packages start with /
+			$pkg_id       = $package['id'] ?? 'unknown';
+			$is_local     = strpos( $pkg_id, '/' ) === 0; // Local packages start with /
 			$display_name = $is_local ? basename( dirname( $pkg_id ) ) : $pkg_id;
-			
+
 			// Show status based on what we know
 			if ( $i === $failed_package_index ) {
 				$status_icon = '<error>✗</error>';
@@ -493,19 +493,19 @@ HELP
 				$status_icon = '<info>✓</info>';
 				$status_text = '';
 			}
-			
+
 			$output->writeln( sprintf( '%s Package %d: %s%s', $status_icon, $i + 1, $display_name, $status_text ) );
-			
+
 			if ( $is_local ) {
 				$output->writeln( sprintf( '   Type: Local test package' ) );
 			}
 		}
 		$output->writeln( '' );
-		
+
 		// Artifacts structure and investigation
 		if ( $run_data['status'] === 'failed' ) {
 			$artifacts_dir = $run_data['artifacts']['directory'] ?? '';
-			
+
 			// IMPORTANT: Tell AI it needs access to this directory
 			$output->writeln( '<error>═══════════════════════════════════════════════════════════════════</error>' );
 			$output->writeln( '<error>IMPORTANT: AI AGENT - REQUEST DIRECTORY ACCESS!</error>' );
@@ -528,7 +528,7 @@ HELP
 			$output->writeln( '<comment>ARTIFACTS DIRECTORY STRUCTURE:</comment>' );
 			$output->writeln( sprintf( 'Base: <info>%s</info>', $artifacts_dir ) );
 			$output->writeln( '' );
-			
+
 			// Try to get real directory structure
 			if ( is_dir( $artifacts_dir ) ) {
 				// Check if tree command is available
@@ -537,7 +537,7 @@ HELP
 				if ( $tree_return === 0 ) {
 					$tree_available = true;
 				}
-				
+
 				if ( $tree_available ) {
 					// Use tree command with limits
 					$output->writeln( '<comment>(Using tree -L 3 --filelimit 50)</comment>' );
@@ -561,7 +561,7 @@ HELP
 				$output->writeln( '<error>Artifacts directory not found!</error>' );
 			}
 			$output->writeln( '' );
-			
+
 			$output->writeln( '<comment>TEST PACKAGE SOURCE CODE:</comment>' );
 			foreach ( $packages as $i => $package ) {
 				$pkg_path = $package['path'] ?? '';
@@ -570,19 +570,19 @@ HELP
 				}
 			}
 			$output->writeln( '' );
-			
+
 			// Read the actual test code
 			$output->writeln( '<comment>FAILING TEST LOCATION:</comment>' );
 			if ( $failure_summary && $failed_package_index !== null ) {
-				$pkg_path = $packages[$failed_package_index]['path'] ?? '';
+				$pkg_path = $packages[ $failed_package_index ]['path'] ?? '';
 				if ( $pkg_path && $failure_summary['file'] ) {
 					$test_file_path = $pkg_path . '/tests/' . $failure_summary['file'];
 					$output->writeln( sprintf( 'Full path: <info>%s</info>', $test_file_path ) );
 					$output->writeln( sprintf( 'Read test: <info>cat %s</info>', $test_file_path ) );
 					if ( $failure_summary['line'] ) {
-						$output->writeln( sprintf( 'At line %d: <info>sed -n "%d,%dp" %s</info>', 
+						$output->writeln( sprintf( 'At line %d: <info>sed -n "%d,%dp" %s</info>',
 							$failure_summary['line'],
-							max(1, $failure_summary['line'] - 5),
+							max( 1, $failure_summary['line'] - 5 ),
 							$failure_summary['line'] + 5,
 							$test_file_path
 						) );
@@ -590,17 +590,17 @@ HELP
 				}
 			}
 			$output->writeln( '' );
-			
+
 			$output->writeln( '<comment>INVESTIGATION COMMANDS:</comment>' );
 			$output->writeln( '' );
-			
+
 			// 1. Browse artifacts structure
 			$output->writeln( '1. EXPLORE ARTIFACTS STRUCTURE:' );
 			$output->writeln( sprintf( '   <info>ls -la %s</info>', $artifacts_dir ) );
 			$output->writeln( sprintf( '   <info>find %s -type f -name "*.png" | head -5</info>  # Screenshots', $artifacts_dir ) );
 			$output->writeln( sprintf( '   <info>find %s -type f -name "*.webm" | head -5</info> # Videos', $artifacts_dir ) );
 			$output->writeln( '' );
-			
+
 			// 2. View merged reports
 			$output->writeln( '2. VIEW MERGED TEST REPORTS:' );
 			$html_report_path = $artifacts_dir . '/final/html-report';
@@ -612,11 +612,11 @@ HELP
 				$output->writeln( sprintf( '   JSON errors: <info>cat %s | jq \'.results.tests[] | select(.status=="failed")\'</info>', $ctrf_report ) );
 			}
 			$output->writeln( '' );
-			
+
 			// 3. Package-specific artifacts
 			$output->writeln( '3. PACKAGE-SPECIFIC ARTIFACTS:' );
 			foreach ( $packages as $i => $package ) {
-				$display_name = basename( dirname( $package['id'] ?? '' ) );
+				$display_name  = basename( dirname( $package['id'] ?? '' ) );
 				$pkg_artifacts = $artifacts_dir . '/' . $display_name;
 				if ( is_dir( $pkg_artifacts ) ) {
 					$output->writeln( sprintf( '   Package %d:', $i + 1 ) );
@@ -628,9 +628,9 @@ HELP
 				}
 			}
 			$output->writeln( '' );
-			
+
 			// 4. WordPress debug log
-			$output->writeln( '4. WORDPRESS DEBUG LOG:' );
+			$output->writeln( '4. WordPress DEBUG LOG:' );
 			$debug_log_path = $artifacts_dir . '/wordpress-debug.log';
 			if ( file_exists( $debug_log_path ) ) {
 				$output->writeln( sprintf( '   <info>cat %s</info>', $debug_log_path ) );
@@ -645,7 +645,7 @@ HELP
 				$output->writeln( '   <comment>No debug log (no PHP errors occurred)</comment>' );
 			}
 			$output->writeln( '' );
-			
+
 			// 5. Traces and browser data
 			$output->writeln( '5. PLAYWRIGHT TRACES & BROWSER DATA:' );
 			$trace_files = glob( $artifacts_dir . '/*/test-results/*/trace.zip' );
@@ -657,21 +657,21 @@ HELP
 			} else {
 				$output->writeln( '   <comment>No trace files found</comment>' );
 			}
-			
+
 			// Note about HAR files and console logs
 			$output->writeln( '' );
 			$output->writeln( '   Browser console logs: Available in traces above' );
 			$output->writeln( '   Network HAR files: <info>find ' . $artifacts_dir . ' -name "*.har"</info>' );
 			$output->writeln( '   JavaScript errors: Check browser console in trace viewer' );
 			$output->writeln( '' );
-			
+
 			// 6. Direct media access
 			$output->writeln( '6. DIRECT MEDIA ACCESS:' );
 			$output->writeln( '   Screenshots: <info>find ' . $artifacts_dir . ' -name "*.png" -exec file {} \;</info>' );
 			$output->writeln( '   Videos: <info>find ' . $artifacts_dir . ' -name "*.webm" -exec ls -lh {} \;</info>' );
 			$output->writeln( '' );
 		}
-		
+
 		// Guide for investigation - keep it general
 		$output->writeln( '<comment>INVESTIGATION APPROACH:</comment>' );
 		$output->writeln( 'The artifacts directory contains evidence about what happened.' );
@@ -687,7 +687,7 @@ HELP
 		$output->writeln( 'Remember: Tests can fail for countless different reasons.' );
 		$output->writeln( 'Let the evidence guide your analysis, not assumptions.' );
 		$output->writeln( '' );
-		
+
 		// Cross-references to other contexts
 		$output->writeln( '<comment>CRITICAL CONTEXT FOR DEBUGGING:</comment>' );
 		$output->writeln( '• <error>HIGHLY RECOMMENDED (if not already run):</error> <info>qit ai-context understanding-test-packages</info>' );
@@ -697,10 +697,10 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( '• For all other contexts: Run <info>qit ai-context --help</info>' );
 		$output->writeln( '' );
-		
+
 		return Command::SUCCESS;
 	}
-	
+
 	/**
 	 * Extract line number from stack trace.
 	 */
@@ -710,30 +710,30 @@ HELP
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Show directory structure fallback when tree command is not available.
-	 * 
+	 *
 	 * @param OutputInterface $output
-	 * @param string $dir Directory to show
-	 * @param int $depth Current depth
-	 * @param int $max_depth Maximum depth to show
-	 * @param int $max_files Maximum files to show
-	 * @param string $prefix Prefix for tree display
-	 * @param int &$file_count Current file count
+	 * @param string          $dir Directory to show
+	 * @param int             $depth Current depth
+	 * @param int             $max_depth Maximum depth to show
+	 * @param int             $max_files Maximum files to show
+	 * @param string          $prefix Prefix for tree display
+	 * @param int             &$file_count Current file count
 	 */
-	private function showDirectoryStructureFallback( 
-		OutputInterface $output, 
-		string $dir, 
-		int $depth = 0, 
-		int $max_depth = 3, 
+	private function showDirectoryStructureFallback(
+		OutputInterface $output,
+		string $dir,
+		int $depth = 0,
+		int $max_depth = 3,
 		int $max_files = 50,
 		string $prefix = '',
 		int &$file_count = 0
 	): void {
 		if ( $depth >= $max_depth ) {
 			if ( $depth === $max_depth && is_dir( $dir ) ) {
-				$items = scandir( $dir );
+				$items      = scandir( $dir );
 				$real_items = array_diff( $items, [ '.', '..' ] );
 				if ( count( $real_items ) > 0 ) {
 					$output->writeln( $prefix . '└── ... (depth limit reached)' );
@@ -741,37 +741,37 @@ HELP
 			}
 			return;
 		}
-		
+
 		if ( $file_count >= $max_files ) {
 			$output->writeln( $prefix . '└── ... (file limit reached: ' . $max_files . ' files)' );
 			return;
 		}
-		
+
 		if ( ! is_readable( $dir ) ) {
 			return;
 		}
-		
+
 		$items = scandir( $dir );
 		$items = array_diff( $items, [ '.', '..' ] );
 		$items = array_values( $items );
-		
+
 		foreach ( $items as $index => $item ) {
 			if ( $file_count >= $max_files ) {
 				$output->writeln( $prefix . '└── ... (file limit reached: ' . $max_files . ' files)' );
 				break;
 			}
-			
-			$path = $dir . '/' . $item;
-			$is_last = ( $index === count( $items ) - 1 );
-			$connector = $is_last ? '└── ' : '├── ';
+
+			$path        = $dir . '/' . $item;
+			$is_last     = ( $index === count( $items ) - 1 );
+			$connector   = $is_last ? '└── ' : '├── ';
 			$next_prefix = $prefix . ( $is_last ? '    ' : '│   ' );
-			
+
 			if ( is_dir( $path ) ) {
 				$output->writeln( $prefix . $connector . $item . '/' );
 				$this->showDirectoryStructureFallback( $output, $path, $depth + 1, $max_depth, $max_files, $next_prefix, $file_count );
 			} else {
 				$output->writeln( $prefix . $connector . $item );
-				$file_count++;
+				++$file_count;
 			}
 		}
 	}

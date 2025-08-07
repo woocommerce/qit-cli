@@ -143,7 +143,7 @@ class UpEnvironmentCommand extends QITCommand {
 					$package_info = $package_downloader->download_package( $package_ref );
 					if ( $package_info ) {
 						$global_setup_packages[ $package_ref ] = [
-							'path' => $package_info['path'],
+							'path'   => $package_info['path'],
 							'source' => $package_info['source'] ?? 'registry',
 						];
 					}
@@ -155,21 +155,21 @@ class UpEnvironmentCommand extends QITCommand {
 
 		/* ─ 4. Materialise E2EEnvInfo DTO ─ */
 		$env_info = E2EEnvInfo::from_array( [
-			'env_id'         => 'qitenv' . bin2hex( random_bytes( 8 ) ),
-			'environment'    => 'e2e',
-			'php'            => $env_config['php'] ?? '8.2',
-			'wp'             => $env_config['wp'] ?? 'stable',
-			'woo'            => $env_config['woo'] ?? '',
-			'object_cache'   => $env_config['object_cache'] ?? false,
-			'plugins'        => $plugin_arrays,
-			'themes'         => $theme_arrays,
-			'php_extensions' => $env_config['php_extensions'] ?? [],
-			'volumes'        => $parsed_volumes,
-			'envs'           => $env_config['envs'] ?? [],
+			'env_id'                => 'qitenv' . bin2hex( random_bytes( 8 ) ),
+			'environment'           => 'e2e',
+			'php'                   => $env_config['php'] ?? '8.2',
+			'wp'                    => $env_config['wp'] ?? 'stable',
+			'woo'                   => $env_config['woo'] ?? '',
+			'object_cache'          => $env_config['object_cache'] ?? false,
+			'plugins'               => $plugin_arrays,
+			'themes'                => $theme_arrays,
+			'php_extensions'        => $env_config['php_extensions'] ?? [],
+			'volumes'               => $parsed_volumes,
+			'envs'                  => $env_config['envs'] ?? [],
 			'global_setup_packages' => $global_setup_packages,
-			'tunnel'         => $env_config['tunnel'] ?? false,
-			'tunnel_type'    => $env_config['tunnel_type'] ?? 'no_tunnel',
-			'site_url'       => 'http://localhost:8080',
+			'tunnel'                => $env_config['tunnel'] ?? false,
+			'tunnel_type'           => $env_config['tunnel_type'] ?? 'no_tunnel',
+			'site_url'              => 'http://localhost:8080',
 		] );
 
 		/* ─ 5. Honour --tunnel (validated against TunnelRunner) ─ */
@@ -200,7 +200,7 @@ class UpEnvironmentCommand extends QITCommand {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 		} else {
 			$this->renderHumanSummary( $output, $env_info );
-			
+
 			// Show manual testing instructions (unless only global setup packages were run)
 			if ( empty( $env_info->global_setup_packages ) || ! empty( $env_info->plugins ) || ! empty( $env_info->themes ) ) {
 				$output->writeln( '' );
@@ -546,22 +546,22 @@ class UpEnvironmentCommand extends QITCommand {
 	 * @param E2EEnvInfo $env_info The environment info to save.
 	 */
 	private function save_environment_info( E2EEnvInfo $env_info ): void {
-		$env_dir = $this->environment_vars->get_env_directory();
+		$env_dir   = $this->environment_vars->get_env_directory();
 		$info_file = $env_dir . '/' . $env_info->env_id . '.json';
-		
+
 		// Store essential information for later retrieval
 		$data = [
-			'env_id' => $env_info->env_id,
-			'site_url' => $env_info->site_url,
-			'php' => $env_info->php,
-			'wp' => $env_info->wp,
-			'woo' => $env_info->woo,
-			'db_port' => $env_info->db_port ?? 0,
+			'env_id'        => $env_info->env_id,
+			'site_url'      => $env_info->site_url,
+			'php'           => $env_info->php,
+			'wp'            => $env_info->wp,
+			'woo'           => $env_info->woo,
+			'db_port'       => $env_info->db_port ?? 0,
 			'php_container' => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
-			'db_container' => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
-			'nginx_port' => $env_info->nginx_port ?? '',
+			'db_container'  => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
+			'nginx_port'    => $env_info->nginx_port ?? '',
 		];
-		
+
 		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
 	}
 
@@ -569,31 +569,31 @@ class UpEnvironmentCommand extends QITCommand {
 		$out->writeln( '' );
 		$out->writeln( sprintf( '<info>✅ Environment ready: %s</info>', $info->env_id ) );
 		$out->writeln( '' );
-		
+
 		// URL and credentials
 		$out->writeln( sprintf( '  URL:         %s', $info->site_url ) );
 		$out->writeln( '  Credentials: admin/password' );
-		
+
 		// Stack information
 		if ( $info instanceof E2EEnvInfo ) {
-			$stack_parts = [];
+			$stack_parts   = [];
 			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
 			$stack_parts[] = sprintf( 'PHP %s', $info->php );
 			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
-			
+
 			// Plugins line (only if plugins exist)
 			$plugin_names = [];
 			foreach ( $info->plugins as $plugin ) {
 				if ( $plugin->slug === 'woocommerce' && $info->woo ) {
 					$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
-				} else if ( $plugin->slug !== 'woocommerce' ) {
+				} elseif ( $plugin->slug !== 'woocommerce' ) {
 					$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version ?? '' );
 				}
 			}
 			if ( ! empty( $plugin_names ) ) {
 				$out->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
 			}
-			
+
 			// Theme line (only if non-default theme exists)
 			$theme_names = [];
 			foreach ( $info->themes as $theme ) {
@@ -605,7 +605,7 @@ class UpEnvironmentCommand extends QITCommand {
 			if ( ! empty( $theme_names ) ) {
 				$out->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
 			}
-			
+
 			// Global setup packages (if any were executed)
 			if ( ! empty( $info->global_setup_packages ) ) {
 				$out->writeln( '' );
@@ -615,25 +615,25 @@ class UpEnvironmentCommand extends QITCommand {
 				}
 			}
 		} elseif ( $info instanceof PerformanceEnvInfo ) {
-			$stack_parts = [];
+			$stack_parts   = [];
 			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
 			$stack_parts[] = sprintf( 'PHP %s', $info->php_version );
 			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
-			
+
 			if ( property_exists( $info, 'woo' ) && $info->woo ) {
 				$out->writeln( sprintf( '  Plugins:     WooCommerce %s', $info->woo ) );
 			}
 		}
-		
+
 		// Tunnel information (only if enabled)
 		if ( $info->tunnel ) {
 			$out->writeln( sprintf( '  Tunnel:      %s', $info->tunnel_type ) );
 		}
 	}
-	
+
 	/**
 	 * Format plugin/theme name for display.
-	 * 
+	 *
 	 * @param string $slug The plugin/theme slug.
 	 * @return string Formatted name.
 	 */

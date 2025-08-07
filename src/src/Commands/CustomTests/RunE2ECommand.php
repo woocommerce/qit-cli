@@ -521,7 +521,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Always try to save debug.log to artifacts directory for inspection
 		try {
-			$docker = App::make( Docker::class );
+			$docker         = App::make( Docker::class );
 			$debug_log_path = $artifacts_dir . '/wordpress-debug.log';
 			$docker->copy_from_docker(
 				$env_info,
@@ -534,7 +534,7 @@ class RunE2ECommand extends QITCommand {
 		} catch ( \RuntimeException $e ) {
 			// Debug log might not exist if no errors occurred - this is normal
 		}
-		
+
 		// Save run information for qit ai-context failed-e2e command
 		$this->save_run_info( $env_info, $test_packages, $exit_status, $artifacts_dir, $report_url ?? null );
 
@@ -543,13 +543,13 @@ class RunE2ECommand extends QITCommand {
 
 	/**
 	 * Save run information for the qit ai-context failed-e2e command.
-	 * 
+	 *
 	 * This creates a JSON file with all the information an AI agent would need to debug a test failure:
 	 * - Environment configuration to understand the test context
 	 * - Test package locations to examine the actual test code
 	 * - Artifacts directory to find logs, screenshots, and reports
 	 * - Pre-formatted debug commands that can be executed directly
-	 * 
+	 *
 	 * Example scenario for an AI agent:
 	 * 1. AI runs: qit run:e2e --plugin=my-plugin
 	 * 2. Tests fail with "1 failed" in the summary
@@ -563,85 +563,85 @@ class RunE2ECommand extends QITCommand {
 	 * 6. AI can now analyze the failure, read logs, and provide specific fixes
 	 *
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info Environment information.
-	 * @param array $test_packages Test packages that were run.
-	 * @param int $exit_status Exit status of the test run.
-	 * @param string $artifacts_dir Path to artifacts directory.
-	 * @param string|null $report_url Remote report URL if available.
+	 * @param array                                            $test_packages Test packages that were run.
+	 * @param int                                              $exit_status Exit status of the test run.
+	 * @param string                                           $artifacts_dir Path to artifacts directory.
+	 * @param string|null                                      $report_url Remote report URL if available.
 	 */
 	private function save_run_info( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, int $exit_status, string $artifacts_dir, ?string $report_url ): void {
 		$run_id = uniqid( 'run-', true );
-		
+
 		// Prepare test packages info with status
 		$packages_info = [];
 		foreach ( $test_packages as $pkg_id => $meta ) {
 			$packages_info[] = [
-				'id' => $pkg_id,
-				'path' => $meta['path'] ?? null,
+				'id'     => $pkg_id,
+				'path'   => $meta['path'] ?? null,
 				'status' => 'completed', // We don't track individual package status currently
 			];
 		}
-		
+
 		// Prepare debug commands
 		$debug_commands = [];
-		
+
 		// Command to view HTML report
 		$final_html_report = $artifacts_dir . '/final/html-report/index.html';
 		if ( file_exists( $final_html_report ) ) {
 			$debug_commands[] = [
 				'description' => 'View HTML test report',
-				'command' => sprintf( 'npx playwright show-report "%s"', dirname( $final_html_report ) ),
+				'command'     => sprintf( 'npx playwright show-report "%s"', dirname( $final_html_report ) ),
 			];
 		}
-		
+
 		// Command to browse artifacts
 		$debug_commands[] = [
 			'description' => 'Browse test artifacts',
-			'command' => sprintf( 'ls -la "%s"', $artifacts_dir ),
+			'command'     => sprintf( 'ls -la "%s"', $artifacts_dir ),
 		];
-		
+
 		// Command to re-run tests with same environment
 		$debug_commands[] = [
 			'description' => 'Re-run tests with same environment',
-			'command' => sprintf( 'qit env:source %s && npx playwright test', $env_info->env_id ),
+			'command'     => sprintf( 'qit env:source %s && npx playwright test', $env_info->env_id ),
 		];
-		
+
 		// Build the run info data
 		$run_info = [
-			'run_id' => $run_id,
-			'timestamp' => date( 'c' ),
-			'status' => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
-			'environment' => [
-				'id' => $env_info->env_id,
-				'url' => $env_info->site_url,
-				'wordpress' => $env_info->wp,
-				'php' => $env_info->php,
+			'run_id'         => $run_id,
+			'timestamp'      => date( 'c' ),
+			'status'         => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
+			'environment'    => [
+				'id'          => $env_info->env_id,
+				'url'         => $env_info->site_url,
+				'wordpress'   => $env_info->wp,
+				'php'         => $env_info->php,
 				'woocommerce' => $env_info->woo ?: null,
-				'sut' => isset( $env_info->sut ) ? [
+				'sut'         => isset( $env_info->sut ) ? [
 					'slug' => $env_info->sut['slug'] ?? null,
-					'id' => $env_info->sut['id'] ?? null,
+					'id'   => $env_info->sut['id'] ?? null,
 					'type' => $env_info->sut['type'] ?? 'plugin',
 				] : null,
-				'plugins' => array_map( function( $plugin ) {
+				'plugins'     => array_map( function ( $plugin ) {
 					return [
-						'slug' => $plugin->slug ?? $plugin['slug'] ?? null,
+						'slug'    => $plugin->slug ?? $plugin['slug'] ?? null,
 						'version' => $plugin->version ?? $plugin['version'] ?? null,
 					];
 				}, $env_info->plugins ),
-				'themes' => array_map( function( $theme ) {
+				'themes'      => array_map( function ( $theme ) {
 					return [
-						'slug' => $theme->slug ?? $theme['slug'] ?? null,
+						'slug'    => $theme->slug ?? $theme['slug'] ?? null,
 						'version' => $theme->version ?? $theme['version'] ?? null,
 					];
 				}, $env_info->themes ),
 			],
-			'test_packages' => $packages_info,
-			'artifacts' => [
+			'test_packages'  => $packages_info,
+			'artifacts'      => [
 				'directory' => $artifacts_dir,
-				'reports' => [],
+				'reports'   => [],
 			],
 			'debug_commands' => $debug_commands,
 		];
-		
+
 		// Add report locations
 		if ( file_exists( $final_html_report ) ) {
 			$run_info['artifacts']['reports'][] = [
@@ -649,7 +649,7 @@ class RunE2ECommand extends QITCommand {
 				'path' => dirname( $final_html_report ),
 			];
 		}
-		
+
 		$ctrf_report = $artifacts_dir . '/final/ctrf/ctrf-report.json';
 		if ( file_exists( $ctrf_report ) ) {
 			$run_info['artifacts']['reports'][] = [
@@ -657,7 +657,7 @@ class RunE2ECommand extends QITCommand {
 				'path' => $ctrf_report,
 			];
 		}
-		
+
 		$allure_results = $artifacts_dir . '/final/allure-results';
 		if ( is_dir( $allure_results ) ) {
 			$run_info['artifacts']['reports'][] = [
@@ -665,7 +665,7 @@ class RunE2ECommand extends QITCommand {
 				'path' => $allure_results,
 			];
 		}
-		
+
 		// Add debug log if it exists
 		$debug_log = $artifacts_dir . '/wordpress-debug.log';
 		if ( file_exists( $debug_log ) ) {
@@ -674,16 +674,16 @@ class RunE2ECommand extends QITCommand {
 				'path' => $debug_log,
 			];
 		}
-		
+
 		// Add remote report URL if available
 		if ( $report_url ) {
 			$run_info['remote_report'] = $report_url;
 		}
-		
+
 		// Save to last-run.json
 		$last_run_file = Config::get_qit_dir() . '/last-run.json';
 		file_put_contents( $last_run_file, json_encode( $run_info, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
-		
+
 		// Also save with run ID for history
 		$runs_dir = Config::get_qit_dir() . '/runs';
 		if ( ! is_dir( $runs_dir ) ) {
@@ -691,12 +691,12 @@ class RunE2ECommand extends QITCommand {
 		}
 		$run_file = $runs_dir . '/' . $run_id . '.json';
 		file_put_contents( $run_file, json_encode( $run_info, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
-		
+
 		// Clean up old run files (keep last 10)
 		$run_files = glob( $runs_dir . '/*.json' );
 		if ( count( $run_files ) > 10 ) {
 			// Sort by modification time
-			usort( $run_files, function( $a, $b ) {
+			usort( $run_files, function ( $a, $b ) {
 				return filemtime( $a ) - filemtime( $b );
 			});
 			// Remove oldest files
@@ -1471,32 +1471,32 @@ class RunE2ECommand extends QITCommand {
 	/**
 	 * Display environment summary similar to env:up output.
 	 *
-	 * @param OutputInterface $output
+	 * @param OutputInterface                                  $output
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info
-	 * @param array<string,array> $test_packages
+	 * @param array<string,array>                              $test_packages
 	 */
 	private function renderEnvironmentSummary( OutputInterface $output, \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages ): void {
 		$output->writeln( '' );
 		$output->writeln( sprintf( '<info>✅ Environment ready: %s</info>', $env_info->env_id ) );
 		$output->writeln( '' );
-		
+
 		// URL and credentials
 		$output->writeln( sprintf( '  URL:         %s', $env_info->site_url ) );
 		$output->writeln( '  Credentials: admin/password' );
-		
+
 		// Stack information
-		$stack_parts = [];
+		$stack_parts   = [];
 		$stack_parts[] = sprintf( 'WordPress %s', $env_info->wp );
 		$stack_parts[] = sprintf( 'PHP %s', $env_info->php );
 		$output->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
-		
+
 		// SUT (System Under Test) if present
 		if ( isset( $env_info->sut ) ) {
-			$sut_type = $env_info->sut['type'] ?? 'plugin';
+			$sut_type  = $env_info->sut['type'] ?? 'plugin';
 			$sut_label = ucfirst( $sut_type ) . ' Under Test';
 			$output->writeln( sprintf( '  %s: %s', str_pad( $sut_label, 11 ), $env_info->sut['slug'] ) );
 		}
-		
+
 		// Plugins line (only if plugins exist)
 		$plugin_names = [];
 		foreach ( $env_info->plugins as $plugin ) {
@@ -1506,14 +1506,14 @@ class RunE2ECommand extends QITCommand {
 			}
 			if ( $plugin->slug === 'woocommerce' && $env_info->woo ) {
 				$plugin_names[] = sprintf( 'WooCommerce %s', $env_info->woo );
-			} else if ( $plugin->slug !== 'woocommerce' ) {
+			} elseif ( $plugin->slug !== 'woocommerce' ) {
 				$plugin_names[] = $this->format_extension_name( $plugin->slug ) . ( $plugin->version ? ' ' . $plugin->version : '' );
 			}
 		}
 		if ( ! empty( $plugin_names ) ) {
 			$output->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
 		}
-		
+
 		// Theme line (only if non-default theme exists)
 		$theme_names = [];
 		foreach ( $env_info->themes as $theme ) {
@@ -1528,13 +1528,13 @@ class RunE2ECommand extends QITCommand {
 		if ( ! empty( $theme_names ) ) {
 			$output->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
 		}
-		
+
 		// Test packages summary
 		if ( ! empty( $test_packages ) ) {
-			$package_count = count( $test_packages );
+			$package_count      = count( $test_packages );
 			$global_setup_count = count( $env_info->global_setup_packages ?? [] );
-			$test_count = $package_count - $global_setup_count;
-			
+			$test_count         = $package_count - $global_setup_count;
+
 			if ( $test_count > 0 || $global_setup_count > 0 ) {
 				$output->writeln( '' );
 				if ( $test_count > 0 ) {
@@ -1545,13 +1545,13 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 		}
-		
+
 		$output->writeln( '' );
 	}
 
 	/**
 	 * Format extension name for display.
-	 * 
+	 *
 	 * @param string $slug The extension slug.
 	 * @return string Formatted name.
 	 */

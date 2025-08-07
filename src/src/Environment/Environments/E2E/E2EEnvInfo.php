@@ -32,7 +32,7 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public string $php_container = '';
 
-	/** @var string */  
+	/** @var string */
 	public string $db_container = '';
 
 	/** @var array<string,mixed> */

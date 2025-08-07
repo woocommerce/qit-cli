@@ -22,10 +22,10 @@ class PackagePhaseRunner {
 	private EnvironmentVars $environment_vars;
 
 	public function __construct( Docker $docker, OutputInterface $output, EnvironmentVars $environment_vars ) {
-		$this->docker = $docker;
-		$this->output = $output;
+		$this->docker           = $docker;
+		$this->output           = $output;
 		$this->environment_vars = $environment_vars;
-		$this->parser = App::make( TestPackageManifestParser::class );
+		$this->parser           = App::make( TestPackageManifestParser::class );
 	}
 
 	/**

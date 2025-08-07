@@ -85,16 +85,16 @@ class E2EEnvironment extends Environment {
 
 		// Set container names for reference
 		$this->env_info->php_container = sprintf( 'qit_env_php_%s', $this->env_info->env_id );
-		$this->env_info->db_container = sprintf( 'qit_env_db_%s', $this->env_info->env_id );
-		
+		$this->env_info->db_container  = sprintf( 'qit_env_db_%s', $this->env_info->env_id );
+
 		// Try to get the database port (if exposed)
 		try {
 			$db_container = $this->env_info->get_docker_container( 'db' );
 			if ( $db_container ) {
-				$docker = App::make( Docker::class )->find_docker();
+				$docker              = App::make( Docker::class )->find_docker();
 				$get_db_port_process = new Process( [ $docker, 'port', $db_container, '3306' ] );
 				$get_db_port_process->run();
-				
+
 				if ( $get_db_port_process->isSuccessful() ) {
 					$output = $get_db_port_process->getOutput();
 					if ( preg_match( '/0\.0\.0\.0:(\d+)/', $output, $matches ) ) {
@@ -153,7 +153,7 @@ class E2EEnvironment extends Environment {
 
 			foreach ( $this->env_info->global_setup_packages as $pkg_id => $info ) {
 				$setup_orchestrator->start_package( $pkg_id, $info );
-				
+
 				try {
 					$commands_run = $runner->run_phase(
 						$this->env_info,
@@ -163,7 +163,7 @@ class E2EEnvironment extends Environment {
 						null,  // No artifacts_dir for global setup packages
 						$setup_orchestrator
 					);
-					
+
 					$setup_orchestrator->end_package( $pkg_id, true, $commands_run );
 				} catch ( \Exception $e ) {
 					$setup_orchestrator->end_package( $pkg_id, false, 0, $e->getMessage() );
@@ -247,7 +247,7 @@ class E2EEnvironment extends Environment {
 			$listing[] = sprintf( 'Path: %s', $this->env_info->temporary_env );
 
 			$io->listing( $listing );
-		} else if ( getenv( 'QIT_HIDE_SITE_INFO' ) ) {
+		} elseif ( getenv( 'QIT_HIDE_SITE_INFO' ) ) {
 			$this->output->writeln( '<info>Environment ready.</info>' );
 		}
 		// Otherwise, show nothing here - the compact summary will be shown by UpEnvironmentCommand
