@@ -151,6 +151,7 @@ class PerformanceEnvironment extends Environment {
 
 		$this->install_php_extensions();
 		$this->setup_wordpress();
+		$this->activate_required_plugins();
 		$this->activate_plugins_and_themes();
 	}
 
@@ -183,6 +184,15 @@ class PerformanceEnvironment extends Environment {
 			'SITE_URL'          => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
+	}
+
+	/**
+	 * Activate required plugins.
+	 * This method installs and activates plugins that are required for the performance environment.
+	 */
+	private function activate_required_plugins(): void {
+		$this->output->writeln( '<info>Activating required plugins...</info>' );
+		$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp plugin install https://github.com/WP-API/Basic-Auth/archive/master.zip --force --activate' ] );
 	}
 
 	/**

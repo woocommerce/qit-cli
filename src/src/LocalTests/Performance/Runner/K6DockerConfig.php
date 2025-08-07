@@ -107,7 +107,7 @@ class K6DockerConfig {
 	 */
 	private function get_k6_command(): array {
 		return [
-			'grafana/k6:latest-with-browser',
+			'grafana/k6:master-with-browser',
 			'run',
 			'--out',
 			'json=/results/k6-results.json',
