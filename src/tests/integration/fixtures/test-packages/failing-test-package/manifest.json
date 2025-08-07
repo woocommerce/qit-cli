@@ -1,0 +1,19 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "failing-test-package",
+  "namespace": "woocommerce",
+  "test_type": "e2e",
+  "description": "Test package with one failing test to verify failure handling",
+  "test": {
+    "phases": {
+      "run": [
+        "npx playwright test"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "allure-dir": "./results/allure",
+      "blob-dir": "./blob-report"
+    }
+  }
+}

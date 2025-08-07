@@ -1,0 +1,19 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "my-woo-test-package",
+  "namespace": "woocommerce",
+  "test_type": "e2e",
+  "description": "Custom WooCommerce test package for testing orchestrator",
+  "test": {
+    "phases": {
+      "run": [
+        "npx playwright test"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "allure-dir": "./results/allure",
+      "blob-dir": "./blob-report"
+    }
+  }
+}
