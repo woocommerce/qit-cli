@@ -36,6 +36,7 @@ class EnvironmentVars {
 	public function get_mapping( E2EEnvInfo $env_info ): array {
 		$vars = [
 			// Core QIT variables
+			'QIT'            => '1',  // Indicates running in QIT context
 			'QIT_ENV_ID'     => $env_info->env_id,
 			'QIT_SITE_URL'   => $env_info->site_url,
 			'QIT_WP_ADMIN'   => $env_info->site_url . '/wp-admin',

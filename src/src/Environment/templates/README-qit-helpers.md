@@ -21,6 +21,11 @@ This directory contains helper utilities for test packages to interact with QIT 
 const { execWpCli, getSiteUrl, getAdminCredentials } = require('./qit-helpers');
 const { test, expect } = require('@playwright/test');
 
+// Example: Branch logic based on QIT context
+const siteUrl = process.env.QIT 
+    ? process.env.QIT_SITE_URL  // Running in QIT
+    : 'http://localhost:8080';   // Local development
+
 test('verify plugin activation', async ({ page }) => {
     // Execute WP-CLI command
     const plugins = JSON.parse(await execWpCli('plugin list --format=json'));
@@ -54,6 +59,7 @@ test('direct env var usage', async ({ page }) => {
 
 When running in a QIT environment, the following variables are available:
 
+- `QIT` - Set to "1" when running in QIT context (useful for branching logic)
 - `QIT_ENV_ID` - Unique environment identifier
 - `QIT_SITE_URL` - WordPress site URL
 - `QIT_WP_ADMIN` - WordPress admin URL
@@ -108,6 +114,29 @@ npm test
 - `clearTransients()` - Clear all transients
 - `flushRewriteRules()` - Flush rewrite rules
 
+## Example: Branching Logic Based on Context
+
+```javascript
+// config.js - Configuration that adapts to the environment
+module.exports = {
+    // Use QIT environment variables when available, fallback to local defaults
+    siteUrl: process.env.QIT_SITE_URL || 'http://localhost:8888',
+    adminUser: process.env.WP_USERNAME || 'admin',
+    adminPass: process.env.WP_PASSWORD || 'password',
+    
+    // Different timeouts for QIT vs local
+    timeout: process.env.QIT ? 30000 : 60000,
+    
+    // Skip certain tests in QIT
+    skipFlaky: process.env.QIT === '1',
+    
+    // Use container commands in QIT, local commands otherwise
+    wpCliCommand: process.env.QIT 
+        ? `docker exec ${process.env.PHP_CONTAINER} wp`
+        : 'wp'
+};
+```
+
 ## Example: Complete Test Package
 
 ```javascript
@@ -120,6 +149,9 @@ const {
     waitFor,
     installPlugin 
 } = require('./qit-helpers');
+
+// Skip certain tests when not in QIT
+const describeInQit = process.env.QIT ? test.describe : test.describe.skip;
 
 test.describe('My Plugin Tests', () => {
     test.beforeAll(async () => {
