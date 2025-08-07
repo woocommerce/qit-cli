@@ -1609,9 +1609,9 @@
             ],
             "environments": {
                 "performance": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/0f5f7f5ee97306ef96f388399a4ce32f.zip",
-                    "checksum": "0f5f7f5ee97306ef96f388399a4ce32f",
-                    "zip_checksum": 15493
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/af7f947f97a78ede4c17bbd22bbe61cd.zip",
+                    "checksum": "af7f947f97a78ede4c17bbd22bbe61cd",
+                    "zip_checksum": 15490
                 },
                 "e2e": {
                     "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
