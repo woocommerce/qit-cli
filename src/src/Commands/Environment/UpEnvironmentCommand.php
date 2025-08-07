@@ -200,10 +200,17 @@ class UpEnvironmentCommand extends QITCommand {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 		} else {
 			$this->renderHumanSummary( $output, $env_info );
-			$output->writeln( '' );
-			$output->writeln( 'To run tests:' );
-			$output->writeln( '  source "$(qit env:source)"' );
-			$output->writeln( '  npx playwright test' );
+			
+			// Show manual testing instructions (unless only global setup packages were run)
+			if ( empty( $env_info->global_setup_packages ) || ! empty( $env_info->plugins ) || ! empty( $env_info->themes ) ) {
+				$output->writeln( '' );
+				$output->writeln( 'To run manual tests:' );
+				$output->writeln( '  1. Navigate to your test directory' );
+				$output->writeln( '  2. Load environment variables in this terminal:' );
+				$output->writeln( sprintf( '     <info>source "$(qit env:source %s)"</info>', $env_info->env_id ) );
+				$output->writeln( '  3. Run your tests:' );
+				$output->writeln( '     <info>npx playwright test</info>' );
+			}
 		}
 
 		return Command::SUCCESS;

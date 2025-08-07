@@ -343,6 +343,11 @@ class RunE2ECommand extends QITCommand {
 			];
 		}
 
+		// Display environment summary (similar to env:up)
+		if ( ! $input->getOption( 'json' ) ) {
+			$this->renderEnvironmentSummary( $output, $env_info, $test_packages );
+		}
+
 		/*****************************************************************
 		 * 3. Normal test execution flow
 		 */
@@ -1275,5 +1280,98 @@ class RunE2ECommand extends QITCommand {
 		$env_up_options[ $key ][] = $woo_extension_slug;
 
 		return $env_up_options;
+	}
+
+	/**
+	 * Display environment summary similar to env:up output.
+	 *
+	 * @param OutputInterface $output
+	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info
+	 * @param array<string,array> $test_packages
+	 */
+	private function renderEnvironmentSummary( OutputInterface $output, \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages ): void {
+		$output->writeln( '' );
+		$output->writeln( sprintf( '<info>✅ Environment ready: %s</info>', $env_info->env_id ) );
+		$output->writeln( '' );
+		
+		// URL and credentials
+		$output->writeln( sprintf( '  URL:         %s', $env_info->site_url ) );
+		$output->writeln( '  Credentials: admin/password' );
+		
+		// Stack information
+		$stack_parts = [];
+		$stack_parts[] = sprintf( 'WordPress %s', $env_info->wp );
+		$stack_parts[] = sprintf( 'PHP %s', $env_info->php );
+		$output->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
+		
+		// SUT (System Under Test) if present
+		if ( isset( $env_info->sut ) ) {
+			$sut_type = $env_info->sut['type'] ?? 'plugin';
+			$sut_label = ucfirst( $sut_type ) . ' Under Test';
+			$output->writeln( sprintf( '  %s: %s', str_pad( $sut_label, 11 ), $env_info->sut['slug'] ) );
+		}
+		
+		// Plugins line (only if plugins exist)
+		$plugin_names = [];
+		foreach ( $env_info->plugins as $plugin ) {
+			// Skip the SUT if it's a plugin
+			if ( isset( $env_info->sut ) && $env_info->sut['type'] === 'plugin' && $plugin->slug === $env_info->sut['slug'] ) {
+				continue;
+			}
+			if ( $plugin->slug === 'woocommerce' && $env_info->woo ) {
+				$plugin_names[] = sprintf( 'WooCommerce %s', $env_info->woo );
+			} else if ( $plugin->slug !== 'woocommerce' ) {
+				$plugin_names[] = $this->format_extension_name( $plugin->slug ) . ( $plugin->version ? ' ' . $plugin->version : '' );
+			}
+		}
+		if ( ! empty( $plugin_names ) ) {
+			$output->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
+		}
+		
+		// Theme line (only if non-default theme exists)
+		$theme_names = [];
+		foreach ( $env_info->themes as $theme ) {
+			// Skip default themes and SUT if it's a theme
+			if ( isset( $env_info->sut ) && $env_info->sut['type'] === 'theme' && $theme->slug === $env_info->sut['slug'] ) {
+				continue;
+			}
+			if ( ! in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
+				$theme_names[] = $this->format_extension_name( $theme->slug ) . ( $theme->version ? ' ' . $theme->version : '' );
+			}
+		}
+		if ( ! empty( $theme_names ) ) {
+			$output->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
+		}
+		
+		// Test packages summary
+		if ( ! empty( $test_packages ) ) {
+			$package_count = count( $test_packages );
+			$global_setup_count = count( $env_info->global_setup_packages ?? [] );
+			$test_count = $package_count - $global_setup_count;
+			
+			if ( $test_count > 0 || $global_setup_count > 0 ) {
+				$output->writeln( '' );
+				if ( $test_count > 0 ) {
+					$output->writeln( sprintf( '  Test Packages: %d package%s ready', $test_count, $test_count === 1 ? '' : 's' ) );
+				}
+				if ( $global_setup_count > 0 ) {
+					$output->writeln( sprintf( '  Global Setup:  %d package%s completed', $global_setup_count, $global_setup_count === 1 ? '' : 's' ) );
+				}
+			}
+		}
+		
+		$output->writeln( '' );
+	}
+
+	/**
+	 * Format extension name for display.
+	 * 
+	 * @param string $slug The extension slug.
+	 * @return string Formatted name.
+	 */
+	private function format_extension_name( string $slug ): string {
+		// Convert slug to title case
+		$name = str_replace( [ '-', '_' ], ' ', $slug );
+		return ucwords( $name );
 	}
 }
