@@ -341,7 +341,7 @@ class PackageOrchestrator {
 		$out->writeln( sprintf( 'Duration:      %s', $this->format_duration( $duration ) ) );
 
 		// View results section
-		if ( ! empty( $results['local_command'] ) || ! empty( $results['remote_url'] ) ) {
+		if ( ! empty( $results['local_command'] ) || ! empty( $results['remote_url'] ) || ( isset( $results['status'] ) && $results['status'] === 'failed' ) ) {
 			$out->writeln( '' );
 			$out->writeln( 'View Results:' );
 			if ( ! empty( $results['local_command'] ) ) {
@@ -349,6 +349,10 @@ class PackageOrchestrator {
 			}
 			if ( ! empty( $results['remote_url'] ) ) {
 				$out->writeln( '• Remote URL:    <comment>' . $results['remote_url'] . '</comment>' );
+			}
+			// Add debug info for failures
+			if ( isset( $results['status'] ) && $results['status'] === 'failed' ) {
+				$out->writeln( '• Agentic AI:    <comment>qit investigate</comment> (explains QIT orchestration + debug info)' );
 			}
 		}
 		$out->writeln( str_repeat( '═', $line_width ) );
