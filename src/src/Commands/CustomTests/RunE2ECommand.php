@@ -508,7 +508,7 @@ class RunE2ECommand extends QITCommand {
 
 		$summary_data = [
 			'status'        => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
-			'local_command' => 'qit e2e-report',
+			'local_command' => 'qit report',
 			'remote_url'    => $report_url ?? '',
 		];
 		$orchestrator->summary( $summary_data );
@@ -799,7 +799,7 @@ class RunE2ECommand extends QITCommand {
 			}
 
 			if ( $report_found ) {
-				echo "\nView full Playwright report:  qit e2e-report\n";
+				echo "\nView full Playwright report:  qit report\n";
 			} else {
 				echo "\nNo HTML reports generated yet. Check the artifacts directory.\n";
 
@@ -1152,7 +1152,7 @@ class RunE2ECommand extends QITCommand {
 
 					if ( $report_found ) {
 						$io->writeln( "\n<info>View test report with:</info>" );
-						$io->writeln( '  <comment>qit e2e-report</comment>' );
+						$io->writeln( '  <comment>qit report</comment>' );
 					}
 
 					// Also show other useful artifacts

@@ -14,7 +14,7 @@ use Symfony\Component\Process\Process;
 use function QIT_CLI\open_in_browser;
 
 class ShowReportCommand extends QITCommand {
-	protected static $defaultName = 'e2e-report'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected static $defaultName = 'report'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected Cache $cache;
 

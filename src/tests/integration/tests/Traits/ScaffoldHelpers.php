@@ -135,7 +135,7 @@ PHP;
 		 *** npm notice Run `npm install -g npm@10.6.0` to update!
 		 * npm notice
 		 *
-		 * To open last HTML report run: qit e2e-report
+		 * To open last HTML report run: qit report
 		 *
 		 * Shutting down environment...
 		 */
