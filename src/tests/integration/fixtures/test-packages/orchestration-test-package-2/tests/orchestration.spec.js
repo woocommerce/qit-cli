@@ -89,14 +89,44 @@ test.describe('Orchestration Package 2', () => {
       
       // Create our own post to show Package 2 ran
       await page.goto('/wp-admin/post-new.php');
-      await page.fill('[data-title="Add title"], #title', 'Orchestration Test Post by Package 2');
       
-      const blockEditor = await page.locator('.block-editor-default-block-appender__content').isVisible().catch(() => false);
-      if (blockEditor) {
-        await page.click('.block-editor-default-block-appender__content');
+      // Dismiss WordPress welcome tour/guide if present (WP 6.7+)
+      const welcomeGuideClose = page.locator('.components-modal__header button[aria-label="Close"], .components-guide .components-button.is-tertiary');
+      if (await welcomeGuideClose.isVisible().catch(() => false)) {
+        await welcomeGuideClose.click();
+        await page.waitForTimeout(500); // Brief wait for modal to close
+      }
+      
+      // Check if we have an iframe (WordPress 6.8+) or direct editor (older versions)
+      const editorIframe = page.frameLocator('.editor-canvas__iframe, [name="editor-canvas"]').first();
+      const hasIframe = await page.locator('.editor-canvas__iframe, [name="editor-canvas"]').count() > 0;
+      
+      if (hasIframe) {
+        // WordPress 6.8+ with iframe
+        console.log('Package 2: Detected editor iframe (WordPress 6.8+)');
+        
+        // Wait for and fill the title inside the iframe
+        const titleSelector = await editorIframe.locator('[data-title="Add title"], #post-title-0, .editor-post-title__input').first();
+        await titleSelector.waitFor({ state: 'visible', timeout: 5000 });
+        await titleSelector.fill('Orchestration Test Post by Package 2');
+        
+        // Add content inside the iframe
+        const contentBlock = await editorIframe.locator('.block-editor-default-block-appender__content, [data-title="Write your story"]').first();
+        await contentBlock.click();
         await page.keyboard.type('This post was created by orchestration test package 2');
       } else {
-        await page.fill('#content', 'This post was created by orchestration test package 2');
+        // Older WordPress versions without iframe
+        console.log('Package 2: No iframe detected (older WordPress version)');
+        
+        await page.fill('[data-title="Add title"], #title', 'Orchestration Test Post by Package 2');
+        
+        const blockEditor = await page.locator('.block-editor-default-block-appender__content').isVisible().catch(() => false);
+        if (blockEditor) {
+          await page.click('.block-editor-default-block-appender__content');
+          await page.keyboard.type('This post was created by orchestration test package 2');
+        } else {
+          await page.fill('#content', 'This post was created by orchestration test package 2');
+        }
       }
       
       const publishButton = page.locator('.editor-post-publish-panel__toggle, #publish');

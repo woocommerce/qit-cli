@@ -64,17 +64,71 @@ test.describe('Orchestration Package 1', () => {
       await page.waitForURL('**/wp-admin/post-new.php');
     }
     
-    // Create a post
-    await page.fill('[data-title="Add title"], #title', 'Orchestration Test Post by Package 1');
+    // Dismiss WordPress welcome tour/guide if present (WP 6.7+)
+    // Try multiple selectors for different WordPress versions
+    const modalSelectors = [
+      'button[aria-label="Close dialog"]',
+      'button[aria-label="Close"]',
+      '.components-modal__header button',
+      '.components-guide button:has-text("×")',
+      '.components-guide .components-button.is-tertiary',
+      'button:has-text("Got it")',
+      'button:has-text("Skip")',
+      '.edit-post-welcome-guide button[aria-label="Close"]'
+    ];
     
-    // Add content (handle both classic and block editor)
-    const blockEditor = await page.locator('.block-editor-default-block-appender__content').isVisible().catch(() => false);
-    if (blockEditor) {
-      await page.click('.block-editor-default-block-appender__content');
+    for (const selector of modalSelectors) {
+      try {
+        const closeButton = page.locator(selector).first();
+        if (await closeButton.isVisible({ timeout: 1000 })) {
+          await closeButton.click();
+          await page.waitForTimeout(500); // Brief wait for modal to close
+          console.log(`Package 1: Dismissed editor welcome modal using: ${selector}`);
+          break;
+        }
+      } catch (e) {
+        // Continue to next selector
+      }
+    }
+    
+    // Wait for the editor to be ready - let it stabilize after modal dismissal
+    await page.waitForTimeout(1000);
+    
+    // Check if we have an iframe (WordPress 6.8+) or direct editor (older versions)
+    const editorIframe = page.frameLocator('.editor-canvas__iframe, [name="editor-canvas"]').first();
+    const hasIframe = await page.locator('.editor-canvas__iframe, [name="editor-canvas"]').count() > 0;
+    
+    if (hasIframe) {
+      // WordPress 6.8+ with iframe
+      console.log('Package 1: Detected editor iframe (WordPress 6.8+)');
+      
+      // Wait for and fill the title inside the iframe
+      const titleSelector = await editorIframe.locator('[data-title="Add title"], #post-title-0, .editor-post-title__input').first();
+      await titleSelector.waitFor({ state: 'visible', timeout: 10000 });
+      await titleSelector.fill('Orchestration Test Post by Package 1');
+      
+      // Add content inside the iframe
+      const contentBlock = await editorIframe.locator('.block-editor-default-block-appender__content, [data-title="Write your story"]').first();
+      await contentBlock.click();
       await page.keyboard.type('This post was created by orchestration test package 1');
     } else {
-      // Classic editor
-      await page.fill('#content', 'This post was created by orchestration test package 1');
+      // Older WordPress versions without iframe
+      console.log('Package 1: No iframe detected (older WordPress version)');
+      
+      // Try both block editor and classic editor selectors
+      const titleSelector = await page.locator('[data-title="Add title"], #post-title-0, #title').first();
+      await titleSelector.waitFor({ state: 'visible', timeout: 10000 });
+      await titleSelector.fill('Orchestration Test Post by Package 1');
+      
+      // Add content (handle both classic and block editor)
+      const blockEditor = await page.locator('.block-editor-default-block-appender__content').isVisible().catch(() => false);
+      if (blockEditor) {
+        await page.click('.block-editor-default-block-appender__content');
+        await page.keyboard.type('This post was created by orchestration test package 1');
+      } else {
+        // Classic editor
+        await page.fill('#content', 'This post was created by orchestration test package 1');
+      }
     }
     
     // Publish the post
