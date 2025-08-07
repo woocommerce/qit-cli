@@ -16,6 +16,7 @@ use QIT_CLI\Commands\CustomTests\ValidateE2ECommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
+use QIT_CLI\Commands\Environment\EnvSourceCommand;
 use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ReloadEnvironmentCommand;
@@ -183,6 +184,7 @@ try {
 	$application->add( $container->make( ReloadEnvironmentCommand::class ) );
 	$application->add( $container->make( EnterEnvironmentCommand::class ) );
 	$application->add( $container->make( ExecEnvironmentCommand::class ) );
+	$application->add( $container->make( EnvSourceCommand::class ) );
 } catch ( \Exception $e ) {
 	App::make( Output::class )->writeln( $e->getMessage() );
 }

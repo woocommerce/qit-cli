@@ -83,6 +83,30 @@ class E2EEnvironment extends Environment {
 			}
 		}
 
+		// Set container names for reference
+		$this->env_info->php_container = sprintf( 'qit_env_php_%s', $this->env_info->env_id );
+		$this->env_info->db_container = sprintf( 'qit_env_db_%s', $this->env_info->env_id );
+		
+		// Try to get the database port (if exposed)
+		try {
+			$db_container = $this->env_info->get_docker_container( 'db' );
+			if ( $db_container ) {
+				$docker = App::make( Docker::class )->find_docker();
+				$get_db_port_process = new Process( [ $docker, 'port', $db_container, '3306' ] );
+				$get_db_port_process->run();
+				
+				if ( $get_db_port_process->isSuccessful() ) {
+					$output = $get_db_port_process->getOutput();
+					if ( preg_match( '/0\.0\.0\.0:(\d+)/', $output, $matches ) ) {
+						$this->env_info->db_port = (int) $matches[1];
+					}
+				}
+			}
+		} catch ( \Exception $e ) {
+			// Database port might not be exposed, that's okay
+			$this->env_info->db_port = 0;
+		}
+
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
 		/**

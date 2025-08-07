@@ -19,10 +19,12 @@ class PackagePhaseRunner {
 	private Docker $docker;
 	private OutputInterface $output;
 	private TestPackageManifestParser $parser;
+	private EnvironmentVars $environment_vars;
 
-	public function __construct( Docker $docker, OutputInterface $output ) {
+	public function __construct( Docker $docker, OutputInterface $output, EnvironmentVars $environment_vars ) {
 		$this->docker = $docker;
 		$this->output = $output;
+		$this->environment_vars = $environment_vars;
 		$this->parser = App::make( TestPackageManifestParser::class );
 	}
 
@@ -46,11 +48,12 @@ class PackagePhaseRunner {
 	private function prepare_test_env_vars( EnvInfo $env_info ): array {
 		$env_vars = [];
 
-		// Pass QIT_SITE_URL for E2E environments
+		// Use centralized environment variable mapping for E2E environments
 		if ( $env_info instanceof E2EEnvInfo ) {
-			$env_vars['QIT_SITE_URL'] = $env_info->site_url;
+			// Get base environment variables from centralized mapping
+			$env_vars = $this->environment_vars->get_mapping( $env_info );
 
-			// Pass SUT info
+			// Add SUT-specific variables (these are test-specific, not general env vars)
 			if ( ! empty( $env_info->sut ) ) {
 				$env_vars['QIT_SUT_SLUG'] = $env_info->sut['slug'] ?? '';
 				$env_vars['QIT_SUT_TYPE'] = $env_info->sut['type'] ?? '';

@@ -31,14 +31,17 @@ class UpEnvironmentCommand extends QITCommand {
 	private TunnelRunner $tunnel_runner;
 	/** @var \QIT_CLI\PreCommand\Extensions\VersionResolver */
 	private \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver;
+	/** @var \QIT_CLI\Environment\EnvironmentVars */
+	private \QIT_CLI\Environment\EnvironmentVars $environment_vars;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver ) {
+	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver, \QIT_CLI\Environment\EnvironmentVars $environment_vars ) {
 		$this->e2e_environment         = $e2e_environment;
 		$this->performance_environment = $performance_environment;
 		$this->tunnel_runner           = $tunnel_runner;
 		$this->version_resolver        = $version_resolver;
+		$this->environment_vars        = $environment_vars;
 		parent::__construct();
 	}
 
@@ -166,11 +169,20 @@ class UpEnvironmentCommand extends QITCommand {
 		$environment->init( $env_info );
 		$environment->up();
 
-		/* ─ 8. Print result ─ */
+		/* ─ 8. Save environment info and generate source files ─ */
+		$this->save_environment_info( $env_info );
+		$files = $this->environment_vars->save_environment_file( $env_info );
+
+		/* ─ 9. Print result ─ */
 		if ( $input->getOption( 'json' ) ) {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 		} else {
 			$this->renderHumanSummary( $output, $env_info );
+			$output->writeln( '' );
+			$output->writeln( '<comment>To load environment variables for manual testing:</comment>' );
+			$output->writeln( sprintf( '  source "%s"', $files['shell'] ) );
+			$output->writeln( '<comment>Or use the shorthand:</comment>' );
+			$output->writeln( '  source "$(qit env:source)"' );
 		}
 
 		return Command::SUCCESS;
@@ -499,6 +511,31 @@ class UpEnvironmentCommand extends QITCommand {
 	/**
 	 * Nicely formatted human output.
 	 */
+	/**
+	 * Save environment info to a JSON file for later use.
+	 *
+	 * @param E2EEnvInfo $env_info The environment info to save.
+	 */
+	private function save_environment_info( E2EEnvInfo $env_info ): void {
+		$env_dir = $this->environment_vars->get_env_directory();
+		$info_file = $env_dir . '/' . $env_info->env_id . '.json';
+		
+		// Store essential information for later retrieval
+		$data = [
+			'env_id' => $env_info->env_id,
+			'site_url' => $env_info->site_url,
+			'php' => $env_info->php,
+			'wp' => $env_info->wp,
+			'woo' => $env_info->woo,
+			'db_port' => $env_info->db_port ?? 0,
+			'php_container' => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
+			'db_container' => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
+			'nginx_port' => $env_info->nginx_port ?? '',
+		];
+		
+		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
+	}
+
 	private function renderHumanSummary( OutputInterface $out, EnvInfo $info ): void {
 		$out->writeln( '<info>Environment started ✔</info>' );
 		$out->writeln( "ID:          <comment>{$info->env_id}</comment>" );

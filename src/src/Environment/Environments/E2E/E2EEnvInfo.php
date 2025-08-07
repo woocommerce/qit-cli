@@ -26,6 +26,15 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public string $nginx_port = '';
 
+	/** @var int */
+	public int $db_port = 0;
+
+	/** @var string */
+	public string $php_container = '';
+
+	/** @var string */  
+	public string $db_container = '';
+
 	/** @var array<string,mixed> */
 	public array $sut = [];
 
