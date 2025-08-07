@@ -14,7 +14,7 @@ use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\CustomTests\ShowReportCommand;
 use QIT_CLI\Commands\CustomTests\ValidateE2ECommand;
 use QIT_CLI\Commands\DevModeCommand;
-use QIT_CLI\Commands\InvestigateCommand;
+use QIT_CLI\Commands\AIContextCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
@@ -253,7 +253,7 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( PackageScaffoldCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
-	$application->add( $container->make( InvestigateCommand::class ) );
+	$application->add( $container->make( AIContextCommand::class ) );
 
 	// Group Commands.
 	$application->add( $container->make( GroupRunCommand::class ) );

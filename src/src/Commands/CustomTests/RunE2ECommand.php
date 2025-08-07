@@ -535,14 +535,14 @@ class RunE2ECommand extends QITCommand {
 			// Debug log might not exist if no errors occurred - this is normal
 		}
 		
-		// Save run information for qit investigate command
+		// Save run information for qit ai-context failed-e2e command
 		$this->save_run_info( $env_info, $test_packages, $exit_status, $artifacts_dir, $report_url ?? null );
 
 		return $exit_status;
 	}
 
 	/**
-	 * Save run information for the qit investigate command.
+	 * Save run information for the qit ai-context failed-e2e command.
 	 * 
 	 * This creates a JSON file with all the information an AI agent would need to debug a test failure:
 	 * - Environment configuration to understand the test context
@@ -553,8 +553,8 @@ class RunE2ECommand extends QITCommand {
 	 * Example scenario for an AI agent:
 	 * 1. AI runs: qit run:e2e --plugin=my-plugin
 	 * 2. Tests fail with "1 failed" in the summary
-	 * 3. AI sees "Debug Info: qit investigate" in the output
-	 * 4. AI runs: qit investigate
+	 * 3. AI sees "Agentic AI: qit ai-context failed-e2e" in the output
+	 * 4. AI runs: qit ai-context failed-e2e
 	 * 5. AI receives JSON with:
 	 *    - WordPress version that was tested (e.g., "6.7-RC1")
 	 *    - Failed test package path to read the test code
@@ -616,6 +616,11 @@ class RunE2ECommand extends QITCommand {
 				'wordpress' => $env_info->wp,
 				'php' => $env_info->php,
 				'woocommerce' => $env_info->woo ?: null,
+				'sut' => isset( $env_info->sut ) ? [
+					'slug' => $env_info->sut['slug'] ?? null,
+					'id' => $env_info->sut['id'] ?? null,
+					'type' => $env_info->sut['type'] ?? 'plugin',
+				] : null,
 				'plugins' => array_map( function( $plugin ) {
 					return [
 						'slug' => $plugin->slug ?? $plugin['slug'] ?? null,
