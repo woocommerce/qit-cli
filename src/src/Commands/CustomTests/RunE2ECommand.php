@@ -877,13 +877,13 @@ class RunE2ECommand extends QITCommand {
 			// Store in DI container for signal handler access
 			App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
 
-			// Get bootstrap package IDs to skip them (they only run globalSetup)
-			$bootstrap_package_ids = array_keys( $env_info->bootstrap_packages ?? [] );
+			// Get global setup package IDs to skip them (they only run globalSetup)
+			$global_setup_package_ids = array_keys( $env_info->global_setup_packages ?? [] );
 
 			$io->section( 'Running Test Packages' );
 
-			// Count non-bootstrap packages
-			$test_package_count = count( array_diff( array_keys( $test_packages ), $bootstrap_package_ids ) );
+			// Count non-global-setup packages
+			$test_package_count = count( array_diff( array_keys( $test_packages ), $global_setup_package_ids ) );
 			$orchestrator->start( $env_info->env_id, $test_package_count );
 
 			// Store test packages in DI container for signal handler access
@@ -913,13 +913,13 @@ class RunE2ECommand extends QITCommand {
 			$is_first_package      = true;
 			$package_display_names = []; // Track display names for error messages
 			foreach ( $test_packages as $pkg_id => $meta ) {
-				// Skip packages that are in bootstrap_packages (they only run globalSetup)
-				if ( in_array( $pkg_id, $bootstrap_package_ids, true ) ) {
-					$io->writeln( "<comment>Skipping {$pkg_id} (bootstrap package - globalSetup already executed)</comment>" );
+				// Skip packages that are in global_setup_packages (they only run globalSetup)
+				if ( in_array( $pkg_id, $global_setup_package_ids, true ) ) {
+					$io->writeln( "<comment>Skipping {$pkg_id} (global setup package - globalSetup already executed)</comment>" );
 					continue;
 				}
 
-				// Increment package index for non-bootstrap packages
+				// Increment package index for non-global-setup packages
 				++$package_index;
 
 				$package_path = $meta['path'] ?? '';

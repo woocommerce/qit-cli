@@ -215,9 +215,9 @@ abstract class Environment {
 
 		$default_volumes = $this->additional_default_volumes( $default_volumes );
 
-		/* Mount test‑packages (bootstrap_packages) as read‑only -----------------------*/
-		if ( ! empty( $this->env_info->bootstrap_packages ) ) {
-			foreach ( $this->env_info->bootstrap_packages as $pkg_id => $info ) {
+		/* Mount test‑packages (global_setup_packages) as read‑only -----------------------*/
+		if ( ! empty( $this->env_info->global_setup_packages ) ) {
+			foreach ( $this->env_info->global_setup_packages as $pkg_id => $info ) {
 				if ( empty( $info['path'] ) || ! is_dir( $info['path'] ) ) {
 					continue;
 				}
@@ -368,8 +368,8 @@ abstract class Environment {
 		$output              = $output ?? App::make( OutputInterface::class );
 		$environment_monitor = App::make( EnvironmentMonitor::class );
 
-		// Execute globalTeardown phase for bootstrap packages - always executed, even on failure
-		if ( ! empty( $env_info->bootstrap_packages ) ) {
+		// Execute globalTeardown phase for global setup packages - always executed, even on failure
+		if ( ! empty( $env_info->global_setup_packages ) ) {
 			$docker = App::make( Docker::class );
 			$runner = new \QIT_CLI\Environment\PackagePhaseRunner( $docker, $output );
 
@@ -379,14 +379,14 @@ abstract class Environment {
 			// Create a null orchestrator for teardown phase (non-test packages)
 			$null_orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( new \Symfony\Component\Console\Output\NullOutput() );
 
-			foreach ( $env_info->bootstrap_packages as $pkg_id => $info ) {
+			foreach ( $env_info->global_setup_packages as $pkg_id => $info ) {
 				try {
 					$teardown_cmds = $runner->run_phase(
 						$env_info,
 						'globalTeardown',
 						$pkg_id,
 						$info['path'],
-						null,  // No artifacts_dir for bootstrap packages
+						null,  // No artifacts_dir for global setup packages
 						$null_orchestrator
 					);
 

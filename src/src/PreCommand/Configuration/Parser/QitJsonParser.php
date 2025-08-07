@@ -233,9 +233,9 @@ class QitJsonParser {
 			$this->load_all_test_packages( $config['test_types'] );
 		}
 
-		// Process bootstrap_packages in environments
+		// Process global_setup in environments
 		if ( isset( $config['environments'] ) ) {
-			$this->load_bootstrap_packages( $config['environments'] );
+			$this->load_global_setup_packages( $config['environments'] );
 		}
 
 		// Validate cross-references
@@ -271,14 +271,14 @@ class QitJsonParser {
 	}
 
 	/**
-	 * Load bootstrap packages from environments
+	 * Load global setup packages from environments
 	 *
 	 * @param array<string, mixed> $environments
 	 */
-	private function load_bootstrap_packages( array $environments ): void {
+	private function load_global_setup_packages( array $environments ): void {
 		foreach ( $environments as $env_name => $env ) {
-			if ( isset( $env['bootstrap_packages'] ) ) {
-				foreach ( $env['bootstrap_packages'] as $package_ref ) {
+			if ( isset( $env['global_setup'] ) ) {
+				foreach ( $env['global_setup'] as $package_ref ) {
 					$this->get_test_package( $package_ref );
 				}
 			}
@@ -371,17 +371,17 @@ class QitJsonParser {
 	}
 
 	/**
-	 * Get bootstrap packages for an environment
+	 * Get global setup packages for an environment
 	 *
 	 * @return array<string, array<string, mixed>>
 	 */
-	public function get_bootstrap_packages_for_environment( string $environment ): array {
-		if ( ! isset( $this->parsed_config['environments'][ $environment ]['bootstrap_packages'] ) ) {
+	public function get_global_setup_packages_for_environment( string $environment ): array {
+		if ( ! isset( $this->parsed_config['environments'][ $environment ]['global_setup'] ) ) {
 			return [];
 		}
 
 		$packages   = [];
-		$references = $this->parsed_config['environments'][ $environment ]['bootstrap_packages'];
+		$references = $this->parsed_config['environments'][ $environment ]['global_setup'];
 
 		foreach ( $references as $reference ) {
 			$packages[ $reference ] = $this->get_test_package( $reference );
@@ -639,13 +639,13 @@ class QitJsonParser {
 			}
 		}
 
-		// Validate bootstrap_packages references in environments
+		// Validate global_setup references in environments
 		if ( isset( $config['environments'] ) ) {
-			$this->debug_log( 'Validating environment bootstrap_packages' );
+			$this->debug_log( 'Validating environment global_setup' );
 			foreach ( $config['environments'] as $env_name => $env ) {
-				if ( isset( $env['bootstrap_packages'] ) ) {
-					foreach ( $env['bootstrap_packages'] as $package_ref ) {
-						$this->debug_log( "Checking bootstrap_packages package: $package_ref" );
+				if ( isset( $env['global_setup'] ) ) {
+					foreach ( $env['global_setup'] as $package_ref ) {
+						$this->debug_log( "Checking global_setup package: $package_ref" );
 						if ( $this->is_local_package_reference( $package_ref ) ) {
 							$context = $this->get_path_context( $package_ref );
 							$path    = $this->resolve_path_with_context( $package_ref, $context );

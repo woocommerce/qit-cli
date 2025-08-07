@@ -82,7 +82,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	public array $envs = [];
 
 	/** @var array<string,array{path:string}>  (package‑id => ['path' => dir]) */
-	public array $bootstrap_packages = [];
+	public array $global_setup_packages = [];
 
 	/** @var array<string,array{path:string,container_path?:string,manifest?:\QIT_CLI\PreCommand\Objects\TestPackageManifest}>  (package‑id => ['path' => dir, 'container_path' => optional container path, 'manifest' => optional manifest object]) */
 	public array $test_packages_metadata = [];

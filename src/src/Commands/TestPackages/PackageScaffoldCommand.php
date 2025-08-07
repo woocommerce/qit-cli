@@ -198,7 +198,7 @@ class PackageScaffoldCommand extends QITCommand {
 #   – Disables onboarding banners
 #   – Turns off tracking, etc.
 # This runs **once** per test run (even if your package is only in
-# `bootstrap_packages`) and should finish fast.
+# `global_setup`) and should finish fast.
 
 set -euo pipefail
 

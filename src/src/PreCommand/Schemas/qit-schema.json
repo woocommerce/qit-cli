@@ -288,9 +288,9 @@
                 ]
               }
             },
-            "bootstrap_packages": {
+            "global_setup": {
               "type": "array",
-              "description": "Test packages to run only during bootstrap",
+              "description": "Test packages to run only during global setup phase",
               "items": {
                 "type": "string"
               }

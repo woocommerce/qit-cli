@@ -134,41 +134,41 @@ class E2EEnvironment extends Environment {
 
 		/*
 		--------------------------------------------------------------
-		 * Execute bootstrap test‑packages
+		 * Execute global setup packages
 		 * ------------------------------------------------------------
 		 */
-		if ( ! empty( $this->env_info->bootstrap_packages ) ) {
-			$runner     = new \QIT_CLI\Environment\PackagePhaseRunner(
+		if ( ! empty( $this->env_info->global_setup_packages ) ) {
+			$runner = new \QIT_CLI\Environment\PackagePhaseRunner(
 				$this->docker,
-				$this->output
+				$this->output,
+				App::make( \QIT_CLI\Environment\EnvironmentVars::class )
 			);
-			$total_cmds = 0;
 
-			$this->output->writeln( "\n<comment>🔧  Test‑package bootstrap phase</comment>" );
-			$this->output->writeln( '<comment>----------------------------</comment>' );
+			$this->output->writeln( '' );
+			$this->output->writeln( 'Running Global Setup' );
+			$this->output->writeln( str_repeat( '-', 20 ) );
 
-			// Create a null orchestrator for bootstrap phase (non-test packages)
-			$null_orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( new \Symfony\Component\Console\Output\NullOutput() );
+			// Create a custom orchestrator for global setup packages
+			$setup_orchestrator = new \QIT_CLI\Environment\GlobalSetupOrchestrator( $this->output );
 
-			foreach ( $this->env_info->bootstrap_packages as $pkg_id => $info ) {
-				$total_cmds += $runner->run_phase(
-					$this->env_info,
-					'globalSetup',
-					$pkg_id,
-					$info['path'],
-					null,  // No artifacts_dir for bootstrap packages
-					$null_orchestrator
-				);
-			}
-
-			if ( $total_cmds === 0 ) {
-				$this->output->writeln(
-					"  <info>• No setup commands found – skipping</info>\n"
-				);
-			} else {
-				$this->output->writeln(
-					"\n<info>[OK] 🟩  All {$total_cmds} command(s) executed successfully.</info>\n"
-				);
+			foreach ( $this->env_info->global_setup_packages as $pkg_id => $info ) {
+				$setup_orchestrator->start_package( $pkg_id, $info );
+				
+				try {
+					$commands_run = $runner->run_phase(
+						$this->env_info,
+						'globalSetup',
+						$pkg_id,
+						$info['path'],
+						null,  // No artifacts_dir for global setup packages
+						$setup_orchestrator
+					);
+					
+					$setup_orchestrator->end_package( $pkg_id, true, $commands_run );
+				} catch ( \Exception $e ) {
+					$setup_orchestrator->end_package( $pkg_id, false, 0, $e->getMessage() );
+					// Continue with other packages even if one fails
+				}
 			}
 		}
 
@@ -225,7 +225,8 @@ class E2EEnvironment extends Environment {
 			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
 		}
 
-		if ( $this->output->isVerbose() || ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
+		// Only show verbose output if explicitly requested
+		if ( $this->output->isVerbose() ) {
 			if ( ! getenv( 'QIT_CODEGEN' ) ) {
 				$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
 			}
@@ -246,13 +247,10 @@ class E2EEnvironment extends Environment {
 			$listing[] = sprintf( 'Path: %s', $this->env_info->temporary_env );
 
 			$io->listing( $listing );
-
-			if ( ! $this->output->isVerbose() ) {
-				$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
-			}
-		} else {
+		} else if ( getenv( 'QIT_HIDE_SITE_INFO' ) ) {
 			$this->output->writeln( '<info>Environment ready.</info>' );
 		}
+		// Otherwise, show nothing here - the compact summary will be shown by UpEnvironmentCommand
 
 		// Try to connect to the website if we are exposing this environment to host.
 		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) !== 'DOCKER' ) {
