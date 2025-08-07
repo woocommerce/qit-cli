@@ -37,7 +37,7 @@ class PrepareDebugLog {
 		if ( $env_info instanceof E2EEnvInfo ) {
 			$sut_slug = isset( $env_info->sut ) ? ( $env_info->sut['slug'] ?? '' ) : '';
 		} elseif ( $env_info instanceof PerformanceEnvInfo ) {
-			$sut_slug = $env_info->sut_slug ?? '';
+			$sut_slug = $env_info->sut_slug;
 		}
 
 		$output = App::make( Output::class );
@@ -145,15 +145,15 @@ class PrepareDebugLog {
 				 * @link https://core.trac.wordpress.org/ticket/54504
 				 */
 				$php_version = '';
-				$wp_version = '';
+				$wp_version  = '';
 				if ( $env_info instanceof E2EEnvInfo ) {
 					$php_version = $env_info->php ?? '';
-					$wp_version = $env_info->wp ?? '';
+					$wp_version  = $env_info->wp ?? '';
 				} elseif ( $env_info instanceof PerformanceEnvInfo ) {
-					$php_version = $env_info->php_version ?? '';
-					$wp_version = $env_info->wp ?? '';
+					$php_version = $env_info->php_version;
+					$wp_version  = $env_info->wp;
 				}
-				
+
 				if ( $php_version && $wp_version && version_compare( $php_version, '8', '>=' ) && version_compare( $wp_version, '6.2', '<' ) ) {
 					if (
 						stripos( $line, 'attribute should be used to temporarily suppress the notice in /var/www/html/wp-includes/Requests/Cookie/Jar.php' ) !== false
