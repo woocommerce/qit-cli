@@ -6,6 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\Environment\PackageOrchestrator;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
@@ -213,7 +214,7 @@ class LocalTestRunNotifier {
 
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
 			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
-			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::getVar( E2EEnvInfo::class ) );
+			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::make( EnvInfo::class ) );
 			$debug_log['debug_log'] = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 

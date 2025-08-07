@@ -42,21 +42,20 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	 * This is CRITICAL - global setup should affect all test packages
 	 */
 	public function test_global_state_shared_across_packages(): void {
+		// Create a package with globalSetup that creates state
+		$setupPackage = $this->createPackageWithGlobalSetup( 'setup-package' );
+		
 		// Create package 1 that reads global state
 		$package1 = $this->createPackageThatReadsGlobalState( 'package-1' );
 		
 		// Create package 2 that also reads the same global state
 		$package2 = $this->createPackageThatReadsGlobalState( 'package-2' );
 		
-		// Create a globalSetup that sets state
-		$globalSetup = $this->createGlobalSetupFile();
-		
 		$config = [
 			'test_types' => [
 				'e2e' => [
 					'default' => [
-						'test_packages' => [ $package1, $package2 ],
-						'global_setup' => $globalSetup
+						'test_packages' => [ $setupPackage, $package1, $package2 ]
 					]
 				]
 			]
@@ -174,15 +173,14 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 		$package1 = $this->createPackageThatWritesResult( 'package-1' );
 		$package2 = $this->createPackageThatWritesResult( 'package-2' );
 		
-		// Global teardown counts all result files
-		$globalTeardown = $this->createGlobalTeardownThatCountsResults();
+		// Package with globalTeardown that counts all result files
+		$teardownPackage = $this->createPackageWithGlobalTeardown( 'teardown-package' );
 		
 		$config = [
 			'test_types' => [
 				'e2e' => [
 					'default' => [
-						'test_packages' => [ $package1, $package2 ],
-						'global_teardown' => $globalTeardown
+						'test_packages' => [ $package1, $package2, $teardownPackage ]
 					]
 				]
 			]
@@ -525,25 +523,88 @@ JS;
 		return $packageDir;
 	}
 
-	private function createGlobalSetupFile(): string {
-		$setupFile = $this->fixturesDir . '/global-setup.js';
+	private function createPackageWithGlobalSetup( string $name ): string {
+		$packageDir = $this->fixturesDir . '/' . $name;
+		mkdir( $packageDir, 0755, true );
+		mkdir( $packageDir . '/tests', 0755, true );
 		
-		$setup = <<<JS
-import fs from 'fs';
+		// Manifest with globalSetup phase
+		$manifest = [
+			'package' => $name,
+			'namespace' => 'woocommerce',
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'globalSetup' => [
+						"echo 'Running global setup...' && echo 'GLOBAL_STATE_VALUE' > /tmp/qit-global-state.txt && echo 'Global setup: Created state file'"
+					],
+					'run' => [ 'echo "Setup package running"' ]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			]
+		];
+		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		
+		// Minimal test file
+		$test = <<<JS
+import { test, expect } from '@playwright/test';
 
-export default async function globalSetup() {
-  console.log('Running global setup...');
-  
-  // Create a global state file that all packages can read
-  const globalStateFile = '/tmp/qit-global-state.txt';
-  fs.writeFileSync(globalStateFile, 'GLOBAL_STATE_VALUE');
-  
-  console.log('Global setup: Created state file');
-}
+test('setup test', async ({ page }) => {
+  console.log('Setup package test running');
+  await page.goto('/');
+  await expect(page).toHaveTitle(/WooCommerce/i);
+});
 JS;
-		file_put_contents( $setupFile, $setup );
+		file_put_contents( $packageDir . '/tests/test.spec.js', $test );
 		
-		return $setupFile;
+		$this->copyPackageEssentials( $packageDir );
+		
+		return $packageDir;
+	}
+
+	private function createPackageWithGlobalTeardown( string $name ): string {
+		$packageDir = $this->fixturesDir . '/' . $name;
+		mkdir( $packageDir, 0755, true );
+		mkdir( $packageDir . '/tests', 0755, true );
+		
+		// Manifest with globalTeardown phase
+		$manifest = [
+			'package' => $name,
+			'namespace' => 'woocommerce',
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'run' => [ 'npx playwright test' ],
+					'globalTeardown' => [
+						"echo 'Running global teardown...' && ls -la /tmp/qit-result-*.txt 2>/dev/null | wc -l | xargs -I {} echo 'Global teardown: Found {} result files'"
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			]
+		];
+		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		
+		// Minimal test file
+		$test = <<<JS
+import { test, expect } from '@playwright/test';
+
+test('teardown test', async ({ page }) => {
+  console.log('Teardown package test running');
+  await page.goto('/');
+  await expect(page).toHaveTitle(/WooCommerce/i);
+});
+JS;
+		file_put_contents( $packageDir . '/tests/test.spec.js', $test );
+		
+		$this->copyPackageEssentials( $packageDir );
+		
+		return $packageDir;
 	}
 
 	private function createGlobalTeardownThatCountsResults(): string {

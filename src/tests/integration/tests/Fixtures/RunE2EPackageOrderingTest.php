@@ -59,7 +59,7 @@ class RunE2EPackageOrderingTest extends TestCase {
 		
 		// Package names should appear in order
 		$package1Pos = strpos( $output, 'my-woo-test-package' );
-		$package2Pos = strpos( $output, 'regular-test-package-two' );
+		$package2Pos = strpos( $output, 'second-test-package' );
 		$package3Pos = strpos( $output, 'failing-test-package' );
 		
 		$this->assertLessThan( $package2Pos, $package1Pos, 'Package 1 should run before package 2' );

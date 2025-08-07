@@ -14,6 +14,7 @@ use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo; // @phan-suppress-current-line PhanUnreferencedUseNormal - Used in PHPDoc
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
 use QIT_CLI\Environment\ResultCollector;
@@ -327,6 +328,7 @@ class RunE2ECommand extends QITCommand {
 		try {
 			/** @var E2EEnvInfo $env_info */
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
+			App::singleton( EnvInfo::class, $env_info );
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>Failed to start environment: %s</error>', $e->getMessage() ) );
 
