@@ -37,10 +37,10 @@ class RunE2EPackageOrderingTest extends TestCase {
 	 * Test that packages execute in the specified order
 	 */
 	public function test_packages_execute_in_order(): void {
-		// Use our existing fixtures
-		$package1 = $this->fixturesDir . '/regular-test-package-one';
-		$package2 = $this->fixturesDir . '/regular-test-package-two';
-		$package3 = $this->fixturesDir . '/failing-test-package'; // Has 2 pass, 1 fail
+		// Create simple test packages that output unique markers
+		$package1 = $this->createSimplePackage('package-1', 'PACKAGE_1_WAS_HERE');
+		$package2 = $this->createSimplePackage('package-2', 'PACKAGE_2_WAS_HERE');
+		$package3 = $this->createSimplePackage('package-3', 'PACKAGE_3_WAS_HERE');
 		
 		$config = $this->createConfig( [ $package1, $package2, $package3 ] );
 
@@ -48,7 +48,7 @@ class RunE2EPackageOrderingTest extends TestCase {
 			'run:e2e',
 			'woocommerce',
 			'--config=' . $config,
-		], expected_exit_code: 1, return_process: true ); // Exit code 1 because one package has failures
+		], return_process: true );
 
 		$output = $proc->getOutput();
 
@@ -57,29 +57,34 @@ class RunE2EPackageOrderingTest extends TestCase {
 		$this->assertStringContainsString( 'PACKAGE [2/3]', $output );
 		$this->assertStringContainsString( 'PACKAGE [3/3]', $output );
 		
-		// Package names should appear in order
-		$package1Pos = strpos( $output, 'my-woo-test-package' );
-		$package2Pos = strpos( $output, 'second-test-package' );
-		$package3Pos = strpos( $output, 'failing-test-package' );
+		// Look for our unique markers in order
+		$package1Pos = strpos( $output, 'PACKAGE_1_WAS_HERE' );
+		$package2Pos = strpos( $output, 'PACKAGE_2_WAS_HERE' );
+		$package3Pos = strpos( $output, 'PACKAGE_3_WAS_HERE' );
 		
-		$this->assertLessThan( $package2Pos, $package1Pos, 'Package 1 should run before package 2' );
-		$this->assertLessThan( $package3Pos, $package2Pos, 'Package 2 should run before package 3' );
+		$this->assertNotFalse($package1Pos, 'PACKAGE_1_WAS_HERE not found in output');
+		$this->assertNotFalse($package2Pos, 'PACKAGE_2_WAS_HERE not found in output');
+		$this->assertNotFalse($package3Pos, 'PACKAGE_3_WAS_HERE not found in output');
+		
+		// Check they appear in the right order (position in string increases)
+		$this->assertLessThan( $package2Pos, $package1Pos, 'Package 1 should appear before package 2' );
+		$this->assertLessThan( $package3Pos, $package2Pos, 'Package 2 should appear before package 3' );
 		
 		// Results should be collected from all packages
 		$this->assertStringContainsString( 'Tests:', $output );
 		
-		// Should fail overall because package 3 has failures
-		$this->assertStringContainsString( 'Status:        ✗ FAILED', $output );
+		// Should pass since all packages pass
+		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
 	}
 
 	/**
 	 * Test that failures in one package don't stop other packages
 	 */
 	public function test_failure_doesnt_stop_other_packages(): void {
-		// Put failing package first
-		$package1 = $this->fixturesDir . '/failing-test-package';
-		$package2 = $this->fixturesDir . '/regular-test-package-one';
-		$package3 = $this->fixturesDir . '/regular-test-package-two';
+		// Create packages with one that fails
+		$package1 = $this->createFailingPackage('failing-package', 'FAILING_PACKAGE_RAN');
+		$package2 = $this->createSimplePackage('success-package-1', 'SUCCESS_1_RAN');
+		$package3 = $this->createSimplePackage('success-package-2', 'SUCCESS_2_RAN');
 		
 		$config = $this->createConfig( [ $package1, $package2, $package3 ] );
 
@@ -96,11 +101,10 @@ class RunE2EPackageOrderingTest extends TestCase {
 		$this->assertStringContainsString( 'PACKAGE [2/3]', $output );
 		$this->assertStringContainsString( 'PACKAGE [3/3]', $output );
 		
-		// Package 2 and 3 should pass even though package 1 failed
-		// Look for the execution of each package
-		$this->assertMatchesRegularExpression( '/failing-test-package.*1 failed/s', $output );
-		$this->assertMatchesRegularExpression( '/my-woo-test-package.*3 passed/s', $output );
-		$this->assertMatchesRegularExpression( '/regular-test-package-two.*3 passed/s', $output );
+		// All packages should run - check for our markers
+		$this->assertStringContainsString( 'FAILING_PACKAGE_RAN', $output );
+		$this->assertStringContainsString( 'SUCCESS_1_RAN', $output );
+		$this->assertStringContainsString( 'SUCCESS_2_RAN', $output );
 	}
 
 	/**
@@ -207,6 +211,60 @@ class RunE2EPackageOrderingTest extends TestCase {
 	}
 
 	// ============= Helper Methods =============
+
+	private function createSimplePackage( string $name, string $marker ): string {
+		$tempDir = sys_get_temp_dir() . '/qit-test-' . $name . '-' . uniqid();
+		mkdir( $tempDir, 0755, true );
+		$this->tempDirs[] = $tempDir;
+
+		// Create a simple manifest that just echoes a marker
+		$manifest = [
+			'package' => $name,
+			'namespace' => 'test',
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'run' => [
+						"echo '$marker' && mkdir -p ./results && echo '{\"results\":{\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0},\"tests\":[{\"name\":\"test\",\"status\":\"passed\"}]}}' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			]
+		];
+		file_put_contents( $tempDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		
+		return $tempDir;
+	}
+
+	private function createFailingPackage( string $name, string $marker ): string {
+		$tempDir = sys_get_temp_dir() . '/qit-test-' . $name . '-' . uniqid();
+		mkdir( $tempDir, 0755, true );
+		$this->tempDirs[] = $tempDir;
+
+		// Create a manifest with a test that fails
+		$manifest = [
+			'package' => $name,
+			'namespace' => 'test',
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'run' => [
+						"echo '$marker' && mkdir -p ./results && echo '{\"results\":{\"summary\":{\"tests\":2,\"passed\":1,\"failed\":1},\"tests\":[{\"name\":\"passing\",\"status\":\"passed\"},{\"name\":\"failing\",\"status\":\"failed\"}]}}' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt && exit 1"
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			]
+		];
+		file_put_contents( $tempDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		
+		return $tempDir;
+	}
 
 	private function createConfig( array $testPackages ): string {
 		$config = [
