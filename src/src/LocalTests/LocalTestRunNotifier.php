@@ -292,7 +292,9 @@ class LocalTestRunNotifier {
 
 		// Check for E2E test failures - use CTRF approach
 		if ( is_null( $status ) ) {
-			if ( $test_result instanceof TestResult && $this->ctrf_has_failed( $result_json ) ) {
+			// Only check CTRF failures if we have actual test results
+			// Empty result_json array means no CTRF file was generated (e.g., utility packages)
+			if ( $test_result instanceof TestResult && ! empty( $result_json ) && $this->ctrf_has_failed( $result_json ) ) {
 				// We consider it a test failure.
 				$exit_status_code_override = Command::FAILURE; // i.e., exit code 1.
 				$status                    = 'failed';

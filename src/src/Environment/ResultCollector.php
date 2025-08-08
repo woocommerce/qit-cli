@@ -370,8 +370,13 @@ class ResultCollector {
 		} );
 
 		if ( ! $proc->isSuccessful() ) {
-			$orchestrator->post_processing_message( 'Blob merge failed', false );
-			throw new RuntimeException( 'Blob merge failed: ' . $proc->getErrorOutput() );
+			$orchestrator->post_processing_message( 'Blob merge failed (HTML report unavailable)', false );
+			// Don't throw - blob merge failure shouldn't fail the entire test run
+			// This can happen with non-Playwright test packages or invalid blob files
+			if ( $io->isVerbose() ) {
+				$io->writeln( '<comment>Blob merge error: ' . $proc->getErrorOutput() . '</comment>' );
+			}
+			return;
 		}
 
 		$orchestrator->post_processing_message( 'HTML report generated' );

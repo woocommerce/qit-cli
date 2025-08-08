@@ -476,12 +476,22 @@ class PackagePhaseRunner {
 					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase, $orchestrator );
 				}
 
+				// Record lifecycle command for orchestrator CTRF (for non-run phases)
+				if ( $phase !== 'run' ) {
+					$orchestrator->record_lifecycle_command( $execution_data['exit_code'], $phase, $package_id );
+				}
+
 				// Generate individual CTRF immediately for bash scripts
 				if ( $is_bash_script ) {
 					$script_execution = array_merge( $execution_data, [ 'script' => $cmd ] );
 					$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $script_execution, $artifacts_dir );
 				}
 			} catch ( \RuntimeException $e ) {
+				// Record failed lifecycle command for orchestrator CTRF (for non-run phases)
+				if ( $phase !== 'run' ) {
+					$orchestrator->record_lifecycle_command( 1, $phase, $package_id );
+				}
+
 				// Generate CTRF for failed bash scripts too
 				if ( $is_bash_script ) {
 					$failed_execution = [

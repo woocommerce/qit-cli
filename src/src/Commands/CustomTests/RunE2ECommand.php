@@ -435,7 +435,10 @@ class RunE2ECommand extends QITCommand {
 
 			$orchestrator->post_processing_start();
 
-			// Merge CTRF artifacts
+			// Save orchestrator CTRF for lifecycle phases
+			$orchestrator->save_orchestrator_ctrf( $artifacts_dir );
+
+			// Merge CTRF artifacts (including orchestrator.json)
 			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
 
 			// Read merged CTRF report to get accurate test counts
@@ -1055,6 +1058,40 @@ class RunE2ECommand extends QITCommand {
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): array {
 		// Create orchestrator early so it's available in catch/finally blocks
 		$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
+
+		// Create and configure SecretManager
+		$secret_manager = new \QIT_CLI\Environment\SecretManager();
+
+		// Collect all required secrets from test packages
+		$all_required_secrets = [];
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( isset( $env_info->test_packages_metadata[ $pkg_id ]['manifest'] ) ) {
+				// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset - We check it exists above
+				$manifest = $env_info->test_packages_metadata[ $pkg_id ]['manifest'];
+				if ( $manifest instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+					$requires = $manifest->getRequires();
+					if ( isset( $requires['secrets'] ) && is_array( $requires['secrets'] ) ) {
+						$all_required_secrets = array_merge( $all_required_secrets, $requires['secrets'] );
+					}
+				}
+			}
+		}
+
+		// Validate all secrets are present before starting
+		if ( ! empty( $all_required_secrets ) ) {
+			$all_required_secrets = array_unique( $all_required_secrets );
+			try {
+				$secret_manager->validate( $all_required_secrets );
+				$io->writeln( '<info>✓ All required secrets validated</info>' );
+			} catch ( \RuntimeException $e ) {
+				$io->writeln( '<error>' . $e->getMessage() . '</error>' );
+				return [ Command::FAILURE, $orchestrator, '' ];
+			}
+		}
+
+		// Set secret manager on orchestrator for redaction
+		$orchestrator->set_secret_manager( $secret_manager );
+
 		// Use unique artifacts directory per run to avoid mixing results
 		$run_id                = uniqid( 'run-', true );
 		$artifacts_dir         = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id . '-' . $run_id;
@@ -1066,8 +1103,9 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		try {
-			$total_executed  = 0;
-			$failed_packages = [];
+			$total_executed    = 0;
+			$failed_packages   = [];
+			$has_test_packages = false; // Track if any package has a run phase
 
 			// Store in DI container for signal handler access
 			App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
@@ -1179,57 +1217,84 @@ class RunE2ECommand extends QITCommand {
 					// Run full lifecycle for test packages: setup -> run -> teardown
 					$orchestrator->phase_start( 'setup' );
 					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
-					if ( $setup_count > 0 ) {
+					if ( $setup_count > 0 && $manifest->hasResults() ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
 					}
 
 					// Run phase with CTRF collection even on test failures
-					try {
-						$orchestrator->phase_start( 'run' );
-						$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
-					} catch ( \RuntimeException $e ) {
-						// Collect CTRF even if tests failed (exit code 1 from test failures)
+					if ( $manifest->hasPhase( 'run' ) ) {
+						$has_test_packages = true; // Found at least one test package
 						try {
-							$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
-						} catch ( \Throwable $collector_err ) {
-							$error_msg = $collector_err->getMessage();
-							$io->writeln( "<error>Result collection failed: {$error_msg}</error>" );
-
-							// Check if it's a blob reporter error
-							if ( strpos( $error_msg, 'blob-dir' ) !== false ) {
-								$io->writeln( '<error>Test terminated abnormally - Blob reporter output is required</error>' );
-								$io->writeln( '' );
-								$io->writeln( '<comment>To fix this issue, ensure your test package generates blob reports:</comment>' );
-								$io->writeln( '  1. Configure blob reporter in playwright.config.js:' );
-								$io->writeln( '     reporter: [' );
-								$io->writeln( "       ['list']," );
-								$io->writeln( "       ['blob', {outputDir: './blob-report'}]," );
-								$io->writeln( "       ['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]" );
-								$io->writeln( '     ]' );
-								$io->writeln( '  2. Update manifest.json to point to both report directories:' );
-								$io->writeln( '     "results": {' );
-								$io->writeln( '       "ctrf-json": "./results/ctrf.json",' );
-								$io->writeln( '       "blob-dir": "./blob-report"' );
-								$io->writeln( '     }' );
-							} elseif ( strpos( $error_msg, 'ctrf-json' ) !== false ) {
-								$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
-								$io->writeln( '' );
-								$io->writeln( '<comment>To fix this issue, ensure your test package generates CTRF reports:</comment>' );
-								$io->writeln( '  1. Install the CTRF reporter: npm install --save-dev playwright-ctrf-json-reporter' );
-								$io->writeln( '  2. Configure it in playwright.config.js:' );
-								$io->writeln( "     reporter: [['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]]" );
-								$io->writeln( '  3. Update manifest.json to point to the CTRF file:' );
-								$io->writeln( '     "results": {"ctrf-json": "./results/ctrf.json"}' );
+							$orchestrator->phase_start( 'run' );
+							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
+							// Normal CTRF collection for successful runs
+							if ( $manifest->hasResults() ) {
+								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 							}
-							throw new \RuntimeException( 'Test failed to produce required output: ' . $collector_err->getMessage() );
+						} catch ( \RuntimeException $e ) {
+							// Collect CTRF even if tests failed (exit code 1 from test failures)
+							if ( $manifest->hasResults() ) {
+								try {
+									$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
+								} catch ( \Throwable $collector_err ) {
+									$error_msg = $collector_err->getMessage();
+									$io->writeln( "<error>Result collection failed: {$error_msg}</error>" );
+
+									// Check if it's a blob reporter error
+									if ( strpos( $error_msg, 'blob-dir' ) !== false ) {
+										$io->writeln( '<error>Test terminated abnormally - Blob reporter output is required</error>' );
+										$io->writeln( '' );
+										$io->writeln( '<comment>To fix this issue, ensure your test package generates blob reports:</comment>' );
+										$io->writeln( '  1. Configure blob reporter in playwright.config.js:' );
+										$io->writeln( '     reporter: [' );
+										$io->writeln( "       ['list']," );
+										$io->writeln( "       ['blob', {outputDir: './blob-report'}]," );
+										$io->writeln( "       ['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]" );
+										$io->writeln( '     ]' );
+										$io->writeln( '  2. Update manifest.json to point to both report directories:' );
+										$io->writeln( '     "results": {' );
+										$io->writeln( '       "ctrf-json": "./results/ctrf.json",' );
+										$io->writeln( '       "blob-dir": "./blob-report"' );
+										$io->writeln( '     }' );
+									} elseif ( strpos( $error_msg, 'ctrf-json' ) !== false ) {
+										$io->writeln( '<error>Test terminated abnormally - CTRF output is required</error>' );
+										$io->writeln( '' );
+										$io->writeln( '<comment>To fix this issue, ensure your test package generates CTRF reports:</comment>' );
+										$io->writeln( '  1. Install the CTRF reporter: npm install --save-dev playwright-ctrf-json-reporter' );
+										$io->writeln( '  2. Configure it in playwright.config.js:' );
+										$io->writeln( "     reporter: [['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]]" );
+										$io->writeln( '  3. Update manifest.json to point to the CTRF file:' );
+										$io->writeln( '     "results": {"ctrf-json": "./results/ctrf.json"}' );
+									}
+									throw new \RuntimeException( 'Test failed to produce required output: ' . $collector_err->getMessage() );
+								}
+							}
+							// Re-throw to maintain failure status
+							throw $e;
 						}
-						// Re-throw to maintain failure status
-						throw $e;
+					} else {
+						// No run phase - this is a utility package
+						$run_count = 0;
 					}
 
-					// Normal CTRF collection for successful runs
-					if ( $run_count > 0 ) {
-						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
+					// Validate that packages with run phase produce test results
+					// Note: If a package has a run phase, it MUST have results defined per schema
+					if ( $manifest->hasPhase( 'run' ) && $manifest->hasResults() ) {
+						$ctrf_path = $artifacts_dir . '/ctrf/' . ltrim( str_replace( [ '/', ':' ], '_', $pkg_id ), '._' ) . '.json';
+						if ( file_exists( $ctrf_path ) ) {
+							$ctrf_data  = json_decode( file_get_contents( $ctrf_path ), true );
+							$test_count = 0;
+							if ( isset( $ctrf_data['results']['tests'] ) && is_array( $ctrf_data['results']['tests'] ) ) {
+								$test_count = count( $ctrf_data['results']['tests'] );
+							}
+
+							if ( $test_count === 0 ) {
+								throw new \RuntimeException(
+									"Package \"{$display_name}\" declared a run phase but produced 0 test results.\n" .
+									'  • Either add a real test, or remove the run phase if this is a pure setup package.'
+								);
+							}
+						}
 					}
 
 					$orchestrator->phase_start( 'teardown' );
@@ -1247,8 +1312,12 @@ class RunE2ECommand extends QITCommand {
 					$is_first_package = false;
 
 				} catch ( \Exception $e ) {
-					// Don't show the error here - it's already shown in the orchestrator output
-					// Just track the failed package using its display name
+					// Show the error message if it's about test validation
+					if ( strpos( $e->getMessage(), 'declared a run phase but produced 0 test results' ) !== false ) {
+						$io->writeln( '' );
+						$io->writeln( '<error>' . $e->getMessage() . '</error>' );
+					}
+					// Track the failed package using its display name
 					$failed_packages[] = $package_display_names[ $pkg_id ] ?? $pkg_id;
 
 					// End package with failure status
@@ -1268,8 +1337,14 @@ class RunE2ECommand extends QITCommand {
 			// Mark that normal flow completed successfully
 			$normal_flow_completed = true;
 
-			// Return appropriate exit code - error message already shown
-			if ( empty( $failed_packages ) ) {
+			// Debug: Log state
+			// Return appropriate exit code
+			// Special case: if there are no test packages (only utility packages), always succeed
+			if ( ! $has_test_packages ) {
+				// All packages are utility packages (setup/teardown only)
+				$io->writeln( '<comment>Note: All packages are utility packages (no run phases) - treating as success</comment>' );
+				return [ Command::SUCCESS, $orchestrator, $artifacts_dir ];
+			} elseif ( empty( $failed_packages ) ) {
 				return [ Command::SUCCESS, $orchestrator, $artifacts_dir ];
 			} else {
 				// Don't show redundant error message - already shown in output

@@ -47,11 +47,6 @@ final class TestPackageManifest implements \JsonSerializable {
 			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "namespace", or "package".' );
 		}
 
-		// Add defensive check for required run phase
-		if ( ! isset( $payload['test']['phases']['run'] ) ) {
-			throw new InvalidArgumentException( 'Manifest missing mandatory "test.phases.run" key.' );
-		}
-
 		$this->namespace   = $payload['namespace'];
 		$this->package     = $payload['package'];
 		$this->tags        = $payload['tags'] ?? [];
@@ -164,6 +159,20 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function getPhaseCommands( string $phase ): array {
 		return $this->phases[ $phase ] ?? [];
+	}
+
+	/**
+	 * Check if a specific phase is defined
+	 */
+	public function hasPhase( string $phase ): bool {
+		return isset( $this->phases[ $phase ] ) && ! empty( $this->phases[ $phase ] );
+	}
+
+	/**
+	 * Check if results are defined
+	 */
+	public function hasResults(): bool {
+		return ! empty( $this->test_results );
 	}
 
 	/**

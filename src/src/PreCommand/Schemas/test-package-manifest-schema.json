@@ -5,6 +5,33 @@
   "type": "object",
   "required": ["test_type", "namespace", "package", "test"],
   "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "test": {
+            "properties": {
+              "phases": {
+                "required": ["run"]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "test": {
+            "required": ["phases", "results"],
+            "properties": {
+              "results": {
+                "required": ["ctrf-json", "blob-dir"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
   "properties": {
     "$schema": {
       "type": "string",
@@ -112,7 +139,7 @@
       "properties": {
         "phases": {
           "type": "object",
-          "description": "Execution phases in order. Only ✧run✧ is mandatory.",
+          "description": "Execution phases. If 'run' phase is present, it must produce test results.",
           "additionalProperties": false,
           "properties": {
             "globalSetup": { "$ref": "#/definitions/lifecycleCommands" },
@@ -120,8 +147,7 @@
             "run":              { "$ref": "#/definitions/lifecycleCommands" },
             "teardown":         { "$ref": "#/definitions/lifecycleCommands" },
             "globalTeardown":  { "$ref": "#/definitions/lifecycleCommands" }
-          },
-          "required": ["run"]
+          }
         },
         "results": {
           "type": "object",
@@ -148,7 +174,7 @@
           "additionalProperties": false
         }
       },
-      "required": ["phases", "results"]
+      "required": ["phases"]
     },
     "mu_plugins": {
       "type": "array",
@@ -196,6 +222,7 @@
     "lifecycleCommands": {
       "type": "array",
       "description": "Array of commands to execute",
+      "minItems": 1,
       "items": {
         "oneOf": [
           {
