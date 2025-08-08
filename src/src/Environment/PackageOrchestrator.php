@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\Environment\SecretManager;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,6 +16,20 @@ class PackageOrchestrator {
 	private ?ConsoleSectionOutput $package_section = null;
 	private ?ConsoleSectionOutput $status_section  = null;
 	private int $terminal_width;
+	private ?SecretManager $secret_manager = null;
+	private bool $suppress_output          = false;
+	/** @var array<string> */
+	private array $suppressed_lines = [];
+	private bool $in_ci_environment = false;
+
+	/**
+	 * @var array<array{name: string, id: string, status: string, duration: float, extra: array{type: string, phase: string, package: string, exitCode: int, output: string}}>
+	 */
+	private array $lifecycle_results       = [];
+	private ?float $current_phase_start    = null;
+	private ?string $current_phase_command = null;
+	/** @var array<string> */
+	private array $current_phase_output = [];
 
 	/**
 	 * @var array{
@@ -69,6 +84,50 @@ class PackageOrchestrator {
 			$this->package_section = $output->section();
 			$this->status_section  = $output->section();
 		}
+
+		// Detect CI environment
+		$this->in_ci_environment = (bool) getenv( 'CI' );
+
+		// Default output suppression based on environment
+		$this->configure_output_suppression();
+	}
+
+	/**
+	 * Configure output suppression based on environment and verbosity.
+	 */
+	private function configure_output_suppression(): void {
+		// In CI, suppress by default unless verbose or failure
+		if ( $this->in_ci_environment ) {
+			$this->suppress_output = ! $this->output->isVerbose();
+		} else {
+			// Local development: show output by default, suppress only in quiet mode
+			$this->suppress_output = $this->output->isQuiet();
+		}
+
+		// Allow override via environment variable
+		if ( getenv( 'QIT_SUPPRESS_OUTPUT' ) === 'true' ) {
+			$this->suppress_output = true;
+		} elseif ( getenv( 'QIT_SUPPRESS_OUTPUT' ) === 'false' ) {
+			$this->suppress_output = false;
+		}
+	}
+
+	/**
+	 * Set the secret manager for redacting sensitive information.
+	 *
+	 * @param SecretManager $secret_manager
+	 */
+	public function set_secret_manager( SecretManager $secret_manager ): void {
+		$this->secret_manager = $secret_manager;
+	}
+
+	/**
+	 * Enable or disable output suppression.
+	 *
+	 * @param bool $suppress
+	 */
+	public function set_suppress_output( bool $suppress ): void {
+		$this->suppress_output = $suppress;
 	}
 
 	/**
@@ -138,6 +197,11 @@ class PackageOrchestrator {
 		$out                            = $this->package_section ?? $this->output;
 		$this->state['current_command'] = $command;
 
+		// Track for lifecycle CTRF
+		$this->current_phase_command = $command;
+		$this->current_phase_start   = microtime( true );
+		$this->current_phase_output  = [];
+
 		// Add spacing before new command (except first)
 		if ( isset( $this->state['has_output'] ) && $this->state['has_output'] ) {
 			$out->writeln( '│' );
@@ -150,9 +214,7 @@ class PackageOrchestrator {
 	/**
 	 * Parse and beautify line output
 	 */
-	public function parse_line( string $line ): bool {
-		$out = $this->package_section ?? $this->output;
-
+	public function parse_line( string $line, bool $is_error = false ): bool {
 		// Skip empty lines
 		if ( trim( $line ) === '' ) {
 			return false;
@@ -176,11 +238,53 @@ class PackageOrchestrator {
 			return true;
 		}
 
-		// Format output line with proper indentation (no right border)
+		// Redact secrets if secret manager is available
+		if ( $this->secret_manager ) {
+			$line = $this->secret_manager->redact( $line );
+		}
+
+		// Track output for lifecycle CTRF
+		$this->current_phase_output[] = $line;
+
+		// Handle output suppression
+		if ( $this->suppress_output && ! $is_error ) {
+			// Store suppressed lines for potential later display (e.g., on failure)
+			$this->suppressed_lines[] = $line;
+			// Keep only last 100 lines to avoid memory issues
+			if ( count( $this->suppressed_lines ) > 100 ) {
+				array_shift( $this->suppressed_lines );
+			}
+			return true; // Line was handled but not displayed
+		}
+
+		// Output the line
+		$out = $this->package_section ?? $this->output;
 		$out->writeln( '│   ' . $line );
 		$this->state['has_output'] = true;
 
 		return true;
+	}
+
+	/**
+	 * Show suppressed output (e.g., on failure).
+	 *
+	 * @param int $max_lines Maximum number of lines to show.
+	 */
+	public function show_suppressed_output( int $max_lines = 50 ): void {
+		if ( empty( $this->suppressed_lines ) ) {
+			return;
+		}
+
+		$out = $this->package_section ?? $this->output;
+		$out->writeln( '│ <comment>[Showing last ' . min( $max_lines, count( $this->suppressed_lines ) ) . ' lines of suppressed output]</comment>' );
+
+		$lines_to_show = array_slice( $this->suppressed_lines, -$max_lines );
+		foreach ( $lines_to_show as $line ) {
+			$out->writeln( '│   ' . $line );
+		}
+
+		// Clear suppressed lines after showing
+		$this->suppressed_lines = [];
 	}
 
 	/**
@@ -371,5 +475,88 @@ class PackageOrchestrator {
 			$secs    = round( $seconds % 60 );
 			return "{$minutes}m {$secs}s";
 		}
+	}
+
+	/**
+	 * Record a lifecycle command completion for CTRF generation.
+	 *
+	 * @param int    $exit_code Exit code of the command.
+	 * @param string $phase     Phase name (globalSetup, setup, run, teardown, globalTeardown).
+	 * @param string $package   Package identifier.
+	 */
+	public function record_lifecycle_command( int $exit_code, string $phase, string $package ): void {
+		if ( ! $this->current_phase_command || ! $this->current_phase_start ) {
+			return;
+		}
+
+		$duration = ( microtime( true ) - $this->current_phase_start ) * 1000; // Convert to milliseconds
+
+		// Truncate output to first 1KB
+		$output = implode( "\n", array_slice( $this->current_phase_output, 0, 20 ) );
+		if ( strlen( $output ) > 1000 ) {
+			$output = substr( $output, 0, 997 ) . '...';
+		}
+
+		$this->lifecycle_results[] = [
+			'name'     => sprintf( '[%s] %s', $phase, $this->current_phase_command ),
+			'id'       => sprintf( '%s-%s-%d', $package, $phase, count( $this->lifecycle_results ) ),
+			'status'   => $exit_code === 0 ? 'passed' : 'failed',
+			'duration' => round( $duration ),
+			'extra'    => [
+				'type'     => 'lifecycle',
+				'phase'    => $phase,
+				'package'  => $package,
+				'exitCode' => $exit_code,
+				'output'   => $output ?: '[No output]',
+			],
+		];
+
+		// Reset for next command
+		$this->current_phase_command = null;
+		$this->current_phase_start   = null;
+		$this->current_phase_output  = [];
+	}
+
+	/**
+	 * Save orchestrator CTRF results to file.
+	 *
+	 * @param string $artifacts_dir Directory to save the CTRF file.
+	 */
+	public function save_orchestrator_ctrf( string $artifacts_dir ): void {
+		if ( empty( $this->lifecycle_results ) ) {
+			return;
+		}
+
+		$ctrf_dir = $artifacts_dir . '/ctrf';
+		if ( ! is_dir( $ctrf_dir ) ) {
+			mkdir( $ctrf_dir, 0755, true );
+		}
+
+		$ctrf_data = [
+			'results' => [
+				'tool'    => [
+					'name' => 'qit-orchestrator',
+				],
+				'summary' => [
+					'tests'   => count( $this->lifecycle_results ),
+					'passed'  => count( array_filter( $this->lifecycle_results, fn( $r ) => $r['status'] === 'passed' ) ),
+					'failed'  => count( array_filter( $this->lifecycle_results, fn( $r ) => $r['status'] === 'failed' ) ),
+					'skipped' => 0,
+				],
+				'tests'   => $this->lifecycle_results,
+			],
+		];
+
+		$ctrf_file = $ctrf_dir . '/orchestrator.json';
+		file_put_contents( $ctrf_file, json_encode( $ctrf_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+	}
+
+	/**
+	 * Get lifecycle results for testing.
+	 *
+	 * @return array<array{name: string, id: string, status: string, duration: float, extra: array{type: string, phase: string, package: string, exitCode: int, output: string}}>
+	 */
+	public function get_lifecycle_results(): array {
+		return $this->lifecycle_results;
 	}
 }

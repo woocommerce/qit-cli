@@ -68,11 +68,12 @@ class GlobalSetupOrchestrator extends PackageOrchestrator {
 	 * Parse a line of output from the test runner.
 	 *
 	 * @param string $line The line to parse.
+	 * @param bool   $is_error Whether this is an error line.
 	 * @return bool True if the line was handled, false otherwise.
 	 */
-	public function parse_line( string $line ): bool {
+	public function parse_line( string $line, bool $is_error = false ): bool {
 		// Let parent handle special markers
-		if ( parent::parse_line( $line ) ) {
+		if ( parent::parse_line( $line, $is_error ) ) {
 			return true;
 		}
 
