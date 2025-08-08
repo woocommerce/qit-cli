@@ -66,9 +66,10 @@ class RunE2EValidationTest extends TestCase {
 	}
 
 	/**
-	 * Test that a package without a run phase (utility package) works fine
+	 * Test that a package without a run phase (utility package) fails with run:e2e
+	 * Since run:e2e is for running tests, utility-only packages should use env:up instead
 	 */
-	public function test_utility_package_without_run_phase_succeeds(): void {
+	public function test_utility_package_without_run_phase_fails(): void {
 		// Create a utility package with only setup/teardown
 		$packageDir = $this->createUtilityPackage();
 		
@@ -78,13 +79,13 @@ class RunE2EValidationTest extends TestCase {
 			'run:e2e',
 			'woocommerce',
 			'--config=' . $config,
-		], return_process: true );  // Should return 0 for utility packages
+		], expected_exit_code: 1, return_process: true );  // Should fail for utility-only packages
 
 		$output = $proc->getOutput();
 
-		// Should succeed without errors
-		$this->assertEquals( 0, $proc->getExitCode() );
-		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
+		// Should fail with appropriate message
+		$this->assertEquals( 1, $proc->getExitCode() );
+		$this->assertStringContainsString( 'No test packages with run phase found', $output );
 		// Should not complain about missing test results
 		$this->assertStringNotContainsString( 'produced 0 test results', $output );
 	}
@@ -110,8 +111,9 @@ class RunE2EValidationTest extends TestCase {
 		// Should succeed
 		$this->assertEquals( 0, $proc->getExitCode() );
 		$this->assertStringContainsString( 'Packages:      2/2 executed', $output );
-		// Only the test package contributes to test count
-		$this->assertStringContainsString( 'Tests:         3 passed', $output );
+		// Test count includes orchestrator-generated lifecycle entries (setup/teardown)
+		// Regular test package has 3 tests + 2 lifecycle entries = 5 total
+		$this->assertStringContainsString( 'Tests:         5 passed', $output );
 		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
 	}
 

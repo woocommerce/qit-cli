@@ -34,10 +34,8 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 		$args[] = '--config';
 		$args[] = $qit_config_filename;
 	}
-	if ( $command[0] === 'run:e2e' ) {
-		$args[] = '--pw_options';
-		$args[] = '"--trace on"';
-	}
+	// Don't add --trace on for run:e2e anymore since it's not a valid 
+	// option for the test packages being run in the integration tests
 
 	if ( isset( $extra_env['QIT_SELF_TEST'] ) && $extra_env['QIT_SELF_TEST'] === 'precommand' ) {
 		$args[] = '--json';
@@ -56,14 +54,17 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 	/*
 	 * Add our helper mu-plugin, if applicable.
 	 * To do this, we check if the command we are running have a "--volume" option.
+	 * Only add it if we're not running run:e2e since it would be passed as runner_args
 	 */
-	$volume_check = new Process( [ 'php', $GLOBALS['qit-php'], $command[0], '--help' ] );
-	$volume_check->setEnv( $env );
-	$volume_check->run();
+	if ( $command[0] !== 'run:e2e' ) {
+		$volume_check = new Process( [ 'php', $GLOBALS['qit-php'], $command[0], '--help' ] );
+		$volume_check->setEnv( $env );
+		$volume_check->run();
 
-	if ( strpos( $volume_check->getOutput(), '--volume' ) !== false ) {
-		$args[] = '--volume';
-		$args[] = sprintf( '%s:%s', __DIR__ . '/helpers/custom-test-mu-plugin.php', '/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php' );
+		if ( strpos( $volume_check->getOutput(), '--volume' ) !== false ) {
+			$args[] = '--volume';
+			$args[] = sprintf( '%s:%s', __DIR__ . '/helpers/custom-test-mu-plugin.php', '/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php' );
+		}
 	}
 
 	$env = array_merge( $env, $extra_env );

@@ -274,63 +274,26 @@ class RunE2ECommandTest extends QITTestCase {
 	}
 
 	/**
-	 * scenario-sharding:
-	 * Multiple tests, run with --shard=1/2.
+	 * Test pass-through arguments using --
 	 */
-	public function test_sharding() {
+	public function test_pass_through_args() {
 		putenv( 'QIT_SELF_TEST=env_info' );
 
-		$fixture_dir = $this->scenarios_dir . 'scenario-sharding';
+		$fixture_dir = $this->scenarios_dir . 'scenario-cli-only';
 		chdir( $fixture_dir );
 
 		$this->application_tester->run( [
 			'command'       => 'run:e2e',
 			'sut' => 'woocommerce-amazon-s3-storage',
-			'--shard'       => '1/2',
+			'runner_args'   => ['--headed', '--workers=2', '--grep=checkout'],
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
-	}
-
-	/**
-	 * scenario-ui-codegen:
-	 * Run with --ui.
-	 */
-	public function test_ui_mode() {
-		putenv( 'QIT_SELF_TEST=env_info' );
-
-		$fixture_dir = $this->scenarios_dir . 'scenario-ui-codegen';
-		chdir( $fixture_dir );
-
-		$this->application_tester->run( [
-			'command'       => 'run:e2e',
-			'sut' => 'woocommerce-amazon-s3-storage',
-			'--ui'          => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
-	}
-
-	/**
-	 * scenario-ui-codegen:
-	 * Run with --codegen.
-	 */
-	public function test_codegen_mode() {
-		putenv( 'QIT_SELF_TEST=env_info' );
-
-		$fixture_dir = $this->scenarios_dir . 'scenario-ui-codegen';
-		chdir( $fixture_dir );
-
-		$this->application_tester->run( [
-			'command'       => 'run:e2e',
-			'sut' => 'woocommerce-amazon-s3-storage',
-			'--codegen'     => true,
-		], [ 'capture_stderr_separately' => true ] );
-
-		$this->assertCommandIsSuccessful( $this->application_tester );
-		$this->assertMatchesJsonSnapshot( $this->normalize_env_info( json_decode( $this->application_tester->getDisplay(), true ) ) );
+		$env_info = json_decode( $this->application_tester->getDisplay(), true );
+		
+		// Verify runner_args are present in the env_info
+		$this->assertArrayHasKey( 'runner_args', $env_info );
+		$this->assertEquals( ['--headed', '--workers=2', '--grep=checkout'], $env_info['runner_args'] );
 	}
 
 	public function test_with_plugin_dependencies_cli_only() {

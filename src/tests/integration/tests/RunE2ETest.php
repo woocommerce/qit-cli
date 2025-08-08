@@ -140,7 +140,8 @@ JS;
 			'--theme',
 			'storefront',
 			'--skip_activating_themes',
-			'--update_snapshots',
+			'--',
+			'--update-snapshots',
 		] );
 
 		$this->assertFileExists( $scaffolded_dir . '/__snapshots__' );

@@ -1110,8 +1110,8 @@ class RunE2ECommand extends QITCommand {
 			// Store test packages in DI container for signal handler access
 			App::setVar( 'qit_test_packages', $test_packages );
 
-			// Reset Allure tracking for this test run
-			$this->result_collector->reset_allure_tracking();
+			// Reset tracking for this test run
+			$this->result_collector->reset_tracking();
 			App::setVar( 'skip_allure_upload', false );
 
 			// Run globalSetup phase for all packages

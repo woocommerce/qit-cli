@@ -24,6 +24,11 @@ class ResultCollector {
 	 */
 	private ?array $allure_tracking = null;
 
+	/**
+	 * @var array{total_packages: int, packages_with_blob: int, packages_without_blob: array<string>}|null
+	 */
+	private ?array $blob_tracking = null;
+
 	public function __construct( Docker $docker, NodeDependencyManager $node_deps ) {
 		$this->node_deps = $node_deps;
 		$this->docker    = $docker;
@@ -39,10 +44,20 @@ class ResultCollector {
 	}
 
 	/**
-	 * Reset Allure tracking for new test run
+	 * Get Blob configuration tracking data
+	 *
+	 * @return array{total_packages: int, packages_with_blob: int, packages_without_blob: array<string>}|null
 	 */
-	public function reset_allure_tracking(): void {
+	public function get_blob_tracking(): ?array {
+		return $this->blob_tracking;
+	}
+
+	/**
+	 * Reset tracking for new test run
+	 */
+	public function reset_tracking(): void {
 		$this->allure_tracking = null;
+		$this->blob_tracking = null;
 	}
 
 	/**
@@ -85,15 +100,29 @@ class ResultCollector {
 			$this->allure_tracking['packages_without_allure'][] = basename( $slug );
 		}
 
-		// --------- 3️⃣  collect Blob (mandatory for run phase) ----------------
-		$this->collect_blob(
+		// --------- 3️⃣  collect Blob (optional, but track for warnings) ------
+		$has_blob = $this->collect_blob(
 			$env,
 			$slug,
 			$mf,
-			$dir,
-			/* mandatory = */ $phase === 'run',   // ← only "run" is mandatory
-			$phase
+			$dir
 		);
+
+		// Track Blob configuration status
+		if ( ! isset( $this->blob_tracking ) ) {
+			$this->blob_tracking = [
+				'total_packages'       => 0,
+				'packages_with_blob'   => 0,
+				'packages_without_blob' => [],
+			];
+		}
+
+		++$this->blob_tracking['total_packages'];
+		if ( $has_blob ) {
+			++$this->blob_tracking['packages_with_blob'];
+		} else {
+			$this->blob_tracking['packages_without_blob'][] = basename( $slug );
+		}
 	}
 
 	private function collect_ctrf(
@@ -189,21 +218,19 @@ class ResultCollector {
 		}
 	}
 
+	/**
+	 * @return bool True if package has blob-dir configured and collected, false otherwise
+	 */
 	private function collect_blob(
 		E2EEnvInfo $env,
 		string $slug,
 		TestPackageManifest $mf,
-		string $dir,
-		bool $mandatory,
-		string $phase
-	): void {
+		string $dir
+	): bool {
 
 		$rel = $mf->getTestResults()['blob-dir'] ?? null;
 		if ( ! $rel ) {
-			if ( $mandatory ) {
-				throw new RuntimeException( "manifest lacks blob-dir for phase '{$phase}'" );
-			}
-			return;                 // optional → skip
+			return false;  // No blob-dir configured
 		}
 
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
@@ -217,14 +244,15 @@ class ResultCollector {
 
 		/* host first */
 		if ( is_dir( $host_src ) ) {
-			// Validate blob directory structure
-			$this->validate_blob_directory( $host_src );
-
-			// Use Symfony Filesystem mirror instead of custom implementation
-			$fs = new Filesystem();
-			$fs->mirror( $host_src, $dst );
-
-			return;
+			// Check if blob directory has valid content
+			if ( $this->validate_blob_directory( $host_src ) ) {
+				// Use Symfony Filesystem mirror instead of custom implementation
+				$fs = new Filesystem();
+				$fs->mirror( $host_src, $dst );
+				return true;
+			}
+			// Blob directory exists but is empty/invalid - not fatal
+			return false;
 		}
 
 		/* container fallback */
@@ -232,22 +260,27 @@ class ResultCollector {
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 			// Validate after copying from container
-			$this->validate_blob_directory( $dst );
-		} catch ( \RuntimeException $e ) {
-			if ( $mandatory ) {
-				throw $e;           // only fail for "run"
+			if ( $this->validate_blob_directory( $dst ) ) {
+				return true;
 			}
-			// optional → do nothing
+			// Blob directory copied but is empty/invalid - not fatal
+			return false;
+		} catch ( \RuntimeException $e ) {
+			// Blob collection failures are not fatal
+			unset( $e ); // Explicitly acknowledge the exception is not used
+			return false;
 		}
 	}
 
 
 	/**
 	 * Validate blob directory structure
+	 * 
+	 * @return bool True if directory contains valid blob files, false otherwise
 	 */
-	private function validate_blob_directory( string $blob_dir ): void {
+	private function validate_blob_directory( string $blob_dir ): bool {
 		if ( ! is_dir( $blob_dir ) ) {
-			throw new RuntimeException( "Blob directory does not exist: $blob_dir" );
+			return false;
 		}
 
 		// Check for required blob reporter files
@@ -261,9 +294,7 @@ class ResultCollector {
 			}
 		}
 
-		if ( ! $has_blob_files ) {
-			throw new RuntimeException( "No blob reporter files found in directory: $blob_dir. Expected .zip files from Playwright blob reporter." );
-		}
+		return $has_blob_files;
 	}
 
 	/**
@@ -295,6 +326,15 @@ class ResultCollector {
 		// Skip if no blob directories
 		if ( ! is_dir( $blob_dir ) || empty( glob( $blob_dir . '/*', GLOB_ONLYDIR ) ) ) {
 			return;
+		}
+
+		// Warn if some but not all packages have blob reports
+		if ( $this->blob_tracking && $this->blob_tracking['packages_with_blob'] > 0 
+			&& $this->blob_tracking['packages_with_blob'] < $this->blob_tracking['total_packages'] ) {
+			$orchestrator->post_processing_message( 
+				'<warning>⚠ HTML report may be incomplete: ' . count($this->blob_tracking['packages_without_blob']) . 
+				' package(s) missing blob reports</warning>' 
+			);
 		}
 
 		// Ensure playwright is available via npx

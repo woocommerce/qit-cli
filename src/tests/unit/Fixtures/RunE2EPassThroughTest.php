@@ -1,13 +1,13 @@
 <?php
 
-namespace QIT\Tests\Fixtures;
+namespace QIT_CLI_Tests\Fixtures;
 
 use PHPUnit\Framework\TestCase;
-use QIT\App;
-use QIT\Environment\PackagePhaseRunner;
-use QIT\Environment\Environments\E2E\E2EEnvInfo;
-use QIT\Environment\PackageOrchestrator;
-use QIT\PreCommand\Objects\TestPackageManifest;
+use QIT_CLI\App;
+use QIT_CLI\Environment\PackagePhaseRunner;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\PackageOrchestrator;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use Symfony\Component\Console\Output\NullOutput;
 
 /**
