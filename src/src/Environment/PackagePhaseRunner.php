@@ -463,8 +463,28 @@ class PackagePhaseRunner {
 		foreach ( $commands as $cmd ) {
 			// Append runner_args to commands in the 'run' phase
 			if ( $phase === 'run' && ! empty( $runner_args ) ) {
-				// Append runner args to the command
-				$cmd = $cmd . ' ' . implode( ' ', array_map( 'escapeshellarg', $runner_args ) );
+				// Filter out shard arguments with warning
+				$filtered_args = [];
+				$shard_detected = false;
+				
+				foreach ( $runner_args as $arg ) {
+					if ( strpos( $arg, '--shard' ) === 0 || strpos( $arg, '-shard' ) === 0 ) {
+						$shard_detected = true;
+						// Skip this argument
+					} else {
+						$filtered_args[] = $arg;
+					}
+				}
+				
+				if ( $shard_detected ) {
+					$this->output->writeln( '<warning>Warning: --shard is not supported with Test Packages.</warning>' );
+					$this->output->writeln( '<warning>         Tests will run without sharding.</warning>' );
+				}
+				
+				if ( ! empty( $filtered_args ) ) {
+					// Append filtered args to the command
+					$cmd = $cmd . ' ' . implode( ' ', array_map( 'escapeshellarg', $filtered_args ) );
+				}
 			}
 			
 			$venue          = $this->determine_execution_venue( $cmd );

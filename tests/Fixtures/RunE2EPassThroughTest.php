@@ -226,6 +226,81 @@ class RunE2EPassThroughTest extends TestCase {
 	}
 	
 	/**
+	 * Test that --shard arguments are filtered out with a warning
+	 */
+	public function test_shard_args_filtered(): void {
+		// Create temp directory for package
+		$tempDir = sys_get_temp_dir() . '/test-package-' . uniqid();
+		mkdir( $tempDir );
+		file_put_contents( $tempDir . '/manifest.json', json_encode( [
+			'package' => 'test-package',
+			'namespace' => 'test',
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'run' => [ 'npx playwright test' ]
+				]
+			]
+		] ) );
+		
+		// Create mocks
+		$envInfo = $this->createMock( E2EEnvInfo::class );
+		$orchestrator = $this->createMock( PackageOrchestrator::class );
+		
+		// Create output to capture warnings
+		$output = $this->createMock( \Symfony\Component\Console\Output\OutputInterface::class );
+		
+		// Expect warning about sharding
+		$output->expects( $this->exactly( 2 ) )
+			->method( 'writeln' )
+			->withConsecutive(
+				[ $this->stringContains( 'Warning: --shard is not supported' ) ],
+				[ $this->stringContains( 'Tests will run without sharding' ) ]
+			);
+		
+		// Create Docker mock
+		$docker = $this->createMock( \QIT_CLI\Environment\Docker::class );
+		
+		// Capture the command
+		$capturedCommand = null;
+		$orchestrator->expects( $this->once() )
+			->method( 'show_command' )
+			->willReturnCallback( function( $cmd, $context ) use ( &$capturedCommand ) {
+				$capturedCommand = $cmd;
+			} );
+		
+		// Create PackagePhaseRunner
+		$envVars = $this->createMock( \QIT_CLI\Environment\EnvironmentVars::class );
+		$runner = new PackagePhaseRunner( $docker, $output, $envVars );
+		
+		// Test with shard argument that should be filtered
+		$runner_args = [ '--shard=1/3', '--grep=checkout', '--headed' ];
+		
+		try {
+			$runner->run_phase(
+				$envInfo,
+				'run',
+				'test-package',
+				$tempDir,
+				null,
+				$orchestrator,
+				$runner_args
+			);
+		} catch ( \Exception $e ) {
+			// Expected to fail since we're mocking
+		}
+		
+		// Verify the command does NOT include --shard but includes other args
+		$this->assertNotNull( $capturedCommand );
+		$this->assertStringNotContainsString( '--shard', $capturedCommand );
+		$this->assertStringContainsString( '--grep=checkout', $capturedCommand );
+		$this->assertStringContainsString( '--headed', $capturedCommand );
+		
+		// Clean up
+		rmdir( $tempDir );
+	}
+	
+	/**
 	 * Test that runner_args with special characters are properly escaped
 	 */
 	public function test_runner_args_escaping(): void {
