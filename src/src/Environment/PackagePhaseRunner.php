@@ -403,6 +403,7 @@ class PackagePhaseRunner {
 	 * @param string              $package_path Package directory path.
 	 * @param string|null         $artifacts_dir Artifacts directory for CTRF files.
 	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
+	 * @param array               $runner_args Arguments to pass through to test framework (only used for 'run' phase).
 	 * @return int Number of commands that were actually executed.
 	 * @throws \RuntimeException On command failure.
 	 */
@@ -412,7 +413,8 @@ class PackagePhaseRunner {
 		string $package_id,
 		string $package_path,
 		?string $artifacts_dir,
-		PackageOrchestrator $orchestrator
+		PackageOrchestrator $orchestrator,
+		array $runner_args = []
 	): int {
 		$manifest_path = $package_path . '/manifest.json';
 		if ( ! file_exists( $manifest_path ) ) {
@@ -459,6 +461,12 @@ class PackagePhaseRunner {
 
 		$executed = 0;
 		foreach ( $commands as $cmd ) {
+			// Append runner_args to commands in the 'run' phase
+			if ( $phase === 'run' && ! empty( $runner_args ) ) {
+				// Append runner args to the command
+				$cmd = $cmd . ' ' . implode( ' ', array_map( 'escapeshellarg', $runner_args ) );
+			}
+			
 			$venue          = $this->determine_execution_venue( $cmd );
 			$is_bash_script = $venue === 'container'; // Bash scripts run in container
 

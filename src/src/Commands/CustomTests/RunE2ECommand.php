@@ -141,15 +141,7 @@ class RunE2ECommand extends QITCommand {
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
 			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
 
-			// Test options
-			->addOption( 'pw_test_tag', null, InputOption::VALUE_OPTIONAL, 'Playwright test tag', '' )
-			->addOption( 'shard', null, InputOption::VALUE_OPTIONAL, 'Playwright sharding' )
-			->addOption( 'update_snapshots', null, InputOption::VALUE_NONE, 'Update snapshots' )
-			->addOption( 'pw_options', null, InputOption::VALUE_OPTIONAL, 'Additional Playwright options' )
-
 			// Execution options
-			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run in UI mode' )
-			->addOption( 'codegen', 'c', InputOption::VALUE_NONE, 'Run environment for Codegen' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false );
 	}
@@ -186,18 +178,9 @@ class RunE2ECommand extends QITCommand {
 			$input->setOption( 'skip_activating_themes', true );
 		}
 
-		// Determine test mode and wait behavior
-		try {
-			[ $test_mode, $wait ] = $this->determine_test_mode( $input );
-		} catch ( \RuntimeException $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
-			return Command::INVALID;
-		}
+		// Set default test mode to headless
+		$test_mode = 'headless';
 		App::setVar( 'TEST_MODE', $test_mode );
-
-		// Configure PW options
-		$this->configure_pw_options( $input );
 
 		// Parse environment variables
 		if ( $input->hasOption( 'env' ) && $input->getOption( 'env' ) ) {
@@ -231,14 +214,10 @@ class RunE2ECommand extends QITCommand {
 		}
 		// else: No SUT provided - run without SUT
 
-		// Set environment exposure based on wait mode
-		if ( $wait ) {
-			putenv( 'QIT_HIDE_SITE_INFO=0' );
-		} else {
-			putenv( 'QIT_HIDE_SITE_INFO=1' );
-			// Don't set QIT_EXPOSE_ENVIRONMENT_TO=DOCKER for E2E tests
-			// because Playwright runs on the host and needs to access the site
-		}
+		// Set environment exposure
+		putenv( 'QIT_HIDE_SITE_INFO=1' );
+		// Don't set QIT_EXPOSE_ENVIRONMENT_TO=DOCKER for E2E tests
+		// because Playwright runs on the host and needs to access the site
 		putenv( 'QIT_UP_AND_TEST=1' );
 
 		// Set global variables
@@ -358,13 +337,7 @@ class RunE2ECommand extends QITCommand {
 		// ─ validate shard, run phases, collect results, notify, etc.
 		// … existing logic untouched …
 
-		// Validate shard format (only if explicitly provided)
-		if ( $input->hasOption( 'shard' ) ) {
-			$shard = $input->getOption( 'shard' );
-			if ( $shard && ! $this->validateShard( $shard, $output ) ) {
-				return self::INVALID;
-			}
-		}
+		// No shard validation needed - pass through to test framework via runner_args
 
 		// Set up globals and environment
 		$this->setupGlobals( $env_info, $input );
@@ -399,14 +372,12 @@ class RunE2ECommand extends QITCommand {
 			);
 		}
 
-		// If up_only or codegen mode, we're done
-		if ( $wait ) {
-			return Command::SUCCESS;
-		}
-
+		// Get runner args to pass through to test framework
+		$runner_args = $input->getArgument( 'runner_args' ) ?? [];
+		
 		// Run tests with test packages
 		$io = new SymfonyStyle( $input, $output );
-		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io );
+		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io, $runner_args );
 
 		// Notify test finished
 		if ( isset( $env_info->sut['slug'] ) ) {
@@ -712,22 +683,6 @@ class RunE2ECommand extends QITCommand {
 				unlink( $run_files[ $i ] );
 			}
 		}
-	}
-
-	protected function validateShard( string $shard, OutputInterface $output ): bool {
-		if ( ! preg_match( '/^\d+\/\d+$/', $shard ) ) {
-			$output->writeln( '<error>Invalid shard format. Should be current/total, e.g., 1/5.</error>' );
-
-			return false;
-		}
-		[ $current, $total ] = explode( '/', $shard );
-		if ( $current <= 0 || $current > $total ) {
-			$output->writeln( '<error>Invalid shard format. Current must be > 0 and <= total.</error>' );
-
-			return false;
-		}
-
-		return true;
 	}
 
 
@@ -1052,32 +1007,52 @@ class RunE2ECommand extends QITCommand {
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
 	 * @param array<string,mixed>                              $test_packages The test packages to run.
 	 * @param SymfonyStyle                                     $io The IO interface.
+	 * @param array                                            $runner_args Arguments to pass to test framework after --.
 	 *
 	 * @return array{int, \QIT_CLI\Environment\PackageOrchestrator, string} Returns [exit_status, orchestrator, artifacts_dir].
 	 */
-	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io ): array {
+	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io, array $runner_args = [] ): array {
 		// Create orchestrator early so it's available in catch/finally blocks
 		$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
 
 		// Create and configure SecretManager
 		$secret_manager = new \QIT_CLI\Environment\SecretManager();
 
+		// Check if we have any packages at all
+		if ( empty( $test_packages ) ) {
+			$io->writeln( '<error>No test packages configured</error>' );
+			return [ Command::FAILURE, $orchestrator, '' ];
+		}
+
 		// Collect all required secrets from test packages
 		$all_required_secrets = [];
+		$has_test_packages    = false;
+		$has_any_packages     = false;
+
 		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( isset( $env_info->test_packages_metadata[ $pkg_id ]['manifest'] ) ) {
-				// @phan-suppress-next-line PhanTypePossiblyInvalidDimOffset - We check it exists above
-				$manifest = $env_info->test_packages_metadata[ $pkg_id ]['manifest'];
-				if ( $manifest instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
-					$requires = $manifest->getRequires();
-					if ( isset( $requires['secrets'] ) && is_array( $requires['secrets'] ) ) {
-						$all_required_secrets = array_merge( $all_required_secrets, $requires['secrets'] );
-					}
+			// Get manifest from meta['manifest'] which is already loaded
+			if ( ! isset( $meta['manifest'] ) ) {
+				continue;
+			}
+
+			$manifest = $meta['manifest'];
+			if ( $manifest instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+				$has_any_packages = true;
+
+				// Check for secrets
+				$requires = $manifest->getRequires();
+				if ( isset( $requires['secrets'] ) && is_array( $requires['secrets'] ) ) {
+					$all_required_secrets = array_merge( $all_required_secrets, $requires['secrets'] );
+				}
+
+				// Check if this is a test package (has run phase)
+				if ( $manifest->hasPhase( 'run' ) ) {
+					$has_test_packages = true;
 				}
 			}
 		}
 
-		// Validate all secrets are present before starting
+		// Validate all secrets are present before checking for utility packages
 		if ( ! empty( $all_required_secrets ) ) {
 			$all_required_secrets = array_unique( $all_required_secrets );
 			try {
@@ -1092,6 +1067,20 @@ class RunE2ECommand extends QITCommand {
 		// Set secret manager on orchestrator for redaction
 		$orchestrator->set_secret_manager( $secret_manager );
 
+		// Check if we have valid packages
+		if ( ! $has_any_packages ) {
+			$io->writeln( '<error>No valid test packages found</error>' );
+			return [ Command::FAILURE, $orchestrator, '' ];
+		}
+
+		// Check if all packages are utility packages (no run phases)
+		// run:e2e requires at least one test package with a run phase
+		if ( ! $has_test_packages ) {
+			$io->writeln( '<error>No test packages with run phase found. All packages are utility packages.</error>' );
+			$io->writeln( '<comment>Use "env:up --global-setup" if you only need to set up an environment.</comment>' );
+			return [ Command::FAILURE, $orchestrator, '' ];
+		}
+
 		// Use unique artifacts directory per run to avoid mixing results
 		$run_id                = uniqid( 'run-', true );
 		$artifacts_dir         = sys_get_temp_dir() . '/qit-e2e-artifacts-' . $env_info->env_id . '-' . $run_id;
@@ -1103,9 +1092,8 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		try {
-			$total_executed    = 0;
-			$failed_packages   = [];
-			$has_test_packages = false; // Track if any package has a run phase
+			$total_executed  = 0;
+			$failed_packages = [];
 
 			// Store in DI container for signal handler access
 			App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
@@ -1223,10 +1211,9 @@ class RunE2ECommand extends QITCommand {
 
 					// Run phase with CTRF collection even on test failures
 					if ( $manifest->hasPhase( 'run' ) ) {
-						$has_test_packages = true; // Found at least one test package
 						try {
 							$orchestrator->phase_start( 'run' );
-							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
+							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $runner_args );
 							// Normal CTRF collection for successful runs
 							if ( $manifest->hasResults() ) {
 								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
@@ -1337,14 +1324,8 @@ class RunE2ECommand extends QITCommand {
 			// Mark that normal flow completed successfully
 			$normal_flow_completed = true;
 
-			// Debug: Log state
 			// Return appropriate exit code
-			// Special case: if there are no test packages (only utility packages), always succeed
-			if ( ! $has_test_packages ) {
-				// All packages are utility packages (setup/teardown only)
-				$io->writeln( '<comment>Note: All packages are utility packages (no run phases) - treating as success</comment>' );
-				return [ Command::SUCCESS, $orchestrator, $artifacts_dir ];
-			} elseif ( empty( $failed_packages ) ) {
+			if ( empty( $failed_packages ) ) {
 				return [ Command::SUCCESS, $orchestrator, $artifacts_dir ];
 			} else {
 				// Don't show redundant error message - already shown in output
@@ -1442,55 +1423,6 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 		}
-	}
-
-
-	/**
-	 * Determine the test mode and whether to wait.
-	 *
-	 * @param InputInterface $input
-	 *
-	 * @return array{0:string,1:bool} Returns [test_mode, wait]
-	 * @throws \RuntimeException If both ui and codegen are set.
-	 */
-	private function determine_test_mode( InputInterface $input ): array {
-		if ( $input->getOption( 'ui' ) && $input->getOption( 'codegen' ) ) {
-			throw new \RuntimeException( 'Cannot run tests in both "UI" and "Codegen" mode at the same time.' );
-		}
-
-		if ( $input->getOption( 'ui' ) ) {
-			$test_mode = 'ui';
-		} elseif ( $input->getOption( 'codegen' ) ) {
-			putenv( 'QIT_CODEGEN=1' );
-			$test_mode = 'codegen';
-		} else {
-			$test_mode = 'headless';
-		}
-
-		$wait = $test_mode === 'codegen';
-
-		return [ $test_mode, $wait ];
-	}
-
-	/**
-	 * Configure Playwright options.
-	 *
-	 * @param InputInterface $input
-	 */
-	private function configure_pw_options( InputInterface $input ): void {
-		$pw_options = $input->getOption( 'pw_options' ) ?? '';
-		if ( ! empty( $pw_options ) ) {
-			// Strip surrounding quotes if present.
-			if ( substr( $pw_options, 0, 1 ) === '"' && substr( $pw_options, - 1 ) === '"' ) {
-				$pw_options = substr( $pw_options, 1, - 1 );
-			}
-		}
-
-		if ( $input->getOption( 'update_snapshots' ) ) {
-			$pw_options .= ' --update-snapshots';
-		}
-
-		App::setVar( 'pw_options', $pw_options );
 	}
 
 	/**
