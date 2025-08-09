@@ -503,11 +503,13 @@ class PackageOrchestrator {
 			'status'   => $exit_code === 0 ? 'passed' : 'failed',
 			'duration' => round( $duration ),
 			'extra'    => [
-				'type'     => 'lifecycle',
-				'phase'    => $phase,
-				'package'  => $package,
-				'exitCode' => $exit_code,
-				'output'   => $output ?: '[No output]',
+				'type'               => 'lifecycle',
+				'phase'              => $phase,
+				'package'            => $package,
+				'exitCode'           => $exit_code,
+				'output'             => $output ?: '[No output]',
+				'isLifecycle'        => true,
+				'countsTowardTotals' => false,
 			],
 		];
 

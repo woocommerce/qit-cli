@@ -463,6 +463,10 @@ class ResultCollector {
 				unlink( $target_file );
 			}
 			rename( $ctrf_dir . '/ctrf-report.json', $final_dir . '/ctrf-report.json' );
+			
+			// Add package metadata to the merged CTRF report
+			$this->add_package_metadata_to_merged_ctrf( $final_dir . '/ctrf-report.json' );
+			
 			$orchestrator->post_processing_message( 'CTRF reports merged' );
 		}
 	}
@@ -552,5 +556,160 @@ class ResultCollector {
 			'testType'    => $manifest->getTestType(),
 			'namespace'   => $manifest->getNamespace(),
 		];
+	}
+
+	/**
+	 * Add package metadata to the merged CTRF report's extra field
+	 * This enriches the CTRF with QIT-specific package information while maintaining schema compliance
+	 */
+	private function add_package_metadata_to_merged_ctrf( string $ctrf_path ): void {
+		if ( ! file_exists( $ctrf_path ) ) {
+			return;
+		}
+
+		$ctrf = json_decode( file_get_contents( $ctrf_path ), true );
+		if ( ! is_array( $ctrf ) || ! isset( $ctrf['results'] ) ) {
+			return;
+		}
+
+		// Initialize results.extra if it doesn't exist
+		if ( ! isset( $ctrf['results']['extra'] ) ) {
+			$ctrf['results']['extra'] = [];
+		}
+
+		// Build package details from individual test metadata
+		$package_details = [];
+		$package_tests = [];
+		$package_order = [];
+		$order_counter = 0;
+		
+		// Scan through all tests to gather package information
+		if ( isset( $ctrf['results']['tests'] ) && is_array( $ctrf['results']['tests'] ) ) {
+			foreach ( $ctrf['results']['tests'] as $index => $test ) {
+				if ( isset( $test['extra']['packageSlug'] ) ) {
+					$pkg_id = $test['extra']['packageSlug'];
+					
+					// Track execution order
+					if ( ! isset( $package_order[ $pkg_id ] ) ) {
+						$package_order[ $pkg_id ] = ++$order_counter;
+					}
+					
+					// Initialize package entry if not seen before
+					if ( ! isset( $package_details[ $pkg_id ] ) ) {
+						$package_details[ $pkg_id ] = [
+							'packageId'      => $pkg_id,
+							'namespace'      => $test['extra']['namespace'] ?? 'unknown',
+							'testType'       => $test['extra']['testType'] ?? 'unknown',
+							'hasRunPhase'    => ( $test['extra']['phase'] ?? '' ) === 'run',
+							'testCount'      => 0,
+							'packageType'    => 'utility', // Default to utility, will update if run phase found
+							'executionOrder' => $package_order[ $pkg_id ],
+							'firstSeen'      => $index,
+							'duration'       => 0,
+						];
+					}
+					
+					// Count tests and accumulate duration per package (only from run phase)
+					if ( ( $test['extra']['phase'] ?? '' ) === 'run' ) {
+						$package_details[ $pkg_id ]['testCount']++;
+						$package_details[ $pkg_id ]['hasRunPhase'] = true;
+						$package_details[ $pkg_id ]['packageType'] = 'test';
+						
+						// Add duration if available
+						if ( isset( $test['duration'] ) && is_numeric( $test['duration'] ) ) {
+							$package_details[ $pkg_id ]['duration'] += (int) $test['duration'];
+						}
+					}
+				}
+			}
+		}
+
+		// Add blob and allure tracking information
+		if ( $this->blob_tracking ) {
+			foreach ( $package_details as $pkg_id => &$details ) {
+				$pkg_basename = basename( $pkg_id );
+				$details['hasBlobReport'] = ! in_array( $pkg_basename, $this->blob_tracking['packages_without_blob'], true );
+			}
+		}
+
+		if ( $this->allure_tracking ) {
+			foreach ( $package_details as $pkg_id => &$details ) {
+				$pkg_basename = basename( $pkg_id );
+				$details['hasAllureReport'] = ! in_array( $pkg_basename, $this->allure_tracking['packages_without_allure'], true );
+			}
+		}
+
+		// Keep original for test enhancement, convert to indexed for metadata
+		$package_details_original = $package_details;
+		$package_details_indexed = array_values( $package_details );
+
+		// Build the QIT package metadata structure
+		$qit_metadata = [
+			'version' => '1.0.0',
+			'packages' => $package_details_indexed,
+		];
+
+		// Add summary statistics
+		$total_packages = count( $package_details );
+		$packages_with_tests = count( array_filter( $package_details, function( $pkg ) {
+			return $pkg['hasRunPhase'] && $pkg['testCount'] > 0;
+		} ) );
+		$utility_packages = $total_packages - $packages_with_tests;
+
+		$qit_metadata['summary'] = [
+			'totalPackages'     => $total_packages,
+			'packagesWithTests' => $packages_with_tests,
+			'utilityPackages'   => $utility_packages,
+		];
+
+		// Add report completeness information
+		if ( $this->blob_tracking || $this->allure_tracking ) {
+			$qit_metadata['reportCompleteness'] = [];
+			
+			if ( $this->blob_tracking ) {
+				$qit_metadata['reportCompleteness']['blob'] = [
+					'complete'              => $this->blob_tracking['packages_with_blob'] === $packages_with_tests,
+					'packagesWithBlob'      => $this->blob_tracking['packages_with_blob'],
+					'totalPackagesWithTests' => $packages_with_tests,
+					'missingFrom'           => $this->blob_tracking['packages_without_blob'],
+				];
+			}
+			
+			if ( $this->allure_tracking ) {
+				$qit_metadata['reportCompleteness']['allure'] = [
+					'complete'                => $this->allure_tracking['packages_with_allure'] === $packages_with_tests,
+					'packagesWithAllure'      => $this->allure_tracking['packages_with_allure'],
+					'totalPackagesWithTests'  => $packages_with_tests,
+					'missingFrom'            => $this->allure_tracking['packages_without_allure'],
+				];
+			}
+		}
+
+		// Add to results.extra
+		$ctrf['results']['extra']['qitPackageMetadata'] = $qit_metadata;
+
+		// Also add a marker to results.tool.extra to identify this as QIT orchestrated
+		if ( isset( $ctrf['results']['tool'] ) ) {
+			if ( ! isset( $ctrf['results']['tool']['extra'] ) ) {
+				$ctrf['results']['tool']['extra'] = [];
+			}
+			$ctrf['results']['tool']['extra']['orchestrationType'] = 'test-packages';
+		}
+
+		// Now enhance each test with packageType and executionOrder
+		if ( isset( $ctrf['results']['tests'] ) && is_array( $ctrf['results']['tests'] ) ) {
+			foreach ( $ctrf['results']['tests'] as &$test ) {
+				if ( isset( $test['extra']['packageSlug'] ) ) {
+					$pkg_id = $test['extra']['packageSlug'];
+					if ( isset( $package_details_original[ $pkg_id ] ) ) {
+						$test['extra']['packageType'] = $package_details_original[ $pkg_id ]['packageType'];
+						$test['extra']['packageOrder'] = $package_details_original[ $pkg_id ]['executionOrder'];
+					}
+				}
+			}
+		}
+
+		// Write back the enhanced CTRF
+		file_put_contents( $ctrf_path, json_encode( $ctrf, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 	}
 }

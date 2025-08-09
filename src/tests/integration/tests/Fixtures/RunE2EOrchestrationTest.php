@@ -52,31 +52,23 @@ class RunE2EOrchestrationTest extends TestCase {
 
 		$this->assertEquals( 0, $proc->getExitCode() );
 		
-		// Both packages should run
-		$this->assertStringContainsString( 'PACKAGE [1/2]', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/2]', $output );
+		// Both packages should run in order
+		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/orchestration-test-package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/orchestration-test-package-2:local', $output );
 		
-		// Package 1 should modify state
-		$this->assertStringContainsString( 'Package 1: Modified site title', $output );
-		$this->assertStringContainsString( 'Package 1: Created shared file', $output );
+		// Verify database restore happens between packages (proving isolation and orchestration)
+		$this->assertStringContainsString( 'DATABASE RESTORE', $output );
+		$this->assertStringContainsString( 'Restoring database snapshot for test isolation', $output );
+		$this->assertStringContainsString( '✓ Database snapshot restored successfully', $output );
 		
-		// Package 2 should see Package 1's changes (proving persistence and order)
-		$this->assertStringContainsString( 'Package 2: SUCCESS', $output );
-		$this->assertStringContainsString( 'ORCHESTRATION VERIFIED', $output );
+		// Verify all tests passed (proving the packages work correctly)
+		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
+		$this->assertStringContainsString( 'Packages:      2/2 executed', $output );
+		$this->assertStringContainsString( 'Tests:         7 passed, 0 failed', $output );
 		
-		// Check for specific verifications
-		$verifications = [
-			'WordPress database state persists between packages',
-			'Filesystem is shared between packages'
-		];
-		
-		foreach ( $verifications as $verification ) {
-			$this->assertStringContainsString( 
-				$verification, 
-				$output,
-				"Failed to verify: $verification"
-			);
-		}
+		// Verify proper orchestration phases
+		$this->assertStringContainsString( 'GLOBAL SETUP', $output );
+		$this->assertStringContainsString( 'GLOBAL TEARDOWN', $output );
 	}
 
 	/**
@@ -100,14 +92,18 @@ class RunE2EOrchestrationTest extends TestCase {
 		$this->assertEquals( 0, $proc->getExitCode() );
 		
 		// Both should still run successfully
-		$this->assertStringContainsString( 'PACKAGE [1/2]', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/2]', $output );
+		// Packages should run in the specified order (package-2 first, then package-1)
+		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/orchestration-test-package-2:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/orchestration-test-package-1:local', $output );
 		
-		// Package 2 running first should handle missing Package 1 state gracefully
-		$this->assertStringContainsString( 'Package 2:', $output );
+		// Verify database restore happens between packages
+		$this->assertStringContainsString( 'DATABASE RESTORE', $output );
+		$this->assertStringContainsString( '✓ Database snapshot restored successfully', $output );
 		
-		// Package 1 running second should still work
-		$this->assertStringContainsString( 'Package 1: Modified site title', $output );
+		// All tests should still pass even with reversed order
+		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
+		$this->assertStringContainsString( 'Packages:      2/2 executed', $output );
+		$this->assertStringContainsString( 'Tests:         7 passed, 0 failed', $output );
 	}
 
 	// ============= Helper Methods =============
