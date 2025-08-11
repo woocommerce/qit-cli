@@ -315,6 +315,7 @@ class ResultCollector {
 				$test['extra']['phase']       = $phase;
 				$test['extra']['testType']    = $mf->getTestType();
 				$test['extra']['namespace']   = $mf->getNamespace();
+				$test['extra']['packageId']   = $mf->getPackageId();
 			}
 			file_put_contents( $ctrf_path, json_encode( $data, JSON_PRETTY_PRINT ) );
 		}
@@ -555,6 +556,7 @@ class ResultCollector {
 			'packageSlug' => $package_id,
 			'testType'    => $manifest->getTestType(),
 			'namespace'   => $manifest->getNamespace(),
+			'packageId'   => $manifest->getPackageId(),
 		];
 	}
 

@@ -3,7 +3,7 @@
   "title": "QIT Test Package Schema",
   "description": "Schema for QIT test package manifest files",
   "type": "object",
-  "required": ["test_type", "namespace", "package", "test"],
+  "required": ["package", "test"],
   "additionalProperties": false,
   "allOf": [
     {
@@ -38,19 +38,12 @@
       "const": "https://qit.woo.com/json-schema/test-package",
       "description": "Schema reference for IDE support"
     },
-    "namespace": {
-      "type": "string",
-      "description": "Package namespace/organization name",
-      "pattern": "^[a-zA-Z0-9_.-]+$",
-      "minLength": 1,
-      "maxLength": 64
-    },
     "package": {
       "type": "string", 
-      "description": "Package name",
-      "pattern": "^[a-zA-Z0-9_.-]+$",
-      "minLength": 1,
-      "maxLength": 64
+      "description": "Package identifier in format 'namespace/name' (e.g., 'woocommerce/checkout-tests')",
+      "pattern": "^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$",
+      "minLength": 3,
+      "maxLength": 128
     },
     "tags": {
       "type": "array",
@@ -63,9 +56,10 @@
     },
     "test_type": {
       "type": "string",
-      "description": "Type of test (e.g., e2e, unit, integration, security)",
+      "description": "Type of test (defaults to 'e2e')",
       "pattern": "^[a-zA-Z0-9_.-]+$",
-      "enum": ["e2e"]
+      "enum": ["e2e"],
+      "default": "e2e"
     },
     "test_dir": {
       "type": "string",
@@ -222,7 +216,7 @@
     "lifecycleCommands": {
       "type": "array",
       "description": "Array of commands to execute",
-      "minItems": 1,
+      "minItems": 0,
       "items": {
         "oneOf": [
           {

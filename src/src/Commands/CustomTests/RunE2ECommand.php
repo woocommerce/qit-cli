@@ -1160,7 +1160,7 @@ class RunE2ECommand extends QITCommand {
 				$package_path = $meta['path'];
 
 				// Build display name from manifest - this is the canonical package identifier
-				$display_name = $manifest->getNamespace() . '/' . $manifest->getPackage();
+				$display_name = $manifest->getPackageId();
 
 				// Version MUST be set in metadata - either 'local' or a specific version
 				if ( ! isset( $metadata['version'] ) ) {

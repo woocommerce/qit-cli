@@ -383,6 +383,7 @@ class PackagePhaseRunner {
 							'packageSlug' => basename( $package_path ),
 							'testType'    => $manifest->getTestType(),
 							'namespace'   => $manifest->getNamespace(),
+							'packageId'   => $manifest->getPackageId(),
 							'scriptType'  => 'bash',
 						],
 					],

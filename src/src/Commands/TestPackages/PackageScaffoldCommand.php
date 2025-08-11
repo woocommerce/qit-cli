@@ -41,17 +41,10 @@ class PackageScaffoldCommand extends QITCommand {
 				'Directory to scaffold the test package (must not already exist)'
 			)
 			->addOption(
-				'namespace',
-				null,
-				InputOption::VALUE_REQUIRED,
-				'Namespace (extension slug) you maintain – this becomes the "namespace" in manifest'
-			)
-			->addOption(
 				'package',
 				null,
 				InputOption::VALUE_REQUIRED,
-				'Package name (default: e2e)',
-				'e2e'
+				'Package identifier in format namespace/name (e.g., woocommerce/checkout-tests)'
 			)
 			->addOption(
 				'framework',
@@ -73,14 +66,20 @@ class PackageScaffoldCommand extends QITCommand {
 				InputOption::VALUE_NONE,
 				'Create manifest.json only (skip npm scaffolding)'
 			)
+			->addOption(
+				'with-schema',
+				null,
+				InputOption::VALUE_NONE,
+				'Include $schema field for IDE validation support'
+			)
 			->setDescription( 'Scaffold a Playwright E2E test package' )
 			->setHelp(
-				'You can scaffold test packages only under the namespace (extension slug) that you maintain.' . "\n\n" .
-				'Package identifier structure: namespace/package-name:[version]' . "\n" .
-				'Example: woocommerce/e2e:stable' . "\n" .
-				'  - namespace: woocommerce (your extension slug)' . "\n" .
-				'  - package-name: e2e (what you\'re creating now)' . "\n" .
-				'  - [version]: you will choose this when you publish the package'
+				'You can scaffold test packages only under a namespace (extension slug) that you maintain.' . "\n\n" .
+				'Package identifier format: namespace/name' . "\n" .
+				'Example: woocommerce/checkout-tests' . "\n" .
+				'  - The namespace must be an extension slug you maintain' . "\n" .
+				'  - The name identifies this specific test package' . "\n" .
+				'  - Version is specified when publishing or using the package'
 			);
 	}
 
@@ -88,10 +87,13 @@ class PackageScaffoldCommand extends QITCommand {
 		$io           = new SymfonyStyle( $input, $output );
 		$fs           = new Filesystem();
 		$target_dir   = normalize_path( $input->getArgument( 'target_dir' ) );
-		$namespace    = (string) $input->getOption( 'namespace' );
-		$package_name = (string) $input->getOption( 'package' );
+		$package_id   = (string) $input->getOption( 'package' );
 		$framework    = strtolower( (string) $input->getOption( 'framework' ) );
 		$test_type    = strtolower( (string) $input->getOption( 'test-type' ) );
+		
+		// Initialize namespace and package_name for parsing later
+		$namespace    = '';
+		$package_name = '';
 
 		/*
 		---------------------------------------------------------------------
@@ -133,42 +135,35 @@ class PackageScaffoldCommand extends QITCommand {
 
 		/*
 		---------------------------------------------------------------------
-		 * Ask for namespace (extension slug)
+		 * Ask for package identifier (namespace/name)
 		 * -------------------------------------------------------------------
 		 */
-		if ( $namespace === '' ) {
-			$q = new Question( 'Extension slug you maintain (namespace) > ' );
-			$q->setValidator( function ( $answer ) {
-				return $this->validate_namespace( $answer );
-			} );
-			$namespace = (string) $helper->ask( $input, $output, $q );
-		} else {
-			$this->validate_namespace( $namespace ); // throws on failure
-		}
-		$io->writeln( "✓ You are a maintainer of \"{$namespace}\"" );
-
-		/*
-		---------------------------------------------------------------------
-		 * Ask for package name
-		 * -------------------------------------------------------------------
-		 */
-		$should_ask = $package_name === '' || $package_name === 'e2e';
-
-		if ( $should_ask ) {
+		if ( $package_id === '' ) {
 			$io->writeln( "\n<comment>Package identifier structure:</comment>" );
-			$io->writeln( '  <info>namespace/package-name:[version]</info>' );
-			$io->writeln( '  Example: <info>woocommerce/e2e:stable</info>' );
-			$io->writeln( sprintf( "\nYour package identifier will be: <info>%s/[package-name]:[version]</info>", $namespace ) );
-			$q = new Question( 'Package name [e2e]: ', 'e2e' );
-			$q->setValidator( function ( $a ) {
-				return $this->validate_slug( $a, 'Package name' );
+			$io->writeln( '  <info>namespace/name</info>' );
+			$io->writeln( '  Example: <info>woocommerce/checkout-tests</info>' );
+			$io->writeln( '  - The namespace must be an extension slug you maintain' );
+			$io->writeln( '  - The name identifies this specific test package' );
+			
+			$q = new Question( 'Package identifier (namespace/name) > ' );
+			$q->setValidator( function ( $answer ) {
+				return $this->validate_package_identifier( $answer );
 			} );
-			$package_name = (string) $helper->ask( $input, $output, $q );
+			$package_id = (string) $helper->ask( $input, $output, $q );
 		} else {
-			$this->validate_slug( $package_name, 'Package name' );
+			$this->validate_package_identifier( $package_id ); // throws on failure
 		}
-
-		$io->writeln( sprintf( '✓ Package identifier will be: <info>%s/%s:[version]</info>', $namespace, $package_name ) );
+		
+		// Parse the package identifier
+		if ( ! str_contains( $package_id, '/' ) ) {
+			throw new \RuntimeException( 'Package identifier must be in format "namespace/name"' );
+		}
+		[ $namespace, $package_name ] = explode( '/', $package_id, 2 );
+		
+		// Validate namespace ownership
+		$this->validate_namespace( $namespace );
+		$io->writeln( sprintf( '✓ You are a maintainer of "%s"', $namespace ) );
+		$io->writeln( sprintf( '✓ Package identifier: <info>%s</info>', $package_id ) );
 
 		/*
 		---------------------------------------------------------------------
@@ -248,11 +243,15 @@ BASH;
 		chmod( "$target_dir/bootstrap/global-teardown.sh", 0755 );
 
 		/* manifest.json – wired to the three scripts above */
-		$manifest = [
-			'$schema'   => 'https://qit.woo.com/json-schema/test-package',
-			'namespace' => $namespace,
-			'package'   => $package_name,
-			'test_type' => $test_type,
+		$manifest = [];
+		
+		// Optionally include $schema for IDE validation
+		if ( $input->getOption( 'with-schema' ) ) {
+			$manifest['$schema'] = 'https://qit.woo.com/json-schema/test-package';
+		}
+		
+		$manifest = array_merge( $manifest, [
+			'package'   => $namespace . '/' . $package_name,
 			'test'      => [
 				'phases'  => [
 					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
@@ -267,7 +266,7 @@ BASH;
 					'blob-dir'   => './results/blob',
 				],
 			],
-		];
+		] );
 		file_put_contents(
 			"$target_dir/manifest.json",
 			json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . PHP_EOL
@@ -328,6 +327,33 @@ BASH;
 	 * Helpers
 	 * -----------------------------------------------------------------------
 	 */
+
+	/**
+	 * Validate package identifier (namespace/name).
+	 *
+	 * @param string $identifier The package identifier to validate.
+	 *
+	 * @return string The validated identifier.
+	 * @throws \RuntimeException If validation fails.
+	 */
+	private function validate_package_identifier( string $identifier ): string {
+		if ( ! str_contains( $identifier, '/' ) ) {
+			throw new \RuntimeException( 'Package identifier must be in format "namespace/name"' );
+		}
+		
+		[ $namespace, $name ] = explode( '/', $identifier, 2 );
+		
+		// Validate both parts
+		$this->validate_slug( $namespace, 'Namespace' );
+		$this->validate_slug( $name, 'Package name' );
+		
+		// Check namespace ownership
+		if ( ! $this->extensions->user_maintains( $namespace ) ) {
+			throw new \RuntimeException( "You are not a maintainer of \"{$namespace}\"." );
+		}
+		
+		return $identifier;
+	}
 
 	/**
 	 * Validate namespace (extension slug).

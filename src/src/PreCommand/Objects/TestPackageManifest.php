@@ -42,15 +42,18 @@ final class TestPackageManifest implements \JsonSerializable {
 	 * @param array<string,mixed> $payload – already validated & normalised by parser.
 	 */
 	public function __construct( array $payload ) {
-		if ( empty( $payload['test_type'] ) || empty( $payload['test'] ) ||
-			empty( $payload['namespace'] ) || empty( $payload['package'] ) ) {
-			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test_type", "test", "namespace", or "package".' );
+		if ( empty( $payload['test'] ) || empty( $payload['package'] ) ) {
+			throw new InvalidArgumentException( 'Manifest missing mandatory keys "test" or "package".' );
 		}
 
-		$this->namespace   = $payload['namespace'];
-		$this->package     = $payload['package'];
+		// Parse package identifier into namespace and name
+		if ( ! str_contains( $payload['package'], '/' ) ) {
+			throw new InvalidArgumentException( 'Package must be in format "namespace/name" (e.g., "woocommerce/checkout-tests").' );
+		}
+
+		[ $this->namespace, $this->package ] = explode( '/', $payload['package'], 2 );
 		$this->tags        = $payload['tags'] ?? [];
-		$this->test_type   = $payload['test_type'];
+		$this->test_type   = $payload['test_type'] ?? 'e2e';
 		$this->test_dir    = $payload['test_dir'] ?? './';
 		$this->description = $payload['description'] ?? '';
 
@@ -75,8 +78,26 @@ final class TestPackageManifest implements \JsonSerializable {
 		return $this->namespace;
 	}
 
+	/**
+	 * Get the package name (without namespace).
+	 * @deprecated Use getPackageName() for clarity
+	 */
 	public function getPackage(): string {
 		return $this->package;
+	}
+
+	/**
+	 * Get the package name (without namespace).
+	 */
+	public function getPackageName(): string {
+		return $this->package;
+	}
+
+	/**
+	 * Get the full package identifier (namespace/name).
+	 */
+	public function getPackageId(): string {
+		return $this->namespace . '/' . $this->package;
 	}
 
 	/**
