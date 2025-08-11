@@ -217,7 +217,7 @@ class SecretHandlingTest extends TestCase {
 				]
 			]
 		];
-		file_put_contents( $tempDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 
 		return $tempDir;
 	}
@@ -243,7 +243,7 @@ class SecretHandlingTest extends TestCase {
 				]
 			]
 		];
-		file_put_contents( $tempDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 
 		return $tempDir;
 	}
@@ -276,7 +276,7 @@ class SecretHandlingTest extends TestCase {
 				]
 			]
 		];
-		file_put_contents( $tempDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 
 		return $tempDir;
 	}

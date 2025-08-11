@@ -458,7 +458,7 @@ class RunE2ECommand extends QITCommand {
 				} elseif ( $packages_with_allure === 0 && $total_packages > 0 ) {
 					// No packages have Allure configured
 					$orchestrator->post_processing_message( 'ℹ No Allure configuration found', false );
-					$orchestrator->post_processing_message( '  Add "allure-dir" to qit-package.json for failure debugging', false );
+					$orchestrator->post_processing_message( '  Add "allure-dir" to qit-test.json for failure debugging', false );
 				} elseif ( $packages_with_allure === $total_packages && $total_packages > 0 ) {
 					// All packages have Allure configured - perfect!
 					$orchestrator->post_processing_message( '✓ Allure configured (uploads on test failure)', false );
@@ -747,9 +747,9 @@ class RunE2ECommand extends QITCommand {
 	}
 
 	/**
-	 * Generate a container name from qit-package.json or package reference.
+	 * Generate a container name from qit-test.json or package reference.
 	 *
-	 * For local packages: reads namespace/package from qit-package.json
+	 * For local packages: reads namespace/package from qit-test.json
 	 * For remote packages: parses namespace/package/version from reference
 	 *
 	 * @param string                 $package_id The package ID (local path or remote reference).
@@ -765,12 +765,12 @@ class RunE2ECommand extends QITCommand {
 
 		// Check if this is a local path
 		if ( file_exists( $package_id ) && is_dir( $package_id ) ) {
-			// Local package - read qit-package.json
-			$manifest_path = rtrim( $package_id, '/\\' ) . '/qit-package.json';
+			// Local package - read qit-test.json
+			$manifest_path = rtrim( $package_id, '/\\' ) . '/qit-test.json';
 
 			if ( ! file_exists( $manifest_path ) ) {
 				throw new \InvalidArgumentException(
-					"Test package directory must contain qit-package.json: {$package_id}"
+					"Test package directory must contain qit-test.json: {$package_id}"
 				);
 			}
 
@@ -779,7 +779,7 @@ class RunE2ECommand extends QITCommand {
 
 			if ( json_last_error() !== JSON_ERROR_NONE ) {
 				throw new \InvalidArgumentException(
-					"Invalid JSON in qit-package.json: {$package_id} - " . json_last_error_msg()
+					"Invalid JSON in qit-test.json: {$package_id} - " . json_last_error_msg()
 				);
 			}
 
@@ -1238,7 +1238,7 @@ class RunE2ECommand extends QITCommand {
 										$io->writeln( "       ['blob', {outputDir: './blob-report'}]," );
 										$io->writeln( "       ['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]" );
 										$io->writeln( '     ]' );
-										$io->writeln( '  2. Update qit-package.json to point to both report directories:' );
+										$io->writeln( '  2. Update qit-test.json to point to both report directories:' );
 										$io->writeln( '     "results": {' );
 										$io->writeln( '       "ctrf-json": "./results/ctrf.json",' );
 										$io->writeln( '       "blob-dir": "./blob-report"' );
@@ -1250,7 +1250,7 @@ class RunE2ECommand extends QITCommand {
 										$io->writeln( '  1. Install the CTRF reporter: npm install --save-dev playwright-ctrf-json-reporter' );
 										$io->writeln( '  2. Configure it in playwright.config.js:' );
 										$io->writeln( "     reporter: [['playwright-ctrf-json-reporter', {outputDir: './results', outputFile: 'ctrf.json'}]]" );
-										$io->writeln( '  3. Update qit-package.json to point to the CTRF file:' );
+										$io->writeln( '  3. Update qit-test.json to point to the CTRF file:' );
 										$io->writeln( '     "results": {"ctrf-json": "./results/ctrf.json"}' );
 									}
 									throw new \RuntimeException( 'Test failed to produce required output: ' . $collector_err->getMessage() );

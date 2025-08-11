@@ -199,7 +199,7 @@ class RunE2EWithFixturesTest extends TestCase {
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/regular-test-package-two' ) . " " . escapeshellarg( $packageDir ) );
 		
 		// Modify manifest to remove allure-dir
-		$manifestPath = $packageDir . '/qit-package.json';
+		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		unset( $manifest['test']['results']['allure-dir'] );
 		$manifest['package'] = $name;

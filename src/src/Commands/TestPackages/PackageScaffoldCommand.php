@@ -64,7 +64,7 @@ class PackageScaffoldCommand extends QITCommand {
 				'only-manifest',
 				null,
 				InputOption::VALUE_NONE,
-				'Create qit-package.json only (skip npm scaffolding)'
+				'Create qit-test.json only (skip npm scaffolding)'
 			)
 			->addOption(
 				'with-schema',
@@ -242,7 +242,7 @@ BASH;
 		file_put_contents( "$target_dir/bootstrap/global-teardown.sh", $global_teardown_sh );
 		chmod( "$target_dir/bootstrap/global-teardown.sh", 0755 );
 
-		/* qit-package.json – wired to the three scripts above */
+		/* qit-test.json – wired to the three scripts above */
 		$manifest = [];
 		
 		// Optionally include $schema for IDE validation
@@ -268,14 +268,14 @@ BASH;
 			],
 		] );
 		file_put_contents(
-			"$target_dir/qit-package.json",
+			"$target_dir/qit-test.json",
 			json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . PHP_EOL
 		);
 
 		/* Validate manifest (will throw if schema mismatch) */
 		try {
 			( new \QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser() )
-				->parse( "$target_dir/qit-package.json" );
+				->parse( "$target_dir/qit-test.json" );
 		} catch ( \Throwable $e ) {
 			$fs->remove( $target_dir );
 			$io->error( 'Manifest validation failed: ' . $e->getMessage() );
@@ -284,7 +284,7 @@ BASH;
 		}
 
 		if ( $input->getOption( 'only-manifest' ) ) {
-			$io->success( 'qit-package.json created at ' . $target_dir . '/qit-package.json' );
+			$io->success( 'qit-test.json created at ' . $target_dir . '/qit-test.json' );
 
 			return Command::SUCCESS;
 		}

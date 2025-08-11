@@ -33,14 +33,14 @@ class PackagePublishCommand extends QITCommand {
 			->setName( 'package:publish' )
 			->setDescription( 'Publish a test package to QIT' )
 			->setHelp(
-				'Publishes a test package by reading the qit-package.json file for package details.' . "\n\n" .
+				'Publishes a test package by reading the qit-test.json file for package details.' . "\n\n" .
 				'Package identifier structure: namespace/package-name:[version]' . "\n" .
 				'Example: woocommerce/e2e:latest' . "\n" .
-				'  - namespace: read from qit-package.json' . "\n" .
-				'  - package-name: read from qit-package.json' . "\n" .
+				'  - namespace: read from qit-test.json' . "\n" .
+				'  - package-name: read from qit-test.json' . "\n" .
 				'  - [version]: specified as argument (you choose this now)'
 			)
-			->addArgument( 'path', InputArgument::REQUIRED, 'Path to directory or zip file containing qit-package.json' )
+			->addArgument( 'path', InputArgument::REQUIRED, 'Path to directory or zip file containing qit-test.json' )
 			->addArgument( 'version', InputArgument::OPTIONAL, 'Version for this release (e.g. 1.0.0, 1.0.0-beta.1, latest) [default: latest]' )
 			->addOption( 'force', null, InputOption::VALUE_NONE, 'Force overwrite existing package version' )
 			->addOption( 'skip-validate', null, InputOption::VALUE_NONE, 'Skip manifest validation' );
@@ -66,21 +66,21 @@ class PackagePublishCommand extends QITCommand {
 		 */
 		$io->title( 'Publish Test Package' );
 		$io->writeln( '<comment>This command uploads your test package to the QIT registry.</comment>' );
-		$io->writeln( '<comment>Package details will be read from qit-package.json</comment>' );
+		$io->writeln( '<comment>Package details will be read from qit-test.json</comment>' );
 		$io->writeln( '' );
 
 		try {
 			/*
 			---------------------------------------------------------------------
-			 * Step 1: Find and read qit-package.json
+			 * Step 1: Find and read qit-test.json
 			 * -------------------------------------------------------------------
 			 */
 			$manifest_path = $this->find_manifest_in_path( $path );
 			if ( ! $manifest_path ) {
-				throw new \RuntimeException( 'No qit-package.json found in the specified path. Make sure you\'re in a scaffolded test package directory.' );
+				throw new \RuntimeException( 'No qit-test.json found in the specified path. Make sure you\'re in a scaffolded test package directory.' );
 			}
 
-			$io->writeln( '<info>Reading package details from qit-package.json...</info>' );
+			$io->writeln( '<info>Reading package details from qit-test.json...</info>' );
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
 			$namespace    = $manifest->getNamespace();
@@ -199,13 +199,13 @@ class PackagePublishCommand extends QITCommand {
 	}
 
 	/**
-	 * Find qit-package.json in the given path (directory or zip)
+	 * Find qit-test.json in the given path (directory or zip)
 	 */
 	private function find_manifest_in_path( string $path ): ?string {
 		if ( is_dir( $path ) ) {
 			// Check root directory
-			if ( file_exists( $path . '/qit-package.json' ) ) {
-				return $path . '/qit-package.json';
+			if ( file_exists( $path . '/qit-test.json' ) ) {
+				return $path . '/qit-test.json';
 			}
 
 			// Check one level deep (common with downloaded archives)
@@ -216,8 +216,8 @@ class PackagePublishCommand extends QITCommand {
 				}
 
 				$entry_path = $path . '/' . $entry;
-				if ( is_dir( $entry_path ) && file_exists( $entry_path . '/qit-package.json' ) ) {
-					return $entry_path . '/qit-package.json';
+				if ( is_dir( $entry_path ) && file_exists( $entry_path . '/qit-test.json' ) ) {
+					return $entry_path . '/qit-test.json';
 				}
 			}
 		} elseif ( is_file( $path ) && pathinfo( $path, PATHINFO_EXTENSION ) === 'zip' ) {
@@ -288,7 +288,7 @@ class PackagePublishCommand extends QITCommand {
 	}
 
 	/**
-	 * Validate qit-package.json in the zip matches expected values
+	 * Validate qit-test.json in the zip matches expected values
 	 */
 	private function validate_manifest_in_zip( string $zip_path, string $expected_namespace, string $expected_package, OutputInterface $output ): void {
 		$output->writeln( '🔍 Validating manifest in package...' );
@@ -298,10 +298,10 @@ class PackagePublishCommand extends QITCommand {
 		$this->zipper->extract_zip( $zip_path, $temp_dir );
 
 		try {
-			// Find qit-package.json
+			// Find qit-test.json
 			$manifest_path = $this->find_manifest( $temp_dir );
 			if ( ! $manifest_path ) {
-				throw new \RuntimeException( 'No qit-package.json found in package' );
+				throw new \RuntimeException( 'No qit-test.json found in package' );
 			}
 
 			// Parse and validate manifest
@@ -375,12 +375,12 @@ class PackagePublishCommand extends QITCommand {
 	}
 
 	/**
-	 * Find qit-package.json in extracted package
+	 * Find qit-test.json in extracted package
 	 */
 	private function find_manifest( string $dir ): ?string {
 		// Check root directory
-		if ( file_exists( $dir . '/qit-package.json' ) ) {
-			return $dir . '/qit-package.json';
+		if ( file_exists( $dir . '/qit-test.json' ) ) {
+			return $dir . '/qit-test.json';
 		}
 
 		// Check one level deep (common with GitHub archives)
@@ -391,8 +391,8 @@ class PackagePublishCommand extends QITCommand {
 			}
 
 			$entry_path = $dir . '/' . $entry;
-			if ( is_dir( $entry_path ) && file_exists( $entry_path . '/qit-package.json' ) ) {
-				return $entry_path . '/qit-package.json';
+			if ( is_dir( $entry_path ) && file_exists( $entry_path . '/qit-test.json' ) ) {
+				return $entry_path . '/qit-test.json';
 			}
 		}
 

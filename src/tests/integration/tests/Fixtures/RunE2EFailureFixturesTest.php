@@ -177,7 +177,7 @@ class RunE2EFailureFixturesTest extends TestCase {
 		$package = $this->scaffoldFailingPackage();
 		
 		// Remove allure-dir from manifest
-		$manifestPath = $package . '/qit-package.json';
+		$manifestPath = $package . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		unset( $manifest['test']['results']['allure-dir'] );
 		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT ) );

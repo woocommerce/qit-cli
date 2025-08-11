@@ -48,7 +48,7 @@ class PackageDownloadCommand extends QITCommand {
 				null,
 				InputOption::VALUE_OPTIONAL,
 				'Target directory for downloads',
-				'./qit-packages/'
+				'./qit-tests/'
 			)
 			->addOption(
 				'verify',

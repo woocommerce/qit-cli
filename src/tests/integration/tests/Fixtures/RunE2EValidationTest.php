@@ -143,7 +143,7 @@ class RunE2EValidationTest extends TestCase {
 				]
 			]
 		];
-		file_put_contents( $tempDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 
 		return $tempDir;
 	}
@@ -171,7 +171,7 @@ class RunE2EValidationTest extends TestCase {
 				// No results needed for utility packages
 			]
 		];
-		file_put_contents( $tempDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 
 		return $tempDir;
 	}

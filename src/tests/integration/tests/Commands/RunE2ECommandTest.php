@@ -44,14 +44,14 @@ class RunE2ECommandTest extends TestCase {
 				'--framework=playwright',
 			] );
 			
-			$this->assertFileExists( $packageDir . '/qit-package.json' );
+			$this->assertFileExists( $packageDir . '/qit-test.json' );
 			$this->assertFileExists( $packageDir . '/package.json' );
 			$this->assertFileExists( $packageDir . '/playwright.config.js' );
 			$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 			$this->assertDirectoryExists( $packageDir . '/bootstrap' );
 			
 			// Verify manifest content
-			$manifest = json_decode( file_get_contents( $packageDir . '/qit-package.json' ), true );
+			$manifest = json_decode( file_get_contents( $packageDir . '/qit-test.json' ), true );
 			$this->assertEquals( 'woocommerce', $manifest['namespace'] );
 			$this->assertEquals( 'test-e2e', $manifest['package'] );
 			$this->assertEquals( 'e2e', $manifest['test_type'] );

@@ -78,7 +78,7 @@ class PublishCommandTest extends QITTestCase {
 			],
 		] );
 		
-		file_put_contents( $temp_dir . '/qit-package.json', $manifest_content );
+		file_put_contents( $temp_dir . '/qit-test.json', $manifest_content );
 
 		// Mock HTTP response for successful upload
 		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/test-packages' ), json_encode( [
@@ -100,7 +100,7 @@ class PublishCommandTest extends QITTestCase {
 			->willReturnCallback( function( $zip_path, $extract_to ) {
 				// Create manifest.json in extract directory
 				mkdir( $extract_to, 0755, true );
-				file_put_contents( $extract_to . '/qit-package.json', json_encode( [
+				file_put_contents( $extract_to . '/qit-test.json', json_encode( [
 					'$schema' => 'https://qit.woo.com/json-schema/test-package',
 					'test_type' => 'e2e',
 					'lifecycle' => [
@@ -186,7 +186,7 @@ class PublishCommandTest extends QITTestCase {
 				],
 			],
 		] );
-		file_put_contents( $temp_dir . '/qit-package.json', $manifest_content );
+		file_put_contents( $temp_dir . '/qit-test.json', $manifest_content );
 
 		// Note: manifest parser is not called because version validation fails first
 
@@ -274,7 +274,7 @@ class PublishCommandTest extends QITTestCase {
 				],
 			],
 		] );
-		file_put_contents( $temp_dir . '/qit-package.json', $manifest_content );
+		file_put_contents( $temp_dir . '/qit-test.json', $manifest_content );
 
 		// Note: manifest parser is not called because --skip-validate bypasses validation
 
@@ -350,7 +350,7 @@ class PublishCommandTest extends QITTestCase {
 			],
 		] );
 		
-		file_put_contents( $temp_dir . '/qit-package.json', $manifest_content );
+		file_put_contents( $temp_dir . '/qit-test.json', $manifest_content );
 
 		// Mock HTTP response for successful upload
 		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/cli/test-packages' ), json_encode( [
@@ -372,7 +372,7 @@ class PublishCommandTest extends QITTestCase {
 			->willReturnCallback( function( $zip_path, $extract_to ) {
 				// Create manifest.json in extract directory
 				mkdir( $extract_to, 0755, true );
-				file_put_contents( $extract_to . '/qit-package.json', json_encode( [
+				file_put_contents( $extract_to . '/qit-test.json', json_encode( [
 					'$schema' => 'https://qit.woo.com/json-schema/test-package',
 					'test_type' => 'e2e',
 					'lifecycle' => [

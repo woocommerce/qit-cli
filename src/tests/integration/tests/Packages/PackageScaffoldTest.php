@@ -27,8 +27,8 @@ class PackageScaffoldTest extends \PHPUnit\Framework\TestCase {
 		$this->assertDirectoryExists( $temp_dir );
 
 		// Check that manifest.json exists and has correct content
-		$this->assertFileExists( $temp_dir . '/qit-package.json' );
-		$manifest = json_decode( file_get_contents( $temp_dir . '/qit-package.json' ), true );
+		$this->assertFileExists( $temp_dir . '/qit-test.json' );
+		$manifest = json_decode( file_get_contents( $temp_dir . '/qit-test.json' ), true );
 		$this->assertEquals( 'woocommerce', $manifest['vendor'] );
 		$this->assertEquals( 'tests', $manifest['package'] );
 		$this->assertEquals( 'e2e', $manifest['test_type'] );
@@ -69,7 +69,7 @@ class PackageScaffoldTest extends \PHPUnit\Framework\TestCase {
 		$this->assertDirectoryExists( $temp_dir . '/results' );
 
 		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/playwright.config.js' ) );
-		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/qit-package.json' ) );
+		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/qit-test.json' ) );
 		$this->assertMatchesTextSnapshot( file_get_contents( $temp_dir . '/bootstrap/setup.sh' ) );
 	}
 }

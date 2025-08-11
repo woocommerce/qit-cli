@@ -25,7 +25,7 @@ class TestPackageManifestParserTest extends TestCase {
 	}
 
 	public function test_minimal_valid_manifest(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -57,7 +57,7 @@ JSON;
 	}
 
 	public function test_complete_manifest(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -188,7 +188,7 @@ JSON;
 	}
 
 	public function test_phase_normalization(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -248,7 +248,7 @@ JSON;
 	}
 
 	public function test_env_var_type_conversion(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -301,7 +301,7 @@ JSON;
 	}
 
 	public function test_paths_remain_relative(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -353,7 +353,7 @@ JSON;
 	}
 
 	public function test_missing_required_field(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -369,7 +369,7 @@ JSON;
 	}
 
 	public function test_invalid_schema(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -401,7 +401,7 @@ JSON;
 	}
 
 	public function test_missing_test_dir(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -433,7 +433,7 @@ JSON;
 	}
 
 	public function test_missing_phase_script(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -466,7 +466,7 @@ JSON;
 	}
 
 	public function test_empty_phase_commands(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/test-package",
@@ -506,7 +506,7 @@ JSON;
 	}
 
 	public function test_invalid_json(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		file_put_contents( $manifest_file, '{ invalid json' );
 
 		$this->expectException( \RuntimeException::class );
@@ -523,7 +523,7 @@ JSON;
 	}
 
 	public function test_wrong_schema(): void {
-		$manifest_file = $this->temp_dir . '/qit-package.json';
+		$manifest_file = $this->temp_dir . '/qit-test.json';
 		$manifest      = <<<'JSON'
 {
     "$schema": "https://qit.woo.com/json-schema/qit",

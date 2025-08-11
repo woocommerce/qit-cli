@@ -99,8 +99,8 @@ class TestPackageManifestParser {
 	 */
 	public function parse( string $file_path ): TestPackageManifest {
 		// Accept directory entries during parsing
-		if ( is_dir( $file_path ) && file_exists( $file_path . '/qit-package.json' ) ) {
-			$file_path .= '/qit-package.json';
+		if ( is_dir( $file_path ) && file_exists( $file_path . '/qit-test.json' ) ) {
+			$file_path .= '/qit-test.json';
 		}
 
 		$this->root_path = dirname( $file_path );
