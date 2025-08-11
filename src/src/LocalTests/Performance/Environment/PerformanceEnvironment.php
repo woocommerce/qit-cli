@@ -153,6 +153,7 @@ class PerformanceEnvironment extends Environment {
 		$this->setup_wordpress();
 		$this->activate_required_plugins();
 		$this->activate_plugins_and_themes();
+		$this->enable_payment_method();
 	}
 
 	/**
@@ -215,6 +216,15 @@ class PerformanceEnvironment extends Environment {
 
 		$theme_activation->maybe_activate_theme_that_is_dependency_of_sut();
 	}
+
+	/**
+	 * Enable payment methods.
+	 */
+	private function enable_payment_method(): void {
+		$this->output->writeln( '<info>Enabling Cash-on-delivery payment method...</info>' );
+		$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp wc payment_gateway update cod --enabled=true --user=admin' ] );
+	}
+
 
 	protected function get_generate_docker_compose_envs(): array {
 		return [
