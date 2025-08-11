@@ -250,7 +250,7 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Test that reads global state
 		$test = <<<JS
@@ -303,7 +303,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Test that creates state
 		$test = <<<JS
@@ -349,7 +349,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Test that checks for state
 		$test = <<<JS
@@ -399,7 +399,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Test that sets WP option
 		$test = <<<JS
@@ -449,7 +449,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Test that updates WP option
 		$test = <<<JS
@@ -493,7 +493,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Test that verifies WP option
 		$test = <<<JS
@@ -537,7 +537,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Test that writes result
 		$test = <<<JS
@@ -586,7 +586,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Minimal test file
 		$test = <<<JS
@@ -630,7 +630,7 @@ JS;
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		// Minimal test file
 		$test = <<<JS

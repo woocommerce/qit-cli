@@ -68,7 +68,7 @@
         // Assert I see my welcome message when I click it.
         // await expect(page.locator('h3')).toContainText('Welcome to My Plugin!');
     });
-/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/manifest.json: |-
+/tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/qit-package.json: |-
     {
         "$schema": "https://qit.woo.com/json-schema/test-package",
         "vendor": "test-vendor",

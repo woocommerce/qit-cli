@@ -89,7 +89,7 @@ class PackagePhaseRunnerTest extends TestCase {
 			]
 		];
 		
-		file_put_contents( $package_dir . '/manifest.json', json_encode( $manifest ) );
+		file_put_contents( $package_dir . '/qit-package.json', json_encode( $manifest ) );
 
 		// Mock the parser to return our test manifest
 		$mock_parser = $this->createMock( TestPackageManifestParser::class );
@@ -135,7 +135,7 @@ class PackagePhaseRunnerTest extends TestCase {
 
 		// Check output contains warning message
 		$output = $this->output->fetch();
-		$this->assertStringContainsString( 'no manifest.json', $output );
+		$this->assertStringContainsString( 'no qit-package.json', $output );
 	}
 
 	/**
@@ -151,7 +151,7 @@ class PackagePhaseRunnerTest extends TestCase {
 			'lifecycle' => []
 		];
 		
-		file_put_contents( $package_dir . '/manifest.json', json_encode( $manifest ) );
+		file_put_contents( $package_dir . '/qit-package.json', json_encode( $manifest ) );
 
 		// Mock the parser
 		$mock_parser = $this->createMock( TestPackageManifestParser::class );
@@ -188,7 +188,7 @@ class PackagePhaseRunnerTest extends TestCase {
 			]
 		];
 		
-		file_put_contents( $package_dir . '/manifest.json', json_encode( $manifest ) );
+		file_put_contents( $package_dir . '/qit-package.json', json_encode( $manifest ) );
 
 		// Mock the parser
 		$mock_parser = $this->createMock( TestPackageManifestParser::class );

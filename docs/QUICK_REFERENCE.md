@@ -4,7 +4,7 @@
 
 ### Declare Required Secrets
 ```json
-// manifest.json
+// qit-package.json
 {
   "requires": {
     "secrets": ["API_KEY", "API_SECRET"]

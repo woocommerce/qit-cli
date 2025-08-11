@@ -31,13 +31,13 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $packageDir );
-			$this->assertFileExists( $packageDir . '/manifest.json' );
+			$this->assertFileExists( $packageDir . '/qit-package.json' );
 			$this->assertFileExists( $packageDir . '/package.json' );
 			$this->assertFileExists( $packageDir . '/playwright.config.js' );
 			$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 
 			// Modify manifest to include all phases with meaningful commands
-			$manifest_path = $packageDir . '/manifest.json';
+			$manifest_path = $packageDir . '/qit-package.json';
 			$manifest      = json_decode( file_get_contents( $manifest_path ), true );
 
 			// Modify manifest to include all phases with real commands
@@ -183,15 +183,15 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $packageDir );
-			$this->assertFileExists( $packageDir . '/manifest.json' );
+			$this->assertFileExists( $packageDir . '/qit-package.json' );
 			$this->assertFileExists( $packageDir . '/package.json' );
 			$this->assertFileExists( $packageDir . '/playwright.config.js' );
 			$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 
 			// Modify manifest to include all phases with real commands
 			// Note: Only include phases that have actual scripts created by scaffold
-			$manifest_path              = $packageDir . '/manifest.json';
-			$manifest                   = json_decode( file_get_contents( $packageDir . '/manifest.json' ), true );
+			$manifest_path              = $packageDir . '/qit-package.json';
+			$manifest                   = json_decode( file_get_contents( $packageDir . '/qit-package.json' ), true );
 			$manifest['test']['phases'] = [
 				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
 				'setup'          => [ './bootstrap/setup.sh' ],
@@ -281,10 +281,10 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $localPackageDir );
-			$this->assertFileExists( $localPackageDir . '/manifest.json' );
+			$this->assertFileExists( $localPackageDir . '/qit-package.json' );
 
 			// Modify local package manifest
-			$localManifest                   = json_decode( file_get_contents( $localPackageDir . '/manifest.json' ), true );
+			$localManifest                   = json_decode( file_get_contents( $localPackageDir . '/qit-package.json' ), true );
 			$localManifest['test']['phases'] = [
 				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
 				'setup'          => [ './bootstrap/setup.sh' ],
@@ -292,7 +292,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 				'teardown'       => [],
 				'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
 			];
-			file_put_contents( $localPackageDir . '/manifest.json', json_encode( $localManifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+			file_put_contents( $localPackageDir . '/qit-package.json', json_encode( $localManifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			// Publish the package
 			$publishProcess = qit( [
@@ -330,7 +330,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			// The downloaded package should be in a directory named after the package
 			$downloadedPackageDir = $downloadDir . '/qit-test-plugin-tp003-local-1.0.0';
 			$this->assertDirectoryExists( $downloadedPackageDir );
-			$this->assertFileExists( $downloadedPackageDir . '/manifest.json' );
+			$this->assertFileExists( $downloadedPackageDir . '/qit-package.json' );
 
 			// Make bootstrap scripts executable (they lose permissions during zip extraction)
 			$bootstrapDir = $downloadedPackageDir . '/bootstrap';
@@ -429,10 +429,10 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $packageDir );
-			$this->assertFileExists( $packageDir . '/manifest.json' );
+			$this->assertFileExists( $packageDir . '/qit-package.json' );
 
 			// Modify manifest so that only globalSetup has commands; all other phases are empty.
-			$manifest_path              = $packageDir . '/manifest.json';
+			$manifest_path              = $packageDir . '/qit-package.json';
 			$manifest                   = json_decode( file_get_contents( $manifest_path ), true );
 			$manifest['test']['phases'] = [
 				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
@@ -529,13 +529,13 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $packageDir );
-			$this->assertFileExists( $packageDir . '/manifest.json' );
+			$this->assertFileExists( $packageDir . '/qit-package.json' );
 			$this->assertFileExists( $packageDir . '/package.json' );
 			$this->assertFileExists( $packageDir . '/playwright.config.js' );
 			$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 
 			// Modify manifest to include all phases with real commands
-			$manifest_path              = $packageDir . '/manifest.json';
+			$manifest_path              = $packageDir . '/qit-package.json';
 			$manifest                   = json_decode( file_get_contents( $manifest_path ), true );
 			$manifest['test']['phases'] = [
 				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
@@ -647,10 +647,10 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $localPackageDir );
-			$this->assertFileExists( $localPackageDir . '/manifest.json' );
+			$this->assertFileExists( $localPackageDir . '/qit-package.json' );
 
 			// Modify manifest to include all phases and CTRF reporting
-			$manifestPath               = $localPackageDir . '/manifest.json';
+			$manifestPath               = $localPackageDir . '/qit-package.json';
 			$manifest                   = json_decode( file_get_contents( $manifestPath ), true );
 			$manifest['test']['phases'] = [
 				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
@@ -704,7 +704,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			// Determine downloaded package directory path
 			$downloadedPackageDir = $downloadDir . '/qit-test-plugin-tp007-ctrf-published-1.0.0';
 			$this->assertDirectoryExists( $downloadedPackageDir );
-			$this->assertFileExists( $downloadedPackageDir . '/manifest.json' );
+			$this->assertFileExists( $downloadedPackageDir . '/qit-package.json' );
 
 			// Make bootstrap scripts executable (permissions lost during zip extraction)
 			$bootstrapDir = $downloadedPackageDir . '/bootstrap';
@@ -801,10 +801,10 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $localPackageDir );
-			$this->assertFileExists( $localPackageDir . '/manifest.json' );
+			$this->assertFileExists( $localPackageDir . '/qit-package.json' );
 
 			// Modify local package manifest for full phases + CTRF
-			$localManifestPath               = $localPackageDir . '/manifest.json';
+			$localManifestPath               = $localPackageDir . '/qit-package.json';
 			$localManifest                   = json_decode( file_get_contents( $localManifestPath ), true );
 			$localManifest['test']['phases'] = [
 				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
@@ -840,10 +840,10 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $publishedPackageDir );
-			$this->assertFileExists( $publishedPackageDir . '/manifest.json' );
+			$this->assertFileExists( $publishedPackageDir . '/qit-package.json' );
 
 			// Modify manifest similarly
-			$publishedManifestPath               = $publishedPackageDir . '/manifest.json';
+			$publishedManifestPath               = $publishedPackageDir . '/qit-package.json';
 			$publishedManifest                   = json_decode( file_get_contents( $publishedManifestPath ), true );
 			$publishedManifest['test']['phases'] = [
 				'globalSetup'    => [ './bootstrap/global-setup.sh' ],
@@ -889,7 +889,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			$downloadedPackageDir = $downloadDir . '/qit-test-plugin-tp008-published-1.0.0';
 			$this->assertDirectoryExists( $downloadedPackageDir );
-			$this->assertFileExists( $downloadedPackageDir . '/manifest.json' );
+			$this->assertFileExists( $downloadedPackageDir . '/qit-package.json' );
 
 			// Fix permissions on scripts
 			$bootstrapDirDownload = $downloadedPackageDir . '/bootstrap';
@@ -1067,13 +1067,13 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 				] );
 
 				$this->assertDirectoryExists( $packageDir );
-				$this->assertFileExists( $packageDir . '/manifest.json' );
+				$this->assertFileExists( $packageDir . '/qit-package.json' );
 				$this->assertFileExists( $packageDir . '/package.json' );
 				$this->assertFileExists( $packageDir . '/playwright.config.js' );
 				$this->assertFileExists( $packageDir . '/tests/example.spec.js' );
 
 				// Modify manifest to include all phases and CTRF configuration
-				$manifestPath               = $packageDir . '/manifest.json';
+				$manifestPath               = $packageDir . '/qit-package.json';
 				$manifest                   = json_decode( file_get_contents( $manifestPath ), true );
 				$manifest['test']['phases'] = [
 					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
@@ -1247,7 +1247,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			] );
 
 			$this->assertDirectoryExists( $packageDir );
-			$this->assertFileExists( $packageDir . '/manifest.json' );
+			$this->assertFileExists( $packageDir . '/qit-package.json' );
 
 			// Create a custom plugin that generates PHP warnings
 			$pluginDir = $packageDir . '/plugins';
@@ -1305,7 +1305,7 @@ test("trigger PHP warnings by visiting site", async ({ page }) => {
 			file_put_contents( $packageDir . '/tests/example.spec.js', $testContent );
 
 			// Modify manifest to include our custom plugin in the volume mapping
-			$manifest_path = $packageDir . '/manifest.json';
+			$manifest_path = $packageDir . '/qit-package.json';
 			$manifest      = json_decode( file_get_contents( $manifest_path ), true );
 
 			// Add volume mapping for our custom plugin

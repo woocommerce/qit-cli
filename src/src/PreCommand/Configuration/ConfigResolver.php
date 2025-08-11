@@ -225,7 +225,7 @@ class ConfigResolver {
 			$package_path = $this->resolve_package_path( $package_config, $base_dir );
 
 			// Load package manifest
-			$manifest_path = $package_path . '/manifest.json';
+			$manifest_path = $package_path . '/qit-package.json';
 			if ( ! file_exists( $manifest_path ) ) {
 				throw new \RuntimeException( "Test package manifest not found: $manifest_path" );
 			}

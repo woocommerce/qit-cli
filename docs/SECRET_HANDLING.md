@@ -22,7 +22,7 @@ QIT provides secure secret management for test packages that need to interact wi
 
 ## Declaring Required Secrets
 
-Test packages declare required secrets in their `manifest.json`:
+Test packages declare required secrets in their `qit-package.json`:
 
 ```json
 {

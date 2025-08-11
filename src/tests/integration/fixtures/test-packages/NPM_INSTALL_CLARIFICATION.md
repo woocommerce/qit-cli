@@ -17,9 +17,9 @@ The automatic npm install is handled by the `TestPackageDownloader` class:
 
 ## Important implications
 
-### DO NOT include npm install in your manifest.json
+### DO NOT include npm install in your qit-package.json
 
-Since npm dependencies are installed automatically, you should NOT include `npm install` in your test package's `manifest.json` phases. 
+Since npm dependencies are installed automatically, you should NOT include `npm install` in your test package's `qit-package.json` phases. 
 
 **Incorrect** (redundant):
 ```json
@@ -63,7 +63,7 @@ When creating test packages without a specific SUT (System Under Test):
 
 ```
 my-test-package/
-├── manifest.json       # No npm install in phases
+├── qit-package.json    # No npm install in phases
 ├── package.json        # Dependencies defined here
 ├── package-lock.json   # Optional, for reproducible builds
 ├── playwright.config.js

@@ -138,7 +138,7 @@ class RunE2EPackageMetadataTest extends TestCase {
 				]
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		return $packageDir;
 	}
@@ -165,7 +165,7 @@ class RunE2EPackageMetadataTest extends TestCase {
 				// No results section for utility packages
 			]
 		];
-		file_put_contents( $packageDir . '/manifest.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		file_put_contents( $packageDir . '/qit-package.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		return $packageDir;
 	}

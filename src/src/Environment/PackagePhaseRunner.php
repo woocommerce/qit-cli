@@ -417,10 +417,10 @@ class PackagePhaseRunner {
 		PackageOrchestrator $orchestrator,
 		array $runner_args = []
 	): int {
-		$manifest_path = $package_path . '/manifest.json';
+		$manifest_path = $package_path . '/qit-package.json';
 		if ( ! file_exists( $manifest_path ) ) {
 			$this->output->writeln(
-				"<comment>Package {$package_id} has no manifest.json – skipping {$phase} phase.</comment>"
+				"<comment>Package {$package_id} has no qit-package.json – skipping {$phase} phase.</comment>"
 			);
 			return 0;
 		}

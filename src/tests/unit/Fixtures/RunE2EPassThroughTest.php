@@ -27,7 +27,7 @@ class RunE2EPassThroughTest extends TestCase {
 		// Create temp directory for package
 		$tempDir = sys_get_temp_dir() . '/test-package-' . uniqid();
 		mkdir( $tempDir );
-		file_put_contents( $tempDir . '/manifest.json', json_encode( [
+		file_put_contents( $tempDir . '/qit-package.json', json_encode( [
 			'package' => 'test-package',
 			'namespace' => 'test',
 			'test_type' => 'e2e',
@@ -97,7 +97,7 @@ class RunE2EPassThroughTest extends TestCase {
 		// Create temp directory for package
 		$tempDir = sys_get_temp_dir() . '/test-package-' . uniqid();
 		mkdir( $tempDir );
-		file_put_contents( $tempDir . '/manifest.json', json_encode( [
+		file_put_contents( $tempDir . '/qit-package.json', json_encode( [
 			'package' => 'test-package',
 			'namespace' => 'test',
 			'test_type' => 'e2e',
@@ -162,7 +162,7 @@ class RunE2EPassThroughTest extends TestCase {
 		// Create temp directory for package
 		$tempDir = sys_get_temp_dir() . '/test-package-' . uniqid();
 		mkdir( $tempDir );
-		file_put_contents( $tempDir . '/manifest.json', json_encode( [
+		file_put_contents( $tempDir . '/qit-package.json', json_encode( [
 			'package' => 'test-package',
 			'namespace' => 'test',
 			'test_type' => 'e2e',
@@ -232,7 +232,7 @@ class RunE2EPassThroughTest extends TestCase {
 		// Create temp directory for package
 		$tempDir = sys_get_temp_dir() . '/test-package-' . uniqid();
 		mkdir( $tempDir );
-		file_put_contents( $tempDir . '/manifest.json', json_encode( [
+		file_put_contents( $tempDir . '/qit-package.json', json_encode( [
 			'package' => 'test-package',
 			'namespace' => 'test',
 			'test_type' => 'e2e',
@@ -307,7 +307,7 @@ class RunE2EPassThroughTest extends TestCase {
 		// Create temp directory for package
 		$tempDir = sys_get_temp_dir() . '/test-package-' . uniqid();
 		mkdir( $tempDir );
-		file_put_contents( $tempDir . '/manifest.json', json_encode( [
+		file_put_contents( $tempDir . '/qit-package.json', json_encode( [
 			'package' => 'test-package',
 			'namespace' => 'test',
 			'test_type' => 'e2e',

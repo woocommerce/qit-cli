@@ -57,10 +57,10 @@ class TestPackageDownloader {
 		// First, separate local paths from remote references
 		foreach ( $packages as $reference => $package_info ) {
 			// Check if reference is a local path
-			if ( is_dir( $reference ) && file_exists( $reference . '/manifest.json' ) ) {
+			if ( is_dir( $reference ) && file_exists( $reference . '/qit-package.json' ) ) {
 				// Handle local package
 				$this->output->writeln( "Using local package: $reference" );
-				$manifest                = $this->manifest_parser->parse( $reference . '/manifest.json' );
+				$manifest                = $this->manifest_parser->parse( $reference . '/qit-package.json' );
 				$manifests[ $reference ] = $manifest;
 
 				// Store metadata for local package
@@ -221,7 +221,7 @@ class TestPackageDownloader {
 		// Find and parse manifest
 		$manifest_file = $this->find_manifest( $package_dir );
 		if ( ! $manifest_file ) {
-			throw new \RuntimeException( "No manifest.json found in package '$reference'" );
+			throw new \RuntimeException( "No qit-package.json found in package '$reference'" );
 		}
 
 		$manifest_object = $this->manifest_parser->parse( $manifest_file );
@@ -264,12 +264,12 @@ class TestPackageDownloader {
 	}
 
 	/**
-	 * Find manifest.json in extracted package
+	 * Find qit-package.json in extracted package
 	 */
 	protected function find_manifest( string $dir ): ?string {
 		// Check root directory
-		if ( file_exists( $dir . '/manifest.json' ) ) {
-			return $dir . '/manifest.json';
+		if ( file_exists( $dir . '/qit-package.json' ) ) {
+			return $dir . '/qit-package.json';
 		}
 
 		// Check one level deep (common with GitHub archives)
@@ -280,8 +280,8 @@ class TestPackageDownloader {
 			}
 
 			$path = $dir . '/' . $entry;
-			if ( is_dir( $path ) && file_exists( $path . '/manifest.json' ) ) {
-				return $path . '/manifest.json';
+			if ( is_dir( $path ) && file_exists( $path . '/qit-package.json' ) ) {
+				return $path . '/qit-package.json';
 			}
 		}
 
