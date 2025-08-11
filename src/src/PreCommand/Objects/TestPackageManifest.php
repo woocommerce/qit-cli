@@ -38,6 +38,12 @@ final class TestPackageManifest implements \JsonSerializable {
 	/** @var array{times:int,delay:int} */
 	private array $retry;
 
+	/** @var array<string,array<string,mixed>> */
+	private array $subpackages;
+
+	/** @var ?string Parent package identifier if this is a subpackage */
+	private ?string $parent_package;
+
 	/**
 	 * @param array<string,mixed> $payload – already validated & normalised by parser.
 	 */
@@ -52,21 +58,23 @@ final class TestPackageManifest implements \JsonSerializable {
 		}
 
 		[ $this->namespace, $this->package ] = explode( '/', $payload['package'], 2 );
-		$this->tags        = $payload['tags'] ?? [];
-		$this->test_type   = $payload['test_type'] ?? 'e2e';
-		$this->test_dir    = $payload['test_dir'] ?? './';
-		$this->description = $payload['description'] ?? '';
+		$this->tags                          = $payload['tags'] ?? [];
+		$this->test_type                     = $payload['test_type'] ?? 'e2e';
+		$this->test_dir                      = $payload['test_dir'] ?? './';
+		$this->description                   = $payload['description'] ?? '';
 
-		$this->requires     = $payload['requires'] ?? [];
-		$this->phases       = $payload['test']['phases'] ?? [];
-		$this->test_results = $payload['test']['results'] ?? [];
-		$this->mu_plugins   = $payload['mu_plugins'] ?? [];
-		$this->env_vars     = $this->stringifyEnv( $payload['envs'] ?? [] );
-		$this->timeout      = (int) ( $payload['timeout'] ?? 1800 );
-		$this->retry        = $payload['retry'] ?? [
+		$this->requires       = $payload['requires'] ?? [];
+		$this->phases         = $payload['test']['phases'] ?? [];
+		$this->test_results   = $payload['test']['results'] ?? [];
+		$this->mu_plugins     = $payload['mu_plugins'] ?? [];
+		$this->env_vars       = $this->stringifyEnv( $payload['envs'] ?? [] );
+		$this->timeout        = (int) ( $payload['timeout'] ?? 1800 );
+		$this->retry          = $payload['retry'] ?? [
 			'times' => 0,
 			'delay' => 0,
 		];
+		$this->subpackages    = $payload['subpackages'] ?? [];
+		$this->parent_package = $payload['parent_package'] ?? null;
 	}
 
 	/**
@@ -80,6 +88,7 @@ final class TestPackageManifest implements \JsonSerializable {
 
 	/**
 	 * Get the package name (without namespace).
+	 *
 	 * @deprecated Use getPackageName() for clarity
 	 */
 	public function getPackage(): string {
@@ -163,6 +172,43 @@ final class TestPackageManifest implements \JsonSerializable {
 	 */
 	public function getRetry(): array {
 		return $this->retry;
+	}
+
+	/**
+	 * @return array<string,array<string,mixed>>
+	 */
+	public function get_subpackages(): array {
+		return $this->subpackages;
+	}
+
+	/**
+	 * Check if this manifest has subpackages defined
+	 */
+	public function has_subpackages(): bool {
+		return ! empty( $this->subpackages );
+	}
+
+	/**
+	 * Get a specific subpackage by its full identifier
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	public function get_subpackage( string $identifier ): ?array {
+		return $this->subpackages[ $identifier ] ?? null;
+	}
+
+	/**
+	 * Get the parent package identifier if this is a subpackage
+	 */
+	public function get_parent_package(): ?string {
+		return $this->parent_package;
+	}
+
+	/**
+	 * Check if this is a subpackage
+	 */
+	public function is_subpackage(): bool {
+		return $this->parent_package !== null;
 	}
 
 	/**

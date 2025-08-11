@@ -23,6 +23,7 @@ use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PreCommand\Objects\Extension;
+use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use QIT_CLI\QITInput;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
@@ -237,6 +238,9 @@ class RunE2ECommand extends QITCommand {
 			$input->getTestPackages() // This includes both profile and CLI packages
 		);
 
+		// Validate version consistency for subpackages
+		$this->validate_subpackage_versions( $test_packages );
+
 		// Prepare test package metadata with container paths BEFORE env:up
 		$test_packages_metadata = [];
 		$seen_remote_packages   = []; // Track remote packages for deduplication
@@ -374,7 +378,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Get runner args to pass through to test framework
 		$runner_args = $input->getArgument( 'runner_args' ) ?? [];
-		
+
 		// Run tests with test packages
 		$io = new SymfonyStyle( $input, $output );
 		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io, $runner_args );
@@ -747,6 +751,51 @@ class RunE2ECommand extends QITCommand {
 	}
 
 	/**
+	 * Validate version consistency for subpackages from the same parent.
+	 *
+	 * @param array<string,array{manifest:TestPackageManifest,path:?string,metadata:array<string,mixed>}> $test_packages
+	 * @throws \RuntimeException If version mismatch is detected.
+	 */
+	private function validate_subpackage_versions( array $test_packages ): void {
+		$parent_versions = [];
+
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( ! isset( $meta['manifest'] ) ) {
+				continue;
+			}
+
+			$manifest = $meta['manifest'];
+
+			// Check if this is a subpackage
+			if ( $manifest->is_subpackage() ) {
+				$parent = $manifest->get_parent_package();
+
+				// Extract version from package ID (format: namespace/name:version)
+				$version = 'latest'; // Default
+				if ( str_contains( $pkg_id, ':' ) ) {
+					[ , $version ] = explode( ':', $pkg_id, 2 );
+				}
+
+				// Check for version consistency
+				if ( isset( $parent_versions[ $parent ] ) ) {
+					if ( $parent_versions[ $parent ] !== $version ) {
+						throw new \RuntimeException(
+							sprintf(
+								'Cannot mix versions of subpackages from %s. Found versions: %s and %s. All subpackages from the same parent must use the same version.',
+								$parent,
+								$parent_versions[ $parent ],
+								$version
+							)
+						);
+					}
+				} else {
+					$parent_versions[ $parent ] = $version;
+				}
+			}
+		}
+	}
+
+	/**
 	 * Generate a container name from qit-test.json or package reference.
 	 *
 	 * For local packages: reads namespace/package from qit-test.json
@@ -789,9 +838,9 @@ class RunE2ECommand extends QITCommand {
 					"Manifest must contain 'package' field in format 'namespace/package': {$package_id}"
 				);
 			}
-			
+
 			[ $namespace, $package ] = explode( '/', $manifest['package'], 2 );
-			$version   = null; // Local packages don't have versions
+			$version                 = null; // Local packages don't have versions
 		} else {
 			// Remote package reference - parse the format
 			// Expected formats:

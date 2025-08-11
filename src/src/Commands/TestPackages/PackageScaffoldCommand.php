@@ -84,13 +84,13 @@ class PackageScaffoldCommand extends QITCommand {
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		$io           = new SymfonyStyle( $input, $output );
-		$fs           = new Filesystem();
-		$target_dir   = normalize_path( $input->getArgument( 'target_dir' ) );
-		$package_id   = (string) $input->getOption( 'package' );
-		$framework    = strtolower( (string) $input->getOption( 'framework' ) );
-		$test_type    = strtolower( (string) $input->getOption( 'test-type' ) );
-		
+		$io         = new SymfonyStyle( $input, $output );
+		$fs         = new Filesystem();
+		$target_dir = normalize_path( $input->getArgument( 'target_dir' ) );
+		$package_id = (string) $input->getOption( 'package' );
+		$framework  = strtolower( (string) $input->getOption( 'framework' ) );
+		$test_type  = strtolower( (string) $input->getOption( 'test-type' ) );
+
 		// Initialize namespace and package_name for parsing later
 		$namespace    = '';
 		$package_name = '';
@@ -144,7 +144,7 @@ class PackageScaffoldCommand extends QITCommand {
 			$io->writeln( '  Example: <info>woocommerce/checkout-tests</info>' );
 			$io->writeln( '  - The namespace must be an extension slug you maintain' );
 			$io->writeln( '  - The name identifies this specific test package' );
-			
+
 			$q = new Question( 'Package identifier (namespace/name) > ' );
 			$q->setValidator( function ( $answer ) {
 				return $this->validate_package_identifier( $answer );
@@ -153,13 +153,13 @@ class PackageScaffoldCommand extends QITCommand {
 		} else {
 			$this->validate_package_identifier( $package_id ); // throws on failure
 		}
-		
+
 		// Parse the package identifier
 		if ( ! str_contains( $package_id, '/' ) ) {
 			throw new \RuntimeException( 'Package identifier must be in format "namespace/name"' );
 		}
 		[ $namespace, $package_name ] = explode( '/', $package_id, 2 );
-		
+
 		// Validate namespace ownership
 		$this->validate_namespace( $namespace );
 		$io->writeln( sprintf( '✓ You are a maintainer of "%s"', $namespace ) );
@@ -244,15 +244,15 @@ BASH;
 
 		/* qit-test.json – wired to the three scripts above */
 		$manifest = [];
-		
+
 		// Optionally include $schema for IDE validation
 		if ( $input->getOption( 'with-schema' ) ) {
 			$manifest['$schema'] = 'https://qit.woo.com/json-schema/test-package';
 		}
-		
+
 		$manifest = array_merge( $manifest, [
-			'package'   => $namespace . '/' . $package_name,
-			'test'      => [
+			'package' => $namespace . '/' . $package_name,
+			'test'    => [
 				'phases'  => [
 					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
 					'setup'          => [ './bootstrap/setup.sh' ],
@@ -340,18 +340,18 @@ BASH;
 		if ( ! str_contains( $identifier, '/' ) ) {
 			throw new \RuntimeException( 'Package identifier must be in format "namespace/name"' );
 		}
-		
+
 		[ $namespace, $name ] = explode( '/', $identifier, 2 );
-		
+
 		// Validate both parts
 		$this->validate_slug( $namespace, 'Namespace' );
 		$this->validate_slug( $name, 'Package name' );
-		
+
 		// Check namespace ownership
 		if ( ! $this->extensions->user_maintains( $namespace ) ) {
 			throw new \RuntimeException( "You are not a maintainer of \"{$namespace}\"." );
 		}
-		
+
 		return $identifier;
 	}
 

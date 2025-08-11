@@ -175,8 +175,20 @@ class PackageListCommand extends QITCommand {
 			$visibility = $package['visibility'] === 'private' ? '👤 Private' : '🌐 Public';
 			$created    = $this->format_date( $package['created_at'] ?? '' );
 
+			// Add visual indicator for subpackages
+			$package_id = $package['package_id'] ?? 'N/A';
+			if ( ! empty( $package['is_subpackage'] ) && $package['is_subpackage'] === true ) {
+				$package_id = '  └─ ' . $package_id;
+				// Show parent package info in the visibility column
+				if ( ! empty( $package['parent_package'] ) ) {
+					$visibility .= sprintf( ' (sub of %s)',
+						explode( ':', $package['parent_package'] )[0] ?? $package['parent_package']
+					);
+				}
+			}
+
 			$table->addRow( [
-				$package['package_id'] ?? 'N/A',
+				$package_id,
 				$package['namespace'] ?? 'N/A',
 				$package['package'] ?? 'N/A',
 				$package['test_type'] ?? 'N/A',

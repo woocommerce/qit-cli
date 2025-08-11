@@ -165,9 +165,27 @@ class PackagePublishCommand extends QITCommand {
 
 			/*
 			---------------------------------------------------------------------
-			 * Step 8: Upload to QIT registry
+			 * Step 8: Upload package to QIT registry (with subpackages if any)
 			 * -------------------------------------------------------------------
 			 */
+			// Validate subpackage namespaces before upload
+			if ( $manifest->has_subpackages() ) {
+				$io->writeln( '<info>Validating subpackage namespaces...</info>' );
+				$subpackages = $manifest->get_subpackages();
+				foreach ( $subpackages as $subpackage_id => $subpackage_config ) {
+					// Parse subpackage identifier
+					if ( ! str_contains( $subpackage_id, '/' ) ) {
+						throw new \RuntimeException( sprintf( 'Invalid subpackage identifier: %s (must be namespace/name format)', $subpackage_id ) );
+					}
+
+					[ $sub_namespace, $sub_name ] = explode( '/', $subpackage_id, 2 );
+
+					// Validate namespace ownership for subpackage
+					$this->validate_namespace_maintenance( $sub_namespace, $io );
+				}
+			}
+
+			// Upload package (the server will handle subpackages from the manifest)
 			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, true, $checksum, $output );
 
 			/*
@@ -180,6 +198,10 @@ class PackagePublishCommand extends QITCommand {
 			$io->writeln( sprintf( 'Upload ID: <info>%s</info>', $upload_result['upload_id'] ) );
 			if ( isset( $upload_result['checksum'] ) ) {
 				$io->writeln( sprintf( 'Checksum: <info>%s</info>', $upload_result['checksum'] ) );
+			}
+
+			if ( $manifest->has_subpackages() ) {
+				$io->writeln( sprintf( 'Subpackages published: <info>%d</info>', count( $manifest->get_subpackages() ) ) );
 			}
 
 			// Clean up temporary zip if we created it

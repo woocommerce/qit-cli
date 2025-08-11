@@ -57,7 +57,7 @@ class ResultCollector {
 	 */
 	public function reset_tracking(): void {
 		$this->allure_tracking = null;
-		$this->blob_tracking = null;
+		$this->blob_tracking   = null;
 	}
 
 	/**
@@ -111,8 +111,8 @@ class ResultCollector {
 		// Track Blob configuration status
 		if ( ! isset( $this->blob_tracking ) ) {
 			$this->blob_tracking = [
-				'total_packages'       => 0,
-				'packages_with_blob'   => 0,
+				'total_packages'        => 0,
+				'packages_with_blob'    => 0,
 				'packages_without_blob' => [],
 			];
 		}
@@ -275,7 +275,7 @@ class ResultCollector {
 
 	/**
 	 * Validate blob directory structure
-	 * 
+	 *
 	 * @return bool True if directory contains valid blob files, false otherwise
 	 */
 	private function validate_blob_directory( string $blob_dir ): bool {
@@ -330,11 +330,11 @@ class ResultCollector {
 		}
 
 		// Warn if some but not all packages have blob reports
-		if ( $this->blob_tracking && $this->blob_tracking['packages_with_blob'] > 0 
+		if ( $this->blob_tracking && $this->blob_tracking['packages_with_blob'] > 0
 			&& $this->blob_tracking['packages_with_blob'] < $this->blob_tracking['total_packages'] ) {
-			$orchestrator->post_processing_message( 
-				'<warning>⚠ HTML report may be incomplete: ' . count($this->blob_tracking['packages_without_blob']) . 
-				' package(s) missing blob reports</warning>' 
+			$orchestrator->post_processing_message(
+				'<warning>⚠ HTML report may be incomplete: ' . count( $this->blob_tracking['packages_without_blob'] ) .
+				' package(s) missing blob reports</warning>'
 			);
 		}
 
@@ -464,10 +464,10 @@ class ResultCollector {
 				unlink( $target_file );
 			}
 			rename( $ctrf_dir . '/ctrf-report.json', $final_dir . '/ctrf-report.json' );
-			
+
 			// Add package metadata to the merged CTRF report
 			$this->add_package_metadata_to_merged_ctrf( $final_dir . '/ctrf-report.json' );
-			
+
 			$orchestrator->post_processing_message( 'CTRF reports merged' );
 		}
 	}
@@ -581,21 +581,21 @@ class ResultCollector {
 
 		// Build package details from individual test metadata
 		$package_details = [];
-		$package_tests = [];
-		$package_order = [];
-		$order_counter = 0;
-		
+		$package_tests   = [];
+		$package_order   = [];
+		$order_counter   = 0;
+
 		// Scan through all tests to gather package information
 		if ( isset( $ctrf['results']['tests'] ) && is_array( $ctrf['results']['tests'] ) ) {
 			foreach ( $ctrf['results']['tests'] as $index => $test ) {
 				if ( isset( $test['extra']['packageSlug'] ) ) {
 					$pkg_id = $test['extra']['packageSlug'];
-					
+
 					// Track execution order
 					if ( ! isset( $package_order[ $pkg_id ] ) ) {
 						$package_order[ $pkg_id ] = ++$order_counter;
 					}
-					
+
 					// Initialize package entry if not seen before
 					if ( ! isset( $package_details[ $pkg_id ] ) ) {
 						$package_details[ $pkg_id ] = [
@@ -610,13 +610,13 @@ class ResultCollector {
 							'duration'       => 0,
 						];
 					}
-					
+
 					// Count tests and accumulate duration per package (only from run phase)
 					if ( ( $test['extra']['phase'] ?? '' ) === 'run' ) {
-						$package_details[ $pkg_id ]['testCount']++;
+						++$package_details[ $pkg_id ]['testCount'];
 						$package_details[ $pkg_id ]['hasRunPhase'] = true;
 						$package_details[ $pkg_id ]['packageType'] = 'test';
-						
+
 						// Add duration if available
 						if ( isset( $test['duration'] ) && is_numeric( $test['duration'] ) ) {
 							$package_details[ $pkg_id ]['duration'] += (int) $test['duration'];
@@ -629,34 +629,34 @@ class ResultCollector {
 		// Add blob and allure tracking information
 		if ( $this->blob_tracking ) {
 			foreach ( $package_details as $pkg_id => &$details ) {
-				$pkg_basename = basename( $pkg_id );
+				$pkg_basename             = basename( $pkg_id );
 				$details['hasBlobReport'] = ! in_array( $pkg_basename, $this->blob_tracking['packages_without_blob'], true );
 			}
 		}
 
 		if ( $this->allure_tracking ) {
 			foreach ( $package_details as $pkg_id => &$details ) {
-				$pkg_basename = basename( $pkg_id );
+				$pkg_basename               = basename( $pkg_id );
 				$details['hasAllureReport'] = ! in_array( $pkg_basename, $this->allure_tracking['packages_without_allure'], true );
 			}
 		}
 
 		// Keep original for test enhancement, convert to indexed for metadata
 		$package_details_original = $package_details;
-		$package_details_indexed = array_values( $package_details );
+		$package_details_indexed  = array_values( $package_details );
 
 		// Build the QIT package metadata structure
 		$qit_metadata = [
-			'version' => '1.0.0',
+			'version'  => '1.0.0',
 			'packages' => $package_details_indexed,
 		];
 
 		// Add summary statistics
-		$total_packages = count( $package_details );
-		$packages_with_tests = count( array_filter( $package_details, function( $pkg ) {
+		$total_packages      = count( $package_details );
+		$packages_with_tests = count( array_filter( $package_details, function ( $pkg ) {
 			return $pkg['hasRunPhase'] && $pkg['testCount'] > 0;
 		} ) );
-		$utility_packages = $total_packages - $packages_with_tests;
+		$utility_packages    = $total_packages - $packages_with_tests;
 
 		$qit_metadata['summary'] = [
 			'totalPackages'     => $total_packages,
@@ -667,21 +667,21 @@ class ResultCollector {
 		// Add report completeness information
 		if ( $this->blob_tracking || $this->allure_tracking ) {
 			$qit_metadata['reportCompleteness'] = [];
-			
+
 			if ( $this->blob_tracking ) {
 				$qit_metadata['reportCompleteness']['blob'] = [
-					'complete'              => $this->blob_tracking['packages_with_blob'] === $packages_with_tests,
-					'packagesWithBlob'      => $this->blob_tracking['packages_with_blob'],
+					'complete'               => $this->blob_tracking['packages_with_blob'] === $packages_with_tests,
+					'packagesWithBlob'       => $this->blob_tracking['packages_with_blob'],
 					'totalPackagesWithTests' => $packages_with_tests,
-					'missingFrom'           => $this->blob_tracking['packages_without_blob'],
+					'missingFrom'            => $this->blob_tracking['packages_without_blob'],
 				];
 			}
-			
+
 			if ( $this->allure_tracking ) {
 				$qit_metadata['reportCompleteness']['allure'] = [
-					'complete'                => $this->allure_tracking['packages_with_allure'] === $packages_with_tests,
-					'packagesWithAllure'      => $this->allure_tracking['packages_with_allure'],
-					'totalPackagesWithTests'  => $packages_with_tests,
+					'complete'               => $this->allure_tracking['packages_with_allure'] === $packages_with_tests,
+					'packagesWithAllure'     => $this->allure_tracking['packages_with_allure'],
+					'totalPackagesWithTests' => $packages_with_tests,
 					'missingFrom'            => $this->allure_tracking['packages_without_allure'],
 				];
 			}
@@ -704,7 +704,7 @@ class ResultCollector {
 				if ( isset( $test['extra']['packageSlug'] ) ) {
 					$pkg_id = $test['extra']['packageSlug'];
 					if ( isset( $package_details_original[ $pkg_id ] ) ) {
-						$test['extra']['packageType'] = $package_details_original[ $pkg_id ]['packageType'];
+						$test['extra']['packageType']  = $package_details_original[ $pkg_id ]['packageType'];
 						$test['extra']['packageOrder'] = $package_details_original[ $pkg_id ]['executionOrder'];
 					}
 				}

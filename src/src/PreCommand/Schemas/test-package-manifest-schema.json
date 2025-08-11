@@ -210,6 +210,50 @@
           "maximum": 60
         }
       }
+    },
+    "subpackages": {
+      "type": "object",
+      "description": "Additional packages derived from this codebase that can be published separately",
+      "patternProperties": {
+        "^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Human-readable description of this subpackage",
+              "maxLength": 500
+            },
+            "tags": {
+              "type": "array",
+              "description": "Tags for categorizing and searching this subpackage",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_.-]+$"
+              },
+              "uniqueItems": true
+            },
+            "test": {
+              "type": "object",
+              "description": "Test configuration overrides for this subpackage",
+              "additionalProperties": false,
+              "properties": {
+                "phases": {
+                  "type": "object",
+                  "description": "Phase overrides (cannot override globalSetup or globalTeardown)",
+                  "additionalProperties": false,
+                  "properties": {
+                    "setup": { "$ref": "#/definitions/lifecycleCommands" },
+                    "run": { "$ref": "#/definitions/lifecycleCommands" },
+                    "teardown": { "$ref": "#/definitions/lifecycleCommands" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
     }
   },
   "definitions": {
