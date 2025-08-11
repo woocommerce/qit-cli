@@ -145,7 +145,7 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with test package missing manifest.json
+	 * Test with test package missing qit-test.json
 	 * Common when users create their own test packages incorrectly
 	 */
 	public function test_package_missing_manifest(): void {
@@ -299,7 +299,7 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 		mkdir( $tempDir, 0755, true );
 		$this->tempDirs[] = $tempDir;
 		
-		// Create a test file but NO manifest.json
+		// Create a test file but NO qit-test.json
 		file_put_contents( $tempDir . '/test.spec.js', 'console.log("test");' );
 		
 		return $tempDir;

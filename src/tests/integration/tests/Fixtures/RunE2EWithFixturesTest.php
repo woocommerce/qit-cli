@@ -160,7 +160,7 @@ class RunE2EWithFixturesTest extends TestCase {
 			$output 
 		);
 		$this->assertStringContainsString(
-			'Add "allure-dir" to manifest.json for failure debugging',
+			'Add "allure-dir" to qit-test.json for failure debugging',
 			$output
 		);
 	}

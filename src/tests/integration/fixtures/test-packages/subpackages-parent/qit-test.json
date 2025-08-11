@@ -1,0 +1,74 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "woocommerce/e2e-suite",
+  "test_type": "e2e",
+  "description": "Main E2E test suite with subpackages",
+  "test": {
+    "phases": {
+      "globalSetup": [
+        "echo '[GLOBAL_SETUP] Setting up WordPress environment'"
+      ],
+      "setup": [
+        "echo '[SETUP] Package-specific setup'"
+      ],
+      "run": [
+        "npx playwright test tests/all.spec.js"
+      ],
+      "teardown": [
+        "echo '[TEARDOWN] Package-specific teardown'"
+      ],
+      "globalTeardown": [
+        "echo '[GLOBAL_TEARDOWN] Cleaning up WordPress environment'"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "allure-dir": "./results/allure",
+      "blob-dir": "./blob-report"
+    }
+  },
+  "subpackages": {
+    "woocommerce/checkout": {
+      "description": "Checkout flow E2E tests",
+      "tags": ["checkout", "payments"],
+      "test": {
+        "phases": {
+          "setup": [
+            "echo '[SETUP] Checkout-specific setup'"
+          ],
+          "run": [
+            "npx playwright test tests/checkout.spec.js"
+          ]
+        }
+      }
+    },
+    "woocommerce/cart": {
+      "description": "Cart functionality E2E tests",
+      "tags": ["cart", "shopping"],
+      "test": {
+        "phases": {
+          "run": [
+            "npx playwright test tests/cart.spec.js"
+          ]
+        }
+      }
+    },
+    "woocommerce/account": {
+      "description": "My Account E2E tests",
+      "tags": ["account", "user"],
+      "test": {
+        "phases": {
+          "setup": [
+            "echo '[SETUP] Account-specific setup'"
+          ],
+          "run": [
+            "npx playwright test tests/account.spec.js"
+          ],
+          "teardown": [
+            "echo '[TEARDOWN] Account-specific cleanup'"
+          ]
+        }
+      }
+    }
+  }
+}

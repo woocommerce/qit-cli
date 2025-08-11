@@ -26,7 +26,7 @@ class PackageScaffoldTest extends \PHPUnit\Framework\TestCase {
 		// Check that the directory was created
 		$this->assertDirectoryExists( $temp_dir );
 
-		// Check that manifest.json exists and has correct content
+		// Check that qit-test.json exists and has correct content
 		$this->assertFileExists( $temp_dir . '/qit-test.json' );
 		$manifest = json_decode( file_get_contents( $temp_dir . '/qit-test.json' ), true );
 		$this->assertEquals( 'woocommerce', $manifest['vendor'] );

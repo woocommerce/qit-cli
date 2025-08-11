@@ -59,7 +59,7 @@ class PublishCommandTest extends QITTestCase {
 			->with( 'vendor' )
 			->willReturn( true );
 
-		// Create a temporary directory with manifest.json
+		// Create a temporary directory with qit-test.json
 		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'qit_test_' );
 		mkdir( $temp_dir );
 		
@@ -98,7 +98,7 @@ class PublishCommandTest extends QITTestCase {
 		$this->zipper->expects( $this->once() )
 			->method( 'extract_zip' )
 			->willReturnCallback( function( $zip_path, $extract_to ) {
-				// Create manifest.json in extract directory
+				// Create qit-test.json in extract directory
 				mkdir( $extract_to, 0755, true );
 				file_put_contents( $extract_to . '/qit-test.json', json_encode( [
 					'$schema' => 'https://qit.woo.com/json-schema/test-package',
@@ -171,7 +171,7 @@ class PublishCommandTest extends QITTestCase {
 		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'qit_test_' );
 		mkdir( $temp_dir );
 
-		// Create a manifest.json file so we can reach the version validation
+		// Create a qit-test.json file so we can reach the version validation
 		$manifest_content = json_encode( [
 			'$schema' => 'https://qit.woo.com/json-schema/test-package',
 			'vendor' => 'vendor',
@@ -255,11 +255,11 @@ class PublishCommandTest extends QITTestCase {
 			->with( 'vendor' )
 			->willReturn( true );
 
-		// Create a temporary directory with manifest.json
+		// Create a temporary directory with qit-test.json
 		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'qit_test_' );
 		mkdir( $temp_dir );
 
-		// Create a manifest.json file
+		// Create a qit-test.json file
 		$manifest_content = json_encode( [
 			'$schema' => 'https://qit.woo.com/json-schema/test-package',
 			'vendor' => 'vendor',
@@ -331,7 +331,7 @@ class PublishCommandTest extends QITTestCase {
 			->with( 'vendor' )
 			->willReturn( true );
 
-		// Create a temporary directory with manifest.json
+		// Create a temporary directory with qit-test.json
 		$temp_dir = sys_get_temp_dir() . '/' . uniqid( 'qit_test_' );
 		mkdir( $temp_dir );
 		
@@ -370,7 +370,7 @@ class PublishCommandTest extends QITTestCase {
 		$this->zipper->expects( $this->once() )
 			->method( 'extract_zip' )
 			->willReturnCallback( function( $zip_path, $extract_to ) {
-				// Create manifest.json in extract directory
+				// Create qit-test.json in extract directory
 				mkdir( $extract_to, 0755, true );
 				file_put_contents( $extract_to . '/qit-test.json', json_encode( [
 					'$schema' => 'https://qit.woo.com/json-schema/test-package',
