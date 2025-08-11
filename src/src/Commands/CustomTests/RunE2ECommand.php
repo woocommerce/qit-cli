@@ -760,10 +760,6 @@ class RunE2ECommand extends QITCommand {
 		$parent_versions = [];
 
 		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( ! isset( $meta['manifest'] ) ) {
-				continue;
-			}
-
 			$manifest = $meta['manifest'];
 
 			// Check if this is a subpackage
@@ -1056,7 +1052,7 @@ class RunE2ECommand extends QITCommand {
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
 	 * @param array<string,mixed>                              $test_packages The test packages to run.
 	 * @param SymfonyStyle                                     $io The IO interface.
-	 * @param array                                            $runner_args Arguments to pass to test framework after --.
+	 * @param array<string>                                    $runner_args Arguments to pass to test framework after --.
 	 *
 	 * @return array{int, \QIT_CLI\Environment\PackageOrchestrator, string} Returns [exit_status, orchestrator, artifacts_dir].
 	 */

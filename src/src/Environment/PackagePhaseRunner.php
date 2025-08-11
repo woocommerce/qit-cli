@@ -404,7 +404,7 @@ class PackagePhaseRunner {
 	 * @param string              $package_path Package directory path.
 	 * @param string|null         $artifacts_dir Artifacts directory for CTRF files.
 	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
-	 * @param array               $runner_args Arguments to pass through to test framework (only used for 'run' phase).
+	 * @param array<string>       $runner_args Arguments to pass through to test framework (only used for 'run' phase).
 	 * @return int Number of commands that were actually executed.
 	 * @throws \RuntimeException On command failure.
 	 */
