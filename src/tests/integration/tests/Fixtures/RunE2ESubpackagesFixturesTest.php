@@ -111,7 +111,6 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'package:publish',
 			$packageDir,
-			'--force', // Force overwrite if it exists
 		], return_process: true );
 
 		// Skip if we're not connected to a Manager
@@ -286,7 +285,6 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		qit( [
 			'package:publish',
 			$packageDir,
-			'--force',
 		], return_process: true );
 		
 		$published = true;

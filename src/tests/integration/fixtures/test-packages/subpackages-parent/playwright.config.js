@@ -12,7 +12,7 @@ module.exports = defineConfig({
   workers: 1,
   reporter: [
     ['line'],
-    ['@playwright/test/reporter', { outputFile: './results/ctrf.json' }]
+    ['playwright-ctrf-json-reporter', { outputFile: './results/ctrf.json' }]
   ],
   use: {
     baseURL: process.env.BASE_URL || 'http://localhost',

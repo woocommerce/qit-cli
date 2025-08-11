@@ -1,7 +1,6 @@
 {
   "$schema": "https://qit.woo.com/json-schema/test-package",
-  "package": "my-woo-test-package",
-  "namespace": "woocommerce",
+  "package": "woocommerce/test-package-one",
   "test_type": "e2e",
   "description": "Custom WooCommerce test package for testing orchestrator",
   "test": {

@@ -1,7 +1,6 @@
 {
   "$schema": "https://qit.woo.com/json-schema/test-package",
-  "package": "global-setup-test-package",
-  "namespace": "woocommerce",
+  "package": "woocommerce/global-setup-package",
   "test_type": "e2e",
   "description": "Test package with globalSetup and globalTeardown phases",
   "test": {

@@ -1,7 +1,6 @@
 {
   "$schema": "https://qit.woo.com/json-schema/test-package",
-  "package": "second-test-package",
-  "namespace": "woocommerce",
+  "package": "woocommerce/test-package-two",
   "test_type": "e2e",
   "description": "Second test package to demonstrate multiple package orchestration",
   "test": {

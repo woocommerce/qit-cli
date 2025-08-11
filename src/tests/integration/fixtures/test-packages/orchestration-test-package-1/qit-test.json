@@ -1,7 +1,6 @@
 {
   "$schema": "https://qit.woo.com/json-schema/test-package",
-  "package": "orchestration-test-package-1",
-  "namespace": "woocommerce",
+  "package": "woocommerce/orchestration-package-1",
   "test_type": "e2e",
   "description": "Tests orchestration by writing state and checking isolation",
   "test": {
