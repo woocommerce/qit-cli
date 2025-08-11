@@ -42,7 +42,6 @@ class PackagePublishCommand extends QITCommand {
 			)
 			->addArgument( 'path', InputArgument::REQUIRED, 'Path to directory or zip file containing qit-test.json' )
 			->addArgument( 'version', InputArgument::OPTIONAL, 'Version for this release (e.g. 1.0.0, 1.0.0-beta.1, latest) [default: latest]' )
-			->addOption( 'force', null, InputOption::VALUE_NONE, 'Force overwrite existing package version' )
 			->addOption( 'skip-validate', null, InputOption::VALUE_NONE, 'Skip manifest validation' );
 	}
 
@@ -50,7 +49,6 @@ class PackagePublishCommand extends QITCommand {
 		$io            = new SymfonyStyle( $input, $output );
 		$path          = $input->getArgument( 'path' );
 		$version       = $input->getArgument( 'version' );
-		$force         = $input->getOption( 'force' );
 		$skip_validate = $input->getOption( 'skip-validate' );
 
 		// Set default version if none provided
@@ -170,7 +168,7 @@ class PackagePublishCommand extends QITCommand {
 			 * Step 8: Upload to QIT registry
 			 * -------------------------------------------------------------------
 			 */
-			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, $force, $checksum, $output );
+			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, true, $checksum, $output );
 
 			/*
 			---------------------------------------------------------------------
