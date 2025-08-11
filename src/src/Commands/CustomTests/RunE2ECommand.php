@@ -783,14 +783,14 @@ class RunE2ECommand extends QITCommand {
 				);
 			}
 
-			if ( empty( $manifest['namespace'] ) || empty( $manifest['package'] ) ) {
+			// Parse the package field (must be in "namespace/package" format)
+			if ( empty( $manifest['package'] ) || ! str_contains( $manifest['package'], '/' ) ) {
 				throw new \InvalidArgumentException(
-					"Manifest must contain 'namespace' and 'package' fields: {$package_id}"
+					"Manifest must contain 'package' field in format 'namespace/package': {$package_id}"
 				);
 			}
-
-			$namespace = $manifest['namespace'];
-			$package   = $manifest['package'];
+			
+			[ $namespace, $package ] = explode( '/', $manifest['package'], 2 );
 			$version   = null; // Local packages don't have versions
 		} else {
 			// Remote package reference - parse the format
