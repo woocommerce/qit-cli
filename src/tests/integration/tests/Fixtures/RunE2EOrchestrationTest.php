@@ -53,8 +53,8 @@ class RunE2EOrchestrationTest extends TestCase {
 		$this->assertEquals( 0, $proc->getExitCode() );
 		
 		// Both packages should run in order
-		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/orchestration-test-package-1:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/orchestration-test-package-2:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/orchestration-package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/orchestration-package-2:local', $output );
 		
 		// Verify database restore happens between packages (proving isolation and orchestration)
 		$this->assertStringContainsString( 'DATABASE RESTORE', $output );
@@ -93,8 +93,8 @@ class RunE2EOrchestrationTest extends TestCase {
 		
 		// Both should still run successfully
 		// Packages should run in the specified order (package-2 first, then package-1)
-		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/orchestration-test-package-2:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/orchestration-test-package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/orchestration-package-2:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/orchestration-package-1:local', $output );
 		
 		// Verify database restore happens between packages
 		$this->assertStringContainsString( 'DATABASE RESTORE', $output );

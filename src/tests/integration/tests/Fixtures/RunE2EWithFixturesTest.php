@@ -202,7 +202,7 @@ class RunE2EWithFixturesTest extends TestCase {
 		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		unset( $manifest['test']['results']['allure-dir'] );
-		$manifest['package'] = $name;
+		$manifest['package'] = 'woocommerce/' . $name;
 		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT ) );
 		
 		return $packageDir;

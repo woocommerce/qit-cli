@@ -219,8 +219,7 @@ class RunE2EPackageOrderingTest extends TestCase {
 
 		// Create a simple manifest that just echoes a marker
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'test',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -246,8 +245,7 @@ class RunE2EPackageOrderingTest extends TestCase {
 
 		// Create a manifest with a test that fails
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'test',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [

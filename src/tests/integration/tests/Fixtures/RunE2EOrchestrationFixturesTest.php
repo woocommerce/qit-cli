@@ -235,8 +235,7 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 		
 		// Manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -288,8 +287,7 @@ JS;
 		
 		// Manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -334,8 +332,7 @@ JS;
 		
 		// Manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -384,8 +381,7 @@ JS;
 		
 		// Manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -434,8 +430,7 @@ JS;
 		
 		// Manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -478,8 +473,7 @@ JS;
 		
 		// Manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -522,8 +516,7 @@ JS;
 		
 		// Manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -568,8 +561,7 @@ JS;
 		
 		// Manifest with globalSetup phase
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
@@ -612,8 +604,7 @@ JS;
 		
 		// Manifest with globalTeardown phase
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'woocommerce',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [

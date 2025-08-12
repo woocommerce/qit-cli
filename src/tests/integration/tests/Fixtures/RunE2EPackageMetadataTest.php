@@ -119,8 +119,7 @@ class RunE2EPackageMetadataTest extends TestCase {
 		
 		// Create manifest
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'test',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'description' => 'Test package with blob report',
 			'test' => [
@@ -149,8 +148,7 @@ class RunE2EPackageMetadataTest extends TestCase {
 		
 		// Create manifest without run phase
 		$manifest = [
-			'package' => $name,
-			'namespace' => 'test',
+			'package' => 'woocommerce/' . $name,
 			'test_type' => 'e2e',
 			'description' => 'Utility package for setup only',
 			'test' => [

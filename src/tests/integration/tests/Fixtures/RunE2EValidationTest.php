@@ -126,8 +126,7 @@ class RunE2EValidationTest extends TestCase {
 
 		// Create manifest with run phase but no actual tests
 		$manifest = [
-			'package' => 'empty-test-package',
-			'namespace' => 'test',
+			'package' => 'woocommerce/empty-test-package',
 			'test_type' => 'e2e',
 			'description' => 'Package with run phase but no tests',
 			'test' => [
@@ -155,8 +154,7 @@ class RunE2EValidationTest extends TestCase {
 
 		// Create manifest with only setup/teardown phases (no run phase)
 		$manifest = [
-			'package' => 'utility-package',
-			'namespace' => 'test',
+			'package' => 'woocommerce/utility-package',
 			'test_type' => 'e2e',
 			'description' => 'Utility package for setup/teardown only',
 			'test' => [

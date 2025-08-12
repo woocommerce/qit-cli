@@ -1,21 +1,23 @@
-const { defineConfig } = require('@playwright/test');
+import { defineConfig } from '@playwright/test';
 
-module.exports = defineConfig({
+export default defineConfig({
   testDir: './tests',
-  timeout: 30 * 1000,
-  expect: {
-    timeout: 5000
-  },
-  fullyParallel: false,
-  forbidOnly: !!process.env.CI,
+  timeout: 30000,
   retries: 0,
   workers: 1,
   reporter: [
-    ['line'],
-    ['playwright-ctrf-json-reporter', { outputFile: './results/ctrf.json' }]
+    ['list'],
+    ['blob', {outputDir: './blob-report', title: 'Subpackages Parent Suite'}],
+    ['playwright-ctrf-json-reporter', {
+      outputDir: './results',
+      outputFile: 'ctrf.json',
+    }]
   ],
   use: {
-    baseURL: process.env.BASE_URL || 'http://localhost',
-    trace: 'on-first-retry',
+    baseURL: process.env.QIT_SITE_URL || 'http://localhost',
+    headless: true,
+    viewport: { width: 1280, height: 720 },
+    ignoreHTTPSErrors: true,
+    video: 'retain-on-failure',
   },
 });

@@ -189,7 +189,13 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 				$this->assertTrue( $foundCheckout, 'Checkout subpackage should be listed' );
 				$this->assertTrue( $foundCart, 'Cart subpackage should be listed' );
 				$this->assertTrue( $foundAccount, 'Account subpackage should be listed' );
+			} else {
+				// At minimum, verify we got a valid response
+				$this->assertIsArray( $data['packages'], 'Should get packages array in response' );
 			}
+		} else {
+			// If JSON parsing failed, at least check the command executed successfully
+			$this->assertEquals( 0, $proc->getExitCode(), 'Package list command should succeed' );
 		}
 	}
 

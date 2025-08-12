@@ -1,12 +1,14 @@
 {
   "name": "woocommerce-e2e-suite",
   "version": "1.0.0",
+  "private": true,
+  "type": "module",
   "description": "WooCommerce E2E test suite with subpackages",
   "scripts": {
     "test": "playwright test"
   },
   "devDependencies": {
-    "@playwright/test": "^1.41.1",
-    "playwright-ctrf-json-reporter": "^0.0.13"
+    "@playwright/test": "^1",
+    "playwright-ctrf-json-reporter": "^0.0.22"
   }
 }

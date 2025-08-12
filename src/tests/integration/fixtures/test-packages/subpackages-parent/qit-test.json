@@ -23,7 +23,6 @@
     },
     "results": {
       "ctrf-json": "./results/ctrf.json",
-      "allure-dir": "./results/allure",
       "blob-dir": "./blob-report"
     }
   },

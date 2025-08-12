@@ -197,8 +197,7 @@ class SecretHandlingTest extends TestCase {
 			];
 
 		$manifest = [
-			'package' => 'secret-test-package',
-			'namespace' => 'test',
+			'package' => 'woocommerce/secret-test-package',
 			'test_type' => 'e2e',
 			'description' => 'Package that requires secrets',
 			'requires' => [
@@ -228,8 +227,7 @@ class SecretHandlingTest extends TestCase {
 		$this->tempDirs[] = $tempDir;
 
 		$manifest = [
-			'package' => 'utility-package',
-			'namespace' => 'test',
+			'package' => 'woocommerce/utility-package',
 			'test_type' => 'e2e',
 			'description' => 'Utility package for testing',
 			'test' => [
@@ -254,8 +252,7 @@ class SecretHandlingTest extends TestCase {
 		$this->tempDirs[] = $tempDir;
 
 		$manifest = [
-			'package' => 'full-test-package',
-			'namespace' => 'test',
+			'package' => 'woocommerce/full-test-package',
 			'test_type' => 'e2e',
 			'description' => 'Test package with all phases',
 			'test' => [
