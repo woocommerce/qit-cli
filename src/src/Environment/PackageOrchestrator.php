@@ -482,11 +482,19 @@ class PackageOrchestrator {
 	 *
 	 * @param int    $exit_code Exit code of the command.
 	 * @param string $phase     Phase name (globalSetup, setup, run, teardown, globalTeardown).
-	 * @param string $package   Package identifier.
+	 * @param string $package   Package identifier (filesystem path).
+	 * @param string $namespace Namespace from manifest.
+	 * @param string $packageId Package ID from manifest (required).
+	 * @param string $testType  Test type from manifest.
 	 */
-	public function record_lifecycle_command( int $exit_code, string $phase, string $package ): void {
+	public function record_lifecycle_command( int $exit_code, string $phase, string $package, string $namespace, string $packageId, string $testType = 'unknown' ): void {
 		if ( ! $this->current_phase_command || ! $this->current_phase_start ) {
 			return;
+		}
+		
+		// Validate required fields
+		if ( empty( $packageId ) ) {
+			throw new \InvalidArgumentException( 'packageId is required for lifecycle commands' );
 		}
 
 		$duration = ( microtime( true ) - $this->current_phase_start ) * 1000; // Convert to milliseconds
@@ -507,6 +515,9 @@ class PackageOrchestrator {
 				'phase'              => $phase,
 				'package'            => $package,
 				'packageSlug'        => $package,  // Add packageSlug for CTRF merger.
+				'namespace'          => $namespace, // Add namespace from manifest
+				'packageId'          => $packageId, // Always use manifest packageId - no fallback
+				'testType'           => $testType, // Add test type from manifest
 				'exitCode'           => $exit_code,
 				'output'             => $output ?: '[No output]',
 				'isLifecycle'        => true,

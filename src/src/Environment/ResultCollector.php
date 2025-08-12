@@ -28,6 +28,16 @@ class ResultCollector {
 	 * @var array{total_packages: int, packages_with_blob: int, packages_without_blob: array<string>}|null
 	 */
 	private ?array $blob_tracking = null;
+	
+	/**
+	 * @var array<string, bool> Track which packages have been counted for blob
+	 */
+	private array $blob_counted = [];
+	
+	/**
+	 * @var array<string, bool> Track which packages have been counted for allure
+	 */
+	private array $allure_counted = [];
 
 	public function __construct( Docker $docker, NodeDependencyManager $node_deps ) {
 		$this->node_deps = $node_deps;
@@ -58,6 +68,8 @@ class ResultCollector {
 	public function reset_tracking(): void {
 		$this->allure_tracking = null;
 		$this->blob_tracking   = null;
+		$this->blob_counted    = [];
+		$this->allure_counted  = [];
 	}
 
 	/**
@@ -84,7 +96,7 @@ class ResultCollector {
 		// --------- 2️⃣  collect Allure (never mandatory) ----------------------
 		$has_allure = $this->collect_allure( $env, $slug, $mf, $dir );
 
-		// Track Allure configuration status
+		// Track Allure configuration status (only count each package once)
 		if ( ! isset( $this->allure_tracking ) ) {
 			$this->allure_tracking = [
 				'total_packages'          => 0,
@@ -93,11 +105,15 @@ class ResultCollector {
 			];
 		}
 
-		++$this->allure_tracking['total_packages'];
-		if ( $has_allure ) {
-			++$this->allure_tracking['packages_with_allure'];
-		} else {
-			$this->allure_tracking['packages_without_allure'][] = basename( $slug );
+		// Only count this package if we haven't counted it before
+		if ( ! isset( $this->allure_counted[ $slug ] ) ) {
+			$this->allure_counted[ $slug ] = true;
+			++$this->allure_tracking['total_packages'];
+			if ( $has_allure ) {
+				++$this->allure_tracking['packages_with_allure'];
+			} else {
+				$this->allure_tracking['packages_without_allure'][] = basename( $slug );
+			}
 		}
 
 		// --------- 3️⃣  collect Blob (optional, but track for warnings) ------
@@ -108,7 +124,7 @@ class ResultCollector {
 			$dir
 		);
 
-		// Track Blob configuration status
+		// Track Blob configuration status (only count each package once)
 		if ( ! isset( $this->blob_tracking ) ) {
 			$this->blob_tracking = [
 				'total_packages'        => 0,
@@ -117,11 +133,15 @@ class ResultCollector {
 			];
 		}
 
-		++$this->blob_tracking['total_packages'];
-		if ( $has_blob ) {
-			++$this->blob_tracking['packages_with_blob'];
-		} else {
-			$this->blob_tracking['packages_without_blob'][] = basename( $slug );
+		// Only count this package if we haven't counted it before
+		if ( ! isset( $this->blob_counted[ $slug ] ) ) {
+			$this->blob_counted[ $slug ] = true;
+			++$this->blob_tracking['total_packages'];
+			if ( $has_blob ) {
+				++$this->blob_tracking['packages_with_blob'];
+			} else {
+				$this->blob_tracking['packages_without_blob'][] = basename( $slug );
+			}
 		}
 	}
 
@@ -598,8 +618,13 @@ class ResultCollector {
 
 					// Initialize package entry if not seen before
 					if ( ! isset( $package_details[ $pkg_id ] ) ) {
+						// packageId MUST be present - it comes from the manifest
+						if ( ! isset( $test['extra']['packageId'] ) ) {
+							throw new \RuntimeException( "Missing packageId in test metadata for package: {$pkg_id}" );
+						}
+						
 						$package_details[ $pkg_id ] = [
-							'packageId'      => $pkg_id,
+							'packageId'      => $test['extra']['packageId'], // Always use manifest packageId - no fallback
 							'namespace'      => $test['extra']['namespace'] ?? 'unknown',
 							'testType'       => $test['extra']['testType'] ?? 'unknown',
 							'hasRunPhase'    => ( $test['extra']['phase'] ?? '' ) === 'run',

@@ -282,6 +282,29 @@ class RunE2EPackageMetadataTest extends TestCase {
 				
 				$this->assertEmpty( $unknown_tests, 'Should not have any tests with unknown/null packageSlug' );
 				
+				// Verify no duplicate bash script entries
+				$test_names = array_map( function( $test ) {
+					return $test['name'];
+				}, $ctrf['results']['tests'] );
+				
+				// Should not have both "setup.sh" and "[setup]..." entries
+				$this->assertNotContains( 'global-setup.sh', $test_names, 'Should not have duplicate global-setup.sh entry' );
+				$this->assertNotContains( 'setup.sh', $test_names, 'Should not have duplicate setup.sh entry' );
+				
+				// Verify report completeness is correct
+				if ( isset( $metadata['reportCompleteness'] ) ) {
+					if ( isset( $metadata['reportCompleteness']['blob'] ) ) {
+						$blob = $metadata['reportCompleteness']['blob'];
+						$this->assertEquals( $blob['packagesWithBlob'], $blob['totalPackagesWithTests'], 
+							'Blob package count should match total packages with tests' );
+					}
+					if ( isset( $metadata['reportCompleteness']['allure'] ) ) {
+						$allure = $metadata['reportCompleteness']['allure'];
+						$this->assertEquals( $allure['packagesWithAllure'], $allure['totalPackagesWithTests'],
+							'Allure package count should match total packages with tests' );
+					}
+				}
+				
 			} else {
 				$this->markTestSkipped( 'CTRF report not found at expected location: ' . $ctrf_path );
 			}

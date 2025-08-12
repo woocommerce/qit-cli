@@ -537,11 +537,19 @@ class PackagePhaseRunner {
 
 				// Record lifecycle command for orchestrator CTRF (for non-run phases)
 				if ( $phase !== 'run' ) {
-					$orchestrator->record_lifecycle_command( $execution_data['exit_code'], $phase, $package_id );
+					$orchestrator->record_lifecycle_command( 
+						$execution_data['exit_code'], 
+						$phase, 
+						$package_id,
+						$manifest->getNamespace(),
+						$manifest->getPackageId(),
+						$manifest->getTestType()
+					);
 				}
 
 				// Generate individual CTRF immediately for bash scripts
-				if ( $is_bash_script ) {
+				// Only generate for 'run' phase to avoid duplication with lifecycle commands
+				if ( $is_bash_script && $phase === 'run' ) {
 					$script_execution = array_merge( $execution_data, [ 'script' => $cmd ] );
 					// Pass package_id instead of package_path to ensure consistent identification
 					$this->generate_individual_bash_script_ctrf( $package_id, $package_path, $manifest, $phase, $script_execution, $artifacts_dir );
@@ -555,10 +563,17 @@ class PackagePhaseRunner {
 					}
 					// Record the failure but continue
 					if ( $phase !== 'run' ) {
-						$orchestrator->record_lifecycle_command( 1, $phase, $package_id );
+						$orchestrator->record_lifecycle_command( 
+							1, 
+							$phase, 
+							$package_id,
+							$manifest->getNamespace(),
+							$manifest->getPackageId(),
+							$manifest->getTestType()
+						);
 					}
-					// Still generate CTRF for the failed command
-					if ( $is_bash_script ) {
+					// Still generate CTRF for the failed command (only for run phase)
+					if ( $is_bash_script && $phase === 'run' ) {
 						$failed_execution = [
 							'script'    => $cmd,
 							'exit_code' => 1,
@@ -575,11 +590,18 @@ class PackagePhaseRunner {
 
 				// Record failed lifecycle command for orchestrator CTRF (for non-run phases)
 				if ( $phase !== 'run' ) {
-					$orchestrator->record_lifecycle_command( 1, $phase, $package_id );
+					$orchestrator->record_lifecycle_command( 
+						1, 
+						$phase, 
+						$package_id,
+						$manifest->getNamespace(),
+						$manifest->getPackageId(),
+						$manifest->getTestType()
+					);
 				}
 
-				// Generate CTRF for failed bash scripts too
-				if ( $is_bash_script ) {
+				// Generate CTRF for failed bash scripts too (only for run phase)
+				if ( $is_bash_script && $phase === 'run' ) {
 					$failed_execution = [
 						'script'    => $cmd,
 						'exit_code' => 1,
