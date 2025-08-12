@@ -293,13 +293,6 @@
                 "type": "boolean",
                 "description": "Continue execution even if this command fails",
                 "default": false
-              },
-              "env": {
-                "type": "object",
-                "description": "Additional environment variables for this command",
-                "additionalProperties": {
-                  "type": "string"
-                }
               }
             }
           }

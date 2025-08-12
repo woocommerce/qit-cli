@@ -100,12 +100,13 @@ class PackagePhaseRunner {
 	 * @param array<string, string> $env_vars Environment variables.
 	 * @param string                $phase The phase being executed (for timeout calculation).
 	 * @param PackageOrchestrator   $orchestrator Orchestrator for output formatting.
+	 * @param int|null              $cmd_timeout Optional command-specific timeout override.
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_on_host( string $cmd, string $package_path, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator ): array {
+	private function run_on_host( string $cmd, string $package_path, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator, ?int $cmd_timeout = null ): array {
 		$start_time = microtime( true );
-		$timeout    = $this->get_timeout_for_phase( $phase );
+		$timeout    = $cmd_timeout !== null ? $cmd_timeout : $this->get_timeout_for_phase( $phase );
 		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, $timeout );
 
 		// if on 'run' phase, add 'DEBUG=pw:api' env var
@@ -227,7 +228,7 @@ class PackagePhaseRunner {
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator ): array {
+	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator, ?int $cmd_timeout = null ): array {
 		$wrapped    = [ '/bin/bash', '-c', "cd {$workdir} && {$cmd}" ];
 		$start_time = microtime( true );
 		$stdout     = '';
@@ -266,7 +267,7 @@ class PackagePhaseRunner {
 				$wrapped,
 				$env_vars,      // extra env‑vars
 				null,           // user
-				$this->get_timeout_for_phase( $phase ),            // timeout
+				$cmd_timeout !== null ? $cmd_timeout : $this->get_timeout_for_phase( $phase ),            // timeout
 				'php',          // container
 				true,           // force_output  → always stream
 				$output_callback // custom output callback
@@ -461,7 +462,27 @@ class PackagePhaseRunner {
 		}
 
 		$executed = 0;
-		foreach ( $commands as $cmd ) {
+		foreach ( $commands as $cmd_item ) {
+			// Parse command - can be string or object
+			$cmd = '';
+			$cmd_timeout = null;
+			$cmd_runs_on = null;
+			$cmd_continue_on_error = false;
+			
+			if ( is_string( $cmd_item ) ) {
+				// Simple string command
+				$cmd = $cmd_item;
+			} elseif ( is_array( $cmd_item ) && isset( $cmd_item['command'] ) ) {
+				// Object command format
+				$cmd = $cmd_item['command'];
+				$cmd_timeout = isset( $cmd_item['timeout'] ) ? (int) $cmd_item['timeout'] : null;
+				$cmd_runs_on = isset( $cmd_item['runs_on'] ) ? $cmd_item['runs_on'] : null;
+				$cmd_continue_on_error = isset( $cmd_item['continue_on_error'] ) ? (bool) $cmd_item['continue_on_error'] : false;
+			} else {
+				// Invalid command format
+				throw new \RuntimeException( 'Invalid command format. Must be string or object with "command" field.' );
+			}
+			
 			// Append runner_args to commands in the 'run' phase
 			if ( $phase === 'run' && ! empty( $runner_args ) ) {
 				// Filter out shard arguments with warning
@@ -488,7 +509,14 @@ class PackagePhaseRunner {
 				}
 			}
 
-			$venue          = $this->determine_execution_venue( $cmd );
+			// Determine execution venue - use explicit runs_on if provided, otherwise auto-detect
+			if ( $cmd_runs_on === 'docker' ) {
+				$venue = 'container';
+			} elseif ( $cmd_runs_on === 'host' ) {
+				$venue = 'host';
+			} else {
+				$venue = $this->determine_execution_venue( $cmd );
+			}
 			$is_bash_script = $venue === 'container'; // Bash scripts run in container
 
 			// Prepare environment variables for test execution
@@ -500,9 +528,9 @@ class PackagePhaseRunner {
 
 			try {
 				if ( $venue === 'host' ) {
-					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars, $phase, $orchestrator );
+					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars, $phase, $orchestrator, $cmd_timeout );
 				} else {
-					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase, $orchestrator );
+					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase, $orchestrator, $cmd_timeout );
 				}
 
 				// Record lifecycle command for orchestrator CTRF (for non-run phases)
@@ -516,6 +544,32 @@ class PackagePhaseRunner {
 					$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $script_execution, $artifacts_dir );
 				}
 			} catch ( \RuntimeException $e ) {
+				// If continue_on_error is true, log the error but don't throw
+				if ( $cmd_continue_on_error ) {
+					$this->output->writeln( '<warning>Command failed but continue_on_error is set, continuing...</warning>' );
+					if ( $this->output->isVerbose() ) {
+						$this->output->writeln( '<warning>Error: ' . $e->getMessage() . '</warning>' );
+					}
+					// Record the failure but continue
+					if ( $phase !== 'run' ) {
+						$orchestrator->record_lifecycle_command( 1, $phase, $package_id );
+					}
+					// Still generate CTRF for the failed command
+					if ( $is_bash_script ) {
+						$failed_execution = [
+							'script'    => $cmd,
+							'exit_code' => 1,
+							'duration'  => 0,
+							'stdout'    => '',
+							'stderr'    => $e->getMessage(),
+						];
+						$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $failed_execution, $artifacts_dir );
+					}
+					// Continue to next command
+					$executed++;
+					continue;
+				}
+				
 				// Record failed lifecycle command for orchestrator CTRF (for non-run phases)
 				if ( $phase !== 'run' ) {
 					$orchestrator->record_lifecycle_command( 1, $phase, $package_id );
