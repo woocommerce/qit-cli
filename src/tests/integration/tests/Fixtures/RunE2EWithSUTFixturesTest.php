@@ -46,7 +46,18 @@ class RunE2EWithSUTFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with a plugin ZIP as additional plugin - common use case
+	 * Test #36: Plugin ZIP as additional
+	 * 
+	 * Coverage aim: Validates testing with plugin ZIP files.
+	 * Tests that custom plugin builds can be added to the test environment
+	 * via ZIP files using the --plugin flag.
+	 * 
+	 * Key aspects tested:
+	 * - Plugin ZIP loading via --plugin flag
+	 * - Custom plugin integration in tests
+	 * - Plugin installation and activation
+	 * - Tests run with additional plugins
+	 *
 	 * Note: For true SUT testing, the plugin needs to be registered with WooCommerce.com
 	 * This test demonstrates testing with custom plugin builds.
 	 */
@@ -81,7 +92,17 @@ class RunE2EWithSUTFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with a local directory as additional plugin - common for development
+	 * Test #37: Local directory as additional plugin
+	 * 
+	 * Coverage aim: Validates testing with local plugin directories.
+	 * Tests that plugins under development can be loaded from local directories
+	 * without needing to create ZIP files first.
+	 * 
+	 * Key aspects tested:
+	 * - Local directory plugin loading
+	 * - Development workflow support
+	 * - Direct plugin path usage
+	 * - No ZIP creation required
 	 */
 	public function test_local_directory_as_additional(): void {
 		// Create a minimal plugin directory
@@ -107,7 +128,18 @@ class RunE2EWithSUTFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with plugin that has compatibility issues
+	 * Test #38: Plugin with PHP fatal error
+	 * 
+	 * Coverage aim: Validates handling of plugins with fatal errors.
+	 * Tests that plugins with PHP fatal errors don't crash the entire test suite,
+	 * demonstrating WordPress's resilient plugin loading behavior.
+	 * 
+	 * Key aspects tested:
+	 * - Fatal error isolation
+	 * - WordPress plugin error handling
+	 * - Test suite resilience
+	 * - Silent failure mode
+	 *
 	 * This is important for users to understand failure modes
 	 */
 	public function test_plugin_with_php_fatal_error(): void {
@@ -135,7 +167,17 @@ class RunE2EWithSUTFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with multiple plugins
+	 * Test #39: Multiple plugins
+	 * 
+	 * Coverage aim: Validates testing with multiple additional plugins.
+	 * Tests that multiple plugins can be loaded simultaneously using
+	 * multiple --plugin flags.
+	 * 
+	 * Key aspects tested:
+	 * - Multiple plugin loading
+	 * - Plugin interaction testing
+	 * - Multiple --plugin flags
+	 * - Plugin activation order
 	 */
 	public function test_multiple_plugins(): void {
 		$plugin1 = $this->createTestPluginZip( 'plugin-one' );

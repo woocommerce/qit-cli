@@ -38,8 +38,18 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that global state set in globalSetup is available to ALL packages
-	 * This is CRITICAL - global setup should affect all test packages
+	 * Test #12: Global state shared across packages
+	 * 
+	 * Coverage aim: Validates globalSetup phase state sharing.
+	 * Tests that state created in the globalSetup phase is accessible to all
+	 * test packages in the run, validating the orchestration guarantee of
+	 * shared global environment setup.
+	 * 
+	 * Key aspects tested:
+	 * - GlobalSetup phase execution once for all packages
+	 * - State persistence across package boundaries
+	 * - All packages can access global state
+	 * - Proper phase ordering with global setup first
 	 */
 	public function test_global_state_shared_across_packages(): void {
 		// Create a package with globalSetup that creates state
@@ -88,8 +98,18 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that state from package 1 does NOT leak to package 2
-	 * This verifies isolation between packages
+	 * Test #13: Package isolation
+	 * 
+	 * Coverage aim: Validates package-level isolation guarantees.
+	 * Tests that state created by one package is isolated and doesn't leak
+	 * to subsequent packages, ensuring clean test environments via database
+	 * restoration between packages.
+	 * 
+	 * Key aspects tested:
+	 * - Database snapshot and restore between packages
+	 * - File system isolation per package
+	 * - No state leakage between packages
+	 * - Clean environment for each package
 	 */
 	public function test_package_isolation(): void {
 		// Package 1 creates a file
@@ -134,8 +154,18 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that packages execute in the specified order
-	 * and can communicate through the WordPress database
+	 * Test #14: Execution order and WP state
+	 * 
+	 * Coverage aim: Validates package execution order preservation.
+	 * Tests that packages execute in the exact order specified in configuration
+	 * and can communicate through WordPress database state when isolation is
+	 * intentionally bypassed.
+	 * 
+	 * Key aspects tested:
+	 * - Deterministic execution order
+	 * - WordPress option persistence within a package
+	 * - Order preservation from configuration
+	 * - Sequential package execution
 	 */
 	public function test_execution_order_and_wp_state(): void {
 		// Package 1 creates a WordPress option
@@ -180,8 +210,17 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that globalTeardown runs AFTER all packages
-	 * and can see accumulated state
+	 * Test #15: Global teardown sees all package results
+	 * 
+	 * Coverage aim: Validates globalTeardown phase timing and access.
+	 * Tests that the globalTeardown phase runs after all packages complete
+	 * and has access to accumulated results/state from all package executions.
+	 * 
+	 * Key aspects tested:
+	 * - GlobalTeardown runs after all packages
+	 * - Access to results from all packages
+	 * - Proper cleanup phase ordering
+	 * - State accumulation visibility
 	 */
 	public function test_global_teardown_sees_all_package_results(): void {
 		// Each package writes its own result file

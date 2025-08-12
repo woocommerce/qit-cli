@@ -31,10 +31,18 @@ class RunE2EOrchestrationTest extends TestCase {
 	}
 
 	/**
-	 * Test that orchestration guarantees are maintained:
-	 * - Database state persists between packages
-	 * - Filesystem is shared between packages
-	 * - Packages execute in order
+	 * Test #16: Orchestration guarantees
+	 * 
+	 * Coverage aim: Validates core orchestration guarantees using real packages.
+	 * Tests fundamental orchestration properties including database state management,
+	 * filesystem sharing, and execution order using fixture packages that verify
+	 * these guarantees internally.
+	 * 
+	 * Key aspects tested:
+	 * - Database snapshot/restore mechanism
+	 * - Filesystem sharing between packages
+	 * - Execution order preservation
+	 * - Global setup/teardown phases
 	 */
 	public function test_orchestration_guarantees(): void {
 		$package1 = $this->fixturesDir . '/orchestration-test-package-1';
@@ -72,7 +80,17 @@ class RunE2EOrchestrationTest extends TestCase {
 	}
 
 	/**
-	 * Test packages in reverse order to ensure they handle it gracefully
+	 * Test #17: Orchestration reverse order
+	 * 
+	 * Coverage aim: Validates orchestration with reversed package order.
+	 * Tests that orchestration guarantees hold regardless of package execution
+	 * order, ensuring the system handles different package sequences correctly.
+	 * 
+	 * Key aspects tested:
+	 * - Order independence of orchestration
+	 * - Database restore regardless of order
+	 * - Consistent results with different sequences
+	 * - Package isolation in any order
 	 */
 	public function test_orchestration_reverse_order(): void {
 		$package1 = $this->fixturesDir . '/orchestration-test-package-1';

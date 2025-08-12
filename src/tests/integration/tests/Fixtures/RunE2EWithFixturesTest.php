@@ -103,7 +103,17 @@ class RunE2EWithFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test mixed Allure configuration - one with, one without
+	 * Test #34: Mixed Allure configuration
+	 * 
+	 * Coverage aim: Validates handling of mixed Allure configurations.
+	 * Tests that when some packages have Allure and others don't, the system
+	 * handles the mixed configuration gracefully.
+	 * 
+	 * Key aspects tested:
+	 * - Mixed Allure configuration handling
+	 * - Incomplete Allure warning
+	 * - Partial report generation
+	 * - No upload with incomplete configuration
 	 */
 	public function test_mixed_allure_configuration(): void {
 		// Create a copy of package-two without Allure
@@ -136,7 +146,17 @@ class RunE2EWithFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test no Allure configuration at all
+	 * Test #35: No Allure configuration
+	 * 
+	 * Coverage aim: Validates behavior without any Allure configuration.
+	 * Tests that when no packages have Allure configured, the system runs
+	 * successfully with basic reporting only.
+	 * 
+	 * Key aspects tested:
+	 * - Running without Allure
+	 * - Basic result reporting
+	 * - Clear messaging about missing Allure
+	 * - Tests still execute successfully
 	 */
 	public function test_no_allure_configuration(): void {
 		$package1 = $this->createPackageWithoutAllure( 'no-allure-1' );

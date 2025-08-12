@@ -41,7 +41,17 @@ class SecretHandlingTest extends TestCase {
 	}
 
 	/**
-	 * Test that missing required secrets cause validation failure.
+	 * Test #40: Missing secrets validation fails
+	 * 
+	 * Coverage aim: Validates secret requirement enforcement.
+	 * Tests that packages requiring secrets fail validation when secrets
+	 * are not provided, with helpful error messages.
+	 * 
+	 * Key aspects tested:
+	 * - Secret requirement validation
+	 * - Missing secret error messages
+	 * - Export instructions provided
+	 * - Early validation failure
 	 */
 	public function test_missing_secrets_validation_fails(): void {
 		// Create a test package that requires secrets
@@ -65,7 +75,17 @@ class SecretHandlingTest extends TestCase {
 	}
 
 	/**
-	 * Test that secrets are validated and redacted from output.
+	 * Test #41: Secrets are redacted from output
+	 * 
+	 * Coverage aim: Validates secret redaction functionality.
+	 * Tests that sensitive values are automatically redacted from test output
+	 * to prevent accidental exposure of credentials.
+	 * 
+	 * Key aspects tested:
+	 * - Secret value redaction
+	 * - [REDACTED:KEY] placeholder usage
+	 * - Output security
+	 * - Secret validation success
 	 */
 	public function test_secrets_are_redacted_from_output(): void {
 		// Set required secrets
@@ -101,7 +121,17 @@ class SecretHandlingTest extends TestCase {
 	}
 
 	/**
-	 * Test that orchestrator CTRF is generated for lifecycle phases.
+	 * Test #42: Orchestrator CTRF generation
+	 * 
+	 * Coverage aim: Validates orchestrator lifecycle CTRF generation.
+	 * Tests that the orchestrator generates CTRF entries for setup and teardown
+	 * phases, enabling complete test lifecycle tracking.
+	 * 
+	 * Key aspects tested:
+	 * - Orchestrator CTRF file creation
+	 * - Lifecycle phase tracking
+	 * - Setup/teardown in CTRF
+	 * - CTRF file merging
 	 */
 	public function test_orchestrator_ctrf_generation(): void {
 		// Create a simple test package with all phases
@@ -151,7 +181,17 @@ class SecretHandlingTest extends TestCase {
 	}
 
 	/**
-	 * Test that output is suppressed in CI mode.
+	 * Test #43: Output suppression in CI
+	 * 
+	 * Coverage aim: Validates CI mode output suppression.
+	 * Tests that when running in CI environments, verbose command output
+	 * is suppressed while still showing the orchestrator UI.
+	 * 
+	 * Key aspects tested:
+	 * - CI environment detection
+	 * - Output suppression in CI
+	 * - Orchestrator UI still shown
+	 * - Command visibility vs output suppression
 	 */
 	public function test_output_suppression_in_ci(): void {
 		// Set CI environment

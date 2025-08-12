@@ -36,8 +36,17 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with specific PHP/WP/WooCommerce versions
-	 * This is important for compatibility testing
+	 * Test #1: Specific version configuration
+	 * 
+	 * Coverage aim: Validates that the CLI correctly handles explicit version specifications
+	 * for PHP, WordPress, and WooCommerce. Tests the version selection and environment
+	 * setup with specific versions to ensure compatibility matrix works.
+	 * 
+	 * Key aspects tested:
+	 * - PHP version selection (--php flag)
+	 * - WordPress version selection (--wp flag)
+	 * - WooCommerce version selection (--woo flag)
+	 * - Environment setup with specific versions
 	 */
 	public function test_specific_version_configuration(): void {
 		$testPackage = $this->fixturesDir . '/regular-test-package-one';
@@ -61,8 +70,16 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with NO test packages - common misconfiguration
-	 * Users often forget to include test packages
+	 * Test #2: No test packages configuration
+	 * 
+	 * Coverage aim: Validates error handling when no test packages are provided.
+	 * Tests that the system properly fails and provides clear feedback when users
+	 * forget to include test packages in their configuration.
+	 * 
+	 * Key aspects tested:
+	 * - Empty test package array handling
+	 * - Clear error messaging for missing packages
+	 * - Proper exit code on configuration error
 	 */
 	public function test_no_test_packages(): void {
 		// Create config with empty test packages
@@ -85,8 +102,16 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with non-existent test package path
-	 * Users often have wrong paths in their config
+	 * Test #3: Invalid test package path
+	 * 
+	 * Coverage aim: Validates error handling for non-existent test package paths.
+	 * Tests that the system properly detects and reports when test package paths
+	 * don't exist, a common user configuration error.
+	 * 
+	 * Key aspects tested:
+	 * - Path validation for test packages
+	 * - Error messaging for invalid paths
+	 * - Graceful failure with clear feedback
 	 */
 	public function test_invalid_test_package_path(): void {
 		$config = $this->createConfig( [ 
@@ -113,8 +138,16 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with malformed qit.json config
-	 * Users often have syntax errors in their JSON
+	 * Test #4: Malformed config JSON
+	 * 
+	 * Coverage aim: Validates JSON parsing error handling.
+	 * Tests that the system properly detects and reports JSON syntax errors
+	 * in configuration files, helping users debug configuration issues.
+	 * 
+	 * Key aspects tested:
+	 * - JSON syntax validation
+	 * - Parse error reporting
+	 * - Clear error messages for malformed JSON
 	 */
 	public function test_malformed_config_json(): void {
 		$tempDir = sys_get_temp_dir() . '/qit-fixture-test-' . uniqid();
@@ -145,8 +178,16 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with test package missing qit-test.json
-	 * Common when users create their own test packages incorrectly
+	 * Test #5: Package missing manifest
+	 * 
+	 * Coverage aim: Validates manifest file requirement enforcement.
+	 * Tests that packages without qit-test.json are properly rejected,
+	 * ensuring all test packages have required metadata.
+	 * 
+	 * Key aspects tested:
+	 * - Manifest file existence validation
+	 * - Package structure requirements
+	 * - Error handling for incomplete packages
 	 */
 	public function test_package_missing_manifest(): void {
 		$badPackage = $this->createPackageWithoutManifest();
@@ -172,8 +213,16 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with conflicting version requirements
-	 * E.g., WooCommerce 9.0 requires WP 6.4+, but user specifies WP 6.0
+	 * Test #6: Incompatible version combination
+	 * 
+	 * Coverage aim: Validates version compatibility checking.
+	 * Tests that incompatible version combinations (e.g., old WordPress with
+	 * new WooCommerce) are detected and handled appropriately.
+	 * 
+	 * Key aspects tested:
+	 * - Version compatibility matrix
+	 * - Detection of incompatible combinations
+	 * - Clear error messaging for version conflicts
 	 */
 	public function test_incompatible_version_combination(): void {
 		$testPackage = $this->fixturesDir . '/regular-test-package-one';
@@ -202,8 +251,16 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test with custom config section that doesn't exist
-	 * Users sometimes reference wrong config sections
+	 * Test #7: Non-existent config section
+	 * 
+	 * Coverage aim: Validates config section reference handling.
+	 * Tests that references to non-existent configuration sections are
+	 * properly detected and reported with helpful error messages.
+	 * 
+	 * Key aspects tested:
+	 * - Config section validation
+	 * - --config_section flag handling
+	 * - Error reporting for missing sections
 	 */
 	public function test_non_existent_config_section(): void {
 		$testPackage = $this->fixturesDir . '/regular-test-package-one';
@@ -249,8 +306,16 @@ class RunE2EConfigurationFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test running with --verbose flag for more output
-	 * Important for users debugging issues
+	 * Test #8: Verbose output
+	 * 
+	 * Coverage aim: Validates verbose output functionality.
+	 * Tests that the --verbose flag properly increases output detail,
+	 * helping users debug issues with more information.
+	 * 
+	 * Key aspects tested:
+	 * - Verbose flag functionality
+	 * - Enhanced output with -v flag
+	 * - Debug information availability
 	 */
 	public function test_verbose_output(): void {
 		$testPackage = $this->fixturesDir . '/regular-test-package-one';

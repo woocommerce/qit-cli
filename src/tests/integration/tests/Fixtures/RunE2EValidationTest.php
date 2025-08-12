@@ -91,7 +91,17 @@ class RunE2EValidationTest extends TestCase {
 	}
 
 	/**
-	 * Test mixed configuration: utility package + test package
+	 * Test #31: Mixed utility and test packages
+	 * 
+	 * Coverage aim: Validates mixing utility and test packages.
+	 * Tests that utility packages (setup only) and test packages can be
+	 * executed together, with utility packages providing setup capabilities.
+	 * 
+	 * Key aspects tested:
+	 * - Mixed package type execution
+	 * - Utility package setup contribution
+	 * - Test package execution after utility setup
+	 * - Proper orchestration of mixed types
 	 */
 	public function test_mixed_utility_and_test_packages(): void {
 		// Create one utility package and one test package

@@ -101,8 +101,17 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that subpackages are published atomically with parent
-	 * Note: This test simulates the publishing behavior
+	 * Test #27: Subpackages publish atomically
+	 * 
+	 * Coverage aim: Validates atomic publishing of subpackages.
+	 * Tests that when publishing a parent package, all subpackages are
+	 * published atomically with the same version.
+	 * 
+	 * Key aspects tested:
+	 * - Atomic publishing of parent and subpackages
+	 * - Version consistency across subpackages
+	 * - All subpackages published together
+	 * - Package listing after publish
 	 */
 	public function test_subpackages_publish_atomically(): void {
 		$packageDir = $this->fixturesDir . '/subpackages-parent';

@@ -34,7 +34,17 @@ class RunE2EPackageOrderingTest extends TestCase {
 	}
 
 	/**
-	 * Test that packages execute in the specified order
+	 * Test #19: Packages execute in order
+	 * 
+	 * Coverage aim: Validates deterministic package execution ordering.
+	 * Tests that multiple test packages execute in the exact order specified
+	 * in the configuration, ensuring predictable test execution sequences.
+	 * 
+	 * Key aspects tested:
+	 * - Sequential package execution
+	 * - Order preservation from configuration
+	 * - Output ordering verification
+	 * - Results collection from all packages
 	 */
 	public function test_packages_execute_in_order(): void {
 		// Create simple test packages that output unique markers
@@ -78,7 +88,17 @@ class RunE2EPackageOrderingTest extends TestCase {
 	}
 
 	/**
-	 * Test that failures in one package don't stop other packages
+	 * Test #20: Failure doesn't stop other packages
+	 * 
+	 * Coverage aim: Validates fault tolerance in multi-package execution.
+	 * Tests that when one package fails, subsequent packages still execute,
+	 * ensuring complete test coverage even with partial failures.
+	 * 
+	 * Key aspects tested:
+	 * - Continuation after package failure
+	 * - All packages execute regardless of failures
+	 * - Proper failure isolation
+	 * - Complete execution despite errors
 	 */
 	public function test_failure_doesnt_stop_other_packages(): void {
 		// Create packages with one that fails
@@ -108,7 +128,17 @@ class RunE2EPackageOrderingTest extends TestCase {
 	}
 
 	/**
-	 * Test that results are properly aggregated from all packages
+	 * Test #21: Results aggregation
+	 * 
+	 * Coverage aim: Validates test result aggregation across packages.
+	 * Tests that results from multiple packages are correctly collected,
+	 * merged, and reported in the final test summary.
+	 * 
+	 * Key aspects tested:
+	 * - Result collection from multiple packages
+	 * - Accurate test count aggregation
+	 * - Combined pass/fail statistics
+	 * - Merged results in summary
 	 */
 	public function test_results_aggregation(): void {
 		// Package 1: 3 tests pass
@@ -135,7 +165,17 @@ class RunE2EPackageOrderingTest extends TestCase {
 	}
 
 	/**
-	 * Test mixed results aggregation (some pass, some fail)
+	 * Test #22: Mixed results aggregation
+	 * 
+	 * Coverage aim: Validates result aggregation with mixed outcomes.
+	 * Tests that when packages have different outcomes (some tests pass,
+	 * some fail), the system correctly aggregates and reports combined statistics.
+	 * 
+	 * Key aspects tested:
+	 * - Mixed pass/fail result handling
+	 * - Accurate combined statistics
+	 * - Overall failure status with partial failures
+	 * - Correct test count aggregation
 	 */
 	public function test_mixed_results_aggregation(): void {
 		// Failing package: 2 pass, 1 fail
@@ -160,7 +200,17 @@ class RunE2EPackageOrderingTest extends TestCase {
 	}
 
 	/**
-	 * Test that CTRF reports are merged correctly
+	 * Test #23: CTRF merging
+	 * 
+	 * Coverage aim: Validates CTRF report merging across packages.
+	 * Tests that Common Test Results Format reports from multiple packages
+	 * are correctly merged into a single unified report.
+	 * 
+	 * Key aspects tested:
+	 * - CTRF report collection from packages
+	 * - Report merging process
+	 * - Merged report generation
+	 * - Post-processing of CTRF data
 	 */
 	public function test_ctrf_merging(): void {
 		$package1 = $this->fixturesDir . '/regular-test-package-one';
@@ -184,7 +234,17 @@ class RunE2EPackageOrderingTest extends TestCase {
 	}
 
 	/**
-	 * Test that blob reports are merged for HTML generation
+	 * Test #24: Blob report merging
+	 * 
+	 * Coverage aim: Validates blob report merging for HTML generation.
+	 * Tests that Playwright blob reports from multiple packages are merged
+	 * to generate a unified HTML test report.
+	 * 
+	 * Key aspects tested:
+	 * - Blob report collection
+	 * - HTML report generation from blobs
+	 * - Report merging process
+	 * - Local report availability
 	 */
 	public function test_blob_report_merging(): void {
 		$package1 = $this->fixturesDir . '/regular-test-package-one';

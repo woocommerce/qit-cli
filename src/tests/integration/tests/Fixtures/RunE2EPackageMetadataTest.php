@@ -30,7 +30,18 @@ class RunE2EPackageMetadataTest extends TestCase {
 	}
 
 	/**
-	 * Test that CTRF contains package metadata after merge
+	 * Test #18: CTRF contains package metadata
+	 * 
+	 * Coverage aim: Validates package metadata inclusion in CTRF reports.
+	 * Tests that CTRF (Common Test Results Format) reports include comprehensive
+	 * metadata about test packages including version, package counts, and report
+	 * completeness information.
+	 * 
+	 * Key aspects tested:
+	 * - Package metadata in CTRF extra field
+	 * - Version information preservation
+	 * - Package summary statistics
+	 * - Report completeness tracking
 	 */
 	public function test_ctrf_contains_package_metadata(): void {
 		// Create test package with blob report

@@ -38,8 +38,17 @@ class RunE2EFailureFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that failing tests trigger Allure upload
-	 * This is THE most important test - users need debugging info when tests fail
+	 * Test #9: Failing tests upload Allure
+	 * 
+	 * Coverage aim: Validates Allure report upload on test failure.
+	 * Tests that when E2E tests fail, Allure reports are automatically uploaded
+	 * to provide debugging information, a critical feature for test failure analysis.
+	 * 
+	 * Key aspects tested:
+	 * - Failure detection and exit code handling
+	 * - Automatic Allure upload trigger on failure
+	 * - Remote URL generation for debugging
+	 * - Failure reporting in test summary
 	 */
 	public function test_failing_tests_upload_allure(): void {
 		// First, we need to scaffold the failing test package since it needs node_modules
@@ -74,8 +83,17 @@ class RunE2EFailureFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test mixed pass/fail with multiple packages
-	 * Common scenario: some packages pass, some fail
+	 * Test #10: Mixed results multiple packages
+	 * 
+	 * Coverage aim: Validates handling of mixed pass/fail results across packages.
+	 * Tests that when running multiple packages where some pass and some fail,
+	 * the system correctly aggregates results and triggers appropriate actions.
+	 * 
+	 * Key aspects tested:
+	 * - Multiple package execution with different outcomes
+	 * - Overall failure when any package fails
+	 * - Allure upload on partial failure
+	 * - Result aggregation across packages
 	 */
 	public function test_mixed_results_multiple_packages(): void {
 		$failingPackage = $this->scaffoldFailingPackage();
@@ -106,8 +124,17 @@ class RunE2EFailureFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test failure with missing Allure configuration
-	 * User story: "My tests failed but I don't have Allure configured"
+	 * Test #11: Failing without Allure
+	 * 
+	 * Coverage aim: Validates failure handling without Allure configuration.
+	 * Tests that when tests fail but Allure is not configured, the system
+	 * still provides basic failure information and doesn't attempt upload.
+	 * 
+	 * Key aspects tested:
+	 * - Graceful handling of missing Allure configuration
+	 * - Clear messaging about missing Allure
+	 * - No upload attempt without Allure
+	 * - Basic results still available via remote URL
 	 */
 	public function test_failing_without_allure(): void {
 		// Create failing package without Allure
