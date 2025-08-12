@@ -77,13 +77,14 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 		$this->assertStringContainsString( 'GLOBAL SETUP', $output );
 		$this->assertStringContainsString( 'Running globalSetup phase for all packages', $output );
 		
-		// Verify both packages ran
-		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/package-1:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/package-2:local', $output );
+		// Verify all three packages ran (setup-package, package-1, package-2)
+		$this->assertStringContainsString( 'PACKAGE [1/3]: woocommerce/setup-package:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/3]: woocommerce/package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [3/3]: woocommerce/package-2:local', $output );
 		
 		// All tests should pass (packages successfully access global state)
 		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
-		$this->assertStringContainsString( 'Packages:      2/2 executed', $output );
+		$this->assertStringContainsString( 'Packages:      3/3 executed', $output );
 	}
 
 	/**
