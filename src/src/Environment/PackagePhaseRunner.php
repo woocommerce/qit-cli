@@ -312,12 +312,14 @@ class PackagePhaseRunner {
 	/**
 	 * Generate individual CTRF file for a single bash script execution
 	 *
+	 * @param string               $package_id Package identifier (full ID, not basename).
 	 * @param string               $package_path Package directory path.
 	 * @param TestPackageManifest  $manifest Package manifest.
 	 * @param string               $phase Phase name.
 	 * @param array<string, mixed> $script_execution Script execution data.
 	 */
 	private function generate_individual_bash_script_ctrf(
+		string $package_id,
 		string $package_path,
 		TestPackageManifest $manifest,
 		string $phase,
@@ -381,7 +383,7 @@ class PackagePhaseRunner {
 						'stderr'   => array_filter( explode( "\n", $script_execution['stderr'] ) ),
 						'extra'    => [
 							'phase'       => $phase,
-							'packageSlug' => basename( $package_path ),
+							'packageSlug' => $package_id,
 							'testType'    => $manifest->getTestType(),
 							'namespace'   => $manifest->getNamespace(),
 							'packageId'   => $manifest->getPackageId(),
@@ -464,25 +466,25 @@ class PackagePhaseRunner {
 		$executed = 0;
 		foreach ( $commands as $cmd_item ) {
 			// Parse command - can be string or object
-			$cmd = '';
-			$cmd_timeout = null;
-			$cmd_runs_on = null;
+			$cmd                   = '';
+			$cmd_timeout           = null;
+			$cmd_runs_on           = null;
 			$cmd_continue_on_error = false;
-			
+
 			if ( is_string( $cmd_item ) ) {
 				// Simple string command
 				$cmd = $cmd_item;
 			} elseif ( is_array( $cmd_item ) && isset( $cmd_item['command'] ) ) {
 				// Object command format
-				$cmd = $cmd_item['command'];
-				$cmd_timeout = isset( $cmd_item['timeout'] ) ? (int) $cmd_item['timeout'] : null;
-				$cmd_runs_on = isset( $cmd_item['runs_on'] ) ? $cmd_item['runs_on'] : null;
+				$cmd                   = $cmd_item['command'];
+				$cmd_timeout           = isset( $cmd_item['timeout'] ) ? (int) $cmd_item['timeout'] : null;
+				$cmd_runs_on           = isset( $cmd_item['runs_on'] ) ? $cmd_item['runs_on'] : null;
 				$cmd_continue_on_error = isset( $cmd_item['continue_on_error'] ) ? (bool) $cmd_item['continue_on_error'] : false;
 			} else {
 				// Invalid command format
 				throw new \RuntimeException( 'Invalid command format. Must be string or object with "command" field.' );
 			}
-			
+
 			// Append runner_args to commands in the 'run' phase
 			if ( $phase === 'run' && ! empty( $runner_args ) ) {
 				// Filter out shard arguments with warning
@@ -541,7 +543,8 @@ class PackagePhaseRunner {
 				// Generate individual CTRF immediately for bash scripts
 				if ( $is_bash_script ) {
 					$script_execution = array_merge( $execution_data, [ 'script' => $cmd ] );
-					$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $script_execution, $artifacts_dir );
+					// Pass package_id instead of package_path to ensure consistent identification
+					$this->generate_individual_bash_script_ctrf( $package_id, $package_path, $manifest, $phase, $script_execution, $artifacts_dir );
 				}
 			} catch ( \RuntimeException $e ) {
 				// If continue_on_error is true, log the error but don't throw
@@ -563,13 +566,13 @@ class PackagePhaseRunner {
 							'stdout'    => '',
 							'stderr'    => $e->getMessage(),
 						];
-						$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $failed_execution, $artifacts_dir );
+						$this->generate_individual_bash_script_ctrf( $package_id, $package_path, $manifest, $phase, $failed_execution, $artifacts_dir );
 					}
 					// Continue to next command
-					$executed++;
+					++$executed;
 					continue;
 				}
-				
+
 				// Record failed lifecycle command for orchestrator CTRF (for non-run phases)
 				if ( $phase !== 'run' ) {
 					$orchestrator->record_lifecycle_command( 1, $phase, $package_id );
@@ -584,7 +587,7 @@ class PackagePhaseRunner {
 						'stdout'    => '',
 						'stderr'    => $e->getMessage(),
 					];
-					$this->generate_individual_bash_script_ctrf( $package_path, $manifest, $phase, $failed_execution, $artifacts_dir );
+					$this->generate_individual_bash_script_ctrf( $package_id, $package_path, $manifest, $phase, $failed_execution, $artifacts_dir );
 				}
 				throw $e;
 			}

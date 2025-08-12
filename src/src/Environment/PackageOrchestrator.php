@@ -506,6 +506,7 @@ class PackageOrchestrator {
 				'type'               => 'lifecycle',
 				'phase'              => $phase,
 				'package'            => $package,
+				'packageSlug'        => $package,  // Add packageSlug for CTRF merger.
 				'exitCode'           => $exit_code,
 				'output'             => $output ?: '[No output]',
 				'isLifecycle'        => true,

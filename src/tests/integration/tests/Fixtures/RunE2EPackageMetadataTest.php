@@ -189,4 +189,161 @@ class RunE2EPackageMetadataTest extends TestCase {
 		
 		return $configPath;
 	}
+
+	/**
+	 * Test that local packages with setup/teardown scripts don't create duplicate entries
+	 * 
+	 * This test verifies that when a local test package contains global setup/teardown scripts,
+	 * it doesn't get split into both a "utility" and "test" package in the CTRF metadata.
+	 * Previously, bash scripts would use basename() for package identification while tests
+	 * used the full path, causing duplication.
+	 */
+	public function test_local_package_no_duplicate_entries(): void {
+		// Create a test package with both test and setup/teardown phases
+		$packageDir = $this->createLocalPackageWithLifecycle( 'local-test-pkg' );
+		
+		$config = [
+			'test_types' => [
+				'e2e' => [
+					'default' => [
+						'test_packages' => [ $packageDir ]
+					]
+				]
+			]
+		];
+		
+		$configPath = $this->writeConfig( $config );
+
+		// Run the test
+		$proc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--config=' . $configPath,
+		], return_process: true );
+
+		$this->assertEquals( 0, $proc->getExitCode(), 'Test should pass. Output: ' . $proc->getOutput() . "\n\nError: " . $proc->getErrorOutput() );
+		
+		// Find the CTRF report in the artifacts
+		$output = $proc->getOutput();
+		
+		// Try multiple patterns to find artifacts directory
+		$patterns = [
+			'/Artifacts directory: (.+)/',
+			'/Test artifacts saved to: (.+)/',
+			'/Results saved to: (.+)/',
+			'/Report available at: (.+)/'
+		];
+		
+		$artifacts_dir = null;
+		foreach ( $patterns as $pattern ) {
+			if ( preg_match( $pattern, $output, $matches ) ) {
+				$artifacts_dir = trim( $matches[1] );
+				break;
+			}
+		}
+		
+		if ( $artifacts_dir ) {
+			$ctrf_path = $artifacts_dir . '/final/ctrf/ctrf-report.json';
+			
+			if ( file_exists( $ctrf_path ) ) {
+				$ctrf = json_decode( file_get_contents( $ctrf_path ), true );
+				
+				// Check package metadata
+				$this->assertArrayHasKey( 'results', $ctrf );
+				$this->assertArrayHasKey( 'extra', $ctrf['results'] );
+				$this->assertArrayHasKey( 'qitPackageMetadata', $ctrf['results']['extra'] );
+				
+				$metadata = $ctrf['results']['extra']['qitPackageMetadata'];
+				
+				// Should only have ONE package, not two
+				$this->assertCount( 1, $metadata['packages'], 'Should have exactly one package, not duplicated' );
+				
+				$package = $metadata['packages'][0];
+				
+				// The single package should be marked as 'test' type since it has a run phase
+				$this->assertEquals( 'test', $package['packageType'], 'Package should be test type' );
+				$this->assertTrue( $package['hasRunPhase'], 'Package should have run phase' );
+				$this->assertGreaterThan( 0, $package['testCount'], 'Package should have tests' );
+				
+				// Verify the package ID is consistent (should be the full path)
+				$this->assertEquals( $packageDir, $package['packageId'], 'Package ID should be the full path' );
+				
+				// Check summary counts
+				$this->assertEquals( 1, $metadata['summary']['totalPackages'], 'Should have 1 total package' );
+				$this->assertEquals( 1, $metadata['summary']['packagesWithTests'], 'Should have 1 package with tests' );
+				$this->assertEquals( 0, $metadata['summary']['utilityPackages'], 'Should have 0 utility packages' );
+				
+				// Verify no "unknown" package entries in test results
+				$unknown_tests = array_filter( $ctrf['results']['tests'], function( $test ) {
+					return ! isset( $test['extra']['packageSlug'] ) || 
+					       $test['extra']['packageSlug'] === null ||
+					       $test['extra']['packageSlug'] === '';
+				} );
+				
+				$this->assertEmpty( $unknown_tests, 'Should not have any tests with unknown/null packageSlug' );
+				
+			} else {
+				$this->markTestSkipped( 'CTRF report not found at expected location: ' . $ctrf_path );
+			}
+		} else {
+			// Output first 500 chars of output to help debug
+			$this->markTestSkipped( 'Could not extract artifacts directory from output. Output start: ' . substr( $output, 0, 500 ) );
+		}
+	}
+
+	/**
+	 * Create a local test package with setup/teardown lifecycle phases
+	 */
+	private function createLocalPackageWithLifecycle( string $name ): string {
+		$packageDir = $this->fixturesDir . '/' . $name;
+		mkdir( $packageDir, 0755, true );
+		mkdir( $packageDir . '/bootstrap', 0755, true );
+		
+		// Create bash scripts for lifecycle phases
+		file_put_contents( $packageDir . '/bootstrap/global-setup.sh', '#!/bin/bash
+echo "[globalSetup] Starting global configuration..."
+echo "[globalSetup] Done."
+exit 0
+' );
+		chmod( $packageDir . '/bootstrap/global-setup.sh', 0755 );
+		
+		file_put_contents( $packageDir . '/bootstrap/setup.sh', '#!/bin/bash
+echo "[setup] Creating sample data ..."
+echo "[setup] Done."
+exit 0
+' );
+		chmod( $packageDir . '/bootstrap/setup.sh', 0755 );
+		
+		file_put_contents( $packageDir . '/bootstrap/global-teardown.sh', '#!/bin/bash
+echo "[globalTeardown] Cleaning up ..."
+echo "[globalTeardown] Done."
+exit 0
+' );
+		chmod( $packageDir . '/bootstrap/global-teardown.sh', 0755 );
+		
+		// Create manifest with all phases
+		$manifest = [
+			'package' => 'woocommerce/' . $name,
+			'test_type' => 'e2e',
+			'description' => 'Test package with lifecycle phases',
+			'test' => [
+				'phases' => [
+					'globalSetup' => [ './bootstrap/global-setup.sh' ],
+					'setup' => [ './bootstrap/setup.sh' ],
+					'run' => [
+						// Simple inline test that passes
+						'mkdir -p ./results && echo \'{"results":{"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"sample test","status":"passed","duration":100}]}}\' > ./results/ctrf.json'
+					],
+					'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			]
+		];
+		file_put_contents( $packageDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		
+		return $packageDir;
+	}
 }
