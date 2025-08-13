@@ -286,6 +286,17 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
+		// Build package local map for ResultCollector
+		$package_local_map = [];
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( isset( $meta['path'] ) ) {
+				$is_local = file_exists( $pkg_id ) && is_dir( $pkg_id );
+				$package_local_map[ $pkg_id ] = $is_local;
+			}
+		}
+		// Set the map in ResultCollector for later use
+		\QIT_CLI\Environment\ResultCollector::set_package_local_map( $package_local_map );
+		
 		// Add local test packages as volumes
 		foreach ( $test_packages as $pkg_id => $meta ) {
 			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {

@@ -38,6 +38,11 @@ class ResultCollector {
 	 * @var array<string, bool> Track which packages have been counted for allure
 	 */
 	private array $allure_counted = [];
+	
+	/**
+	 * @var array<string, bool> Static map of package ID to isLocal status
+	 */
+	private static array $package_local_map = [];
 
 	public function __construct( Docker $docker, NodeDependencyManager $node_deps ) {
 		$this->node_deps = $node_deps;
@@ -70,6 +75,25 @@ class ResultCollector {
 		$this->blob_tracking   = null;
 		$this->blob_counted    = [];
 		$this->allure_counted  = [];
+	}
+	
+	/**
+	 * Set the package local map for the current run
+	 * 
+	 * @param array<string, bool> $map Map of package ID to isLocal status
+	 */
+	public static function set_package_local_map( array $map ): void {
+		self::$package_local_map = $map;
+	}
+	
+	/**
+	 * Get isLocal status for a package
+	 * 
+	 * @param string $package_id The package ID
+	 * @return bool|null True if local, false if remote, null if unknown
+	 */
+	private static function get_package_is_local( string $package_id ): ?bool {
+		return self::$package_local_map[ $package_id ] ?? null;
 	}
 
 	/**
@@ -170,12 +194,15 @@ class ResultCollector {
 			mkdir( $dir_path, 0755, true );
 		}
 
+		// Get isLocal from static map
+		$isLocal = self::get_package_is_local( $slug );
+
 		/* 1 — host path ------------------------------------------------------- */
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . ltrim( $rel, './' );
 		if ( is_readable( $host_src ) ) {
 			copy( $host_src, $dst );
-			$this->tag_ctrf( $dst, $slug, $mf, $phase );
+			$this->tag_ctrf( $dst, $slug, $mf, $phase, $isLocal );
 
 			return;
 		}
@@ -184,7 +211,7 @@ class ResultCollector {
 		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . ltrim( $rel, './' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
-			$this->tag_ctrf( $dst, $slug, $mf, $phase );
+			$this->tag_ctrf( $dst, $slug, $mf, $phase, $isLocal );
 		} catch ( \RuntimeException $e ) {
 			if ( $mandatory ) {
 				throw $e;           // only fail for "run"
@@ -320,7 +347,7 @@ class ResultCollector {
 	/**
 	 * Tag CTRF file with package metadata (host version)
 	 */
-	private function tag_ctrf( string $ctrf_path, string $slug, TestPackageManifest $mf, string $phase ): void {
+	private function tag_ctrf( string $ctrf_path, string $slug, TestPackageManifest $mf, string $phase, ?bool $isLocal = null ): void {
 		if ( ! file_exists( $ctrf_path ) ) {
 			return;
 		}
@@ -336,6 +363,11 @@ class ResultCollector {
 				$test['extra']['testType']    = $mf->getTestType();
 				$test['extra']['namespace']   = $mf->getNamespace();
 				$test['extra']['packageId']   = $mf->getPackageId();
+				
+				// Add isLocal if provided
+				if ( $isLocal !== null ) {
+					$test['extra']['isLocal'] = $isLocal;
+				}
 			}
 			file_put_contents( $ctrf_path, json_encode( $data, JSON_PRETTY_PRINT ) );
 		}
@@ -623,6 +655,12 @@ class ResultCollector {
 							throw new \RuntimeException( "Missing packageId in test metadata for package: {$pkg_id}" );
 						}
 						
+						// Get isLocal from static map or test metadata
+						$isLocal = $test['extra']['isLocal'] ?? self::get_package_is_local( $pkg_id );
+						if ( $isLocal === null ) {
+							throw new \RuntimeException( "Missing isLocal in test metadata for package: {$pkg_id}" );
+						}
+						
 						$package_details[ $pkg_id ] = [
 							'packageId'      => $test['extra']['packageId'], // Always use manifest packageId - no fallback
 							'namespace'      => $test['extra']['namespace'] ?? 'unknown',
@@ -633,6 +671,7 @@ class ResultCollector {
 							'executionOrder' => $package_order[ $pkg_id ],
 							'firstSeen'      => $index,
 							'duration'       => 0,
+							'isLocal'        => $isLocal, // Package source - deterministic from static map
 						];
 					}
 
