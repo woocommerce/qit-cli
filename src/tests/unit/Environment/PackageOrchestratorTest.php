@@ -65,7 +65,7 @@ class PackageOrchestratorTest extends TestCase {
 		// Verify it was recorded
 		$results = $this->orchestrator->get_lifecycle_results();
 		$this->assertCount( 1, $results );
-		$this->assertEquals( '[setup] npm install', $results[0]['name'] );
+		$this->assertEquals( 'npm install', $results[0]['name'] );
 		$this->assertEquals( 'passed', $results[0]['status'] );
 		$this->assertEquals( 'setup', $results[0]['extra']['phase'] );
 		$this->assertEquals( 'test-package', $results[0]['extra']['package'] );

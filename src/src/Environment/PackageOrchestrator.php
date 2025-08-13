@@ -506,7 +506,7 @@ class PackageOrchestrator {
 		}
 
 		$this->lifecycle_results[] = [
-			'name'     => sprintf( '[%s] %s', $phase, $this->current_phase_command ),
+			'name'     => $this->current_phase_command,
 			'id'       => sprintf( '%s-%s-%d', $package, $phase, count( $this->lifecycle_results ) ),
 			'status'   => $exit_code === 0 ? 'passed' : 'failed',
 			'duration' => round( $duration ),
