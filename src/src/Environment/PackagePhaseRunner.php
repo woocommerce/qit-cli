@@ -537,9 +537,9 @@ class PackagePhaseRunner {
 
 				// Record lifecycle command for orchestrator CTRF (for non-run phases)
 				if ( $phase !== 'run' ) {
-					$orchestrator->record_lifecycle_command( 
-						$execution_data['exit_code'], 
-						$phase, 
+					$orchestrator->record_lifecycle_command(
+						$execution_data['exit_code'],
+						$phase,
 						$package_id,
 						$manifest->getNamespace(),
 						$manifest->getPackageId(),
@@ -563,9 +563,9 @@ class PackagePhaseRunner {
 					}
 					// Record the failure but continue
 					if ( $phase !== 'run' ) {
-						$orchestrator->record_lifecycle_command( 
-							1, 
-							$phase, 
+						$orchestrator->record_lifecycle_command(
+							1,
+							$phase,
 							$package_id,
 							$manifest->getNamespace(),
 							$manifest->getPackageId(),
@@ -590,9 +590,9 @@ class PackagePhaseRunner {
 
 				// Record failed lifecycle command for orchestrator CTRF (for non-run phases)
 				if ( $phase !== 'run' ) {
-					$orchestrator->record_lifecycle_command( 
-						1, 
-						$phase, 
+					$orchestrator->record_lifecycle_command(
+						1,
+						$phase,
 						$package_id,
 						$manifest->getNamespace(),
 						$manifest->getPackageId(),

@@ -82,7 +82,7 @@ class PackagePublishCommand extends QITCommand {
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
 			$namespace    = $manifest->getNamespace();
-			$package_name = $manifest->getPackage();
+			$package_name = $manifest->getPackageName();
 			$test_type    = $manifest->getTestType();
 
 			/*
@@ -331,8 +331,8 @@ class PackagePublishCommand extends QITCommand {
 				throw new \RuntimeException( "Manifest namespace '{$manifest->getNamespace()}' does not match expected '{$expected_namespace}'" );
 			}
 
-			if ( $expected_package !== $manifest->getPackage() ) {
-				throw new \RuntimeException( "Manifest package name '{$manifest->getPackage()}' does not match expected '{$expected_package}'" );
+			if ( $expected_package !== $manifest->getPackageName() ) {
+				throw new \RuntimeException( "Manifest package name '{$manifest->getPackageName()}' does not match expected '{$expected_package}'" );
 			}
 
 			$output->writeln( '✓ Manifest validation passed' );
