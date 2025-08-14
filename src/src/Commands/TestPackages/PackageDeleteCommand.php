@@ -26,8 +26,8 @@ class PackageDeleteCommand extends QITCommand {
 				'Package identifier in format namespace/package:version (e.g., woocommerce/e2e:latest)'
 			)
 			->addOption(
-				'force',
-				'f',
+				'yes',
+				'y',
 				InputOption::VALUE_NONE,
 				'Skip confirmation prompt'
 			)
@@ -43,7 +43,7 @@ class PackageDeleteCommand extends QITCommand {
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$io         = new SymfonyStyle( $input, $output );
 		$package_id = $input->getArgument( 'package_id' );
-		$force      = $input->getOption( 'force' );
+		$yes        = $input->getOption( 'yes' );
 		$format     = $input->getOption( 'format' );
 
 		// Validate package ID format
@@ -52,8 +52,8 @@ class PackageDeleteCommand extends QITCommand {
 			return 1;
 		}
 
-		// Confirmation prompt unless --force is used
-		if ( ! $force ) {
+		// Confirmation prompt unless --yes is used
+		if ( ! $yes ) {
 			$question = new ConfirmationQuestion(
 				"Are you sure you want to delete package '{$package_id}'? This action cannot be undone. [y/N] ",
 				false
