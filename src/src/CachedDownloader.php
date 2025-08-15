@@ -41,11 +41,11 @@ class CachedDownloader {
 	 * Download a resource with intelligent caching.
 	 * Automatically queries the appropriate API based on type.
 	 *
-	 * @param string $type Resource type: 'test_package', 'wporg_plugin', 'wporg_theme', 'wccom_extension', 'url'
-	 * @param string $identifier Unique identifier (e.g., 'woocommerce', 'namespace/package:1.0.0')
-	 * @param string $cache_dir Directory to cache files in
-	 * @param array  $options Optional: Additional options like explicit URL, version, etc.
-	 * @return array ['path' => file path, 'metadata' => remote metadata]
+	 * @param string              $type Resource type: 'test_package', 'wporg_plugin', 'wporg_theme', 'wccom_extension', 'url'.
+	 * @param string              $identifier Unique identifier (e.g., 'woocommerce', 'namespace/package:1.0.0').
+	 * @param string              $cache_dir Directory to cache files in.
+	 * @param array<string,mixed> $options Optional: Additional options like explicit URL, version, etc.
+	 * @return array{path: string, metadata: array<string,mixed>, cached: bool}
 	 */
 	public function download(
 		string $type,
@@ -102,6 +102,11 @@ class CachedDownloader {
 
 	/**
 	 * Fetch metadata from the appropriate remote API.
+	 *
+	 * @param string                    $type
+	 * @param string                    $identifier
+	 * @param array<string,string|null> $options
+	 * @return array<string,string|int|null>
 	 */
 	private function fetch_remote_metadata( string $type, string $identifier, array $options ): array {
 		// Check short-lived metadata cache first (30 seconds)
@@ -113,14 +118,25 @@ class CachedDownloader {
 		}
 
 		// Fetch based on type
-		$metadata = match ( $type ) {
-			'test_package' => $this->fetch_test_package_metadata( $identifier, $options ),
-			'wporg_plugin' => $this->fetch_wporg_plugin_metadata( $identifier ),
-			'wporg_theme' => $this->fetch_wporg_theme_metadata( $identifier ),
-			'wccom_extension' => $this->fetch_wccom_metadata( $identifier, $options ),
-			'url' => $this->fetch_url_metadata( $identifier, $options ),
-			default => throw new \InvalidArgumentException( "Unknown type: $type" )
-		};
+		switch ( $type ) {
+			case 'test_package':
+				$metadata = $this->fetch_test_package_metadata( $identifier, $options );
+				break;
+			case 'wporg_plugin':
+				$metadata = $this->fetch_wporg_plugin_metadata( $identifier );
+				break;
+			case 'wporg_theme':
+				$metadata = $this->fetch_wporg_theme_metadata( $identifier );
+				break;
+			case 'wccom_extension':
+				$metadata = $this->fetch_wccom_metadata( $identifier, $options );
+				break;
+			case 'url':
+				$metadata = $this->fetch_url_metadata( $identifier, $options );
+				break;
+			default:
+				throw new \InvalidArgumentException( "Unknown type: $type" );
+		}
 
 		// Cache for 30 seconds to prevent burst requests
 		$this->cache->set( $metadata_cache_key, $metadata, self::METADATA_CACHE_DURATION );
@@ -130,8 +146,12 @@ class CachedDownloader {
 
 	/**
 	 * Fetch test package metadata from QIT Manager.
+	 *
+	 * @param string                    $identifier
+	 * @param array<string,string|null> $options
+	 * @return array<string,string|int|null>
 	 */
-	private function fetch_test_package_metadata( string $identifier, array $options ): array {
+	private function fetch_test_package_metadata( string $identifier, array $options ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
@@ -157,6 +177,9 @@ class CachedDownloader {
 
 	/**
 	 * Fetch WordPress.org plugin metadata.
+	 *
+	 * @param string $slug
+	 * @return array<string,string|null>
 	 */
 	private function fetch_wporg_plugin_metadata( string $slug ): array {
 		$url = "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}";
@@ -181,6 +204,9 @@ class CachedDownloader {
 
 	/**
 	 * Fetch WordPress.org theme metadata.
+	 *
+	 * @param string $slug
+	 * @return array<string,string|null>
 	 */
 	private function fetch_wporg_theme_metadata( string $slug ): array {
 		$url = "https://api.wordpress.org/themes/info/1.2/?action=theme_information&request[slug]={$slug}";
@@ -204,6 +230,10 @@ class CachedDownloader {
 
 	/**
 	 * Fetch WooCommerce.com extension metadata.
+	 *
+	 * @param string                    $identifier
+	 * @param array<string,string|null> $options
+	 * @return array<string,string|null>
 	 */
 	private function fetch_wccom_metadata( string $identifier, array $options ): array {
 		// This would need the authenticated WCCOM API
@@ -220,6 +250,10 @@ class CachedDownloader {
 
 	/**
 	 * Handle generic URL metadata.
+	 *
+	 * @param string                    $url
+	 * @param array<string,string|null> $options
+	 * @return array<string,string|null>
 	 */
 	private function fetch_url_metadata( string $url, array $options ): array {
 		return [
@@ -231,6 +265,10 @@ class CachedDownloader {
 
 	/**
 	 * Check if cached file is still valid.
+	 *
+	 * @param array<string,string|int|null> $local_cache
+	 * @param array<string,string|int|null> $remote_metadata
+	 * @return bool
 	 */
 	private function is_cache_valid( array $local_cache, array $remote_metadata ): bool {
 		// Check if file still exists
@@ -285,6 +323,12 @@ class CachedDownloader {
 
 	/**
 	 * Perform the actual download.
+	 *
+	 * @param string                        $type
+	 * @param string                        $identifier
+	 * @param array<string,string|int|null> $remote_metadata
+	 * @param string                        $cache_dir
+	 * @return string
 	 */
 	private function perform_download(
 		string $type,
@@ -315,6 +359,11 @@ class CachedDownloader {
 
 	/**
 	 * Generate a cache filename.
+	 *
+	 * @param string              $type Resource type.
+	 * @param string              $identifier Resource identifier.
+	 * @param array<string,mixed> $metadata Metadata.
+	 * @return string
 	 */
 	private function generate_filename( string $type, string $identifier, array $metadata ): string {
 		// Clean up identifier for filename
@@ -329,7 +378,7 @@ class CachedDownloader {
 		}
 
 		// Add timestamp for uniqueness
-		$timestamp = date( 'Ymd-His' );
+		$timestamp = gmdate( 'Ymd-His' );
 
 		// Determine extension
 		$extension = $metadata['extension'] ?? 'zip';
@@ -339,6 +388,8 @@ class CachedDownloader {
 
 	/**
 	 * Get the cache map from storage.
+	 *
+	 * @return array<string,array<string,mixed>>
 	 */
 	private function get_cache_map(): array {
 		$map = $this->cache->get( self::CACHE_MAP_KEY );
@@ -347,6 +398,11 @@ class CachedDownloader {
 
 	/**
 	 * Update the cache map with new entry.
+	 *
+	 * @param string                        $cache_key
+	 * @param string                        $file_path
+	 * @param array<string,string|int|null> $metadata
+	 * @return void
 	 */
 	private function update_cache_map( string $cache_key, string $file_path, array $metadata ): void {
 		$map = $this->get_cache_map();
@@ -365,6 +421,9 @@ class CachedDownloader {
 
 	/**
 	 * Clean up invalid cache entry.
+	 *
+	 * @param array<string,string|int|null> $local_cache
+	 * @return void
 	 */
 	private function cleanup_invalid_cache( array $local_cache ): void {
 		if ( ! empty( $local_cache['path'] ) && file_exists( $local_cache['path'] ) ) {
@@ -402,6 +461,10 @@ class CachedDownloader {
 
 	/**
 	 * Get info about what's cached.
+	 *
+	 * @param string $type
+	 * @param string $identifier
+	 * @return array{path: string, version: string, checksum?: string}|null
 	 */
 	public function get_cached_info( string $type, string $identifier ): ?array {
 		$cache_map = $this->get_cache_map();

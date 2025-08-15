@@ -139,7 +139,7 @@ class ExtensionMetadataFetcher {
 
 		foreach ( $extensions as $extension ) {
 			// Check cache first
-			$cache_key       = 'wporg_metadata_' . md5( $extension->slug . '_' . $extension->type . '_' . ( $extension->version ?? 'stable' ) );
+			$cache_key       = 'wporg_metadata_' . md5( $extension->slug . '_' . $extension->type . '_' . ( $extension->version ?: 'stable' ) );
 			$cached_metadata = $this->cache->get( $cache_key );
 
 			if ( $cached_metadata && is_array( $cached_metadata ) ) {

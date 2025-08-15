@@ -241,7 +241,7 @@ class TestPackageDownloader {
 	 * @param string              $cache_dir The cache directory path.
 	 * @return TestPackageManifest|null The cached manifest or null if not cached/checksum changed.
 	 */
-	protected function validate_and_get_cached_package( string $reference, array $metadata, string $cache_dir ): ?TestPackageManifest {
+	protected function validate_and_get_cached_package( string $reference, array $metadata, string $cache_dir ): ?TestPackageManifest { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
 		// Use checksum as the cache key component for reliable cache invalidation
 		if ( ! isset( $metadata['checksum'] ) || empty( $metadata['checksum'] ) ) {
 			// No checksum available, can't use cache
@@ -383,9 +383,9 @@ class TestPackageDownloader {
 	/**
 	 * Download and extract a test package (already validated that cache doesn't have it)
 	 *
-	 * @param string              $reference
-	 * @param array<string,mixed> $metadata Package metadata including URL and checksum
-	 * @param string              $cache_dir
+	 * @param string              $reference Package reference.
+	 * @param array<string,mixed> $metadata Package metadata including URL and checksum.
+	 * @param string              $cache_dir Cache directory.
 	 * @return TestPackageManifest
 	 */
 	protected function download_package( string $reference, array $metadata, string $cache_dir ): TestPackageManifest {
@@ -591,8 +591,8 @@ class TestPackageDownloader {
 	/**
 	 * Extract package ID from a reference (removes version suffix).
 	 *
-	 * @param string $reference Package reference like "namespace/package:version"
-	 * @return string Package ID like "namespace/package"
+	 * @param string $reference Package reference like "namespace/package:version".
+	 * @return string Package ID like "namespace/package".
 	 */
 	protected function extract_package_id( string $reference ): string {
 		if ( strpos( $reference, ':' ) !== false ) {
@@ -610,9 +610,9 @@ class TestPackageDownloader {
 	 * - Inherits requires, mu_plugins, envs, timeout, retry from parent
 	 * - Can override: description, tags, test.phases.setup/run/teardown
 	 *
-	 * @param TestPackageManifest $parent_manifest The parent package manifest
-	 * @param string              $subpackage_id The subpackage ID to extract
-	 * @return TestPackageManifest|null The subpackage manifest or null if not found
+	 * @param TestPackageManifest $parent_manifest The parent package manifest.
+	 * @param string              $subpackage_id The subpackage ID to extract.
+	 * @return TestPackageManifest|null The subpackage manifest or null if not found.
 	 */
 	protected function extract_subpackage_manifest( TestPackageManifest $parent_manifest, string $subpackage_id ): ?TestPackageManifest {
 		// Check if parent has this subpackage
