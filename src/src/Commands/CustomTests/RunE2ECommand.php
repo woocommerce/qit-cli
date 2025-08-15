@@ -710,7 +710,7 @@ class RunE2ECommand extends QITCommand {
 	 * @throws \RuntimeException On cleanup failures.
 	 */
 	private function cleanup_test_package_results( string $package_path, \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest ): void {
-		$results = $manifest->getTestResults();
+		$results = $manifest->get_test_results();
 
 		foreach ( $results as $type => $rel_path ) {
 			$full_path = rtrim( $package_path, '/' ) . '/' . ltrim( $rel_path, './' );
@@ -1096,13 +1096,13 @@ class RunE2ECommand extends QITCommand {
 				$has_any_packages = true;
 
 				// Check for secrets
-				$requires = $manifest->getRequires();
+				$requires = $manifest->get_requires();
 				if ( isset( $requires['secrets'] ) && is_array( $requires['secrets'] ) ) {
 					$all_required_secrets = array_merge( $all_required_secrets, $requires['secrets'] );
 				}
 
 				// Check if this is a test package (has run phase)
-				if ( $manifest->hasPhase( 'run' ) ) {
+				if ( $manifest->has_phase( 'run' ) ) {
 					$has_test_packages = true;
 				}
 			}
@@ -1185,7 +1185,7 @@ class RunE2ECommand extends QITCommand {
 					continue;
 				}
 
-				$phases                = $manifest->getPhases();
+				$phases                = $manifest->get_phases();
 				$global_setup_commands = $phases['globalSetup'] ?? [];
 
 				if ( empty( $global_setup_commands ) ) {
@@ -1285,7 +1285,7 @@ class RunE2ECommand extends QITCommand {
 				$package_path = $meta['path'];
 
 				// Build display name from manifest - this is the canonical package identifier
-				$display_name = $manifest->getPackageId();
+				$display_name = $manifest->get_package_id();
 
 				// Version MUST be set in metadata - either 'local' or a specific version
 				if ( ! isset( $metadata['version'] ) ) {
@@ -1330,22 +1330,22 @@ class RunE2ECommand extends QITCommand {
 					// Run full lifecycle for test packages: setup -> run -> teardown
 					$orchestrator->phase_start( 'setup' );
 					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir, $orchestrator, [], $manifest );
-					if ( $setup_count > 0 && $manifest->hasResults() ) {
+					if ( $setup_count > 0 && $manifest->has_results() ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
 					}
 
 					// Run phase with CTRF collection even on test failures
-					if ( $manifest->hasPhase( 'run' ) ) {
+					if ( $manifest->has_phase( 'run' ) ) {
 						try {
 							$orchestrator->phase_start( 'run' );
 							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $runner_args, $manifest );
 							// Normal CTRF collection for successful runs
-							if ( $manifest->hasResults() ) {
+							if ( $manifest->has_results() ) {
 								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 							}
 						} catch ( \RuntimeException $e ) {
 							// Collect CTRF even if tests failed (exit code 1 from test failures)
-							if ( $manifest->hasResults() ) {
+							if ( $manifest->has_results() ) {
 								try {
 									$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
 								} catch ( \Throwable $collector_err ) {
@@ -1391,7 +1391,7 @@ class RunE2ECommand extends QITCommand {
 
 					// Validate that packages with run phase produce test results
 					// Note: If a package has a run phase, it MUST have results defined per schema
-					if ( $manifest->hasPhase( 'run' ) && $manifest->hasResults() ) {
+					if ( $manifest->has_phase( 'run' ) && $manifest->has_results() ) {
 						$ctrf_path = $artifacts_dir . '/ctrf/' . ltrim( str_replace( [ '/', ':' ], '_', $pkg_id ), '._' ) . '.json';
 						if ( file_exists( $ctrf_path ) ) {
 							$ctrf_data  = json_decode( file_get_contents( $ctrf_path ), true );
@@ -1481,7 +1481,7 @@ class RunE2ECommand extends QITCommand {
 					continue;
 				}
 
-				$phases                   = $manifest->getPhases();
+				$phases                   = $manifest->get_phases();
 				$global_teardown_commands = $phases['globalTeardown'] ?? [];
 
 				if ( empty( $global_teardown_commands ) ) {

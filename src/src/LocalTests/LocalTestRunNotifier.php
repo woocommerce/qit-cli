@@ -168,7 +168,7 @@ class LocalTestRunNotifier {
 			foreach ( $env_info->test_packages_metadata as $pkg_id => $pkg_info ) {
 				if ( isset( $pkg_info['manifest'] ) && $pkg_info['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
 					$manifest     = $pkg_info['manifest'];
-					$test_results = $manifest->getTestResults();
+					$test_results = $manifest->get_test_results();
 
 					// Check if 'json' property exists in manifest results
 					if ( isset( $test_results['json'] ) ) {

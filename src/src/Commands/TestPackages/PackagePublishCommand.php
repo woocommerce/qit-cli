@@ -81,9 +81,9 @@ class PackagePublishCommand extends QITCommand {
 			$io->writeln( '<info>Reading package details from qit-test.json...</info>' );
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
-			$namespace    = $manifest->getNamespace();
-			$package_name = $manifest->getPackageName();
-			$test_type    = $manifest->getTestType();
+			$namespace    = $manifest->get_namespace();
+			$package_name = $manifest->get_package_name();
+			$test_type    = $manifest->get_test_type();
 
 			/*
 			---------------------------------------------------------------------
@@ -327,12 +327,12 @@ class PackagePublishCommand extends QITCommand {
 			// Parse and validate manifest
 			$manifest = $this->manifest_parser->parse( $manifest_path );
 
-			if ( $expected_namespace !== $manifest->getNamespace() ) {
-				throw new \RuntimeException( "Manifest namespace '{$manifest->getNamespace()}' does not match expected '{$expected_namespace}'" );
+			if ( $expected_namespace !== $manifest->get_namespace() ) {
+				throw new \RuntimeException( "Manifest namespace '{$manifest->get_namespace()}' does not match expected '{$expected_namespace}'" );
 			}
 
-			if ( $expected_package !== $manifest->getPackageName() ) {
-				throw new \RuntimeException( "Manifest package name '{$manifest->getPackageName()}' does not match expected '{$expected_package}'" );
+			if ( $expected_package !== $manifest->get_package_name() ) {
+				throw new \RuntimeException( "Manifest package name '{$manifest->get_package_name()}' does not match expected '{$expected_package}'" );
 			}
 
 			$output->writeln( '✓ Manifest validation passed' );

@@ -178,7 +178,7 @@ class ResultCollector {
 		string $phase
 	): void {
 
-		$rel = $mf->getTestResults()['ctrf-json'] ?? null;
+		$rel = $mf->get_test_results()['ctrf-json'] ?? null;
 		if ( ! $rel ) {
 			if ( $mandatory ) {
 				throw new RuntimeException( "manifest lacks ctrf-json for phase '{$phase}'" );
@@ -230,7 +230,7 @@ class ResultCollector {
 		string $dir
 	): bool {
 
-		$rel = $mf->getTestResults()['allure-dir'] ?? null;
+		$rel = $mf->get_test_results()['allure-dir'] ?? null;
 		if ( ! $rel ) {
 			return false;
 		}                     // no declaration → skip
@@ -275,7 +275,7 @@ class ResultCollector {
 		string $dir
 	): bool {
 
-		$rel = $mf->getTestResults()['blob-dir'] ?? null;
+		$rel = $mf->get_test_results()['blob-dir'] ?? null;
 		if ( ! $rel ) {
 			return false;  // No blob-dir configured
 		}
@@ -360,9 +360,9 @@ class ResultCollector {
 				}
 				$test['extra']['packageSlug'] = $slug;
 				$test['extra']['phase']       = $phase;
-				$test['extra']['testType']    = $mf->getTestType();
-				$test['extra']['namespace']   = $mf->getNamespace();
-				$test['extra']['packageId']   = $mf->getPackageId();
+				$test['extra']['testType']    = $mf->get_test_type();
+				$test['extra']['namespace']   = $mf->get_namespace();
+				$test['extra']['packageId']   = $mf->get_package_id();
 
 				// Add isLocal if provided
 				if ( $is_local !== null ) {
@@ -578,7 +578,7 @@ class ResultCollector {
 	 */
 	public function map_container_to_host_paths( TestPackageManifest $manifest, string $package_id, string $host_artifacts_dir ): array {
 		$mappings = [];
-		$results  = $manifest->getTestResults();
+		$results  = $manifest->get_test_results();
 
 		foreach ( $results as $type => $container_path ) {
 			// Handle relative paths
@@ -606,9 +606,9 @@ class ResultCollector {
 	public function tag_ctrf_with_package_metadata( string $package_id, TestPackageManifest $manifest ): array {
 		return [
 			'packageSlug' => $package_id,
-			'testType'    => $manifest->getTestType(),
-			'namespace'   => $manifest->getNamespace(),
-			'packageId'   => $manifest->getPackageId(),
+			'testType'    => $manifest->get_test_type(),
+			'namespace'   => $manifest->get_namespace(),
+			'packageId'   => $manifest->get_package_id(),
 		];
 	}
 

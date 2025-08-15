@@ -327,7 +327,7 @@ class PackagePhaseRunner {
 		?string $artifacts_dir = null
 	): void {
 		// Get CTRF file path from manifest
-		$test_results = $manifest->getTestResults();
+		$test_results = $manifest->get_test_results();
 		$ctrf_path    = $test_results['ctrf-json'] ?? null;
 
 		if ( ! $ctrf_path ) {
@@ -384,9 +384,9 @@ class PackagePhaseRunner {
 						'extra'    => [
 							'phase'       => $phase,
 							'packageSlug' => $package_id,
-							'testType'    => $manifest->getTestType(),
-							'namespace'   => $manifest->getNamespace(),
-							'packageId'   => $manifest->getPackageId(),
+							'testType'    => $manifest->get_test_type(),
+							'namespace'   => $manifest->get_namespace(),
+							'packageId'   => $manifest->get_package_id(),
 							'scriptType'  => 'bash',
 						],
 					],
@@ -435,7 +435,7 @@ class PackagePhaseRunner {
 			$manifest = $this->parser->parse( $manifest_path );
 		}
 
-		$commands = $manifest->getPhaseCommands( $phase );
+		$commands = $manifest->get_phase_commands( $phase );
 
 		if ( empty( $commands ) ) {
 			return 0;
@@ -547,9 +547,9 @@ class PackagePhaseRunner {
 						$execution_data['exit_code'],
 						$phase,
 						$package_id,
-						$manifest->getNamespace(),
-						$manifest->getPackageId(),
-						$manifest->getTestType()
+						$manifest->get_namespace(),
+						$manifest->get_package_id(),
+						$manifest->get_test_type()
 					);
 				}
 
@@ -573,9 +573,9 @@ class PackagePhaseRunner {
 							1,
 							$phase,
 							$package_id,
-							$manifest->getNamespace(),
-							$manifest->getPackageId(),
-							$manifest->getTestType()
+							$manifest->get_namespace(),
+							$manifest->get_package_id(),
+							$manifest->get_test_type()
 						);
 					}
 					// Still generate CTRF for the failed command (only for run phase)
@@ -600,9 +600,9 @@ class PackagePhaseRunner {
 						1,
 						$phase,
 						$package_id,
-						$manifest->getNamespace(),
-						$manifest->getPackageId(),
-						$manifest->getTestType()
+						$manifest->get_namespace(),
+						$manifest->get_package_id(),
+						$manifest->get_test_type()
 					);
 				}
 

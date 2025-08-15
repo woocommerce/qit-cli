@@ -666,6 +666,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			$this->markTestSkipped( 'Test requires connection to QIT Manager' );
 		}
 		
+		// Check if publish succeeded
+		$this->assertEquals( 0, $publishProc->getExitCode(),
+			'Failed to publish package: ' . $publishProc->getOutput() );
+		
 		// Run checkout and cart subpackages together
 		$proc = qit( [
 			'run:e2e',
@@ -1158,12 +1162,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$packageName = $manifest['package'];
 		
-		// Test 1: Use utility subpackage with env:up --global-setup
+		// Test 1: Use utility subpackage with env:up --global_setup
 		$envUpProc = qit( [
 			'env:up',
-			'woocommerce',
-			'--global-setup',
-			'--test-package=' . $packageName . '/setup-heavy:1.0.0',
+			'--global_setup=' . $packageName . '/setup-heavy:1.0.0',
 		], return_process: true );
 		
 		$envUpOutput = $envUpProc->getOutput();
@@ -1215,7 +1217,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$manifestPath = $tempDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = 'woocommerce/dedup-test-' . substr( uniqid(), 0, 8 );
+		$packageBase = 'woocommerce/dedup-test-' . substr( uniqid(), 0, 8 );
+		$manifest['package'] = $packageBase;
 		
 		// Parent has base setup
 		$manifest['test']['phases']['globalSetup'] = [
@@ -1223,17 +1226,40 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			'echo "[DEDUP] Command B"'
 		];
 		
+		// Clear existing subpackages and add new ones with matching names
+		$manifest['subpackages'] = [];
+		
 		// Subpackage 1 repeats some commands and adds new ones
-		$manifest['subpackages']['woocommerce/checkout']['test']['phases']['globalSetup'] = [
-			'echo "[DEDUP] Command A"',  // Duplicate
-			'echo "[DEDUP] Command B"',  // Duplicate
-			'echo "[DEDUP] Command C"'   // New
+		$manifest['subpackages'][$packageBase . '/checkout'] = [
+			'description' => 'Checkout flow tests',
+			'test' => [
+				'phases' => [
+					'globalSetup' => [
+						'echo "[DEDUP] Command A"',  // Duplicate
+						'echo "[DEDUP] Command B"',  // Duplicate
+						'echo "[DEDUP] Command C"'   // New
+					],
+					'run' => [
+						'npx playwright test tests/checkout.spec.js'
+					]
+				]
+			]
 		];
 		
 		// Subpackage 2 has different overlap
-		$manifest['subpackages']['woocommerce/cart']['test']['phases']['globalSetup'] = [
-			'echo "[DEDUP] Command B"',  // Duplicate
-			'echo "[DEDUP] Command D"'   // New
+		$manifest['subpackages'][$packageBase . '/cart'] = [
+			'description' => 'Cart tests',
+			'test' => [
+				'phases' => [
+					'globalSetup' => [
+						'echo "[DEDUP] Command B"',  // Duplicate
+						'echo "[DEDUP] Command D"'   // New
+					],
+					'run' => [
+						'npx playwright test tests/cart.spec.js'
+					]
+				]
+			]
 		];
 		
 		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
@@ -1252,22 +1278,23 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$this->assertEquals( 0, $publishProc->getExitCode(),
 			'Should publish package' );
 		
-		$packageName = $manifest['package'];
-		
-		// Run all three packages together
+		// Run just the subpackages (can't mix parent with subpackages)
 		$runProc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=' . $packageName . ':1.0.0',
-			'--test-package=' . $packageName . '/checkout:1.0.0',
-			'--test-package=' . $packageName . '/cart:1.0.0',
+			'--test-package=' . $packageBase . '/checkout:1.0.0',
+			'--test-package=' . $packageBase . '/cart:1.0.0',
 		], return_process: true );
 		
 		$runOutput = $runProc->getOutput();
 		
+		// Check if the command succeeded
+		$this->assertEquals( 0, $runProc->getExitCode(),
+			'Should run parent and subpackages together. Output: ' . $runOutput );
+		
 		// Count occurrences of each command in globalSetup phase
 		// Extract just the globalSetup section to avoid counting from run phase output
-		preg_match('/GLOBAL SETUP.*?(?=PACKAGE \[1\/3\]|DB Export|$)/s', $runOutput, $globalSetupSection);
+		preg_match('/GLOBAL SETUP.*?(?=PACKAGE \[1\/2\]|DB Export|$)/s', $runOutput, $globalSetupSection);
 		$setupOutput = $globalSetupSection[0] ?? $runOutput;
 		
 		// Each command should appear exactly once in globalSetup
@@ -1292,7 +1319,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Clean up
 		qit( [
 			'package:delete',
-			$packageName . ':1.0.0',
+			$packageBase . ':1.0.0',
 			'--yes'
 		], return_process: true );
 	}
@@ -1317,6 +1344,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 						'echo "[PACKAGE1] Package 1 specific setup"'
 					],
 					'run' => ['echo "Running package 1 tests"']
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -1338,6 +1369,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 						'echo "[PACKAGE2] Package 2 specific setup"'         // Different
 					],
 					'run' => ['echo "Running package 2 tests"']
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];

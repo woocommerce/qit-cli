@@ -90,6 +90,10 @@ class TestPackageDownloader {
 	 * @return array<string,TestPackageManifest> Map of reference => manifest objects
 	 */
 	public function download( array $packages, string $cache_dir ): array {
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( '[DEBUG] Starting download with packages: ' . json_encode( $packages ) );
+		}
+
 		if ( empty( $packages ) ) {
 			return [];
 		}
@@ -156,6 +160,10 @@ class TestPackageDownloader {
 
 			// Process by artifact group (packages that share the same ZIP)
 			foreach ( $artifact_groups as $artifact_key => $package_ids ) {
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( '[DEBUG] Processing artifact group: ' . json_encode( $package_ids ) );
+				}
+
 				// Find packages in this group that we need to process
 				$group_packages = [];
 				foreach ( $package_ids as $package_id ) {
@@ -173,6 +181,9 @@ class TestPackageDownloader {
 				$first_metadata  = $group_packages[ $first_reference ];
 
 				// Check if the primary package is already cached
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( "[DEBUG] Checking cache for primary package: $first_reference" );
+				}
 				$cached_manifest = $this->validate_and_get_cached_package( $first_reference, $first_metadata, $cache_dir );
 				if ( $cached_manifest !== null ) {
 					$manifests[ $first_reference ] = $cached_manifest;
@@ -205,6 +216,13 @@ class TestPackageDownloader {
 					$subpackage_manifest  = $this->extract_subpackage_manifest( $primary_manifest, $requested_package_id );
 
 					if ( $subpackage_manifest !== null ) {
+						// Set metadata for the subpackage to use the parent's path
+						// The subpackage shares the same physical artifact as the parent
+						$this->package_metadata[ $reference ] = $this->package_metadata[ $first_reference ] ?? [];
+						if ( $this->output->isVeryVerbose() ) {
+							$this->output->writeln( "Extracted subpackage $reference from $first_reference" );
+							$this->output->writeln( '  Metadata path: ' . ( $this->package_metadata[ $reference ]['downloaded_path'] ?? 'NOT SET' ) );
+						}
 						$manifests[ $reference ] = $subpackage_manifest;
 					} else {
 						// This package doesn't exist as a subpackage in the primary manifest
@@ -242,9 +260,16 @@ class TestPackageDownloader {
 	 * @return TestPackageManifest|null The cached manifest or null if not cached/checksum changed.
 	 */
 	protected function validate_and_get_cached_package( string $reference, array $metadata, string $cache_dir ): ?TestPackageManifest { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( "[DEBUG] validate_and_get_cached_package called for: $reference" );
+		}
+
 		// Use checksum as the cache key component for reliable cache invalidation
 		if ( ! isset( $metadata['checksum'] ) || empty( $metadata['checksum'] ) ) {
 			// No checksum available, can't use cache
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->writeln( "[DEBUG] No checksum available for $reference, skipping cache" );
+			}
 			return null;
 		}
 
@@ -256,19 +281,42 @@ class TestPackageDownloader {
 		if ( $cached && is_array( $cached ) && isset( $cached['manifest'] ) ) {
 			// Verify the cached package still exists on disk
 			if ( isset( $cached['metadata']['downloaded_path'] ) && is_dir( $cached['metadata']['downloaded_path'] ) ) {
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( "[DEBUG] Found cached package data for $reference" );
+					$this->output->writeln( '[DEBUG] Creating TestPackageManifest from cached data' );
+					$this->output->writeln( "[DEBUG] Cached manifest 'package' field: " . ( $cached['manifest']['package'] ?? 'NOT SET' ) );
+				}
+
 				// Restore metadata for caller access
 				$this->package_metadata[ $reference ] = $cached['metadata'];
 
 				// Check if we need to handle subpackage extraction
-				$manifest_object      = new TestPackageManifest( $cached['manifest'] );
+				try {
+					$manifest_object = new TestPackageManifest( $cached['manifest'] );
+				} catch ( \Exception $e ) {
+					// Invalid cached manifest - delete it and throw error
+					$this->cache->delete( $cache_key );
+					if ( $this->output->isVerbose() ) {
+						$this->output->writeln( "Invalid cached manifest for $reference, cache deleted: " . $e->getMessage() );
+					}
+					// This shouldn't happen with checksum-based caching unless the manifest format changed
+					// Re-throw the exception so the issue is visible
+					throw new \RuntimeException( "Cached manifest for $reference is invalid: " . $e->getMessage(), 0, $e );
+				}
 				$requested_package_id = $this->extract_package_id( $reference );
-				$manifest_package_id  = $manifest_object->getPackageId();
+				$manifest_package_id  = $manifest_object->get_package_id();
 
 				// If the cached manifest is for a different package, check if it's a parent with the requested subpackage
 				if ( $requested_package_id !== $manifest_package_id ) {
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( "Cache hit for different package. Requested: $requested_package_id, Cached: $manifest_package_id" );
+					}
 					// Try to extract the subpackage configuration
 					$subpackage_manifest = $this->extract_subpackage_manifest( $manifest_object, $requested_package_id );
 					if ( $subpackage_manifest ) {
+						// Update metadata for the subpackage to point to the parent's path
+						// The subpackage uses the same physical files as the parent
+						$this->package_metadata[ $reference ] = $cached['metadata'];
 						return $subpackage_manifest;
 					}
 					// Cache miss - need to download the correct package
@@ -408,7 +456,17 @@ class TestPackageDownloader {
 				// Restore metadata for caller access
 				$this->package_metadata[ $reference ] = $cached['metadata'];
 
-				return new TestPackageManifest( $cached['manifest'] );
+				try {
+					return new TestPackageManifest( $cached['manifest'] );
+				} catch ( \Exception $e ) {
+					// Invalid cached manifest - delete it
+					$this->cache->delete( $cache_key );
+					if ( $this->output->isVerbose() ) {
+						$this->output->writeln( "Invalid cached manifest for $reference (second check), cache deleted: " . $e->getMessage() );
+						$this->output->writeln( 'Continuing with fresh download...' );
+					}
+					// Continue with download rather than throwing, since we're already in the download method
+				}
 			}
 		}
 
@@ -468,7 +526,7 @@ class TestPackageDownloader {
 
 		// Check if we requested a subpackage but got the parent manifest
 		$requested_package_id = $this->extract_package_id( $reference );
-		$manifest_package_id  = $manifest_object->getPackageId();
+		$manifest_package_id  = $manifest_object->get_package_id();
 
 		// If the downloaded manifest is for a different package, check if it's a parent with the requested subpackage
 		if ( $requested_package_id !== $manifest_package_id ) {
@@ -492,7 +550,7 @@ class TestPackageDownloader {
 		];
 		$this->package_metadata[ $reference ] = $metadata;
 
-		$manifest_array = $manifest_object->jsonSerialize();
+		$manifest_array = $manifest_object->to_array();
 
 		// Cache both manifest and metadata together
 		$this->cache->set( $cache_key, [
@@ -618,16 +676,23 @@ class TestPackageDownloader {
 		// Check if parent has this subpackage
 		$subpackage_config = $parent_manifest->get_subpackage( $subpackage_id );
 		if ( ! $subpackage_config ) {
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->writeln( "Subpackage $subpackage_id not found in parent manifest" );
+			}
 			return null;
 		}
 
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( "Found subpackage $subpackage_id in parent manifest" );
+		}
+
 		// Start with parent's configuration as base (full inheritance)
-		$parent_phases   = $parent_manifest->getPhases();
+		$parent_phases   = $parent_manifest->get_phases();
 		$subpackage_data = [
 			'package'        => $subpackage_id,
-			'parent_package' => $parent_manifest->getPackageId(),
-			'test_type'      => $parent_manifest->getTestType(),
-			'test_dir'       => $parent_manifest->getTestDir(),
+			'parent_package' => $parent_manifest->get_package_id(),
+			'test_type'      => $parent_manifest->get_test_type(),
+			'test_dir'       => $parent_manifest->get_test_dir(),
 			'test'           => [
 				'phases'  => [
 					// Global phases can be overridden or inherited
@@ -635,14 +700,14 @@ class TestPackageDownloader {
 					'globalTeardown' => $parent_phases['globalTeardown'] ?? [],
 				],
 				// Results paths inherited from parent
-				'results' => $parent_manifest->getTestResults(),
+				'results' => $parent_manifest->get_test_results(),
 			],
 			// Inherit other configurations from parent
-			'requires'       => $parent_manifest->getRequires(),
-			'mu_plugins'     => $parent_manifest->getMuPlugins(),
-			'envs'           => $parent_manifest->getEnv(),
-			'timeout'        => $parent_manifest->getTimeout(),
-			'retry'          => $parent_manifest->getRetry(),
+			'requires'       => $parent_manifest->get_requires(),
+			'mu_plugins'     => $parent_manifest->get_mu_plugins(),
+			'envs'           => $parent_manifest->get_env(),
+			'timeout'        => $parent_manifest->get_timeout(),
+			'retry'          => $parent_manifest->get_retry(),
 		];
 
 		// Apply subpackage-specific overrides (only for allowed fields)
@@ -673,6 +738,11 @@ class TestPackageDownloader {
 			if ( isset( $subpackage_phases['teardown'] ) ) {
 				$subpackage_data['test']['phases']['teardown'] = $subpackage_phases['teardown'];
 			}
+		}
+
+		// Debug the package field before creating manifest
+		if ( $this->output->isVeryVerbose() ) {
+			$this->output->writeln( 'Creating subpackage manifest with package ID: ' . $subpackage_data['package'] );
 		}
 
 		// Create and return the subpackage manifest
