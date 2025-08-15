@@ -1165,7 +1165,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Test 1: Use utility subpackage with env:up --global_setup
 		$envUpProc = qit( [
 			'env:up',
-			'--global_setup=' . $packageName . '/setup-heavy:1.0.0',
+			'--global_setup=woocommerce/setup-heavy:1.0.0',
 		], return_process: true );
 		
 		$envUpOutput = $envUpProc->getOutput();
@@ -1183,8 +1183,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$runProc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=' . $packageName . '/setup-heavy:1.0.0',
-			'--test-package=' . $packageName . '/checkout:1.0.0',
+			'--test-package=woocommerce/setup-heavy:1.0.0',
+			'--test-package=woocommerce/checkout:1.0.0',
 		], return_process: true );
 		
 		$runOutput = $runProc->getOutput();
@@ -1230,7 +1230,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$manifest['subpackages'] = [];
 		
 		// Subpackage 1 repeats some commands and adds new ones
-		$manifest['subpackages'][$packageBase . '/checkout'] = [
+		$manifest['subpackages']['woocommerce/dedup-checkout'] = [
 			'description' => 'Checkout flow tests',
 			'test' => [
 				'phases' => [
@@ -1247,7 +1247,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		];
 		
 		// Subpackage 2 has different overlap
-		$manifest['subpackages'][$packageBase . '/cart'] = [
+		$manifest['subpackages']['woocommerce/dedup-cart'] = [
 			'description' => 'Cart tests',
 			'test' => [
 				'phases' => [
@@ -1282,8 +1282,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$runProc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=' . $packageBase . '/checkout:1.0.0',
-			'--test-package=' . $packageBase . '/cart:1.0.0',
+			'--test-package=woocommerce/dedup-checkout:1.0.0',
+			'--test-package=woocommerce/dedup-cart:1.0.0',
 		], return_process: true );
 		
 		$runOutput = $runProc->getOutput();
@@ -1313,7 +1313,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			'Command D should execute exactly once' );
 		
 		// Verify the message about deduplication
-		$this->assertStringContainsString( 'Running 4 unique globalSetup commands', $runOutput,
+		$this->assertStringContainsString( 'Executed 4 unique commands', $runOutput,
 			'Should report the number of unique commands' );
 		
 		// Clean up
@@ -1343,11 +1343,15 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 						'echo "[SHARED] Setting up WordPress environment"',
 						'echo "[PACKAGE1] Package 1 specific setup"'
 					],
-					'run' => ['echo "Running package 1 tests"']
+					'run' => [
+						'echo "Running package 1 tests"',
+						'echo \'{"results":{"tests":[{"name":"test1","status":"passed"}]}}\' > results.json',
+						'mkdir -p blob'
+					]
 				],
 				'results' => [
-					'ctrf-json' => './results/ctrf.json',
-					'blob-dir' => './blob-report'
+					'ctrf-json' => './results.json',
+					'blob-dir' => './blob'
 				]
 			]
 		];
@@ -1368,11 +1372,15 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 						'echo "[SHARED] Setting up WordPress environment"',  // Same as package1
 						'echo "[PACKAGE2] Package 2 specific setup"'         // Different
 					],
-					'run' => ['echo "Running package 2 tests"']
+					'run' => [
+						'echo "Running package 2 tests"',
+						'echo \'{"results":{"tests":[{"name":"test2","status":"passed"}]}}\' > results.json',
+						'mkdir -p blob'
+					]
 				],
 				'results' => [
-					'ctrf-json' => './results/ctrf.json',
-					'blob-dir' => './blob-report'
+					'ctrf-json' => './results.json',
+					'blob-dir' => './blob'
 				]
 			]
 		];
