@@ -62,8 +62,6 @@ class ExtensionCacheManager {
 
 	protected EntrypointDetector $entrypoint_detector;
 	
-	/** @var ExtensionVersionValidator|null */
-	protected ?ExtensionVersionValidator $version_validator = null;
 
 	/** @var string[] */
 	protected $download_handlers = [
@@ -81,12 +79,6 @@ class ExtensionCacheManager {
 		$this->entrypoint_detector = $entrypoint_detector;
 	}
 	
-	/**
-	 * Set version validator for enhanced cache validation.
-	 */
-	public function set_version_validator( ExtensionVersionValidator $validator ): void {
-		$this->version_validator = $validator;
-	}
 
 	/**
 	 * Check if an extension is already cached without downloading or making API calls.
@@ -131,27 +123,28 @@ class ExtensionCacheManager {
 
 		// Check for cached remote extensions
 		if ( in_array( $extension->from, [ 'wporg', 'wccom', 'url' ], true ) ) {
-			// Need to know the version to check cache properly
-			// For stable versions, we can use a predictable cache key
 			$cache_file = $this->make_cache_path( $extension, $cache_dir );
+			
 			if ( file_exists( $cache_file ) ) {
 				// Check if it's a valid zip
 				$zip = new \ZipArchive();
 				if ( $zip->open( $cache_file, \ZipArchive::CHECKCONS ) === true ) {
 					$zip->close();
 					
-					// If we have a version validator, use it to check if cache is still valid
-					if ( $this->version_validator && in_array( $extension->from, [ 'wporg', 'wccom' ], true ) ) {
-						if ( ! $this->version_validator->is_cache_valid( $extension, $cache_file ) ) {
-							debug_log( "  Cache invalidated by version change: $cache_file" );
-							return false;
-						}
+					// Check cache age (max 1 day)
+					$age = time() - filemtime( $cache_file );
+					if ( $age > DAY_IN_SECONDS ) {
+						debug_log( "  Cache expired: older than 1 day" );
+						return false;
 					}
 					
 					debug_log( "  Found valid cached file: $cache_file" );
-					// Set the metadata so ensure_cached can use it
+					// Set the downloaded_source so ensure_cached can use it
 					$extension->downloaded_source = $cache_file;
 					return true;
+				} else {
+					// Invalid ZIP, remove it
+					unlink( $cache_file );
 				}
 			}
 		}

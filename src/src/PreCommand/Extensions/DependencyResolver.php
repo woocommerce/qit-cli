@@ -202,8 +202,8 @@ class DependencyResolver {
 				throw new \RuntimeException( 'Invalid response from WCCOM dependencies API' );
 			}
 
-			// Cache dependencies for 5 minutes - they change less frequently than versions
-			$this->cache->set( $cache_key, $response, 300 );
+			// Cache dependencies for 30 seconds to prevent API burst but still get fresh data
+			$this->cache->set( $cache_key, $response, 30 );
 		}
 
 		// Convert to Extensions objects
@@ -267,8 +267,8 @@ class DependencyResolver {
 
 			if ( ! is_array( $raw_info ) || ! isset( $raw_info['requires_plugins'] ) ) {
 				file_put_contents( '/tmp/qit/qit_debug.log', "DependencyResolver: No requires_plugins for $slug\n", FILE_APPEND );
-				// Cache empty dependencies for 5 minutes
-				$this->cache->set( $cache_key, [], 300 );
+				// Cache empty dependencies for 30 seconds
+				$this->cache->set( $cache_key, [], 30 );
 
 				return [];
 			}
@@ -281,8 +281,8 @@ class DependencyResolver {
 				$dependencies[]           = $ext;
 			}
 
-			// Cache the Extension objects for 5 minutes
-			$this->cache->set( $cache_key, $dependencies, 300 );
+			// Cache the Extension objects for 30 seconds
+			$this->cache->set( $cache_key, $dependencies, 30 );
 
 			return $dependencies;
 		} catch ( \Exception $e ) {
