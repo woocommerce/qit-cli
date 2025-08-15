@@ -1171,10 +1171,25 @@ class RunE2ECommand extends QITCommand {
 			App::setVar( 'skip_allure_upload', false );
 
 			// Run globalSetup phase for all packages
+			// Group subpackages by parent to avoid running globalSetup multiple times for the same parent
 			$orchestrator->global_setup_start();
 			$orchestrator->global_setup_message( 'Running globalSetup phase for all packages...' );
+			
+			$processed_parents = []; // Track which parent packages have already run globalSetup
 			foreach ( $test_packages as $pkg_id => $meta ) {
-				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir, $orchestrator );
+				$manifest = $meta['manifest'] ?? null;
+				
+				// If this is a subpackage, check if we've already run globalSetup for its parent
+				if ( $manifest && $manifest->is_subpackage() ) {
+					$parent = $manifest->get_parent_package();
+					if ( isset( $processed_parents[ $parent ] ) ) {
+						// Already ran globalSetup for this parent, skip
+						continue;
+					}
+					$processed_parents[ $parent ] = true;
+				}
+				
+				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir, $orchestrator, [], $manifest );
 			}
 
 			// Export baseline database snapshot only if we have multiple test packages
@@ -1398,11 +1413,26 @@ class RunE2ECommand extends QITCommand {
 			throw $e;
 		} finally {
 			// Run globalTeardown phase for all packages
+			// Group subpackages by parent to avoid running globalTeardown multiple times for the same parent
 			$orchestrator->global_teardown_start();
 			$orchestrator->global_teardown_message( 'Running globalTeardown phase for all packages...' );
+			
+			$processed_parents_teardown = []; // Track which parent packages have already run globalTeardown
 			foreach ( $test_packages as $pkg_id => $meta ) {
+				$manifest = $meta['manifest'] ?? null;
+				
+				// If this is a subpackage, check if we've already run globalTeardown for its parent
+				if ( $manifest && $manifest->is_subpackage() ) {
+					$parent = $manifest->get_parent_package();
+					if ( isset( $processed_parents_teardown[ $parent ] ) ) {
+						// Already ran globalTeardown for this parent, skip
+						continue;
+					}
+					$processed_parents_teardown[ $parent ] = true;
+				}
+				
 				try {
-					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'], null, $orchestrator );
+					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'], null, $orchestrator, [], $manifest );
 				} catch ( \Throwable $e ) {
 					// Continue with other teardowns even if one fails
 					$io->writeln( "<comment>Warning: globalTeardown failed for {$pkg_id}: {$e->getMessage()}</comment>" );
