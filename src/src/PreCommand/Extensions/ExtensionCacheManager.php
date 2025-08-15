@@ -16,40 +16,40 @@ use ZipArchive;
 
 /**
  * Manages extension caching and downloads with intelligent cache validation.
- * 
+ *
  * ## Caching Strategy
- * 
+ *
  * This class handles the physical caching of extension files (plugins/themes):
- * 
+ *
  * ### 1. Cache Location
  * - WPORG/WCCOM/URL extensions: Cached as ZIP files in cache directory
  * - Local extensions: Used directly from their source location (no caching)
  * - Cache path format: `[cache_dir]/[type]_[slug]_[version].zip`
- * 
+ *
  * ### 2. Cache Validation (is_cached method)
  * - Checks if extension file exists and is valid WITHOUT downloading
  * - For ZIP files: Validates using ZipArchive::CHECKCONS
  * - For local directories: Verifies directory exists
  * - Returns true only if extension is ready to use
- * 
+ *
  * ### 3. Cache Usage Flow
  * ```
  * ExtensionResolver calls is_cached() first
  * ├─ If cached: Skip metadata fetch & download
  * └─ If not cached: Fetch metadata, then ensure_cached()
  * ```
- * 
+ *
  * ### 4. Download Optimization
  * - Only downloads if not already cached
  * - Validates downloads before caching
  * - Detects entry points after download
- * 
+ *
  * ### 5. Benefits
  * - Prevents redundant downloads
  * - Validates cache integrity
  * - Supports multiple source types (wporg, wccom, url, local, build)
  * - No API calls for cached extensions
- * 
+ *
  * @see is_cached() for cache validation without downloading
  * @see ensure_cached() for download and cache storage
  */
@@ -61,7 +61,7 @@ class ExtensionCacheManager {
 	protected OutputInterface $output;
 
 	protected EntrypointDetector $entrypoint_detector;
-	
+
 
 	/** @var string[] */
 	protected $download_handlers = [
@@ -78,21 +78,21 @@ class ExtensionCacheManager {
 		$this->output              = $output;
 		$this->entrypoint_detector = $entrypoint_detector;
 	}
-	
+
 
 	/**
 	 * Check if an extension is already cached without downloading or making API calls.
-	 * 
+	 *
 	 * This method is critical for preventing unnecessary downloads and API calls:
 	 * - Called by ExtensionResolver BEFORE fetching metadata
 	 * - Returns true only if extension is fully ready to use
 	 * - Does NOT make any network requests
-	 * 
+	 *
 	 * Cache validation by source type:
 	 * - **Local**: Checks if directory/file exists at source path
 	 * - **WPORG/WCCOM/URL**: Checks for valid ZIP file in cache directory
 	 * - **Already downloaded**: Checks downloaded_source property
-	 * 
+	 *
 	 * ZIP validation ensures cache integrity:
 	 * - Uses ZipArchive::CHECKCONS to verify ZIP structure
 	 * - Removes corrupt cache files automatically
@@ -124,20 +124,20 @@ class ExtensionCacheManager {
 		// Check for cached remote extensions
 		if ( in_array( $extension->from, [ 'wporg', 'wccom', 'url' ], true ) ) {
 			$cache_file = $this->make_cache_path( $extension, $cache_dir );
-			
+
 			if ( file_exists( $cache_file ) ) {
 				// Check if it's a valid zip
 				$zip = new \ZipArchive();
 				if ( $zip->open( $cache_file, \ZipArchive::CHECKCONS ) === true ) {
 					$zip->close();
-					
+
 					// Check cache age (max 1 day)
 					$age = time() - filemtime( $cache_file );
 					if ( $age > DAY_IN_SECONDS ) {
-						debug_log( "  Cache expired: older than 1 day" );
+						debug_log( '  Cache expired: older than 1 day' );
 						return false;
 					}
-					
+
 					debug_log( "  Found valid cached file: $cache_file" );
 					// Set the downloaded_source so ensure_cached can use it
 					$extension->downloaded_source = $cache_file;
@@ -149,7 +149,7 @@ class ExtensionCacheManager {
 			}
 		}
 
-		debug_log( "  Not cached" );
+		debug_log( '  Not cached' );
 		return false;
 	}
 

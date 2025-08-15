@@ -84,7 +84,7 @@ class WPORGExtensionsList {
 			'version' => $json['version'] ?? '',
 			'url'     => $json['download_link'],
 		];
-		
+
 		// Add last_updated if available for cache validation
 		if ( ! empty( $json['last_updated'] ) ) {
 			$info['last_updated'] = $json['last_updated'];
@@ -132,7 +132,7 @@ class WPORGExtensionsList {
 			'version' => $json['version'] ?? '',
 			'url'     => $json['download_link'],
 		];
-		
+
 		// Add last_updated if available for cache validation
 		if ( ! empty( $json['last_updated'] ) ) {
 			$info['last_updated'] = $json['last_updated'];

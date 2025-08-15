@@ -9,16 +9,16 @@ use function QIT_CLI\debug_log;
 
 /**
  * Main extension resolver that orchestrates the resolution process.
- * 
+ *
  * ## Caching Strategy
- * 
+ *
  * This class coordinates caching across multiple components to minimize API calls:
- * 
+ *
  * ### 1. Cache-First Resolution
  * - Checks if extension is already cached BEFORE fetching metadata
  * - Prevents unnecessary API calls to WPORG/WCCOM for metadata
  * - Only fetches metadata for extensions not found in cache
- * 
+ *
  * ### 2. Resolution Flow
  * ```
  * 1. Resolve source (wporg/wccom/local/url)
@@ -27,18 +27,18 @@ use function QIT_CLI\debug_log;
  * 4. Ensure cached (download if needed)
  * 5. Add to resolved collection
  * ```
- * 
+ *
  * ### 3. Benefits
  * - Dramatically reduces API calls on repeated runs
  * - Prevents rate limiting from WordPress.org and WooCommerce.com
  * - Faster resolution for cached extensions
  * - Shared cache across all test runs
- * 
+ *
  * ### 4. Cache Coordination
  * - Works with ExtensionCacheManager for file caching
  * - Works with ExtensionMetadataFetcher for metadata caching
  * - Cache location: `/tmp/qit-cache/` or system temp directory
- * 
+ *
  * @see ExtensionCacheManager::is_cached() for cache checking
  * @see ExtensionMetadataFetcher for metadata caching
  */
@@ -73,13 +73,13 @@ class ExtensionResolver {
 
 	/**
 	 * Main entry point for resolving extensions with intelligent caching.
-	 * 
+	 *
 	 * This method processes extensions efficiently by:
 	 * 1. Checking cache before making ANY external API calls
 	 * 2. Only fetching metadata for uncached extensions
 	 * 3. Batch processing for efficiency
 	 * 4. Handling dependencies recursively with the same caching strategy
-	 * 
+	 *
 	 * The cache-first approach prevents rate limiting and improves performance:
 	 * - First run: Downloads and caches everything
 	 * - Subsequent runs: Uses cache, no API calls for cached items
@@ -120,7 +120,7 @@ class ExtensionResolver {
 
 				// Step 2: Check if extension is already cached (avoid metadata API call if possible)
 				$is_cached = $this->cache_manager->is_cached( $extension, $cache_dir );
-				
+
 				// Step 3: Fetch metadata only if not cached (version, download URL, etc.)
 				if ( ! $is_cached ) {
 					try {

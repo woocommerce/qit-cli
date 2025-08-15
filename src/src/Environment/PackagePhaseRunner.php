@@ -401,13 +401,13 @@ class PackagePhaseRunner {
 	/**
 	 * Execute a specific phase for a test package
 	 *
-	 * @param EnvInfo             $env_info Environment information.
-	 * @param string              $phase Phase name (setup, run, teardown, globalSetup, globalTeardown).
-	 * @param string              $package_id Package identifier.
-	 * @param string              $package_path Package directory path.
-	 * @param string|null         $artifacts_dir Artifacts directory for CTRF files.
-	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
-	 * @param array<string>       $runner_args Arguments to pass through to test framework (only used for 'run' phase).
+	 * @param EnvInfo                  $env_info Environment information.
+	 * @param string                   $phase Phase name (setup, run, teardown, globalSetup, globalTeardown).
+	 * @param string                   $package_id Package identifier.
+	 * @param string                   $package_path Package directory path.
+	 * @param string|null              $artifacts_dir Artifacts directory for CTRF files.
+	 * @param PackageOrchestrator      $orchestrator Orchestrator for output formatting.
+	 * @param array<string>            $runner_args Arguments to pass through to test framework (only used for 'run' phase).
 	 * @param TestPackageManifest|null $manifest Optional manifest to use instead of loading from disk (for subpackages).
 	 * @return int Number of commands that were actually executed.
 	 * @throws \RuntimeException On command failure.
@@ -434,7 +434,7 @@ class PackagePhaseRunner {
 
 			$manifest = $this->parser->parse( $manifest_path );
 		}
-		
+
 		$commands = $manifest->getPhaseCommands( $phase );
 
 		if ( empty( $commands ) ) {
