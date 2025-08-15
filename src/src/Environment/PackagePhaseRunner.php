@@ -408,6 +408,7 @@ class PackagePhaseRunner {
 	 * @param string|null         $artifacts_dir Artifacts directory for CTRF files.
 	 * @param PackageOrchestrator $orchestrator Orchestrator for output formatting.
 	 * @param array<string>       $runner_args Arguments to pass through to test framework (only used for 'run' phase).
+	 * @param TestPackageManifest|null $manifest Optional manifest to use instead of loading from disk (for subpackages).
 	 * @return int Number of commands that were actually executed.
 	 * @throws \RuntimeException On command failure.
 	 */
@@ -418,17 +419,22 @@ class PackagePhaseRunner {
 		string $package_path,
 		?string $artifacts_dir,
 		PackageOrchestrator $orchestrator,
-		array $runner_args = []
+		array $runner_args = [],
+		?TestPackageManifest $manifest = null
 	): int {
-		$manifest_path = $package_path . '/qit-test.json';
-		if ( ! file_exists( $manifest_path ) ) {
-			$this->output->writeln(
-				"<comment>Package {$package_id} has no qit-test.json – skipping {$phase} phase.</comment>"
-			);
-			return 0;
-		}
+		// If manifest is provided, use it; otherwise load from disk
+		if ( $manifest === null ) {
+			$manifest_path = $package_path . '/qit-test.json';
+			if ( ! file_exists( $manifest_path ) ) {
+				$this->output->writeln(
+					"<comment>Package {$package_id} has no qit-test.json – skipping {$phase} phase.</comment>"
+				);
+				return 0;
+			}
 
-		$manifest = $this->parser->parse( $manifest_path );
+			$manifest = $this->parser->parse( $manifest_path );
+		}
+		
 		$commands = $manifest->getPhaseCommands( $phase );
 
 		if ( empty( $commands ) ) {

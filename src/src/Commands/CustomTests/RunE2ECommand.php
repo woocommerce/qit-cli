@@ -1260,7 +1260,7 @@ class RunE2ECommand extends QITCommand {
 
 					// Run full lifecycle for test packages: setup -> run -> teardown
 					$orchestrator->phase_start( 'setup' );
-					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
+					$setup_count = $this->package_phase_runner->run_phase( $env_info, 'setup', $pkg_id, $package_path, $artifacts_dir, $orchestrator, [], $manifest );
 					if ( $setup_count > 0 && $manifest->hasResults() ) {
 						$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'setup' );
 					}
@@ -1269,7 +1269,7 @@ class RunE2ECommand extends QITCommand {
 					if ( $manifest->hasPhase( 'run' ) ) {
 						try {
 							$orchestrator->phase_start( 'run' );
-							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $runner_args );
+							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $runner_args, $manifest );
 							// Normal CTRF collection for successful runs
 							if ( $manifest->hasResults() ) {
 								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
@@ -1341,7 +1341,7 @@ class RunE2ECommand extends QITCommand {
 					}
 
 					$orchestrator->phase_start( 'teardown' );
-					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir, $orchestrator );
+					$teardown_count = $this->package_phase_runner->run_phase( $env_info, 'teardown', $pkg_id, $package_path, $artifacts_dir, $orchestrator, [], $manifest );
 					// Note: teardown phase is for cleanup only - no result collection needed
 
 					$package_total   = $setup_count + $run_count + $teardown_count;

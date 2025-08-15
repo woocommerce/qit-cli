@@ -12,7 +12,49 @@ use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 /**
- * Fetches metadata (version, download URLs) for extensions.
+ * Fetches and caches metadata (version, download URLs) for extensions.
+ * 
+ * ## Caching Strategy
+ * 
+ * This class implements metadata caching to prevent repeated API calls:
+ * 
+ * ### 1. Metadata Cache
+ * - Caches API responses for version info and download URLs
+ * - Cache duration: 30 seconds (prevents burst requests while keeping data fresh)
+ * - Separate cache for WPORG and WCCOM metadata
+ * 
+ * ### 2. Cache Keys
+ * - WPORG: `wporg_metadata_[md5(slug_type_version)]`
+ * - WCCOM: `wccom_metadata_[md5(slug_version)]`
+ * - Includes version to handle different version requests
+ * 
+ * ### 3. Cache-First Approach
+ * - Checks cache before making ANY API calls
+ * - Only fetches metadata for extensions not in cache
+ * - Batch processes uncached items for efficiency
+ * 
+ * ### 4. API Call Optimization
+ * - **WPORG**: Individual API calls, but cached per extension
+ * - **WCCOM**: Bulk API call for multiple extensions at once
+ * - Both use cache to prevent repeated calls
+ * 
+ * ### 5. Benefits
+ * - Prevents rate limiting from WordPress.org API
+ * - Reduces load on WooCommerce.com API
+ * - Faster metadata resolution on repeated runs
+ * - Shared cache across all test runs
+ * 
+ * ### 6. Cache Flow
+ * ```
+ * fetch_metadata() called
+ * ├─ Check cache for each extension
+ * ├─ Use cached data if available
+ * └─ Fetch only uncached items from API
+ *     └─ Store in cache for future use
+ * ```
+ * 
+ * @see fetch_wporg_metadata() for WordPress.org caching
+ * @see fetch_wccom_metadata() for WooCommerce.com caching
  */
 class ExtensionMetadataFetcher {
 	protected WooExtensionsList $woo_extensions_list;
@@ -78,12 +120,39 @@ class ExtensionMetadataFetcher {
 	}
 
 	/**
-	 * Fetch metadata for WPORG extensions.
+	 * Fetch metadata for WPORG extensions with intelligent caching.
+	 * 
+	 * This method implements per-extension caching to minimize API calls:
+	 * 1. Checks cache for each extension's metadata
+	 * 2. Uses cached data if available (no API call)
+	 * 3. Only fetches from WordPress.org API if not cached
+	 * 4. Caches fetched metadata for 30 seconds
+	 * 
+	 * This prevents rate limiting from burst requests while ensuring
+	 * we always check for the latest versions.
+	 * 
+	 * @param Extension[] $extensions Array of WPORG extensions to process.
 	 */
 	protected function fetch_wporg_metadata( array $extensions ): void {
 		$start = microtime( true );
+		$fetched_count = 0;
 
 		foreach ( $extensions as $extension ) {
+			// Check cache first
+			$cache_key = 'wporg_metadata_' . md5( $extension->slug . '_' . $extension->type . '_' . ( $extension->version ?? 'stable' ) );
+			$cached_metadata = $this->cache->get( $cache_key );
+			
+			if ( $cached_metadata && is_array( $cached_metadata ) ) {
+				// Use cached metadata
+				$extension->source = $cached_metadata['source'];
+				$extension->version = $cached_metadata['version'];
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( "Using cached metadata for WPORG extension: {$extension->slug}" );
+				}
+				continue;
+			}
+
+			// Fetch from API
 			try {
 				if ( $extension->type === 'plugin' ) {
 					$info = $this->wporg_extensions_list->get_plugin_download_info( $extension->slug );
@@ -96,16 +165,26 @@ class ExtensionMetadataFetcher {
 				if ( $extension->version === 'stable' || $extension->version === 'undefined' ) {
 					$extension->version = $info['version'];
 				}
+				
+				// Cache the metadata
+				// Cache metadata for 30 seconds to prevent API burst but still get fresh data
+				$this->cache->set( $cache_key, [
+					'source' => $extension->source,
+					'version' => $extension->version,
+				], 30 );
+				
+				$fetched_count++;
 			} catch ( \Exception $e ) {
 				throw new \RuntimeException( "Failed to fetch WPORG metadata for '{$extension->slug}': " . $e->getMessage() );
 			}
 		}
 
-		if ( $this->output->isVerbose() ) {
+		if ( $this->output->isVerbose() && $fetched_count > 0 ) {
 			$this->output->writeln( sprintf(
-				'Fetched metadata for %d WordPress.org extensions in %f seconds.',
-				count( $extensions ),
-				microtime( true ) - $start
+				'Fetched metadata for %d WordPress.org extensions in %f seconds (%d cached).',
+				$fetched_count,
+				microtime( true ) - $start,
+				count( $extensions ) - $fetched_count
 			) );
 		}
 	}
@@ -118,10 +197,36 @@ class ExtensionMetadataFetcher {
 			return;
 		}
 
+		// Check cache for each extension's metadata
+		$extensions_needing_fetch = [];
+		foreach ( $extensions as $extension ) {
+			$cache_key = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version ?? 'stable' ) );
+			$cached_metadata = $this->cache->get( $cache_key );
+			
+			if ( $cached_metadata && is_array( $cached_metadata ) ) {
+				// Use cached metadata
+				$extension->version = $cached_metadata['version'];
+				$extension->source = $cached_metadata['source'];
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( "Using cached metadata for WCCOM extension: {$extension->slug}" );
+				}
+			} else {
+				// Need to fetch from API
+				$extensions_needing_fetch[] = $extension;
+			}
+		}
+
+		if ( empty( $extensions_needing_fetch ) ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( 'All WCCOM extensions metadata cached, skipping API call' );
+			}
+			return;
+		}
+
 		$start     = microtime( true );
-		$slugs     = array_map( fn( $ext ) => $ext->slug, $extensions );
+		$slugs     = array_map( fn( $ext ) => $ext->slug, $extensions_needing_fetch );
 		$types_map = [];
-		foreach ( $extensions as $ext ) {
+		foreach ( $extensions_needing_fetch as $ext ) {
 			$types_map[ $ext->slug ] = $ext->type;
 		}
 
@@ -142,12 +247,20 @@ class ExtensionMetadataFetcher {
 				throw new \RuntimeException( 'Invalid response from WCCOM API' );
 			}
 
-			foreach ( $extensions as $extension ) {
+			foreach ( $extensions_needing_fetch as $extension ) {
 				if ( isset( $data['urls'][ $extension->slug ] ) ) {
 					$info               = $data['urls'][ $extension->slug ];
 					$extension->slug    = $info['slug']; // May be different from requested
 					$extension->version = $info['version'];
 					$extension->source  = $info['url'];
+					
+					// Cache the metadata
+					$cache_key = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version ?? 'stable' ) );
+					// Cache metadata for 30 seconds to prevent API burst but still get fresh data
+					$this->cache->set( $cache_key, [
+						'version' => $extension->version,
+						'source' => $extension->source,
+					], 30 );
 				} else {
 					// Fallback for extensions not found
 					$extension->version = 'stable';
