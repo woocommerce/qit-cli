@@ -163,6 +163,9 @@ class RequestBuilder {
 	public function request(): string {
 		retry_request: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
 
+		// Apply rate limiting before making the request
+		self::apply_rate_limit( $this->url );
+
 		// Integration test mocking - check this first to allow override of unit tests
 		if ( getenv( 'QIT_MOCK_DIR' ) ) {
 			return $this->handle_file_mock();
@@ -404,6 +407,9 @@ class RequestBuilder {
 			$output->writeln( "Downloading $url into $file_path..." );
 		}
 
+		// Apply rate limiting for downloads
+		self::apply_rate_limit( $url );
+
 		// Check for mock response in unit tests
 		if ( defined( 'UNIT_TESTS' ) ) {
 			$mocked = App::getVar( 'mock_' . $url );
@@ -582,5 +588,63 @@ class RequestBuilder {
 		$log      = is_file( $log_file ) ? json_decode( file_get_contents( $log_file ), true ) : [];
 		$log[]    = $entry;
 		file_put_contents( $log_file, json_encode( $log, JSON_PRETTY_PRINT ) );
+	}
+
+
+	/**
+	 * Apply rate limiting to prevent hitting API rate limits.
+	 * Ensures at least 1 second delay between requests to the same domain.
+	 *
+	 * @param string $url The URL to rate limit.
+	 * @return void
+	 */
+	protected static function apply_rate_limit( string $url ): void {
+		// Local static variables to keep state between calls
+		static $last_request_time = [];
+		static $rate_limit_delay_us = 1000000; // 1 second in microseconds
+
+		// Skip rate limiting for unit tests and local/mock environments
+		if ( defined( 'UNIT_TESTS' ) || getenv( 'QIT_MOCK_DIR' ) ) {
+			return;
+		}
+
+		// Extract domain from URL
+		$parsed_url = parse_url( $url );
+		if ( ! isset( $parsed_url['host'] ) ) {
+			return;
+		}
+
+		$domain = $parsed_url['host'];
+
+		// Check if we've made a request to this domain recently
+		if ( isset( $last_request_time[ $domain ] ) ) {
+			$time_since_last    = microtime( true ) - $last_request_time[ $domain ];
+			$time_since_last_us = (int) ( $time_since_last * 1000000 );
+
+			// If less than the delay threshold, sleep for the remaining time
+			if ( $time_since_last_us < $rate_limit_delay_us ) {
+				$sleep_time = $rate_limit_delay_us - $time_since_last_us;
+
+				// Log the rate limiting if verbose output is enabled
+				try {
+					$output = App::make( Output::class );
+					if ( $output->getOutput()->isVerbose() ) {
+						$output->getOutput()->writeln(
+							sprintf( 'Rate limiting: Waiting %dms before request to %s',
+								(int) ( $sleep_time / 1000 ),
+								$domain
+							)
+						);
+					}
+				} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+					// Output might not be available in all contexts - silently continue
+				}
+
+				usleep( $sleep_time );
+			}
+		}
+
+		// Update the last request time for this domain
+		$last_request_time[ $domain ] = microtime( true );
 	}
 }
