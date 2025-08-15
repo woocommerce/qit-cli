@@ -272,8 +272,16 @@ class TestPackageDownloader {
 
 		$data = json_decode( $response, true );
 
+		// Check for rate limiting or other errors
+		if ( isset( $data['error'] ) ) {
+			// This is an error response from the API
+			throw new \RuntimeException( $data['error'] );
+		}
+
 		if ( ! is_array( $data ) || ! isset( $data['urls'] ) ) {
-			throw new \RuntimeException( 'Invalid response from package download API' );
+			// Add more context to the error for debugging
+			$debug_info = is_array( $data ) ? json_encode( $data ) : $response;
+			throw new \RuntimeException( 'Invalid response from package download API. Response: ' . substr( $debug_info, 0, 500 ) );
 		}
 
 		// Response is now keyed by full reference, so return as-is
