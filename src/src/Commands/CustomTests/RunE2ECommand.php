@@ -1170,26 +1170,80 @@ class RunE2ECommand extends QITCommand {
 			$this->result_collector->reset_tracking();
 			App::setVar( 'skip_allure_upload', false );
 
-			// Run globalSetup phase for all packages
-			// Group subpackages by parent to avoid running globalSetup multiple times for the same parent
+			// Run globalSetup phase with runtime deduplication
 			$orchestrator->global_setup_start();
-			$orchestrator->global_setup_message( 'Running globalSetup phase for all packages...' );
 
-			$processed_parents = []; // Track which parent packages have already run globalSetup
+			// Track executed commands to avoid duplicates
+			$executed_commands = [];
+			$total_commands    = 0;
+			$skipped_commands  = 0;
+
+			// Run globalSetup for each package, skipping duplicates
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				$manifest = $meta['manifest'] ?? null;
-
-				// If this is a subpackage, check if we've already run globalSetup for its parent
-				if ( $manifest && $manifest->is_subpackage() ) {
-					$parent = $manifest->get_parent_package();
-					if ( isset( $processed_parents[ $parent ] ) ) {
-						// Already ran globalSetup for this parent, skip
-						continue;
-					}
-					$processed_parents[ $parent ] = true;
+				if ( ! $manifest ) {
+					continue;
 				}
 
-				$this->package_phase_runner->run_phase( $env_info, 'globalSetup', $pkg_id, $meta['path'], $artifacts_dir, $orchestrator, [], $manifest );
+				$phases                = $manifest->getPhases();
+				$global_setup_commands = $phases['globalSetup'] ?? [];
+
+				if ( empty( $global_setup_commands ) ) {
+					continue;
+				}
+
+				$package_path = $meta['path'] ?? '';
+
+				foreach ( $global_setup_commands as $command ) {
+					++$total_commands;
+
+					// Create a normalized hash for the command
+					$command_hash = md5( json_encode( $command ) );
+
+					if ( isset( $executed_commands[ $command_hash ] ) ) {
+						// Command already executed, skip with info message
+						++$skipped_commands;
+						$orchestrator->global_setup_message(
+							sprintf( '⏭ Skipping duplicate command (already executed by %s)',
+							$executed_commands[ $command_hash ] )
+						);
+						continue;
+					}
+
+					// Mark as executed and run the command
+					$executed_commands[ $command_hash ] = $pkg_id;
+
+					// Run the command using package phase runner
+					$temp_manifest_data = [
+						'package' => $pkg_id,
+						'test'    => [
+							'phases' => [
+								'globalSetup' => [ $command ],
+							],
+						],
+					];
+					$temp_manifest      = new TestPackageManifest( $temp_manifest_data );
+
+					$this->package_phase_runner->run_phase(
+						$env_info,
+						'globalSetup',
+						$pkg_id,
+						$package_path,
+						$artifacts_dir,
+						$orchestrator,
+						[],
+						$temp_manifest
+					);
+				}
+			}
+
+			if ( $total_commands === 0 ) {
+				$orchestrator->global_setup_message( 'No globalSetup commands to run.' );
+			} elseif ( $skipped_commands > 0 ) {
+				$orchestrator->global_setup_message(
+					sprintf( 'Executed %d unique commands, skipped %d duplicates',
+					count( $executed_commands ), $skipped_commands )
+				);
 			}
 
 			// Export baseline database snapshot only if we have multiple test packages
@@ -1412,31 +1466,87 @@ class RunE2ECommand extends QITCommand {
 			// Re-throw other RuntimeExceptions
 			throw $e;
 		} finally {
-			// Run globalTeardown phase for all packages
-			// Group subpackages by parent to avoid running globalTeardown multiple times for the same parent
+			// Run globalTeardown phase with runtime deduplication
 			$orchestrator->global_teardown_start();
-			$orchestrator->global_teardown_message( 'Running globalTeardown phase for all packages...' );
 
-			$processed_parents_teardown = []; // Track which parent packages have already run globalTeardown
+			// Track executed commands to avoid duplicates
+			$executed_teardown_commands = [];
+			$total_teardown_commands    = 0;
+			$skipped_teardown_commands  = 0;
+
+			// Run globalTeardown for each package, skipping duplicates
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				$manifest = $meta['manifest'] ?? null;
+				if ( ! $manifest ) {
+					continue;
+				}
 
-				// If this is a subpackage, check if we've already run globalTeardown for its parent
-				if ( $manifest && $manifest->is_subpackage() ) {
-					$parent = $manifest->get_parent_package();
-					if ( isset( $processed_parents_teardown[ $parent ] ) ) {
-						// Already ran globalTeardown for this parent, skip
+				$phases                   = $manifest->getPhases();
+				$global_teardown_commands = $phases['globalTeardown'] ?? [];
+
+				if ( empty( $global_teardown_commands ) ) {
+					continue;
+				}
+
+				$package_path = $meta['path'] ?? '';
+
+				foreach ( $global_teardown_commands as $command ) {
+					++$total_teardown_commands;
+
+					// Create a normalized hash for the command
+					$command_hash = md5( json_encode( $command ) );
+
+					if ( isset( $executed_teardown_commands[ $command_hash ] ) ) {
+						// Command already executed, skip with info message
+						++$skipped_teardown_commands;
+						$orchestrator->global_teardown_message(
+							sprintf( '⏭ Skipping duplicate command (already executed by %s)',
+							$executed_teardown_commands[ $command_hash ] )
+						);
 						continue;
 					}
-					$processed_parents_teardown[ $parent ] = true;
-				}
 
-				try {
-					$this->package_phase_runner->run_phase( $env_info, 'globalTeardown', $pkg_id, $meta['path'], null, $orchestrator, [], $manifest );
-				} catch ( \Throwable $e ) {
-					// Continue with other teardowns even if one fails
-					$io->writeln( "<comment>Warning: globalTeardown failed for {$pkg_id}: {$e->getMessage()}</comment>" );
+					// Mark as executed and run the command
+					$executed_teardown_commands[ $command_hash ] = $pkg_id;
+
+					try {
+						// Run the command using package phase runner
+						$temp_manifest_data = [
+							'package' => $pkg_id,
+							'test'    => [
+								'phases' => [
+									'globalTeardown' => [ $command ],
+								],
+							],
+						];
+						$temp_manifest      = new TestPackageManifest( $temp_manifest_data );
+
+						$this->package_phase_runner->run_phase(
+							$env_info,
+							'globalTeardown',
+							$pkg_id,
+							$package_path,
+							null, // No artifacts dir for teardown
+							$orchestrator,
+							[],
+							$temp_manifest
+						);
+					} catch ( \Throwable $e ) {
+						// Log but don't fail the entire test run if globalTeardown fails
+						$orchestrator->global_teardown_message(
+							sprintf( '⚠ Command failed: %s', $e->getMessage() )
+						);
+					}
 				}
+			}
+
+			if ( $total_teardown_commands === 0 ) {
+				$orchestrator->global_teardown_message( 'No globalTeardown commands to run.' );
+			} elseif ( $skipped_teardown_commands > 0 ) {
+				$orchestrator->global_teardown_message(
+					sprintf( 'Executed %d unique commands, skipped %d duplicates',
+					count( $executed_teardown_commands ), $skipped_teardown_commands )
+				);
 			}
 
 			// Close global teardown section

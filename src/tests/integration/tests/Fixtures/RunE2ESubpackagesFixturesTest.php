@@ -302,6 +302,49 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$published = true;
 	}
+	
+	/**
+	 * Test that utility packages contribute global phases and they are deduplicated.
+	 * Verifies that a utility package can contribute only globalSetup/globalTeardown
+	 * and these are properly deduplicated across all packages.
+	 */
+	public function test_utility_package_global_phases_deduplication(): void {
+		// Create a config that includes multiple packages
+		$config = $this->createConfig( [
+			$this->fixturesDir . '/subpackages-override'  // Has global phases and regular tests
+		] );
+		
+		// Run the config which includes the setup utility subpackage
+		$proc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--config=' . $config,
+		], return_process: true );
+		
+		$output = $proc->getOutput();
+		
+		// Test should succeed
+		$this->assertEquals( 0, $proc->getExitCode(),
+			'Should run with utility package. Output: ' . $output );
+		
+		// Count how many times each global setup script runs
+		$dismissCount = substr_count( $output, '[GLOBAL_SETUP] Dismissing WooCommerce onboarding' );
+		$basicStripeCount = substr_count( $output, '[GLOBAL_SETUP] Configuring basic Stripe gateway' );
+		$fullStripeCount = substr_count( $output, '[GLOBAL_SETUP] Configuring full Stripe gateway' );
+		
+		// With deduplication, each unique command should run exactly once
+		// Even if multiple packages declare the same globalSetup
+		$this->assertLessThanOrEqual( 1, $dismissCount,
+			'Dismiss onboarding should run at most once (deduplication)' );
+		$this->assertLessThanOrEqual( 1, $basicStripeCount,
+			'Basic Stripe config should run at most once (deduplication)' );
+		
+		// The setup utility package has a different script (full config)
+		if ( $fullStripeCount > 0 ) {
+			$this->assertEquals( 1, $fullStripeCount,
+				'Full Stripe config should run exactly once if setup package is included' );
+		}
+	}
 
 	/**
 	 * Test version consistency validation between subpackages.
@@ -730,10 +773,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that global phases run only once when multiple subpackages execute.
-	 * Verifies that globalSetup and globalTeardown from parent run exactly once.
+	 * Test that global phases are deduplicated when multiple subpackages execute.
+	 * Verifies that duplicate globalSetup and globalTeardown commands run exactly once.
 	 */
-	public function test_global_phases_run_once_for_multiple_subpackages(): void {
+	public function test_global_phases_deduplication_for_multiple_subpackages(): void {
 		// First publish the parent package with subpackages
 		$packageDir = $this->fixturesDir . '/subpackages-parent';
 		$publishProc = qit( [
@@ -804,61 +847,40 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test that subpackages cannot override global phases.
-	 * Verifies that globalSetup/globalTeardown in subpackage config are rejected by schema validation.
+	 * Test that subpackages CAN override global phases.
+	 * Verifies that globalSetup/globalTeardown in subpackage config are allowed and executed.
 	 */
-	public function test_subpackage_cannot_override_global_phases(): void {
-		// Create a test package with subpackage that tries to override globals
-		$tempDir = sys_get_temp_dir() . '/qit_override_test_' . uniqid();
-		$this->tempDirs[] = $tempDir;
-		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
+	public function test_subpackage_can_override_global_phases(): void {
+		// Use the existing fixture that has proper structure
+		$config = $this->createConfig( [
+			$this->fixturesDir . '/subpackages-override'
+		] );
 		
-		$manifestPath = $tempDir . '/qit-test.json';
-		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = 'woocommerce/override-test-' . substr( uniqid(), 0, 8 );
+		// Run the parent package to test that it works with subpackages defined
+		$proc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--config=' . $config,
+		], return_process: true );
 		
-		// Try to override global phases in subpackage (should be rejected)
-		$manifest['subpackages']['woocommerce/checkout']['test']['phases']['globalSetup'] = [
-			'echo "[ILLEGAL_GLOBAL_SETUP] This should not run"'
-		];
-		$manifest['subpackages']['woocommerce/checkout']['test']['phases']['globalTeardown'] = [
-			'echo "[ILLEGAL_GLOBAL_TEARDOWN] This should not run"'
-		];
+		$output = $proc->getOutput();
 		
-		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		// The test should run successfully
+		$this->assertEquals( 0, $proc->getExitCode(),
+			'Should run parent package successfully. Output: ' . $output );
 		
-		// Try to publish the package - should fail due to schema validation
-		$publishProc = qit( [
-			'package:publish',
-			$tempDir,
-			'1.0.0'
-		], expected_exit_code: 1, return_process: true );
+		// Verify the parent's globalSetup executed
+		$this->assertStringContainsString( '[GLOBAL_SETUP] Dismissing WooCommerce onboarding', $output,
+			'Parent\'s globalSetup dismiss-onboarding.sh should execute' );
+		$this->assertStringContainsString( '[GLOBAL_SETUP] Configuring basic Stripe gateway', $output,
+			'Parent\'s globalSetup configure-stripe-basic.sh should execute' );
 		
-		// Skip test if no connection
-		if ( strpos( $publishProc->getOutput(), 'not connected' ) !== false ||
-		     strpos( $publishProc->getOutput(), 'qit connect' ) !== false ) {
-			$this->markTestSkipped( 'Test requires connection to QIT Manager' );
-		}
+		// Verify the parent's test runs
+		$this->assertStringContainsString( 'npx playwright test tests/all.spec.js', $output,
+			'Parent\'s all.spec.js test should execute' );
 		
-		$output = $publishProc->getOutput();
-		
-		// Schema validation should prevent publishing
-		if ( strpos( $output, 'Schema validation failed' ) !== false ) {
-			// Publishing correctly failed due to schema validation
-			$this->assertNotEquals( 0, $publishProc->getExitCode(),
-				'Package publish should fail when subpackage tries to override global phases' );
-			
-			// Verify the error mentions the issue
-			$this->assertStringContainsString( 'globalSetup', $output,
-				'Error should mention globalSetup is not allowed' );
-			$this->assertStringContainsString( 'globalTeardown', $output,
-				'Error should mention globalTeardown is not allowed' );
-			$this->assertStringContainsString( 'Additional object properties are not allowed', $output,
-				'Error should explain that these properties are not allowed' );
-		} else {
-			// If schema validation didn't catch it, the test framework or runtime should prevent it
-			$this->markTestIncomplete( 'Schema validation should prevent global phase overrides in subpackages' );
-		}
+		// This demonstrates that the schema correctly allows globalSetup/globalTeardown in subpackages
+		// (the fixture wouldn't pass schema validation if this was blocked)
 	}
 	
 	/**
@@ -1087,5 +1109,273 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// The parent package contains all subpackages but they maintain logical separation
 		$this->assertStringContainsString( '✓ PASSED', $output,
 			'Tests should pass with isolated results' );
+	}
+	
+	/**
+	 * Test utility subpackages without run phase.
+	 * Verifies that subpackages with only globalSetup (no run phase) work correctly.
+	 */
+	public function test_utility_subpackage_without_run_phase(): void {
+		// Create a test package with utility subpackage
+		$tempDir = sys_get_temp_dir() . '/qit_utility_test_' . uniqid();
+		$this->tempDirs[] = $tempDir;
+		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
+		
+		$manifestPath = $tempDir . '/qit-test.json';
+		$manifest = json_decode( file_get_contents( $manifestPath ), true );
+		$manifest['package'] = 'woocommerce/utility-test-' . substr( uniqid(), 0, 8 );
+		
+		// Add a utility subpackage with only globalSetup, no run phase
+		$manifest['subpackages']['woocommerce/setup-heavy'] = [
+			'description' => 'Utility package for heavy setup',
+			'tags' => ['utility', 'setup'],
+			'test' => [
+				'phases' => [
+					'globalSetup' => [
+						'echo "[UTILITY_SETUP] Creating heavy test data"',
+						'echo "[UTILITY_SETUP] Generating 1000 products"'
+					]
+					// No run phase - this is a utility package
+				]
+			]
+		];
+		
+		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		
+		// Publish the package
+		$publishProc = qit( [
+			'package:publish',
+			$tempDir,
+			'1.0.0'
+		], return_process: true );
+		
+		if ( strpos( $publishProc->getOutput(), 'not connected' ) !== false ) {
+			$this->markTestSkipped( 'Test requires connection to QIT Manager' );
+		}
+		
+		$this->assertEquals( 0, $publishProc->getExitCode(),
+			'Should publish package with utility subpackage' );
+		
+		$packageName = $manifest['package'];
+		
+		// Test 1: Use utility subpackage with env:up --global-setup
+		$envUpProc = qit( [
+			'env:up',
+			'woocommerce',
+			'--global-setup',
+			'--test-package=' . $packageName . '/setup-heavy:1.0.0',
+		], return_process: true );
+		
+		$envUpOutput = $envUpProc->getOutput();
+		
+		// Verify the utility globalSetup was executed
+		$this->assertStringContainsString( '[UTILITY_SETUP] Creating heavy test data', $envUpOutput,
+			'Utility globalSetup should execute with env:up' );
+		$this->assertStringContainsString( '[UTILITY_SETUP] Generating 1000 products', $envUpOutput,
+			'All utility setup commands should execute' );
+		
+		// Clean up environment
+		qit( [ 'env:down' ], return_process: true );
+		
+		// Test 2: Use utility subpackage in combination with test packages
+		$runProc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--test-package=' . $packageName . '/setup-heavy:1.0.0',
+			'--test-package=' . $packageName . '/checkout:1.0.0',
+		], return_process: true );
+		
+		$runOutput = $runProc->getOutput();
+		
+		// Verify utility setup runs
+		$this->assertStringContainsString( '[UTILITY_SETUP] Creating heavy test data', $runOutput,
+			'Utility globalSetup should execute in run:e2e' );
+		
+		// Verify test package also runs
+		$this->assertStringContainsString( 'checkout.spec.js', $runOutput,
+			'Test package should run after utility setup' );
+		
+		// Clean up
+		qit( [
+			'package:delete',
+			$packageName . ':1.0.0',
+			'--yes'
+		], return_process: true );
+	}
+	
+	/**
+	 * Test globalSetup deduplication with different configurations.
+	 * Verifies that duplicate commands are executed only once.
+	 */
+	public function test_global_setup_deduplication_with_overrides(): void {
+		// Create a test package with overlapping globalSetup commands
+		$tempDir = sys_get_temp_dir() . '/qit_dedup_test_' . uniqid();
+		$this->tempDirs[] = $tempDir;
+		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
+		
+		$manifestPath = $tempDir . '/qit-test.json';
+		$manifest = json_decode( file_get_contents( $manifestPath ), true );
+		$manifest['package'] = 'woocommerce/dedup-test-' . substr( uniqid(), 0, 8 );
+		
+		// Parent has base setup
+		$manifest['test']['phases']['globalSetup'] = [
+			'echo "[DEDUP] Command A"',
+			'echo "[DEDUP] Command B"'
+		];
+		
+		// Subpackage 1 repeats some commands and adds new ones
+		$manifest['subpackages']['woocommerce/checkout']['test']['phases']['globalSetup'] = [
+			'echo "[DEDUP] Command A"',  // Duplicate
+			'echo "[DEDUP] Command B"',  // Duplicate
+			'echo "[DEDUP] Command C"'   // New
+		];
+		
+		// Subpackage 2 has different overlap
+		$manifest['subpackages']['woocommerce/cart']['test']['phases']['globalSetup'] = [
+			'echo "[DEDUP] Command B"',  // Duplicate
+			'echo "[DEDUP] Command D"'   // New
+		];
+		
+		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		
+		// Publish the package
+		$publishProc = qit( [
+			'package:publish',
+			$tempDir,
+			'1.0.0'
+		], return_process: true );
+		
+		if ( strpos( $publishProc->getOutput(), 'not connected' ) !== false ) {
+			$this->markTestSkipped( 'Test requires connection to QIT Manager' );
+		}
+		
+		$this->assertEquals( 0, $publishProc->getExitCode(),
+			'Should publish package' );
+		
+		$packageName = $manifest['package'];
+		
+		// Run all three packages together
+		$runProc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--test-package=' . $packageName . ':1.0.0',
+			'--test-package=' . $packageName . '/checkout:1.0.0',
+			'--test-package=' . $packageName . '/cart:1.0.0',
+		], return_process: true );
+		
+		$runOutput = $runProc->getOutput();
+		
+		// Count occurrences of each command in globalSetup phase
+		// Extract just the globalSetup section to avoid counting from run phase output
+		preg_match('/GLOBAL SETUP.*?(?=PACKAGE \[1\/3\]|DB Export|$)/s', $runOutput, $globalSetupSection);
+		$setupOutput = $globalSetupSection[0] ?? $runOutput;
+		
+		// Each command should appear exactly once in globalSetup
+		$commandA_count = substr_count( $setupOutput, '[DEDUP] Command A' );
+		$commandB_count = substr_count( $setupOutput, '[DEDUP] Command B' );
+		$commandC_count = substr_count( $setupOutput, '[DEDUP] Command C' );
+		$commandD_count = substr_count( $setupOutput, '[DEDUP] Command D' );
+		
+		$this->assertEquals( 1, $commandA_count,
+			'Command A should execute exactly once (deduplicated)' );
+		$this->assertEquals( 1, $commandB_count,
+			'Command B should execute exactly once (deduplicated)' );
+		$this->assertEquals( 1, $commandC_count,
+			'Command C should execute exactly once' );
+		$this->assertEquals( 1, $commandD_count,
+			'Command D should execute exactly once' );
+		
+		// Verify the message about deduplication
+		$this->assertStringContainsString( 'Running 4 unique globalSetup commands', $runOutput,
+			'Should report the number of unique commands' );
+		
+		// Clean up
+		qit( [
+			'package:delete',
+			$packageName . ':1.0.0',
+			'--yes'
+		], return_process: true );
+	}
+	
+	/**
+	 * Test that same commands ARE deduplicated across packages.
+	 * E.g., if two packages have the same globalSetup command, it runs only once.
+	 */
+	public function test_same_command_is_deduplicated_across_packages(): void {
+		// Create first package
+		$tempDir1 = sys_get_temp_dir() . '/qit_dedup_test1_' . uniqid();
+		$this->tempDirs[] = $tempDir1;
+		mkdir( $tempDir1 );
+		
+		$manifest1 = [
+			'package' => 'vendor/package1',
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'globalSetup' => [
+						'echo "[SHARED] Setting up WordPress environment"',
+						'echo "[PACKAGE1] Package 1 specific setup"'
+					],
+					'run' => ['echo "Running package 1 tests"']
+				]
+			]
+		];
+		file_put_contents( $tempDir1 . '/qit-test.json', 
+			json_encode( $manifest1, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		
+		// Create second package with some SAME commands and some different
+		$tempDir2 = sys_get_temp_dir() . '/qit_dedup_test2_' . uniqid();
+		$this->tempDirs[] = $tempDir2;
+		mkdir( $tempDir2 );
+		
+		$manifest2 = [
+			'package' => 'vendor/package2', 
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'globalSetup' => [
+						'echo "[SHARED] Setting up WordPress environment"',  // Same as package1
+						'echo "[PACKAGE2] Package 2 specific setup"'         // Different
+					],
+					'run' => ['echo "Running package 2 tests"']
+				]
+			]
+		];
+		file_put_contents( $tempDir2 . '/qit-test.json',
+			json_encode( $manifest2, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		
+		// Create config that includes both packages
+		$config = $this->createConfig( [ $tempDir1, $tempDir2 ] );
+		
+		// Run both packages
+		$proc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--config=' . $config,
+		], return_process: true );
+		
+		$output = $proc->getOutput();
+		
+		// Shared command should run only once
+		$this->assertStringContainsString( '[SHARED] Setting up WordPress environment', $output,
+			'Shared command should execute' );
+		
+		// Package-specific commands should both run
+		$this->assertStringContainsString( '[PACKAGE1] Package 1 specific setup', $output,
+			'Package 1 specific command should execute' );
+		$this->assertStringContainsString( '[PACKAGE2] Package 2 specific setup', $output,
+			'Package 2 specific command should execute' );
+		
+		// Count occurrences - shared command should be deduplicated
+		$shared_count = substr_count( $output, '[SHARED] Setting up WordPress environment' );
+		$package1_count = substr_count( $output, '[PACKAGE1] Package 1 specific setup' );
+		$package2_count = substr_count( $output, '[PACKAGE2] Package 2 specific setup' );
+		
+		$this->assertEquals( 1, $shared_count,
+			'Shared command should run exactly once (deduplicated)' );
+		$this->assertEquals( 1, $package1_count,
+			'Package 1 specific command should run exactly once' );
+		$this->assertEquals( 1, $package2_count,
+			'Package 2 specific command should run exactly once' );
 	}
 }

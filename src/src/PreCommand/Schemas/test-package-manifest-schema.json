@@ -240,9 +240,11 @@
               "properties": {
                 "phases": {
                   "type": "object",
-                  "description": "Phase overrides (cannot override globalSetup or globalTeardown)",
+                  "description": "Phase overrides for this subpackage",
                   "additionalProperties": false,
                   "properties": {
+                    "globalSetup": { "$ref": "#/definitions/lifecycleCommands" },
+                    "globalTeardown": { "$ref": "#/definitions/lifecycleCommands" },
                     "setup": { "$ref": "#/definitions/lifecycleCommands" },
                     "run": { "$ref": "#/definitions/lifecycleCommands" },
                     "teardown": { "$ref": "#/definitions/lifecycleCommands" }

@@ -630,7 +630,7 @@ class TestPackageDownloader {
 			'test_dir'       => $parent_manifest->getTestDir(),
 			'test'           => [
 				'phases'  => [
-					// Global phases MUST be inherited from parent (cannot override)
+					// Global phases can be overridden or inherited
 					'globalSetup'    => $parent_phases['globalSetup'] ?? [],
 					'globalTeardown' => $parent_phases['globalTeardown'] ?? [],
 				],
@@ -653,12 +653,17 @@ class TestPackageDownloader {
 			$subpackage_data['tags'] = $subpackage_config['tags'];
 		}
 
-		// Override package-specific phases (setup, run, teardown)
-		// But NOT globalSetup or globalTeardown
+		// Override phases - all phases can now be overridden
 		if ( isset( $subpackage_config['test']['phases'] ) ) {
 			$subpackage_phases = $subpackage_config['test']['phases'];
 
-			// Only allow overriding non-global phases
+			// Allow overriding all phases including global ones
+			if ( isset( $subpackage_phases['globalSetup'] ) ) {
+				$subpackage_data['test']['phases']['globalSetup'] = $subpackage_phases['globalSetup'];
+			}
+			if ( isset( $subpackage_phases['globalTeardown'] ) ) {
+				$subpackage_data['test']['phases']['globalTeardown'] = $subpackage_phases['globalTeardown'];
+			}
 			if ( isset( $subpackage_phases['setup'] ) ) {
 				$subpackage_data['test']['phases']['setup'] = $subpackage_phases['setup'];
 			}
@@ -668,9 +673,6 @@ class TestPackageDownloader {
 			if ( isset( $subpackage_phases['teardown'] ) ) {
 				$subpackage_data['test']['phases']['teardown'] = $subpackage_phases['teardown'];
 			}
-
-			// Explicitly ignore any attempts to override global phases
-			// (they should not be in subpackage config, but enforce the rule)
 		}
 
 		// Create and return the subpackage manifest

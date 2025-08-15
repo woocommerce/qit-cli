@@ -1,0 +1,12 @@
+{
+  "name": "woocommerce-stripe-e2e",
+  "version": "1.0.0",
+  "type": "module",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "playwright-ctrf-json-reporter": "^0.0.12"
+  },
+  "scripts": {
+    "test": "playwright test"
+  }
+}

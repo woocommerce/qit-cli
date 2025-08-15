@@ -600,7 +600,7 @@ class RequestBuilder {
 	 */
 	protected static function apply_rate_limit( string $url ): void {
 		// Local static variables to keep state between calls
-		static $last_request_time = [];
+		static $last_request_time   = [];
 		static $rate_limit_delay_us = 1000000; // 1 second in microseconds
 
 		// Skip rate limiting for unit tests and local/mock environments
@@ -628,8 +628,8 @@ class RequestBuilder {
 				// Log the rate limiting if verbose output is enabled
 				try {
 					$output = App::make( Output::class );
-					if ( $output->getOutput()->isVerbose() ) {
-						$output->getOutput()->writeln(
+					if ( $output->isVerbose() ) {
+						$output->writeln(
 							sprintf( 'Rate limiting: Waiting %dms before request to %s',
 								(int) ( $sleep_time / 1000 ),
 								$domain
