@@ -12,40 +12,40 @@ use function QIT_CLI\get_manager_url;
 
 /**
  * Downloads and caches remote test packages from the QIT repository.
- * 
+ *
  * ## Caching Strategy
- * 
+ *
  * This class implements a checksum-based caching system to handle both immutable and rolling versions:
- * 
+ *
  * ### 1. Checksum-Based Validation
  * - ALWAYS fetches package metadata (including SHA256 checksum) from the API first
  * - Uses checksum to validate if cached package is still current
  * - This ensures rolling versions (latest, rc, nightly) stay up-to-date
  * - Immutable versions (1.0.0) benefit from checksum validation too
- * 
+ *
  * ### 2. Cache Key Generation
  * - Format: `test_package_[md5(reference_checksum)]`
  * - Uses SHA256 checksum as the cache key component
  * - Different checksums = different cache entries
  * - Rolling versions get new cache entries when updated
- * 
+ *
  * ### 3. Cache Validation Flow
  * - Fetch metadata (lightweight API call with checksum)
  * - Check if we have this exact checksum cached
  * - If cached and valid, use it (no download needed)
  * - If not cached or checksum changed, download new version
- * 
+ *
  * ### 4. Benefits
  * - Rolling versions (latest, rc) always get fresh content when updated
  * - Immutable versions are cached indefinitely (checksum never changes)
  * - Prevents using stale packages for version channels
  * - Still prevents unnecessary downloads when content hasn't changed
- * 
+ *
  * ### 5. Subpackage Handling
  * - Subpackages share the same artifact as their parent
  * - When a subpackage is requested, downloads parent and extracts subpackage manifest
  * - Cache key is based on parent package checksum
- * 
+ *
  * @see download() for the main checksum-based caching logic
  * @see validate_and_get_cached_package() for cache validation
  */
@@ -75,13 +75,13 @@ class TestPackageDownloader {
 
 	/**
 	 * Download multiple test packages with checksum-based caching.
-	 * 
+	 *
 	 * This method implements checksum validation to handle rolling versions:
 	 * 1. Separates local packages (no caching needed) from remote packages
 	 * 2. For ALL remote packages, fetches metadata including checksums (lightweight API call)
 	 * 3. Uses checksums to validate cache - only downloads if checksum changed
 	 * 4. Ensures rolling versions like 'latest' always get fresh content when updated
-	 * 
+	 *
 	 * This approach handles both immutable versions and rolling version channels correctly.
 	 *
 	 * @param array<string, array<string,mixed>> $packages Map of reference => package info.
@@ -125,29 +125,93 @@ class TestPackageDownloader {
 			// Always fetch metadata for ALL remote packages (lightweight API call)
 			// This gives us checksums to validate cache
 			$this->output->writeln( 'Fetching package metadata...' );
-			$package_metadata = $this->fetch_download_urls( array_keys( $remote_packages ) );
+			$response = $this->fetch_download_urls( array_keys( $remote_packages ) );
 
-			// Process each package with checksum validation
-			foreach ( $remote_packages as $reference => $package_info ) {
-				if ( ! isset( $package_metadata[ $reference ] ) ) {
-					throw new \RuntimeException( "No metadata found for package '$reference'" );
+			// Extract URLs and artifact groups from response
+			$package_metadata = $response['urls'];
+			$artifact_groups  = $response['artifact_groups'] ?? [];
+
+			// Debug: Log what we received
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( 'Received ' . count( $package_metadata ) . ' package metadata entries' );
+				if ( ! empty( $artifact_groups ) ) {
+					$this->output->writeln( 'Server provided ' . count( $artifact_groups ) . ' artifact groups' );
+				}
+			}
+
+			// If artifact groups are provided, use them to optimize downloads
+			// Otherwise, create our own groups based on checksums
+			if ( empty( $artifact_groups ) ) {
+				// Group packages by checksum ourselves
+				$artifact_groups = [];
+				foreach ( $package_metadata as $reference => $metadata ) {
+					if ( isset( $metadata['checksum'] ) ) {
+						$artifact_groups[ $metadata['checksum'] ][] = $reference;
+					} else {
+						// No checksum means it's its own group
+						$artifact_groups[ 'no_checksum_' . $reference ][] = $reference;
+					}
+				}
+			}
+
+			// Process by artifact group (packages that share the same ZIP)
+			foreach ( $artifact_groups as $artifact_key => $package_ids ) {
+				// Find packages in this group that we need to process
+				$group_packages = [];
+				foreach ( $package_ids as $package_id ) {
+					if ( isset( $remote_packages[ $package_id ] ) && isset( $package_metadata[ $package_id ] ) ) {
+						$group_packages[ $package_id ] = $package_metadata[ $package_id ];
+					}
 				}
 
-				$metadata = $package_metadata[ $reference ];
-				
-				// Check if we have this exact checksum cached
-				$cached_manifest = $this->validate_and_get_cached_package( $reference, $metadata, $cache_dir );
-				
+				if ( empty( $group_packages ) ) {
+					continue;
+				}
+
+				// Pick the first package as the primary one to download
+				$first_reference = array_key_first( $group_packages );
+				$first_metadata  = $group_packages[ $first_reference ];
+
+				// Check if the primary package is already cached
+				$cached_manifest = $this->validate_and_get_cached_package( $first_reference, $first_metadata, $cache_dir );
 				if ( $cached_manifest !== null ) {
-					// Cache is valid for this checksum
-					$manifests[ $reference ] = $cached_manifest;
+					$manifests[ $first_reference ] = $cached_manifest;
 					if ( $this->output->isVerbose() ) {
-						$this->output->writeln( "Using cached package: $reference (checksum validated)" );
+						$this->output->writeln( "Using cached package: $first_reference (checksum validated)" );
 					}
+					$artifact_downloaded = true;
+					$primary_manifest    = $cached_manifest;
 				} else {
-					// Need to download - either not cached or checksum changed
-					$this->output->writeln( "Downloading package: $reference" );
-					$manifests[ $reference ] = $this->download_package( $reference, $metadata, $cache_dir );
+					// Download the artifact using the primary package
+					if ( count( $group_packages ) > 1 ) {
+						$this->output->writeln( 'Downloading shared artifact for ' . count( $group_packages ) . ' packages: ' . implode( ', ', array_keys( $group_packages ) ) );
+					} else {
+						$this->output->writeln( "Downloading package: $first_reference" );
+					}
+
+					$primary_manifest              = $this->download_package( $first_reference, $first_metadata, $cache_dir );
+					$manifests[ $first_reference ] = $primary_manifest;
+					$artifact_downloaded           = true;
+				}
+
+				// Process other packages in the group
+				foreach ( $group_packages as $reference => $metadata ) {
+					if ( $reference === $first_reference ) {
+						continue; // Already processed
+					}
+
+					// Try to extract subpackage manifest from the primary manifest
+					$requested_package_id = $this->extract_package_id( $reference );
+					$subpackage_manifest  = $this->extract_subpackage_manifest( $primary_manifest, $requested_package_id );
+
+					if ( $subpackage_manifest !== null ) {
+						$manifests[ $reference ] = $subpackage_manifest;
+					} else {
+						// This package doesn't exist as a subpackage in the primary manifest
+						// It must be downloaded separately
+						$this->output->writeln( "Downloading package: $reference (not found as subpackage)" );
+						$manifests[ $reference ] = $this->download_package( $reference, $metadata, $cache_dir );
+					}
 				}
 			}
 		}
@@ -160,21 +224,21 @@ class TestPackageDownloader {
 
 	/**
 	 * Validate cache using checksum and return cached package if valid.
-	 * 
+	 *
 	 * This method validates cached packages using SHA256 checksums:
 	 * - Uses checksum from API metadata to generate cache key
 	 * - Checks if we have this exact checksum cached
 	 * - Validates that the cached package directory still exists
 	 * - Handles subpackage extraction from parent manifests
-	 * 
+	 *
 	 * This ensures:
 	 * - Rolling versions (latest, rc) get fresh content when updated
 	 * - Immutable versions use cache indefinitely (checksum never changes)
 	 * - Cache invalidation is automatic when content changes
-	 * 
-	 * @param string $reference The package reference (e.g., "woocommerce/e2e:latest").
+	 *
+	 * @param string              $reference The package reference (e.g., "woocommerce/e2e:latest").
 	 * @param array<string,mixed> $metadata Package metadata from API including checksum.
-	 * @param string $cache_dir The cache directory path.
+	 * @param string              $cache_dir The cache directory path.
 	 * @return TestPackageManifest|null The cached manifest or null if not cached/checksum changed.
 	 */
 	protected function validate_and_get_cached_package( string $reference, array $metadata, string $cache_dir ): ?TestPackageManifest {
@@ -183,7 +247,7 @@ class TestPackageDownloader {
 			// No checksum available, can't use cache
 			return null;
 		}
-		
+
 		// Generate cache key based on checksum (not version)
 		// This ensures cache is invalidated when content changes
 		$cache_key = 'test_package_' . md5( $reference . '_' . $metadata['checksum'] );
@@ -194,12 +258,12 @@ class TestPackageDownloader {
 			if ( isset( $cached['metadata']['downloaded_path'] ) && is_dir( $cached['metadata']['downloaded_path'] ) ) {
 				// Restore metadata for caller access
 				$this->package_metadata[ $reference ] = $cached['metadata'];
-				
+
 				// Check if we need to handle subpackage extraction
-				$manifest_object = new TestPackageManifest( $cached['manifest'] );
+				$manifest_object      = new TestPackageManifest( $cached['manifest'] );
 				$requested_package_id = $this->extract_package_id( $reference );
-				$manifest_package_id = $manifest_object->getPackageId();
-				
+				$manifest_package_id  = $manifest_object->getPackageId();
+
 				// If the cached manifest is for a different package, check if it's a parent with the requested subpackage
 				if ( $requested_package_id !== $manifest_package_id ) {
 					// Try to extract the subpackage configuration
@@ -210,7 +274,7 @@ class TestPackageDownloader {
 					// Cache miss - need to download the correct package
 					return null;
 				}
-				
+
 				return $manifest_object;
 			}
 		}
@@ -240,9 +304,9 @@ class TestPackageDownloader {
 		if ( ! isset( $metadata_array[ $reference ] ) ) {
 			throw new \RuntimeException( "No metadata found for package '$reference'" );
 		}
-		
+
 		$metadata = $metadata_array[ $reference ];
-		
+
 		// Check if we have this exact checksum cached
 		$cached_manifest = $this->validate_and_get_cached_package( $reference, $metadata, $cache_dir );
 		if ( $cached_manifest !== null ) {
@@ -260,9 +324,21 @@ class TestPackageDownloader {
 	 * Fetch download URLs from QIT Manager
 	 *
 	 * @param string[] $references
-	 * @return array<string,array<string,mixed>>
+	 * @return array{urls: array<string,array<string,mixed>>, artifact_groups?: array<string,array<string>>}
 	 */
 	protected function fetch_download_urls( array $references ): array {
+		// Check cache first to prevent API rate limiting
+		// Cache key includes all references to handle bulk requests
+		$cache_key = 'test_package_urls_' . md5( implode( '|', $references ) );
+		$cached    = $this->cache->get( $cache_key );
+
+		if ( $cached && is_array( $cached ) ) {
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->writeln( 'Using cached package metadata (expires in ' . ( 30 - ( time() - ( $cached['cached_at'] ?? time() ) ) ) . 's)' );
+			}
+			return $cached['data'] ?? $cached; // Support both old and new cache format
+		}
+
 		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
@@ -284,13 +360,24 @@ class TestPackageDownloader {
 			throw new \RuntimeException( 'Invalid response from package download API. Response: ' . substr( $debug_info, 0, 500 ) );
 		}
 
-		// Response is now keyed by full reference, so return as-is
-		$urls = [];
-		foreach ( $data['urls'] as $ref => $info ) {
-			$urls[ $ref ] = $info;
+		// Build the response structure
+		$result = [
+			'urls' => $data['urls'],
+		];
+
+		// Include artifact groups if provided by the server
+		if ( isset( $data['artifact_groups'] ) ) {
+			$result['artifact_groups'] = $data['artifact_groups'];
 		}
 
-		return $urls;
+		// Cache the response for 30 seconds to prevent API burst
+		// This is especially important for repeated test runs
+		$this->cache->set( $cache_key, [
+			'data'      => $result,
+			'cached_at' => time(),
+		], 30 );
+
+		return $result;
 	}
 
 	/**
@@ -306,9 +393,9 @@ class TestPackageDownloader {
 		if ( ! isset( $metadata['checksum'] ) ) {
 			throw new \RuntimeException( "No checksum available for package '$reference'" );
 		}
-		
+
 		$cache_key = 'test_package_' . md5( $reference . '_' . $metadata['checksum'] );
-		
+
 		// Double-check cache (shouldn't hit this since we already validated)
 		$cached = $this->cache->get( $cache_key );
 		if ( $cached && is_array( $cached ) && isset( $cached['manifest'] ) ) {
@@ -336,7 +423,7 @@ class TestPackageDownloader {
 		if ( ! isset( $metadata['url'] ) ) {
 			throw new \RuntimeException( "No download URL for package '$reference'" );
 		}
-		
+
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( "Downloading test package '$reference' from {$metadata['url']}" );
 		}
@@ -378,11 +465,11 @@ class TestPackageDownloader {
 		if ( ! $version ) {
 			throw new \RuntimeException( "Cannot determine version for remote package '{$reference}'" );
 		}
-		
+
 		// Check if we requested a subpackage but got the parent manifest
 		$requested_package_id = $this->extract_package_id( $reference );
-		$manifest_package_id = $manifest_object->getPackageId();
-		
+		$manifest_package_id  = $manifest_object->getPackageId();
+
 		// If the downloaded manifest is for a different package, check if it's a parent with the requested subpackage
 		if ( $requested_package_id !== $manifest_package_id ) {
 			// Try to extract the subpackage configuration
@@ -477,8 +564,9 @@ class TestPackageDownloader {
 
 	/**
 	 * Legacy method for backward compatibility.
+	 *
 	 * @deprecated Use validate_and_get_cached_package() instead
-	 * 
+	 *
 	 * @param string $reference The package reference.
 	 * @param string $cache_dir The cache directory path.
 	 * @return TestPackageManifest|null The cached manifest or null if not cached.
@@ -494,12 +582,12 @@ class TestPackageDownloader {
 		} catch ( \Exception $e ) {
 			// If metadata fetch fails, can't use cache
 			if ( $this->output->isVeryVerbose() ) {
-				$this->output->writeln( "Could not fetch metadata for cache validation: " . $e->getMessage() );
+				$this->output->writeln( 'Could not fetch metadata for cache validation: ' . $e->getMessage() );
 			}
 		}
 		return null;
 	}
-	
+
 	/**
 	 * Extract package ID from a reference (removes version suffix).
 	 *
@@ -513,7 +601,7 @@ class TestPackageDownloader {
 		}
 		return $reference;
 	}
-	
+
 	/**
 	 * Extract subpackage manifest from a parent manifest.
 	 * Respects inheritance rules as documented:
@@ -523,7 +611,7 @@ class TestPackageDownloader {
 	 * - Can override: description, tags, test.phases.setup/run/teardown
 	 *
 	 * @param TestPackageManifest $parent_manifest The parent package manifest
-	 * @param string $subpackage_id The subpackage ID to extract
+	 * @param string              $subpackage_id The subpackage ID to extract
 	 * @return TestPackageManifest|null The subpackage manifest or null if not found
 	 */
 	protected function extract_subpackage_manifest( TestPackageManifest $parent_manifest, string $subpackage_id ): ?TestPackageManifest {
@@ -532,31 +620,31 @@ class TestPackageDownloader {
 		if ( ! $subpackage_config ) {
 			return null;
 		}
-		
+
 		// Start with parent's configuration as base (full inheritance)
-		$parent_phases = $parent_manifest->getPhases();
+		$parent_phases   = $parent_manifest->getPhases();
 		$subpackage_data = [
-			'package' => $subpackage_id,
+			'package'        => $subpackage_id,
 			'parent_package' => $parent_manifest->getPackageId(),
-			'test_type' => $parent_manifest->getTestType(),
-			'test_dir' => $parent_manifest->getTestDir(),
-			'test' => [
-				'phases' => [
+			'test_type'      => $parent_manifest->getTestType(),
+			'test_dir'       => $parent_manifest->getTestDir(),
+			'test'           => [
+				'phases'  => [
 					// Global phases MUST be inherited from parent (cannot override)
-					'globalSetup' => $parent_phases['globalSetup'] ?? [],
+					'globalSetup'    => $parent_phases['globalSetup'] ?? [],
 					'globalTeardown' => $parent_phases['globalTeardown'] ?? [],
 				],
 				// Results paths inherited from parent
 				'results' => $parent_manifest->getTestResults(),
 			],
 			// Inherit other configurations from parent
-			'requires' => $parent_manifest->getRequires(),
-			'mu_plugins' => $parent_manifest->getMuPlugins(),
-			'envs' => $parent_manifest->getEnv(),
-			'timeout' => $parent_manifest->getTimeout(),
-			'retry' => $parent_manifest->getRetry(),
+			'requires'       => $parent_manifest->getRequires(),
+			'mu_plugins'     => $parent_manifest->getMuPlugins(),
+			'envs'           => $parent_manifest->getEnv(),
+			'timeout'        => $parent_manifest->getTimeout(),
+			'retry'          => $parent_manifest->getRetry(),
 		];
-		
+
 		// Apply subpackage-specific overrides (only for allowed fields)
 		if ( isset( $subpackage_config['description'] ) ) {
 			$subpackage_data['description'] = $subpackage_config['description'];
@@ -564,12 +652,12 @@ class TestPackageDownloader {
 		if ( isset( $subpackage_config['tags'] ) ) {
 			$subpackage_data['tags'] = $subpackage_config['tags'];
 		}
-		
+
 		// Override package-specific phases (setup, run, teardown)
 		// But NOT globalSetup or globalTeardown
 		if ( isset( $subpackage_config['test']['phases'] ) ) {
 			$subpackage_phases = $subpackage_config['test']['phases'];
-			
+
 			// Only allow overriding non-global phases
 			if ( isset( $subpackage_phases['setup'] ) ) {
 				$subpackage_data['test']['phases']['setup'] = $subpackage_phases['setup'];
@@ -580,11 +668,11 @@ class TestPackageDownloader {
 			if ( isset( $subpackage_phases['teardown'] ) ) {
 				$subpackage_data['test']['phases']['teardown'] = $subpackage_phases['teardown'];
 			}
-			
+
 			// Explicitly ignore any attempts to override global phases
 			// (they should not be in subpackage config, but enforce the rule)
 		}
-		
+
 		// Create and return the subpackage manifest
 		return new TestPackageManifest( $subpackage_data );
 	}
