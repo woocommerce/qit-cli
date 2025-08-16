@@ -480,15 +480,18 @@ class PackagePhaseRunner {
 			if ( is_string( $cmd_item ) ) {
 				// Simple string command
 				$cmd = $cmd_item;
-			} elseif ( is_array( $cmd_item ) && isset( $cmd_item['command'] ) ) {
+			} elseif ( is_array( $cmd_item ) ) {
 				// Object command format
+				if ( ! isset( $cmd_item['command'] ) ) {
+					throw new \RuntimeException( 'Invalid command format. Array must have "command" field.' );
+				}
 				$cmd                   = $cmd_item['command'];
 				$cmd_timeout           = isset( $cmd_item['timeout'] ) ? (int) $cmd_item['timeout'] : null;
 				$cmd_runs_on           = isset( $cmd_item['runs_on'] ) ? $cmd_item['runs_on'] : null;
 				$cmd_continue_on_error = isset( $cmd_item['continue_on_error'] ) ? (bool) $cmd_item['continue_on_error'] : false;
 			} else {
-				// Invalid command format
-				throw new \RuntimeException( 'Invalid command format. Must be string or object with "command" field.' );
+				// Invalid command format (neither string nor array)
+				throw new \RuntimeException( 'Invalid command format. Must be string or array with "command" field.' );
 			}
 
 			// Append runner_args to commands in the 'run' phase
@@ -518,10 +521,15 @@ class PackagePhaseRunner {
 			}
 
 			// Determine execution venue - use explicit runs_on if provided, otherwise auto-detect
-			if ( $cmd_runs_on === 'docker' ) {
-				$venue = 'container';
-			} elseif ( $cmd_runs_on === 'host' ) {
-				$venue = 'host';
+			if ( $cmd_runs_on !== null ) {
+				if ( $cmd_runs_on === 'docker' ) {
+					$venue = 'container';
+				} elseif ( $cmd_runs_on === 'host' ) {
+					$venue = 'host';
+				} else {
+					// Invalid runs_on value, fall back to auto-detect
+					$venue = $this->determine_execution_venue( $cmd );
+				}
 			} else {
 				$venue = $this->determine_execution_venue( $cmd );
 			}

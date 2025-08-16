@@ -7,10 +7,7 @@ use QIT_CLI\Config;
 use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Zipper;
-use QIT_CLI\WooExtensionsList;
-use QIT_CLI\WPORGExtensionsList;
 use Symfony\Component\Console\Output\OutputInterface;
-use ZipArchive;
 use function QIT_CLI\debug_log;
 use function QIT_CLI\normalize_path;
 

@@ -1098,7 +1098,7 @@ class RunE2ECommand extends QITCommand {
 
 				// Check for secrets
 				$requires = $manifest->get_requires();
-				if ( isset( $requires['secrets'] ) && is_array( $requires['secrets'] ) ) {
+				if ( ! empty( $requires['secrets'] ) ) {
 					$all_required_secrets = array_merge( $all_required_secrets, $requires['secrets'] );
 				}
 

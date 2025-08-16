@@ -11,8 +11,8 @@ class GlobalSetupOrchestrator extends PackageOrchestrator {
 	private OutputInterface $output;
 	private bool $in_frame = false;
 
-	public function __construct( OutputInterface $output ) {
-		parent::__construct( $output );
+	public function __construct( OutputInterface $output, CTRFValidator $ctrf_validator ) {
+		parent::__construct( $output, $ctrf_validator );
 		$this->output = $output;
 	}
 

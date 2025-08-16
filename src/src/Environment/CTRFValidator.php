@@ -38,11 +38,10 @@ class CTRFValidator {
 	/**
 	 * Validate CTRF data against schema
 	 *
-	 * @param array<string, mixed> $data CTRF data to validate
-	 * @param bool                 $unused Deprecated parameter, kept for BC
+	 * @param array<string, mixed> $data CTRF data to validate.
 	 * @return array{valid: bool, errors: string|null}
 	 */
-	public function validate( array $data, bool $unused = false ): array {
+	public function validate( array $data ): array {
 		// Fix known issues with non-compliant CTRF reporters
 		// See: https://github.com/ctrf-io/playwright-ctrf-json-reporter/issues/23
 		$data = $this->fix_known_ctrf_issues( $data );
@@ -72,8 +71,8 @@ class CTRFValidator {
 	/**
 	 * Fix known issues with non-compliant CTRF reporters
 	 *
-	 * @param array<string, mixed> $data CTRF data to fix
-	 * @return array<string, mixed> Fixed CTRF data (immutable - returns new array)
+	 * @param array<string, mixed> $data CTRF data to fix.
+	 * @return array<string, mixed> Fixed CTRF data (immutable - returns new array).
 	 */
 	private function fix_known_ctrf_issues( array $data ): array {
 		// Create a copy to avoid mutating the original
@@ -117,11 +116,10 @@ class CTRFValidator {
 	/**
 	 * Validate CTRF file
 	 *
-	 * @param string $file_path Path to CTRF JSON file
-	 * @param bool   $unused Deprecated parameter, kept for BC
+	 * @param string $file_path Path to CTRF JSON file.
 	 * @return array{valid: bool, errors: string|null}
 	 */
-	public function validate_file( string $file_path, bool $unused = false ): array {
+	public function validate_file( string $file_path ): array {
 		if ( ! file_exists( $file_path ) ) {
 			return [
 				'valid'  => false,

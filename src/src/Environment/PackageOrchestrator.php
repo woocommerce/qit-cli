@@ -549,33 +549,10 @@ class PackageOrchestrator {
 			mkdir( $ctrf_dir, 0755, true );
 		}
 
-		// Calculate start and stop times from lifecycle results
-		$start_time = null;
-		$stop_time  = null;
-
-		if ( ! empty( $this->lifecycle_results ) ) {
-			// Get the earliest start time (if available)
-			foreach ( $this->lifecycle_results as $result ) {
-				if ( isset( $result['start'] ) && ( $start_time === null || $result['start'] < $start_time ) ) {
-					$start_time = $result['start'];
-				}
-			}
-
-			// Get the latest stop time (if available)
-			foreach ( $this->lifecycle_results as $result ) {
-				if ( isset( $result['stop'] ) && ( $stop_time === null || $result['stop'] > $stop_time ) ) {
-					$stop_time = $result['stop'];
-				}
-			}
-		}
-
-		// Use current timestamp as fallback
-		if ( $start_time === null ) {
-			$start_time = (int) ( ( $this->state['start_time'] ?? microtime( true ) ) * 1000 );
-		}
-		if ( $stop_time === null ) {
-			$stop_time = (int) ( microtime( true ) * 1000 );
-		}
+		// Calculate start and stop times
+		// Since lifecycle_results don't have start/stop fields, use state times
+		$start_time = (int) ( ( $this->state['start_time'] ?? microtime( true ) ) * 1000 );
+		$stop_time  = (int) ( microtime( true ) * 1000 );
 
 		$ctrf_data = [
 			'reportFormat' => 'CTRF',

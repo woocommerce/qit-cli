@@ -149,7 +149,8 @@ class E2EEnvironment extends Environment {
 			$this->output->writeln( str_repeat( '-', 20 ) );
 
 			// Create a custom orchestrator for global setup packages
-			$setup_orchestrator = new \QIT_CLI\Environment\GlobalSetupOrchestrator( $this->output );
+			$ctrf_validator     = \QIT_CLI\App::make( \QIT_CLI\Environment\CTRFValidator::class );
+			$setup_orchestrator = \QIT_CLI\App::make( \QIT_CLI\Environment\GlobalSetupOrchestrator::class );
 
 			foreach ( $this->env_info->global_setup_packages as $pkg_id => $info ) {
 				$setup_orchestrator->start_package( $pkg_id, $info );

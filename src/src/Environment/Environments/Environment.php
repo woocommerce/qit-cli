@@ -378,7 +378,8 @@ abstract class Environment {
 			$output->writeln( '<comment>-----------------------------------</comment>' );
 
 			// Create a null orchestrator for teardown phase (non-test packages)
-			$null_orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( new \Symfony\Component\Console\Output\NullOutput() );
+			$ctrf_validator    = \QIT_CLI\App::make( \QIT_CLI\Environment\CTRFValidator::class );
+			$null_orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( new \Symfony\Component\Console\Output\NullOutput(), $ctrf_validator );
 
 			foreach ( $env_info->global_setup_packages as $pkg_id => $info ) {
 				try {

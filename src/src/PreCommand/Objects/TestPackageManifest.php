@@ -12,21 +12,31 @@ use InvalidArgumentException;
  * @see https://qit.woo.com/json-schema/test-package
  */
 final class TestPackageManifest {
-	// Domain model - internal representation
+	/**
+	 * @var string The package ID.
+	 */
 	private string $package_id;
 	private string $namespace;
 	private string $package_name;
+	/** @var array<string> */
 	private array $tags;
 	private string $test_type;
 	private string $test_dir;
 	private string $description;
+	/** @var array<string, array<string, mixed>> */
 	private array $requires;
+	/** @var array<string, array<string|array<string,mixed>>> */
 	private array $phases;
+	/** @var array<string, string> */
 	private array $test_results;
+	/** @var array<string> */
 	private array $mu_plugins;
+	/** @var array<string, string> */
 	private array $env_vars;
 	private int $timeout;
+	/** @var array{retries?: int, flaky_retries?: int} */
 	private array $retry;
+	/** @var array<string, array<string, mixed>> */
 	private array $subpackages;
 	private ?string $parent_package;
 
@@ -169,8 +179,11 @@ final class TestPackageManifest {
 		];
 	}
 
-	// Domain methods - clean interface, no JSON knowledge
-
+	/**
+	 * Get the package ID.
+	 *
+	 * @return string The package ID.
+	 */
 	public function get_package_id(): string {
 		return $this->package_id;
 	}
@@ -183,6 +196,9 @@ final class TestPackageManifest {
 		return $this->package_name;
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	public function get_tags(): array {
 		return $this->tags;
 	}
@@ -199,26 +215,44 @@ final class TestPackageManifest {
 		return $this->description;
 	}
 
+	/**
+	 * @return array<string, array<string, mixed>>
+	 */
 	public function get_requires(): array {
 		return $this->requires;
 	}
 
+	/**
+	 * @return array<string, array<string|array<string,mixed>>>
+	 */
 	public function get_phases(): array {
 		return $this->phases;
 	}
 
+	/**
+	 * @return array<string|array<string,mixed>>
+	 */
 	public function get_phase_commands( string $phase ): array {
 		return $this->phases[ $phase ] ?? [];
 	}
 
+	/**
+	 * @return array<string, string>
+	 */
 	public function get_test_results(): array {
 		return $this->test_results;
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	public function get_mu_plugins(): array {
 		return $this->mu_plugins;
 	}
 
+	/**
+	 * @return array<string, string>
+	 */
 	public function get_env(): array {
 		return $this->env_vars;
 	}
@@ -227,10 +261,16 @@ final class TestPackageManifest {
 		return $this->timeout;
 	}
 
+	/**
+	 * @return array{retries?: int, flaky_retries?: int}
+	 */
 	public function get_retry(): array {
 		return $this->retry;
 	}
 
+	/**
+	 * @return array<string, array<string, mixed>>
+	 */
 	public function get_subpackages(): array {
 		return $this->subpackages;
 	}
@@ -239,8 +279,11 @@ final class TestPackageManifest {
 		return $this->parent_package;
 	}
 
-	// Domain queries
-
+	/**
+	 * Check if this is a subpackage.
+	 *
+	 * @return bool True if this is a subpackage, false otherwise.
+	 */
 	public function is_subpackage(): bool {
 		return $this->parent_package !== null;
 	}
@@ -269,6 +312,9 @@ final class TestPackageManifest {
 		return ! empty( $this->test_results );
 	}
 
+	/**
+	 * @return array<string, mixed>|null
+	 */
 	public function get_subpackage( string $identifier ): ?array {
 		return $this->subpackages[ $identifier ] ?? null;
 	}
@@ -281,7 +327,7 @@ final class TestPackageManifest {
 		return isset( $this->requires['themes'][ $slug ] );
 	}
 
-	public function jsonSerialize(): mixed {
+	public function jsonSerialize(): mixed { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Required by JsonSerializable interface.
 		// Return current schema format for external use
 		return [
 			'package'        => $this->package_id,
