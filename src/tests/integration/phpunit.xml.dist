@@ -4,9 +4,15 @@
         backupGlobals="false"
         colors="true"
         stopOnWarning="true"
+        displayDetailsOnTestsThatTriggerErrors="false"
+        displayDetailsOnTestsThatTriggerWarnings="false"
+        displayDetailsOnTestsThatTriggerNotices="false"
 >
     <extensions>
         <bootstrap class="QITTestExtension"/>
+        <bootstrap class="QIT\IntegrationTests\RealTimeTestReporter">
+            <parameter name="verbose" value="true"/>
+        </bootstrap>
     </extensions>
     <testsuites>
         <testsuite name="QIT_Custom_Tests">
