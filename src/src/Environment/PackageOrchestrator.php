@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Environment;
 
+use QIT_CLI\Environment\CTRFValidator;
 use QIT_CLI\Environment\SecretManager;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
@@ -18,6 +19,7 @@ class PackageOrchestrator {
 	private int $terminal_width;
 	private ?SecretManager $secret_manager = null;
 	private bool $suppress_output          = false;
+	private CTRFValidator $ctrf_validator;
 	/** @var array<string> */
 	private array $suppressed_lines = [];
 	private bool $in_ci_environment = false;
@@ -72,8 +74,9 @@ class PackageOrchestrator {
 		'suppress_output'    => false,
 	];
 
-	public function __construct( OutputInterface $output ) {
+	public function __construct( OutputInterface $output, CTRFValidator $ctrf_validator ) {
 		$this->output = $output;
+		$this->ctrf_validator = $ctrf_validator;
 
 		// Get terminal width for dynamic sizing
 		$terminal             = new Terminal();
@@ -546,8 +549,38 @@ class PackageOrchestrator {
 			mkdir( $ctrf_dir, 0755, true );
 		}
 
+		// Calculate start and stop times from lifecycle results
+		$start_time = null;
+		$stop_time = null;
+		
+		if ( ! empty( $this->lifecycle_results ) ) {
+			// Get the earliest start time (if available)
+			foreach ( $this->lifecycle_results as $result ) {
+				if ( isset( $result['start'] ) && ( $start_time === null || $result['start'] < $start_time ) ) {
+					$start_time = $result['start'];
+				}
+			}
+			
+			// Get the latest stop time (if available)
+			foreach ( $this->lifecycle_results as $result ) {
+				if ( isset( $result['stop'] ) && ( $stop_time === null || $result['stop'] > $stop_time ) ) {
+					$stop_time = $result['stop'];
+				}
+			}
+		}
+		
+		// Use current timestamp as fallback
+		if ( $start_time === null ) {
+			$start_time = (int) ( ( $this->state['start_time'] ?? microtime( true ) ) * 1000 );
+		}
+		if ( $stop_time === null ) {
+			$stop_time = (int) ( microtime( true ) * 1000 );
+		}
+
 		$ctrf_data = [
-			'results' => [
+			'reportFormat' => 'CTRF',
+			'specVersion'  => '0.1.0',
+			'results'      => [
 				'tool'    => [
 					'name' => 'qit-orchestrator',
 				],
@@ -555,11 +588,22 @@ class PackageOrchestrator {
 					'tests'   => count( $this->lifecycle_results ),
 					'passed'  => count( array_filter( $this->lifecycle_results, fn( $r ) => $r['status'] === 'passed' ) ),
 					'failed'  => count( array_filter( $this->lifecycle_results, fn( $r ) => $r['status'] === 'failed' ) ),
-					'skipped' => 0,
+					'skipped' => count( array_filter( $this->lifecycle_results, fn( $r ) => $r['status'] === 'skipped' ) ),
+					'pending' => count( array_filter( $this->lifecycle_results, fn( $r ) => $r['status'] === 'pending' ) ),
+					'other'   => count( array_filter( $this->lifecycle_results, fn( $r ) => $r['status'] === 'other' ) ),
+					'start'   => $start_time,
+					'stop'    => $stop_time,
 				],
 				'tests'   => $this->lifecycle_results,
 			],
 		];
+
+		// Validate CTRF before saving - this is our own generation so it MUST be valid
+		$validation = $this->ctrf_validator->validate( $ctrf_data );
+		
+		if ( ! $validation['valid'] ) {
+			throw new \RuntimeException( 'Orchestrator generated invalid CTRF: ' . $validation['errors'] );
+		}
 
 		$ctrf_file = $ctrf_dir . '/orchestrator.json';
 		file_put_contents( $ctrf_file, json_encode( $ctrf_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );

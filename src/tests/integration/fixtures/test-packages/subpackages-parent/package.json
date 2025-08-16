@@ -9,6 +9,6 @@
   },
   "devDependencies": {
     "@playwright/test": "^1",
-    "playwright-ctrf-json-reporter": "^0.0.22"
+    "playwright-ctrf-json-reporter": "^0"
   }
 }

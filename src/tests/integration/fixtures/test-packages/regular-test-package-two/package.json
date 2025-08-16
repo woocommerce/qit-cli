@@ -10,6 +10,6 @@
   "devDependencies": {
     "@playwright/test": "^1",
     "allure-playwright": "^3.3.3",
-    "playwright-ctrf-json-reporter": "^0.0.22"
+    "playwright-ctrf-json-reporter": "^0"
   }
 }

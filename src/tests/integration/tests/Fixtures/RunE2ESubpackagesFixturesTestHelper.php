@@ -35,11 +35,17 @@ class RunE2ESubpackagesFixturesTestHelper {
 				$baseName = $oldName;
 			}
 			
-			// Generate unique name with test prefix
-			$uniqueName = TestCleanupHelper::generate_test_package_name( 
-				$namespace, 
-				$baseName . ( $suffix ? '-' . $suffix : '' )
-			);
+			// Check if the name already has the test prefix to avoid double prefixing
+			if ( strpos( $baseName, TestCleanupHelper::TEST_PACKAGE_PREFIX ) === 0 ) {
+				// Already has prefix, just add unique suffix
+				$uniqueName = $namespace . '/' . $baseName . '-' . substr( uniqid(), 0, 8 );
+			} else {
+				// Generate unique name with test prefix
+				$uniqueName = TestCleanupHelper::generate_test_package_name( 
+					$namespace, 
+					$baseName . ( $suffix ? '-' . $suffix : '' )
+				);
+			}
 			
 			$mapping[ $oldName ] = $uniqueName;
 			$newSubpackages[ $uniqueName ] = $subpackageConfig;

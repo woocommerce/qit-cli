@@ -1069,7 +1069,8 @@ class RunE2ECommand extends QITCommand {
 	 */
 	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io, array $runner_args = [] ): array {
 		// Create orchestrator early so it's available in catch/finally blocks
-		$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io );
+		$ctrf_validator = App::make( \QIT_CLI\Environment\CTRFValidator::class );
+		$orchestrator = new \QIT_CLI\Environment\PackageOrchestrator( $io, $ctrf_validator );
 
 		// Create and configure SecretManager
 		$secret_manager = new \QIT_CLI\Environment\SecretManager();

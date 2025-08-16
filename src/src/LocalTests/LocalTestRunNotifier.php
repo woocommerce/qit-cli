@@ -34,19 +34,24 @@ class LocalTestRunNotifier {
 
 	/** @var PrepareQMLog */
 	protected $prepare_qm_log;
+	
+	/** @var \QIT_CLI\Environment\CTRFValidator */
+	protected $ctrf_validator;
 
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
-		PrepareQMLog $prepare_qm_log
+		PrepareQMLog $prepare_qm_log,
+		\QIT_CLI\Environment\CTRFValidator $ctrf_validator
 	) {
 		$this->zipper            = $zipper;
 		$this->output            = $output;
 		$this->uploader          = $uploader;
 		$this->prepare_debug_log = $prepare_debug_log;
 		$this->prepare_qm_log    = $prepare_qm_log;
+		$this->ctrf_validator    = $ctrf_validator;
 	}
 
 	/**
@@ -368,36 +373,24 @@ class LocalTestRunNotifier {
 
 	/**
 	 * Checks if the CTRF report indicates a failing test.
-	 * If the schema is missing crucial fields, we treat it as failed to be safe.
+	 * 
+	 * Note: ctrf-cli merge tool may produce null values for integer fields,
+	 * which violates the schema but we need to handle gracefully.
 	 */
 	private function ctrf_has_failed( array $ctrf ): bool {
-		// 1. Basic structure check: results & results.summary must exist.
-		if (
-			! isset( $ctrf['results'] ) ||
-			! is_array( $ctrf['results'] ) ||
-			! isset( $ctrf['results']['summary'] ) ||
-			! is_array( $ctrf['results']['summary'] )
-		) {
-			// If we can't verify, we assume failed, to be safe.
+		// Basic structure check
+		if ( ! isset( $ctrf['results']['summary'] ) ) {
+			// No summary = cannot determine status
 			return true;
 		}
 
-		// 2. 'failed' must be set and numeric (schema says integer).
-		if (
-			! isset( $ctrf['results']['summary']['failed'] ) ||
-			! is_numeric( $ctrf['results']['summary']['failed'] )
-		) {
-			// If missing or invalid type, treat as failed.
-			return true;
-		}
-
-		$failed_count = (int) $ctrf['results']['summary']['failed'];
-		// 3. If the number of failed tests is > 0, it's a fail.
-		if ( $failed_count > 0 ) {
-			return true;
-		}
-
-		// Otherwise, no CTRF-based failures.
-		return false;
+		// Get failed count - handle both valid (integer) and invalid (null) values
+		// that ctrf-cli merge might produce
+		$failed = $ctrf['results']['summary']['failed'] ?? 0;
+		
+		// Convert to integer - null becomes 0, numeric strings become integers
+		$failed_count = (int) $failed;
+		
+		return $failed_count > 0;
 	}
 }

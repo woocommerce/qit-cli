@@ -18,6 +18,7 @@ use RuntimeException;
 class ResultCollector {
 	private NodeDependencyManager $node_deps;
 	private Docker $docker;
+	private CTRFValidator $ctrf_validator;
 
 	/**
 	 * @var array{total_packages: int, packages_with_allure: int, packages_without_allure: array<string>}|null
@@ -44,9 +45,10 @@ class ResultCollector {
 	 */
 	private static array $package_local_map = [];
 
-	public function __construct( Docker $docker, NodeDependencyManager $node_deps ) {
+	public function __construct( Docker $docker, NodeDependencyManager $node_deps, CTRFValidator $ctrf_validator ) {
 		$this->node_deps = $node_deps;
 		$this->docker    = $docker;
+		$this->ctrf_validator = $ctrf_validator;
 	}
 
 	/**
@@ -202,6 +204,13 @@ class ResultCollector {
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . ltrim( $rel, './' );
 		if ( is_readable( $host_src ) ) {
 			copy( $host_src, $dst );
+			
+			// Validate CTRF from test package
+			$validation = $this->ctrf_validator->validate_file( $dst );
+			if ( ! $validation['valid'] ) {
+				throw new RuntimeException( "Test package CTRF validation failed for $slug: " . $validation['errors'] );
+			}
+			
 			$this->tag_ctrf( $dst, $slug, $mf, $phase, $is_local );
 
 			return;
@@ -211,6 +220,13 @@ class ResultCollector {
 		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . ltrim( $rel, './' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
+			
+			// Validate CTRF from test package
+			$validation = $this->ctrf_validator->validate_file( $dst );
+			if ( ! $validation['valid'] ) {
+				throw new RuntimeException( "Test package CTRF validation failed for $slug: " . $validation['errors'] );
+			}
+			
 			$this->tag_ctrf( $dst, $slug, $mf, $phase, $is_local );
 		} catch ( \RuntimeException $e ) {
 			if ( $mandatory ) {
@@ -519,7 +535,13 @@ class ResultCollector {
 
 			// Add package metadata to the merged CTRF report
 			$this->add_package_metadata_to_merged_ctrf( $final_dir . '/ctrf-report.json' );
-
+			
+			// Validate the merged CTRF
+			$validation = $this->ctrf_validator->validate_file( $final_dir . '/ctrf-report.json' );
+			if ( ! $validation['valid'] ) {
+				throw new RuntimeException( 'Merged CTRF validation failed: ' . $validation['errors'] );
+			}
+			
 			$orchestrator->post_processing_message( 'CTRF reports merged' );
 		}
 	}

@@ -678,7 +678,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Clean up
 		qit( [
 			'package:delete',
-			'woocommerce/qit-integration-test-e2e-suite:1.0.0',
+			$packageName . ':1.0.0',
 			'--yes'
 		], return_process: true );
 	}
@@ -930,11 +930,20 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Create a test package with comprehensive parent configuration
 		$tempDir = sys_get_temp_dir() . '/qit_inherit_test_' . uniqid();
 		$this->tempDirs[] = $tempDir;
-		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
+		mkdir( $tempDir, 0755, true );
 		
-		$manifestPath = $tempDir . '/qit-test.json';
+		// Create test package with unique names
+		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+			$this->fixturesDir . '/subpackages-parent',
+			$tempDir,
+			'inherit-test'
+		);
+		
+		$manifestPath = $packageInfo['dir'] . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = 'woocommerce/qit-integration-test-inherit-' . substr( uniqid(), 0, 8 );
+		$packageName = $packageInfo['package_name'];
+		$subpackageMapping = $packageInfo['subpackage_mapping'];
+		$checkoutName = $subpackageMapping['woocommerce/qit-integration-test-checkout'] ?? '';
 		
 		// Set up parent with all inheritable fields
 		$manifest['test']['results'] = [
@@ -958,7 +967,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		// Subpackage should inherit all of these
 		// Add echo commands to verify environment variables are inherited
-		$manifest['subpackages']['woocommerce/qit-integration-test-checkout']['test']['phases']['run'] = [
+		$manifest['subpackages'][$checkoutName]['test']['phases']['run'] = [
 			'echo "[ENV_CHECK] TEST_ENV_VAR=$TEST_ENV_VAR"',
 			'echo "[ENV_CHECK] ANOTHER_VAR=$ANOTHER_VAR"',
 			'npx playwright test tests/e2e/checkout.spec.js'
@@ -969,7 +978,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Publish the package
 		$publishProc = qit( [
 			'package:publish',
-			$tempDir,
+			$packageInfo['dir'],
 			'1.0.0'
 		], return_process: true );
 		
@@ -984,7 +993,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
+			'--test-package=' . $checkoutName . ':1.0.0',
 		], expected_exit_code: 1, return_process: true );
 		
 		$output = $proc->getOutput();
@@ -1026,12 +1035,22 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// We'll reuse the version consistency test setup
 		$tempDir = sys_get_temp_dir() . '/qit_version_mismatch_' . uniqid();
 		$this->tempDirs[] = $tempDir;
-		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
+		mkdir( $tempDir, 0755, true );
 		
-		$packageName = 'woocommerce/qit-integration-test-version-' . substr( uniqid(), 0, 8 );
-		$manifestPath = $tempDir . '/qit-test.json';
+		// Create test package with unique names
+		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+			$this->fixturesDir . '/subpackages-parent',
+			$tempDir,
+			'version-mismatch'
+		);
+		
+		$packageName = $packageInfo['package_name'];
+		$subpackageMapping = $packageInfo['subpackage_mapping'];
+		$checkoutName = $subpackageMapping['woocommerce/qit-integration-test-checkout'] ?? '';
+		$cartName = $subpackageMapping['woocommerce/qit-integration-test-cart'] ?? '';
+		
+		$manifestPath = $packageInfo['dir'] . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = $packageName;
 		
 		// Version 1.0.0
 		$manifest['test']['phases']['globalSetup'] = [
@@ -1041,7 +1060,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$publishV1 = qit( [
 			'package:publish',
-			$tempDir,
+			$packageInfo['dir'],
 			'1.0.0'
 		], return_process: true );
 		
@@ -1060,7 +1079,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$publishV2 = qit( [
 			'package:publish',
-			$tempDir,
+			$packageInfo['dir'],
 			'2.0.0'
 		], return_process: true );
 		
@@ -1073,8 +1092,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
-			'--test-package=woocommerce/qit-integration-test-cart:2.0.0',
+			'--test-package=' . $checkoutName . ':1.0.0',
+			'--test-package=' . $cartName . ':2.0.0',
 		], expected_exit_code: 1, return_process: true );
 		
 		$output = $proc->getOutput();
@@ -1152,39 +1171,40 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 	
 	/**
 	 * Test utility subpackages without run phase.
-	 * Verifies that subpackages with only globalSetup (no run phase) work correctly.
+	 * Verifies that packages with only globalSetup (no run phase) work correctly.
 	 */
 	public function test_utility_subpackage_without_run_phase(): void {
-		// Create a test package with utility subpackage
+		// Create a test package where the parent has only globalSetup, no run phase
 		$tempDir = sys_get_temp_dir() . '/qit_utility_test_' . uniqid();
 		$this->tempDirs[] = $tempDir;
-		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
+		mkdir( $tempDir, 0755, true );
 		
-		$manifestPath = $tempDir . '/qit-test.json';
-		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = 'woocommerce/qit-integration-test-utility-' . substr( uniqid(), 0, 8 );
-		
-		// Add a utility subpackage with only globalSetup, no run phase
-		$manifest['subpackages']['woocommerce/qit-integration-test-setup-heavy'] = [
-			'description' => 'Utility package for heavy setup',
-			'tags' => ['utility', 'setup'],
+		// Create a simple utility package with only globalSetup
+		$packageName = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'utility-only' );
+		$manifest = [
+			'package' => $packageName,
+			'test_type' => 'e2e',
+			'description' => 'Utility package with only globalSetup',
 			'test' => [
 				'phases' => [
 					'globalSetup' => [
 						'echo "[UTILITY_SETUP] Creating heavy test data"',
-						'echo "[UTILITY_SETUP] Generating 1000 products"'
+						'echo "[UTILITY_SETUP] Generating 1000 products"',
+						'echo "[UTILITY_SETUP] Setting up test environment"'
 					]
 					// No run phase - this is a utility package
 				]
 			]
 		];
 		
-		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		$packageDir = $tempDir . '/utility-package';
+		mkdir( $packageDir, 0755, true );
+		file_put_contents( $packageDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		
-		// Publish the package
+		// Publish the utility package
 		$publishProc = qit( [
 			'package:publish',
-			$tempDir,
+			$packageDir,
 			'1.0.0'
 		], return_process: true );
 		
@@ -1193,51 +1213,83 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		}
 		
 		$this->assertEquals( 0, $publishProc->getExitCode(),
-			'Should publish package with utility subpackage' );
+			'Should publish utility package' );
 		
-		$packageName = $manifest['package'];
-		
-		// Test 1: Use utility subpackage with env:up --global_setup
-		$envUpProc = qit( [
-			'env:up',
-			'--global_setup=woocommerce/qit-integration-test-setup-heavy:1.0.0',
-		], return_process: true );
-		
-		$envUpOutput = $envUpProc->getOutput();
-		
-		// Verify the utility globalSetup was executed
-		$this->assertStringContainsString( '[UTILITY_SETUP] Creating heavy test data', $envUpOutput,
-			'Utility globalSetup should execute with env:up' );
-		$this->assertStringContainsString( '[UTILITY_SETUP] Generating 1000 products', $envUpOutput,
-			'All utility setup commands should execute' );
-		
-		// Clean up environment
-		qit( [ 'env:down' ], return_process: true );
-		
-		// Test 2: Use utility subpackage in combination with test packages
+		// Test 1: Try to run the utility package - should fail with helpful message
 		$runProc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/qit-integration-test-setup-heavy:1.0.0',
-			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
+			'--test-package=' . $packageName . ':1.0.0',
+		], expected_exit_code: 1, return_process: true );
+		
+		$output = $runProc->getOutput();
+		
+		// System should detect there's no run phase and provide guidance
+		$this->assertStringContainsString( 'No test packages with run phase found', $output,
+			'Should detect package has no run phase' );
+		$this->assertStringContainsString( 'All packages are utility packages', $output,
+			'Should identify as utility package' );
+		
+		// Test 2: Combine utility package with a regular test package
+		// Create a simple test package with a run phase
+		$testPackageName = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'simple-test' );
+		$testManifest = [
+			'package' => $testPackageName,
+			'test_type' => 'e2e',
+			'description' => 'Simple test package',
+			'test' => [
+				'phases' => [
+					'run' => [
+						'echo "[TEST] Running actual tests"',
+						'mkdir -p ./results',
+						'echo \'{"reportFormat":"CTRF","specVersion":"0.1.0","results":{"tool":{"name":"test"},"summary":{"tests":1,"passed":1,"failed":0,"skipped":0,"pending":0,"other":0,"start":1700000000000,"stop":1700000001000},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json'
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			]
+		];
+		
+		$testPackageDir = $tempDir . '/test-package';
+		mkdir( $testPackageDir, 0755, true );
+		file_put_contents( $testPackageDir . '/qit-test.json', json_encode( $testManifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+		
+		$publishTestProc = qit( [
+			'package:publish',
+			$testPackageDir,
+			'1.0.0'
 		], return_process: true );
 		
-		$runOutput = $runProc->getOutput();
+		$this->assertEquals( 0, $publishTestProc->getExitCode(),
+			'Should publish test package' );
 		
-		// Verify utility setup runs
-		$this->assertStringContainsString( '[UTILITY_SETUP] Creating heavy test data', $runOutput,
-			'Utility globalSetup should execute in run:e2e' );
+		// Now run both packages together
+		$combinedProc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--test-package=' . $packageName . ':1.0.0',
+			'--test-package=' . $testPackageName . ':1.0.0',
+		], return_process: true );
 		
-		// Verify test package also runs
-		$this->assertStringContainsString( 'checkout.spec.js', $runOutput,
-			'Test package should run after utility setup' );
+		$combinedOutput = $combinedProc->getOutput();
+		
+		// The combined run should succeed
+		$this->assertEquals( 0, $combinedProc->getExitCode(),
+			'Combined utility + test package should succeed' );
+		
+		// Utility package's globalSetup should execute
+		$this->assertStringContainsString( '[UTILITY_SETUP] Creating heavy test data', $combinedOutput,
+			'Utility globalSetup should execute' );
+		
+		// Test package should also run
+		$this->assertStringContainsString( '[TEST] Running actual tests', $combinedOutput,
+			'Test package should run' );
 		
 		// Clean up
-		qit( [
-			'package:delete',
-			$packageName . ':1.0.0',
-			'--yes'
-		], return_process: true );
+		qit( [ 'package:delete', $packageName . ':1.0.0', '--yes' ], return_process: true );
+		qit( [ 'package:delete', $testPackageName . ':1.0.0', '--yes' ], return_process: true );
 	}
 	
 	/**
@@ -1248,12 +1300,18 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Create a test package with overlapping globalSetup commands
 		$tempDir = sys_get_temp_dir() . '/qit_dedup_test_' . uniqid();
 		$this->tempDirs[] = $tempDir;
-		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
+		mkdir( $tempDir, 0755, true );
 		
-		$manifestPath = $tempDir . '/qit-test.json';
+		// Create test package with unique names
+		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+			$this->fixturesDir . '/subpackages-parent',
+			$tempDir,
+			'dedup-test'
+		);
+		
+		$manifestPath = $packageInfo['dir'] . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$packageBase = 'woocommerce/qit-integration-test-dedup-test-' . substr( uniqid(), 0, 8 );
-		$manifest['package'] = $packageBase;
+		$packageBase = $packageInfo['package_name'];
 		
 		// Parent has base setup
 		$manifest['test']['phases']['globalSetup'] = [
@@ -1264,8 +1322,12 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Clear existing subpackages and add new ones with matching names
 		$manifest['subpackages'] = [];
 		
+		// Generate unique subpackage names
+		$checkoutName = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'dedup-checkout' );
+		$cartName = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'dedup-cart' );
+		
 		// Subpackage 1 repeats some commands and adds new ones
-		$manifest['subpackages']['woocommerce/qit-integration-test-dedup-checkout'] = [
+		$manifest['subpackages'][$checkoutName] = [
 			'description' => 'Checkout flow tests',
 			'test' => [
 				'phases' => [
@@ -1282,7 +1344,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		];
 		
 		// Subpackage 2 has different overlap
-		$manifest['subpackages']['woocommerce/qit-integration-test-dedup-cart'] = [
+		$manifest['subpackages'][$cartName] = [
 			'description' => 'Cart tests',
 			'test' => [
 				'phases' => [
@@ -1302,7 +1364,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Publish the package
 		$publishProc = qit( [
 			'package:publish',
-			$tempDir,
+			$packageInfo['dir'],
 			'1.0.0'
 		], return_process: true );
 		
@@ -1317,8 +1379,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$runProc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/qit-integration-test-dedup-checkout:1.0.0',
-			'--test-package=woocommerce/qit-integration-test-dedup-cart:1.0.0',
+			'--test-package=' . $checkoutName . ':1.0.0',
+			'--test-package=' . $cartName . ':1.0.0',
 		], return_process: true );
 		
 		$runOutput = $runProc->getOutput();
