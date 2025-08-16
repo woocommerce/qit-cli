@@ -38,7 +38,7 @@ class TestPackageCachingTest extends TestCase {
 		// First, publish a test package if not already published
 		$packageDir = $this->fixturesDir . '/regular-test-package-one';
 		$uniqueId = substr( uniqid(), 0, 8 );
-		$packageName = 'woocommerce/cache-test' . $uniqueId;  // No hyphen before ID
+		$packageName = 'woocommerce/qit-integration-test-cache-' . $uniqueId;  // No hyphen before ID
 		
 		// Create a copy with unique name
 		$tempDir = sys_get_temp_dir() . '/qit_cache_test_' . uniqid();
@@ -145,7 +145,7 @@ class TestPackageCachingTest extends TestCase {
 		$proc1 = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/checkout:5.0.0',
+			'--test-package=woocommerce/qit-integration-test-checkout:5.0.0',
 			'--config=' . $config1,
 		], return_process: true );
 		
@@ -160,7 +160,7 @@ class TestPackageCachingTest extends TestCase {
 		$proc2 = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/cart:5.0.0',
+			'--test-package=woocommerce/qit-integration-test-cart:5.0.0',
 			'--config=' . $config2,
 			'-v',
 		], return_process: true );
@@ -173,14 +173,14 @@ class TestPackageCachingTest extends TestCase {
 				'Second subpackage should use cached parent' );
 		} else {
 			// At least should not re-download
-			$this->assertStringNotContainsString( 'Downloading package: woocommerce/cart:5.0.0', $output2,
+			$this->assertStringNotContainsString( 'Downloading package: woocommerce/qit-integration-test-cart:5.0.0', $output2,
 				'Second subpackage should not trigger new download' );
 		}
 		
 		// Clean up
 		qit( [
 			'package:delete',
-			'woocommerce/e2e-suite:5.0.0',
+			'woocommerce/qit-integration-test-e2e-suite:5.0.0',
 			'--yes'
 		], return_process: true );
 	}

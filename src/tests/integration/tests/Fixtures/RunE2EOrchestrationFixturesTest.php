@@ -55,13 +55,13 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	 */
 	public function test_global_state_shared_across_packages(): void {
 		// Create a package with globalSetup that creates state
-		$setupPackage = $this->createPackageWithGlobalSetup( 'setup-package' );
+		$setupPackage = $this->createPackageWithGlobalSetup( 'qit-integration-test-setup-package' );
 		
 		// Create package 1 that reads global state
-		$package1 = $this->createPackageThatReadsGlobalState( 'package-1' );
+		$package1 = $this->createPackageThatReadsGlobalState( 'qit-integration-test-package-1' );
 		
 		// Create package 2 that also reads the same global state
-		$package2 = $this->createPackageThatReadsGlobalState( 'package-2' );
+		$package2 = $this->createPackageThatReadsGlobalState( 'qit-integration-test-package-2' );
 		
 		$config = [
 			'test_types' => [
@@ -90,9 +90,9 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 		$this->assertStringContainsString( 'Running globalSetup phase for all packages', $output );
 		
 		// Verify all three packages ran (setup-package, package-1, package-2)
-		$this->assertStringContainsString( 'PACKAGE [1/3]: woocommerce/setup-package:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/3]: woocommerce/package-1:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [3/3]: woocommerce/package-2:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [1/3]: woocommerce/qit-integration-test-setup-package:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/3]: woocommerce/qit-integration-test-package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [3/3]: woocommerce/qit-integration-test-package-2:local', $output );
 		
 		// All tests should pass (packages successfully access global state)
 		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
@@ -115,10 +115,10 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	 */
 	public function test_package_isolation(): void {
 		// Package 1 creates a file
-		$package1 = $this->createPackageThatCreatesState( 'package-1', 'package1-state.txt' );
+		$package1 = $this->createPackageThatCreatesState( 'qit-integration-test-package-1', 'package1-state.txt' );
 		
 		// Package 2 checks if package 1's file exists (it shouldn't)
-		$package2 = $this->createPackageThatChecksForState( 'package-2', 'package1-state.txt' );
+		$package2 = $this->createPackageThatChecksForState( 'qit-integration-test-package-2', 'package1-state.txt' );
 		
 		$config = [
 			'test_types' => [
@@ -143,8 +143,8 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 		$this->assertEquals( 0, $proc->getExitCode() );
 		
 		// Verify both packages ran
-		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/package-1:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/package-2:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [1/2]: woocommerce/qit-integration-test-package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/2]: woocommerce/qit-integration-test-package-2:local', $output );
 		
 		// Verify database restore happened between packages (ensuring isolation)
 		$this->assertStringContainsString( 'DATABASE RESTORE', $output );
@@ -171,13 +171,13 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	 */
 	public function test_execution_order_and_wp_state(): void {
 		// Package 1 creates a WordPress option
-		$package1 = $this->createPackageThatSetsWPOption( 'package-1', 'test_sequence', 'first' );
+		$package1 = $this->createPackageThatSetsWPOption( 'qit-integration-test-package-1', 'test_sequence', 'first' );
 		
 		// Package 2 reads and updates the option
-		$package2 = $this->createPackageThatUpdatesWPOption( 'package-2', 'test_sequence', 'first_then_second' );
+		$package2 = $this->createPackageThatUpdatesWPOption( 'qit-integration-test-package-2', 'test_sequence', 'first_then_second' );
 		
 		// Package 3 verifies the sequence
-		$package3 = $this->createPackageThatVerifiesWPOption( 'package-3', 'test_sequence', 'first_then_second' );
+		$package3 = $this->createPackageThatVerifiesWPOption( 'qit-integration-test-package-3', 'test_sequence', 'first_then_second' );
 		
 		$config = [
 			'test_types' => [
@@ -202,9 +202,9 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 		$this->assertEquals( 0, $proc->getExitCode() );
 		
 		// Verify execution order
-		$this->assertStringContainsString( 'PACKAGE [1/3]: woocommerce/package-1:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/3]: woocommerce/package-2:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [3/3]: woocommerce/package-3:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [1/3]: woocommerce/qit-integration-test-package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/3]: woocommerce/qit-integration-test-package-2:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [3/3]: woocommerce/qit-integration-test-package-3:local', $output );
 		
 		// Verify all packages executed successfully
 		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
@@ -226,11 +226,11 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 	 */
 	public function test_global_teardown_sees_all_package_results(): void {
 		// Each package writes its own result file
-		$package1 = $this->createPackageThatWritesResult( 'package-1' );
-		$package2 = $this->createPackageThatWritesResult( 'package-2' );
+		$package1 = $this->createPackageThatWritesResult( 'qit-integration-test-package-1' );
+		$package2 = $this->createPackageThatWritesResult( 'qit-integration-test-package-2' );
 		
 		// Package with globalTeardown that counts all result files
-		$teardownPackage = $this->createPackageWithGlobalTeardown( 'teardown-package' );
+		$teardownPackage = $this->createPackageWithGlobalTeardown( 'qit-integration-test-teardown-package' );
 		
 		$config = [
 			'test_types' => [
@@ -255,9 +255,9 @@ class RunE2EOrchestrationFixturesTest extends TestCase {
 		$this->assertEquals( 0, $proc->getExitCode() );
 		
 		// Verify all packages executed
-		$this->assertStringContainsString( 'PACKAGE [1/3]: woocommerce/package-1:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [2/3]: woocommerce/package-2:local', $output );
-		$this->assertStringContainsString( 'PACKAGE [3/3]: woocommerce/teardown-package:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [1/3]: woocommerce/qit-integration-test-package-1:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [2/3]: woocommerce/qit-integration-test-package-2:local', $output );
+		$this->assertStringContainsString( 'PACKAGE [3/3]: woocommerce/qit-integration-test-teardown-package:local', $output );
 		
 		// Verify globalTeardown phase ran
 		$this->assertStringContainsString( 'GLOBAL TEARDOWN', $output );

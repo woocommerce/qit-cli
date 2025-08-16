@@ -53,7 +53,7 @@ class PackageRegistryOperationsTest extends TestCase {
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/regular-test-package-one' ) . " " . escapeshellarg( $packageDir ) );
 		
 		// Give it a unique name
-		$packageName = 'woocommerce/test-simple-' . substr( uniqid(), 0, 8 );
+		$packageName = 'woocommerce/qit-integration-test-simple-' . substr( uniqid(), 0, 8 );
 		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		$manifest['package'] = $packageName;
@@ -97,7 +97,7 @@ class PackageRegistryOperationsTest extends TestCase {
 		$packageDir = $tempDir . '/versioned-package';
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/regular-test-package-one' ) . " " . escapeshellarg( $packageDir ) );
 		
-		$packageName = 'woocommerce/test-versioned-' . substr( uniqid(), 0, 8 );
+		$packageName = 'woocommerce/qit-integration-test-versioned-' . substr( uniqid(), 0, 8 );
 		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		$manifest['package'] = $packageName;
@@ -137,7 +137,7 @@ class PackageRegistryOperationsTest extends TestCase {
 		$packageDir = $tempDir . '/subpackages';
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $packageDir ) );
 		
-		$packageName = 'woocommerce/test-subpkgs-' . substr( uniqid(), 0, 8 );
+		$packageName = 'woocommerce/qit-integration-test-subpkgs-' . substr( uniqid(), 0, 8 );
 		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		$manifest['package'] = $packageName;
@@ -177,7 +177,7 @@ class PackageRegistryOperationsTest extends TestCase {
 		$packageDir = $tempDir . '/list-test-package';
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/regular-test-package-one' ) . " " . escapeshellarg( $packageDir ) );
 		
-		$packageName = 'woocommerce/test-list-' . substr( uniqid(), 0, 8 );
+		$packageName = 'woocommerce/qit-integration-test-list-' . substr( uniqid(), 0, 8 );
 		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		$manifest['package'] = $packageName;
@@ -253,7 +253,7 @@ class PackageRegistryOperationsTest extends TestCase {
 		$packageDir = $tempDir . '/delete-test-package';
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/regular-test-package-one' ) . " " . escapeshellarg( $packageDir ) );
 		
-		$packageName = 'woocommerce/test-delete-' . substr( uniqid(), 0, 8 );
+		$packageName = 'woocommerce/qit-integration-test-delete-' . substr( uniqid(), 0, 8 );
 		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		$manifest['package'] = $packageName;
@@ -310,7 +310,7 @@ class PackageRegistryOperationsTest extends TestCase {
 		$packageDir = $tempDir . '/lifecycle-package';
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/regular-test-package-one' ) . " " . escapeshellarg( $packageDir ) );
 		
-		$packageName = 'woocommerce/test-lifecycle-' . substr( uniqid(), 0, 8 );
+		$packageName = 'woocommerce/qit-integration-test-lifecycle-' . substr( uniqid(), 0, 8 );
 		$manifestPath = $packageDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		$manifest['package'] = $packageName;

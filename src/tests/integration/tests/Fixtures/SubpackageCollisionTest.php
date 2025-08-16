@@ -31,10 +31,10 @@ class SubpackageCollisionTest extends TestCase {
 		// No need to manually delete temp directories
 		
 		// Clean up test packages from registry
-		$this->cleanupPackage( 'woocommerce/parent-a:1.0.0' );
-		$this->cleanupPackage( 'woocommerce/parent-b:1.0.0' );
-		$this->cleanupPackage( 'woocommerce/shared-checkout:1.0.0' );
-		$this->cleanupPackage( 'woocommerce/shared-cart:1.0.0' );
+		$this->cleanupPackage( 'woocommerce/qit-integration-test-parent-a:1.0.0' );
+		$this->cleanupPackage( 'woocommerce/qit-integration-test-parent-b:1.0.0' );
+		$this->cleanupPackage( 'woocommerce/qit-integration-test-shared-checkout:1.0.0' );
+		$this->cleanupPackage( 'woocommerce/qit-integration-test-shared-cart:1.0.0' );
 		
 		parent::tearDown();
 	}
@@ -47,8 +47,8 @@ class SubpackageCollisionTest extends TestCase {
 	 */
 	public function test_subpackage_collision_across_different_parents(): void {
 		// Step 1: Create and publish Parent A with subpackages
-		$parentADir = $this->createPackageWithSubpackages( 'parent-a', [
-			'woocommerce/shared-checkout' => [
+		$parentADir = $this->createPackageWithSubpackages( 'qit-integration-test-parent-a', [
+			'woocommerce/qit-integration-test-shared-checkout' => [
 				'description' => 'Checkout tests from Parent A',
 				'test' => [
 					'phases' => [
@@ -61,7 +61,7 @@ class SubpackageCollisionTest extends TestCase {
 					]
 				]
 			],
-			'woocommerce/shared-cart' => [
+			'woocommerce/qit-integration-test-shared-cart' => [
 				'description' => 'Cart tests from Parent A',
 				'test' => [
 					'phases' => [
@@ -100,8 +100,8 @@ class SubpackageCollisionTest extends TestCase {
 			'Parent A checkout subpackage should execute with correct content' );
 		
 		// Step 3: Create and publish Parent B with SAME subpackage names
-		$parentBDir = $this->createPackageWithSubpackages( 'parent-b', [
-			'woocommerce/shared-checkout' => [
+		$parentBDir = $this->createPackageWithSubpackages( 'qit-integration-test-parent-b', [
+			'woocommerce/qit-integration-test-shared-checkout' => [
 				'description' => 'Checkout tests from Parent B - DIFFERENT CONTENT',
 				'test' => [
 					'phases' => [
@@ -114,7 +114,7 @@ class SubpackageCollisionTest extends TestCase {
 					]
 				]
 			],
-			'woocommerce/shared-cart' => [
+			'woocommerce/qit-integration-test-shared-cart' => [
 				'description' => 'Cart tests from Parent B',
 				'test' => [
 					'phases' => [
@@ -139,7 +139,7 @@ class SubpackageCollisionTest extends TestCase {
 		// The error message should clearly indicate the collision
 		$this->assertStringContainsString( 'collision', strtolower( $publishB->getOutput() ),
 			'Should indicate collision as reason for failure' );
-		$this->assertStringContainsString( 'woocommerce/shared-checkout:1.0.0', $publishB->getOutput(),
+		$this->assertStringContainsString( 'woocommerce/qit-integration-test-shared-checkout:1.0.0', $publishB->getOutput(),
 			'Should specify which subpackage caused the collision' );
 		
 		// Step 4: Critical Check - Parent A's subpackage should STILL work correctly
@@ -167,8 +167,8 @@ class SubpackageCollisionTest extends TestCase {
 	 */
 	public function test_subpackage_storage_integrity(): void {
 		// Create Parent A with a subpackage
-		$parentADir = $this->createPackageWithSubpackages( 'parent-a', [
-			'woocommerce/shared-checkout' => [
+		$parentADir = $this->createPackageWithSubpackages( 'qit-integration-test-parent-a', [
+			'woocommerce/qit-integration-test-shared-checkout' => [
 				'description' => 'Checkout from Parent A',
 				'test' => [
 					'phases' => [
@@ -191,7 +191,7 @@ class SubpackageCollisionTest extends TestCase {
 		$this->assertEquals( 0, $publishA->getExitCode() );
 		
 		// Get storage info for Parent A's subpackage
-		$storageInfoA = $this->getPackageStorageInfo( 'woocommerce/shared-checkout:1.0.0' );
+		$storageInfoA = $this->getPackageStorageInfo( 'woocommerce/qit-integration-test-shared-checkout:1.0.0' );
 		if ( $storageInfoA === null ) {
 			// Debug: Check what's in the database
 			$debug = shell_exec( "docker exec cd_php bash -c 'wp db query \"SELECT package_id FROM wp_qit_test_packages\"' 2>&1" );
@@ -204,8 +204,8 @@ class SubpackageCollisionTest extends TestCase {
 		$this->assertTrue( $fileExists, 'Parent A storage file should exist in container' );
 		
 		// Create Parent B with SAME subpackage name
-		$parentBDir = $this->createPackageWithSubpackages( 'parent-b', [
-			'woocommerce/shared-checkout' => [
+		$parentBDir = $this->createPackageWithSubpackages( 'qit-integration-test-parent-b', [
+			'woocommerce/qit-integration-test-shared-checkout' => [
 				'description' => 'Checkout from Parent B',
 				'test' => [
 					'phases' => [
@@ -222,7 +222,7 @@ class SubpackageCollisionTest extends TestCase {
 		], expected_exit_code: 1, return_process: true );
 		
 		// After Parent B's failed publish, check Parent A's storage
-		$storageInfoA2 = $this->getPackageStorageInfo( 'woocommerce/shared-checkout:1.0.0' );
+		$storageInfoA2 = $this->getPackageStorageInfo( 'woocommerce/qit-integration-test-shared-checkout:1.0.0' );
 		
 		// Critical assertions:
 		if ( $publishB->getExitCode() === 0 ) {

@@ -256,10 +256,10 @@ class RunE2ESubpackagesWithParentFixturesTest extends TestCase {
 				'e2e' => [
 					'default' => [
 						'test_packages' => [
-							"woocommerce/e2e-suite:$version",
-							"woocommerce/checkout:$version",
-							"woocommerce/cart:$version",
-							"woocommerce/account:$version",
+							"woocommerce/qit-integration-test-e2e-suite:$version",
+							"woocommerce/qit-integration-test-checkout:$version",
+							"woocommerce/qit-integration-test-cart:$version",
+							"woocommerce/qit-integration-test-account:$version",
 						]
 					]
 				]
@@ -283,30 +283,30 @@ class RunE2ESubpackagesWithParentFixturesTest extends TestCase {
 		
 		// Verify all packages ran
 		$output = $proc->getOutput();
-		$this->assertStringContainsString( "woocommerce/e2e-suite:$version", $output );
-		$this->assertStringContainsString( "woocommerce/checkout:$version", $output );
-		$this->assertStringContainsString( "woocommerce/cart:$version", $output );
-		$this->assertStringContainsString( "woocommerce/account:$version", $output );
+		$this->assertStringContainsString( "woocommerce/qit-integration-test-e2e-suite:$version", $output );
+		$this->assertStringContainsString( "woocommerce/qit-integration-test-checkout:$version", $output );
+		$this->assertStringContainsString( "woocommerce/qit-integration-test-cart:$version", $output );
+		$this->assertStringContainsString( "woocommerce/qit-integration-test-account:$version", $output );
 		
 		// Clean up
 		qit( [
 			'package:delete',
-			"woocommerce/e2e-suite:$version",
+			"woocommerce/qit-integration-test-e2e-suite:$version",
 			'--yes',
 		] );
 		qit( [
 			'package:delete',
-			"woocommerce/checkout:$version",
+			"woocommerce/qit-integration-test-checkout:$version",
 			'--yes',
 		] );
 		qit( [
 			'package:delete',
-			"woocommerce/cart:$version",
+			"woocommerce/qit-integration-test-cart:$version",
 			'--yes',
 		] );
 		qit( [
 			'package:delete',
-			"woocommerce/account:$version",
+			"woocommerce/qit-integration-test-account:$version",
 			'--yes',
 		] );
 	}

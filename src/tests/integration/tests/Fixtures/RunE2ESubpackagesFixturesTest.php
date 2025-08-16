@@ -136,7 +136,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// If publish succeeded, verify subpackages were mentioned
 		if ( $proc->getExitCode() === 0 ) {
 			// The publish command should indicate subpackages were published
-			$this->assertStringContainsString( 'woocommerce/e2e-suite', $output,
+			$this->assertStringContainsString( 'woocommerce/qit-integration-test-e2e-suite', $output,
 				'Parent package should be published' );
 			
 			// Check if subpackages count is mentioned
@@ -550,7 +550,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			'Should run successfully. Output: ' . $output );
 		
 		// Verify package identification shows single source
-		$this->assertStringContainsString( 'woocommerce/e2e-suite:local', $output,
+		$this->assertStringContainsString( 'woocommerce/qit-integration-test-e2e-suite:local', $output,
 			'Parent package loaded from local source' );
 		
 		// Only one package entry should be shown (parent with subpackages)
@@ -678,7 +678,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Clean up
 		qit( [
 			'package:delete',
-			'woocommerce/e2e-suite:1.0.0',
+			'woocommerce/qit-integration-test-e2e-suite:1.0.0',
 			'--yes'
 		], return_process: true );
 	}
@@ -746,7 +746,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Clean up
 		qit( [
 			'package:delete',
-			'woocommerce/e2e-suite:1.0.0',
+			'woocommerce/qit-integration-test-e2e-suite:1.0.0',
 			'--yes'
 		], return_process: true );
 	}
@@ -806,7 +806,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Clean up
 		qit( [
 			'package:delete',
-			'woocommerce/e2e-suite:2.0.0',
+			'woocommerce/qit-integration-test-e2e-suite:2.0.0',
 			'--yes'
 		], return_process: true );
 	}
@@ -880,7 +880,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Clean up
 		qit( [
 			'package:delete',
-			'woocommerce/e2e-suite:3.0.0',
+			'woocommerce/qit-integration-test-e2e-suite:3.0.0',
 			'--yes'
 		], return_process: true );
 	}
@@ -934,7 +934,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$manifestPath = $tempDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = 'woocommerce/inherit-test-' . substr( uniqid(), 0, 8 );
+		$manifest['package'] = 'woocommerce/qit-integration-test-inherit-' . substr( uniqid(), 0, 8 );
 		
 		// Set up parent with all inheritable fields
 		$manifest['test']['results'] = [
@@ -1028,7 +1028,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$this->tempDirs[] = $tempDir;
 		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $tempDir ) );
 		
-		$packageName = 'woocommerce/version-test-' . substr( uniqid(), 0, 8 );
+		$packageName = 'woocommerce/qit-integration-test-version-' . substr( uniqid(), 0, 8 );
 		$manifestPath = $tempDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
 		$manifest['package'] = $packageName;
@@ -1133,7 +1133,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			'Should run successfully. Output: ' . $output );
 		
 		// Verify parent package runs
-		$this->assertStringContainsString( 'woocommerce/e2e-suite:local', $output,
+		$this->assertStringContainsString( 'woocommerce/qit-integration-test-e2e-suite:local', $output,
 			'Parent package should be identified' );
 		
 		// Each component has its own test file and results
@@ -1162,10 +1162,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$manifestPath = $tempDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = 'woocommerce/utility-test-' . substr( uniqid(), 0, 8 );
+		$manifest['package'] = 'woocommerce/qit-integration-test-utility-' . substr( uniqid(), 0, 8 );
 		
 		// Add a utility subpackage with only globalSetup, no run phase
-		$manifest['subpackages']['woocommerce/setup-heavy'] = [
+		$manifest['subpackages']['woocommerce/qit-integration-test-setup-heavy'] = [
 			'description' => 'Utility package for heavy setup',
 			'tags' => ['utility', 'setup'],
 			'test' => [
@@ -1200,7 +1200,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		// Test 1: Use utility subpackage with env:up --global_setup
 		$envUpProc = qit( [
 			'env:up',
-			'--global_setup=woocommerce/setup-heavy:1.0.0',
+			'--global_setup=woocommerce/qit-integration-test-setup-heavy:1.0.0',
 		], return_process: true );
 		
 		$envUpOutput = $envUpProc->getOutput();
@@ -1218,7 +1218,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$runProc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/setup-heavy:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-setup-heavy:1.0.0',
 			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
 		], return_process: true );
 		
@@ -1252,7 +1252,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		$manifestPath = $tempDir . '/qit-test.json';
 		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$packageBase = 'woocommerce/dedup-test-' . substr( uniqid(), 0, 8 );
+		$packageBase = 'woocommerce/qit-integration-test-dedup-test-' . substr( uniqid(), 0, 8 );
 		$manifest['package'] = $packageBase;
 		
 		// Parent has base setup
@@ -1265,7 +1265,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$manifest['subpackages'] = [];
 		
 		// Subpackage 1 repeats some commands and adds new ones
-		$manifest['subpackages']['woocommerce/dedup-checkout'] = [
+		$manifest['subpackages']['woocommerce/qit-integration-test-dedup-checkout'] = [
 			'description' => 'Checkout flow tests',
 			'test' => [
 				'phases' => [
@@ -1282,7 +1282,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		];
 		
 		// Subpackage 2 has different overlap
-		$manifest['subpackages']['woocommerce/dedup-cart'] = [
+		$manifest['subpackages']['woocommerce/qit-integration-test-dedup-cart'] = [
 			'description' => 'Cart tests',
 			'test' => [
 				'phases' => [
@@ -1317,8 +1317,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$runProc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/dedup-checkout:1.0.0',
-			'--test-package=woocommerce/dedup-cart:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-dedup-checkout:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-dedup-cart:1.0.0',
 		], return_process: true );
 		
 		$runOutput = $runProc->getOutput();
