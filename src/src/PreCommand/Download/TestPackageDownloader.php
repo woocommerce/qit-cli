@@ -284,8 +284,8 @@ class TestPackageDownloader {
 				if ( $this->output->isVeryVerbose() ) {
 					$this->output->writeln( "[DEBUG] Found cached package data for $reference" );
 					$this->output->writeln( '[DEBUG] Creating TestPackageManifest from cached data' );
-					$this->output->writeln( "[DEBUG] Cached manifest has '_normalized' flag: " . ( isset($cached['manifest']['_normalized']) ? 'YES' : 'NO' ) );
-					$this->output->writeln( "[DEBUG] Cached manifest keys: " . implode(', ', array_keys($cached['manifest'])) );
+					$this->output->writeln( "[DEBUG] Cached manifest has '_normalized' flag: " . ( isset( $cached['manifest']['_normalized'] ) ? 'YES' : 'NO' ) );
+					$this->output->writeln( '[DEBUG] Cached manifest keys: ' . implode( ', ', array_keys( $cached['manifest'] ) ) );
 				}
 
 				// Restore metadata for caller access
@@ -555,7 +555,7 @@ class TestPackageDownloader {
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( "[DEBUG] Caching package with key: $cache_key" );
-			$this->output->writeln( "[DEBUG] Manifest array has _normalized: " . ( isset($manifest_array['_normalized']) ? 'YES' : 'NO' ) );
+			$this->output->writeln( '[DEBUG] Manifest array has _normalized: ' . ( isset( $manifest_array['_normalized'] ) ? 'YES' : 'NO' ) );
 		}
 
 		// Cache both manifest and metadata together

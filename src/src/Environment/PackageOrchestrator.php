@@ -75,7 +75,7 @@ class PackageOrchestrator {
 	];
 
 	public function __construct( OutputInterface $output, CTRFValidator $ctrf_validator ) {
-		$this->output = $output;
+		$this->output         = $output;
 		$this->ctrf_validator = $ctrf_validator;
 
 		// Get terminal width for dynamic sizing
@@ -551,8 +551,8 @@ class PackageOrchestrator {
 
 		// Calculate start and stop times from lifecycle results
 		$start_time = null;
-		$stop_time = null;
-		
+		$stop_time  = null;
+
 		if ( ! empty( $this->lifecycle_results ) ) {
 			// Get the earliest start time (if available)
 			foreach ( $this->lifecycle_results as $result ) {
@@ -560,7 +560,7 @@ class PackageOrchestrator {
 					$start_time = $result['start'];
 				}
 			}
-			
+
 			// Get the latest stop time (if available)
 			foreach ( $this->lifecycle_results as $result ) {
 				if ( isset( $result['stop'] ) && ( $stop_time === null || $result['stop'] > $stop_time ) ) {
@@ -568,7 +568,7 @@ class PackageOrchestrator {
 				}
 			}
 		}
-		
+
 		// Use current timestamp as fallback
 		if ( $start_time === null ) {
 			$start_time = (int) ( ( $this->state['start_time'] ?? microtime( true ) ) * 1000 );
@@ -600,7 +600,7 @@ class PackageOrchestrator {
 
 		// Validate CTRF before saving - this is our own generation so it MUST be valid
 		$validation = $this->ctrf_validator->validate( $ctrf_data );
-		
+
 		if ( ! $validation['valid'] ) {
 			throw new \RuntimeException( 'Orchestrator generated invalid CTRF: ' . $validation['errors'] );
 		}

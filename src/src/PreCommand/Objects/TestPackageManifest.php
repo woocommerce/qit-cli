@@ -57,7 +57,7 @@ final class TestPackageManifest {
 		// Package identification - handle v1 vs v2 format
 		if ( isset( $data['package'] ) && str_contains( $data['package'], '/' ) ) {
 			// v2 format: "package": "woocommerce/checkout"
-			$this->package_id = $data['package'];
+			$this->package_id                         = $data['package'];
 			[ $this->namespace, $this->package_name ] = explode( '/', $this->package_id, 2 );
 		} elseif ( isset( $data['namespace'] ) && isset( $data['package'] ) ) {
 			// v1 format: separate namespace and package fields
@@ -92,7 +92,10 @@ final class TestPackageManifest {
 		$this->mu_plugins     = $data['mu_plugins'] ?? [];
 		$this->env_vars       = $this->stringify_env( $data['envs'] ?? [] );
 		$this->timeout        = $data['timeout'] ?? 1800;
-		$this->retry          = $data['retry'] ?? [ 'times' => 0, 'delay' => 0 ];
+		$this->retry          = $data['retry'] ?? [
+			'times' => 0,
+			'delay' => 0,
+		];
 		$this->subpackages    = $data['subpackages'] ?? [];
 		$this->parent_package = $data['parent_package'] ?? null;
 	}
@@ -281,13 +284,13 @@ final class TestPackageManifest {
 	public function jsonSerialize(): mixed {
 		// Return current schema format for external use
 		return [
-			'package'     => $this->package_id,
-			'tags'        => $this->tags,
-			'test_type'   => $this->test_type,
-			'test_dir'    => $this->test_dir,
-			'description' => $this->description,
-			'requires'    => $this->requires,
-			'test'        => [
+			'package'        => $this->package_id,
+			'tags'           => $this->tags,
+			'test_type'      => $this->test_type,
+			'test_dir'       => $this->test_dir,
+			'description'    => $this->description,
+			'requires'       => $this->requires,
+			'test'           => [
 				'phases'  => $this->phases,
 				'results' => $this->test_results,
 			],

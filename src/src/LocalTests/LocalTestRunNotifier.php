@@ -34,7 +34,7 @@ class LocalTestRunNotifier {
 
 	/** @var PrepareQMLog */
 	protected $prepare_qm_log;
-	
+
 	/** @var \QIT_CLI\Environment\CTRFValidator */
 	protected $ctrf_validator;
 
@@ -373,7 +373,7 @@ class LocalTestRunNotifier {
 
 	/**
 	 * Checks if the CTRF report indicates a failing test.
-	 * 
+	 *
 	 * Note: ctrf-cli merge tool may produce null values for integer fields,
 	 * which violates the schema but we need to handle gracefully.
 	 */
@@ -387,10 +387,10 @@ class LocalTestRunNotifier {
 		// Get failed count - handle both valid (integer) and invalid (null) values
 		// that ctrf-cli merge might produce
 		$failed = $ctrf['results']['summary']['failed'] ?? 0;
-		
+
 		// Convert to integer - null becomes 0, numeric strings become integers
 		$failed_count = (int) $failed;
-		
+
 		return $failed_count > 0;
 	}
 }
