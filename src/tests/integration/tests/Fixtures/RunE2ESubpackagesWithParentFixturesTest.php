@@ -2,6 +2,7 @@
 
 namespace QIT\IntegrationTests\Fixtures;
 
+use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -12,6 +13,9 @@ class RunE2ESubpackagesWithParentFixturesTest extends TestCase {
 	
 	protected function setUp(): void {
 		parent::setUp();
+		
+		// Clean up any leftover test packages before running
+		TestCleanupHelper::cleanup_all_test_packages();
 		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
 	}
 	

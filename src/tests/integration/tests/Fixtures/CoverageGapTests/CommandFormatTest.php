@@ -28,11 +28,9 @@ class CommandFormatTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		foreach ( $this->tempDirs as $dir ) {
-			if ( is_dir( $dir ) ) {
-				exec( "rm -rf " . escapeshellarg( $dir ) );
-			}
-		}
+		// Let the OS handle temp directory cleanup
+		// No need to manually delete temp directories
+		
 		parent::tearDown();
 	}
 

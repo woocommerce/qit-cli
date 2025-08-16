@@ -1,6 +1,6 @@
 {
   "$schema": "https://qit.woo.com/json-schema/test-package",
-  "package": "woocommerce/e2e-suite",
+  "package": "woocommerce/qit-integration-test-e2e-suite",
   "test_type": "e2e",
   "description": "Main E2E test suite with subpackages",
   "test": {
@@ -27,7 +27,7 @@
     }
   },
   "subpackages": {
-    "woocommerce/checkout": {
+    "woocommerce/qit-integration-test-checkout": {
       "description": "Checkout flow E2E tests",
       "tags": ["checkout", "payments"],
       "test": {
@@ -41,7 +41,7 @@
         }
       }
     },
-    "woocommerce/cart": {
+    "woocommerce/qit-integration-test-cart": {
       "description": "Cart functionality E2E tests",
       "tags": ["cart", "shopping"],
       "test": {
@@ -52,7 +52,7 @@
         }
       }
     },
-    "woocommerce/account": {
+    "woocommerce/qit-integration-test-account": {
       "description": "My Account E2E tests",
       "tags": ["account", "user"],
       "test": {

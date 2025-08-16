@@ -2,6 +2,7 @@
 
 namespace QIT\IntegrationTests\Fixtures;
 
+use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -21,6 +22,9 @@ class SecretHandlingTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
+		
+		// Clean up any leftover test packages before running
+		TestCleanupHelper::cleanup_all_test_packages();
 		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
 		// Clear any test environment variables
 		putenv( 'TEST_API_KEY' );
@@ -28,12 +32,6 @@ class SecretHandlingTest extends TestCase {
 	}
 
 	protected function tearDown(): void {
-		// Clean up temp directories
-		foreach ( $this->tempDirs as $dir ) {
-			if ( is_dir( $dir ) ) {
-				exec( "rm -rf " . escapeshellarg( $dir ) );
-			}
-		}
 		// Clear environment variables
 		putenv( 'TEST_API_KEY' );
 		putenv( 'TEST_SECRET' );

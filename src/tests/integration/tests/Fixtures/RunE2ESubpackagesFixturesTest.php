@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\Fixtures;
 
 use PHPUnit\Framework\TestCase;
+use QIT\IntegrationTests\TestCleanupHelper;
 use function qit;
 
 /**
@@ -19,14 +20,18 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
+		
+		// Clean up any leftover test packages before running
+		TestCleanupHelper::cleanup_all_test_packages();
 	}
 
 	protected function tearDown(): void {
-		foreach ( $this->tempDirs as $dir ) {
-			if ( is_dir( $dir ) ) {
-				exec( "rm -rf " . escapeshellarg( $dir ) );
-			}
-		}
+		// Let the OS handle temp directory cleanup
+		// No need to manually delete temp directories
+		
+		// Clean up any test packages created during the test
+		TestCleanupHelper::cleanup_all_test_packages();
+		
 		parent::tearDown();
 	}
 
@@ -172,10 +177,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			$foundAccount = false;
 			
 			foreach ( $data['packages'] as $package ) {
-				if ( $package['package_id'] === 'woocommerce/e2e-suite:latest' ) {
+				if ( $package['package_id'] === 'woocommerce/qit-integration-test-e2e-suite:latest' ) {
 					$foundParent = true;
 				}
-				if ( strpos( $package['package_id'], 'woocommerce/checkout' ) === 0 ) {
+				if ( strpos( $package['package_id'], 'woocommerce/qit-integration-test-checkout' ) === 0 ) {
 					$foundCheckout = true;
 					// Verify it's marked as subpackage
 					$this->assertTrue( 
@@ -183,10 +188,10 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 						'Checkout should be marked as subpackage'
 					);
 				}
-				if ( strpos( $package['package_id'], 'woocommerce/cart' ) === 0 ) {
+				if ( strpos( $package['package_id'], 'woocommerce/qit-integration-test-cart' ) === 0 ) {
 					$foundCart = true;
 				}
-				if ( strpos( $package['package_id'], 'woocommerce/account' ) === 0 ) {
+				if ( strpos( $package['package_id'], 'woocommerce/qit-integration-test-account' ) === 0 ) {
 					$foundAccount = true;
 				}
 			}
@@ -357,21 +362,30 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$this->tempDirs[] = $tempDir;
 		mkdir( $tempDir, 0755, true );
 		
-		// Create a test package with a unique name
-		$packageDir = $tempDir . '/ecommerce-tests';
-		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/subpackages-parent' ) . " " . escapeshellarg( $packageDir ) );
+		// Create a test package with unique names using helper
+		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package( 
+			$this->fixturesDir . '/subpackages-parent',
+			$tempDir,
+			'ecommerce-tests'
+		);
 		
-		// Give it a unique package name to avoid conflicts
-		$packageName = 'woocommerce/ecom-tests-' . substr( uniqid(), 0, 8 );
-		$manifestPath = $packageDir . '/qit-test.json';
-		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		$manifest['package'] = $packageName;
+		$packageDir = $packageInfo['dir'];
+		$manifest = $packageInfo['manifest'];
+		$packageName = $packageInfo['package_name'];
+		$subpackageMapping = $packageInfo['subpackage_mapping'];
+		
+		// Get the new unique subpackage names
+		$checkoutName = $subpackageMapping['woocommerce/qit-integration-test-checkout'] ?? '';
+		$cartName = $subpackageMapping['woocommerce/qit-integration-test-cart'] ?? '';
+		$accountName = $subpackageMapping['woocommerce/qit-integration-test-account'] ?? '';
 		
 		// Make v1.0.0 identifiable
 		$manifest['test']['phases']['globalSetup'] = [
 			'echo "[VERSION] Running E-Commerce Tests v1.0.0"',
 			'echo "[VERSION] This version includes: checkout, cart, and account tests"'
 		];
+		
+		$manifestPath = $packageDir . '/qit-test.json';
 		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		
 		// Publish version 1.0.0
@@ -393,10 +407,12 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			'echo "[VERSION] Running E-Commerce Tests v2.0.0"',
 			'echo "[VERSION] This version has updated checkout flow and new features"'
 		];
-		// Update subpackage to show it's v2
-		$manifest['subpackages']['woocommerce/checkout']['test']['phases']['setup'] = [
-			'echo "[VERSION] Checkout v2.0.0 - New payment methods added"'
-		];
+		// Update subpackage to show it's v2 (using the unique name)
+		if ( $checkoutName && isset( $manifest['subpackages'][$checkoutName] ) ) {
+			$manifest['subpackages'][$checkoutName]['test']['phases']['setup'] = [
+				'echo "[VERSION] Checkout v2.0.0 - New payment methods added"'
+			];
+		}
 		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		
 		// Publish version 2.0.0
@@ -596,8 +612,24 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 	 * Verifies that subpackages can be run independently when specified.
 	 */
 	public function test_run_subpackage_explicitly(): void {
-		// First publish the parent package with subpackages
-		$packageDir = $this->fixturesDir . '/subpackages-parent';
+		// Create a temporary directory and unique package
+		$tempDir = sys_get_temp_dir() . '/qit_subpkg_explicit_' . uniqid();
+		$this->tempDirs[] = $tempDir;
+		mkdir( $tempDir, 0755, true );
+		
+		// Create test package with unique names
+		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+			$this->fixturesDir . '/subpackages-parent',
+			$tempDir,
+			'e2e-suite-explicit'
+		);
+		
+		$packageDir = $packageInfo['dir'];
+		$packageName = $packageInfo['package_name'];
+		$subpackageMapping = $packageInfo['subpackage_mapping'];
+		$checkoutName = $subpackageMapping['woocommerce/qit-integration-test-checkout'] ?? '';
+		
+		// Publish the parent package with subpackages
 		$publishProc = qit( [
 			'package:publish',
 			$packageDir,
@@ -609,11 +641,14 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			$this->markTestSkipped( 'Test requires connection to QIT Manager' );
 		}
 		
+		$this->assertEquals( 0, $publishProc->getExitCode(),
+			'Should publish package. Output: ' . $publishProc->getOutput() );
+		
 		// Run just the checkout subpackage
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/checkout:1.0.0',
+			'--test-package=' . $checkoutName . ':1.0.0',
 		], return_process: true );
 		
 		$output = $proc->getOutput();
@@ -674,8 +709,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/checkout:1.0.0',
-			'--test-package=woocommerce/cart:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-cart:1.0.0',
 		], return_process: true );
 		
 		$output = $proc->getOutput();
@@ -703,9 +738,9 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			'Should show package 2 of 2' );
 		
 		// Verify single download optimization (both use same artifact)
-		$this->assertStringContainsString( 'woocommerce/checkout:1.0.0', $output,
+		$this->assertStringContainsString( 'woocommerce/qit-integration-test-checkout:1.0.0', $output,
 			'Should show checkout package' );
-		$this->assertStringContainsString( 'woocommerce/cart:1.0.0', $output,
+		$this->assertStringContainsString( 'woocommerce/qit-integration-test-cart:1.0.0', $output,
 			'Should show cart package' );
 		
 		// Clean up
@@ -738,7 +773,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/checkout:2.0.0',
+			'--test-package=woocommerce/qit-integration-test-checkout:2.0.0',
 		], return_process: true );
 		
 		$output = $proc->getOutput();
@@ -798,9 +833,9 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/checkout:3.0.0',
-			'--test-package=woocommerce/cart:3.0.0',
-			'--test-package=woocommerce/account:3.0.0',
+			'--test-package=woocommerce/qit-integration-test-checkout:3.0.0',
+			'--test-package=woocommerce/qit-integration-test-cart:3.0.0',
+			'--test-package=woocommerce/qit-integration-test-account:3.0.0',
 		], return_process: true );
 		
 		$output = $proc->getOutput();
@@ -923,7 +958,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		
 		// Subpackage should inherit all of these
 		// Add echo commands to verify environment variables are inherited
-		$manifest['subpackages']['woocommerce/checkout']['test']['phases']['run'] = [
+		$manifest['subpackages']['woocommerce/qit-integration-test-checkout']['test']['phases']['run'] = [
 			'echo "[ENV_CHECK] TEST_ENV_VAR=$TEST_ENV_VAR"',
 			'echo "[ENV_CHECK] ANOTHER_VAR=$ANOTHER_VAR"',
 			'npx playwright test tests/e2e/checkout.spec.js'
@@ -949,7 +984,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/checkout:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
 		], expected_exit_code: 1, return_process: true );
 		
 		$output = $proc->getOutput();
@@ -1038,8 +1073,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/checkout:1.0.0',
-			'--test-package=woocommerce/cart:2.0.0',
+			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-cart:2.0.0',
 		], expected_exit_code: 1, return_process: true );
 		
 		$output = $proc->getOutput();
@@ -1184,7 +1219,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 			'run:e2e',
 			'woocommerce',
 			'--test-package=woocommerce/setup-heavy:1.0.0',
-			'--test-package=woocommerce/checkout:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-checkout:1.0.0',
 		], return_process: true );
 		
 		$runOutput = $runProc->getOutput();

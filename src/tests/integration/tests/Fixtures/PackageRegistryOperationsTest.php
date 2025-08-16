@@ -2,6 +2,7 @@
 
 namespace QIT\IntegrationTests\Fixtures;
 
+use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -21,6 +22,9 @@ class PackageRegistryOperationsTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
+		
+		// Clean up any leftover test packages before running
+		TestCleanupHelper::cleanup_all_test_packages();
 		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
 	}
 
@@ -32,14 +36,7 @@ class PackageRegistryOperationsTest extends TestCase {
 				$packageId,
 				'--yes'
 			], return_process: true );
-		}
-		
-		// Clean up temp directories
-		foreach ( $this->tempDirs as $dir ) {
-			if ( is_dir( $dir ) ) {
-				exec( "rm -rf " . escapeshellarg( $dir ) );
-			}
-		}
+		}}
 		parent::tearDown();
 	}
 

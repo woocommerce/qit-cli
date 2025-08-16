@@ -2,6 +2,7 @@
 
 namespace QIT\IntegrationTests\Fixtures;
 
+use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -19,15 +20,16 @@ class RunE2EWithFixturesTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
+		
+		// Clean up any leftover test packages before running
+		TestCleanupHelper::cleanup_all_test_packages();
 		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
 	}
 
 	protected function tearDown(): void {
-		foreach ( $this->tempDirs as $dir ) {
-			if ( is_dir( $dir ) ) {
-				exec( "rm -rf " . escapeshellarg( $dir ) );
-			}
-		}
+		// Let the OS handle temp directory cleanup
+		// No need to manually delete temp directories
+		
 		parent::tearDown();
 	}
 

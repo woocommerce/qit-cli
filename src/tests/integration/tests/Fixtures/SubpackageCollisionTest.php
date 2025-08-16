@@ -2,6 +2,7 @@
 
 namespace QIT\IntegrationTests\Fixtures;
 
+use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 
 require_once __DIR__ . '/../../bootstrap.php';
@@ -19,16 +20,15 @@ class SubpackageCollisionTest extends TestCase {
 	
 	protected function setUp(): void {
 		parent::setUp();
+		
+		// Clean up any leftover test packages before running
+		TestCleanupHelper::cleanup_all_test_packages();
 		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
 	}
 	
 	protected function tearDown(): void {
-		// Clean up temp directories
-		foreach ( $this->tempDirs as $dir ) {
-			if ( is_dir( $dir ) ) {
-				exec( "rm -rf " . escapeshellarg( $dir ) );
-			}
-		}
+		// Let the OS handle temp directory cleanup
+		// No need to manually delete temp directories
 		
 		// Clean up test packages from registry
 		$this->cleanupPackage( 'woocommerce/parent-a:1.0.0' );
