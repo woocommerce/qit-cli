@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\Fixtures;
 
 use QIT\IntegrationTests\TestCleanupHelper;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -71,8 +72,24 @@ class ChecksumCachingTest extends TestCase {
 			$this->markTestSkipped( 'Test requires connection to QIT Manager' );
 		}
 		
-		// Create config with remote test packages from fixtures
-		$config = $this->createRemotePackageConfig();
+		// We need actual remote packages to test this properly
+		// First, publish a test package
+		$packageName = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'checksum' );
+		$packageDir = $this->createTestPackageDirectory( $packageName );
+		
+		// Publish the package
+		$publishProc = qit( [
+			'package:publish',
+			$packageDir,
+			'1.0.0',
+		], return_process: true );
+		
+		if ( $publishProc->getExitCode() !== 0 ) {
+			$this->markTestSkipped( 'Could not publish test package: ' . $publishProc->getOutput() );
+		}
+		
+		// Create config with the actual remote package
+		$config = $this->createConfigWithRemotePackage( $packageName . ':1.0.0' );
 		
 		// First run - should fetch metadata
 		$proc1 = qit( [
@@ -102,11 +119,12 @@ class ChecksumCachingTest extends TestCase {
 		$this->assertStringContainsString( 'Fetching package metadata', $output2,
 			'Should fetch metadata for remote packages on second run for checksum validation' );
 		
-		// But should use cache if checksum matches
-		if ( strpos( $output2, 'checksum validated' ) !== false ) {
-			$this->assertStringContainsString( 'checksum validated', $output2,
-				'Should indicate checksum validation when using cache' );
-		}
+		// Clean up the published package
+		qit( [
+			'package:delete',
+			$packageName . ':1.0.0',
+			'--yes',
+		] );
 	}
 
 	/**
@@ -129,7 +147,15 @@ class ChecksumCachingTest extends TestCase {
 			'test_type' => 'e2e',
 			'test' => [
 				'phases' => [
-					'run' => [ 'echo "test"' ]
+					'run' => [ 
+						'mkdir -p ./results ./blob-report && ' .
+						'echo \'' . json_encode(CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && ' .
+						'echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -190,15 +216,45 @@ class ChecksumCachingTest extends TestCase {
 	}
 
 	/**
-	 * Helper: Create config with remote test packages.
+	 * Helper: Create a test package directory for publishing.
 	 */
-	private function createRemotePackageConfig(): string {
-		$tempDir = sys_get_temp_dir() . '/qit_remote_pkg_' . uniqid();
+	private function createTestPackageDirectory( string $packageName ): string {
+		$tempDir = sys_get_temp_dir() . '/qit_test_pkg_' . uniqid();
 		$this->tempDirs[] = $tempDir;
 		mkdir( $tempDir, 0755, true );
 		
-		// Note: These would need to be actual published packages
-		// For now using local packages as fallback
+		// Create a minimal valid test package
+		$manifest = [
+			'package' => $packageName,
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'run' => [ 
+						'mkdir -p ./results ./blob-report && ' .
+						'echo \'' . json_encode(CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && ' .
+						'echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			]
+		];
+		
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		
+		return $tempDir;
+	}
+	
+	/**
+	 * Helper: Create config with a specific remote package.
+	 */
+	private function createConfigWithRemotePackage( string $packageRef ): string {
+		$tempDir = sys_get_temp_dir() . '/qit_remote_cfg_' . uniqid();
+		$this->tempDirs[] = $tempDir;
+		mkdir( $tempDir, 0755, true );
+		
 		$config = [
 			'$schema'      => 'https://qit.woo.com/json-schema/qit',
 			'sut'          => [
@@ -215,11 +271,7 @@ class ChecksumCachingTest extends TestCase {
 			'test_types' => [
 				'e2e' => [
 					'default' => [
-						'test_packages' => [
-							// Would use remote packages like 'woocommerce/e2e:latest'
-							// but need them to be published first
-							__DIR__ . '/../../fixtures/test-packages/regular-test-package-one',
-						]
+						'test_packages' => [ $packageRef ]
 					]
 				]
 			]
