@@ -173,30 +173,33 @@ class UpEnvironmentCommand extends QITCommand {
 			'site_url'              => 'http://localhost:8080',
 		] );
 
-		/* ─ 5. Honour --tunnel (validated against TunnelRunner) ─ */
+		/* ─ 5. Add QIT_ENV_ID to environment variables ─ */
+		$env_info->envs['QIT_ENV_ID'] = $env_info->env_id;
+		
+		/* ─ 6. Honour --tunnel (validated against TunnelRunner) ─ */
 		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
 			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
 			$env_info->tunnel = true;
 		}
 
-		/* ─ 6. SELF‑TEST shortcut ─ */
+		/* ─ 7. SELF‑TEST shortcut ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 
 			return Command::SUCCESS;
 		}
 
-		/* ─ 7. Bring the environment up ─ */
+		/* ─ 8. Bring the environment up ─ */
 		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
 		$environment      = $this->get_environment( $environment_type );
 		$environment->init( $env_info );
 		$environment->up();
 
-		/* ─ 8. Save environment info and generate source files ─ */
+		/* ─ 9. Save environment info and generate source files ─ */
 		$this->save_environment_info( $env_info );
 		$files = $this->environment_vars->save_environment_file( $env_info );
 
-		/* ─ 9. Print result ─ */
+		/* ─ 10. Print result ─ */
 		if ( $input->getOption( 'json' ) ) {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 		} else {
@@ -439,6 +442,7 @@ class UpEnvironmentCommand extends QITCommand {
 
 		/* ─ Runtime env vars - process files immediately ─ */
 		// Set default environment variables for QIT environments
+		// Note: QIT_ENV_ID is added later when env_info is created
 		$default_env_vars = [
 			'QIT_DISABLE_UPDATE_CHECKS' => 'true',  // Disable WordPress update checks by default
 			'QIT_NETWORK_LOGGING'       => 'false', // Network logging disabled by default
