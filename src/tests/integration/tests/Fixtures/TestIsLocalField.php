@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\Fixtures;
 
 use QIT\IntegrationTests\TestCleanupHelper;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -98,7 +99,7 @@ class TestIsLocalField extends TestCase {
 				'phases' => [
 					'run' => [
 						'mkdir -p ./results ./blob-report && ' .
-						'echo \'{"results":{"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"test1","status":"passed","duration":100}]}}\' > ./results/ctrf.json && ' .
+						"echo '" . CTRFHelper::create_passing_report(1) . "' > ./results/ctrf.json && " .
 						'echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
 				],

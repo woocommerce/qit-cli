@@ -36,7 +36,7 @@ class PackageRegistryOperationsTest extends TestCase {
 				$packageId,
 				'--yes'
 			], return_process: true );
-		}}
+		}
 		parent::tearDown();
 	}
 
@@ -219,11 +219,14 @@ class PackageRegistryOperationsTest extends TestCase {
 			'--format=json'
 		], return_process: true );
 		
+		$this->assertEquals( 0, $listJsonProc->getExitCode(),
+			'package:list --format=json should succeed' );
+		
 		$jsonOutput = $listJsonProc->getOutput();
 		$data = json_decode( $jsonOutput, true );
 		
 		$this->assertIsArray( $data,
-			'Should return valid JSON' );
+			'Should return valid JSON. Output was: ' . $jsonOutput );
 		
 		$this->assertArrayHasKey( 'packages', $data,
 			'JSON should have packages key' );

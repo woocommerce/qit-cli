@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\Fixtures\CoverageGapTests;
 
 use PHPUnit\Framework\TestCase;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use function qit;
 
 /**
@@ -220,7 +221,7 @@ class CommandFormatTest extends TestCase {
 							'runs_on' => $runsOn
 						],
 						// Results generation always runs on host where we have write access
-						'mkdir -p ./results && echo \'{"results":{"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"test","status":"passed"}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+						"mkdir -p ./results && echo '" . CTRFHelper::create_passing_report(1) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -284,7 +285,7 @@ class CommandFormatTest extends TestCase {
 						'echo "AFTER_ERROR_MARKER"'
 					],
 					'run' => [
-						'mkdir -p ./results && echo \'{"results":{"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"test","status":"passed"}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+						"mkdir -p ./results && echo '" . CTRFHelper::create_passing_report(1) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -318,7 +319,7 @@ class CommandFormatTest extends TestCase {
 						'echo "STRING_COMMAND_2"'
 					],
 					'run' => [
-						'mkdir -p ./results && echo \'{"results":{"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"test","status":"passed"}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+						"mkdir -p ./results && echo '" . CTRFHelper::create_passing_report(1) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [

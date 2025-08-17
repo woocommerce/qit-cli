@@ -143,8 +143,8 @@ class ComprehensiveCachingTest extends TestCase {
 	 */
 	public function test_metadata_caching(): void {
 		// Skip if not connected to Manager
-		$testProc = qit( [ 'package:list', '--limit=1' ], return_process: true );
-		if ( strpos( $testProc->getOutput(), 'not connected' ) !== false ) {
+		$testProc = qit( [ 'package:list', '--format=json' ], return_process: true );
+		if ( strpos( $testProc->getOutput(), 'not connected' ) !== false || $testProc->getExitCode() !== 0 ) {
 			$this->markTestSkipped( 'Test requires connection to QIT Manager' );
 		}
 		
