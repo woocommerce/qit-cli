@@ -36,7 +36,15 @@ class PackagePhaseRunner {
 	 * @return string 'container' or 'host'
 	 */
 	private function determine_execution_venue( string $cmd ): string {
-		return str_ends_with( trim( $cmd ), '.sh' ) ? 'container' : 'host';
+		$trimmed = trim( $cmd );
+		
+		// npm/npx commands should run on host (where Node.js is installed)
+		if ( str_starts_with( $trimmed, 'npm ' ) || str_starts_with( $trimmed, 'npx ' ) ) {
+			return 'host';
+		}
+		
+		// Everything else runs in container (WordPress environment)
+		return 'container';
 	}
 
 	/**

@@ -216,11 +216,11 @@ class PackageRegistryOperationsTest extends TestCase {
 		$listJsonProc = qit( [
 			'package:list',
 			'--namespace=woocommerce',
-			'--format=json'
+			'--json'
 		], return_process: true );
 		
 		$this->assertEquals( 0, $listJsonProc->getExitCode(),
-			'package:list --format=json should succeed' );
+			'package:list --json should succeed' );
 		
 		$jsonOutput = $listJsonProc->getOutput();
 		$data = json_decode( $jsonOutput, true );
@@ -352,7 +352,7 @@ class PackageRegistryOperationsTest extends TestCase {
 		$listProc = qit( [
 			'package:list',
 			'--namespace=woocommerce',
-			'--format=json'
+			'--json'
 		], return_process: true );
 		
 		$data = json_decode( $listProc->getOutput(), true );

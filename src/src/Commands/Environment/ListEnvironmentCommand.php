@@ -100,8 +100,10 @@ class ListEnvironmentCommand extends QITCommand {
 					$v = $elapsed;
 				}
 				if ( is_array( $v ) ) {
-					// "implode" only works on flat arrays, otherwise we need "json_encode".
-					$is_flat = count( array_filter( $v, 'is_array' ) ) === 0;
+					// "implode" only works on flat arrays of scalars, otherwise we need "json_encode".
+					$is_flat = count( array_filter( $v, function( $item ) {
+						return is_array( $item ) || is_object( $item );
+					} ) ) === 0;
 					$v       = $is_flat ? implode( "\n", $v ) : json_encode( $v, JSON_UNESCAPED_SLASHES );
 				}
 
