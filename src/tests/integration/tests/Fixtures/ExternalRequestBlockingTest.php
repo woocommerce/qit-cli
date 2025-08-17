@@ -34,9 +34,9 @@ class ExternalRequestBlockingTest extends TestCase {
 				
 				// Check for our blocking plugins
 				$this->assertStringContainsString( 
-					'disable-external-requests.php', 
+					'qit-disable-updates.php', 
 					$mu_plugins, 
-					'The disable-external-requests.php mu-plugin should be present in the environment' 
+					'The qit-disable-updates.php mu-plugin should be present in the environment' 
 				);
 				
 				$this->assertStringContainsString( 
@@ -143,10 +143,10 @@ class ExternalRequestBlockingTest extends TestCase {
 					echo "WordPress feed/event requests blocked: " . ( empty( $found_blocked ) ? '✓ Yes' : '✗ No' ) . "\n";
 					echo "=== End Results ===\n";
 				} else {
-					$this->markTestSkipped( 'Network log not found - network logging may not be captured for this test type' );
+					$this->fail( 'Network log not found - network logging may not be captured for this test type. The mu-plugins might not be loaded in the environment.' );
 				}
 			} else {
-				$this->markTestSkipped( 'Could not determine config directory' );
+				$this->fail( 'Could not determine config directory' );
 			}
 		} else {
 			$this->markTestIncomplete( 'Could not determine environment ID from output' );

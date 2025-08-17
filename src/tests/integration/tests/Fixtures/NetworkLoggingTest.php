@@ -39,11 +39,12 @@ class NetworkLoggingTest extends TestCase {
         $configPath = $tempDir . '/qit.json';
         file_put_contents($configPath, json_encode($config, JSON_PRETTY_PRINT));
         
-        // Run the test - output is captured
+        // Run the test with network logging enabled
         $proc = qit([
             'run:e2e',
             'woocommerce',
             '--config=' . $configPath,
+            '--env=QIT_NETWORK_LOGGING=true',
         ], return_process: true);
         
         $output = $proc->getOutput();

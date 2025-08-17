@@ -27,6 +27,12 @@ class PackageListCommand extends QITCommand {
 				'table'
 			)
 			->addOption(
+				'json',
+				'j',
+				InputOption::VALUE_NONE,
+				'Output in JSON format (shorthand for --format=json)'
+			)
+			->addOption(
 				'test-type',
 				't',
 				InputOption::VALUE_REQUIRED,

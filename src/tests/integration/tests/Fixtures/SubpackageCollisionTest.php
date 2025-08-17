@@ -30,11 +30,9 @@ class SubpackageCollisionTest extends TestCase {
 		// Let the OS handle temp directory cleanup
 		// No need to manually delete temp directories
 		
-		// Clean up test packages from registry
-		$this->cleanupPackage( 'woocommerce/qit-integration-test-parent-a:1.0.0' );
-		$this->cleanupPackage( 'woocommerce/qit-integration-test-parent-b:1.0.0' );
-		$this->cleanupPackage( 'woocommerce/qit-integration-test-shared-checkout:1.0.0' );
-		$this->cleanupPackage( 'woocommerce/qit-integration-test-shared-cart:1.0.0' );
+		// Clean up all test packages from registry using the helper
+		// This will clean up all packages with the qit-integration-test- prefix
+		TestCleanupHelper::cleanup_all_test_packages();
 		
 		parent::tearDown();
 	}
@@ -91,7 +89,7 @@ class SubpackageCollisionTest extends TestCase {
 		$testA = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/shared-checkout:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-shared-checkout:1.0.0',
 		], expected_exit_code: 1, return_process: true ); // Exit 1 expected due to missing result file
 		
 		// Check that the correct globalSetup was executed
@@ -146,7 +144,7 @@ class SubpackageCollisionTest extends TestCase {
 		$testA2 = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--test-package=woocommerce/shared-checkout:1.0.0',
+			'--test-package=woocommerce/qit-integration-test-shared-checkout:1.0.0',
 		], expected_exit_code: 1, return_process: true ); // Exit 1 expected due to missing result file
 		
 		// Parent A's subpackage should still be intact and functional
@@ -290,14 +288,4 @@ class SubpackageCollisionTest extends TestCase {
 		];
 	}
 	
-	/**
-	 * Helper: Clean up a package from the registry
-	 */
-	private function cleanupPackage( string $packageId ): void {
-		qit( [
-			'package:delete',
-			$packageId,
-			'--yes'
-		],  return_process: true );
-	}
 }
