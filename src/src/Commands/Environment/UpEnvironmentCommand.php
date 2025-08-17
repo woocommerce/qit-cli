@@ -438,6 +438,12 @@ class UpEnvironmentCommand extends QITCommand {
 		$merge_simple_list( 'global_setup', 'global_setup' );
 
 		/* ─ Runtime env vars - process files immediately ─ */
+		// Set default environment variables for QIT environments
+		$default_env_vars = [
+			'QIT_DISABLE_UPDATE_CHECKS' => 'true',  // Disable WordPress update checks by default
+			'QIT_NETWORK_LOGGING'       => 'false', // Network logging disabled by default
+		];
+		
 		$existing_env_vars = $config['envs'] ?? [];
 		$env_files         = array_merge(
 			$config['env_files'] ?? [],
@@ -450,8 +456,9 @@ class UpEnvironmentCommand extends QITCommand {
 		// Parse and merge everything using EnvParser
 		$parsed_vars = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvParser::class )->parse( $cli_env_vars, $env_files );
 
-		// Merge with existing env vars (existing takes precedence, then parsed)
-		$config['envs'] = array_merge( $existing_env_vars, $parsed_vars );
+		// Merge with existing env vars (defaults < existing < parsed)
+		// This ensures user can override defaults via config file or CLI
+		$config['envs'] = array_merge( $default_env_vars, $existing_env_vars, $parsed_vars );
 
 		// Remove env_files - no longer needed
 		unset( $config['env_files'] );
