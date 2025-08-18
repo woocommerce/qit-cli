@@ -180,8 +180,9 @@ class UpEnvironmentCommand extends QITCommand {
 			'site_url'              => 'http://localhost:8080',
 		] );
 
-		/* ─ 5. Add QIT_ENV_ID to environment variables ─ */
+		/* ─ 5. Add QIT_ENV_ID and QIT_NETWORK_RESTRICTION to environment variables ─ */
 		$env_info->envs['QIT_ENV_ID'] = $env_info->env_id;
+		$env_info->envs['QIT_NETWORK_RESTRICTION'] = $env_info->network_restriction ? 'true' : 'false';
 		
 		/* ─ 6. Honour --tunnel (validated against TunnelRunner) ─ */
 		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
