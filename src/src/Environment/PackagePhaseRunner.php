@@ -30,21 +30,29 @@ class PackagePhaseRunner {
 
 	/**
 	 * Determine execution venue based on command type.
-	 * Rule: *.sh → container | anything else → host
+	 * Determine where a command should run based on its content.
 	 *
 	 * @param string $cmd The command to analyze.
-	 * @return string 'container' or 'host'
+	 * @return string 'docker' or 'host'
 	 */
 	private function determine_execution_venue( string $cmd ): string {
 		$trimmed = trim( $cmd );
+		
+		// Check for explicit venue prefix
+		if ( str_starts_with( $trimmed, 'host:' ) ) {
+			return 'host';
+		}
+		if ( str_starts_with( $trimmed, 'docker:' ) ) {
+			return 'docker';
+		}
 		
 		// npm/npx commands should run on host (where Node.js is installed)
 		if ( str_starts_with( $trimmed, 'npm ' ) || str_starts_with( $trimmed, 'npx ' ) ) {
 			return 'host';
 		}
 		
-		// Everything else runs in container (WordPress environment)
-		return 'container';
+		// Everything else runs in docker (WordPress environment)
+		return 'docker';
 	}
 
 	/**
@@ -531,7 +539,7 @@ class PackagePhaseRunner {
 			// Determine execution venue - use explicit runs_on if provided, otherwise auto-detect
 			if ( $cmd_runs_on !== null ) {
 				if ( $cmd_runs_on === 'docker' ) {
-					$venue = 'container';
+					$venue = 'docker';
 				} elseif ( $cmd_runs_on === 'host' ) {
 					$venue = 'host';
 				} else {
@@ -541,13 +549,21 @@ class PackagePhaseRunner {
 			} else {
 				$venue = $this->determine_execution_venue( $cmd );
 			}
-			$is_bash_script = $venue === 'container'; // Bash scripts run in container
+			$is_bash_script = $venue === 'docker'; // Bash scripts run in docker
+			
+			// Strip venue prefix from command if present (after venue detection)
+			$trimmed = trim( $cmd );
+			if ( str_starts_with( $trimmed, 'host:' ) ) {
+				$cmd = trim( substr( $trimmed, 5 ) ); // Remove 'host:' prefix
+			} elseif ( str_starts_with( $trimmed, 'docker:' ) ) {
+				$cmd = trim( substr( $trimmed, 7 ) ); // Remove 'docker:' prefix
+			}
 
 			// Prepare environment variables for test execution
 			$env_vars = $this->prepare_test_env_vars( $env_info );
 
 			// Show command in orchestrator
-			$context = $venue === 'host' ? 'host' : 'docker';
+			$context = $venue; // Now venue is already 'host' or 'docker'
 			$orchestrator->show_command( $cmd, $context );
 
 			try {

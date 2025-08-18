@@ -230,7 +230,7 @@ class ChecksumCachingTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'run' => [ 
-						'mkdir -p ./results ./blob-report && ' .
+						'host: mkdir -p ./results ./blob-report && ' .
 						'echo \'' . json_encode(CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && ' .
 						'echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
