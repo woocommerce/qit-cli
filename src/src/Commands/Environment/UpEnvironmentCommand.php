@@ -76,6 +76,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
+			->addOption( 'network-restriction', null, InputOption::VALUE_NEGATABLE, 'Enable network restriction to block external requests (default: true, use --no-network-restriction to disable)', true )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
 			->setHelp( $this->getHelpText() );
 	}
@@ -155,6 +156,11 @@ class UpEnvironmentCommand extends QITCommand {
 
 		/* ─ 4. Materialise E2EEnvInfo DTO ─ */
 		/** @var E2EEnvInfo $env_info */
+		// Set network restriction default if not specified
+		if ( ! isset( $env_config['network_restriction'] ) ) {
+			$env_config['network_restriction'] = true;
+		}
+		
 		$env_info = E2EEnvInfo::from_array( [
 			'env_id'                => 'qitenv' . bin2hex( random_bytes( 8 ) ),
 			'environment'           => 'e2e',
@@ -170,6 +176,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'global_setup_packages' => $global_setup_packages,
 			'tunnel'                => $env_config['tunnel'] ?? false,
 			'tunnel_type'           => $env_config['tunnel_type'] ?? 'no_tunnel',
+			'network_restriction'   => $env_config['network_restriction'],
 			'site_url'              => 'http://localhost:8080',
 		] );
 
@@ -371,13 +378,24 @@ class UpEnvironmentCommand extends QITCommand {
 		/* ─ Scalars ─ */
 		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
 			if ( $input->hasOption( $opt ) ) {
-				if ( $opt === 'tunnel' ) {
-					$tunnel_value          = $input->getOption( $opt );
-					$config['tunnel_type'] = $tunnel_value;
-					$config['tunnel']      = $tunnel_value !== 'no_tunnel';
-				} else {
-					$config[ $opt ] = $input->getOption( $opt );
+				$option_value = $input->getOption( $opt );
+				if ( $option_value !== null ) {
+					if ( $opt === 'tunnel' ) {
+						$config['tunnel_type'] = $option_value;
+						$config['tunnel']      = $option_value !== 'no_tunnel';
+					} else {
+						$config[ $opt ] = $option_value;
+					}
 				}
+			}
+		}
+
+		/* ─ Handle network restriction boolean option ─ */
+		if ( $input->hasOption( 'network-restriction' ) ) {
+			$network_restriction = $input->getOption( 'network-restriction' );
+			// VALUE_NEGATABLE returns true, false, or null
+			if ( $network_restriction !== null ) {
+				$config['network_restriction'] = $network_restriction;
 			}
 		}
 

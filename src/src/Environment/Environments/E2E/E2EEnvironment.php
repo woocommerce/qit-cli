@@ -130,6 +130,7 @@ class E2EEnvironment extends Environment {
 			'WORDPRESS_VERSION' => $this->env_info->wp === 'stable' ? 'latest' : $this->env_info->wp,
 			'SITE_URL'          => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
+			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		] );
 
 		/*
@@ -269,6 +270,7 @@ class E2EEnvironment extends Environment {
 			'PHP_VERSION'      => $this->env_info->php,
 			'QIT_DOCKER_REDIS' => $this->env_info->object_cache ? 'yes' : 'no',
 			'DOMAIN'           => $this->env_info->domain,
+			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		];
 	}
 

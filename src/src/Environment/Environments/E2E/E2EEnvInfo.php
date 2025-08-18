@@ -23,6 +23,9 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public string $php = '';
 
+	/** @var bool */
+	public bool $network_restriction = true;
+
 	/** @var string */
 	public string $nginx_port = '';
 
