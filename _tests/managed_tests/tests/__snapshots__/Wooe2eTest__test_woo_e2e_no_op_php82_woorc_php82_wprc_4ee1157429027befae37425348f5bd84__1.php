@@ -2692,6 +2692,11 @@
         },
         {
             "ctrf_json": {
+                "reportFormat": "CTRF",
+                "specVersion": "0.0.0",
+                "reportId": "d4ca6a96-0218-49b7-8773-d642ee11faaf",
+                "timestamp": "2025-08-19T15:54:30.955Z",
+                "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
                         "name": "playwright"
@@ -10298,6 +10303,14 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
                                             "line": 44,
                                             "column": 16
                                         }
@@ -10327,6 +10340,14 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    },
                                     {
                                         "type": "skip",
                                         "location": {
@@ -10364,6 +10385,14 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
                                             "line": 62,
                                             "column": 16
                                         }
@@ -10393,6 +10422,14 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 43,
+                                            "column": 15
+                                        }
+                                    },
                                     {
                                         "type": "skip",
                                         "location": {
@@ -10598,14 +10635,6 @@
                                             "line": 20,
                                             "column": 15
                                         }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 44,
-                                            "column": 8
-                                        }
                                     }
                                 ]
                             },
@@ -10671,14 +10700,6 @@
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
                                             "line": 20,
                                             "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 77,
-                                            "column": 8
                                         }
                                     }
                                 ]
