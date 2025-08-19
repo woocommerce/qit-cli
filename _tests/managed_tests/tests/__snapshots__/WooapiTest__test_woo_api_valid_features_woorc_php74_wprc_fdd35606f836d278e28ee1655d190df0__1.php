@@ -1432,6 +1432,11 @@
         },
         {
             "ctrf_json": {
+                "reportFormat": "CTRF",
+                "specVersion": "0.0.0",
+                "reportId": "57b1f577-6a45-45ab-9392-e161bc91ff30",
+                "timestamp": "2025-08-19T15:38:03.967Z",
+                "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
                         "name": "playwright"
