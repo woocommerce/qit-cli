@@ -1,12 +1,12 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Packages\Subpackages;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
-class RunE2ESubpackagesWithParentFixturesTest extends TestCase {
+class ParentSubpackageCombinationTest extends TestCase {
 	
 	private array $tempDirs = [];
 	private string $fixturesDir;
@@ -16,7 +16,7 @@ class RunE2ESubpackagesWithParentFixturesTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
+		$this->fixturesDir = __DIR__ . '/../../../fixtures/test-packages';
 	}
 	
 	protected function tearDown(): void {

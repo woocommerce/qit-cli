@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Packages\Subpackages;
 
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\TestCleanupHelper;
@@ -12,14 +12,14 @@ use function qit;
  * When a parent package is deleted, its subpackages should also be deleted
  * to avoid orphaned subpackages in the database.
  */
-class PackageDeleteWithSubpackagesTest extends TestCase {
+class SubpackageDeletionTest extends TestCase {
 
 	private string $fixturesDir;
 	private array $tempDirs = [];
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
+		$this->fixturesDir = __DIR__ . '/../../../fixtures/test-packages';
 		
 		// Clean up any leftover test packages before running
 		// The cleanup helper checks for QIT_SELF_TESTS env var which is set by bootstrap.php

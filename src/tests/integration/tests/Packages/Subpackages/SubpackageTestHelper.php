@@ -1,14 +1,14 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Packages\Subpackages;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 
 /**
- * Helper class for RunE2ESubpackagesFixturesTest.
+ * Helper class for subpackage tests.
  * Provides utilities for creating test packages with unique subpackage names.
  */
-class RunE2ESubpackagesFixturesTestHelper {
+class SubpackageTestHelper {
 	
 	/**
 	 * Updates a manifest's subpackage names to use unique test-prefixed names.

@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Packages\Subpackages;
 
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\TestCleanupHelper;
@@ -12,14 +12,14 @@ use function qit;
  * Fixtures:
  * - subpackages-parent: Main package with 3 subpackages (checkout, cart, account)
  */
-class RunE2ESubpackagesFixturesTest extends TestCase {
+class SubpackageExecutionTest extends TestCase {
 
 	private string $fixturesDir;
 	private array $tempDirs = [];
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
+		$this->fixturesDir = __DIR__ . '/../../../fixtures/test-packages';
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
@@ -363,7 +363,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		mkdir( $tempDir, 0755, true );
 		
 		// Create a test package with unique names using helper
-		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package( 
+		$packageInfo = SubpackageTestHelper::create_unique_test_package( 
 			$this->fixturesDir . '/subpackages-parent',
 			$tempDir,
 			'ecommerce-tests'
@@ -618,7 +618,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		mkdir( $tempDir, 0755, true );
 		
 		// Create test package with unique names
-		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+		$packageInfo = SubpackageTestHelper::create_unique_test_package(
 			$this->fixturesDir . '/subpackages-parent',
 			$tempDir,
 			'e2e-suite-explicit'
@@ -933,7 +933,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		mkdir( $tempDir, 0755, true );
 		
 		// Create test package with unique names
-		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+		$packageInfo = SubpackageTestHelper::create_unique_test_package(
 			$this->fixturesDir . '/subpackages-parent',
 			$tempDir,
 			'inherit-test'
@@ -1038,7 +1038,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		mkdir( $tempDir, 0755, true );
 		
 		// Create test package with unique names
-		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+		$packageInfo = SubpackageTestHelper::create_unique_test_package(
 			$this->fixturesDir . '/subpackages-parent',
 			$tempDir,
 			'version-mismatch'
@@ -1303,7 +1303,7 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 		mkdir( $tempDir, 0755, true );
 		
 		// Create test package with unique names
-		$packageInfo = RunE2ESubpackagesFixturesTestHelper::create_unique_test_package(
+		$packageInfo = SubpackageTestHelper::create_unique_test_package(
 			$this->fixturesDir . '/subpackages-parent',
 			$tempDir,
 			'dedup-test'
