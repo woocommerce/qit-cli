@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\CTRF;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 use QIT\IntegrationTests\Helpers\CTRFHelper;
@@ -10,7 +10,7 @@ use function qit;
 /**
  * Test to verify isLocal field is correctly set in CTRF metadata
  */
-class TestIsLocalField extends TestCase {
+class IsLocalFieldTest extends TestCase {
 
 	private string $fixturesDir;
 	private array $tempDirs = [];

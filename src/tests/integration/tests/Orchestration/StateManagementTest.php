@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Orchestration;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
@@ -17,7 +17,7 @@ use function qit;
  * 
  * This is what REALLY matters for multi-package test execution.
  */
-class RunE2EOrchestrationFixturesTest extends TestCase {
+class StateManagementTest extends TestCase {
 
 	private string $fixturesDir;
 	private array $tempDirs = [];

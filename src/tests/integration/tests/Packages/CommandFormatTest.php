@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures\CoverageGapTests;
+namespace QIT\IntegrationTests\Packages;
 
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\Helpers\CTRFHelper;
@@ -25,7 +25,7 @@ class CommandFormatTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->fixturesDir = __DIR__ . '/../../../fixtures/test-packages';
+		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
 	}
 
 	protected function tearDown(): void {

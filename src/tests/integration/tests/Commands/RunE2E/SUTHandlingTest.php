@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Commands\RunE2E;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
@@ -18,7 +18,7 @@ use function qit;
  * 3. Local directory as SUT
  * 4. Invalid/malformed extensions
  */
-class RunE2EWithSUTFixturesTest extends TestCase {
+class SUTHandlingTest extends TestCase {
 
 	private string $fixturesDir;
 	private array $tempDirs = [];
@@ -29,7 +29,7 @@ class RunE2EWithSUTFixturesTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../fixtures';
+		$this->fixturesDir = __DIR__ . '/../../../fixtures';
 	}
 
 	protected function tearDown(): void {		foreach ( $this->tempFiles as $file ) {

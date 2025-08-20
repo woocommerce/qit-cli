@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Orchestration;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
@@ -12,7 +12,7 @@ use function qit;
  * The test packages do the actual verification and report via console.log.
  * We just need to run them and check their output.
  */
-class RunE2EOrchestrationTest extends TestCase {
+class IntegrationTest extends TestCase {
 
 	private string $fixturesDir;
 	private array $tempDirs = [];
