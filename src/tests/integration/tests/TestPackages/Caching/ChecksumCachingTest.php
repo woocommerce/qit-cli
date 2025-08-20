@@ -202,7 +202,7 @@ class ChecksumCachingTest extends TestCase {
 				'e2e' => [
 					'default' => [
 						'test_packages' => [
-							__DIR__ . '/../../../../fixtures/test-packages/regular-test-package-one',
+							QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages/regular-test-package-one',
 						]
 					]
 				]

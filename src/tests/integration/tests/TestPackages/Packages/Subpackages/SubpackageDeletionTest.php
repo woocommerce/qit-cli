@@ -19,7 +19,7 @@ class SubpackageDeletionTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
+		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 		
 		// Clean up any leftover test packages before running
 		// The cleanup helper checks for QIT_SELF_TESTS env var which is set by bootstrap.php

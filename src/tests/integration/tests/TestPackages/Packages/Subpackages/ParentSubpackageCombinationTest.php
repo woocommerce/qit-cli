@@ -16,7 +16,7 @@ class ParentSubpackageCombinationTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
+		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 	}
 	
 	protected function tearDown(): void {
@@ -230,7 +230,7 @@ class ParentSubpackageCombinationTest extends TestCase {
 	public function test_parent_with_all_subpackages() {
 
 		// Use the existing fixture
-		$packageDir = __DIR__ . '/../../../../fixtures/test-packages/subpackages-parent';
+		$packageDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages/subpackages-parent';
 		
 		// Use a unique version to avoid conflicts
 		$version = '3.0.' . uniqid();

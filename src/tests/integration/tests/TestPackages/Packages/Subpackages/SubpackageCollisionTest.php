@@ -5,7 +5,7 @@ namespace QIT\IntegrationTests\TestPackages\Packages\Subpackages;
 use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 
-require_once __DIR__ . '/../../../../bootstrap.php';
+require_once QIT_INTEGRATION_TESTS_ROOT . '/bootstrap.php';
 
 /**
  * Tests for subpackage collision prevention.
@@ -23,7 +23,7 @@ class SubpackageCollisionTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
+		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 	}
 	
 	protected function tearDown(): void {

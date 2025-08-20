@@ -725,7 +725,7 @@ JS;
 
 	private function copyPackageEssentials( string $packageDir ): void {
 		// Copy package.json and playwright.config.js from a working package
-		$sourceDir = __DIR__ . '/../../../../fixtures/test-packages/regular-test-package-one';
+		$sourceDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages/regular-test-package-one';
 		
 		if ( file_exists( $sourceDir . '/package.json' ) ) {
 			copy( $sourceDir . '/package.json', $packageDir . '/package.json' );

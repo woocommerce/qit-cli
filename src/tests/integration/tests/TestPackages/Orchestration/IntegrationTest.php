@@ -22,7 +22,7 @@ class IntegrationTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
+		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 	}
 
 	protected function tearDown(): void {

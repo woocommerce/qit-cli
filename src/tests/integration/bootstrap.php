@@ -2,6 +2,9 @@
 
 use Symfony\Component\Process\Process;
 
+// Define the root directory for integration tests to avoid relative path issues
+define( 'QIT_INTEGRATION_TESTS_ROOT', __DIR__ );
+
 // Set up required global variables for integration tests
 $GLOBALS['qit-php']  = __DIR__ . '/../../../src/qit-cli.php';
 $GLOBALS['QIT_HOME'] = sys_get_temp_dir() . '/qit-test-' . uniqid();

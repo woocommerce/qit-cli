@@ -25,7 +25,7 @@ class CommandFormatTest extends TestCase {
 
 	protected function setUp(): void {
 		parent::setUp();
-		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
+		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 	}
 
 	protected function tearDown(): void {

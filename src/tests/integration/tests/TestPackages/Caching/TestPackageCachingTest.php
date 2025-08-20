@@ -20,7 +20,7 @@ class TestPackageCachingTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
+		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 	}
 
 	protected function tearDown(): void {
@@ -82,9 +82,9 @@ class TestPackageCachingTest extends TestCase {
 		$this->assertEquals( 0, $proc1->getExitCode(),
 			'First run should succeed' );
 		
-		// Should show downloading
-		$this->assertStringContainsString( 'Fetching download URLs', $output1,
-			'First run should fetch download URLs' );
+		// Should show fetching/downloading
+		$this->assertStringContainsString( 'Fetching package metadata', $output1,
+			'First run should fetch package metadata' );
 		$this->assertStringContainsString( 'Downloading package: ' . $packageName . ':1.0.0', $output1,
 			'First run should download the package' );
 		
@@ -152,8 +152,8 @@ class TestPackageCachingTest extends TestCase {
 		$output1 = $proc1->getOutput();
 		
 		// Should download on first run
-		$this->assertStringContainsString( 'Fetching download URLs', $output1,
-			'First subpackage should fetch download URLs' );
+		$this->assertStringContainsString( 'Fetching package metadata', $output1,
+			'First subpackage should fetch package metadata' );
 		
 		// Second subpackage - should use cached parent
 		$config2 = $this->createConfig();

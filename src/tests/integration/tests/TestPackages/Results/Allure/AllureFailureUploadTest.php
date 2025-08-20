@@ -25,7 +25,7 @@ class AllureFailureUploadTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
+		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 		
 		// Note: For Allure upload to actually work (with GitHub webhook callback),
 		// you need to use staging environment by renaming .env.staging to .env
