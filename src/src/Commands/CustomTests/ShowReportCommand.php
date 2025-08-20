@@ -29,11 +29,54 @@ class ShowReportCommand extends QITCommand {
 			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
 			->addOption( 'local', null, null, 'Force showing the local report instead of the remote one.' )
 			->addOption( 'dir_only', null, null, 'Only output the local report directory path.' )
+			->addOption( 'artifacts_dir', null, null, 'Only output the artifacts directory path (root directory containing all test artifacts).' )
 			->setDescription( 'Shows a test report.' );
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		// Determine the report directories.
+		// Handle --artifacts_dir option early and specially
+		if ( $input->getOption( 'artifacts_dir' ) ) {
+			// Try to get from report cache first
+			$report_dir = json_decode( $this->cache->get( 'last_e2e_report' ) ?: '', true );
+			
+			if ( ! empty( $report_dir ) && isset( $report_dir['local_playwright'] ) ) {
+				// Get the artifacts directory (parent of parent of HTML report directory)
+				// HTML report is at /artifacts/final/html-report, so we need to go up 2 levels
+				$artifacts_dir = dirname( dirname( $report_dir['local_playwright'] ) );
+				
+				if ( file_exists( $artifacts_dir ) ) {
+					$directory = realpath( $artifacts_dir );
+					if ( $directory !== false ) {
+						$output->writeln( $directory );
+						return Command::SUCCESS;
+					}
+				}
+			}
+			
+			// If cache not found or directory doesn't exist, find the most recent artifacts directory
+			$pattern        = sys_get_temp_dir() . '/qit-e2e-artifacts-*';
+			$artifacts_dirs = glob( $pattern );
+			
+			if ( empty( $artifacts_dirs ) ) {
+				throw new \RuntimeException( 'No artifacts directories found. Run a test first.' );
+			}
+			
+			// Sort by modification time (most recent first)
+			usort( $artifacts_dirs, function( $a, $b ) {
+				return filemtime( $b ) - filemtime( $a );
+			} );
+			
+			$artifacts_dir = $artifacts_dirs[0];
+			$directory = realpath( $artifacts_dir );
+			if ( $directory === false ) {
+				throw new \RuntimeException( sprintf( 'Invalid artifacts directory path: %s', $artifacts_dir ) );
+			}
+			
+			$output->writeln( $directory );
+			return Command::SUCCESS;
+		}
+		
+		// Determine the report directories for normal flow.
 		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
 			$local_report  = $input->getArgument( 'report_dir' );
 			$remote_report = null; // Assuming no remote report when report_dir is specified.

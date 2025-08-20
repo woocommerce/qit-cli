@@ -494,8 +494,18 @@ class ResultCollector {
 	public function merge_ctrf( string $artifacts_dir, SymfonyStyle $io, PackageOrchestrator $orchestrator ): void {
 		$ctrf_dir = $artifacts_dir . '/ctrf';
 
-		// Skip if no CTRF files
-		if ( ! is_dir( $ctrf_dir ) || empty( glob( $ctrf_dir . '/*.json' ) ) ) {
+		// Check if CTRF directory exists
+		if ( ! is_dir( $ctrf_dir ) ) {
+			// No CTRF directory - this is OK only if no packages had run phases
+			// or if all packages were utility packages
+			$orchestrator->post_processing_message( 'No CTRF files to merge (no test results collected)' );
+			return;
+		}
+		
+		$ctrf_files = glob( $ctrf_dir . '/*.json' );
+		if ( empty( $ctrf_files ) ) {
+			// Empty CTRF directory - still OK for utility packages
+			$orchestrator->post_processing_message( 'No CTRF files found (utility packages only)' );
 			return;
 		}
 
