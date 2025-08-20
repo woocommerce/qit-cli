@@ -27,7 +27,7 @@ class ConfigurationTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../../../../fixtures/test-packages';
+		$this->fixturesDir = __DIR__ . '/../../../../fixtures/test-packages';
 	}
 
 	protected function tearDown(): void {

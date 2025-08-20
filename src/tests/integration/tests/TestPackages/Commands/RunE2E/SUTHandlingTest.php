@@ -29,7 +29,7 @@ class SUTHandlingTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../../../../fixtures';
+		$this->fixturesDir = __DIR__ . '/../../../../fixtures';
 	}
 
 	protected function tearDown(): void {		foreach ( $this->tempFiles as $file ) {
