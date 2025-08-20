@@ -286,7 +286,8 @@ class RunE2EPackageOrderingTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'run' => [
-						"echo '$marker' && mkdir -p ./results && echo '{\"results\":{\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0},\"tests\":[{\"name\":\"test\",\"status\":\"passed\"}]}}' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
+						"echo '$marker'",
+						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"test\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -312,7 +313,9 @@ class RunE2EPackageOrderingTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'run' => [
-						"echo '$marker' && mkdir -p ./results && echo '{\"results\":{\"summary\":{\"tests\":2,\"passed\":1,\"failed\":1},\"tests\":[{\"name\":\"passing\",\"status\":\"passed\"},{\"name\":\"failing\",\"status\":\"failed\"}]}}' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt && exit 1"
+						"echo '$marker'",
+						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":2,\"passed\":1,\"failed\":1,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"passing\",\"status\":\"passed\",\"duration\":100},{\"name\":\"failing\",\"status\":\"failed\",\"duration\":100}]}}' > ./results/ctrf.json && mkdir -p ./blob-report && echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt",
+						"exit 1"
 					]
 				],
 				'results' => [

@@ -55,6 +55,12 @@ class PackageListCommand extends QITCommand {
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$io         = new SymfonyStyle( $input, $output );
 		$format     = $input->getOption( 'format' );
+		
+		// Handle --json shorthand option
+		if ( $input->getOption( 'json' ) ) {
+			$format = 'json';
+		}
+		
 		$test_type  = $input->getOption( 'test-type' );
 		$namespace  = $input->getOption( 'namespace' );
 		$owned_only = $input->getOption( 'owned-only' );

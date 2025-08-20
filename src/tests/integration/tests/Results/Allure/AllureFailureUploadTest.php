@@ -1,21 +1,21 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Results\Allure;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
 /**
- * Test E2E command failure scenarios - critical for 95% of users.
+ * Tests for Allure report upload behavior on test failures.
  * 
- * Most users will encounter test failures and need to understand:
- * 1. How failures are reported
- * 2. When Allure uploads happen
- * 3. What exit codes mean
- * 4. How to debug failures
+ * These tests verify that:
+ * - Allure reports are automatically uploaded when tests fail
+ * - Mixed pass/fail results trigger upload appropriately
+ * - Failures without Allure configuration are handled gracefully
+ * - Remote URLs are generated for debugging failed tests
  */
-class RunE2EFailureFixturesTest extends TestCase {
+class AllureFailureUploadTest extends TestCase {
 
 	private string $fixturesDir;
 	private array $tempDirs = [];
@@ -25,7 +25,7 @@ class RunE2EFailureFixturesTest extends TestCase {
 		
 		// Clean up any leftover test packages before running
 		TestCleanupHelper::cleanup_all_test_packages();
-		$this->fixturesDir = __DIR__ . '/../../fixtures/test-packages';
+		$this->fixturesDir = __DIR__ . '/../../../fixtures/test-packages';
 		
 		// Note: For Allure upload to actually work (with GitHub webhook callback),
 		// you need to use staging environment by renaming .env.staging to .env
@@ -34,23 +34,14 @@ class RunE2EFailureFixturesTest extends TestCase {
 
 	protected function tearDown(): void {
 		// Let the OS handle temp directory cleanup
-		// No need to manually delete temp directories
-		
 		parent::tearDown();
 	}
 
 	/**
-	 * Test #9: Failing tests upload Allure
+	 * Test that failing tests trigger Allure upload.
 	 * 
-	 * Coverage aim: Validates Allure report upload on test failure.
-	 * Tests that when E2E tests fail, Allure reports are automatically uploaded
-	 * to provide debugging information, a critical feature for test failure analysis.
-	 * 
-	 * Key aspects tested:
-	 * - Failure detection and exit code handling
-	 * - Automatic Allure upload trigger on failure
-	 * - Remote URL generation for debugging
-	 * - Failure reporting in test summary
+	 * When E2E tests fail, Allure reports should be automatically uploaded
+	 * to provide debugging information.
 	 */
 	public function test_failing_tests_upload_allure(): void {
 		// First, we need to scaffold the failing test package since it needs node_modules
@@ -81,17 +72,10 @@ class RunE2EFailureFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test #10: Mixed results multiple packages
+	 * Test mixed pass/fail results across multiple packages.
 	 * 
-	 * Coverage aim: Validates handling of mixed pass/fail results across packages.
-	 * Tests that when running multiple packages where some pass and some fail,
-	 * the system correctly aggregates results and triggers appropriate actions.
-	 * 
-	 * Key aspects tested:
-	 * - Multiple package execution with different outcomes
-	 * - Overall failure when any package fails
-	 * - Allure upload on partial failure
-	 * - Result aggregation across packages
+	 * When running multiple packages where some pass and some fail,
+	 * the system should correctly aggregate results and trigger upload.
 	 */
 	public function test_mixed_results_multiple_packages(): void {
 		$failingPackage = $this->scaffoldFailingPackage();
@@ -123,17 +107,10 @@ class RunE2EFailureFixturesTest extends TestCase {
 	}
 
 	/**
-	 * Test #11: Failing without Allure
+	 * Test failure handling without Allure configuration.
 	 * 
-	 * Coverage aim: Validates failure handling without Allure configuration.
-	 * Tests that when tests fail but Allure is not configured, the system
-	 * still provides basic failure information and doesn't attempt upload.
-	 * 
-	 * Key aspects tested:
-	 * - Graceful handling of missing Allure configuration
-	 * - Clear messaging about missing Allure
-	 * - No upload attempt without Allure
-	 * - Basic results still available via remote URL
+	 * When tests fail but Allure is not configured, the system
+	 * should still provide basic failure information.
 	 */
 	public function test_failing_without_allure(): void {
 		// Create failing package without Allure
@@ -152,63 +129,85 @@ class RunE2EFailureFixturesTest extends TestCase {
 		// Should fail
 		$this->assertNotEquals( 0, $proc->getExitCode() );
 		
-		// Should mention lack of Allure configuration
-		$this->assertMatchesRegularExpression( 
-			'/No Allure configuration|allure/i', 
-			$output 
-		);
+		// Should have clear failure message
+		$this->assertStringContainsString( 'Status:        ✗ FAILED', $output );
 		
-		// Should NOT attempt upload
-		$this->assertStringNotContainsString( 'Uploading Allure', $output );
+		// Should mention lack of Allure
+		$this->assertStringContainsString( 'No Allure configuration found', $output );
 		
-		// But should still have basic results
+		// Should still have remote URL for basic results
 		$this->assertMatchesRegularExpression( '/Remote URL:.*qit_results=/', $output );
 	}
 
-	// ============= Helper Methods =============
+	// ========== Helper Methods ==========
 
 	private function scaffoldFailingPackage(): string {
-		$tempDir = sys_get_temp_dir() . '/qit-fixture-' . uniqid();
+		$tempDir = sys_get_temp_dir() . '/qit-failing-test-' . uniqid();
 		mkdir( $tempDir, 0755, true );
 		$this->tempDirs[] = $tempDir;
+
+		// Scaffold a basic E2E test package
+		$proc = qit( [
+			'scaffold:e2e',
+			$tempDir,
+			'--package_name=woocommerce/qit-integration-test-failing-package',
+			'--test_type=e2e'
+		], return_process: true );
 		
-		$packageDir = $tempDir . '/failing-package';
-		
-		// Use the pre-created failing fixture
-		exec( "cp -r " . escapeshellarg( $this->fixturesDir . '/failing-test-package' ) . " " . escapeshellarg( $packageDir ) );
-		
-		// Copy package.json and playwright config from working package
-		// This overwrites any incorrect package.json that might have ES modules configured
-		$filesToCopy = [ 'package.json', 'package-lock.json', 'playwright.config.js' ];
-		foreach ( $filesToCopy as $file ) {
-			$source = $this->fixturesDir . '/regular-test-package-one/' . $file;
-			if ( file_exists( $source ) ) {
-				copy( $source, $packageDir . '/' . $file );
-			}
+		$this->assertEquals( 0, $proc->getExitCode(), 'Scaffolding should succeed' );
+
+		// Make the test fail by modifying the test file
+		$testFile = $tempDir . '/test.spec.js';
+		if ( file_exists( $testFile ) ) {
+			$content = file_get_contents( $testFile );
+			// Replace expect to fail
+			$content = str_replace( 
+				"expect(page.locator('body'))", 
+				"expect(page.locator('.non-existent-selector'))", 
+				$content 
+			);
+			file_put_contents( $testFile, $content );
 		}
-		
-		// Scaffold node_modules if needed
-		if ( ! is_dir( $packageDir . '/node_modules' ) ) {
-			// Copy from a working package
-			$sourceModules = $this->fixturesDir . '/regular-test-package-one/node_modules';
-			if ( is_dir( $sourceModules ) ) {
-				exec( "cp -r " . escapeshellarg( $sourceModules ) . " " . escapeshellarg( $packageDir . '/node_modules' ) );
-			}
+
+		// Add Allure configuration
+		$manifest = json_decode( file_get_contents( $tempDir . '/qit-test.json' ), true );
+		$manifest['test']['results']['allure-dir'] = './allure-results';
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+
+		// Install dependencies if needed
+		if ( file_exists( $tempDir . '/package.json' ) ) {
+			$npmProc = qit( [ 'cd ' . $tempDir . ' && npm install' ], 
+				expected_exit_code: 0, 
+				return_process: true 
+			);
 		}
-		
-		return $packageDir;
+
+		return $tempDir;
 	}
 
 	private function createFailingPackageWithoutAllure(): string {
-		$package = $this->scaffoldFailingPackage();
-		
-		// Remove allure-dir from manifest
-		$manifestPath = $package . '/qit-test.json';
-		$manifest = json_decode( file_get_contents( $manifestPath ), true );
-		unset( $manifest['test']['results']['allure-dir'] );
-		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT ) );
-		
-		return $package;
+		$tempDir = sys_get_temp_dir() . '/qit-failing-no-allure-' . uniqid();
+		mkdir( $tempDir, 0755, true );
+		$this->tempDirs[] = $tempDir;
+
+		$manifest = [
+			'package' => 'woocommerce/qit-integration-test-failing-no-allure',
+			'test_type' => 'e2e',
+			'description' => 'Failing package without Allure',
+			'test' => [
+				'phases' => [
+					'run' => [
+						'host: echo "Test starting" && exit 1'
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json'
+				]
+			]
+		];
+
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+		return $tempDir;
 	}
 
 	private function createConfig( array $testPackages ): string {

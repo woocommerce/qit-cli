@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT\IntegrationTests\Fixtures;
+namespace QIT\IntegrationTests\Caching;
 
 use QIT\IntegrationTests\TestCleanupHelper;
 use QIT\IntegrationTests\Helpers\CTRFHelper;

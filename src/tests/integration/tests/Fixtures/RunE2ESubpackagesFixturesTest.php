@@ -1241,8 +1241,8 @@ class RunE2ESubpackagesFixturesTest extends TestCase {
 				'phases' => [
 					'run' => [
 						'echo "[TEST] Running actual tests"',
-						'mkdir -p ./results',
-						'echo \'{"reportFormat":"CTRF","specVersion":"0.1.0","results":{"tool":{"name":"test"},"summary":{"tests":1,"passed":1,"failed":0,"skipped":0,"pending":0,"other":0,"start":1700000000000,"stop":1700000001000},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json'
+						'host: mkdir -p ./results',
+						'host: echo \'{"reportFormat":"CTRF","specVersion":"0.1.0","results":{"tool":{"name":"test"},"summary":{"tests":1,"passed":1,"failed":0,"skipped":0,"pending":0,"other":0,"start":1700000000000,"stop":1700000001000},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json'
 					]
 				],
 				'results' => [

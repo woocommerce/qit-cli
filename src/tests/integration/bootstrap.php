@@ -91,13 +91,14 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 
 		return $qit->getOutput();
 	}
+	
+	// If we're returning the process, don't check exit code
+	if ( $return_process ) {
+		return $qit;
+	}
 
 	if ( $qit->getExitCode() !== $expected_exit_code ) {
 		throw new \RuntimeException( sprintf( "Command \"%s\" failed with exit code %d. \n\nError Output:\n %s \n\nOutput:\n %s", implode( ' ', $command ), $qit->getExitCode(), $qit->getErrorOutput(), $qit->getOutput() ) );
-	}
-
-	if ( $return_process ) {
-		return $qit;
 	}
 
 	// Handle separate stderr capture

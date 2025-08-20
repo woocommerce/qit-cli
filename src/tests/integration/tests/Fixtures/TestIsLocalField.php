@@ -98,7 +98,7 @@ class TestIsLocalField extends TestCase {
 			'test' => [
 				'phases' => [
 					'run' => [
-						'mkdir -p ./results ./blob-report && ' .
+						'host: mkdir -p ./results ./blob-report && ' .
 						"echo '" . CTRFHelper::create_passing_report(1) . "' > ./results/ctrf.json && " .
 						'echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]

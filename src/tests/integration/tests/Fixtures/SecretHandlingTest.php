@@ -245,7 +245,7 @@ class SecretHandlingTest extends TestCase {
 				'phases' => [
 					'setup' => $setup_commands,
 					'run' => [
-						'mkdir -p ./results && echo \'{"results":{"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"test","status":"passed"}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+						'host: mkdir -p ./results && echo \'{"results":{"tool":{"name":"test-package"},"summary":{"tests":1,"passed":1,"failed":0,"skipped":0,"pending":0,"other":0,"start":0,"stop":1000},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
 				],
 				'results' => [
@@ -299,7 +299,7 @@ class SecretHandlingTest extends TestCase {
 						'echo "Setting up test environment..."'
 					],
 					'run' => [
-						'mkdir -p ./results && echo \'{"results":{"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"test","status":"passed"}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+						'host: mkdir -p ./results && echo \'{"results":{"tool":{"name":"test-package"},"summary":{"tests":1,"passed":1,"failed":0,"skipped":0,"pending":0,"other":0,"start":0,"stop":1000},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					],
 					'teardown' => [
 						'echo "Cleaning up test environment..."'
