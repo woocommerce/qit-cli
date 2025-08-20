@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\TestPackages\Commands\RunE2E\Validation;
 
 use QIT\IntegrationTests\TestCleanupHelper;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -145,7 +146,7 @@ class RunE2EValidationTest extends TestCase {
 				'phases' => [
 					'run' => [
 						// Create results directory and CTRF file with 0 tests
-						'host: mkdir -p ./results && echo \'{"results":{"tool":{"name":"test-package"},"summary":{"tests":0,"passed":0,"failed":0,"skipped":0,"pending":0,"other":0,"start":0,"stop":1000},"tests":[]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+						'host: mkdir -p ./results && echo \'' . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => []])) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
 				],
 				'results' => [

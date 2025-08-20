@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\TestPackages\CTRF;
 
 use QIT\IntegrationTests\TestCleanupHelper;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -100,7 +101,7 @@ class OrchestratorCTRFTest extends TestCase {
 						'echo "Setting up test environment..."'
 					],
 					'run' => [
-						'host: mkdir -p ./results && echo \'{"results":{"tool":{"name":"test-package"},"summary":{"tests":1,"passed":1,"failed":0,"skipped":0,"pending":0,"other":0,"start":0,"stop":1000},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
+						'host: mkdir -p ./results && echo \'' . json_encode(CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					],
 					'teardown' => [
 						'echo "Cleaning up test environment..."'

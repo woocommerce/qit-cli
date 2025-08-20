@@ -4,6 +4,7 @@ namespace QIT\IntegrationTests\TestPackages\Packages\Subpackages;
 
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\TestCleanupHelper;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use function qit;
 
 /**
@@ -1242,7 +1243,7 @@ class SubpackageExecutionTest extends TestCase {
 					'run' => [
 						'echo "[TEST] Running actual tests"',
 						'host: mkdir -p ./results',
-						'host: echo \'{"reportFormat":"CTRF","specVersion":"0.1.0","results":{"tool":{"name":"test"},"summary":{"tests":1,"passed":1,"failed":0,"skipped":0,"pending":0,"other":0,"start":1700000000000,"stop":1700000001000},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json'
+						'host: echo \'' . json_encode(CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
 				],
 				'results' => [
@@ -1442,7 +1443,7 @@ class SubpackageExecutionTest extends TestCase {
 					],
 					'run' => [
 						'echo "Running package 1 tests"',
-						'echo \'{"results":{"tests":[{"name":"test1","status":"passed"}]}}\' > results.json',
+						'echo \'' . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'test1', 'status' => 'passed']]])) . '\' > results.json',
 						'mkdir -p blob'
 					]
 				],
@@ -1471,7 +1472,7 @@ class SubpackageExecutionTest extends TestCase {
 					],
 					'run' => [
 						'echo "Running package 2 tests"',
-						'echo \'{"results":{"tests":[{"name":"test2","status":"passed"}]}}\' > results.json',
+						'echo \'' . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'test2', 'status' => 'passed']]])) . '\' > results.json',
 						'mkdir -p blob'
 					]
 				],

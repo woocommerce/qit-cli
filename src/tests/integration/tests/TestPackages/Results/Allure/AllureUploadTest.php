@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\TestPackages\Results\Allure;
 
 use QIT\IntegrationTests\TestCleanupHelper;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -214,11 +215,12 @@ class AllureUploadTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'run' => [
-						'host: mkdir -p ./results && echo \'{"results":{"tool":{"name":"test"},"summary":{"tests":1,"passed":1,"failed":0},"tests":[{"name":"test","status":"passed","duration":100}]}}\' > ./results/ctrf.json'
+						'host: mkdir -p ./results && echo \'' . json_encode(CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
 				],
 				'results' => [
-					'ctrf-json' => './results/ctrf.json'
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];

@@ -3,6 +3,7 @@
 namespace QIT\IntegrationTests\TestPackages\Orchestration;
 
 use QIT\IntegrationTests\TestCleanupHelper;
+use QIT\IntegrationTests\Helpers\CTRFHelper;
 use PHPUnit\Framework\TestCase;
 use function qit;
 
@@ -282,7 +283,7 @@ class StateManagementTest extends TestCase {
 				'phases' => [
 					'run' => [ 
 						"if [ -f /tmp/qit-global-state.txt ]; then echo '{$name}: Found global state file with content:' && cat /tmp/qit-global-state.txt; else echo '{$name}: No global state file found'; fi",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"read global state\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'read global state', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -335,7 +336,7 @@ JS;
 				'phases' => [
 					'run' => [ 
 						"echo '{$name} was here' > /tmp/{$stateFile} && echo '{$name}: Created state file'",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"create state\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'create state', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -381,7 +382,7 @@ JS;
 				'phases' => [
 					'run' => [ 
 						"if [ -f /tmp/{$stateFile} ]; then echo '{$name}: WARNING - State file found (isolation broken!)'; else echo '{$name}: State file NOT found (good isolation!)'; fi",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"check for leaked state\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'check for leaked state', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -431,7 +432,7 @@ JS;
 				'phases' => [
 					'run' => [ 
 						"echo '{$name}: Setting WP option {$option} = {$value}' && echo '{$name}: Set WordPress option'",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"set WordPress option\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'set WordPress option', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -481,7 +482,7 @@ JS;
 				'phases' => [
 					'run' => [ 
 						"echo '{$name}: Updating WP option {$option} to {$newValue}'",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"update WordPress option\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'update WordPress option', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -525,7 +526,7 @@ JS;
 				'phases' => [
 					'run' => [ 
 						"echo '{$name}: Verified sequence is correct'",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"verify WordPress option sequence\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'verify WordPress option sequence', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -569,7 +570,7 @@ JS;
 				'phases' => [
 					'run' => [ 
 						"echo '{$name} completed' > /tmp/qit-result-{$name}.txt && echo '{$name}: Wrote result file'",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"write package result\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'write package result', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -618,7 +619,7 @@ JS;
 					],
 					'run' => [ 
 						"echo 'Setup package running'",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"setup test\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'setup test', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					]
 				],
 				'results' => [
@@ -659,7 +660,7 @@ JS;
 				'phases' => [
 					'run' => [ 
 						"echo 'Teardown package test running'",
-						"host: mkdir -p ./results && echo '{\"results\":{\"tool\":{\"name\":\"test-package\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"teardown test\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+						"host: mkdir -p ./results && echo '" . json_encode(CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'teardown test', 'status' => 'passed', 'duration' => 100]]])) . "' > ./results/ctrf.json && mkdir -p ./blob-report && echo \"test\" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
 					],
 					'globalTeardown' => [
 						"echo 'Running global teardown...' && ls -la /tmp/qit-result-*.txt 2>/dev/null | wc -l | xargs -I {} echo 'Global teardown: Found {} result files'"
