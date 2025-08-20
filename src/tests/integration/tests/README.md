@@ -1,6 +1,8 @@
 # QIT CLI Integration Tests Organization
 
-This directory contains the integration tests for the QIT CLI, organized by functionality and concern.
+This directory contains the original integration tests for the QIT CLI. 
+
+For the reorganized test package tests that were previously in Fixtures/, see the `TestPackages/` directory at `/storage/qit/qit-cli/src/tests/integration/TestPackages/`.
 
 ## Directory Structure
 
