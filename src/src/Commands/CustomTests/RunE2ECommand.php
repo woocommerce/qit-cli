@@ -1386,11 +1386,10 @@ class RunE2ECommand extends QITCommand {
 					$is_first_package = false;
 
 				} catch ( \Exception $e ) {
-					// Show the error message if it's about test validation
-					if ( strpos( $e->getMessage(), 'declared a run phase but produced 0 test results' ) !== false ) {
-						$io->writeln( '' );
-						$io->writeln( '<error>' . $e->getMessage() . '</error>' );
-					}
+					// Always show the actual error for debugging
+					$io->writeln( '' );
+					$io->writeln( '<error>Package failed: ' . $e->getMessage() . '</error>' );
+					
 					// Track the failed package using its display name
 					$failed_packages[] = $package_display_names[ $pkg_id ] ?? $pkg_id;
 

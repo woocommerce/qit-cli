@@ -217,8 +217,9 @@ class ResultCollector {
 		}
 
 		/* 2 — container fallback --------------------------------------------- */
-		// Use centralized method for consistent container paths
-		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $slug );
+		// Use manifest's package ID for container paths, not the slug
+		$package_id = $mf->get_package_id();
+		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
 		$ctr_path = $container_base . '/' . ltrim( $rel, './' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
@@ -256,8 +257,9 @@ class ResultCollector {
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
 
-		// Use sanitized package name for directory
-		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $slug );
+		// Use sanitized package name for directory - use manifest's package ID, not the slug
+		$package_id = $mf->get_package_id();
+		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
 		$dst      = $dir . '/allure/' . $safe_name;
 		$dir_path = dirname( $dst );
 		if ( ! is_dir( $dir_path ) ) {
@@ -274,8 +276,9 @@ class ResultCollector {
 		}
 
 		/* container fallback */
-		// Use centralized method for consistent container paths
-		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $slug );
+		// Use manifest's package ID for container paths, not the slug
+		$package_id = $mf->get_package_id();
+		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
 		$ctr_path = $container_base . '/' . trim( $rel, '/' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
@@ -305,8 +308,9 @@ class ResultCollector {
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
 
-		// Use sanitized package name for directory
-		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $slug );
+		// Use sanitized package name for directory - use manifest's package ID, not the slug
+		$package_id = $mf->get_package_id();
+		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
 		$dst      = $dir . '/blob/' . $safe_name;
 		$dir_path = dirname( $dst );
 		if ( ! is_dir( $dir_path ) ) {
@@ -327,8 +331,9 @@ class ResultCollector {
 		}
 
 		/* container fallback */
-		// Use centralized method for consistent container paths
-		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $slug );
+		// Use manifest's package ID for container paths, not the slug
+		$package_id = $mf->get_package_id();
+		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
 		$ctr_path = $container_base . '/' . trim( $rel, '/' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
