@@ -420,7 +420,7 @@ class PublishCommandTest extends QITTestCase {
 	/**
 	 * Recursively remove directory
 	 */
-	private function recursive_rmdir( string $dir ): void {
+	protected function recursive_rmdir( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			return;
 		}

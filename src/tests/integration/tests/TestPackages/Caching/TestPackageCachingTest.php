@@ -162,7 +162,7 @@ class TestPackageCachingTest extends TestCase {
 			'woocommerce',
 			'--test-package=woocommerce/qit-integration-test-cart:5.0.0',
 			'--config=' . $config2,
-			'-v',
+			'-vv',
 		], return_process: true );
 		
 		$output2 = $proc2->getOutput();

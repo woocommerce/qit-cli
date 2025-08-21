@@ -217,7 +217,9 @@ class ResultCollector {
 		}
 
 		/* 2 — container fallback --------------------------------------------- */
-		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . ltrim( $rel, './' );
+		// Use centralized method for consistent container paths
+		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $slug );
+		$ctr_path = $container_base . '/' . ltrim( $rel, './' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 
@@ -254,7 +256,9 @@ class ResultCollector {
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
 
-		$dst      = $dir . '/allure/' . basename( $slug );
+		// Use sanitized package name for directory
+		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $slug );
+		$dst      = $dir . '/allure/' . $safe_name;
 		$dir_path = dirname( $dst );
 		if ( ! is_dir( $dir_path ) ) {
 			mkdir( $dir_path, 0755, true );
@@ -270,7 +274,9 @@ class ResultCollector {
 		}
 
 		/* container fallback */
-		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . trim( $rel, '/' );
+		// Use centralized method for consistent container paths
+		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $slug );
+		$ctr_path = $container_base . '/' . trim( $rel, '/' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 			return true;
@@ -299,7 +305,9 @@ class ResultCollector {
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . trim( $rel, '/' );
 
-		$dst      = $dir . '/blob/' . basename( $slug );
+		// Use sanitized package name for directory
+		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $slug );
+		$dst      = $dir . '/blob/' . $safe_name;
 		$dir_path = dirname( $dst );
 		if ( ! is_dir( $dir_path ) ) {
 			mkdir( $dir_path, 0755, true );
@@ -319,7 +327,9 @@ class ResultCollector {
 		}
 
 		/* container fallback */
-		$ctr_path = '/qit/packages/' . basename( $slug ) . '/' . trim( $rel, '/' );
+		// Use centralized method for consistent container paths
+		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $slug );
+		$ctr_path = $container_base . '/' . trim( $rel, '/' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 			// Validate after copying from container
@@ -615,7 +625,9 @@ class ResultCollector {
 		foreach ( $results as $type => $container_path ) {
 			// Handle relative paths
 			if ( strpos( $container_path, './' ) === 0 ) {
-				$container_path = '/qit/packages/' . basename( $package_id ) . '/' . substr( $container_path, 2 );
+				// Use centralized method for consistent container paths
+				$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
+				$container_path = $container_base . '/' . substr( $container_path, 2 );
 			}
 
 			$host_path = rtrim( $host_artifacts_dir, '/' ) . '/' . $package_id . '/' . $type;

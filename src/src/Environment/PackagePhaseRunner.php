@@ -466,8 +466,8 @@ class PackagePhaseRunner {
 			$workdir = $env_info->test_packages_metadata[ $package_id ]['container_path'];
 		} else {
 			// This is a downloaded package extracted in the container
-			// Use the same logic as before for backwards compatibility
-			$workdir = '/qit/packages/' . basename( $package_id );
+			// Use the centralized method for consistent naming
+			$workdir = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
 		}
 
 		$phase_timeout = $this->get_timeout_for_phase( $phase );

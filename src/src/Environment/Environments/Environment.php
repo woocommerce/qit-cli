@@ -221,7 +221,11 @@ abstract class Environment {
 				if ( empty( $info['path'] ) || ! is_dir( $info['path'] ) ) {
 					continue;
 				}
-				$container                                    = '/qit/packages/' . basename( $pkg_id );
+				// Container path MUST be provided - no fallback allowed
+				if ( ! isset( $info['container_path'] ) ) {
+					throw new \RuntimeException( "Missing container_path for global setup package: {$pkg_id}" );
+				}
+				$container = $info['container_path'];
 				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
 			}
 		}
@@ -232,7 +236,11 @@ abstract class Environment {
 				if ( empty( $info['path'] ) || ! is_dir( $info['path'] ) ) {
 					continue;
 				}
-				$container                                    = '/qit/packages/' . basename( $pkg_id );
+				// Container path MUST be provided - no fallback allowed
+				if ( ! isset( $info['container_path'] ) ) {
+					throw new \RuntimeException( "Missing container_path for test package: {$pkg_id}" );
+				}
+				$container = $info['container_path'];
 				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
 			}
 		}

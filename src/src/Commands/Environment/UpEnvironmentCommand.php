@@ -142,10 +142,13 @@ class UpEnvironmentCommand extends QITCommand {
 				try {
 					$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
 					if ( $manifest ) {
-						$metadata                              = $package_downloader->get_package_metadata( $package_ref );
+						$metadata = $package_downloader->get_package_metadata( $package_ref );
+						// Use centralized method for consistent container path generation
+						$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
 						$global_setup_packages[ $package_ref ] = [
-							'path'   => $metadata['downloaded_path'] ?? '',
-							'source' => 'registry',
+							'path'           => $metadata['downloaded_path'] ?? '',
+							'source'         => 'registry',
+							'container_path' => $container_path,
 						];
 					}
 				} catch ( \Exception $e ) {

@@ -149,20 +149,12 @@ class ParentSubpackageCombinationTest extends TestCase {
 		$this->assertSame( 0, $publishProc->getExitCode(), $publishProc->getOutput() . "\n" . $publishProc->getErrorOutput() );
 		$this->assertStringContainsString( "Package published successfully: $parentPackage:1.0.0", $publishProc->getOutput() );
 
-		// Create config for the test run
-		$config1 = sys_get_temp_dir() . '/qit-config-' . uniqid() . '.json';
-		file_put_contents( $config1, json_encode( [
-			'test_packages' => [
-				"$parentPackage:1.0.0",
-				"$child1Package:1.0.0",
-			],
-		] ) );
-		
 		// Run parent package with one subpackage - should work
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--config=' . $config1,
+			"--test-package=$parentPackage:1.0.0",
+			"--test-package=$child1Package:1.0.0",
 		], return_process: true );
 
 		$this->assertSame( 0, $proc->getExitCode(), $proc->getOutput() . "\n" . $proc->getErrorOutput() );
@@ -180,21 +172,13 @@ class ParentSubpackageCombinationTest extends TestCase {
 		$this->assertStringContainsString( '[PARENT_SETUP] Parent-specific setup', $output );
 		$this->assertStringContainsString( '[CHILD1_SETUP] Child 1 specific setup', $output );
 		
-		// Create config for all three packages
-		$config2 = sys_get_temp_dir() . '/qit-config-' . uniqid() . '.json';
-		file_put_contents( $config2, json_encode( [
-			'test_packages' => [
-				"$parentPackage:1.0.0",
-				"$child1Package:1.0.0",
-				"$child2Package:1.0.0",
-			],
-		] ) );
-		
 		// Run all three together - parent and both subpackages
 		$proc2 = qit( [
 			'run:e2e',
 			'woocommerce',
-			'--config=' . $config2,
+			"--test-package=$parentPackage:1.0.0",
+			"--test-package=$child1Package:1.0.0",
+			"--test-package=$child2Package:1.0.0",
 		], return_process: true );
 
 		$this->assertSame( 0, $proc2->getExitCode(), $proc2->getOutput() . "\n" . $proc2->getErrorOutput() );

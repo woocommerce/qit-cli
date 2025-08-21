@@ -253,7 +253,8 @@ class RunE2ECommand extends QITCommand {
 
 				if ( $is_local ) {
 					// Local packages - never deduplicate, but need unique names
-					$container_name = $this->container_name_from_manifest( $pkg_id, $local_package_counter );
+					// For local packages, we need a counter to handle duplicates
+					$container_name = $this->get_unique_container_name_for_local( $pkg_id, $local_package_counter );
 
 					$test_packages_metadata[ $pkg_id ] = [
 						'path'           => $meta['path'],
@@ -270,12 +271,12 @@ class RunE2ECommand extends QITCommand {
 						continue;
 					}
 
-					// For remote packages, include version in container name to avoid conflicts
-					$container_name = $this->container_name_for_remote_package( $pkg_id );
+					// For remote packages, use the centralized method
+					$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $pkg_id );
 
 					$test_packages_metadata[ $pkg_id ] = [
 						'path'           => $meta['path'],
-						'container_path' => '/qit/packages/' . $container_name,
+						'container_path' => $container_path,
 					];
 
 					$seen_remote_packages[ $pkg_id ] = $test_packages_metadata[ $pkg_id ];
@@ -749,6 +750,54 @@ class RunE2ECommand extends QITCommand {
 	}
 
 	/**
+	 * Generate a unique container name for a local package.
+	 *
+	 * @param string            $package_id The local package path.
+	 * @param array<string,int> &$counter Counter array to ensure uniqueness.
+	 *
+	 * @return string The container-safe directory name with counter if needed.
+	 * @throws \InvalidArgumentException If manifest is missing or invalid.
+	 */
+	private function get_unique_container_name_for_local( string $package_id, array &$counter ): string {
+		// Read the manifest to get the package name
+		$manifest_path = rtrim( $package_id, '/\\' ) . '/qit-test.json';
+		
+		if ( ! file_exists( $manifest_path ) ) {
+			throw new \InvalidArgumentException(
+				"Test package directory must contain qit-test.json: {$package_id}"
+			);
+		}
+		
+		$manifest_content = file_get_contents( $manifest_path );
+		$manifest_data    = json_decode( $manifest_content, true );
+		
+		if ( json_last_error() !== JSON_ERROR_NONE ) {
+			throw new \InvalidArgumentException(
+				"Invalid JSON in qit-test.json: {$package_id} - " . json_last_error_msg()
+			);
+		}
+		
+		// Create manifest object to use centralized naming
+		$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
+		
+		// Get the base container name
+		$base_name = $manifest->get_container_directory_name();
+		
+		// Apply counter for uniqueness
+		$key = $base_name;
+		if ( ! isset( $counter[ $key ] ) ) {
+			$counter[ $key ] = 0;
+		}
+		++$counter[ $key ];
+		
+		if ( $counter[ $key ] > 1 ) {
+			$base_name .= '-' . $counter[ $key ];
+		}
+		
+		return $base_name;
+	}
+
+	/**
 	 * Generate a container name for a remote package.
 	 *
 	 * @param string $package_id The remote package reference.
@@ -757,9 +806,8 @@ class RunE2ECommand extends QITCommand {
 	 * @throws \InvalidArgumentException If package reference is invalid.
 	 */
 	private function container_name_for_remote_package( string $package_id ): string {
-		$counter = null; // Not used for remote packages
-
-		return $this->container_name_from_manifest( $package_id, $counter, true );
+		// Use the centralized static method from TestPackageManifest
+		return \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
 	}
 
 	/**
@@ -803,94 +851,6 @@ class RunE2ECommand extends QITCommand {
 		}
 	}
 
-	/**
-	 * Generate a container name from qit-test.json or package reference.
-	 *
-	 * For local packages: reads namespace/package from qit-test.json
-	 * For remote packages: parses namespace/package/version from reference
-	 *
-	 * @param string                 $package_id The package ID (local path or remote reference).
-	 * @param array<string,int>|null &$counter Counter array for local packages to ensure uniqueness.
-	 * @param bool                   $include_version Whether to include version in the container name (for remote packages).
-	 *
-	 * @return string The container-safe directory name.
-	 * @throws \InvalidArgumentException If manifest is missing or invalid.
-	 */
-	private function container_name_from_manifest( string $package_id, ?array &$counter = null, bool $include_version = false ): string {
-		$namespace = '';
-		$package   = '';
-
-		// Check if this is a local path
-		if ( file_exists( $package_id ) && is_dir( $package_id ) ) {
-			// Local package - read qit-test.json
-			$manifest_path = rtrim( $package_id, '/\\' ) . '/qit-test.json';
-
-			if ( ! file_exists( $manifest_path ) ) {
-				throw new \InvalidArgumentException(
-					"Test package directory must contain qit-test.json: {$package_id}"
-				);
-			}
-
-			$manifest_content = file_get_contents( $manifest_path );
-			$manifest         = json_decode( $manifest_content, true );
-
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				throw new \InvalidArgumentException(
-					"Invalid JSON in qit-test.json: {$package_id} - " . json_last_error_msg()
-				);
-			}
-
-			// Parse the package field (must be in "namespace/package" format)
-			if ( empty( $manifest['package'] ) || ! str_contains( $manifest['package'], '/' ) ) {
-				throw new \InvalidArgumentException(
-					"Manifest must contain 'package' field in format 'namespace/package': {$package_id}"
-				);
-			}
-
-			[ $namespace, $package ] = explode( '/', $manifest['package'], 2 );
-			$version                 = null; // Local packages don't have versions
-		} else {
-			// Remote package reference - parse the format
-			// Expected formats:
-			// - namespace/package:version
-			// - namespace/package
-			if ( ! preg_match( '/^([^\/]+)\/([^:]+)(?::(.+))?$/', $package_id, $matches ) ) {
-				throw new \InvalidArgumentException(
-					"Invalid package reference format. Expected 'namespace/package[:version]', got: {$package_id}"
-				);
-			}
-
-			$namespace = $matches[1];
-			$package   = $matches[2];
-			$version   = isset( $matches[3] ) ? $matches[3] : null;
-		}
-
-		// Sanitize for container safety
-		$safe_namespace = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $namespace ) );
-		$safe_package   = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $package ) );
-		$base_name      = trim( "{$safe_namespace}-{$safe_package}", '-' );
-
-		// Add version to container name if requested (for remote packages that need version distinction)
-		if ( $include_version && $version !== null ) {
-			$safe_version = strtolower( preg_replace( '/[^a-z0-9]+/i', '-', $version ) );
-			$base_name   .= '-' . $safe_version;
-		}
-
-		// For local packages, add counter if needed to ensure uniqueness
-		if ( $counter !== null ) {
-			$key = $base_name;
-			if ( ! isset( $counter[ $key ] ) ) {
-				$counter[ $key ] = 0;
-			}
-			++$counter[ $key ];
-
-			if ( $counter[ $key ] > 1 ) {
-				$base_name .= '-' . $counter[ $key ];
-			}
-		}
-
-		return $base_name;
-	}
 
 	private function handle_termination(): void {
 		register_shutdown_function( static function () {

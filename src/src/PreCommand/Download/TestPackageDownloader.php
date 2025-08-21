@@ -24,7 +24,7 @@ use function QIT_CLI\get_manager_url;
  * - Immutable versions (1.0.0) benefit from checksum validation too
  *
  * ### 2. Cache Key Generation
- * - Format: `test_package_[md5(reference_checksum)]`
+ * - Format: `test_package_checksum_[checksum]`
  * - Uses SHA256 checksum as the cache key component
  * - Different checksums = different cache entries
  * - Rolling versions get new cache entries when updated
@@ -275,7 +275,8 @@ class TestPackageDownloader {
 
 		// Generate cache key based on checksum (not version)
 		// This ensures cache is invalidated when content changes
-		$cache_key = 'test_package_' . md5( $reference . '_' . $metadata['checksum'] );
+		// Using only checksum allows subpackages to share the same cache entry
+		$cache_key = 'test_package_checksum_' . $metadata['checksum'];
 		$cached    = $this->cache->get( $cache_key );
 
 		if ( $cached && is_array( $cached ) && isset( $cached['manifest'] ) ) {
@@ -443,7 +444,8 @@ class TestPackageDownloader {
 			throw new \RuntimeException( "No checksum available for package '$reference'" );
 		}
 
-		$cache_key = 'test_package_' . md5( $reference . '_' . $metadata['checksum'] );
+		// Using only checksum allows subpackages to share the same cache entry
+		$cache_key = 'test_package_checksum_' . $metadata['checksum'];
 
 		// Double-check cache (shouldn't hit this since we already validated)
 		$cached = $this->cache->get( $cache_key );
@@ -528,13 +530,16 @@ class TestPackageDownloader {
 		// Check if we requested a subpackage but got the parent manifest
 		$requested_package_id = $this->extract_package_id( $reference );
 		$manifest_package_id  = $manifest_object->get_package_id();
+		$is_subpackage_request = false;
 
 		// If the downloaded manifest is for a different package, check if it's a parent with the requested subpackage
 		if ( $requested_package_id !== $manifest_package_id ) {
+			$is_subpackage_request = true;
 			// We downloaded a parent package for a subpackage request
 			// Cache the parent under its own reference for future subpackage requests
 			$parent_reference = $manifest_package_id . ':' . $version;
-			$parent_cache_key = 'test_package_' . md5( $parent_reference . '_' . $metadata['checksum'] );
+			// Using only checksum allows subpackages to share the same cache entry
+			$parent_cache_key = 'test_package_checksum_' . $metadata['checksum'];
 			
 			// Cache the parent manifest
 			$parent_metadata = [
@@ -575,16 +580,20 @@ class TestPackageDownloader {
 
 		$manifest_array = $manifest_object->to_array();
 
-		if ( $this->output->isVeryVerbose() ) {
-			$this->output->writeln( "[DEBUG] Caching package with key: $cache_key" );
-			$this->output->writeln( '[DEBUG] Manifest array has _normalized: ' . ( isset( $manifest_array['_normalized'] ) ? 'YES' : 'NO' ) );
-		}
+		// Only cache if we haven't already cached the parent manifest
+		// (subpackages share the parent's cache entry)
+		if ( ! $is_subpackage_request ) {
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->writeln( "[DEBUG] Caching package with key: $cache_key" );
+				$this->output->writeln( '[DEBUG] Manifest array has _normalized: ' . ( isset( $manifest_array['_normalized'] ) ? 'YES' : 'NO' ) );
+			}
 
-		// Cache both manifest and metadata together
-		$this->cache->set( $cache_key, [
-			'manifest' => $manifest_array,
-			'metadata' => $metadata,
-		], DAY_IN_SECONDS );
+			// Cache both manifest and metadata together
+			$this->cache->set( $cache_key, [
+				'manifest' => $manifest_array,
+				'metadata' => $metadata,
+			], DAY_IN_SECONDS );
+		}
 
 		// Clean up zip file
 		unlink( $zip_file );
