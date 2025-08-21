@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 335 passed, 0 failed, 50 skipped.",
+            "test_summary": "385 total, 333 passed, 2 failed, 50 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,12 +49,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 79,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 77,
                 "numPendingTestSuites": 21,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 0,
-                "numPassedTests": 335,
+                "numFailedTests": 2,
+                "numPassedTests": 333,
                 "numPendingTests": 50,
                 "numTotalTests": 385,
                 "testResults": [
@@ -494,7 +494,7 @@
                     },
                     {
                         "file": "checkout\\/checkout.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
@@ -536,7 +536,7 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
@@ -951,7 +951,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Assembler -> Logo Picker": [
@@ -961,7 +961,7 @@
                                 },
                                 {
                                     "title": "Selecting an image should update the site preview",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Changing the image width should update the site preview and the frontend",
@@ -2687,15 +2687,15 @@
                         }
                     }
                 ],
-                "summary": "385 total, 335 passed, 0 failed, 50 skipped."
+                "summary": "385 total, 333 passed, 2 failed, 50 skipped."
             }
         },
         {
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "8fed8056-3dc6-4aa1-8b5a-81785b7f2a29",
-                "timestamp": "2025-08-19T15:54:33.634Z",
+                "reportId": "69730f5b-743c-42f3-a39f-346f28f31741",
+                "timestamp": "2025-08-21T06:51:19.391Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
@@ -2703,8 +2703,8 @@
                     },
                     "summary": {
                         "tests": 385,
-                        "passed": 335,
-                        "failed": 0,
+                        "passed": 333,
+                        "failed": 2,
                         "pending": 0,
                         "skipped": 50,
                         "other": 0,
@@ -4634,11 +4634,14 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Edit shipping address\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Edit shipping address\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js:449:7",
+                            "snippet": "\\u001b[0m \\u001b[90m 447 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 448 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Edit shipping address\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 449 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 450 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m fillShippingCheckoutBlocks( page\\u001b[33m,\\u001b[39m shippingAddress )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 451 |\\u001b[39m \\t\\t\\t}\\n \\u001b[90m 452 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4646,7 +4649,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/checkout-checkout-customer-8c11a-ing-address-blocks-checkout-e2e-retry1\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/checkout-checkout-customer-8c11a-ing-address-blocks-checkout-e2e-retry1\\/video.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/checkout-checkout-customer-8c11a-ing-address-blocks-checkout-e2e-retry1\\/error-context.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/checkout-checkout-customer-8c11a-ing-address-blocks-checkout-e2e-retry1\\/trace.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -7041,11 +7065,14 @@
                         },
                         {
                             "name": "Selecting an image should update the site preview",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m failed\\n\\nLocator:  locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m failed\\n\\nLocator:  locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js:133:6",
+                            "snippet": "\\u001b[0m \\u001b[90m 131 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'document\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Header\'\\u001b[39m } )\\n \\u001b[90m 132 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'img.custom-logo\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 133 |\\u001b[39m \\t\\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 134 |\\u001b[39m\\n \\u001b[90m 135 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( imageWidth )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 136 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( linkLogoToHomepage )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7053,7 +7080,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/video.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/error-context.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/trace.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
