@@ -1434,8 +1434,8 @@
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "2e66fe34-c7f7-46fe-8506-815400ce2ea2",
-                "timestamp": "2025-08-19T15:39:15.086Z",
+                "reportId": "b813a927-f0aa-45c3-b360-1ad61aa7aade",
+                "timestamp": "2025-08-21T06:31:44.282Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
