@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 334 passed, 1 failed, 50 skipped.",
+            "test_summary": "385 total, 326 passed, 0 failed, 59 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,13 +49,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 78,
-                "numPendingTestSuites": 21,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 77,
+                "numPendingTestSuites": 23,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 1,
-                "numPassedTests": 334,
-                "numPendingTests": 50,
+                "numFailedTests": 0,
+                "numPassedTests": 326,
+                "numPendingTests": 59,
                 "numTotalTests": 385,
                 "testResults": [
                     {
@@ -495,7 +495,7 @@
                     {
                         "file": "checkout\\/checkout.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
                                 {
@@ -536,13 +536,13 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout": [
@@ -951,37 +951,37 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Assembler -> Logo Picker": [
                                 {
                                     "title": "Logo Picker should be empty initially",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Selecting an image should update the site preview",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Changing the image width should update the site preview and the frontend",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking the Delete button should remove the selected image",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking the replace image should open the media gallery",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logo should be visible after header update",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "The selected image should be visible on the frontend",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2687,15 +2687,15 @@
                         }
                     }
                 ],
-                "summary": "385 total, 334 passed, 1 failed, 50 skipped."
+                "summary": "385 total, 326 passed, 0 failed, 59 skipped."
             }
         },
         {
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "0e235b92-e8cd-4fe4-a5a8-a40c567e03b7",
-                "timestamp": "2025-08-21T06:51:41.024Z",
+                "reportId": "ad2ec36e-4797-4a95-8fec-5f5c91da8063",
+                "timestamp": "2025-08-21T07:39:15.519Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
@@ -2703,10 +2703,10 @@
                     },
                     "summary": {
                         "tests": 385,
-                        "passed": 334,
-                        "failed": 1,
+                        "passed": 326,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 50,
+                        "skipped": 59,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4634,11 +4634,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4650,22 +4650,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js",
+                                            "line": 381,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
@@ -4677,12 +4683,18 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js",
+                                            "line": 381,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -7017,11 +7029,11 @@
                         },
                         {
                             "name": "Logo Picker should be empty initially",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7035,20 +7047,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                                            "line": 28,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Selecting an image should update the site preview",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m failed\\n\\nLocator:  locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m failed\\n\\nLocator:  locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\nExpected: visible\\nReceived: <element(s) not found>\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'iframe[title=\\"assembler-hub\\"]\').contentFrame().locator(\'.woocommerce-customize-store__edit-site-editor [name=\\"editor-canvas\\"]\').contentFrame().getByRole(\'document\', { name: \'Header\' }).locator(\'img.custom-logo\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js:133:6",
-                            "snippet": "\\u001b[0m \\u001b[90m 131 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'document\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Header\'\\u001b[39m } )\\n \\u001b[90m 132 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'img.custom-logo\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 133 |\\u001b[39m \\t\\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 134 |\\u001b[39m\\n \\u001b[90m 135 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( imageWidth )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 136 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( linkLogoToHomepage )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7056,44 +7074,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--d08c1-uld-update-the-site-preview-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                                            "line": 28,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Changing the image width should update the site preview and the frontend",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7107,17 +7113,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                                            "line": 28,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking the Delete button should remove the selected image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7131,17 +7146,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                                            "line": 28,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking the replace image should open the media gallery",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7155,17 +7179,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                                            "line": 28,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logo should be visible after header update",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7179,17 +7212,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                                            "line": 28,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "The selected image should be visible on the frontend",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
@@ -7203,7 +7245,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
+                                            "line": 28,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
