@@ -20,13 +20,15 @@ class ParentSubpackageCombinationTest extends TestCase {
 	}
 	
 	protected function tearDown(): void {
-		parent::tearDown();
 		// Clean up any temp directories
 		foreach ( $this->tempDirs as $dir ) {
 			if ( is_dir( $dir ) ) {
 				$this->deleteDirectory( $dir );
 			}
 		}
+		// Clean up test packages from Manager
+		TestCleanupHelper::cleanup_all_test_packages();
+		parent::tearDown();
 	}
 	
 	private function deleteDirectory( string $dir ): void {
@@ -68,10 +70,14 @@ class ParentSubpackageCombinationTest extends TestCase {
 	 * Test that parent package can run alongside its subpackages
 	 */
 	public function test_parent_and_subpackages_run_together() {
+		// Generate unique package names using the convention
+		$parentPackage = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'parent-suite' );
+		$child1Package = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'child-one' );
+		$child2Package = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'child-two' );
 
 		// Create a test package with subpackages
 		$packageDir = $this->create_test_package( 'parent-with-subpackages', [
-			'package'     => 'test-vendor/parent-suite',
+			'package'     => $parentPackage,
 			'test_type'   => 'e2e',
 			'description' => 'Parent test suite with subpackages',
 			'test'        => [
@@ -98,7 +104,7 @@ class ParentSubpackageCombinationTest extends TestCase {
 				],
 			],
 			'subpackages' => [
-				'test-vendor/child-one' => [
+				$child1Package => [
 					'description' => 'First child subpackage',
 					'tags'        => ['child1'],
 					'test'        => [
@@ -112,7 +118,7 @@ class ParentSubpackageCombinationTest extends TestCase {
 						],
 					],
 				],
-				'test-vendor/child-two' => [
+				$child2Package => [
 					'description' => 'Second child subpackage',
 					'tags'        => ['child2'],
 					'test'        => [
@@ -141,14 +147,14 @@ class ParentSubpackageCombinationTest extends TestCase {
 			'1.0.0',
 		], return_process: true );
 		$this->assertSame( 0, $publishProc->getExitCode(), $publishProc->getOutput() . "\n" . $publishProc->getErrorOutput() );
-		$this->assertStringContainsString( 'Package published successfully: test-vendor/parent-suite:1.0.0', $publishProc->getOutput() );
+		$this->assertStringContainsString( "Package published successfully: $parentPackage:1.0.0", $publishProc->getOutput() );
 
 		// Create config for the test run
 		$config1 = sys_get_temp_dir() . '/qit-config-' . uniqid() . '.json';
 		file_put_contents( $config1, json_encode( [
 			'test_packages' => [
-				'test-vendor/parent-suite:1.0.0',
-				'test-vendor/child-one:1.0.0',
+				"$parentPackage:1.0.0",
+				"$child1Package:1.0.0",
 			],
 		] ) );
 		
@@ -163,8 +169,8 @@ class ParentSubpackageCombinationTest extends TestCase {
 		
 		// Verify both packages ran
 		$output = $proc->getOutput();
-		$this->assertStringContainsString( 'test-vendor/parent-suite:1.0.0', $output );
-		$this->assertStringContainsString( 'test-vendor/child-one:1.0.0', $output );
+		$this->assertStringContainsString( "$parentPackage:1.0.0", $output );
+		$this->assertStringContainsString( "$child1Package:1.0.0", $output );
 		
 		// Verify globalSetup deduplication worked
 		$this->assertStringContainsString( '[PARENT_GLOBAL_SETUP] Setting up parent environment', $output );
@@ -178,9 +184,9 @@ class ParentSubpackageCombinationTest extends TestCase {
 		$config2 = sys_get_temp_dir() . '/qit-config-' . uniqid() . '.json';
 		file_put_contents( $config2, json_encode( [
 			'test_packages' => [
-				'test-vendor/parent-suite:1.0.0',
-				'test-vendor/child-one:1.0.0',
-				'test-vendor/child-two:1.0.0',
+				"$parentPackage:1.0.0",
+				"$child1Package:1.0.0",
+				"$child2Package:1.0.0",
 			],
 		] ) );
 		
@@ -195,9 +201,9 @@ class ParentSubpackageCombinationTest extends TestCase {
 		
 		// Verify all three packages ran
 		$output2 = $proc2->getOutput();
-		$this->assertStringContainsString( 'test-vendor/parent-suite:1.0.0', $output2 );
-		$this->assertStringContainsString( 'test-vendor/child-one:1.0.0', $output2 );
-		$this->assertStringContainsString( 'test-vendor/child-two:1.0.0', $output2 );
+		$this->assertStringContainsString( "$parentPackage:1.0.0", $output2 );
+		$this->assertStringContainsString( "$child1Package:1.0.0", $output2 );
+		$this->assertStringContainsString( "$child2Package:1.0.0", $output2 );
 		
 		// Verify globalSetup override and deduplication
 		$this->assertStringContainsString( '[PARENT_GLOBAL_SETUP] Setting up parent environment', $output2 );
@@ -206,22 +212,7 @@ class ParentSubpackageCombinationTest extends TestCase {
 		// Child 2's globalSetup should be different, so both should run
 		// But if parent and child1 have the same globalSetup, it should deduplicate
 		
-		// Clean up
-		qit( [
-			'package:delete',
-			'test-vendor/parent-suite:1.0.0',
-			'--yes',
-		] );
-		qit( [
-			'package:delete',
-			'test-vendor/child-one:1.0.0',
-			'--yes',
-		] );
-		qit( [
-			'package:delete',
-			'test-vendor/child-two:1.0.0',
-			'--yes',
-		] );
+		// No need for manual cleanup - TestCleanupHelper will handle it in tearDown
 	}
 
 	/**
@@ -246,12 +237,6 @@ class ParentSubpackageCombinationTest extends TestCase {
 		// Create config for all packages
 		$config = sys_get_temp_dir() . '/qit-config-' . uniqid() . '.json';
 		file_put_contents( $config, json_encode( [
-			'$schema' => 'https://qit.woo.com/json-schema/qit',
-			'sut' => [
-				'type' => 'plugin',
-				'slug' => 'woocommerce',
-				'source' => [ 'type' => 'wporg' ]
-			],
 			'test_types' => [
 				'e2e' => [
 					'default' => [
@@ -262,12 +247,6 @@ class ParentSubpackageCombinationTest extends TestCase {
 							"woocommerce/qit-integration-test-account:$version",
 						]
 					]
-				]
-			],
-			'environments' => [
-				'default' => [
-					'wordpress_version' => 'latest',
-					'php_version' => '7.4'
 				]
 			]
 		], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
@@ -288,26 +267,6 @@ class ParentSubpackageCombinationTest extends TestCase {
 		$this->assertStringContainsString( "woocommerce/qit-integration-test-cart:$version", $output );
 		$this->assertStringContainsString( "woocommerce/qit-integration-test-account:$version", $output );
 		
-		// Clean up
-		qit( [
-			'package:delete',
-			"woocommerce/qit-integration-test-e2e-suite:$version",
-			'--yes',
-		] );
-		qit( [
-			'package:delete',
-			"woocommerce/qit-integration-test-checkout:$version",
-			'--yes',
-		] );
-		qit( [
-			'package:delete',
-			"woocommerce/qit-integration-test-cart:$version",
-			'--yes',
-		] );
-		qit( [
-			'package:delete',
-			"woocommerce/qit-integration-test-account:$version",
-			'--yes',
-		] );
+		// No need for manual cleanup - TestCleanupHelper will handle it in tearDown
 	}
 }

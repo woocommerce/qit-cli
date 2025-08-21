@@ -186,8 +186,16 @@ class CTRFContractEnforcementTest extends TestCase {
 		$this->assertIsArray( $ctrfData, "CTRF should be valid JSON" );
 		$this->assertArrayHasKey( 'results', $ctrfData );
 		$this->assertArrayHasKey( 'summary', $ctrfData['results'] );
-		$this->assertEquals( 2, $ctrfData['results']['summary']['tests'], "Should have 2 tests" );
-		$this->assertEquals( 2, $ctrfData['results']['summary']['passed'], "Should have 2 passed tests" );
+		
+		// The merged CTRF includes lifecycle events as tests, so we check for actual package tests
+		$packageTests = array_filter( $ctrfData['results']['tests'], function( $test ) {
+			return !isset( $test['extra']['type'] ) || $test['extra']['type'] !== 'lifecycle';
+		} );
+		$this->assertCount( 2, $packageTests, "Should have 2 actual package tests" );
+		
+		// All tests (including lifecycle) should pass
+		$this->assertEquals( $ctrfData['results']['summary']['tests'], $ctrfData['results']['summary']['passed'], 
+			"All tests should pass" );
 	}
 
 	/**
@@ -217,12 +225,17 @@ class CTRFContractEnforcementTest extends TestCase {
 		$this->assertArrayHasKey( 'results', $ctrfData );
 		$this->assertArrayHasKey( 'tests', $ctrfData['results'] );
 		
-		// Should contain tests from both packages (2 + 3 = 5)
-		$this->assertCount( 5, $ctrfData['results']['tests'], "Should have all 5 tests from both packages" );
+		// Filter out lifecycle events to count actual package tests
+		$packageTests = array_filter( $ctrfData['results']['tests'], function( $test ) {
+			return !isset( $test['extra']['type'] ) || $test['extra']['type'] !== 'lifecycle';
+		} );
 		
-		// Verify summary counts
-		$this->assertEquals( 5, $ctrfData['results']['summary']['tests'], "Summary should show 5 total tests" );
-		$this->assertEquals( 5, $ctrfData['results']['summary']['passed'], "Summary should show 5 passed tests" );
+		// Should contain tests from both packages (2 + 3 = 5)
+		$this->assertCount( 5, $packageTests, "Should have all 5 tests from both packages" );
+		
+		// The summary includes lifecycle events, so just verify all tests passed
+		$this->assertEquals( $ctrfData['results']['summary']['tests'], $ctrfData['results']['summary']['passed'], 
+			"All tests should pass" );
 	}
 
 	// ========== Helper Methods ==========

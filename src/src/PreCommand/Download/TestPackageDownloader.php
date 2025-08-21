@@ -531,6 +531,28 @@ class TestPackageDownloader {
 
 		// If the downloaded manifest is for a different package, check if it's a parent with the requested subpackage
 		if ( $requested_package_id !== $manifest_package_id ) {
+			// We downloaded a parent package for a subpackage request
+			// Cache the parent under its own reference for future subpackage requests
+			$parent_reference = $manifest_package_id . ':' . $version;
+			$parent_cache_key = 'test_package_' . md5( $parent_reference . '_' . $metadata['checksum'] );
+			
+			// Cache the parent manifest
+			$parent_metadata = [
+				'reference'       => $parent_reference,
+				'remote'          => true,
+				'downloaded_path' => $package_dir,
+				'version'         => $version,
+			];
+			
+			$this->cache->set( $parent_cache_key, [
+				'manifest' => $manifest_object->to_array(),
+				'metadata' => $parent_metadata,
+			], DAY_IN_SECONDS );
+			
+			if ( $this->output->isVeryVerbose() ) {
+				$this->output->writeln( "[DEBUG] Cached parent package '$parent_reference' with key: $parent_cache_key" );
+			}
+			
 			// Try to extract the subpackage configuration
 			$subpackage_manifest = $this->extract_subpackage_manifest( $manifest_object, $requested_package_id );
 			if ( $subpackage_manifest ) {

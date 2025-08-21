@@ -148,7 +148,7 @@ class AllureFailureUploadTest extends TestCase {
 
 		// Scaffold a basic E2E test package
 		$proc = qit( [
-			'scaffold:e2e',
+			'package:scaffold',
 			$tempDir,
 			'--package_name=woocommerce/qit-integration-test-failing-package',
 			'--test_type=e2e'
@@ -201,7 +201,8 @@ class AllureFailureUploadTest extends TestCase {
 					]
 				],
 				'results' => [
-					'ctrf-json' => './results/ctrf.json'
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];

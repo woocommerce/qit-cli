@@ -180,19 +180,12 @@ class SubpackageCollisionTest extends TestCase {
 					]
 				],
 				'results' => [
-					'ctrf-json' => './results/ctrf.json'
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			],
-			'subpackages' => []
+			'subpackages' => $subpackages
 		];
-		
-		// Add subpackages
-		foreach ( $subpackages as $name => $config ) {
-			$manifest['subpackages'][] = array_merge( 
-				[ 'package' => $name ],
-				$config
-			);
-		}
 		
 		// Create CTRF result for parent
 		mkdir( $tempDir . '/results', 0755, true );

@@ -230,6 +230,11 @@ class AllureUploadTest extends TestCase {
 	}
 
 	private function extractTestRunId( string $output ): ?string {
+		// Match the current URL format: http://qit.test:8081?qit_results=4762434.xyz...
+		if ( preg_match( '/Remote URL:.*qit_results=(\d+)\./', $output, $matches ) ) {
+			return $matches[1];
+		}
+		// Also try legacy format
 		if ( preg_match( '/Remote URL.*test-runs\/run-([a-f0-9.-]+)/', $output, $matches ) ) {
 			return $matches[1];
 		}
