@@ -33,10 +33,11 @@ class SubpackageCollisionTest extends TestCase {
 	}
 	
 	/**
-	 * Test that subpackages from different parents don't collide.
+	 * Test that the Manager correctly rejects duplicate subpackage identifiers.
 	 * 
-	 * When two different parent packages define subpackages with the same name,
-	 * they must not interfere with each other.
+	 * Package identifiers must be globally unique, even for subpackages.
+	 * When a second parent tries to publish a subpackage with an already-taken ID,
+	 * the Manager should reject it with a clear error message.
 	 */
 	public function test_subpackage_collision_across_different_parents(): void {
 		// Step 1: Create and publish Parent A with subpackages
@@ -83,9 +84,9 @@ class SubpackageCollisionTest extends TestCase {
 		
 		$this->assertStringContainsString( 'Package published successfully', $publishA->getOutput() );
 		
-		// Step 2: Create and publish Parent B with SAME subpackage names but DIFFERENT content
+		// Step 2: Create and attempt to publish Parent B with SAME subpackage ID
 		$parentBDir = $this->createPackageWithSubpackages( 'qit-integration-test-parent-b', [
-			'woocommerce/qit-integration-test-shared-checkout' => [
+			'woocommerce/qit-integration-test-shared-checkout' => [  // SAME ID as Parent A!
 				'description' => 'Checkout tests from Parent B',
 				'test' => [
 					'phases' => [
@@ -116,49 +117,78 @@ class SubpackageCollisionTest extends TestCase {
 			'1.0.0',
 		], return_process: true );
 		
-		$this->assertEquals( 0, $publishB->getExitCode(), 
-			'Parent B publish should succeed: ' . $publishB->getOutput() . "\n" . $publishB->getErrorOutput() );
-		$this->assertStringContainsString( 'Package published successfully', $publishB->getOutput() );
+		// EXPECT FAILURE: The Manager should reject the duplicate subpackage ID
+		$this->assertNotEquals( 0, $publishB->getExitCode(), 
+			'Parent B publish should FAIL due to duplicate subpackage ID' );
 		
-		// Step 3: Run subpackage from Parent A - should get PARENT_A content
-		$configA = $this->createConfig( [
-			'woocommerce/qit-integration-test-parent-a/qit-integration-test-shared-checkout:1.0.0'
+		// Verify the error message clearly indicates the collision
+		$output = $publishB->getOutput() . $publishB->getErrorOutput();
+		$this->assertStringContainsString( 'Subpackage collision', $output,
+			'Error should mention subpackage collision' );
+		$this->assertStringContainsString( 'woocommerce/qit-integration-test-shared-checkout', $output,
+			'Error should identify the conflicting subpackage ID' );
+		$this->assertStringContainsString( 'already exists', $output,
+			'Error should indicate the package ID is already taken' );
+		$this->assertStringContainsString( 'qit-integration-test-parent-a', $output,
+			'Error should identify which parent owns the subpackage' );
+		
+		// Step 3: Verify Parent B CAN publish with different subpackage IDs
+		$parentBFixedDir = $this->createPackageWithSubpackages( 'qit-integration-test-parent-b-fixed', [
+			'woocommerce/qit-integration-test-parent-b-checkout' => [  // UNIQUE ID!
+				'description' => 'Checkout tests from Parent B with unique ID',
+				'test' => [
+					'phases' => [
+						'run' => [
+							'echo "[PARENT_B_FIXED] Running checkout tests from Parent B"'
+						]
+					]
+				]
+			],
+			'woocommerce/qit-integration-test-parent-b-payment' => [  // UNIQUE ID!
+				'description' => 'Payment tests from Parent B',
+				'test' => [
+					'phases' => [
+						'run' => [
+							'echo "[PARENT_B_FIXED] Running payment tests"'
+						]
+					]
+				]
+			]
 		] );
 		
-		$runA = qit( [
-			'run:e2e',
-			'woocommerce',
-			'--config=' . $configA,
+		$publishBFixed = qit( [
+			'package:publish',
+			$parentBFixedDir,
+			'1.0.0',
 		], return_process: true );
 		
-		$this->assertEquals( 0, $runA->getExitCode(), 
-			'Run A should succeed: ' . $runA->getOutput() . "\n" . $runA->getErrorOutput() );
+		// This should succeed with unique subpackage IDs
+		$this->assertEquals( 0, $publishBFixed->getExitCode(), 
+			'Parent B should succeed with unique subpackage IDs: ' . $publishBFixed->getOutput() . "\n" . $publishBFixed->getErrorOutput() );
+		$this->assertStringContainsString( 'Package published successfully', $publishBFixed->getOutput() );
 		
-		// CRITICAL: Must see PARENT_A content, not PARENT_B
-		$this->assertStringContainsString( '[PARENT_A]', $runA->getOutput() );
-		$this->assertStringContainsString( 'PARENT A - ORIGINAL', $runA->getOutput() );
-		$this->assertStringNotContainsString( '[PARENT_B]', $runA->getOutput() );
-		$this->assertStringNotContainsString( 'PARENT B - DIFFERENT', $runA->getOutput() );
-		
-		// Step 4: Run subpackage from Parent B - should get PARENT_B content
-		$configB = $this->createConfig( [
-			'woocommerce/qit-integration-test-parent-b/qit-integration-test-shared-checkout:1.0.0'
-		] );
-		
-		$runB = qit( [
-			'run:e2e',
-			'woocommerce',
-			'--config=' . $configB,
+		// Step 4: Verify packages were published correctly by listing them
+		$listProc = qit( [
+			'package:list',
+			'--namespace=woocommerce',
 		], return_process: true );
 		
-		$this->assertEquals( 0, $runB->getExitCode(), 
-			'Run B should succeed: ' . $runB->getOutput() . "\n" . $runB->getErrorOutput() );
+		$this->assertEquals( 0, $listProc->getExitCode(),
+			'Package list should succeed' );
 		
-		// CRITICAL: Must see PARENT_B content, not PARENT_A
-		$this->assertStringContainsString( '[PARENT_B]', $runB->getOutput() );
-		$this->assertStringContainsString( 'PARENT B - DIFFERENT', $runB->getOutput() );
-		$this->assertStringNotContainsString( '[PARENT_A]', $runB->getOutput() );
-		$this->assertStringNotContainsString( 'PARENT A - ORIGINAL', $runB->getOutput() );
+		$listOutput = $listProc->getOutput();
+		
+		// Verify Parent A and its subpackage are in the registry
+		$this->assertStringContainsString( 'qit-integration-test-parent-a', $listOutput,
+			'Parent A should be in the registry' );
+		$this->assertStringContainsString( 'qit-integration-test-shared-checkout', $listOutput,
+			'Parent A\'s subpackage should be in the registry' );
+		
+		// Verify Parent B (fixed version) and its unique subpackages are in the registry
+		$this->assertStringContainsString( 'qit-integration-test-parent-b-fixed', $listOutput,
+			'Parent B (fixed) should be in the registry' );
+		$this->assertStringContainsString( 'qit-integration-test-parent-b-checkout', $listOutput,
+			'Parent B\'s unique checkout subpackage should be in the registry' );
 	}
 	
 	// ========== Helper Methods ==========
