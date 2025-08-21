@@ -137,8 +137,8 @@ class OutputRedactionTest extends TestCase {
 			'description' => 'Package that outputs secrets',
 			'requires' => [
 				'secrets' => [
-					'TEST_API_KEY' => 'API key',
-					'TEST_SECRET' => 'Secret'
+					'TEST_API_KEY',
+					'TEST_SECRET'
 				]
 			],
 			'test' => [
@@ -146,8 +146,13 @@ class OutputRedactionTest extends TestCase {
 					'run' => [
 						'host: echo "API Key is: $TEST_API_KEY"',
 						'host: echo "Secret is: $TEST_SECRET"',
-						'host: echo "Combined: $TEST_API_KEY:$TEST_SECRET"'
+						'host: echo "Combined: $TEST_API_KEY:$TEST_SECRET"',
+						'host: mkdir -p ./results && echo \'' . json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -166,14 +171,19 @@ class OutputRedactionTest extends TestCase {
 			'description' => 'Package using secret in URL',
 			'requires' => [
 				'secrets' => [
-					'TEST_API_KEY' => 'API key'
+					'TEST_API_KEY'
 				]
 			],
 			'test' => [
 				'phases' => [
 					'run' => [
-						'host: echo "Calling API at https://api.example.com/endpoint?key=$TEST_API_KEY&action=test"'
+						'host: echo "Calling API at https://api.example.com/endpoint?key=$TEST_API_KEY&action=test"',
+						'host: mkdir -p ./results && echo \'' . json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -192,14 +202,18 @@ class OutputRedactionTest extends TestCase {
 			'description' => 'Package that fails with secret in message',
 			'requires' => [
 				'secrets' => [
-					'TEST_SECRET' => 'Secret'
+					'TEST_SECRET'
 				]
 			],
 			'test' => [
 				'phases' => [
 					'run' => [
-						'host: echo "Error: Authentication failed for $TEST_SECRET" && exit 1'
+						'host: mkdir -p ./results && echo \'' . json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'test', 'status' => 'failed', 'duration' => 100]]])) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt && echo "Error: Authentication failed for $TEST_SECRET" && exit 1'
 					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];

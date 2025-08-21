@@ -117,15 +117,19 @@ class SecretValidationTest extends TestCase {
 			'description' => 'Package requiring secrets',
 			'requires' => [
 				'secrets' => [
-					'TEST_API_KEY' => 'API key for testing',
-					'TEST_SECRET' => 'Secret value for testing'
+					'TEST_API_KEY',
+					'TEST_SECRET'
 				]
 			],
 			'test' => [
 				'phases' => [
 					'run' => [
-						'host: echo "Running with secrets" && echo "Done"'
+						'host: echo "Running with secrets" && echo "Done" && mkdir -p ./results && echo \'' . json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -145,8 +149,12 @@ class SecretValidationTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'run' => [
-						'host: echo "Simple test"'
+						'host: echo "Simple test" && mkdir -p ./results && echo \'' . json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf()) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];

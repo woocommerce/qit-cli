@@ -177,6 +177,9 @@ class ExecutionOrderTest extends TestCase {
 		$packageDir = $this->fixturesDir . '/' . $name;
 		mkdir( $packageDir, 0755, true );
 		
+		// Import CTRFHelper at the top of the file if not already there
+		$ctrf = \QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf();
+		
 		$manifest = [
 			'package' => 'test/' . $name,
 			'test_type' => 'e2e',
@@ -184,8 +187,12 @@ class ExecutionOrderTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'run' => [
-						'host: echo "' . $name . ': executing" && echo "' . $order . '" >> ' . $outputFile
+						'host: echo "' . $name . ': executing" && echo "' . $order . '" >> ' . $outputFile . ' && mkdir -p ./results && echo \'' . json_encode($ctrf) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt'
 					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -204,6 +211,8 @@ class ExecutionOrderTest extends TestCase {
 			"#!/bin/bash\necho 'Global setup from $name'\nexit 0\n" );
 		chmod( $packageDir . '/bootstrap/global-setup.sh', 0755 );
 		
+		$ctrf = \QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf();
+		
 		$manifest = [
 			'package' => 'test/' . $name,
 			'test_type' => 'e2e',
@@ -211,7 +220,11 @@ class ExecutionOrderTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'globalSetup' => [ './bootstrap/global-setup.sh' ],
-					'run' => [ 'host: echo "Running ' . $name . '"' ]
+					'run' => [ 'host: echo "Running ' . $name . '" && mkdir -p ./results && echo \'' . json_encode($ctrf) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt' ]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -230,14 +243,20 @@ class ExecutionOrderTest extends TestCase {
 			"#!/bin/bash\necho 'Global teardown from $name'\nexit 0\n" );
 		chmod( $packageDir . '/bootstrap/global-teardown.sh', 0755 );
 		
+		$ctrf = \QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf();
+		
 		$manifest = [
 			'package' => 'test/' . $name,
 			'test_type' => 'e2e',
 			'description' => 'Package with global teardown',
 			'test' => [
 				'phases' => [
-					'run' => [ 'host: echo "Running ' . $name . '"' ],
+					'run' => [ 'host: echo "Running ' . $name . '" && mkdir -p ./results && echo \'' . json_encode($ctrf) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt' ],
 					'globalTeardown' => [ './bootstrap/global-teardown.sh' ]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -250,6 +269,8 @@ class ExecutionOrderTest extends TestCase {
 		$packageDir = $this->fixturesDir . '/' . $name;
 		mkdir( $packageDir, 0755, true );
 		
+		$ctrf = \QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf();
+		
 		$manifest = [
 			'package' => 'test/' . $name,
 			'test_type' => 'e2e',
@@ -257,8 +278,12 @@ class ExecutionOrderTest extends TestCase {
 			'test' => [
 				'phases' => [
 					'setup' => [ 'host: echo "Setup phase executing"' ],
-					'run' => [ 'host: echo "Run phase executing"' ],
+					'run' => [ 'host: echo "Run phase executing" && mkdir -p ./results && echo \'' . json_encode($ctrf) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt' ],
 					'teardown' => [ 'host: echo "Teardown phase executing"' ]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -271,13 +296,19 @@ class ExecutionOrderTest extends TestCase {
 		$packageDir = $this->fixturesDir . '/' . $name;
 		mkdir( $packageDir, 0755, true );
 		
+		$ctrf = \QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf();
+		
 		$manifest = [
 			'package' => 'test/' . $name,
 			'test_type' => 'e2e',
 			'description' => 'Simple package',
 			'test' => [
 				'phases' => [
-					'run' => [ 'host: echo "' . $name . ': executing"' ]
+					'run' => [ 'host: echo "' . $name . ': executing" && mkdir -p ./results && echo \'' . json_encode($ctrf) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt' ]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];
@@ -290,13 +321,19 @@ class ExecutionOrderTest extends TestCase {
 		$packageDir = $this->fixturesDir . '/' . $name;
 		mkdir( $packageDir, 0755, true );
 		
+		$ctrf = \QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf(['tests' => [['name' => 'test', 'status' => 'failed', 'duration' => 100]]]);
+		
 		$manifest = [
 			'package' => 'test/' . $name,
 			'test_type' => 'e2e',
 			'description' => 'Failing package',
 			'test' => [
 				'phases' => [
-					'run' => [ 'host: echo "' . $name . ': executing" && exit 1' ]
+					'run' => [ 'host: echo "' . $name . ': executing" && mkdir -p ./results && echo \'' . json_encode($ctrf) . '\' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt && exit 1' ]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
 				]
 			]
 		];

@@ -63,8 +63,30 @@ class TestPackageManifestParser {
 
 		if ( ! $result->isValid() ) {
 			$errors    = $this->error_formatter->format( $result->error() );
-			$error_msg = $this->format_validation_errors( $errors, $file_path );
-			throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
+			
+			// Check if this is a secrets validation error
+			$is_secrets_error = false;
+			foreach ( $errors as $path => $messages ) {
+				if ( $path === '/requires/secrets' ) {
+					$is_secrets_error = true;
+					break;
+				}
+			}
+			
+			if ( $is_secrets_error ) {
+				// Custom error message for secrets configuration issue
+				throw new \RuntimeException( 
+					"Invalid secrets format in $file_path\n\n" .
+					"Secrets must be an array of environment variable names, not key-value pairs.\n\n" .
+					"Wrong:   \"secrets\": {\"API_KEY\": \"value\"}\n" .
+					"Correct: \"secrets\": [\"API_KEY\"]\n\n" .
+					"The actual values should be provided as environment variables when running the test."
+				);
+			} else {
+				// Standard validation error for other issues
+				$error_msg = $this->format_validation_errors( $errors, $file_path );
+				throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
+			}
 		}
 
 		// Return as array
@@ -137,6 +159,30 @@ class TestPackageManifestParser {
 				} elseif ( is_numeric( $value ) ) {
 					$value = (string) $value;
 				}
+			}
+		}
+
+		// Validate secrets format
+		if ( isset( $config['requires']['secrets'] ) && ! is_array( $config['requires']['secrets'] ) ) {
+			throw new \RuntimeException( 
+				'Invalid secrets format in manifest. Secrets must be an array of environment variable names.' . "\n" .
+				'Example: "secrets": ["API_KEY", "SECRET_TOKEN"]' . "\n" .
+				'SECURITY: Never put actual secret values in the manifest!'
+			);
+		}
+		
+		// Check if secrets is an associative array (security issue - might contain values)
+		if ( isset( $config['requires']['secrets'] ) && is_array( $config['requires']['secrets'] ) ) {
+			$first_key = array_key_first( $config['requires']['secrets'] );
+			if ( $first_key !== null && ! is_int( $first_key ) ) {
+				throw new \RuntimeException( 
+					'SECURITY ERROR: Invalid secrets format in manifest!' . "\n" .
+					'Found key-value pairs but secrets must be a simple array of environment variable names.' . "\n" .
+					'NEVER put secret values in the manifest - they should only be provided via environment variables at runtime.' . "\n" .
+					'Incorrect: "secrets": {"API_KEY": "actual-secret-value"}' . "\n" .
+					'Correct: "secrets": ["API_KEY"]' . "\n" .
+					'Then provide the value at runtime: export API_KEY="actual-secret-value"'
+				);
 			}
 		}
 
