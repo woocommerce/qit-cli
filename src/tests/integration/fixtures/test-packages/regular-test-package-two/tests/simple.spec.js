@@ -1,10 +1,13 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('My WooCommerce Tests', () => {
+test.describe('My E2E Tests', () => {
   test('should load the homepage', async ({ page }) => {
     await page.goto('/');
-    await expect(page).toHaveTitle(/WooCommerce/i);
-    console.log('Homepage loaded successfully');
+    // Check that page has a title (works with any test site name)
+    const title = await page.title();
+    expect(title).toBeTruthy();
+    expect(title.length).toBeGreaterThan(0);
+    console.log('Homepage loaded successfully with title:', title);
   });
 
   test('should have shop page', async ({ page }) => {
