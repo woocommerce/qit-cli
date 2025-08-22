@@ -186,6 +186,7 @@ class PackagePublishCommand extends QITCommand {
 			}
 
 			// Upload package (the server will handle subpackages from the manifest)
+			// Note: force=true allows owners to replace their own packages
 			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, true, $checksum, $output );
 
 			/*

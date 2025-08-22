@@ -1389,7 +1389,7 @@ class RunE2ECommand extends QITCommand {
 					// Always show the actual error for debugging
 					$io->writeln( '' );
 					$io->writeln( '<error>Package failed: ' . $e->getMessage() . '</error>' );
-					
+
 					// Track the failed package using its display name
 					$failed_packages[] = $package_display_names[ $pkg_id ] ?? $pkg_id;
 
