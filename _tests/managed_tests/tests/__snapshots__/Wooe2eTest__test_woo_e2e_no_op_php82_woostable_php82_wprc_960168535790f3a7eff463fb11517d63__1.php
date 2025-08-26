@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 326 passed, 0 failed, 59 skipped.",
+            "test_summary": "385 total, 321 passed, 0 failed, 64 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -50,12 +50,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 77,
-                "numPendingTestSuites": 23,
+                "numPassedTestSuites": 75,
+                "numPendingTestSuites": 25,
                 "numTotalTestSuites": 100,
                 "numFailedTests": 0,
-                "numPassedTests": 326,
-                "numPendingTests": 59,
+                "numPassedTests": 321,
+                "numPendingTests": 64,
                 "numTotalTests": 385,
                 "testResults": [
                     {
@@ -562,7 +562,7 @@
                     {
                         "file": "coupons\\/cart-block-coupons.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Cart Block Applying Coupons": [
                                 {
@@ -571,7 +571,7 @@
                                 },
                                 {
                                     "title": "allows cart block to apply multiple coupons",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "prevents cart block applying same coupon twice",
@@ -1056,24 +1056,24 @@
                     {
                         "file": "customize-store\\/transitional.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Store owner can view the Transitional page": [
                                 {
                                     "title": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"View store\\" should go to the store home page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"Share feedback\\" should open the survey modal",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2687,15 +2687,15 @@
                         }
                     }
                 ],
-                "summary": "385 total, 326 passed, 0 failed, 59 skipped."
+                "summary": "385 total, 321 passed, 0 failed, 64 skipped."
             }
         },
         {
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "997a396e-683b-4cfa-8d5e-71b88f85d9ad",
-                "timestamp": "2025-08-21T07:39:26.518Z",
+                "reportId": "e33a0579-c1f8-49ac-8f60-9fca3b83f010",
+                "timestamp": "2025-08-26T05:38:21.613Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
@@ -2703,10 +2703,10 @@
                     },
                     "summary": {
                         "tests": 385,
-                        "passed": 326,
+                        "passed": 321,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 59,
+                        "skipped": 64,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4780,11 +4780,11 @@
                         },
                         {
                             "name": "allows cart block to apply multiple coupons",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -4798,7 +4798,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/cart-block-coupons.spec.js",
+                                            "line": 169,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -7500,11 +7509,11 @@
                         },
                         {
                             "name": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7518,17 +7527,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7542,17 +7560,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"View store\\" should go to the store home page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7566,17 +7593,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Share feedback\\" should open the survey modal",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7590,7 +7626,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
