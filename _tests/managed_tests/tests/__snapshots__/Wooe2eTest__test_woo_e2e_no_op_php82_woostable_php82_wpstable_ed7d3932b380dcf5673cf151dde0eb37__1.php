@@ -13,7 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -32,7 +32,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 324 passed, 2 failed, 59 skipped.",
+            "test_summary": "385 total, 321 passed, 0 failed, 64 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,13 +49,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 75,
-                "numPendingTestSuites": 23,
+                "numPendingTestSuites": 25,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 2,
-                "numPassedTests": 324,
-                "numPendingTests": 59,
+                "numFailedTests": 0,
+                "numPassedTests": 321,
+                "numPendingTests": 64,
                 "numTotalTests": 385,
                 "testResults": [
                     {
@@ -561,8 +561,8 @@
                     },
                     {
                         "file": "coupons\\/cart-block-coupons.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Cart Block Applying Coupons": [
                                 {
@@ -571,7 +571,7 @@
                                 },
                                 {
                                     "title": "allows cart block to apply multiple coupons",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "prevents cart block applying same coupon twice",
@@ -1055,25 +1055,25 @@
                     },
                     {
                         "file": "customize-store\\/transitional.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Store owner can view the Transitional page": [
                                 {
                                     "title": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"View store\\" should go to the store home page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"Share feedback\\" should open the survey modal",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2687,15 +2687,15 @@
                         }
                     }
                 ],
-                "summary": "385 total, 324 passed, 2 failed, 59 skipped."
+                "summary": "385 total, 321 passed, 0 failed, 64 skipped."
             }
         },
         {
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "14df044f-3115-432d-9ebe-2cf0497a7520",
-                "timestamp": "2025-08-26T03:21:44.702Z",
+                "reportId": "d8afb587-177f-4303-b8ac-27c8fb893f0f",
+                "timestamp": "2025-08-26T05:38:20.976Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
@@ -2703,10 +2703,10 @@
                     },
                     "summary": {
                         "tests": 385,
-                        "passed": 324,
-                        "failed": 2,
+                        "passed": 321,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 59,
+                        "skipped": 64,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4780,14 +4780,11 @@
                         },
                         {
                             "name": "allows cart block to apply multiple coupons",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.wc-block-components-totals-discount > .wc-block-components-totals-item__value\')\\nExpected string: \\u001b[32m\\"-$5.00\\"\\u001b[39m\\nReceived: <element(s) not found>\\nTimeout: 20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-totals-discount > .wc-block-components-totals-item__value\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.wc-block-components-totals-discount > .wc-block-components-totals-item__value\')\\nExpected string: \\u001b[32m\\"-$5.00\\"\\u001b[39m\\nReceived: <element(s) not found>\\nTimeout: 20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-totals-discount > .wc-block-components-totals-item__value\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/cart-block-coupons.spec.js:199:8",
-                            "snippet": "\\u001b[0m \\u001b[90m 197 |\\u001b[39m \\t\\t\\t\\t\\t\\t\\t\\u001b[32m\'.wc-block-components-totals-discount > .wc-block-components-totals-item__value\'\\u001b[39m\\n \\u001b[90m 198 |\\u001b[39m \\t\\t\\t\\t\\t\\t)\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 199 |\\u001b[39m \\t\\t\\t\\t\\t)\\u001b[33m.\\u001b[39mtoHaveText( discounts[ i ] )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 200 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 201 |\\u001b[39m \\t\\t\\t\\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator(\\n \\u001b[90m 202 |\\u001b[39m \\t\\t\\t\\t\\t\\t\\t\\u001b[32m\'.wc-block-components-totals-footer-item > .wc-block-components-totals-item__value\'\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
@@ -4795,37 +4792,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/coupons-cart-block-coupons-3ed94-k-to-apply-multiple-coupons-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/coupons-cart-block-coupons-3ed94-k-to-apply-multiple-coupons-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/coupons-cart-block-coupons-3ed94-k-to-apply-multiple-coupons-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/coupons-cart-block-coupons-3ed94-k-to-apply-multiple-coupons-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/coupons\\/cart-block-coupons.spec.js",
+                                            "line": 169,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -4847,9 +4829,7 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             },
@@ -7529,11 +7509,11 @@
                         },
                         {
                             "name": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7547,17 +7527,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7571,17 +7560,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"View store\\" should go to the store home page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7595,20 +7593,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Share feedback\\" should open the survey modal",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Share feedback\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Share feedback\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js:169:31",
-                            "snippet": "\\u001b[0m \\u001b[90m 167 |\\u001b[39m \\t\\t\\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 168 |\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 169 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m shareFeedbackButton\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t                          \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 170 |\\u001b[39m\\n \\u001b[90m 171 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m expect( shareFeedbackModal )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 172 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m expect( sendButton )\\u001b[33m.\\u001b[39mtoBeDisabled()\\u001b[33m;\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
@@ -7616,34 +7620,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-75dd7-hould-open-the-survey-modal-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-75dd7-hould-open-the-survey-modal-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-75dd7-hould-open-the-survey-modal-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-75dd7-hould-open-the-survey-modal-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
