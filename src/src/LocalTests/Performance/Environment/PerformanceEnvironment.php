@@ -349,13 +349,13 @@ class PerformanceEnvironment extends Environment {
 		$io->writeln( '' );
 	}
 
-	/*
+	/**
 	 * Download and import the performance database dump.
 	 */
 	private function generate_base_data(): void {
 		$this->output->writeln( '<info>Generating test products and orders...</info>' );
 
-		// Download and import in one command to avoid storing large files
+		// Download and import in one command to avoid storing large files.
 		$import_command = implode( ' && ', [
 			'cd /tmp',
 			'echo "Downloading performance database dump..."',
@@ -372,7 +372,7 @@ class PerformanceEnvironment extends Environment {
 				[ '/bin/bash', '-c', $import_command ],
 				[],
 				null,
-				600 // 10 minute timeout for download and import
+				600 // 10 minute timeout for download and import.
 			);
 		} catch ( \Exception $e ) {
 			$this->output->writeln( '<comment>Warning: Could not import performance database. Continuing with fresh installation.</comment>' );
