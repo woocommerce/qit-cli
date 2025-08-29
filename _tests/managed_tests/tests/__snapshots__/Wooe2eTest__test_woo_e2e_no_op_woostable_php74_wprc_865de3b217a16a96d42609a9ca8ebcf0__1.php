@@ -2694,8 +2694,8 @@
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "1fc7d7c3-86dc-4d97-8ae2-d5b44c7dea47",
-                "timestamp": "2025-08-26T05:38:54.108Z",
+                "reportId": "4c6c1936-2f97-40b4-b43b-230434af39ee",
+                "timestamp": "2025-08-29T05:56:25.374Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
@@ -14533,7 +14533,6 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
