@@ -7,6 +7,7 @@ use QIT_CLI\Zipper;
 use QIT_CLI\Cache;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
+use QIT_CLI\Validation\ArtifactValidator;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
@@ -58,19 +59,26 @@ class TestPackageDownloader {
 
 	protected TestPackageManifestParser $manifest_parser;
 
+	protected ArtifactValidator $artifact_validator;
+
 	/** @var array<string,array<string,mixed>> */
 	protected array $package_metadata = [];
+	
+	/** @var array<string,TestPackageManifest> Parent manifests keyed by checksum */
+	protected array $parent_manifests = [];
 
 	public function __construct(
 		Cache $cache,
 		Zipper $zipper,
 		OutputInterface $output,
-		TestPackageManifestParser $manifest_parser
+		TestPackageManifestParser $manifest_parser,
+		ArtifactValidator $artifact_validator = null
 	) {
-		$this->cache           = $cache;
-		$this->zipper          = $zipper;
-		$this->output          = $output;
-		$this->manifest_parser = $manifest_parser;
+		$this->cache              = $cache;
+		$this->zipper             = $zipper;
+		$this->output             = $output;
+		$this->manifest_parser    = $manifest_parser;
+		$this->artifact_validator = $artifact_validator ?: new ArtifactValidator( $output );
 	}
 
 	/**
@@ -185,13 +193,39 @@ class TestPackageDownloader {
 					$this->output->writeln( "[DEBUG] Checking cache for primary package: $first_reference" );
 				}
 				$cached_manifest = $this->validate_and_get_cached_package( $first_reference, $first_metadata, $cache_dir );
+				$primary_manifest = null;
+				
 				if ( $cached_manifest !== null ) {
 					$manifests[ $first_reference ] = $cached_manifest;
 					if ( $this->output->isVerbose() ) {
 						$this->output->writeln( "Using cached package: $first_reference (checksum validated)" );
 					}
 					$artifact_downloaded = true;
-					$primary_manifest    = $cached_manifest;
+					
+					// For subpackage extraction, we need the parent manifest
+					// If the cached manifest is a subpackage, we need to get its parent
+					if ( $cached_manifest->is_subpackage() && count( $group_packages ) > 1 ) {
+						// We have a cached subpackage but need the parent for extraction
+						// The artifact is already downloaded (cached), so we need to load the parent manifest
+						$package_path = $this->package_metadata[ $first_reference ]['downloaded_path'] ?? null;
+						if ( $package_path && file_exists( $package_path . '/qit-test.json' ) ) {
+							// Load the parent manifest directly from disk
+							$parent_data = json_decode( file_get_contents( $package_path . '/qit-test.json' ), true );
+							if ( $parent_data ) {
+								try {
+									$primary_manifest = new TestPackageManifest( $parent_data );
+								} catch ( \Exception $e ) {
+									// Fall back to using the subpackage manifest
+									$primary_manifest = $cached_manifest;
+								}
+							}
+						}
+					}
+					
+					// If we don't have a primary manifest yet, use the cached one
+					if ( $primary_manifest === null ) {
+						$primary_manifest = $cached_manifest;
+					}
 				} else {
 					// Download the artifact using the primary package
 					if ( count( $group_packages ) > 1 ) {
@@ -200,9 +234,28 @@ class TestPackageDownloader {
 						$this->output->writeln( "Downloading package: $first_reference" );
 					}
 
-					$primary_manifest              = $this->download_package( $first_reference, $first_metadata, $cache_dir );
-					$manifests[ $first_reference ] = $primary_manifest;
+					$downloaded_manifest           = $this->download_package( $first_reference, $first_metadata, $cache_dir );
+					$manifests[ $first_reference ] = $downloaded_manifest;
 					$artifact_downloaded           = true;
+					
+					// Check if we have the parent manifest stored (for subpackage extraction)
+					$checksum = $first_metadata['checksum'] ?? null;
+					if ( $checksum && isset( $this->parent_manifests[ $checksum ] ) ) {
+						$primary_manifest = $this->parent_manifests[ $checksum ];
+						if ( $this->output->isVeryVerbose() ) {
+							$this->output->writeln( "[DEBUG] Using stored parent manifest for extraction" );
+						}
+					} else {
+						$primary_manifest = $downloaded_manifest;
+					}
+					
+					if ( $this->output->isVeryVerbose() ) {
+						$this->output->writeln( "[DEBUG] Primary manifest package ID: " . $primary_manifest->get_package_id() );
+						$this->output->writeln( "[DEBUG] Primary manifest has subpackages: " . ( $primary_manifest->has_subpackages() ? 'YES' : 'NO' ) );
+						if ( $primary_manifest->has_subpackages() ) {
+							$this->output->writeln( "[DEBUG] Subpackages: " . implode( ', ', array_keys( $primary_manifest->get_subpackages() ) ) );
+						}
+					}
 				}
 
 				// Process other packages in the group
@@ -282,6 +335,18 @@ class TestPackageDownloader {
 		if ( $cached && is_array( $cached ) && isset( $cached['manifest'] ) ) {
 			// Verify the cached package still exists on disk
 			if ( isset( $cached['metadata']['downloaded_path'] ) && is_dir( $cached['metadata']['downloaded_path'] ) ) {
+				// Validate cached test package artifact integrity
+				try {
+					$this->artifact_validator->validate_test_package( $cached['metadata']['downloaded_path'], $reference );
+				} catch ( \Exception $e ) {
+					// Cached artifact is invalid, remove from cache
+					$this->cache->delete( $cache_key );
+					if ( $this->output->isVerbose() ) {
+						$this->output->writeln( "Cached test package artifact failed validation, cache deleted: " . $e->getMessage() );
+					}
+					return null; // Will trigger re-download
+				}
+
 				if ( $this->output->isVeryVerbose() ) {
 					$this->output->writeln( "[DEBUG] Found cached package data for $reference" );
 					$this->output->writeln( '[DEBUG] Creating TestPackageManifest from cached data' );
@@ -501,6 +566,16 @@ class TestPackageDownloader {
 
 		$this->zipper->extract_zip( $zip_file, $package_dir );
 
+		// Validate test package artifact integrity
+		try {
+			$this->artifact_validator->validate_test_package( $package_dir, $reference );
+		} catch ( \Exception $e ) {
+			// Invalid artifact, clean up
+			$this->recursive_rmdir( $package_dir );
+			unlink( $zip_file );
+			throw new \RuntimeException( "Downloaded test package artifact failed validation: " . $e->getMessage() );
+		}
+
 		// Install dependencies if package.json exists
 		if ( file_exists( $package_dir . '/package.json' ) ) {
 			$this->install_npm_dependencies( $package_dir );
@@ -561,6 +636,8 @@ class TestPackageDownloader {
 			// Try to extract the subpackage configuration
 			$subpackage_manifest = $this->extract_subpackage_manifest( $manifest_object, $requested_package_id );
 			if ( $subpackage_manifest ) {
+				// Store the parent manifest for later use
+				$this->parent_manifests[ $metadata['checksum'] ] = $manifest_object;
 				// Use the subpackage manifest instead
 				$manifest_object = $subpackage_manifest;
 			} else {

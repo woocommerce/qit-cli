@@ -184,10 +184,13 @@ class RunE2ECommand extends QITCommand {
 		$test_mode = 'headless';
 		App::setVar( 'TEST_MODE', $test_mode );
 
-		// Parse environment variables
-		if ( $input->hasOption( 'env' ) && $input->getOption( 'env' ) ) {
-			$this->parse_env_vars( $input->getOption( 'env' ) );
-		}
+		// Parse environment variables from --env and --env_file
+		$cli_env_vars = $input->hasOption( 'env' ) ? (array) $input->getOption( 'env' ) : [];
+		$env_files = $input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : [];
+		
+		// Use EnvParser to handle both --env and --env_file consistently
+		$env_parser = App::make( \QIT_CLI\Environment\EnvParser::class );
+		$parsed_env_vars = $env_parser->parse( $cli_env_vars, $env_files );
 
 		// Add SUT to env:up options if provided
 		$sut_info = $input->getSut();
@@ -394,7 +397,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Run tests with test packages
 		$io = new SymfonyStyle( $input, $output );
-		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io, $runner_args );
+		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io, $runner_args, $parsed_env_vars );
 
 		// Notify test finished
 		if ( isset( $env_info->sut['slug'] ) ) {
@@ -1028,13 +1031,13 @@ class RunE2ECommand extends QITCommand {
 	 *
 	 * @return array{int, \QIT_CLI\Environment\PackageOrchestrator, string} Returns [exit_status, orchestrator, artifacts_dir].
 	 */
-	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io, array $runner_args = [] ): array {
+	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io, array $runner_args = [], array $parsed_env_vars = [] ): array {
 		// Create orchestrator early so it's available in catch/finally blocks
 		$ctrf_validator = App::make( \QIT_CLI\Environment\CTRFValidator::class );
 		$orchestrator   = new \QIT_CLI\Environment\PackageOrchestrator( $io, $ctrf_validator );
 
-		// Create and configure SecretManager
-		$secret_manager = new \QIT_CLI\Environment\SecretManager();
+		// Create EnvironmentManager for centralized env var and secret handling
+		$env_manager = new \QIT_CLI\Environment\EnvironmentManager();
 
 		// Check if we have any packages at all
 		if ( empty( $test_packages ) ) {
@@ -1070,20 +1073,32 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-		// Validate all secrets are present before checking for utility packages
+		// Initialize EnvironmentManager with all env vars and validate secrets
 		if ( ! empty( $all_required_secrets ) ) {
 			$all_required_secrets = array_unique( $all_required_secrets );
-			try {
-				$secret_manager->validate( $all_required_secrets );
+		}
+		
+		try {
+			// Use the parsed env vars passed from execute method
+			$cli_env_vars = $parsed_env_vars;
+			
+			// Initialize the environment manager with CLI vars and required secrets
+			$env_manager->initialize( $cli_env_vars, [], $all_required_secrets );
+			
+			if ( ! empty( $all_required_secrets ) ) {
 				$io->writeln( '<info>✓ All required secrets validated</info>' );
-			} catch ( \RuntimeException $e ) {
-				$io->writeln( '<error>' . $e->getMessage() . '</error>' );
-				return [ Command::FAILURE, $orchestrator, '' ];
 			}
+		} catch ( \RuntimeException $e ) {
+			$io->writeln( '<error>' . $e->getMessage() . '</error>' );
+			return [ Command::FAILURE, $orchestrator, '' ];
 		}
 
-		// Set secret manager on orchestrator for redaction
-		$orchestrator->set_secret_manager( $secret_manager );
+		// Set environment manager on orchestrator for redaction and env distribution
+		$orchestrator->set_environment_manager( $env_manager );
+
+		// Also set environment manager on Docker for proper secret handling
+		$docker = App::make( \QIT_CLI\Environment\Docker::class );
+		$docker->set_environment_manager( $env_manager );
 
 		// Check if we have valid packages
 		if ( ! $has_any_packages ) {

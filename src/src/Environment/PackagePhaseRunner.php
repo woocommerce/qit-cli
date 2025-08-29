@@ -59,15 +59,24 @@ class PackagePhaseRunner {
 	 * Prepare environment variables for test execution.
 	 *
 	 * @param EnvInfo $env_info Environment information.
+	 * @param PackageOrchestrator $orchestrator Orchestrator with secret manager.
 	 * @return array<string, string> Environment variables.
 	 */
-	private function prepare_test_env_vars( EnvInfo $env_info ): array {
+	private function prepare_test_env_vars( EnvInfo $env_info, PackageOrchestrator $orchestrator ): array {
 		$env_vars = [];
 
 		// Use centralized environment variable mapping for E2E environments
 		if ( $env_info instanceof E2EEnvInfo ) {
 			// Get base environment variables from centralized mapping
 			$env_vars = $this->environment_vars->get_mapping( $env_info );
+			
+			// Add environment variables and secrets from EnvironmentManager if available
+			$environment_manager = $orchestrator->get_environment_manager();
+			if ( $environment_manager ) {
+				// Get all env vars (includes both regular env vars and secrets)
+				$managed_env_vars = $environment_manager->get_host_env();
+				$env_vars = array_merge( $env_vars, $managed_env_vars );
+			}
 
 			// Add SUT-specific variables (these are test-specific, not general env vars)
 			if ( ! empty( $env_info->sut ) ) {
@@ -560,7 +569,7 @@ class PackagePhaseRunner {
 			}
 
 			// Prepare environment variables for test execution
-			$env_vars = $this->prepare_test_env_vars( $env_info );
+			$env_vars = $this->prepare_test_env_vars( $env_info, $orchestrator );
 
 			// Show command in orchestrator
 			$context = $venue; // Now venue is already 'host' or 'docker'

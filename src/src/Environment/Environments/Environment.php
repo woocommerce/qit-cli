@@ -109,7 +109,7 @@ abstract class Environment {
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
 		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
-			$message = 'Downloading plugins and themes...';
+			$message = 'Processing plugins and themes...';
 			if ( ! empty( $this->env_info->woo ) ) {
 				$message .= ' (WooCommerce: ' . $this->env_info->woo . ')';
 			}

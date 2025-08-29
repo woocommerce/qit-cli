@@ -504,7 +504,7 @@ test('can add product to cart', async ({ page }) => {
 			$this->assertContains( $exitCode, [0, 1], 'Test should complete. Output: ' . $output );
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
 			// Should download from WordPress.org
-			$this->assertStringContainsString( 'Downloading plugins and themes...', $output );
+			$this->assertStringContainsString( 'Processing plugins and themes...', $output );
 			
 		} finally {
 			if ( is_dir( $tempDir ) ) {
@@ -700,7 +700,7 @@ test('can add product to cart', async ({ page }) => {
 			
 			// Should handle both plugin types
 			$this->assertContains( $exitCode, [0, 1], 'Test should complete. Output: ' . $output );
-			$this->assertStringContainsString( 'Downloading plugins and themes...', $output );
+			$this->assertStringContainsString( 'Processing plugins and themes...', $output );
 			
 		} finally {
 			if ( is_dir( $tempDir ) ) {

@@ -13,10 +13,20 @@ use function QIT_CLI\use_tty;
 class Docker {
 	protected OutputInterface $output;
 	protected Cache $cache;
+	protected ?EnvironmentManager $environment_manager = null;
 
 	public function __construct( OutputInterface $output, Cache $cache ) {
 		$this->output = $output;
 		$this->cache  = $cache;
+	}
+
+	/**
+	 * Set the environment manager for better secret detection.
+	 *
+	 * @param EnvironmentManager $environment_manager
+	 */
+	public function set_environment_manager( EnvironmentManager $environment_manager ): void {
+		$this->environment_manager = $environment_manager;
 	}
 
 	public function find_docker(): string {
@@ -188,13 +198,25 @@ class Docker {
 		] );
 
 		foreach ( $env_vars as $key => $value ) {
-			// For secrets, use --env NAME to avoid exposing values in command line
-			// Docker will automatically pull the value from the host environment
-			if ( $this->is_likely_secret( $key ) && getenv( $key ) !== false ) {
+			// Check if this is a secret using EnvironmentManager if available, otherwise use heuristics
+			$is_secret = $this->environment_manager 
+				? $this->environment_manager->is_secret( $key )
+				: $this->is_likely_secret( $key );
+
+			// For secrets that are available in host environment, use --env NAME pattern
+			// This avoids exposing values in command line
+			if ( $is_secret && getenv( $key ) !== false ) {
+				// Secret is in host environment, use secure pattern
 				$docker_command[] = '--env';
 				$docker_command[] = $key;
+			} elseif ( $is_secret && ! empty( $value ) ) {
+				// Secret is not in host environment but we have the value
+				// Need to use -e KEY=VALUE but the value will be visible in process list
+				// This happens when secrets come from --env CLI option
+				$docker_command[] = '-e';
+				$docker_command[] = "$key=$value";
 			} else {
-				// For non-secrets or computed values, use -e KEY=VALUE
+				// Regular environment variables
 				$docker_command[] = '-e';
 				$docker_command[] = "$key=$value";
 			}
@@ -207,7 +229,29 @@ class Docker {
 			$timeout = getenv( 'QIT_DOCKER_RUN_TIMEOUT' );
 		}
 
-		$process = new Process( $docker_command );
+		// Build environment for Process
+		// If we have EnvironmentManager, use it to get the proper process environment
+		// Otherwise fall back to collecting secrets manually
+		if ( $this->environment_manager ) {
+			// Use EnvironmentManager's process environment which includes secrets
+			$process_env = $this->environment_manager->get_docker_process_env();
+		} else {
+			// Fallback: manually collect secrets from environment
+			$process_env = null;
+			$secrets_for_process = [];
+			foreach ( $env_vars as $key => $value ) {
+				if ( $this->is_likely_secret( $key ) && getenv( $key ) !== false ) {
+					// This secret is using --env NAME pattern, so we need it in the process environment
+					$secrets_for_process[ $key ] = getenv( $key );
+				}
+			}
+			if ( ! empty( $secrets_for_process ) ) {
+				// Merge with current environment
+				$process_env = array_merge( getenv(), $secrets_for_process );
+			}
+		}
+		
+		$process = new Process( $docker_command, null, $process_env );
 		$process->setTty( $this->output->isVerbose() && use_tty() );
 		$process->setTimeout( $timeout );
 		$process->setIdleTimeout( $timeout );

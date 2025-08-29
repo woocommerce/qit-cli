@@ -5,6 +5,12 @@ use Symfony\Component\Process\Process;
 // Define the root directory for integration tests to avoid relative path issues
 define( 'QIT_INTEGRATION_TESTS_ROOT', __DIR__ );
 
+// Generate a unique process identifier that works for both serial and parallel execution
+// For paratest: use TEST_TOKEN (e.g., "1", "2", "3")
+// For serial: use a unique ID
+$process_id = getenv( 'TEST_TOKEN' ) ?: uniqid( 'serial-' );
+define( 'QIT_TEST_PROCESS_ID', $process_id );
+
 // Set up required global variables for integration tests
 $GLOBALS['qit-php']  = __DIR__ . '/../../../src/qit-cli.php';
 $GLOBALS['QIT_HOME'] = sys_get_temp_dir() . '/qit-test-' . uniqid();

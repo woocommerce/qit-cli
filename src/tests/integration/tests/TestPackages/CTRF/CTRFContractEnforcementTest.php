@@ -33,9 +33,16 @@ class CTRFContractEnforcementTest extends TestCase {
 		$this->fixturesDir = sys_get_temp_dir() . '/qit-ctrf-test-' . uniqid();
 		mkdir( $this->fixturesDir, 0755, true );
 		$this->tempDirs[] = $this->fixturesDir;
+		
+		// Clean up any stale artifacts from previous tests to ensure proper isolation
+		// This prevents CTRF data from other tests contaminating our results
+		exec( 'rm -rf /tmp/qit-results-qit* /tmp/qit-e2e-artifacts-qit* 2>/dev/null' );
 	}
 
 	protected function tearDown(): void {
+		// Clean up test artifacts to prevent cross-test contamination
+		exec( 'rm -rf /tmp/qit-results-qit* /tmp/qit-e2e-artifacts-qit* 2>/dev/null' );
+		
 		// Let the OS handle temp directory cleanup
 		parent::tearDown();
 	}
@@ -189,6 +196,7 @@ class CTRFContractEnforcementTest extends TestCase {
 		
 		// The merged CTRF includes lifecycle events as tests, so we check for actual package tests
 		$packageTests = array_filter( $ctrfData['results']['tests'], function( $test ) {
+			// Only filter out tests that explicitly have type=lifecycle
 			return !isset( $test['extra']['type'] ) || $test['extra']['type'] !== 'lifecycle';
 		} );
 		$this->assertCount( 2, $packageTests, "Should have 2 actual package tests" );

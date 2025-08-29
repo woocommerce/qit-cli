@@ -255,9 +255,11 @@ class ParentSubpackageCombinationTest extends TestCase {
 		], return_process: true );
 		$this->assertSame( 0, $publishProc->getExitCode(), $publishProc->getOutput() . "\n" . $publishProc->getErrorOutput() );
 		
-		// Create config for all packages
-		$config = sys_get_temp_dir() . '/qit-config-' . uniqid() . '.json';
-		$this->tempDirs[] = dirname( $config );
+		// Create config for all packages in a proper subdirectory
+		$configDir = sys_get_temp_dir() . '/qit-config-' . uniqid();
+		mkdir( $configDir, 0755, true );
+		$config = $configDir . '/config.json';
+		$this->tempDirs[] = $configDir;
 		file_put_contents( $config, json_encode( [
 			'test_types' => [
 				'e2e' => [

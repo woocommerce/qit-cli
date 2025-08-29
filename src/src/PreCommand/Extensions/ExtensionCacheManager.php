@@ -6,6 +6,7 @@ use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\RequestBuilder;
+use QIT_CLI\Validation\ArtifactValidator;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\debug_log;
@@ -59,6 +60,7 @@ class ExtensionCacheManager {
 
 	protected EntrypointDetector $entrypoint_detector;
 
+	protected ArtifactValidator $artifact_validator;
 
 	/** @var string[] */
 	protected $download_handlers = [
@@ -69,11 +71,12 @@ class ExtensionCacheManager {
 		'build' => 'copy_local_file',
 	];
 
-	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output, EntrypointDetector $entrypoint_detector ) {
+	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output, EntrypointDetector $entrypoint_detector, ArtifactValidator $artifact_validator = null ) {
 		$this->cache               = $cache;
 		$this->zipper              = $zipper;
 		$this->output              = $output;
 		$this->entrypoint_detector = $entrypoint_detector;
+		$this->artifact_validator  = $artifact_validator ?: new ArtifactValidator( $output );
 	}
 
 
@@ -209,7 +212,14 @@ class ExtensionCacheManager {
 			debug_log( '  Source is a directory' );
 			$extension->downloaded_source = $source_path;
 
-					// Detect entrypoint
+			// Validate artifact integrity
+			try {
+				$this->artifact_validator->validate_extension( $extension );
+			} catch ( \Exception $e ) {
+				throw new \RuntimeException( "Local {$extension->type} artifact failed validation: " . $e->getMessage() );
+			}
+
+			// Detect entrypoint
 			$this->entrypoint_detector->detect( $extension );
 
 			return;
@@ -246,7 +256,16 @@ class ExtensionCacheManager {
 				}
 				$extension->downloaded_source = $cache_file;
 
-							// Detect entrypoint
+				// Validate artifact integrity
+				try {
+					$this->artifact_validator->validate_extension( $extension );
+				} catch ( \Exception $e ) {
+					// Cached artifact is invalid, remove it
+					unlink( $cache_file );
+					throw new \RuntimeException( "Cached {$extension->type} artifact failed validation: " . $e->getMessage() );
+				}
+
+				// Detect entrypoint
 				$this->entrypoint_detector->detect( $extension );
 
 				return;
@@ -273,7 +292,16 @@ class ExtensionCacheManager {
 
 		$extension->downloaded_source = $cache_file;
 
-			// Detect entrypoint
+		// Validate artifact integrity
+		try {
+			$this->artifact_validator->validate_extension( $extension );
+		} catch ( \Exception $e ) {
+			// Downloaded artifact is invalid, remove it
+			unlink( $cache_file );
+			throw new \RuntimeException( "Downloaded {$extension->type} artifact failed validation: " . $e->getMessage() );
+		}
+
+		// Detect entrypoint
 		$this->entrypoint_detector->detect( $extension );
 	}
 
@@ -312,7 +340,16 @@ class ExtensionCacheManager {
 
 		$extension->downloaded_source = $cache_file;
 
-			// Detect entrypoint
+		// Validate artifact integrity
+		try {
+			$this->artifact_validator->validate_extension( $extension );
+		} catch ( \Exception $e ) {
+			// Local artifact is invalid, don't cache it
+			unlink( $cache_file );
+			throw new \RuntimeException( "Local {$extension->type} artifact failed validation: " . $e->getMessage() );
+		}
+
+		// Detect entrypoint
 		$this->entrypoint_detector->detect( $extension );
 	}
 

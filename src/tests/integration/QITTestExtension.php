@@ -97,8 +97,15 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				// Since we are the single process that has an exclusive lock, we run the initialization.
 
 				// Cleanup initial state.
-				array_map( 'unlink', glob( sys_get_temp_dir() . '/qit-running-*' ) );
-				array_map( 'unlink', glob( sys_get_temp_dir() . '/qit-test-tag-lock-*' ) );
+				// DEBUG: Log what we're deleting
+				$files_to_delete = array_merge(
+					glob( sys_get_temp_dir() . '/qit-running-*' ) ?: [],
+					glob( sys_get_temp_dir() . '/qit-test-tag-lock-*' ) ?: []
+				);
+				foreach ( $files_to_delete as $file ) {
+					error_log( "[QIT DEBUG] Deleting: " . basename( $file ) );
+					unlink( $file );
+				}
 				if ( file_exists( sys_get_temp_dir() . '/qit-semaphore' ) ) {
 					unlink( sys_get_temp_dir() . '/qit-semaphore' );
 				}

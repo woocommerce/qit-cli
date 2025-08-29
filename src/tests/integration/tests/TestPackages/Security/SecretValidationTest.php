@@ -80,6 +80,9 @@ class SecretValidationTest extends TestCase {
 			'run:e2e',
 			'woocommerce',
 			'--config=' . $config,
+		], extra_env: [
+			'TEST_API_KEY' => 'test-key-123',
+			'TEST_SECRET' => 'test-secret-456',
 		], return_process: true );
 
 		// Should succeed when secrets are provided

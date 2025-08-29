@@ -3,7 +3,7 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\Environment\CTRFValidator;
-use QIT_CLI\Environment\SecretManager;
+use QIT_CLI\Environment\EnvironmentManager;
 use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -17,7 +17,7 @@ class PackageOrchestrator {
 	private ?ConsoleSectionOutput $package_section = null;
 	private ?ConsoleSectionOutput $status_section  = null;
 	private int $terminal_width;
-	private ?SecretManager $secret_manager = null;
+	private ?EnvironmentManager $environment_manager = null;
 	private bool $suppress_output          = false;
 	private CTRFValidator $ctrf_validator;
 	/** @var array<string> */
@@ -116,12 +116,21 @@ class PackageOrchestrator {
 	}
 
 	/**
-	 * Set the secret manager for redacting sensitive information.
+	 * Set the environment manager for redaction and env distribution.
 	 *
-	 * @param SecretManager $secret_manager
+	 * @param EnvironmentManager $environment_manager
 	 */
-	public function set_secret_manager( SecretManager $secret_manager ): void {
-		$this->secret_manager = $secret_manager;
+	public function set_environment_manager( EnvironmentManager $environment_manager ): void {
+		$this->environment_manager = $environment_manager;
+	}
+
+	/**
+	 * Get the environment manager.
+	 *
+	 * @return EnvironmentManager|null
+	 */
+	public function get_environment_manager(): ?EnvironmentManager {
+		return $this->environment_manager;
 	}
 
 	/**
@@ -210,7 +219,13 @@ class PackageOrchestrator {
 			$out->writeln( '│' );
 		}
 
-		$out->writeln( '│ [' . $context . '] ' . $command );
+		// Redact secrets from the command display if environment manager is available
+		$display_command = $command;
+		if ( $this->environment_manager ) {
+			$display_command = $this->environment_manager->redact( $command );
+		}
+
+		$out->writeln( '│ [' . $context . '] ' . $display_command );
 		$this->state['has_output'] = false;
 	}
 
@@ -241,9 +256,9 @@ class PackageOrchestrator {
 			return true;
 		}
 
-		// Redact secrets if secret manager is available
-		if ( $this->secret_manager ) {
-			$line = $this->secret_manager->redact( $line );
+		// Redact secrets if environment manager is available
+		if ( $this->environment_manager ) {
+			$line = $this->environment_manager->redact( $line );
 		}
 
 		// Track output for lifecycle CTRF
