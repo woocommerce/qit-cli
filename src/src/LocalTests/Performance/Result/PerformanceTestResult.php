@@ -73,8 +73,8 @@ class PerformanceTestResult {
 		// Process k6 JSON results.
 		$this->process_k6_results();
 
-		// Generate reports.
-		$this->generate_reports();
+		// Generate report.
+		$this->generate_summary_report();
 
 		$this->results_processed = true;
 	}
@@ -184,14 +184,6 @@ class PerformanceTestResult {
 	}
 
 	/**
-	 * Generate both JSON summary and HTML reports.
-	 */
-	private function generate_reports(): void {
-		$this->generate_summary_report();
-		$this->generate_html_report();
-	}
-
-	/**
 	 * Generate JSON summary report.
 	 */
 	private function generate_summary_report(): void {
@@ -214,162 +206,6 @@ class PerformanceTestResult {
 	}
 
 	/**
-	 * Generate HTML report.
-	 */
-	private function generate_html_report(): void {
-		$html = $this->build_html_report();
-		file_put_contents( $this->results_dir . '/report.html', $html );
-	}
-
-	private function build_html_report(): string {
-		$duration       = $this->end_time - $this->start_time;
-		$avg_duration   = $this->metrics['summary_http_req_duration_avg'] ?? 0;
-		$p95_duration   = $this->metrics['summary_http_req_duration_p95'] ?? 0;
-		$failed_rate    = $this->metrics['summary_http_req_failed_rate'] ?? 0;
-		$total_requests = $this->metrics['summary_http_req_total'] ?? 0;
-
-		return sprintf(
-			'<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Performance Test Report - %s</title>
-    %s
-</head>
-<body>
-    <div class="container">
-        <h1>Performance Test Report</h1>
-        %s
-        %s
-        %s
-        %s
-    </div>
-</body>
-</html>',
-			htmlspecialchars( $this->env_info->sut_slug ),
-			$this->get_html_styles(),
-			$this->get_test_info_html( $duration ),
-			$this->get_metrics_html( $avg_duration, $p95_duration, $failed_rate, $total_requests ),
-			$this->get_status_html(),
-			$this->get_files_html()
-		);
-	}
-
-	private function get_html_styles(): string {
-		return '<style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
-        .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        h1 { color: #333; border-bottom: 2px solid #007cba; padding-bottom: 10px; }
-        h2 { color: #555; margin-top: 30px; }
-        .metric-card { background: #f8f9fa; padding: 15px; margin: 10px 0; border-radius: 4px; border-left: 4px solid #007cba; }
-        .metric-value { font-size: 24px; font-weight: bold; color: #007cba; }
-        .metric-label { color: #666; font-size: 14px; }
-        .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin: 20px 0; }
-        .test-info { background: #e8f4f8; padding: 15px; border-radius: 4px; margin: 20px 0; }
-        .status-pass { color: #28a745; }
-        .status-fail { color: #dc3545; }
-        .status-warn { color: #ffc107; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
-        th { background-color: #f8f9fa; font-weight: bold; }
-        .file-list { list-style: none; padding: 0; }
-        .file-list li { padding: 8px; margin: 4px 0; background: #f8f9fa; border-radius: 4px; }
-    </style>';
-	}
-
-	private function get_test_info_html( int $duration ): string {
-		return sprintf(
-			'<div class="test-info">
-            <h2>Test Information</h2>
-            <table>
-                <tr><td><strong>Extension:</strong></td><td>%s</td></tr>
-                <tr><td><strong>Test Run ID:</strong></td><td>%s</td></tr>
-                <tr><td><strong>Start Time:</strong></td><td>%s</td></tr>
-                <tr><td><strong>Duration:</strong></td><td>%d seconds</td></tr>
-                <tr><td><strong>Site URL:</strong></td><td>%s</td></tr>
-                <tr><td><strong>Status:</strong></td><td>%s</td></tr>
-            </table>
-        </div>',
-			htmlspecialchars( $this->env_info->sut_slug ),
-			htmlspecialchars( $this->test_run_id ),
-			gmdate( 'Y-m-d H:i:s', $this->start_time ),
-			$duration,
-			htmlspecialchars( $this->env_info->site_url ),
-			strtoupper( $this->status )
-		);
-	}
-
-	private function get_metrics_html( float $avg_duration, float $p95_duration, float $failed_rate, int $total_requests ): string {
-		return sprintf(
-			'<h2>Performance Metrics</h2>
-        <div class="metrics-grid">
-            <div class="metric-card">
-                <div class="metric-value">%.2f ms</div>
-                <div class="metric-label">Average Response Time</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value">%.2f ms</div>
-                <div class="metric-label">95th Percentile Response Time</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value">%.2f%%</div>
-                <div class="metric-label">Failed Request Rate</div>
-            </div>
-            <div class="metric-card">
-                <div class="metric-value">%d</div>
-                <div class="metric-label">Total Requests</div>
-            </div>
-        </div>',
-			$avg_duration,
-			$p95_duration,
-			$failed_rate * 100,
-			$total_requests
-		);
-	}
-
-	private function get_status_html(): string {
-		switch ( $this->status ) {
-			case 'success':
-				$status_class = 'status-pass';
-				$status_text  = '✓ PASSED';
-				break;
-			case 'warning':
-				$status_class = 'status-warn';
-				$status_text  = '⚠ WARNING';
-				break;
-			case 'failed':
-				$status_class = 'status-fail';
-				$status_text  = '✗ FAILED';
-				break;
-			default:
-				$status_class = 'status-fail';
-				$status_text  = strtoupper( $this->status );
-				break;
-		}
-
-		return sprintf(
-			'<h2>Test Results</h2>
-        <div class="metric-card">
-            <div class="metric-value %s">%s</div>
-            <div class="metric-label">Overall Test Status</div>
-        </div>',
-			$status_class,
-			$status_text
-		);
-	}
-
-	private function get_files_html(): string {
-		$files_html = '<h2>Result Files</h2><ul class="file-list">';
-
-		foreach ( array_keys( $this->result_files ) as $filename ) {
-			$files_html .= '<li>' . htmlspecialchars( $filename ) . '</li>';
-		}
-
-		return $files_html . '</ul>';
-	}
-
-	/**
 	 * @return array<string, mixed>
 	 */
 	public function get_metrics(): array {
@@ -388,8 +224,8 @@ class PerformanceTestResult {
 	}
 
 	public function get_report_url(): string {
-		$report_file = $this->results_dir . '/report.html';
-		return file_exists( $report_file ) ? $report_file : '';
+		$k6_dashboard_report = $this->results_dir . '/k6-dashboard-report.html';
+		return file_exists( $k6_dashboard_report ) ? $k6_dashboard_report : '';
 	}
 
 	/**
@@ -433,7 +269,7 @@ class PerformanceTestResult {
 				$issues[] = sprintf( 'Slow response time: %.0fms (p95)', $p95_duration );
 			}
 
-			$details['summary'] = ! empty( $issues ) ? implode( ', ', $issues ) : 'Performance test failed (check K6 output for details)';
+			$details['summary'] = ! empty( $issues ) ? implode( ', ', $issues ) : 'Performance test failed (check k6 output for details)';
 		} else {
 			$details['summary'] = 'Test completed successfully';
 		}
