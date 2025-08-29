@@ -119,6 +119,8 @@ class K6DockerConfig {
 			'run',
 			'--out',
 			'json=/results/k6-results.json',
+			'--summary-export',
+			'/results/k6-summary.json',
 		];
 	}
 }

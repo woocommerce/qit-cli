@@ -73,9 +73,6 @@ class PerformanceTestResult {
 		// Process k6 JSON results.
 		$this->process_k6_results();
 
-		// Generate report.
-		$this->generate_summary_report();
-
 		$this->results_processed = true;
 	}
 
@@ -181,28 +178,6 @@ class PerformanceTestResult {
 			$upper = $values[ (int) ceil( $index ) ];
 			return $lower + ( $upper - $lower ) * ( $index - floor( $index ) );
 		}
-	}
-
-	/**
-	 * Generate JSON summary report.
-	 */
-	private function generate_summary_report(): void {
-		$duration = $this->end_time - $this->start_time;
-
-		$summary = [
-			'test_run_id'      => $this->test_run_id,
-			'sut_slug'         => $this->env_info->sut_slug,
-			'sut_type'         => $this->env_info->sut_type,
-			'start_time'       => gmdate( 'c', $this->start_time ),
-			'end_time'         => gmdate( 'c', $this->end_time ),
-			'duration_seconds' => $duration,
-			'site_url'         => $this->env_info->site_url,
-			'status'           => $this->status,
-			'metrics'          => $this->metrics,
-			'result_files'     => array_keys( $this->result_files ),
-		];
-
-		file_put_contents( $this->results_dir . '/summary.json', json_encode( $summary, JSON_PRETTY_PRINT ) );
 	}
 
 	/**
