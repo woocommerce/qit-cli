@@ -124,7 +124,7 @@ class ArtifactValidator {
 			$slug_prefix_len = strlen( $slug_prefix );
 			$found_with_slug = false;
 
-			for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+			for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- External ZipArchive API uses camelCase
 				$filename = $zip->getNameIndex( $i );
 
 				// Skip if not in plugin root directory
@@ -165,7 +165,7 @@ class ArtifactValidator {
 			if ( ! $found_with_slug ) {
 				// Detect the actual top-level directory in the ZIP
 				$top_dirs = [];
-				for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+				for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- External ZipArchive API uses camelCase
 					$filename = $zip->getNameIndex( $i );
 					$parts    = explode( '/', $filename );
 					if ( count( $parts ) > 1 && ! empty( $parts[0] ) ) {
@@ -178,7 +178,7 @@ class ArtifactValidator {
 					$dir_prefix     = $dir . '/';
 					$dir_prefix_len = strlen( $dir_prefix );
 
-					for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+					for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- External ZipArchive API uses camelCase
 						$filename = $zip->getNameIndex( $i );
 
 						// Skip if not in this directory
@@ -268,7 +268,7 @@ class ArtifactValidator {
 					}
 				} else {
 					// If not found with expected slug, look for any style.css in top-level directories
-					for ( $i = 0; $i < $zip->numFiles; $i++ ) {
+					for ( $i = 0; $i < $zip->numFiles; $i++ ) { // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase -- External ZipArchive API uses camelCase
 						$filename = $zip->getNameIndex( $i );
 						if ( preg_match( '#^[^/]+/style\.css$#', $filename ) ) {
 							$has_style_css = true;

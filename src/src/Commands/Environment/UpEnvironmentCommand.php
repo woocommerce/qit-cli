@@ -463,7 +463,8 @@ class UpEnvironmentCommand extends QITCommand {
 		$merge_simple_list( 'global_setup', 'global_setup' );
 
 		/*
-		─ Runtime env vars - process files immediately ─ */
+		─ Runtime env vars - process files immediately ─
+		*/
 		// Set default environment variables for QIT environments
 		// Note: QIT_ENV_ID is added later when env_info is created
 		$default_env_vars = [

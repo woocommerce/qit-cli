@@ -347,8 +347,8 @@ final class TestPackageManifest {
 	 * - some_namespace/some.package -> some_namespace-some.package
 	 * - woocommerce/package:1.0.0 -> woocommerce-package-1.0.0
 	 *
-	 * @param string|null $version Optional version to append (e.g., "1.0.0" becomes "-1.0.0")
-	 * @return string Filesystem-safe directory name
+	 * @param string|null $version Optional version to append (e.g., "1.0.0" becomes "-1.0.0").
+	 * @return string Filesystem-safe directory name.
 	 */
 	public function get_container_directory_name( ?string $version = null ): string {
 		// Convert to lowercase but preserve valid characters
@@ -370,8 +370,8 @@ final class TestPackageManifest {
 	/**
 	 * Get the full container path for this package.
 	 *
-	 * @param string|null $version Optional version to include
-	 * @return string Full container path (e.g., /qit/packages/woocommerce-my-package-1-0-0)
+	 * @param string|null $version Optional version to include.
+	 * @return string Full container path (e.g., /qit/packages/woocommerce-my-package-1-0-0).
 	 */
 	public function get_container_path( ?string $version = null ): string {
 		return '/qit/packages/' . $this->get_container_directory_name( $version );
@@ -382,9 +382,9 @@ final class TestPackageManifest {
 	 *
 	 * Static helper for when you don't have a manifest object.
 	 *
-	 * @param string $package_id Package ID in format "namespace/package[:version]"
-	 * @return string Filesystem-safe directory name
-	 * @throws InvalidArgumentException If package ID format is invalid
+	 * @param string $package_id Package ID in format "namespace/package[:version]".
+	 * @return string Filesystem-safe directory name.
+	 * @throws InvalidArgumentException If package ID format is invalid.
 	 */
 	public static function create_container_directory_name( string $package_id ): string {
 		// Parse the package ID - must match schema validation pattern
@@ -415,8 +415,8 @@ final class TestPackageManifest {
 	/**
 	 * Create a container path from a package ID string.
 	 *
-	 * @param string $package_id Package ID in format "namespace/package[:version]"
-	 * @return string Full container path
+	 * @param string $package_id Package ID in format "namespace/package[:version]".
+	 * @return string Full container path.
 	 */
 	public static function create_container_path( string $package_id ): string {
 		return '/qit/packages/' . self::create_container_directory_name( $package_id );

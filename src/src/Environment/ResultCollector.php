@@ -217,7 +217,8 @@ class ResultCollector {
 		}
 
 		/*
-		2 — container fallback --------------------------------------------- */
+		2 — Container fallback ---------------------------------------------
+		*/
 		// Use manifest's package ID for container paths, not the slug
 		$package_id     = $mf->get_package_id();
 		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
@@ -277,7 +278,8 @@ class ResultCollector {
 		}
 
 		/*
-		container fallback */
+		Container fallback
+		*/
 		// Use manifest's package ID for container paths, not the slug
 		$package_id     = $mf->get_package_id();
 		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
@@ -333,7 +335,8 @@ class ResultCollector {
 		}
 
 		/*
-		container fallback */
+		Container fallback
+		*/
 		// Use manifest's package ID for container paths, not the slug
 		$package_id     = $mf->get_package_id();
 		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );

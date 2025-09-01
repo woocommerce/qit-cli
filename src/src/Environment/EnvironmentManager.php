@@ -45,10 +45,10 @@ class EnvironmentManager {
 	/**
 	 * Initialize the manager with environment variables from various sources.
 	 *
-	 * @param array<string,string> $cli_env_vars Variables from --env options
-	 * @param array<string,string> $file_env_vars Variables from --env_file options
-	 * @param array<string>        $required_secrets Names of required secrets
-	 * @throws RuntimeException If initialization fails or called twice
+	 * @param array<string,string> $cli_env_vars Variables from --env options.
+	 * @param array<string,string> $file_env_vars Variables from --env_file options.
+	 * @param array<string>        $required_secrets Names of required secrets.
+	 * @throws RuntimeException If initialization fails or called twice.
 	 */
 	public function initialize( array $cli_env_vars = [], array $file_env_vars = [], array $required_secrets = [] ): void {
 		if ( $this->initialized ) {
@@ -72,8 +72,8 @@ class EnvironmentManager {
 	/**
 	 * Validate that required secrets are present and register them for tracking.
 	 *
-	 * @param array<string> $required_secrets Names of required secrets
-	 * @throws RuntimeException If any required secret is missing
+	 * @param array<string> $required_secrets Names of required secrets.
+	 * @throws RuntimeException If any required secret is missing.
 	 */
 	private function validate_and_register_secrets( array $required_secrets ): void {
 		$missing = [];
@@ -114,7 +114,7 @@ class EnvironmentManager {
 	/**
 	 * Get environment variables for host command execution.
 	 *
-	 * @return array<string,string> Environment variables to pass to Process
+	 * @return array<string,string> Environment variables to pass to Process.
 	 */
 	public function get_host_env(): array {
 		$this->ensure_initialized();
@@ -168,8 +168,8 @@ class EnvironmentManager {
 	/**
 	 * Redact secret values from text.
 	 *
-	 * @param string $text Text that may contain secrets
-	 * @return string Text with secrets replaced by [REDACTED] markers
+	 * @param string $text Text that may contain secrets.
+	 * @return string Text with secrets replaced by [REDACTED] markers.
 	 */
 	public function redact( string $text ): string {
 		foreach ( $this->secret_values as $name => $value ) {
@@ -189,8 +189,8 @@ class EnvironmentManager {
 	/**
 	 * Check if a variable name is a registered secret.
 	 *
-	 * @param string $name Variable name to check
-	 * @return bool True if this is a secret
+	 * @param string $name Variable name to check.
+	 * @return bool True if this is a secret.
 	 */
 	public function is_secret( string $name ): bool {
 		$this->ensure_initialized();
@@ -219,7 +219,7 @@ class EnvironmentManager {
 	/**
 	 * Ensure the manager has been initialized.
 	 *
-	 * @throws RuntimeException If not initialized
+	 * @throws RuntimeException If not initialized.
 	 */
 	private function ensure_initialized(): void {
 		if ( ! $this->initialized ) {
@@ -230,8 +230,8 @@ class EnvironmentManager {
 	/**
 	 * Throw a helpful error for missing secrets.
 	 *
-	 * @param array<string> $missing Names of missing secrets
-	 * @throws RuntimeException Always
+	 * @param array<string> $missing Names of missing secrets.
+	 * @throws RuntimeException Always.
 	 */
 	private function throw_missing_secrets_error( array $missing ): void {
 		$message = "Missing required secrets:\n";
