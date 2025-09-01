@@ -1579,32 +1579,69 @@
             },
             "extensions": [
                 {
-                    "id": 123,
-                    "slug": "foo-extension"
+                    "id": 10001,
+                    "slug": "wccom-plugin-1",
+                    "type": "plugin"
                 },
                 {
-                    "id": 456,
-                    "slug": "bar-extension"
+                    "id": 10002,
+                    "slug": "wccom-plugin-2",
+                    "type": "plugin"
                 },
                 {
-                    "id": 789,
-                    "slug": "baz-extension"
+                    "id": 1000245,
+                    "slug": "wccom-plugin-4",
+                    "type": "plugin"
                 },
                 {
-                    "id": 1234,
-                    "slug": "qit-beaver"
+                    "id": 1000255,
+                    "slug": "wccom-plugin-5",
+                    "type": "plugin"
                 },
                 {
-                    "id": 12345,
-                    "slug": "qit-cat"
-                },
-                {
-                    "id": 12346,
-                    "slug": "qit-dog"
+                    "id": 123456,
+                    "slug": "woocommerce",
+                    "type": "plugin"
                 },
                 {
                     "id": 2165910,
-                    "slug": "woocommerce-shipping"
+                    "slug": "woocommerce-shipping",
+                    "type": "plugin"
+                },
+                {
+                    "id": 123457,
+                    "slug": "plugin-a",
+                    "type": "plugin"
+                },
+                {
+                    "id": 123458,
+                    "slug": "plugin-b",
+                    "type": "plugin"
+                },
+                {
+                    "id": 1234,
+                    "slug": "qit-beaver",
+                    "type": "plugin"
+                },
+                {
+                    "id": 12345,
+                    "slug": "qit-cat",
+                    "type": "plugin"
+                },
+                {
+                    "id": 12346,
+                    "slug": "qit-dog",
+                    "type": "plugin"
+                },
+                {
+                    "id": 10003,
+                    "slug": "wccom-theme-1",
+                    "type": "theme"
+                },
+                {
+                    "id": 10004,
+                    "slug": "wccom-theme-2",
+                    "type": "theme"
                 }
             ],
             "environments": {
@@ -1612,6 +1649,11 @@
                     "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
                     "checksum": "c1a78950ca0eb8a23f8706955681bf02",
                     "zip_checksum": 19091
+                },
+                "performance": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/1b9299b1fdaf0ade0b4e5ac59e6fd145.zip",
+                    "checksum": "1b9299b1fdaf0ade0b4e5ac59e6fd145",
+                    "zip_checksum": 15545
                 }
             },
             "versions": {
@@ -1628,24 +1670,11 @@
             "hide_e2e": false,
             "playwright_version": "X.X.X",
             "extension_sets": {
-                "compatibility": [
-                    "woocommerce-gift-cards",
-                    "woocommerce-product-addons",
-                    "woocommerce-min-max-quantities",
-                    "woocommerce-product-bundles",
-                    "woocommerce-product-recommendations",
-                    "woocommerce-payments",
-                    "automatewoo",
-                    "woocommerce-shipping",
-                    "woocommerce-subscriptions",
-                    "woocommerce-composite-products",
-                    "woocommerce-services",
-                    "woocommerce-bookings",
-                    "woocommerce-shipment-tracking",
-                    "woocommerce-google-analytics-integration",
-                    "mailpoet",
-                    "jetpack"
-                ]
+                "test-set": [
+                    "wccom-plugin-4",
+                    "wccom-plugin-5"
+                ],
+                "empty-set": []
             }
         }
     }

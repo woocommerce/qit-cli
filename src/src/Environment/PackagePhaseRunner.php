@@ -129,7 +129,7 @@ class PackagePhaseRunner {
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_on_host( string $cmd, string $package_path, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator, ?int $cmd_timeout = null ): array {
+	private function run_on_host( string $cmd, string $package_path, PackageOrchestrator $orchestrator, array $env_vars = [], string $phase = 'run', ?int $cmd_timeout = null ): array {
 		$start_time = microtime( true );
 		$timeout    = $cmd_timeout !== null ? $cmd_timeout : $this->get_timeout_for_phase( $phase );
 		$process    = new Process( [ 'bash', '-c', $cmd ], $package_path, $env_vars, null, $timeout );
@@ -253,7 +253,7 @@ class PackagePhaseRunner {
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
-	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, array $env_vars = [], string $phase = 'run', PackageOrchestrator $orchestrator, ?int $cmd_timeout = null ): array {
+	private function run_in_docker( string $cmd, EnvInfo $env_info, string $package_id, string $workdir, PackageOrchestrator $orchestrator, array $env_vars = [], string $phase = 'run', ?int $cmd_timeout = null ): array {
 		$wrapped    = [ '/bin/bash', '-c', "cd {$workdir} && {$cmd}" ];
 		$start_time = microtime( true );
 		$stdout     = '';
@@ -577,9 +577,9 @@ class PackagePhaseRunner {
 
 			try {
 				if ( $venue === 'host' ) {
-					$execution_data = $this->run_on_host( $cmd, $package_path, $env_vars, $phase, $orchestrator, $cmd_timeout );
+					$execution_data = $this->run_on_host( $cmd, $package_path, $orchestrator, $env_vars, $phase, $cmd_timeout );
 				} else {
-					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $env_vars, $phase, $orchestrator, $cmd_timeout );
+					$execution_data = $this->run_in_docker( $cmd, $env_info, $package_id, $workdir, $orchestrator, $env_vars, $phase, $cmd_timeout );
 				}
 
 				// Record lifecycle command for orchestrator CTRF (for non-run phases)
