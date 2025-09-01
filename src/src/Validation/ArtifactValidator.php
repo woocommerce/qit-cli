@@ -85,6 +85,9 @@ class ArtifactValidator {
 
 	/**
 	 * Check plugin directory for valid header.
+	 *
+	 * @param string            $directory      Plugin directory path.
+	 * @param array<int,string> &$checked_files List of checked filenames (output parameter).
 	 */
 	protected function check_plugin_directory( string $directory, array &$checked_files ): bool {
 		$iterator = new \DirectoryIterator( $directory );
@@ -110,6 +113,10 @@ class ArtifactValidator {
 
 	/**
 	 * Check plugin ZIP for valid header.
+	 *
+	 * @param string            $zip_path       Path to plugin ZIP.
+	 * @param string            $slug           Expected plugin slug (directory name inside ZIP).
+	 * @param array<int,string> &$checked_files List of checked filenames (output parameter).
 	 */
 	protected function check_plugin_zip( string $zip_path, string $slug, array &$checked_files ): bool {
 		$zip = new \ZipArchive();

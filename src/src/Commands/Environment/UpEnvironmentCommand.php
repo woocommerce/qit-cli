@@ -157,14 +157,15 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
-		/* ─ 4. Materialise E2EEnvInfo DTO ─ */
-		/** @var E2EEnvInfo $env_info */
+		/*
+		─ 4. Materialise E2EEnvInfo DTO ─
+		*/
 		// Set network restriction default if not specified
 		if ( ! isset( $env_config['network_restriction'] ) ) {
 			$env_config['network_restriction'] = true;
 		}
 
-		$env_info = E2EEnvInfo::from_array( [
+		/** @var E2EEnvInfo $env_info */ $env_info = E2EEnvInfo::from_array( [
 			'env_id'                => 'qitenv' . bin2hex( random_bytes( 8 ) ),
 			'environment'           => 'e2e',
 			'php'                   => $env_config['php'] ?? '8.2',

@@ -81,7 +81,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public array $envs = [];
 
-	/** @var array<string,array{path:string}>  (package‑id => ['path' => dir]) */
+	/** @var array<string,array{path:string,container_path?:string}>  (package‑id => ['path' => dir, 'container_path' => optional container path]) */
 	public array $global_setup_packages = [];
 
 	/** @var array<string,array{path:string,container_path?:string,manifest?:\QIT_CLI\PreCommand\Objects\TestPackageManifest}>  (package‑id => ['path' => dir, 'container_path' => optional container path, 'manifest' => optional manifest object]) */
@@ -141,6 +141,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	 * @param array<string,mixed> $env_info_array The array to deserialize.
 	 *
 	 * @return EnvInfo The deserialized EnvInfo object.
+	 * @phpstan-return \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo|\QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo
 	 */
 	public static function from_array( array $env_info_array ): EnvInfo {
 		$environment_type = $env_info_array['environment'] ?? 'e2e';

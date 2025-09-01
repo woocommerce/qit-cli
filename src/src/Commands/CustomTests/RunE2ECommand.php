@@ -258,10 +258,11 @@ class RunE2ECommand extends QITCommand {
 					// Local packages - never deduplicate, but need unique names
 					// For local packages, we need a counter to handle duplicates
 					$container_name = $this->get_unique_container_name_for_local( $pkg_id, $local_package_counter );
+					$container_path = '/qit/packages/' . $container_name;
 
 					$test_packages_metadata[ $pkg_id ] = [
 						'path'           => $meta['path'],
-						'container_path' => '/qit/packages/' . $container_name,
+						'container_path' => $container_path,
 					];
 				} else {
 					// Remote packages - deduplicate by package ID
@@ -286,7 +287,7 @@ class RunE2ECommand extends QITCommand {
 				}
 
 				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Package mapping: {$pkg_id} -> /qit/packages/{$container_name}" );
+					$output->writeln( "Package mapping: {$pkg_id} -> {$container_path}" );
 				}
 			}
 		}
@@ -800,18 +801,6 @@ class RunE2ECommand extends QITCommand {
 		return $base_name;
 	}
 
-	/**
-	 * Generate a container name for a remote package.
-	 *
-	 * @param string $package_id The remote package reference.
-	 *
-	 * @return string The container-safe directory name.
-	 * @throws \InvalidArgumentException If package reference is invalid.
-	 */
-	private function container_name_for_remote_package( string $package_id ): string {
-		// Use the centralized static method from TestPackageManifest
-		return \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
-	}
 
 	/**
 	 * Validate version consistency for subpackages from the same parent.
@@ -1028,6 +1017,7 @@ class RunE2ECommand extends QITCommand {
 	 * @param array<string,mixed>                              $test_packages The test packages to run.
 	 * @param SymfonyStyle                                     $io The IO interface.
 	 * @param array<string>                                    $runner_args Arguments to pass to test framework after --.
+	 * @param array<string,string>                             $parsed_env_vars Parsed environment variables passed from CLI/env files.
 	 *
 	 * @return array{int, \QIT_CLI\Environment\PackageOrchestrator, string} Returns [exit_status, orchestrator, artifacts_dir].
 	 */
@@ -1597,33 +1587,6 @@ class RunE2ECommand extends QITCommand {
 		}
 	}
 
-	/**
-	 * Parse environment variables.
-	 *
-	 * @param array<string> $env_vars
-	 *
-	 * @throws \RuntimeException If invalid format.
-	 */
-	private function parse_env_vars( array $env_vars ): void {
-		$parsed_vars = [];
-		foreach ( $env_vars as $env_var ) {
-			$env_var = explode( '=', $env_var, 2 );
-			if ( count( $env_var ) !== 2 ) {
-				throw new \RuntimeException( 'Invalid environment variable format. Use "--env FOO=bar".' );
-			}
-
-			$key   = trim( $env_var[0] );
-			$value = trim( $env_var[1] );
-
-			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
-				throw new \RuntimeException( 'Invalid env var name. Letters, numbers, underscores only.' );
-			}
-
-			$parsed_vars[ $key ] = $value;
-		}
-
-		App::setVar( 'QIT_PW_ENV_VARS', $parsed_vars );
-	}
 
 	/**
 	 * Add SUT to env:up options.
