@@ -166,6 +166,9 @@ class RequestBuilder {
 		// Apply rate limiting before making the request
 		self::apply_rate_limit( $this->url );
 
+		// Add client early so it's included in mocks
+		$this->post_body['client'] = 'qit_cli';
+
 		// Integration test mocking - check this first to allow override of unit tests
 		if ( getenv( 'QIT_MOCK_DIR' ) ) {
 			return $this->handle_file_mock();
@@ -233,8 +236,6 @@ class RequestBuilder {
 
 			$this->additional_headers = array_merge( $this->additional_headers, $parsed_env_headers );
 		}
-
-		$this->post_body['client'] = 'qit_cli';
 
 		$proxied = false;
 

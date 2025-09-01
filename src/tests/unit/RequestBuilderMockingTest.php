@@ -35,8 +35,8 @@ class RequestBuilderMockingTest extends \QIT_CLI_Tests\QITTestCase {
 		$test_url = 'https://example.com/api/test';
 		$mock_response = [ 'success' => true, 'data' => 'mocked' ];
 		
-		// Create mock file
-		$mock_file = $this->mock_dir . '/' . md5( $test_url ) . '.json';
+		// Create mock file (RequestBuilder uses sha1 for hashing)
+		$mock_file = $this->mock_dir . '/' . sha1( $test_url ) . '.json';
 		file_put_contents( $mock_file, json_encode( $mock_response ) );
 		
 		// Make request using RequestBuilder
@@ -50,20 +50,16 @@ class RequestBuilderMockingTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertEquals( json_encode( $mock_response ), $response );
 		
 		// Verify request was stored for inspection
-		$request_file = $this->mock_dir . '/request_' . md5( $test_url ) . '.json';
+		$request_file = $this->mock_dir . '/last_request.json';
 		$this->assertFileExists( $request_file );
 		
 		$stored_request = json_decode( file_get_contents( $request_file ), true );
 		$this->assertEquals( $test_url, $stored_request['url'] );
-		$this->assertEquals( 'POST', $stored_request['method'] );
-		$this->assertEquals( [ 'test' => 'data', 'client' => 'qit_cli' ], $stored_request['post_body'] );
+		$this->assertEquals( sha1( $test_url ), $stored_request['hash'] );
 		
-		// Verify last request was also stored
-		$last_request_file = $this->mock_dir . '/last_request.json';
-		$this->assertFileExists( $last_request_file );
-		
-		$last_request = json_decode( file_get_contents( $last_request_file ), true );
-		$this->assertEquals( $stored_request, $last_request );
+		// Check the body contains expected data
+		$this->assertEquals( 'POST', $stored_request['body']['method'] );
+		$this->assertEquals( [ 'test' => 'data', 'client' => 'qit_cli' ], $stored_request['body']['post_body'] );
 	}
 
 	public function test_missing_mock_throws_exception(): void {
