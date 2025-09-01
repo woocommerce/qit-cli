@@ -329,24 +329,24 @@ final class TestPackageManifest {
 
 	/**
 	 * Get the filesystem-safe container directory name for this package.
-	 * 
+	 *
 	 * This is the canonical method for generating container paths.
 	 * All components MUST use this for consistency.
-	 * 
+	 *
 	 * Rules:
 	 * 1. Format: namespace-package[-version]
 	 * 2. Slash (/) becomes hyphen to separate namespace from package
 	 * 3. Preserve valid characters: a-z, A-Z, 0-9, hyphen, underscore, period
 	 * 4. Convert to lowercase for consistency
 	 * 5. Colon (:) in version becomes hyphen
-	 * 
+	 *
 	 * Examples:
 	 * - woocommerce/my-package -> woocommerce-my-package
 	 * - woocommerce/my.package -> woocommerce-my.package
 	 * - woocommerce/my_package -> woocommerce-my_package
 	 * - some_namespace/some.package -> some_namespace-some.package
 	 * - woocommerce/package:1.0.0 -> woocommerce-package-1.0.0
-	 * 
+	 *
 	 * @param string|null $version Optional version to append (e.g., "1.0.0" becomes "-1.0.0")
 	 * @return string Filesystem-safe directory name
 	 */
@@ -354,22 +354,22 @@ final class TestPackageManifest {
 		// Convert to lowercase but preserve valid characters
 		$safe_namespace = strtolower( $this->namespace );
 		$safe_package   = strtolower( $this->package_name );
-		
+
 		// Combine with hyphen separator
 		$base_name = $safe_namespace . '-' . $safe_package;
-		
+
 		// Add version if provided (colon becomes hyphen)
 		if ( $version !== null && $version !== '' ) {
 			$safe_version = strtolower( $version );
-			$base_name .= '-' . $safe_version;
+			$base_name   .= '-' . $safe_version;
 		}
-		
+
 		return $base_name;
 	}
 
 	/**
 	 * Get the full container path for this package.
-	 * 
+	 *
 	 * @param string|null $version Optional version to include
 	 * @return string Full container path (e.g., /qit/packages/woocommerce-my-package-1-0-0)
 	 */
@@ -379,9 +379,9 @@ final class TestPackageManifest {
 
 	/**
 	 * Create a container directory name from a package ID string.
-	 * 
+	 *
 	 * Static helper for when you don't have a manifest object.
-	 * 
+	 *
 	 * @param string $package_id Package ID in format "namespace/package[:version]"
 	 * @return string Filesystem-safe directory name
 	 * @throws InvalidArgumentException If package ID format is invalid
@@ -391,30 +391,30 @@ final class TestPackageManifest {
 		if ( ! preg_match( '/^([a-zA-Z0-9_.-]+)\/([a-zA-Z0-9_.-]+)(?::([a-zA-Z0-9_.-]+))?$/', $package_id, $matches ) ) {
 			throw new InvalidArgumentException( "Invalid package ID format: {$package_id}" );
 		}
-		
+
 		$namespace = $matches[1];
 		$package   = $matches[2];
 		$version   = isset( $matches[3] ) ? $matches[3] : null;
-		
+
 		// Convert to lowercase but preserve valid characters
 		$safe_namespace = strtolower( $namespace );
 		$safe_package   = strtolower( $package );
-		
+
 		// Combine with hyphen separator
 		$base_name = $safe_namespace . '-' . $safe_package;
-		
+
 		// Add version if present
 		if ( $version !== null && $version !== '' ) {
 			$safe_version = strtolower( $version );
-			$base_name .= '-' . $safe_version;
+			$base_name   .= '-' . $safe_version;
 		}
-		
+
 		return $base_name;
 	}
 
 	/**
 	 * Create a container path from a package ID string.
-	 * 
+	 *
 	 * @param string $package_id Package ID in format "namespace/package[:version]"
 	 * @return string Full container path
 	 */

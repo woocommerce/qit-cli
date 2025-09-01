@@ -126,10 +126,10 @@ class E2EEnvironment extends Environment {
 		// Setup WordPress.
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
-			'TUNNEL'            => $this->env_info->tunnel ? 'yes' : 'no',
-			'WORDPRESS_VERSION' => $this->env_info->wp === 'stable' ? 'latest' : $this->env_info->wp,
-			'SITE_URL'          => $this->env_info->site_url,
-			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
+			'TUNNEL'                  => $this->env_info->tunnel ? 'yes' : 'no',
+			'WORDPRESS_VERSION'       => $this->env_info->wp === 'stable' ? 'latest' : $this->env_info->wp,
+			'SITE_URL'                => $this->env_info->site_url,
+			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
 			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		] );
 
@@ -267,9 +267,9 @@ class E2EEnvironment extends Environment {
 	 */
 	protected function get_generate_docker_compose_envs(): array {
 		return [
-			'PHP_VERSION'      => $this->env_info->php,
-			'QIT_DOCKER_REDIS' => $this->env_info->object_cache ? 'yes' : 'no',
-			'DOMAIN'           => $this->env_info->domain,
+			'PHP_VERSION'             => $this->env_info->php,
+			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
+			'DOMAIN'                  => $this->env_info->domain,
 			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		];
 	}

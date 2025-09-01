@@ -37,7 +37,7 @@ class PackagePhaseRunner {
 	 */
 	private function determine_execution_venue( string $cmd ): string {
 		$trimmed = trim( $cmd );
-		
+
 		// Check for explicit venue prefix
 		if ( str_starts_with( $trimmed, 'host:' ) ) {
 			return 'host';
@@ -45,12 +45,12 @@ class PackagePhaseRunner {
 		if ( str_starts_with( $trimmed, 'docker:' ) ) {
 			return 'docker';
 		}
-		
+
 		// npm/npx commands should run on host (where Node.js is installed)
 		if ( str_starts_with( $trimmed, 'npm ' ) || str_starts_with( $trimmed, 'npx ' ) ) {
 			return 'host';
 		}
-		
+
 		// Everything else runs in docker (WordPress environment)
 		return 'docker';
 	}
@@ -58,7 +58,7 @@ class PackagePhaseRunner {
 	/**
 	 * Prepare environment variables for test execution.
 	 *
-	 * @param EnvInfo $env_info Environment information.
+	 * @param EnvInfo             $env_info Environment information.
 	 * @param PackageOrchestrator $orchestrator Orchestrator with secret manager.
 	 * @return array<string, string> Environment variables.
 	 */
@@ -69,13 +69,13 @@ class PackagePhaseRunner {
 		if ( $env_info instanceof E2EEnvInfo ) {
 			// Get base environment variables from centralized mapping
 			$env_vars = $this->environment_vars->get_mapping( $env_info );
-			
+
 			// Add environment variables and secrets from EnvironmentManager if available
 			$environment_manager = $orchestrator->get_environment_manager();
 			if ( $environment_manager ) {
 				// Get all env vars (includes both regular env vars and secrets)
 				$managed_env_vars = $environment_manager->get_host_env();
-				$env_vars = array_merge( $env_vars, $managed_env_vars );
+				$env_vars         = array_merge( $env_vars, $managed_env_vars );
 			}
 
 			// Add SUT-specific variables (these are test-specific, not general env vars)
@@ -559,7 +559,7 @@ class PackagePhaseRunner {
 				$venue = $this->determine_execution_venue( $cmd );
 			}
 			$is_bash_script = $venue === 'docker'; // Bash scripts run in docker
-			
+
 			// Strip venue prefix from command if present (after venue detection)
 			$trimmed = trim( $cmd );
 			if ( str_starts_with( $trimmed, 'host:' ) ) {

@@ -20,8 +20,8 @@ class IntegrationTest extends TestCase {
 	protected function setUp(): void {
 		parent::setUp();
 		
-		// Clean up any leftover test packages before running
-		TestCleanupHelper::cleanup_all_test_packages();
+		// Clean up any leftover test packages from this process before running
+		TestCleanupHelper::cleanup_process_packages();
 		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages';
 	}
 

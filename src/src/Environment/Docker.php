@@ -199,7 +199,7 @@ class Docker {
 
 		foreach ( $env_vars as $key => $value ) {
 			// Check if this is a secret using EnvironmentManager if available, otherwise use heuristics
-			$is_secret = $this->environment_manager 
+			$is_secret = $this->environment_manager
 				? $this->environment_manager->is_secret( $key )
 				: $this->is_likely_secret( $key );
 
@@ -237,7 +237,7 @@ class Docker {
 			$process_env = $this->environment_manager->get_docker_process_env();
 		} else {
 			// Fallback: manually collect secrets from environment
-			$process_env = null;
+			$process_env         = null;
 			$secrets_for_process = [];
 			foreach ( $env_vars as $key => $value ) {
 				if ( $this->is_likely_secret( $key ) && getenv( $key ) !== false ) {
@@ -250,7 +250,7 @@ class Docker {
 				$process_env = array_merge( getenv(), $secrets_for_process );
 			}
 		}
-		
+
 		$process = new Process( $docker_command, null, $process_env );
 		$process->setTty( $this->output->isVerbose() && use_tty() );
 		$process->setTimeout( $timeout );

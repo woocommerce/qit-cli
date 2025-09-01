@@ -18,7 +18,7 @@ class PackageOrchestrator {
 	private ?ConsoleSectionOutput $status_section  = null;
 	private int $terminal_width;
 	private ?EnvironmentManager $environment_manager = null;
-	private bool $suppress_output          = false;
+	private bool $suppress_output                    = false;
 	private CTRFValidator $ctrf_validator;
 	/** @var array<string> */
 	private array $suppressed_lines = [];

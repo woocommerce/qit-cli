@@ -225,7 +225,7 @@ abstract class Environment {
 				if ( ! isset( $info['container_path'] ) ) {
 					throw new \RuntimeException( "Missing container_path for global setup package: {$pkg_id}" );
 				}
-				$container = $info['container_path'];
+				$container                                    = $info['container_path'];
 				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
 			}
 		}
@@ -240,7 +240,7 @@ abstract class Environment {
 				if ( ! isset( $info['container_path'] ) ) {
 					throw new \RuntimeException( "Missing container_path for test package: {$pkg_id}" );
 				}
-				$container = $info['container_path'];
+				$container                                    = $info['container_path'];
 				$default_volumes[ $container . ':ro,cached' ] = $info['path'];
 			}
 		}

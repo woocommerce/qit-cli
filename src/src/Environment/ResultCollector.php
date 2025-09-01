@@ -216,11 +216,12 @@ class ResultCollector {
 			return;
 		}
 
-		/* 2 — container fallback --------------------------------------------- */
+		/*
+		2 — container fallback --------------------------------------------- */
 		// Use manifest's package ID for container paths, not the slug
-		$package_id = $mf->get_package_id();
+		$package_id     = $mf->get_package_id();
 		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
-		$ctr_path = $container_base . '/' . ltrim( $rel, './' );
+		$ctr_path       = $container_base . '/' . ltrim( $rel, './' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 
@@ -259,9 +260,9 @@ class ResultCollector {
 
 		// Use sanitized package name for directory - use manifest's package ID, not the slug
 		$package_id = $mf->get_package_id();
-		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
-		$dst      = $dir . '/allure/' . $safe_name;
-		$dir_path = dirname( $dst );
+		$safe_name  = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
+		$dst        = $dir . '/allure/' . $safe_name;
+		$dir_path   = dirname( $dst );
 		if ( ! is_dir( $dir_path ) ) {
 			mkdir( $dir_path, 0755, true );
 		}
@@ -275,11 +276,12 @@ class ResultCollector {
 			return true;
 		}
 
-		/* container fallback */
+		/*
+		container fallback */
 		// Use manifest's package ID for container paths, not the slug
-		$package_id = $mf->get_package_id();
+		$package_id     = $mf->get_package_id();
 		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
-		$ctr_path = $container_base . '/' . trim( $rel, '/' );
+		$ctr_path       = $container_base . '/' . trim( $rel, '/' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 			return true;
@@ -310,9 +312,9 @@ class ResultCollector {
 
 		// Use sanitized package name for directory - use manifest's package ID, not the slug
 		$package_id = $mf->get_package_id();
-		$safe_name = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
-		$dst      = $dir . '/blob/' . $safe_name;
-		$dir_path = dirname( $dst );
+		$safe_name  = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_directory_name( $package_id );
+		$dst        = $dir . '/blob/' . $safe_name;
+		$dir_path   = dirname( $dst );
 		if ( ! is_dir( $dir_path ) ) {
 			mkdir( $dir_path, 0755, true );
 		}
@@ -330,11 +332,12 @@ class ResultCollector {
 			return false;
 		}
 
-		/* container fallback */
+		/*
+		container fallback */
 		// Use manifest's package ID for container paths, not the slug
-		$package_id = $mf->get_package_id();
+		$package_id     = $mf->get_package_id();
 		$container_base = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_id );
-		$ctr_path = $container_base . '/' . trim( $rel, '/' );
+		$ctr_path       = $container_base . '/' . trim( $rel, '/' );
 		try {
 			$this->docker->copy_from_docker( $env, $ctr_path, $dst, 'php' );
 			// Validate after copying from container
@@ -516,7 +519,7 @@ class ResultCollector {
 			$orchestrator->post_processing_message( 'No CTRF files to merge (no test results collected)' );
 			return;
 		}
-		
+
 		$ctrf_files = glob( $ctrf_dir . '/*.json' );
 		if ( empty( $ctrf_files ) ) {
 			// Empty CTRF directory - still OK for utility packages

@@ -7,14 +7,14 @@ use QIT_CLI\App;
 
 /**
  * Centralized manager for all environment variable handling.
- * 
+ *
  * This class is the single source of truth for:
  * - Parsing environment variables from CLI (--env, --env_file)
  * - Validating required secrets
  * - Storing environment variables
  * - Distributing them to execution contexts (host, Docker, Node.js)
  * - Redacting sensitive values from output
- * 
+ *
  * Design principles:
  * - Single responsibility: All env var logic in one place
  * - Immutable after initialization: Prevents state bugs
@@ -44,10 +44,10 @@ class EnvironmentManager {
 
 	/**
 	 * Initialize the manager with environment variables from various sources.
-	 * 
+	 *
 	 * @param array<string,string> $cli_env_vars Variables from --env options
 	 * @param array<string,string> $file_env_vars Variables from --env_file options
-	 * @param array<string> $required_secrets Names of required secrets
+	 * @param array<string>        $required_secrets Names of required secrets
 	 * @throws RuntimeException If initialization fails or called twice
 	 */
 	public function initialize( array $cli_env_vars = [], array $file_env_vars = [], array $required_secrets = [] ): void {
@@ -71,7 +71,7 @@ class EnvironmentManager {
 
 	/**
 	 * Validate that required secrets are present and register them for tracking.
-	 * 
+	 *
 	 * @param array<string> $required_secrets Names of required secrets
 	 * @throws RuntimeException If any required secret is missing
 	 */
@@ -81,14 +81,14 @@ class EnvironmentManager {
 		foreach ( $required_secrets as $name ) {
 			// Check in our env_vars first, then fall back to system environment
 			$value = $this->env_vars[ $name ] ?? getenv( $name );
-			
+
 			if ( $value === false || $value === '' ) {
 				$missing[] = $name;
 			} else {
 				// Register for tracking and redaction
-				$this->secret_names[] = $name;
+				$this->secret_names[]         = $name;
 				$this->secret_values[ $name ] = $value;
-				
+
 				// Ensure it's in our env_vars for distribution
 				if ( ! isset( $this->env_vars[ $name ] ) ) {
 					$this->env_vars[ $name ] = $value;
@@ -113,7 +113,7 @@ class EnvironmentManager {
 
 	/**
 	 * Get environment variables for host command execution.
-	 * 
+	 *
 	 * @return array<string,string> Environment variables to pass to Process
 	 */
 	public function get_host_env(): array {
@@ -123,7 +123,7 @@ class EnvironmentManager {
 
 	/**
 	 * Get environment variables for Docker command execution.
-	 * 
+	 *
 	 * @return array<string,string> Environment variables to pass to Docker
 	 */
 	public function get_docker_env(): array {
@@ -134,7 +134,7 @@ class EnvironmentManager {
 	/**
 	 * Get Docker --env flags for secure secret passing.
 	 * Returns just the names of secrets that should use --env NAME pattern.
-	 * 
+	 *
 	 * @return array<string> Secret names to pass with --env flag
 	 */
 	public function get_docker_secret_flags(): array {
@@ -145,29 +145,29 @@ class EnvironmentManager {
 	/**
 	 * Get environment variables for the Process that runs Docker.
 	 * This ensures --env NAME pattern works correctly.
-	 * 
+	 *
 	 * @return array<string,string> Environment for the Docker process itself
 	 */
 	public function get_docker_process_env(): array {
 		$this->ensure_initialized();
-		
+
 		// We need to ensure secrets are in the Docker process environment
 		// so that --env NAME can find them
 		$process_env = getenv();
-		
+
 		// Add our secrets to ensure they're available
 		foreach ( $this->secret_names as $name ) {
 			if ( isset( $this->secret_values[ $name ] ) ) {
 				$process_env[ $name ] = $this->secret_values[ $name ];
 			}
 		}
-		
+
 		return $process_env;
 	}
 
 	/**
 	 * Redact secret values from text.
-	 * 
+	 *
 	 * @param string $text Text that may contain secrets
 	 * @return string Text with secrets replaced by [REDACTED] markers
 	 */
@@ -182,13 +182,13 @@ class EnvironmentManager {
 				$text = str_replace( base64_encode( $value ), '[REDACTED:' . $name . ']', $text );
 			}
 		}
-		
+
 		return $text;
 	}
 
 	/**
 	 * Check if a variable name is a registered secret.
-	 * 
+	 *
 	 * @param string $name Variable name to check
 	 * @return bool True if this is a secret
 	 */
@@ -199,7 +199,7 @@ class EnvironmentManager {
 
 	/**
 	 * Get count of tracked secrets (for testing/debugging).
-	 * 
+	 *
 	 * @return int Number of secrets being tracked
 	 */
 	public function get_secret_count(): int {
@@ -210,15 +210,15 @@ class EnvironmentManager {
 	 * Clear all state (useful for testing).
 	 */
 	public function reset(): void {
-		$this->env_vars = [];
-		$this->secret_names = [];
+		$this->env_vars      = [];
+		$this->secret_names  = [];
 		$this->secret_values = [];
-		$this->initialized = false;
+		$this->initialized   = false;
 	}
 
 	/**
 	 * Ensure the manager has been initialized.
-	 * 
+	 *
 	 * @throws RuntimeException If not initialized
 	 */
 	private function ensure_initialized(): void {
@@ -229,7 +229,7 @@ class EnvironmentManager {
 
 	/**
 	 * Throw a helpful error for missing secrets.
-	 * 
+	 *
 	 * @param array<string> $missing Names of missing secrets
 	 * @throws RuntimeException Always
 	 */

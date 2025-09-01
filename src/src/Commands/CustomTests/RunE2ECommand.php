@@ -186,10 +186,10 @@ class RunE2ECommand extends QITCommand {
 
 		// Parse environment variables from --env and --env_file
 		$cli_env_vars = $input->hasOption( 'env' ) ? (array) $input->getOption( 'env' ) : [];
-		$env_files = $input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : [];
-		
+		$env_files    = $input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : [];
+
 		// Use EnvParser to handle both --env and --env_file consistently
-		$env_parser = App::make( \QIT_CLI\Environment\EnvParser::class );
+		$env_parser      = App::make( \QIT_CLI\Environment\EnvParser::class );
 		$parsed_env_vars = $env_parser->parse( $cli_env_vars, $env_files );
 
 		// Add SUT to env:up options if provided
@@ -764,39 +764,39 @@ class RunE2ECommand extends QITCommand {
 	private function get_unique_container_name_for_local( string $package_id, array &$counter ): string {
 		// Read the manifest to get the package name
 		$manifest_path = rtrim( $package_id, '/\\' ) . '/qit-test.json';
-		
+
 		if ( ! file_exists( $manifest_path ) ) {
 			throw new \InvalidArgumentException(
 				"Test package directory must contain qit-test.json: {$package_id}"
 			);
 		}
-		
+
 		$manifest_content = file_get_contents( $manifest_path );
 		$manifest_data    = json_decode( $manifest_content, true );
-		
+
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			throw new \InvalidArgumentException(
 				"Invalid JSON in qit-test.json: {$package_id} - " . json_last_error_msg()
 			);
 		}
-		
+
 		// Create manifest object to use centralized naming
 		$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
-		
+
 		// Get the base container name
 		$base_name = $manifest->get_container_directory_name();
-		
+
 		// Apply counter for uniqueness
 		$key = $base_name;
 		if ( ! isset( $counter[ $key ] ) ) {
 			$counter[ $key ] = 0;
 		}
 		++$counter[ $key ];
-		
+
 		if ( $counter[ $key ] > 1 ) {
 			$base_name .= '-' . $counter[ $key ];
 		}
-		
+
 		return $base_name;
 	}
 
@@ -1077,14 +1077,14 @@ class RunE2ECommand extends QITCommand {
 		if ( ! empty( $all_required_secrets ) ) {
 			$all_required_secrets = array_unique( $all_required_secrets );
 		}
-		
+
 		try {
 			// Use the parsed env vars passed from execute method
 			$cli_env_vars = $parsed_env_vars;
-			
+
 			// Initialize the environment manager with CLI vars and required secrets
 			$env_manager->initialize( $cli_env_vars, [], $all_required_secrets );
-			
+
 			if ( ! empty( $all_required_secrets ) ) {
 				$io->writeln( '<info>✓ All required secrets validated</info>' );
 			}

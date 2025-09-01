@@ -144,7 +144,7 @@ class UpEnvironmentCommand extends QITCommand {
 					if ( $manifest ) {
 						$metadata = $package_downloader->get_package_metadata( $package_ref );
 						// Use centralized method for consistent container path generation
-						$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
+						$container_path                        = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
 						$global_setup_packages[ $package_ref ] = [
 							'path'           => $metadata['downloaded_path'] ?? '',
 							'source'         => 'registry',
@@ -163,7 +163,7 @@ class UpEnvironmentCommand extends QITCommand {
 		if ( ! isset( $env_config['network_restriction'] ) ) {
 			$env_config['network_restriction'] = true;
 		}
-		
+
 		$env_info = E2EEnvInfo::from_array( [
 			'env_id'                => 'qitenv' . bin2hex( random_bytes( 8 ) ),
 			'environment'           => 'e2e',
@@ -184,9 +184,9 @@ class UpEnvironmentCommand extends QITCommand {
 		] );
 
 		/* ─ 5. Add QIT_ENV_ID and QIT_NETWORK_RESTRICTION to environment variables ─ */
-		$env_info->envs['QIT_ENV_ID'] = $env_info->env_id;
+		$env_info->envs['QIT_ENV_ID']              = $env_info->env_id;
 		$env_info->envs['QIT_NETWORK_RESTRICTION'] = $env_info->network_restriction ? 'true' : 'false';
-		
+
 		/* ─ 6. Honour --tunnel (validated against TunnelRunner) ─ */
 		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
 			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
@@ -462,14 +462,15 @@ class UpEnvironmentCommand extends QITCommand {
 		$merge_simple_list( 'php_extensions', 'php_extension' );
 		$merge_simple_list( 'global_setup', 'global_setup' );
 
-		/* ─ Runtime env vars - process files immediately ─ */
+		/*
+		─ Runtime env vars - process files immediately ─ */
 		// Set default environment variables for QIT environments
 		// Note: QIT_ENV_ID is added later when env_info is created
 		$default_env_vars = [
 			'QIT_DISABLE_UPDATE_CHECKS' => 'true',  // Disable WordPress update checks by default
 			'QIT_NETWORK_LOGGING'       => 'false', // Network logging disabled by default
 		];
-		
+
 		$existing_env_vars = $config['envs'] ?? [];
 		$env_files         = array_merge(
 			$config['env_files'] ?? [],
