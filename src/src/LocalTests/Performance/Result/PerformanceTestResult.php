@@ -93,7 +93,7 @@ class PerformanceTestResult {
 	}
 
 	private function process_k6_results(): void {
-		$k6_results_file = $this->results_dir . '/k6-results.json';
+		$k6_results_file = $this->results_dir . '/result-extended.json';
 
 		if ( ! file_exists( $k6_results_file ) ) {
 			return;

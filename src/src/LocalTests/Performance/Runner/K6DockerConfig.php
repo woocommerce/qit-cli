@@ -99,7 +99,7 @@ class K6DockerConfig {
 		$args[] = '-e';
 		$args[] = 'K6_WEB_DASHBOARD=true';
 		$args[] = '-e';
-		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/k6-dashboard-report.html';
+		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/dashboard-report.html';
 
 		// Pass additional env vars to the test environment.
 		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
@@ -118,9 +118,9 @@ class K6DockerConfig {
 			'grafana/k6:master-with-browser',
 			'run',
 			'--out',
-			'json=/results/k6-results.json',
+			'json=/results/result-extended.json',
 			'--summary-export',
-			'/results/k6-summary.json',
+			'/results/result.json',
 		];
 	}
 }

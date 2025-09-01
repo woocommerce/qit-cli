@@ -223,11 +223,11 @@ class K6Runner {
 	}
 
 	private function collect_results( PerformanceTestResult $test_result ): void {
-		$source_results = $test_result->get_results_dir() . '/k6-results.json';
+		$source_results = $test_result->get_results_dir() . '/result-extended.json';
 
 		if ( file_exists( $source_results ) && $this->output->isVerbose() ) {
 			$this->output->writeln(
-				"<info>k6 results saved to: {$test_result->get_results_dir()}/k6-results.json</info>"
+				"<info>k6 results saved to: {$test_result->get_results_dir()}/result-extended.json</info>"
 			);
 		}
 	}
