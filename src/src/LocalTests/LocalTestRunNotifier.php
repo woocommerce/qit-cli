@@ -182,7 +182,13 @@ class LocalTestRunNotifier {
 			}
 
 			$test_result_json_original = $result_json;
-			$result_json               = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+
+			// Skip Playwright to Puppeteer conversion for performance tests.
+			if ( $test_result instanceof PerformanceTestResult ) {
+				$result_json = json_decode( $result_json, true );
+			} else {
+				$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+			}
 		} else {
 			$result_json = [];
 		}
@@ -279,6 +285,15 @@ class LocalTestRunNotifier {
 			'ctrf_json'                 => $ctrf_json,
 		];
 
+		// Extract k6 performance metrics for performance tests.
+		if ( $test_result instanceof PerformanceTestResult && is_array( $result_json ) && isset( $result_json['metrics'] ) ) {
+			$performance_results = $this->extract_performance_metrics( $result_json['metrics'] );
+
+			if ( ! empty( $performance_results ) ) {
+				$data['cd_performance_results'] = json_encode( $performance_results );
+			}
+		}
+
 		$r = App::make( RequestBuilder::class )
 				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
 				->with_method( 'POST' )
@@ -304,5 +319,32 @@ class LocalTestRunNotifier {
 		}
 
 		return [ $response['report_url'], $exit_status_code_override ];
+	}
+
+	/**
+	 * Extract performance metrics from k6 test results.
+	 *
+	 * @param array<string, mixed> $metrics The metrics array from k6 test results.
+	 *
+	 * @return array<string, mixed> The extracted performance metrics.
+	 */
+	private function extract_performance_metrics( array $metrics ): array {
+		$performance_results = [];
+		$metrics_to_extract  = [
+			'browser_web_vital_ttfb',
+			'browser_web_vital_fcp',
+			'browser_web_vital_lcp',
+			'browser_web_vital_inp',
+			'browser_web_vital_cls',
+			'checks',
+		];
+
+		foreach ( $metrics_to_extract as $metric ) {
+			if ( isset( $metrics[ $metric ] ) ) {
+				$performance_results[ $metric ] = $metrics[ $metric ];
+			}
+		}
+
+		return $performance_results;
 	}
 }

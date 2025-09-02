@@ -30,7 +30,7 @@ class PerformanceTestManager {
 	public function run_tests( PerformanceEnvInfo $env_info ): int {
 		$test_result = new PerformanceTestResult( $env_info );
 
-		// Run K6 performance tests.
+		// Run k6 performance tests.
 		$exit_status_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
 
 		// Store exit code and set status based on how test finished.

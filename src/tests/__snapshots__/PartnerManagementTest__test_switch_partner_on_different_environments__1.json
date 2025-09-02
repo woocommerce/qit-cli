@@ -1608,15 +1608,15 @@
                 }
             ],
             "environments": {
-                "performance": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/af7f947f97a78ede4c17bbd22bbe61cd.zip",
-                    "checksum": "af7f947f97a78ede4c17bbd22bbe61cd",
-                    "zip_checksum": 15490
-                },
                 "e2e": {
                     "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
                     "checksum": "c1a78950ca0eb8a23f8706955681bf02",
                     "zip_checksum": 19091
+                },
+                "performance": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/1b9299b1fdaf0ade0b4e5ac59e6fd145.zip",
+                    "checksum": "1b9299b1fdaf0ade0b4e5ac59e6fd145",
+                    "zip_checksum": 15545
                 }
             },
             "versions": {
