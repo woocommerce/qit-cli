@@ -14,6 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "ctrf_json": "",
+            "performance_results": "",
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
@@ -76,6 +77,8 @@
                         "blueprint",
                         "block_email_editor",
                         "point_of_sale",
+                        "fulfillments",
+                        "experimental-iapi-mini-cart",
                         "custom_order_tables",
                         "cost_of_goods_sold"
                     ]

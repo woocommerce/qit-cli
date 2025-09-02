@@ -13,6 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
+            "performance_results": "",
             "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
@@ -2694,8 +2695,8 @@
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "693476b3-e51b-4068-8830-ddda42686221",
-                "timestamp": "2025-09-02T03:11:20.655Z",
+                "reportId": "4dbb5caa-0bd5-40b3-90c3-d33eab64f09a",
+                "timestamp": "2025-09-02T14:50:25.365Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {

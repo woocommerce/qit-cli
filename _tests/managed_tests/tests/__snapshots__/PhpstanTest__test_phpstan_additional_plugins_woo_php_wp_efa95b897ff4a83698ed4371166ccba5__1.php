@@ -16,6 +16,7 @@
             ],
             "test_log": "",
             "ctrf_json": "",
+            "performance_results": "",
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
