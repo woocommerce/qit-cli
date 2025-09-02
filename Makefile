@@ -75,6 +75,7 @@ build:
 	@rm -rf src-tmp
 	@rm -f ./_build/box.json
 
+.PHONY: tests
 tests:
 	$(MAKE) phpcs
 	$(MAKE) phpstan

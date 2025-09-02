@@ -3,7 +3,6 @@
 namespace QIT_CLI\Environment;
 
 use RuntimeException;
-use QIT_CLI\App;
 
 /**
  * Centralized manager for all environment variable handling.

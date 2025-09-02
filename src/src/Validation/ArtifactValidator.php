@@ -3,7 +3,6 @@
 namespace QIT_CLI\Validation;
 
 use QIT_CLI\PreCommand\Objects\Extension;
-use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\debug_log;
 

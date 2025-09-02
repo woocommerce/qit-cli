@@ -71,12 +71,12 @@ class ExtensionCacheManager {
 		'build' => 'copy_local_file',
 	];
 
-	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output, EntrypointDetector $entrypoint_detector, ArtifactValidator $artifact_validator = null ) {
+	public function __construct( Cache $cache, Zipper $zipper, OutputInterface $output, EntrypointDetector $entrypoint_detector, ArtifactValidator $artifact_validator ) {
 		$this->cache               = $cache;
 		$this->zipper              = $zipper;
 		$this->output              = $output;
 		$this->entrypoint_detector = $entrypoint_detector;
-		$this->artifact_validator  = $artifact_validator ?: new ArtifactValidator( $output );
+		$this->artifact_validator  = $artifact_validator;
 	}
 
 

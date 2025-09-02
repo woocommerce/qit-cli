@@ -72,13 +72,13 @@ class TestPackageDownloader {
 		Zipper $zipper,
 		OutputInterface $output,
 		TestPackageManifestParser $manifest_parser,
-		ArtifactValidator $artifact_validator = null
+		ArtifactValidator $artifact_validator
 	) {
 		$this->cache              = $cache;
 		$this->zipper             = $zipper;
 		$this->output             = $output;
 		$this->manifest_parser    = $manifest_parser;
-		$this->artifact_validator = $artifact_validator ?: new ArtifactValidator( $output );
+		$this->artifact_validator = $artifact_validator;
 	}
 
 	/**

@@ -122,9 +122,9 @@ class PackagePhaseRunner {
 	 *
 	 * @param string                $cmd Command to execute.
 	 * @param string                $package_path Working directory for the command.
+	 * @param PackageOrchestrator   $orchestrator Orchestrator for output formatting.
 	 * @param array<string, string> $env_vars Environment variables.
 	 * @param string                $phase The phase being executed (for timeout calculation).
-	 * @param PackageOrchestrator   $orchestrator Orchestrator for output formatting.
 	 * @param int|null              $cmd_timeout Optional command-specific timeout override.
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
@@ -247,9 +247,10 @@ class PackagePhaseRunner {
 	 * @param EnvInfo               $env_info Environment information.
 	 * @param string                $package_id Package identifier.
 	 * @param string                $workdir Working directory inside container.
+	 * @param PackageOrchestrator   $orchestrator Orchestrator for output formatting.
 	 * @param array<string, string> $env_vars Environment variables.
 	 * @param string                $phase The phase being executed (globalSetup, setup, run, etc).
-	 * @param PackageOrchestrator   $orchestrator Orchestrator for output formatting.
+	 * @param int|null              $cmd_timeout Optional command-specific timeout override.
 	 * @return array{exit_code: int, duration: float, stdout: string, stderr: string} Execution data.
 	 * @throws \RuntimeException On command failure.
 	 */
