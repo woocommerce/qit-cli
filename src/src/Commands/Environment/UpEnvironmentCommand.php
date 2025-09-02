@@ -134,18 +134,20 @@ class UpEnvironmentCommand extends QITCommand {
 			$parsed_volumes = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] );
 		}
 
-		/* ─ 3.6. Determine network restriction based on network_mode ─ */
+		/*
+		─ 3.6. Determine network restriction based on network_mode ─
+		*/
 		// Process test packages if in auto mode
 		$requires_network = false;
 		if ( isset( $env_config['network_mode'] ) && $env_config['network_mode'] === 'auto' ) {
 			// Check if test packages were passed directly or in environment config
 			$test_packages = [];
-			
+
 			// First check if test packages are in the environment config
 			if ( isset( $env_config['test_packages'] ) ) {
 				$test_packages = (array) $env_config['test_packages'];
 			}
-			
+
 			// Download and check manifests
 			if ( ! empty( $test_packages ) ) {
 				$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
@@ -174,7 +176,7 @@ class UpEnvironmentCommand extends QITCommand {
 					}
 				}
 			}
-			
+
 			// Set network restriction based on package requirements
 			$env_config['network_restriction'] = ! $requires_network;
 		} elseif ( isset( $env_config['network_mode'] ) ) {

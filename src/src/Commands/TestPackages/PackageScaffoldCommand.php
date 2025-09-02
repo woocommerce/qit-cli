@@ -251,9 +251,9 @@ BASH;
 		}
 
 		$manifest = array_merge( $manifest, [
-			'package' => $namespace . '/' . $package_name,
+			'package'          => $namespace . '/' . $package_name,
 			'requires_network' => false, // Explicitly show this field for clarity
-			'test'    => [
+			'test'             => [
 				'phases'  => [
 					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
 					'setup'          => [ './bootstrap/setup.sh' ],

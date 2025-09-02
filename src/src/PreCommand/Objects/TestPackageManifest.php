@@ -109,7 +109,7 @@ final class TestPackageManifest {
 		];
 		$this->subpackages    = $data['subpackages'] ?? [];
 		$this->parent_package = $data['parent_package'] ?? null;
-		
+
 		// Network requirement - optional field, defaults to false (offline)
 		if ( isset( $data['requires_network'] ) ) {
 			// Handle string values properly (JSON might provide strings)
@@ -184,23 +184,23 @@ final class TestPackageManifest {
 	 */
 	public function to_array(): array {
 		return [
-			'_normalized'    => true, // Flag to skip adaptation on reload
-			'package_id'     => $this->package_id,
-			'namespace'      => $this->namespace,
-			'package_name'   => $this->package_name,
-			'tags'           => $this->tags,
-			'test_type'      => $this->test_type,
-			'test_dir'       => $this->test_dir,
-			'description'    => $this->description,
-			'requires'       => $this->requires,
-			'phases'         => $this->phases,
-			'test_results'   => $this->test_results,
-			'mu_plugins'     => $this->mu_plugins,
-			'env_vars'       => $this->env_vars,
-			'timeout'        => $this->timeout,
-			'retry'          => $this->retry,
-			'subpackages'    => $this->subpackages,
-			'parent_package' => $this->parent_package,
+			'_normalized'      => true, // Flag to skip adaptation on reload
+			'package_id'       => $this->package_id,
+			'namespace'        => $this->namespace,
+			'package_name'     => $this->package_name,
+			'tags'             => $this->tags,
+			'test_type'        => $this->test_type,
+			'test_dir'         => $this->test_dir,
+			'description'      => $this->description,
+			'requires'         => $this->requires,
+			'phases'           => $this->phases,
+			'test_results'     => $this->test_results,
+			'mu_plugins'       => $this->mu_plugins,
+			'env_vars'         => $this->env_vars,
+			'timeout'          => $this->timeout,
+			'retry'            => $this->retry,
+			'subpackages'      => $this->subpackages,
+			'parent_package'   => $this->parent_package,
 			'requires_network' => $this->requires_network,
 		];
 	}

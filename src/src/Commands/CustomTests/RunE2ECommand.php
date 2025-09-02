@@ -116,8 +116,11 @@ class RunE2ECommand extends QITCommand {
 			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
 			/* ─────────────── SUT‑related options ─────────────── */
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
-				'Use a custom ZIP (or directory/URL) as the SUT build' )
-			/* ─────────────── Shared Options (reused from env:up) ─────────────── */
+			'Use a custom ZIP (or directory/URL) as the SUT build' )
+
+			/*
+			─────────────── Shared Options (reused from env:up) ───────────────
+			*/
 			/* ─────────────── E2E-specific options ─────────────── */
 			->addOption(
 				'test-package',
@@ -248,7 +251,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Determine network mode based on test packages and CLI options
 		$network_mode = $this->determine_network_mode( $input, $test_packages, $output );
-		
+
 		// Apply network mode to env_up_options
 		if ( $network_mode === 'offline' ) {
 			$env_up_options['--offline'] = true;
@@ -1722,16 +1725,16 @@ class RunE2ECommand extends QITCommand {
 	/**
 	 * Determine network mode based on test package requirements and CLI overrides.
 	 *
-	 * @param QITInput $input The command input.
-	 * @param array $test_packages Downloaded test packages with manifests.
-	 * @param OutputInterface $output The command output.
+	 * @param QITInput                                                                                                             $input The command input.
+	 * @param array<string, array{manifest?: \QIT_CLI\PreCommand\Objects\TestPackageManifest|array<string, mixed>, path?: string}> $test_packages Downloaded test packages with manifests.
+	 * @param OutputInterface                                                                                                      $output The command output.
 	 * @return string The network mode: 'offline' or 'online'.
 	 */
 	private function determine_network_mode( QITInput $input, array $test_packages, OutputInterface $output ): string {
 		// Check if any test package requires network
-		$packages_requiring_network = [];
+		$packages_requiring_network     = [];
 		$packages_not_requiring_network = [];
-		
+
 		foreach ( $test_packages as $pkg_id => $meta ) {
 			if ( isset( $meta['manifest'] ) ) {
 				// The manifest may already be a TestPackageManifest object (from local packages)
@@ -1748,21 +1751,21 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 		}
-		
+
 		// Display network policy information if verbose
 		if ( $output->isVerbose() && count( $test_packages ) > 0 ) {
 			$output->writeln( '' );
 			$output->writeln( '<info>Network Policy: Auto mode</info>' );
-			$output->writeln( sprintf( 
-				'Packages: %d offline-only, %d require network', 
+			$output->writeln( sprintf(
+				'Packages: %d offline-only, %d require network',
 				count( $packages_not_requiring_network ),
 				count( $packages_requiring_network )
 			) );
 		}
-		
+
 		// Determine auto mode result
 		$auto_mode_needs_network = count( $packages_requiring_network ) > 0;
-		
+
 		// Check for override flags
 		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
 			// User forcing offline mode
@@ -1775,7 +1778,7 @@ class RunE2ECommand extends QITCommand {
 					"Options:\n" .
 					"1. Remove --offline flag to use auto mode\n" .
 					"2. Use --online flag to force network access\n" .
-					"3. Exclude these test packages from the run",
+					'3. Exclude these test packages from the run',
 					count( $packages_requiring_network ),
 					$package_list
 				) );
@@ -1785,7 +1788,7 @@ class RunE2ECommand extends QITCommand {
 			}
 			return 'offline';
 		}
-		
+
 		if ( $input->hasOption( 'online' ) && $input->getOption( 'online' ) ) {
 			// User forcing online mode
 			if ( $output->isVerbose() ) {
@@ -1793,7 +1796,7 @@ class RunE2ECommand extends QITCommand {
 			}
 			return 'online';
 		}
-		
+
 		// Auto mode (default)
 		if ( $auto_mode_needs_network ) {
 			if ( $output->isVerbose() ) {
