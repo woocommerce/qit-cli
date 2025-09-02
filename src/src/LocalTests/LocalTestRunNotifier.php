@@ -182,8 +182,8 @@ class LocalTestRunNotifier {
 			}
 
 			$test_result_json_original = $result_json;
-			
-			// Skip Playwright to Puppeteer conversion for performance tests
+
+			// Skip Playwright to Puppeteer conversion for performance tests.
 			if ( $test_result instanceof PerformanceTestResult ) {
 				$result_json = json_decode( $result_json, true );
 			} else {
@@ -285,10 +285,10 @@ class LocalTestRunNotifier {
 			'ctrf_json'                 => $ctrf_json,
 		];
 
-		// Extract k6 performance metrics for performance tests
+		// Extract k6 performance metrics for performance tests.
 		if ( $test_result instanceof PerformanceTestResult && is_array( $result_json ) && isset( $result_json['metrics'] ) ) {
 			$performance_results = $this->extract_performance_metrics( $result_json['metrics'] );
-			
+
 			if ( ! empty( $performance_results ) ) {
 				$data['cd_performance_results'] = json_encode( $performance_results );
 			}
@@ -330,7 +330,7 @@ class LocalTestRunNotifier {
 	 */
 	private function extract_performance_metrics( array $metrics ): array {
 		$performance_results = [];
-		$metrics_to_extract = [
+		$metrics_to_extract  = [
 			'browser_web_vital_ttfb',
 			'browser_web_vital_fcp',
 			'browser_web_vital_lcp',

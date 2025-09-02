@@ -45,7 +45,7 @@ class K6DockerConfig {
 			'--init',
 			'--add-host=host.docker.internal:host-gateway',
 			'-p',
-			'5665:5665'	// Port for k6 live web dashboard.
+			'5665:5665', // Port for k6 live web dashboard.
 		];
 	}
 

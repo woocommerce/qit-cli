@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 
 /**
- * k6 Performance Test Runner.
+ * K6 Performance Test Runner.
  *
  * This class handles k6-specific performance test execution and configuration.
  * k6-specific settings like test duration, virtual users, and test scenarios
