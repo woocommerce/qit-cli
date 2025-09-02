@@ -227,7 +227,7 @@ class K6Runner {
 
 		if ( file_exists( $source_results ) && $this->output->isVerbose() ) {
 			$this->output->writeln(
-				"<info>k6 results saved to: {$test_result->get_results_dir()}/result-extended.json</info>"
+				"<info>k6 results saved to: {$test_result->get_results_dir()}/result.json</info>"
 			);
 		}
 	}
