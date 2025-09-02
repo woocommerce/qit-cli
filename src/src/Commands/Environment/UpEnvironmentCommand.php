@@ -76,7 +76,8 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
-			->addOption( 'network-restriction', null, InputOption::VALUE_NEGATABLE, 'Enable network restriction to block external requests (default: true, use --no-network-restriction to disable)', true )
+			->addOption( 'offline', null, InputOption::VALUE_NONE, 'Override: Force offline mode - will error if any test requires network' )
+			->addOption( 'online', null, InputOption::VALUE_NONE, 'Override: Force online mode - enable network regardless of test requirements' )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
 			->setHelp( $this->getHelpText() );
 	}
@@ -133,7 +134,58 @@ class UpEnvironmentCommand extends QITCommand {
 			$parsed_volumes = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] );
 		}
 
-		/* ─ 3.6. Process global setup packages if present ─ */
+		/* ─ 3.6. Determine network restriction based on network_mode ─ */
+		// Process test packages if in auto mode
+		$requires_network = false;
+		if ( isset( $env_config['network_mode'] ) && $env_config['network_mode'] === 'auto' ) {
+			// Check if test packages were passed directly or in environment config
+			$test_packages = [];
+			
+			// First check if test packages are in the environment config
+			if ( isset( $env_config['test_packages'] ) ) {
+				$test_packages = (array) $env_config['test_packages'];
+			}
+			
+			// Download and check manifests
+			if ( ! empty( $test_packages ) ) {
+				$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
+				foreach ( $test_packages as $package_ref ) {
+					try {
+						$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
+						if ( $manifest && $manifest->requires_network() ) {
+							$requires_network = true;
+							if ( $output->isVerbose() ) {
+								$output->writeln( "<info>Package {$package_ref} requires network access</info>" );
+							}
+							break; // If any package requires network, enable it for all
+						}
+					} catch ( \Exception $e ) {
+						// For local packages, try to read the manifest directly
+						if ( is_dir( $package_ref ) && file_exists( $package_ref . '/qit-test.json' ) ) {
+							$manifest_data = json_decode( file_get_contents( $package_ref . '/qit-test.json' ), true );
+							if ( isset( $manifest_data['requires_network'] ) && $manifest_data['requires_network'] ) {
+								$requires_network = true;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires network access</info>" );
+								}
+								break;
+							}
+						}
+					}
+				}
+			}
+			
+			// Set network restriction based on package requirements
+			$env_config['network_restriction'] = ! $requires_network;
+		} elseif ( isset( $env_config['network_mode'] ) ) {
+			// For explicit modes, convert directly
+			$env_config['network_restriction'] = $env_config['network_mode'] === 'offline';
+		} else {
+			// Default to restricted (offline)
+			$env_config['network_restriction'] = true;
+		}
+
+		/* ─ 3.7. Process global setup packages if present ─ */
 		$global_setup_packages = [];
 		if ( ! empty( $env_config['global_setup'] ) ) {
 			// Download and prepare global setup packages
@@ -160,10 +212,6 @@ class UpEnvironmentCommand extends QITCommand {
 		/*
 		─ 4. Materialise E2EEnvInfo DTO ─
 		*/
-		// Set network restriction default if not specified
-		if ( ! isset( $env_config['network_restriction'] ) ) {
-			$env_config['network_restriction'] = true;
-		}
 
 		/** @var E2EEnvInfo $env_info */ $env_info = E2EEnvInfo::from_array( [
 			'env_id'                => 'qitenv' . bin2hex( random_bytes( 8 ) ),
@@ -395,13 +443,14 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
-		/* ─ Handle network restriction boolean option ─ */
-		if ( $input->hasOption( 'network-restriction' ) ) {
-			$network_restriction = $input->getOption( 'network-restriction' );
-			// VALUE_NEGATABLE returns true, false, or null
-			if ( $network_restriction !== null ) {
-				$config['network_restriction'] = $network_restriction;
-			}
+		/* ─ Handle network mode options ─ */
+		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
+			$config['network_mode'] = 'offline';
+		} elseif ( $input->hasOption( 'online' ) && $input->getOption( 'online' ) ) {
+			$config['network_mode'] = 'online';
+		} else {
+			// Default to auto mode (will be determined based on test packages in RunE2ECommand)
+			$config['network_mode'] = 'auto';
 		}
 
 		/* ─ Resolve special versions and add plugins explicitly ─ */

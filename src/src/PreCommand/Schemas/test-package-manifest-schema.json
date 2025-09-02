@@ -126,6 +126,11 @@
         }
       }
     },
+    "requires_network": {
+      "type": "boolean",
+      "description": "Whether this test package requires network access (defaults to false)",
+      "default": false
+    },
     "test": {
       "type": "object",
       "description": "Test configuration",

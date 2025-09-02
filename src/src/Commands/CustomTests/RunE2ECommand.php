@@ -136,7 +136,8 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'php_extension' )
 			->reuseOption( 'env:up', 'object_cache' )
 			->reuseOption( 'env:up', 'tunnel' )
-			->reuseOption( 'env:up', 'network-restriction' )
+			->reuseOption( 'env:up', 'offline' )
+			->reuseOption( 'env:up', 'online' )
 			->reuseOption( 'env:up', 'env' )
 			->reuseOption( 'env:up', 'env_file' )
 			->reuseOption( 'env:up', 'json' )
@@ -244,6 +245,17 @@ class RunE2ECommand extends QITCommand {
 
 		// Validate version consistency for subpackages
 		$this->validate_subpackage_versions( $test_packages );
+
+		// Determine network mode based on test packages and CLI options
+		$network_mode = $this->determine_network_mode( $input, $test_packages, $output );
+		
+		// Apply network mode to env_up_options
+		if ( $network_mode === 'offline' ) {
+			$env_up_options['--offline'] = true;
+		} elseif ( $network_mode === 'online' ) {
+			$env_up_options['--online'] = true;
+		}
+		// If 'auto', env:up will handle the default
 
 		// Prepare test package metadata with container paths BEFORE env:up
 		$test_packages_metadata = [];
@@ -1705,5 +1717,94 @@ class RunE2ECommand extends QITCommand {
 		// Convert slug to title case
 		$name = str_replace( [ '-', '_' ], ' ', $slug );
 		return ucwords( $name );
+	}
+
+	/**
+	 * Determine network mode based on test package requirements and CLI overrides.
+	 *
+	 * @param QITInput $input The command input.
+	 * @param array $test_packages Downloaded test packages with manifests.
+	 * @param OutputInterface $output The command output.
+	 * @return string The network mode: 'offline' or 'online'.
+	 */
+	private function determine_network_mode( QITInput $input, array $test_packages, OutputInterface $output ): string {
+		// Check if any test package requires network
+		$packages_requiring_network = [];
+		$packages_not_requiring_network = [];
+		
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( isset( $meta['manifest'] ) ) {
+				// The manifest may already be a TestPackageManifest object (from local packages)
+				// or an array (from remote packages)
+				if ( $meta['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+					$manifest = $meta['manifest'];
+				} else {
+					$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $meta['manifest'] );
+				}
+				if ( $manifest->requires_network() ) {
+					$packages_requiring_network[] = $pkg_id;
+				} else {
+					$packages_not_requiring_network[] = $pkg_id;
+				}
+			}
+		}
+		
+		// Display network policy information if verbose
+		if ( $output->isVerbose() && count( $test_packages ) > 0 ) {
+			$output->writeln( '' );
+			$output->writeln( '<info>Network Policy: Auto mode</info>' );
+			$output->writeln( sprintf( 
+				'Packages: %d offline-only, %d require network', 
+				count( $packages_not_requiring_network ),
+				count( $packages_requiring_network )
+			) );
+		}
+		
+		// Determine auto mode result
+		$auto_mode_needs_network = count( $packages_requiring_network ) > 0;
+		
+		// Check for override flags
+		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
+			// User forcing offline mode
+			if ( $auto_mode_needs_network ) {
+				// Error: conflict between forced offline and package requirements
+				$package_list = implode( "\n  - ", $packages_requiring_network );
+				throw new \RuntimeException( sprintf(
+					"Cannot run in offline mode.\n" .
+					"%d package(s) require network access:\n  - %s\n\n" .
+					"Options:\n" .
+					"1. Remove --offline flag to use auto mode\n" .
+					"2. Use --online flag to force network access\n" .
+					"3. Exclude these test packages from the run",
+					count( $packages_requiring_network ),
+					$package_list
+				) );
+			}
+			if ( $output->isVerbose() ) {
+				$output->writeln( '→ Running in OFFLINE mode (forced by --offline flag)' );
+			}
+			return 'offline';
+		}
+		
+		if ( $input->hasOption( 'online' ) && $input->getOption( 'online' ) ) {
+			// User forcing online mode
+			if ( $output->isVerbose() ) {
+				$output->writeln( '→ Running in ONLINE mode (forced by --online flag)' );
+			}
+			return 'online';
+		}
+		
+		// Auto mode (default)
+		if ( $auto_mode_needs_network ) {
+			if ( $output->isVerbose() ) {
+				$output->writeln( '→ Running in ONLINE mode (required by test packages)' );
+			}
+			return 'online';
+		} else {
+			if ( $output->isVerbose() ) {
+				$output->writeln( '→ Running in OFFLINE mode (no packages require network)' );
+			}
+			return 'offline';
+		}
 	}
 }

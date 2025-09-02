@@ -39,6 +39,7 @@ final class TestPackageManifest {
 	/** @var array<string, array<string, mixed>> */
 	private array $subpackages;
 	private ?string $parent_package;
+	private bool $requires_network;
 
 	/**
 	 * Construct from external data (JSON manifest or cached normalized data).
@@ -108,6 +109,19 @@ final class TestPackageManifest {
 		];
 		$this->subpackages    = $data['subpackages'] ?? [];
 		$this->parent_package = $data['parent_package'] ?? null;
+		
+		// Network requirement - optional field, defaults to false (offline)
+		if ( isset( $data['requires_network'] ) ) {
+			// Handle string values properly (JSON might provide strings)
+			if ( is_string( $data['requires_network'] ) ) {
+				$this->requires_network = filter_var( $data['requires_network'], FILTER_VALIDATE_BOOLEAN );
+			} else {
+				$this->requires_network = (bool) $data['requires_network'];
+			}
+		} else {
+			// Default to offline (false) when not specified
+			$this->requires_network = false;
+		}
 	}
 
 	/**
@@ -132,6 +146,17 @@ final class TestPackageManifest {
 		$this->retry          = $data['retry'];
 		$this->subpackages    = $data['subpackages'];
 		$this->parent_package = $data['parent_package'];
+		// For normalized data, requires_network defaults to false if not present
+		if ( isset( $data['requires_network'] ) ) {
+			// Handle string values properly (even in normalized data)
+			if ( is_string( $data['requires_network'] ) ) {
+				$this->requires_network = filter_var( $data['requires_network'], FILTER_VALIDATE_BOOLEAN );
+			} else {
+				$this->requires_network = (bool) $data['requires_network'];
+			}
+		} else {
+			$this->requires_network = false;
+		}
 	}
 
 	/**
@@ -176,6 +201,7 @@ final class TestPackageManifest {
 			'retry'          => $this->retry,
 			'subpackages'    => $this->subpackages,
 			'parent_package' => $this->parent_package,
+			'requires_network' => $this->requires_network,
 		];
 	}
 
@@ -277,6 +303,10 @@ final class TestPackageManifest {
 
 	public function get_parent_package(): ?string {
 		return $this->parent_package;
+	}
+
+	public function requires_network(): bool {
+		return $this->requires_network;
 	}
 
 	/**
