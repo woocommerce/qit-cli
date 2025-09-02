@@ -5,9 +5,7 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\QITInput;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use function QIT_CLI\is_windows;
 
 /**
  * Runs the official activation test‑package against the current SUT.
@@ -29,10 +27,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 	 *****************************************************************/
 	protected function configure(): void {
 		parent::configure();
-		$this->setDescription( 'Run activation tests' )
-			// Deprecated flags kept for backwards‑compat only
-			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated – ignored)', false )
-			->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Deprecated)', false );
+		$this->setDescription( 'Run activation tests' );
 	}
 
 	/******************************************************************
@@ -48,12 +43,6 @@ class RunActivationTestCommand extends RunE2ECommand {
 			return self::SUCCESS;
 		}
 
-		/* ─ platform guard ─ */
-		if ( is_windows() ) {
-			$output->writeln( '<comment>To run Activation Tests on Windows, please use WSL.</comment>' );
-			return self::FAILURE;
-		}
-
 		/****************************************************************
 		 * Inject activation‑specific defaults BEFORE delegating to parent
 		 */
@@ -63,15 +52,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 			$woo_version = $input->getOption( 'woo' );
 		}
 
-		// Set test package - use local path for development
-		$local_test_package = '/home/lucas/automattic/qit/qit-manager/ci/tests/activation/test-package';
-		if ( is_dir( $local_test_package ) ) {
-			// Use local test package for development
-			$input->setOption( 'test-package', [ $local_test_package ] );
-		} else {
-			// Fall back to remote package
-			$input->setOption( 'test-package', [ "woocommerce/activation:$woo_version" ] );
-		}
+		$input->setOption( 'test-package', [ "woocommerce/activation:$woo_version" ] );
 		$input->setOption( 'skip_activating_plugins', true );
 		$input->setOption( 'skip_activating_themes', true );
 		$input->setOption( 'pw_options', '--retries=0' );
@@ -83,13 +64,6 @@ class RunActivationTestCommand extends RunE2ECommand {
 		 * Delegate to parent implementation (now config‑aware)
 		 */
 		$exit_code = parent::doExecute( $input, $output );
-
-		/****************************************************************
-		 * Handle deprecated --ignore-fail flag (only if user typed it)
-		 */
-		if ( $input->hasOption( 'ignore-fail' ) && $input->getOption( 'ignore-fail' ) ) {
-			return self::SUCCESS;            // Treat any result as success
-		}
 
 		return $exit_code;
 	}
