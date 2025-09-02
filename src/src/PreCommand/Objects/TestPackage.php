@@ -22,7 +22,7 @@ class TestPackage implements \JsonSerializable {
 		return new self( $slug, $version );
 	}
 
-	public function jsonSerialize(): mixed {
+	public function jsonSerialize(): array {
 		return [
 			'slug'    => $this->slug,
 			'version' => $this->version,
