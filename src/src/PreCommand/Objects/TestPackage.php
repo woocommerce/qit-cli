@@ -22,6 +22,9 @@ class TestPackage implements \JsonSerializable {
 		return new self( $slug, $version );
 	}
 
+	/**
+	 * @return array{slug: string, version: string}
+	 */
 	public function jsonSerialize(): array {
 		return [
 			'slug'    => $this->slug,
