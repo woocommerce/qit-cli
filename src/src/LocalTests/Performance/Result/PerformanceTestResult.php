@@ -17,10 +17,14 @@ class PerformanceTestResult {
 	/** @var array<string, mixed> */
 	private $metrics = [];
 
-	/** @var int */
+	/** @var int
+	 * @phpstan-ignore-next-line
+	 */
 	private $start_time;
 
-	/** @var int */
+	/** @var int
+	 * @phpstan-ignore-next-line
+	 */
 	private $end_time;
 
 	/** @var string */
