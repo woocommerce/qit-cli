@@ -114,7 +114,18 @@ class RunE2ECommand extends QITCommand {
 		$this->setDescription( 'Run E2E tests' )
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
 			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
+			/* ─────────────── SUT‑related options ─────────────── */
+			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
+				'Use a custom ZIP (or directory/URL) as the SUT build' )
 			/* ─────────────── Shared Options (reused from env:up) ─────────────── */
+			/* ─────────────── E2E-specific options ─────────────── */
+			->addOption(
+				'test-package',
+				null,
+				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Test packages to include (multiple values allowed)',
+				[]
+			)
 			->reuseOption( 'env:up', 'environment' )
 			->reuseOption( 'env:up', 'php' )
 			->reuseOption( 'env:up', 'wp' )
@@ -129,17 +140,6 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'env' )
 			->reuseOption( 'env:up', 'env_file' )
 			->reuseOption( 'env:up', 'json' )
-			/* ─────────────── SUT‑related options ─────────────── */
-			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
-			'Use a custom ZIP (or directory/URL) as the SUT build' )
-			/* ─────────────── E2E-specific options ─────────────── */
-			->addOption(
-				'test-package',
-				null,
-				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-				'Test packages to include (multiple values allowed)',
-				[]
-			)
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
 			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
 
