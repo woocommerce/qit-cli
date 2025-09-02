@@ -120,7 +120,7 @@ class ZipValidatorTest extends QITTestCase {
 
 		$zip_instance->corrupt();
 
-		// Expect either UnexpectedValueException or RuntimeException depending on PHP/libzip version
+		// Expect either UnexpectedValueException or RuntimeException depending on PHP/libzip version.
 		try {
 			$zip_validator->validate_zip( $zip_instance->get_file_path() );
 			$this->fail( 'Expected an exception to be thrown for corrupted ZIP file' );
