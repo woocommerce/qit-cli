@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\MetricsExtractor;
 use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -36,13 +37,17 @@ class LocalTestRunNotifier {
 	/** @var PlaywrightToPuppeteerConverter */
 	protected $playwright_to_puppeteer_converter;
 
+	/** @var MetricsExtractor */
+	protected $metrics_extractor;
+
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
 		PrepareQMLog $prepare_qm_log,
-		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter
+		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter,
+		?MetricsExtractor $metrics_extractor = null
 	) {
 		$this->zipper                            = $zipper;
 		$this->output                            = $output;
@@ -50,6 +55,7 @@ class LocalTestRunNotifier {
 		$this->prepare_debug_log                 = $prepare_debug_log;
 		$this->prepare_qm_log                    = $prepare_qm_log;
 		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
+		$this->metrics_extractor                 = $metrics_extractor ?: new MetricsExtractor();
 	}
 
 	/**
@@ -285,9 +291,9 @@ class LocalTestRunNotifier {
 			'ctrf_json'                 => $ctrf_json,
 		];
 
-		// Extract k6 performance metrics for performance tests.
-		if ( $test_result instanceof PerformanceTestResult && is_array( $result_json ) && isset( $result_json['metrics'] ) ) {
-			$performance_results = $this->extract_performance_metrics( $result_json['metrics'] );
+		// Extract performance metrics for performance tests.
+		if ( $test_result instanceof PerformanceTestResult ) {
+			$performance_results = $this->extract_combined_performance_metrics( $test_result );
 
 			if ( ! empty( $performance_results ) ) {
 				$data['cd_performance_results'] = json_encode( $performance_results );
@@ -322,29 +328,52 @@ class LocalTestRunNotifier {
 	}
 
 	/**
-	 * Extract performance metrics from k6 test results.
+	 * Extract and combine performance metrics from both baseline and main test results.
 	 *
-	 * @param array<string, mixed> $metrics The metrics array from k6 test results.
+	 * @param PerformanceTestResult $test_result The main test result.
 	 *
-	 * @return array<string, mixed> The extracted performance metrics.
+	 * @return array<string, mixed> The combined performance metrics.
 	 */
-	private function extract_performance_metrics( array $metrics ): array {
-		$performance_results = [];
-		$metrics_to_extract  = [
-			'browser_web_vital_ttfb',
-			'browser_web_vital_fcp',
-			'browser_web_vital_lcp',
-			'browser_web_vital_inp',
-			'browser_web_vital_cls',
-			'checks',
+	private function extract_combined_performance_metrics( PerformanceTestResult $test_result ): array {
+		$performance_results = [
+			'has_baseline' => false,
+			'extension'    => [],
+			'baseline'     => [],
+			'comparison'   => [],
 		];
 
-		foreach ( $metrics_to_extract as $metric ) {
-			if ( isset( $metrics[ $metric ] ) ) {
-				$performance_results[ $metric ] = $metrics[ $metric ];
-			}
+		// Extract main test (extension) metrics from the test result itself
+		$performance_results['extension'] = $this->metrics_extractor->extract_metrics( $test_result->get_metrics() );
+
+		// Check if we have baseline results.
+		$baseline_result = $test_result->get_baseline_result();
+		if ( $baseline_result !== null ) {
+			$performance_results['has_baseline'] = true;
+			$performance_results['baseline']     = $this->metrics_extractor->extract_metrics( $baseline_result->get_metrics() );
+			$performance_results['comparison']   = $this->extract_comparison_metrics( $test_result );
 		}
 
 		return $performance_results;
+	}
+
+	/**
+	 * Extract comparison metrics from a test result.
+	 *
+	 * @param PerformanceTestResult $test_result The main test result.
+	 *
+	 * @return array<string, mixed> The comparison metrics.
+	 */
+	private function extract_comparison_metrics( PerformanceTestResult $test_result ): array {
+		$comparison_metrics = [];
+		$all_metrics        = $test_result->get_metrics();
+
+		// Look for comparison metrics (those ending with _vs_baseline_percent or _vs_baseline_diff).
+		foreach ( $all_metrics as $metric_name => $metric_value ) {
+			if ( str_contains( $metric_name, '_vs_baseline_' ) ) {
+				$comparison_metrics[ $metric_name ] = $metric_value;
+			}
+		}
+
+		return $comparison_metrics;
 	}
 }

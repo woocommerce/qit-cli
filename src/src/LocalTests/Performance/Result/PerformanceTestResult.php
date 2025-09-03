@@ -39,6 +39,12 @@ class PerformanceTestResult {
 	/** @var bool */
 	private $results_processed = false;
 
+	/** @var bool */
+	private $is_baseline = false;
+
+	/** @var PerformanceTestResult|null */
+	private $baseline_result = null;
+
 	public function __construct( PerformanceEnvInfo $env_info ) {
 		$this->env_info    = $env_info;
 		$this->start_time  = time();
@@ -76,6 +82,9 @@ class PerformanceTestResult {
 
 		// Process k6 JSON results.
 		$this->process_k6_results();
+
+		// Write processed metrics to result.json for compatibility
+		$this->write_result_json();
 
 		$this->results_processed = true;
 	}
@@ -119,7 +128,8 @@ class PerformanceTestResult {
 			}
 
 			if ( $data['type'] === 'Metric' ) {
-				$this->add_metric( $data['metric'], $data['data'] );
+				// Skip raw metric definitions - we'll calculate summaries from points
+				// Raw metrics only contain metadata, not actual values
 			} elseif ( $data['type'] === 'Point' ) {
 				$points[] = $data;
 			}
@@ -136,15 +146,31 @@ class PerformanceTestResult {
 		$http_req_durations = [];
 		$http_req_failed    = 0;
 		$http_req_total     = 0;
+		
+		// Collect Web Vitals and other metrics
+		$metrics_data = [];
 
 		foreach ( $points as $point ) {
-			if ( isset( $point['metric'] ) && $point['metric'] === 'http_req_duration' && isset( $point['data']['value'] ) ) {
-				$http_req_durations[] = $point['data']['value'];
-			} elseif ( isset( $point['metric'] ) && $point['metric'] === 'http_req_failed' && isset( $point['data']['value'] ) ) {
-				$http_req_failed += $point['data']['value'];
-			} elseif ( isset( $point['metric'] ) && $point['metric'] === 'http_reqs' && isset( $point['data']['value'] ) ) {
-				// Count actual HTTP requests, not all data points.
-				$http_req_total += $point['data']['value'];
+			if ( ! isset( $point['metric'] ) || ! isset( $point['data']['value'] ) ) {
+				continue;
+			}
+			
+			$metric = $point['metric'];
+			$value  = $point['data']['value'];
+			
+			// Collect values for each metric
+			if ( ! isset( $metrics_data[ $metric ] ) ) {
+				$metrics_data[ $metric ] = [];
+			}
+			$metrics_data[ $metric ][] = $value;
+			
+			// Special handling for specific metrics
+			if ( $metric === 'http_req_duration' ) {
+				$http_req_durations[] = $value;
+			} elseif ( $metric === 'http_req_failed' ) {
+				$http_req_failed += $value;
+			} elseif ( $metric === 'http_reqs' ) {
+				$http_req_total += $value;
 			}
 		}
 
@@ -166,6 +192,38 @@ class PerformanceTestResult {
 
 		$this->add_metric( 'summary_http_req_total', $http_req_total );
 		$this->add_metric( 'summary_http_req_failed', $http_req_failed );
+		
+		// Process all collected metrics to calculate statistics
+		foreach ( $metrics_data as $metric_name => $values ) {
+			if ( empty( $values ) ) {
+				continue;
+			}
+			
+			// Calculate statistics for this metric
+			sort( $values );
+			$count = count( $values );
+			
+			$stats = [
+				'avg' => array_sum( $values ) / $count,
+				'med' => $this->calculate_percentile( $values, 50 ),
+				'min' => min( $values ),
+				'max' => max( $values ),
+				'p95' => $this->calculate_percentile( $values, 95 ),
+			];
+			
+			// For checks metric, calculate pass/fail counts
+			if ( $metric_name === 'checks' ) {
+				$passes = array_sum( array_filter( $values, function( $v ) { return $v > 0; } ) );
+				$fails  = count( $values ) - $passes;
+				$stats  = [
+					'passes' => $passes,
+					'fails'  => $fails,
+				];
+			}
+			
+			// Store the processed metric with clean structure
+			$this->add_metric( $metric_name, $stats );
+		}
 	}
 
 	/**
@@ -254,5 +312,57 @@ class PerformanceTestResult {
 		}
 
 		return $details;
+	}
+
+	/**
+	 * Set whether this is a baseline test result.
+	 */
+	public function set_baseline( bool $is_baseline ): void {
+		$this->is_baseline = $is_baseline;
+	}
+
+	/**
+	 * Check if this is a baseline test result.
+	 */
+	public function is_baseline(): bool {
+		return $this->is_baseline;
+	}
+
+	/**
+	 * Set the baseline test result for comparison.
+	 */
+	public function set_baseline_result( PerformanceTestResult $baseline_result ): void {
+		$this->baseline_result = $baseline_result;
+	}
+
+	/**
+	 * Get the baseline test result for comparison.
+	 */
+	public function get_baseline_result(): ?PerformanceTestResult {
+		return $this->baseline_result;
+	}
+
+	/**
+	 * Write processed metrics to result.json for compatibility.
+	 */
+	private function write_result_json(): void {
+		$result_file = $this->results_dir . '/result.json';
+		
+		// Create a structure compatible with existing expectations
+		$result_data = [
+			'metrics' => $this->metrics,
+			'root_group' => [
+				'name' => $this->env_info->sut_slug ?: 'performance-test',
+				'path' => '::',
+				'id' => uniqid(),
+				'groups' => [],
+				'checks' => [],
+			],
+		];
+		
+		$json_content = json_encode( $result_data, JSON_PRETTY_PRINT );
+		if ( $json_content !== false ) {
+			file_put_contents( $result_file, $json_content );
+		}
 	}
 }

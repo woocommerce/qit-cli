@@ -12,6 +12,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\PerformanceTestConfig;
 use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PluginDependencies;
@@ -103,6 +104,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'extension_set' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
+			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests before the main tests.' )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
@@ -231,12 +233,15 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		$test_tag     = $input->getArgument( 'test' ) ?? '';
 		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
+		$no_baseline  = $input->getOption( 'no_baseline' );
 
 		if ( $env_info instanceof PerformanceEnvInfo && ! empty( $woo_extension_id ) ) {
 			$env_info->sut_slug     = $woo_extension_slug;
+			$env_info->sut_id       = $woo_extension_id;
 			$env_info->sut_type     = $sut_type;
 			$env_info->test_tag     = $test_tag;
 			$env_info->k6_test_file = $k6_test_file;
+			$env_info->run_baseline = ! $no_baseline;
 
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
@@ -449,7 +454,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		} else {
 			// If we never set test_tags, ensure it at least exists.
 			if ( empty( $extension_data['test_tags'] ) ) {
-				$extension_data['test_tags'] = [ 'default' ];
+				$extension_data['test_tags'] = PerformanceTestConfig::DEFAULT_TEST_TAGS;
 			}
 		}
 

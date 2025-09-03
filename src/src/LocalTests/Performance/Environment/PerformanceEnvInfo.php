@@ -44,6 +44,9 @@ class PerformanceEnvInfo extends EnvInfo {
 	/** @var string The k6 test file to run */
 	public $k6_test_file = '';
 
+	/** @var bool Whether to run baseline tests before main tests */
+	public $run_baseline = true;
+
 	/** @var array<int,array{
 	 *     slug:string,
 	 *     test_tag:string,
