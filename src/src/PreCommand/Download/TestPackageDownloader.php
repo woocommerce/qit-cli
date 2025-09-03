@@ -133,7 +133,7 @@ class TestPackageDownloader {
 					if ( ! is_dir( $reference . '/node_modules' ) ) {
 						$this->install_npm_dependencies( $reference );
 					}
-					
+
 					// Ensure Playwright browsers are installed if Playwright is present
 					$this->install_playwright_browsers_if_needed( $reference );
 				}
@@ -755,17 +755,17 @@ class TestPackageDownloader {
 	 */
 	protected function install_playwright_browsers_if_needed( string $package_dir ): void {
 		// Check if Playwright is installed
-		if ( ! file_exists( $package_dir . '/node_modules/@playwright/test' ) && 
-		     ! file_exists( $package_dir . '/node_modules/playwright' ) &&
-		     ! file_exists( $package_dir . '/node_modules/playwright-core' ) ) {
+		if ( ! file_exists( $package_dir . '/node_modules/@playwright/test' ) &&
+			! file_exists( $package_dir . '/node_modules/playwright' ) &&
+			! file_exists( $package_dir . '/node_modules/playwright-core' ) ) {
 			return;
 		}
-		
+
 		// First check with --dry-run to see if browsers are already installed
 		$dry_run_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install --dry-run 2>&1';
-		$dry_run_output = [];
+		$dry_run_output  = [];
 		exec( $dry_run_command, $dry_run_output );
-		
+
 		// Check if all browser paths exist
 		$browsers_needed = false;
 		foreach ( $dry_run_output as $line ) {
@@ -785,19 +785,19 @@ class TestPackageDownloader {
 				}
 			}
 		}
-		
+
 		if ( ! $browsers_needed ) {
 			if ( $this->output->isVerbose() ) {
 				$this->output->writeln( 'Playwright browsers already installed, skipping...' );
 			}
 			return;
 		}
-		
+
 		// Browsers need to be installed
 		$this->output->writeln( 'Installing Playwright browsers...' );
 
-		$playwright_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install';
-		$playwright_output = [];
+		$playwright_command     = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install';
+		$playwright_output      = [];
 		$playwright_return_code = 0;
 
 		exec( $playwright_command . ' 2>&1', $playwright_output, $playwright_return_code );
