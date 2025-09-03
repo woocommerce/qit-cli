@@ -103,7 +103,6 @@ class EnvironmentVars {
 		$content .= '  echo "✓ QIT environment variables loaded"' . "\n";
 		$content .= '  echo "  Environment: $QIT_ENV_ID"' . "\n";
 		$content .= '  echo "  Site URL: $QIT_SITE_URL"' . "\n";
-		$content .= '  echo "  DB Port: $DB_PORT"' . "\n";
 		$content .= "fi\n";
 
 		return $content;
