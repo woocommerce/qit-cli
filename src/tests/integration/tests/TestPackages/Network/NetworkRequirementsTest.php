@@ -20,16 +20,6 @@ class NetworkRequirementsTest extends \PHPUnit\Framework\TestCase {
 		$this->fixturesDir = QIT_INTEGRATION_TESTS_ROOT . '/fixtures/test-packages/network';
 	}
 	
-	protected function tearDown(): void {
-		// Clean up any running environments
-		try {
-			qit( [ 'env:down' ] );
-		} catch ( \Exception $e ) {
-			// Ignore teardown errors - environment may already be down
-		}
-		parent::tearDown();
-	}
-	
 	
 	/**
 	 * Test that a package without requires_network field runs offline by default.

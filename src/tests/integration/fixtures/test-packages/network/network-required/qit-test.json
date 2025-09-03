@@ -8,7 +8,7 @@
     "phases": {
       "run": [
         "host: mkdir -p ./results ./blob-report",
-        "wp eval \"\\$response = wp_remote_get('https://api.wordpress.org/plugins/info/1.0/hello-dolly.json', array('timeout' => 5)); file_put_contents('/tmp/network-status.txt', is_wp_error(\\$response) ? 'NO_NETWORK' : 'NETWORK');\"",
+        "php test-network.php",
         "host: echo '{\"results\":{\"tool\":{\"name\":\"network-test\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"network-connectivity-test\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
       ]
     },
