@@ -193,10 +193,6 @@ class PerformanceTestResult {
 
 		// Process all collected metrics to calculate statistics.
 		foreach ( $metrics_data as $metric_name => $values ) {
-			if ( empty( $values ) ) {
-				continue;
-			}
-
 			// Calculate statistics for this metric.
 			sort( $values );
 			$count = count( $values );

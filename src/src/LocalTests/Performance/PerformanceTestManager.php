@@ -59,7 +59,7 @@ class PerformanceTestManager {
 		// Combine baseline and main results if baseline was run.
 		$final_result = $main_result['test_result'];
 		if ( $baseline_result !== null ) {
-			$final_result = $this->combine_results( $main_result['test_result'], $baseline_result, $env_info );
+			$final_result = $this->combine_results( $main_result['test_result'], $baseline_result );
 
 		}
 
