@@ -126,6 +126,17 @@ class TestPackageDownloader {
 					'downloaded_path' => $reference,
 					'version'         => 'local',
 				];
+
+				// For local packages, ensure npm dependencies and Playwright browsers are installed
+				if ( file_exists( $reference . '/package.json' ) ) {
+					// Check if node_modules exists, if not run npm install
+					if ( ! is_dir( $reference . '/node_modules' ) ) {
+						$this->install_npm_dependencies( $reference );
+					}
+					
+					// Ensure Playwright browsers are installed if Playwright is present
+					$this->install_playwright_browsers_if_needed( $reference );
+				}
 			} else {
 				// Remote package - will fetch metadata to validate cache
 				$remote_packages[ $reference ] = $package_info;
@@ -731,6 +742,76 @@ class TestPackageDownloader {
 
 		if ( $this->output->isVerbose() ) {
 			$this->output->writeln( 'npm dependencies installed successfully' );
+		}
+
+		// Ensure Playwright browsers are installed if Playwright is present
+		$this->install_playwright_browsers_if_needed( $package_dir );
+	}
+
+	/**
+	 * Install Playwright browsers if Playwright is detected in the package.
+	 *
+	 * @param string $package_dir The directory containing the package.
+	 */
+	protected function install_playwright_browsers_if_needed( string $package_dir ): void {
+		// Check if Playwright is installed
+		if ( ! file_exists( $package_dir . '/node_modules/@playwright/test' ) && 
+		     ! file_exists( $package_dir . '/node_modules/playwright' ) &&
+		     ! file_exists( $package_dir . '/node_modules/playwright-core' ) ) {
+			return;
+		}
+		
+		// First check with --dry-run to see if browsers are already installed
+		$dry_run_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install --dry-run 2>&1';
+		$dry_run_output = [];
+		exec( $dry_run_command, $dry_run_output );
+		
+		// Check if all browser paths exist
+		$browsers_needed = false;
+		foreach ( $dry_run_output as $line ) {
+			if ( strpos( $line, 'Install location:' ) !== false ) {
+				// Extract path from line like "  Install location:    /home/user/.cache/ms-playwright/chromium-1187"
+				// First remove "Install location:" then trim whitespace
+				$parts = explode( 'Install location:', $line );
+				if ( count( $parts ) > 1 ) {
+					$path = trim( $parts[1] );
+					if ( ! empty( $path ) && ! is_dir( $path ) ) {
+						$browsers_needed = true;
+						if ( $this->output->isVeryVerbose() ) {
+							$this->output->writeln( "Browser directory missing: $path" );
+						}
+						break;
+					}
+				}
+			}
+		}
+		
+		if ( ! $browsers_needed ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( 'Playwright browsers already installed, skipping...' );
+			}
+			return;
+		}
+		
+		// Browsers need to be installed
+		$this->output->writeln( 'Installing Playwright browsers...' );
+
+		$playwright_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install';
+		$playwright_output = [];
+		$playwright_return_code = 0;
+
+		exec( $playwright_command . ' 2>&1', $playwright_output, $playwright_return_code );
+
+		if ( $playwright_return_code !== 0 ) {
+			// Don't throw an exception, just warn - some packages may not need browsers
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( '<warning>Warning: playwright install failed (this may be expected for some packages):</warning>' );
+				$this->output->writeln( implode( "\n", $playwright_output ) );
+			}
+		} else {
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( 'Playwright browsers installed successfully' );
+			}
 		}
 	}
 
