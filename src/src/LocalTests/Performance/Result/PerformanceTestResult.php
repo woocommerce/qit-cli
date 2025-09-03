@@ -83,7 +83,7 @@ class PerformanceTestResult {
 		// Process k6 JSON results.
 		$this->process_k6_results();
 
-		// Write processed metrics to result.json for compatibility
+		// Write processed metrics to result.json for compatibility.
 		$this->write_result_json();
 
 		$this->results_processed = true;
@@ -123,14 +123,12 @@ class PerformanceTestResult {
 			}
 
 			$data = json_decode( $line, true );
-			if ( ! $data ) {
+			if ( ! $data || ! isset( $data['type'] ) ) {
 				continue;
 			}
 
-			if ( $data['type'] === 'Metric' ) {
-				// Skip raw metric definitions - we'll calculate summaries from points
-				// Raw metrics only contain metadata, not actual values
-			} elseif ( $data['type'] === 'Point' ) {
+			// We only need Point data - Metric entries just contain metadata.
+			if ( $data['type'] === 'Point' ) {
 				$points[] = $data;
 			}
 		}
@@ -146,25 +144,25 @@ class PerformanceTestResult {
 		$http_req_durations = [];
 		$http_req_failed    = 0;
 		$http_req_total     = 0;
-		
-		// Collect Web Vitals and other metrics
+
+		// Collect Web Vitals and other metrics.
 		$metrics_data = [];
 
 		foreach ( $points as $point ) {
 			if ( ! isset( $point['metric'] ) || ! isset( $point['data']['value'] ) ) {
 				continue;
 			}
-			
+
 			$metric = $point['metric'];
 			$value  = $point['data']['value'];
-			
-			// Collect values for each metric
+
+			// Collect values for each metric.
 			if ( ! isset( $metrics_data[ $metric ] ) ) {
 				$metrics_data[ $metric ] = [];
 			}
 			$metrics_data[ $metric ][] = $value;
-			
-			// Special handling for specific metrics
+
+			// Special handling for specific metrics.
 			if ( $metric === 'http_req_duration' ) {
 				$http_req_durations[] = $value;
 			} elseif ( $metric === 'http_req_failed' ) {
@@ -192,17 +190,17 @@ class PerformanceTestResult {
 
 		$this->add_metric( 'summary_http_req_total', $http_req_total );
 		$this->add_metric( 'summary_http_req_failed', $http_req_failed );
-		
-		// Process all collected metrics to calculate statistics
+
+		// Process all collected metrics to calculate statistics.
 		foreach ( $metrics_data as $metric_name => $values ) {
 			if ( empty( $values ) ) {
 				continue;
 			}
-			
-			// Calculate statistics for this metric
+
+			// Calculate statistics for this metric.
 			sort( $values );
 			$count = count( $values );
-			
+
 			$stats = [
 				'avg' => array_sum( $values ) / $count,
 				'med' => $this->calculate_percentile( $values, 50 ),
@@ -210,18 +208,20 @@ class PerformanceTestResult {
 				'max' => max( $values ),
 				'p95' => $this->calculate_percentile( $values, 95 ),
 			];
-			
-			// For checks metric, calculate pass/fail counts
+
+			// For checks metric, calculate pass/fail counts.
 			if ( $metric_name === 'checks' ) {
-				$passes = array_sum( array_filter( $values, function( $v ) { return $v > 0; } ) );
+				$passes = array_sum( array_filter( $values, function ( $v ) {
+					return $v > 0;
+				} ) );
 				$fails  = count( $values ) - $passes;
 				$stats  = [
 					'passes' => $passes,
 					'fails'  => $fails,
 				];
 			}
-			
-			// Store the processed metric with clean structure
+
+			// Store the processed metric with clean structure.
 			$this->add_metric( $metric_name, $stats );
 		}
 	}
@@ -347,19 +347,19 @@ class PerformanceTestResult {
 	 */
 	private function write_result_json(): void {
 		$result_file = $this->results_dir . '/result.json';
-		
-		// Create a structure compatible with existing expectations
+
+		// Create a structure compatible with existing expectations.
 		$result_data = [
-			'metrics' => $this->metrics,
+			'metrics'    => $this->metrics,
 			'root_group' => [
-				'name' => $this->env_info->sut_slug ?: 'performance-test',
-				'path' => '::',
-				'id' => uniqid(),
+				'name'   => $this->env_info->sut_slug ?: 'performance-test',
+				'path'   => '::',
+				'id'     => uniqid(),
 				'groups' => [],
 				'checks' => [],
 			],
 		];
-		
+
 		$json_content = json_encode( $result_data, JSON_PRETTY_PRINT );
 		if ( $json_content !== false ) {
 			file_put_contents( $result_file, $json_content );

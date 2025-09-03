@@ -22,7 +22,6 @@ class PerformanceComparisonService {
 		$main_metrics     = $this->load_metrics( $main_result );
 		$baseline_metrics = $this->load_metrics( $baseline_result );
 
-
 		foreach ( PerformanceTestConfig::METRICS_TO_COMPARE as $metric ) {
 			$this->calculate_metric_comparison( $main_result, $metric, $main_metrics, $baseline_metrics );
 		}
@@ -62,7 +61,6 @@ class PerformanceComparisonService {
 		$main_value     = $this->extract_metric_value( $main_metrics[ $metric ] );
 		$baseline_value = $this->extract_metric_value( $baseline_metrics[ $metric ] );
 
-
 		if ( $baseline_value <= 0 ) {
 			return;
 		}
@@ -72,7 +70,6 @@ class PerformanceComparisonService {
 
 		$main_result->add_metric( "{$metric}_vs_baseline_percent", $percentage_change );
 		$main_result->add_metric( "{$metric}_vs_baseline_diff", $absolute_diff );
-
 	}
 
 	/**

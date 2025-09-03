@@ -164,10 +164,9 @@ class PerformanceTestManager {
 	 *
 	 * @param PerformanceTestResult      $main_result The main test result.
 	 * @param PerformanceTestResult|null $baseline_result The baseline test result.
-	 * @param PerformanceEnvInfo         $env_info The environment info.
 	 * @return PerformanceTestResult The combined result.
 	 */
-	private function combine_results( PerformanceTestResult $main_result, ?PerformanceTestResult $baseline_result, PerformanceEnvInfo $env_info ): PerformanceTestResult {
+	private function combine_results( PerformanceTestResult $main_result, ?PerformanceTestResult $baseline_result ): PerformanceTestResult {
 		// Use the main result as the base.
 		$combined_result = $main_result;
 

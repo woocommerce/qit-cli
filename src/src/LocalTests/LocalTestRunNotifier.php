@@ -342,7 +342,7 @@ class LocalTestRunNotifier {
 			'comparison'   => [],
 		];
 
-		// Extract main test (extension) metrics from the test result itself
+		// Extract main test (extension) metrics from the test result itself.
 		$performance_results['extension'] = $this->metrics_extractor->extract_metrics( $test_result->get_metrics() );
 
 		// Check if we have baseline results.
