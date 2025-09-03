@@ -27,8 +27,8 @@
             "client": "qit_cli",
             "event": "cli_development_extension_test",
             "optional_features": {
-                "hpos": true,
-                "new_product_editor": true
+                "hpos": false,
+                "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
@@ -7385,12 +7385,7 @@
         },
         {
             "debug_log": {
-                "generic": [
-                    {
-                        "count": "Between 500 and 999, normalized to 750",
-                        "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
-                    }
-                ]
+                "generic": []
             }
         }
     ]

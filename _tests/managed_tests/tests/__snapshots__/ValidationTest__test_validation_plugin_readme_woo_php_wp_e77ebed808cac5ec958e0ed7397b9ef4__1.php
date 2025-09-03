@@ -76,6 +76,8 @@
                         "blueprint",
                         "block_email_editor",
                         "point_of_sale",
+                        "fulfillments",
+                        "experimental-iapi-mini-cart",
                         "custom_order_tables",
                         "cost_of_goods_sold"
                     ]
