@@ -15,7 +15,6 @@ use Symfony\Component\Console\Output\OutputInterface;
  *     (cannot be overridden – the CLI flag is injected programmatically).
  *   • Plugins / themes are not activated inside the container.
  *   • Playwright retries are disabled.
- *   • Deprecated options --wait / --ignore-fail still exist for BC.
  */
 class RunActivationTestCommand extends RunE2ECommand {
 

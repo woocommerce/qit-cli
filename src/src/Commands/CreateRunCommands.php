@@ -108,7 +108,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$this->test_group          = $test_group;
 				parent::__construct( $test_type );
 				$this->setName( "run:$test_type" );
-				$this->setDescription( "Run $test_type tests remotely on QIT" );
+				$this->setDescription( "Run $test_type tests on QIT (waits for completion by default)" );
 			}
 
 			/**
@@ -222,24 +222,22 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$response = json_decode( $json, true, 512, JSON_THROW_ON_ERROR );
 
 				/****************************************************************
-				 * 9.  --wait support (delegates to get command)
+				 * 9.  Handle async vs sync execution (QIT 1.0 behavior)
 				 */
-				if ( $input->getOption( 'wait' ) ) {
-					return $this->wait_for_completion( $input, $output, $response );
-				}
+				// In QIT 1.0, we wait by default unless --async is specified
+				if ( $input->getOption( 'async' ) ) {
+					// Async mode: enqueue and return immediately
+					if ( $input->getOption( 'json' ) ) {
+						$output->write( $json );
+						return Command::SUCCESS;
+					}
 
-				/****************************************************************
-				 * 10.  Standard non‑wait output
-				 */
-				if ( $input->getOption( 'json' ) ) {
-					$output->write( $json );
-
+					$this->render_start_table( $output, $response, $input->getOption( 'print-report-url' ) );
 					return Command::SUCCESS;
 				}
 
-				$this->render_start_table( $output, $response );
-
-				return Command::SUCCESS;
+				// Default behavior: wait for completion
+				return $this->wait_for_completion( $input, $output, $response );
 			}
 
 			/**
@@ -352,12 +350,30 @@ class CreateRunCommands extends DynamicCommandCreator {
 					}
 
 					if ( time() - $start > $timeout ) {
-						$output->writeln( '<comment>Timed out waiting for remote test.</comment>' );
-						return 124;
+						$output->writeln( '<error>Test execution timed out after ' . $timeout . ' seconds.</error>' );
+						return Command::FAILURE; // Exit code 1 for timeout
 					}
 				} while ( true );
 
 				$output->writeln( '<info>Test run completed.</info>' );
+
+				// Get the test run details to potentially print the report URL
+				if ( $input->getOption( 'print-report-url' ) && ! $input->getOption( 'json' ) ) {
+					try {
+						$result_json = ( new \QIT_CLI\RequestBuilder( \QIT_CLI\get_manager_url() . '/wp-json/cd/v1/get-single' ) )
+							->with_method( 'POST' )
+							->with_post_body( [ 'test_run_id' => $test_run_id ] )
+							->request();
+						$result = json_decode( $result_json, true );
+						if ( isset( $result['test_results_manager_url'] ) ) {
+							$output->writeln( '<info>Report URL:</info> ' . $result['test_results_manager_url'] );
+						} else {
+							$output->writeln( '<comment>Report URL not available yet.</comment>' );
+						}
+					} catch ( \Exception $e ) {
+						$output->writeln( '<error>Failed to fetch report URL: ' . $e->getMessage() . '</error>' );
+					}
+				}
 
 				$exit = $get->run(
 					new ArrayInput( [
@@ -367,7 +383,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$output
 				);
 
-				return $input->getOption( 'ignore-fail' ) ? Command::SUCCESS : $exit;
+				return $exit;
 			}
 
 			/**
@@ -375,24 +391,32 @@ class CreateRunCommands extends DynamicCommandCreator {
 			 *
 			 * @param OutputInterface     $output
 			 * @param array<string,mixed> $response
+			 * @param bool                $print_report_url Whether to print the report URL
 			 * @return void
 			 */
-			private function render_start_table( OutputInterface $output, array $response ): void {
+			private function render_start_table( OutputInterface $output, array $response, bool $print_report_url = false ): void {
+				$output->writeln( '<info>Test enqueued on QIT servers!</info>' );
+				
+				$headers = [ 'Test Run ID' ];
+				$row = [ $response['test_run_id'] ?? '–' ];
+				
+				// Only show Result URL column if --print-report-url is set
+				if ( $print_report_url ) {
+					$headers[] = 'Result URL';
+					$row[] = $response['test_results_manager_url'] ?? '–';
+				}
+				
 				$table = ( new Table( $output ) )
 					->setHorizontal()
 					->setStyle( 'compact' )
-					->setHeaders( [ 'Test Run ID', 'Result URL' ] )
-					->addRow( [
-						$response['test_run_id'] ?? '–',
-						$response['test_results_manager_url'] ?? '–',
-					] );
-				$output->writeln( '<info>Test started on QIT servers!</info>' );
+					->setHeaders( $headers )
+					->addRow( $row );
 				$table->render();
 				$output->writeln( '' );
 
 				$bin = basename( $_SERVER['argv'][0] ?? 'qit' );
 				$output->writeln( sprintf(
-					'<info>You can monitor the run with "%s %s %d" or add "--wait".</info>',
+					'<info>You can monitor the run with "%s %s %d".</info>',
 					$bin,
 					GetCommand::getDefaultName(),
 					$response['test_run_id'] ?? 0
@@ -410,9 +434,9 @@ class CreateRunCommands extends DynamicCommandCreator {
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or WooCommerce.com ID' )
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, '(Optional) Local ZIP / dir / URL build to test' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, '(Optional) Output raw JSON response', false )
-			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Optional) Wait until the test finishes', false )
+			->addOption( 'async', null, InputOption::VALUE_NEGATABLE, '(Optional) Enqueue test and return immediately without waiting', false )
+			->addOption( 'print-report-url', null, InputOption::VALUE_NEGATABLE, '(Optional) Print the test report URL', false )
 			->addOption( 'timeout', 't', InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null )
-			->addOption( 'ignore-fail', 'i', InputOption::VALUE_NEGATABLE, '(Optional) Exit 0 even if test fails', false )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false );
 
 		// Ensure zip gets forwarded
