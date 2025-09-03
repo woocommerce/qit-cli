@@ -43,6 +43,7 @@ define("OSDWPUVERSION", "1.7.1");
  * @since 		1.3
  * @author 		scripts@schloebe.de
  */
+if ( ! class_exists( 'OS_Disable_WordPress_Updates' ) ) {
 class OS_Disable_WordPress_Updates {
 	/**
 	 * The OS_Disable_WordPress_Updates class constructor
@@ -339,6 +340,7 @@ class OS_Disable_WordPress_Updates {
 		return $current;
 	}
 }
+} // End if class_exists check
 
 if ( class_exists('OS_Disable_WordPress_Updates') ) {
 	$OS_Disable_WordPress_Updates = new OS_Disable_WordPress_Updates();
