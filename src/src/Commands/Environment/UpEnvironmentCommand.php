@@ -562,6 +562,10 @@ class UpEnvironmentCommand extends QITCommand {
 
 		$woo_version = $input->getOption( 'woo' );
 
+		if ( empty( $woo_version ) ) {
+			return $config;
+		}
+
 		$resolved_source = $this->version_resolver->resolve_woo( $woo_version );
 
 		if ( $resolved_source !== null ) {
