@@ -463,7 +463,8 @@ class PackageOrchestrator {
 		$out->writeln( sprintf( 'Duration:      %s', $this->format_duration( $duration ) ) );
 
 		// View results section
-		if ( ! empty( $results['local_command'] ) || ! empty( $results['remote_url'] ) || ( isset( $results['status'] ) && $results['status'] === 'failed' ) ) {
+		$is_ci = ! empty( getenv( 'CI' ) );
+		if ( ! empty( $results['local_command'] ) || ! empty( $results['remote_url'] ) || ( isset( $results['status'] ) && $results['status'] === 'failed' ) || $is_ci ) {
 			$out->writeln( '' );
 			$out->writeln( 'View Results:' );
 			if ( ! empty( $results['local_command'] ) ) {
@@ -471,6 +472,9 @@ class PackageOrchestrator {
 			}
 			if ( ! empty( $results['remote_url'] ) ) {
 				$out->writeln( '• Remote URL:    <comment>' . $results['remote_url'] . '</comment>' );
+			} elseif ( $is_ci && empty( $results['remote_url'] ) && isset( $results['status'] ) ) {
+				// In CI mode with no URL shown, add a note
+				$out->writeln( '• Remote URL:    <comment>Hidden in CI (use --print-report-url to show)</comment>' );
 			}
 			// Add debug info for failures
 			if ( isset( $results['status'] ) && $results['status'] === 'failed' ) {

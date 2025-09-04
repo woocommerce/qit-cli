@@ -149,7 +149,8 @@ class RunE2ECommand extends QITCommand {
 
 			// Execution options
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false );
+			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
+			->addOption( 'print-report-url', null, InputOption::VALUE_NONE, 'Print the test report URL (contains sensitive data - use cautiously in public logs)' );
 	}
 
 	/**
@@ -525,10 +526,16 @@ class RunE2ECommand extends QITCommand {
 		// Show orchestrator summary (always available from runTestPackages)
 		$orchestrator = $orchestrator_from_run;
 
+		// Check if we're in CI mode
+		$is_ci = ! empty( getenv( 'CI' ) );
+
+		// Only show remote URL if explicitly requested in CI, or always in non-CI
+		$should_show_url = ! $is_ci || $input->getOption( 'print-report-url' );
+
 		$summary_data = [
 			'status'        => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
 			'local_command' => 'qit report',
-			'remote_url'    => $report_url ?? '',
+			'remote_url'    => $should_show_url ? ( $report_url ?? '' ) : '',
 		];
 		$orchestrator->summary( $summary_data );
 
