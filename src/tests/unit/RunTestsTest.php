@@ -47,6 +47,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 			'command'              => 'run:woo-e2e',
 			'sut'                  => 'wccom-plugin-1', // Using slug.
 			'--additional_plugins' => '10002,1000245', // Using IDs.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -56,6 +57,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 			'command'              => 'run:woo-e2e',
 			'sut'                  => '10001', // Using ID.
 			'--additional_plugins' => 'wccom-plugin-2,wccom-plugin-4', // Using Slugs.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		// If this fails, debug "$this->application_tester->getDisplay()".
@@ -66,6 +68,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 			'command'              => 'run:woo-e2e',
 			'sut'                  => 'wccom-plugin-1', // Using slug.
 			'--additional_plugins' => '10002,wccom-plugin-5', // Using mixed.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -75,6 +78,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 			'command'              => 'run:woo-e2e',
 			'sut'                  => 'wccom-plugin-1',
 			'--additional_plugins' => '1234567890', // If the user passes an invalid ID, the Manager should flag that.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -84,6 +88,7 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 		$exitCode = $this->application_tester->run( [
 			'command' => 'run:woo-e2e',
 			'sut' => 'non-existing-extension',
+			'--async' => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertNotEquals( 0, $exitCode, 'Expected command to fail' );
