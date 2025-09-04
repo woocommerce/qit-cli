@@ -36,28 +36,28 @@ class EnvironmentVars {
 	public function get_mapping( E2EEnvInfo $env_info ): array {
 		$vars = [
 			// Core QIT variables
-			'QIT'                => '1',  // Indicates running in QIT context
-			'QIT_ENV_ID'         => $env_info->env_id,
-			'QIT_SITE_URL'       => $env_info->site_url,
+			'QIT'               => '1',  // Indicates running in QIT context
+			'QIT_ENV_ID'        => $env_info->env_id,
+			'QIT_SITE_URL'      => $env_info->site_url,
 			'QIT_WP_ADMIN'      => $env_info->site_url . '/wp-admin',
 
 			// Standard Playwright/testing variables
-			'QIT_BASE_URL'       => $env_info->site_url,
-			'QIT_WP_ADMIN_URL'   => $env_info->site_url . '/wp-admin',
+			'QIT_BASE_URL'      => $env_info->site_url,
+			'QIT_WP_ADMIN_URL'  => $env_info->site_url . '/wp-admin',
 
 			// Database connection
-			'QIT_DB_HOST'        => 'localhost',
-			'QIT_DB_NAME'        => 'wordpress',
-			'QIT_DB_USER'        => 'root',
-			'QIT_DB_PASSWORD'    => 'root',
+			'QIT_DB_HOST'       => 'localhost',
+			'QIT_DB_NAME'       => 'wordpress',
+			'QIT_DB_USER'       => 'root',
+			'QIT_DB_PASSWORD'   => 'root',
 
 			// WordPress details
-			'QIT_WP_USERNAME'    => 'admin',
-			'QIT_WP_PASSWORD'    => 'password',
+			'QIT_WP_USERNAME'   => 'admin',
+			'QIT_WP_PASSWORD'   => 'password',
 
 			// Container details (for advanced use)
-			'QIT_PHP_CONTAINER'  => $env_info->php_container ?? '',
-			'QIT_DB_CONTAINER'   => $env_info->db_container ?? '',
+			'QIT_PHP_CONTAINER' => $env_info->php_container ?? '',
+			'QIT_DB_CONTAINER'  => $env_info->db_container ?? '',
 		];
 
 		// Add any dynamic environment-specific variables

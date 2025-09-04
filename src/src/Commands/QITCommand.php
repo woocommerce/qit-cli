@@ -103,7 +103,7 @@ abstract class QITCommand extends Command {
 		if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {
 			$config_file = getcwd() . '/qit.json';
 		}
-		
+
 		// Display experimental warning when using qit.json
 		if ( $config_file !== null && $this->output !== null ) {
 			$this->output->writeln( '<comment>[EXPERIMENTAL]</comment> Using qit.json - this feature is highly experimental. Please report any issues or feedback at https://github.com/woocommerce/qit-cli/issues' );
