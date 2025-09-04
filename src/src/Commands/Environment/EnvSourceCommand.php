@@ -29,7 +29,7 @@ class EnvSourceCommand extends QITCommand {
 		parent::configure();
 		$this
 			->addArgument( 'env_id', InputArgument::OPTIONAL, 'The environment ID to generate source file for. If not provided, uses the most recent environment.' )
-			->setDescription( 'Output the path to a source-able file with environment variables for manual testing' );
+			->setDescription( 'Configure your shell to run tests against a QIT environment' );
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
@@ -58,7 +58,18 @@ class EnvSourceCommand extends QITCommand {
 
 		// Output just the path (for sourcing)
 		// This allows: source "$(qit env:source)"
-		$output->write( $files['shell'] );
+		$output->writeln( $files['shell'] );
+
+		// In verbose mode, show all environment variables
+		if ( $output->isVerbose() ) {
+			$vars = $this->environment_vars->get_mapping( $env_info );
+			$output->writeln( '', OutputInterface::VERBOSITY_VERBOSE );
+			$output->writeln( '<comment>Environment variables that will be exported:</comment>', OutputInterface::VERBOSITY_VERBOSE );
+			foreach ( $vars as $key => $value ) {
+				$output->writeln( sprintf( '  <info>%s</info>=<comment>%s</comment>', $key, $value ), OutputInterface::VERBOSITY_VERBOSE );
+			}
+			$output->writeln( '', OutputInterface::VERBOSITY_VERBOSE );
+		}
 
 		return 0;
 	}

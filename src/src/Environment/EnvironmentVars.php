@@ -36,29 +36,28 @@ class EnvironmentVars {
 	public function get_mapping( E2EEnvInfo $env_info ): array {
 		$vars = [
 			// Core QIT variables
-			'QIT'           => '1',  // Indicates running in QIT context
-			'QIT_ENV_ID'    => $env_info->env_id,
-			'QIT_SITE_URL'  => $env_info->site_url,
-			'QIT_WP_ADMIN'  => $env_info->site_url . '/wp-admin',
+			'QIT'                => '1',  // Indicates running in QIT context
+			'QIT_ENV_ID'         => $env_info->env_id,
+			'QIT_SITE_URL'       => $env_info->site_url,
+			'QIT_WP_ADMIN'      => $env_info->site_url . '/wp-admin',
 
 			// Standard Playwright/testing variables
-			'BASE_URL'      => $env_info->site_url,
-			'WP_ADMIN_URL'  => $env_info->site_url . '/wp-admin',
+			'QIT_BASE_URL'       => $env_info->site_url,
+			'QIT_WP_ADMIN_URL'   => $env_info->site_url . '/wp-admin',
 
 			// Database connection
-			'DB_HOST'       => 'localhost',
-			'DB_PORT'       => (string) $env_info->db_port,
-			'DB_NAME'       => 'wordpress',
-			'DB_USER'       => 'root',
-			'DB_PASSWORD'   => 'root',
+			'QIT_DB_HOST'        => 'localhost',
+			'QIT_DB_NAME'        => 'wordpress',
+			'QIT_DB_USER'        => 'root',
+			'QIT_DB_PASSWORD'    => 'root',
 
 			// WordPress details
-			'WP_USERNAME'   => 'admin',
-			'WP_PASSWORD'   => 'password',
+			'QIT_WP_USERNAME'    => 'admin',
+			'QIT_WP_PASSWORD'    => 'password',
 
 			// Container details (for advanced use)
-			'PHP_CONTAINER' => $env_info->php_container ?? '',
-			'DB_CONTAINER'  => $env_info->db_container ?? '',
+			'QIT_PHP_CONTAINER'  => $env_info->php_container ?? '',
+			'QIT_DB_CONTAINER'   => $env_info->db_container ?? '',
 		];
 
 		// Add any dynamic environment-specific variables
@@ -81,11 +80,16 @@ class EnvironmentVars {
 		$vars = $this->get_mapping( $env_info );
 
 		$content  = "#!/bin/bash\n";
-		$content .= "# QIT Environment Variables\n";
+		$content .= "# QIT Test Environment Configuration\n";
 		$content .= '# Generated: ' . gmdate( 'Y-m-d H:i:s' ) . "\n";
 		$content .= "# Environment: {$env_info->env_id}\n";
 		$content .= "#\n";
-		$content .= "# This file is auto-generated. Do not edit manually.\n";
+		$content .= "# This file configures your shell to run tests against a QIT environment.\n";
+		$content .= "# After sourcing, you can run commands like:\n";
+		$content .= "#   - npx playwright test\n";
+		$content .= "#   - npm test\n";
+		$content .= "#   - or any test framework that uses environment variables\n";
+		$content .= "#\n";
 		$content .= "# To regenerate: qit env:source {$env_info->env_id}\n";
 		$content .= "\n";
 
@@ -100,9 +104,12 @@ class EnvironmentVars {
 		$content .= "\n";
 		$content .= "# Provide feedback when sourced\n";
 		$content .= 'if [ -n "$BASH_VERSION" ] || [ -n "$ZSH_VERSION" ]; then' . "\n";
-		$content .= '  echo "✓ QIT environment variables loaded"' . "\n";
-		$content .= '  echo "  Environment: $QIT_ENV_ID"' . "\n";
-		$content .= '  echo "  Site URL: $QIT_SITE_URL"' . "\n";
+		$content .= '  echo "✓ QIT test environment ready!"' . "\n";
+		$content .= '  echo ""' . "\n";
+		$content .= '  echo "You can now run tests against: $QIT_SITE_URL"' . "\n";
+		$content .= '  echo "Example: npx playwright test"' . "\n";
+		$content .= '  echo ""' . "\n";
+		$content .= '  echo "Tip: Run \"env | grep QIT_\" to see all exported variables"' . "\n";
 		$content .= "fi\n";
 
 		return $content;
