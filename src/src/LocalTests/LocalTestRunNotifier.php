@@ -344,6 +344,9 @@ class LocalTestRunNotifier {
 
 		// Extract main test (extension) metrics from the test result itself.
 		$performance_results['extension'] = $this->metrics_extractor->extract_metrics( $test_result->get_metrics() );
+		
+		// Add failed checks for extension
+		$performance_results['extension']['failed_checks'] = $this->extract_failed_checks_from_result( $test_result );
 
 		// Check if we have baseline results.
 		$baseline_result = $test_result->get_baseline_result();
@@ -351,6 +354,9 @@ class LocalTestRunNotifier {
 			$performance_results['has_baseline'] = true;
 			$performance_results['baseline']     = $this->metrics_extractor->extract_metrics( $baseline_result->get_metrics() );
 			$performance_results['comparison']   = $this->extract_comparison_metrics( $test_result );
+			
+			// Add failed checks for baseline.
+			$performance_results['baseline']['failed_checks'] = $this->extract_failed_checks_from_result( $baseline_result );
 		}
 
 		return $performance_results;
@@ -375,5 +381,33 @@ class LocalTestRunNotifier {
 		}
 
 		return $comparison_metrics;
+	}
+
+	/**
+	 * Extract failed checks from a performance test result.
+	 *
+	 * @param PerformanceTestResult $test_result The test result to extract failed checks from.
+	 *
+	 * @return array<mixed> Array of failed check details.
+	 */
+	private function extract_failed_checks_from_result( PerformanceTestResult $test_result ): array {
+		$result_file = $test_result->get_results_dir() . '/result.json';
+		
+		if ( ! file_exists( $result_file ) ) {
+			return [];
+		}
+
+		$result_content = file_get_contents( $result_file );
+		$result_data = json_decode( $result_content, true );
+		
+		$checks = $result_data['root_group']['checks'] ?? [];
+		if ( ! is_array( $checks ) ) {
+			return [];
+		}
+
+		// Return checks that have failures (k6 format: "fails" > 0)
+		return array_filter( $checks, function( $check ) {
+			return ( $check['fails'] ?? 0 ) > 0;
+		} );
 	}
 }

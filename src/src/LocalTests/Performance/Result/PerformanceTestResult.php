@@ -220,6 +220,7 @@ class PerformanceTestResult {
 			// Store the processed metric with clean structure.
 			$this->add_metric( $metric_name, $stats );
 		}
+
 	}
 
 	/**
@@ -244,6 +245,7 @@ class PerformanceTestResult {
 	public function get_metrics(): array {
 		return $this->metrics;
 	}
+
 
 	/**
 	 * @return array<string, string>
@@ -340,11 +342,26 @@ class PerformanceTestResult {
 
 	/**
 	 * Write processed metrics to result.json for compatibility.
+	 * Preserves original k6 data and adds our processed metrics.
 	 */
 	private function write_result_json(): void {
 		$result_file = $this->results_dir . '/result.json';
 
-		// Create a structure compatible with existing expectations.
+		// Preserve original k6 data if it exists.
+		if ( file_exists( $result_file ) ) {
+			$original_content = file_get_contents( $result_file );
+			if ( $original_content !== false ) {
+				$original_data = json_decode( $original_content, true );
+				if ( is_array( $original_data ) ) {
+					// Add our processed metrics to the original k6 data.
+					$original_data['processed_metrics'] = $this->metrics;
+					file_put_contents( $result_file, json_encode( $original_data, JSON_PRETTY_PRINT ) );
+					return;
+				}
+			}
+		}
+
+		// Fallback: Create minimal structure if no original k6 data.
 		$result_data = [
 			'metrics'    => $this->metrics,
 			'root_group' => [
@@ -356,9 +373,6 @@ class PerformanceTestResult {
 			],
 		];
 
-		$json_content = json_encode( $result_data, JSON_PRETTY_PRINT );
-		if ( $json_content !== false ) {
-			file_put_contents( $result_file, $json_content );
-		}
+		file_put_contents( $result_file, json_encode( $result_data, JSON_PRETTY_PRINT ) );
 	}
 }
