@@ -220,7 +220,6 @@ class PerformanceTestResult {
 			// Store the processed metric with clean structure.
 			$this->add_metric( $metric_name, $stats );
 		}
-
 	}
 
 	/**
