@@ -9,9 +9,12 @@ if ( ! stream_filter_register( 'qit_json', \QIT_JSON_Filter::class ) ) {
  * Stream filter that only passes valid JSON, collecting non-JSON for error reporting.
  */
 class QIT_JSON_Filter extends \php_user_filter {
+	/** @var string */
 	private static $non_json_buffer = '';
+	/** @var bool */
 	private static $has_json_output = false;
-	private static $initialized     = false;
+	/** @var bool */
+	private static $initialized = false;
 
 	public function onCreate(): bool {
 		if ( ! self::$initialized ) {

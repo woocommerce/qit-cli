@@ -18,6 +18,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class ReloadEnvironmentCommand extends QITCommand {
 	use EnvironmentSelectorTrait;
 
+	/** @var string */
 	protected static $default_name = 'env:reload';
 
 	protected EnvironmentMonitor $environment_monitor;

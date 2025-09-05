@@ -23,6 +23,7 @@ abstract class EnvInfo implements \JsonSerializable {
 		'environment',
 	];
 
+	/** @var array<string, mixed> */
 	public array $extra = [];
 
 	/** @var string */

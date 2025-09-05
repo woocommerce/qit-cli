@@ -91,7 +91,7 @@ class E2EEnvironment extends Environment {
 		try {
 			$db_container = $this->env_info->get_docker_container( 'db' );
 			if ( $db_container ) {
-				$docker              = App::make( Docker::class )->find_docker();
+				$docker              = $this->docker->find_docker();
 				$get_db_port_process = new Process( [ $docker, 'port', $db_container, '3306' ] );
 				$get_db_port_process->run();
 
@@ -142,7 +142,8 @@ class E2EEnvironment extends Environment {
 			$runner = new \QIT_CLI\Environment\PackagePhaseRunner(
 				$this->docker,
 				$this->output,
-				App::make( \QIT_CLI\Environment\EnvironmentVars::class )
+				$this->environment_vars,
+				$this->manifest_parser
 			);
 
 			$this->output->writeln( '' );
@@ -150,7 +151,7 @@ class E2EEnvironment extends Environment {
 			$this->output->writeln( str_repeat( '-', 20 ) );
 
 			// Create a custom orchestrator for global setup packages
-			$ctrf_validator     = \QIT_CLI\App::make( \QIT_CLI\Environment\CTRFValidator::class );
+			$ctrf_validator     = $this->ctrf_validator;
 			$setup_orchestrator = \QIT_CLI\App::make( \QIT_CLI\Environment\GlobalSetupOrchestrator::class );
 
 			foreach ( $this->env_info->global_setup_packages as $pkg_id => $info ) {
@@ -209,6 +210,8 @@ class E2EEnvironment extends Environment {
 				$volumes = [];
 
 				foreach ( $this->volumes as $k => $v ) {
+					// Volumes are in the format: array{local: string, in_container: string}
+					// Type is guaranteed by PHPDoc, so we can directly access the keys
 					$volumes[] = [ $v['local'], $v['in_container'] ];
 				}
 

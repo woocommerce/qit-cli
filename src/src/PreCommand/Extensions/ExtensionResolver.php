@@ -317,18 +317,30 @@ class ResolvedExtensions {
 		}
 	}
 
+	/**
+	 * @return array<int, \QIT_CLI\PreCommand\Objects\Extension>
+	 */
 	public function get_plugins(): array {
 		return array_values( $this->plugins );
 	}
 
+	/**
+	 * @return array<int, \QIT_CLI\PreCommand\Objects\Extension>
+	 */
 	public function get_themes(): array {
 		return array_values( $this->themes );
 	}
 
+	/**
+	 * @return array<string>
+	 */
 	public function get_php_extensions(): array {
 		return $this->php_extensions;
 	}
 
+	/**
+	 * @param array<string> $extensions
+	 */
 	public function add_php_extensions( array $extensions ): void {
 		$this->php_extensions = array_unique( array_merge( $this->php_extensions, $extensions ) );
 	}

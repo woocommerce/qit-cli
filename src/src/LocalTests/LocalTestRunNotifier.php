@@ -84,7 +84,7 @@ class LocalTestRunNotifier {
 		foreach ( $env_info->plugins as $plugin ) {
 			// Are we running an activation test?
 			if ( $plugin->type === 'plugin' && $plugin->slug === 'woocommerce' ) {
-				if ( ! empty( $plugin->test_tags ) && is_array( $plugin->test_tags ) ) {
+				if ( property_exists( $plugin, 'test_tags' ) && ! empty( $plugin->test_tags ) && is_array( $plugin->test_tags ) ) {
 					foreach ( $plugin->test_tags as $t ) {
 						if ( $t === 'activation' ) {
 							$test_type = 'activation';
@@ -391,6 +391,8 @@ class LocalTestRunNotifier {
 	 *
 	 * Note: ctrf-cli merge tool may produce null values for integer fields,
 	 * which violates the schema but we need to handle gracefully.
+	 *
+	 * @param array<string, mixed> $ctrf
 	 */
 	private function ctrf_has_failed( array $ctrf ): bool {
 		// Basic structure check

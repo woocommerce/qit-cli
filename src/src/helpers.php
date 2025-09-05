@@ -244,8 +244,8 @@ function is_option_explicitly_provided( InputInterface $input, string $option_na
 /**
  * Write debug output only when verbose mode is enabled
  *
- * @param string|array $messages The message(s) to output.
- * @param string       $type The type of message (info, comment, error, etc.).
+ * @param string|array<string> $messages The message(s) to output.
+ * @param string               $type The type of message (info, comment, error, etc.).
  * @return void
  */
 function debug_log( $messages, string $type = 'comment' ): void {
@@ -278,8 +278,8 @@ function debug_log( $messages, string $type = 'comment' ): void {
 /**
  * Write very verbose debug output (requires -vv or -vvv)
  *
- * @param string|array $messages The message(s) to output.
- * @param string       $type The type of message.
+ * @param string|array<string> $messages The message(s) to output.
+ * @param string               $type The type of message.
  * @return void
  */
 function debug_log_verbose( $messages, string $type = 'comment' ): void {

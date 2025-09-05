@@ -7,7 +7,11 @@ use QIT_CLI\Cache;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\PreCommand\Download\EnvironmentDownloader;
+use QIT_CLI\PreCommand\Download\TestPackageDownloader;
+use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\Environment\EnvironmentMonitor;
+use QIT_CLI\Environment\EnvironmentVars;
+use QIT_CLI\Environment\CTRFValidator;
 use QIT_CLI\SafeRemove;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,11 +29,16 @@ abstract class Environment {
 	protected EnvironmentMonitor $environment_monitor;
 	protected Filesystem $filesystem;
 	protected Docker $docker;
+	protected TestPackageDownloader $test_package_downloader;
+	protected Zipper $zipper;
+	protected EnvironmentVars $environment_vars;
+	protected CTRFValidator $ctrf_validator;
+	protected TestPackageManifestParser $manifest_parser;
 	protected string $cache_dir;
 	protected string $source_environment_path;
 	protected EnvInfo $env_info;
 	protected OutputInterface $output;
-	protected $custom_tests_downloader;
+	/** @var array<string,array{local: string, in_container: string}> */
 	protected array $volumes;
 	protected string $type; // "up" or "up_and_test"
 
@@ -39,6 +48,11 @@ abstract class Environment {
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
 		Docker $docker,
+		TestPackageDownloader $test_package_downloader,
+		Zipper $zipper,
+		EnvironmentVars $environment_vars,
+		CTRFValidator $ctrf_validator,
+		TestPackageManifestParser $manifest_parser,
 		OutputInterface $output
 	) {
 		$this->environment_downloader  = $environment_downloader;
@@ -46,10 +60,14 @@ abstract class Environment {
 		$this->environment_monitor     = $environment_monitor;
 		$this->filesystem              = $filesystem;
 		$this->docker                  = $docker;
+		$this->test_package_downloader = $test_package_downloader;
+		$this->zipper                  = $zipper;
+		$this->environment_vars        = $environment_vars;
+		$this->ctrf_validator          = $ctrf_validator;
+		$this->manifest_parser         = $manifest_parser;
 		$this->cache_dir               = normalize_path( Config::get_qit_dir() . 'cache' );
 		$this->source_environment_path = normalize_path( Config::get_qit_dir() . 'environments/' . $this->get_name() );
 		$this->output                  = $output;
-		$this->custom_tests_downloader = null;
 	}
 
 	abstract public function get_name(): string;
@@ -110,7 +128,7 @@ abstract class Environment {
 
 		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
 			$message = 'Processing plugins and themes...';
-			if ( ! empty( $this->env_info->woo ) ) {
+			if ( $this->env_info instanceof \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo && ! empty( $this->env_info->woo ) ) {
 				$message .= ' (WooCommerce: ' . $this->env_info->woo . ')';
 			}
 			$this->output->writeln( '<info>' . $message . '</info>' );
@@ -120,8 +138,22 @@ abstract class Environment {
 
 		// $this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
 
-		if ( $type === 'up_and_test' ) {
-			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+		if ( $type === 'up_and_test' && ! empty( $this->env_info->test_packages_metadata ) ) {
+			// Download test packages if needed
+			$packages_to_download = [];
+			foreach ( $this->env_info->test_packages_metadata as $package_id => $metadata ) {
+				if ( isset( $metadata['manifest'] ) && $metadata['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+					// Package already downloaded and has manifest
+					continue;
+				}
+				// Add package to download list
+				$packages_to_download[ $package_id ] = $metadata;
+			}
+
+			if ( ! empty( $packages_to_download ) ) {
+				// Download all packages at once
+				$this->test_package_downloader->download( $packages_to_download, $this->cache_dir );
+			}
 		}
 
 		$this->output->writeln( '<info>Starting Docker Environment...</info>' );
@@ -154,7 +186,7 @@ abstract class Environment {
 					mkdir( $extract_to, 0755, true );
 				}
 
-				App::make( Zipper::class )->extract_zip( $extension->downloaded_source, $extract_to );
+				$this->zipper->extract_zip( $extension->downloaded_source, $extract_to );
 
 				// Verify extraction worked
 				$local_path = "{$this->env_info->temporary_env}/html/wp-content/{$extension->type}s/{$extension->slug}";
@@ -378,9 +410,8 @@ abstract class Environment {
 
 		// Execute globalTeardown phase for global setup packages - always executed, even on failure
 		if ( ! empty( $env_info->global_setup_packages ) ) {
-			$docker           = App::make( Docker::class );
-			$environment_vars = App::make( \QIT_CLI\Environment\EnvironmentVars::class );
-			$runner           = new \QIT_CLI\Environment\PackagePhaseRunner( $docker, $output, $environment_vars );
+			// Use DI container with autowiring to create PackagePhaseRunner with all dependencies
+			$runner = App::make( \QIT_CLI\Environment\PackagePhaseRunner::class );
 
 			$output->writeln( "\n<comment>🧹  Test‑package globalTeardown phase</comment>" );
 			$output->writeln( '<comment>-----------------------------------</comment>' );

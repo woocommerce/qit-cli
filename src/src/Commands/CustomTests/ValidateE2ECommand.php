@@ -209,6 +209,8 @@ class ValidateE2ECommand extends QITCommand {
 
 	/**
 	 * Helper to create a standardized check array.
+	 *
+	 * @return array{label: string, pass: bool, info: string, severity: string}
 	 */
 	private function makeCheck( string $label, bool $pass, string $info, string $severity = 'must' ): array {
 		// severity = 'must' or 'optional'

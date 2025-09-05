@@ -490,6 +490,9 @@ class QitJsonParser {
 
 	/**
 	 * Process SUT with enhanced source type support
+	 *
+	 * @param array<string, mixed> $sut
+	 * @return array<string, mixed>
 	 */
 	private function process_sut( array $sut ): array {
 		// Validate required fields
@@ -542,6 +545,8 @@ class QitJsonParser {
 
 	/**
 	 * Validate source paths exist without modifying them
+	 *
+	 * @param array<string, mixed> $source
 	 */
 	private function validate_sut_source( array $source ): void {
 		switch ( $source['type'] ) {
@@ -576,6 +581,9 @@ class QitJsonParser {
 
 
 
+	/**
+	 * @param array<string, mixed> $config
+	 */
 	private function validate_cross_references( array $config ): void {
 		$this->debug_log( '=== validate_cross_references called ===' );
 		$this->debug_log( 'Config keys: ' . json_encode( array_keys( $config ) ) );
@@ -680,6 +688,8 @@ class QitJsonParser {
 
 	/**
 	 * Public accessors.
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function get_config(): array {
 		return $this->parsed_config;
@@ -687,6 +697,8 @@ class QitJsonParser {
 
 	/**
 	 * Get environment configuration with full resolution
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function get_environment( string $name ): array {
 		if ( ! isset( $this->parsed_config['environments'][ $name ] ) ) {
@@ -710,6 +722,10 @@ class QitJsonParser {
 
 	/**
 	 * Normalize extension list to consistent format
+	 */
+	/**
+	 * @param array<int|string, string|array<string, mixed>> $extensions
+	 * @return array<int, array<string, mixed>>
 	 */
 	private function normalize_extension_list( array $extensions, string $type ): array {
 		$normalized = [];
@@ -759,6 +775,8 @@ class QitJsonParser {
 
 	/**
 	 * Get test configuration with full resolution
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function get_test_config( string $test_type, string $profile ): array {
 		if ( ! isset( $this->parsed_config['test_types'][ $test_type ][ $profile ] ) ) {
@@ -780,6 +798,8 @@ class QitJsonParser {
 
 	/**
 	 * Get all groups
+	 *
+	 * @return array<string, array<string, mixed>>
 	 */
 	public function get_groups(): array {
 		return $this->parsed_config['groups'] ?? [];
@@ -787,6 +807,8 @@ class QitJsonParser {
 
 	/**
 	 * Get specific group configuration
+	 *
+	 * @return array<string, mixed>
 	 */
 	public function get_group( string $name ): array {
 		if ( ! isset( $this->parsed_config['groups'][ $name ] ) ) {

@@ -61,7 +61,7 @@ class EnvironmentVars {
 		];
 
 		// Add any dynamic environment-specific variables
-		if ( ! empty( $env_info->additional_vars ) ) {
+		if ( property_exists( $env_info, 'additional_vars' ) && ! empty( $env_info->additional_vars ) ) {
 			$vars = array_merge( $vars, $env_info->additional_vars );
 		}
 

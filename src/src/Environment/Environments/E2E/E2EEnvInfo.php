@@ -71,7 +71,7 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public string $notify = '';
 
-	/** @var array<string,array<string,array>> */
+	/** @var array<string,array<string,array<mixed>>> */
 	public array $test_packages = [];
 
 	/** @var string|null */

@@ -6,6 +6,11 @@ use Dotenv\Dotenv;
 use RuntimeException;
 
 class EnvParser {
+	/**
+	 * @param array<string> $env_vars
+	 * @param array<string> $env_files
+	 * @return array<string, string>
+	 */
 	public function parse( array $env_vars = [], array $env_files = [] ): array {
 		$parsed_vars = [];
 

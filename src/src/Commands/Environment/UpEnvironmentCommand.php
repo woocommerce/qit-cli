@@ -9,7 +9,6 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
-use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
@@ -110,22 +109,14 @@ class UpEnvironmentCommand extends QITCommand {
 		// Convert Extension objects to arrays for serialization
 		$plugin_arrays = [];
 		foreach ( $final_plugins as $plugin ) {
-			if ( $plugin instanceof Extension ) {
-				// Use jsonSerialize to get the array representation
-				$plugin_arrays[] = $plugin->jsonSerialize();
-			} else {
-				$plugin_arrays[] = $plugin;
-			}
+			// Use jsonSerialize to get the array representation
+			$plugin_arrays[] = $plugin->jsonSerialize();
 		}
 
 		$theme_arrays = [];
 		foreach ( $final_themes as $theme ) {
-			if ( $theme instanceof Extension ) {
-				// Use jsonSerialize to get the array representation
-				$theme_arrays[] = $theme->jsonSerialize();
-			} else {
-				$theme_arrays[] = $theme;
-			}
+			// Use jsonSerialize to get the array representation
+			$theme_arrays[] = $theme->jsonSerialize();
 		}
 
 		/* ─ 3.5. Parse volumes to get proper associative array structure ─ */

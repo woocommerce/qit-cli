@@ -154,6 +154,8 @@ class DependencyResolver {
 
 	/**
 	 * Get dependencies from WCCOM API.
+	 *
+	 * @return array<int, \QIT_CLI\PreCommand\Objects\Extension>
 	 */
 	protected function get_wccom_dependencies( int $wccom_id ): array {
 		$data = $this->get_wccom_dependencies_bulk( [ $wccom_id ] );
@@ -171,6 +173,9 @@ class DependencyResolver {
 
 	/**
 	 * Get dependencies from WCCOM API in bulk.
+	 *
+	 * @param array<int> $wccom_ids
+	 * @return array{plugins: array<int, \QIT_CLI\PreCommand\Objects\Extension>, themes: array<int, \QIT_CLI\PreCommand\Objects\Extension>, php_extensions: array<string>}
 	 */
 	protected function get_wccom_dependencies_bulk( array $wccom_ids ): array {
 		if ( empty( $wccom_ids ) ) {
@@ -230,6 +235,8 @@ class DependencyResolver {
 
 	/**
 	 * Get dependencies from WPORG API.
+	 *
+	 * @return array<int, \QIT_CLI\PreCommand\Objects\Extension>
 	 */
 	protected function get_wporg_dependencies( string $slug ): array {
 		$cache_key = "wporg_deps_$slug";
@@ -294,6 +301,9 @@ class DependencyResolver {
 
 	/**
 	 * Deduplicate extensions by slug.
+	 *
+	 * @param array<\QIT_CLI\PreCommand\Objects\Extension> $extensions
+	 * @return array<\QIT_CLI\PreCommand\Objects\Extension>
 	 */
 	protected function deduplicate_extensions( array $extensions ): array {
 		$unique = [];

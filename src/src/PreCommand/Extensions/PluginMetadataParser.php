@@ -34,6 +34,8 @@ class PluginMetadataParser {
 
 	/**
 	 * Parse dependencies from a ZIP file.
+	 *
+	 * @return array<int, string>
 	 */
 	protected function parse_zip( string $path ): array {
 		$zip = new \ZipArchive();
@@ -61,6 +63,8 @@ class PluginMetadataParser {
 
 	/**
 	 * Parse dependencies from a directory.
+	 *
+	 * @return array<int, string>
 	 */
 	protected function parse_directory( string $path ): array {
 		$dependencies = [];

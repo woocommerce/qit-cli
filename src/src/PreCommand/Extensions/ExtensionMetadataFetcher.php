@@ -133,6 +133,9 @@ class ExtensionMetadataFetcher {
 	 *
 	 * @param Extension[] $extensions Array of WPORG extensions to process.
 	 */
+	/**
+	 * @param array<\QIT_CLI\PreCommand\Objects\Extension> $extensions
+	 */
 	protected function fetch_wporg_metadata( array $extensions ): void {
 		$start         = microtime( true );
 		$fetched_count = 0;
@@ -192,6 +195,9 @@ class ExtensionMetadataFetcher {
 	/**
 	 * Fetch metadata for WCCOM extensions using bulk API.
 	 */
+	/**
+	 * @param array<\QIT_CLI\PreCommand\Objects\Extension> $extensions
+	 */
 	protected function fetch_wccom_metadata( array $extensions ): void {
 		if ( empty( $extensions ) ) {
 			return;
@@ -200,7 +206,7 @@ class ExtensionMetadataFetcher {
 		// Check cache for each extension's metadata
 		$extensions_needing_fetch = [];
 		foreach ( $extensions as $extension ) {
-			$cache_key       = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version ?? 'stable' ) );
+			$cache_key       = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version === 'undefined' ? 'stable' : $extension->version ) );
 			$cached_metadata = $this->cache->get( $cache_key );
 
 			if ( $cached_metadata && is_array( $cached_metadata ) ) {
@@ -255,7 +261,7 @@ class ExtensionMetadataFetcher {
 					$extension->source  = $info['url'];
 
 					// Cache the metadata
-					$cache_key = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version ?? 'stable' ) );
+					$cache_key = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version === 'undefined' ? 'stable' : $extension->version ) );
 					// Cache metadata for 30 seconds to prevent API burst but still get fresh data
 					$this->cache->set( $cache_key, [
 						'version' => $extension->version,
@@ -282,6 +288,8 @@ class ExtensionMetadataFetcher {
 
 	/**
 	 * Process local extensions metadata.
+	 *
+	 * @param array<\QIT_CLI\PreCommand\Objects\Extension> $extensions
 	 */
 	protected function process_local_metadata( array $extensions ): void {
 		foreach ( $extensions as $extension ) {
@@ -299,6 +307,8 @@ class ExtensionMetadataFetcher {
 
 	/**
 	 * Process URL extensions metadata.
+	 *
+	 * @param array<\QIT_CLI\PreCommand\Objects\Extension> $extensions
 	 */
 	protected function process_url_metadata( array $extensions ): void {
 		foreach ( $extensions as $extension ) {
