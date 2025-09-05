@@ -129,8 +129,11 @@ class TestPackageDownloader {
 
 				// For local packages, ensure npm dependencies and Playwright browsers are installed
 				if ( file_exists( $reference . '/package.json' ) ) {
-					// Check if node_modules exists, if not run npm install
-					if ( ! is_dir( $reference . '/node_modules' ) ) {
+					// Check if npm dependencies are properly installed
+					// We need to verify actual packages exist, not just node_modules directory
+					// because Playwright browsers create node_modules/playwright-core/.local-browsers
+					// without installing the actual npm packages
+					if ( ! $this->are_npm_dependencies_installed( $reference ) ) {
 						$this->install_npm_dependencies( $reference );
 					}
 
@@ -713,6 +716,58 @@ class TestPackageDownloader {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Check if npm dependencies are properly installed in the package directory.
+	 *
+	 * @param string $package_dir The directory containing package.json.
+	 * @return bool True if dependencies are installed, false otherwise.
+	 */
+	protected function are_npm_dependencies_installed( string $package_dir ): bool {
+		// If node_modules doesn't exist at all, dependencies are not installed
+		if ( ! is_dir( $package_dir . '/node_modules' ) ) {
+			return false;
+		}
+
+		// Use npm ls to check if dependencies are satisfied
+		// npm ls returns exit code 0 if all dependencies are installed and satisfied
+		// This is much more reliable than checking for specific packages
+		$check_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npm ls --depth=0 --json 2>/dev/null';
+		$output        = [];
+		$return_code   = 0;
+
+		exec( $check_command, $output, $return_code );
+
+		// npm ls returns 0 if all dependencies are satisfied
+		// It returns non-zero if there are missing or unmet dependencies
+		if ( $return_code === 0 ) {
+			// All dependencies are properly installed
+			return true;
+		}
+
+		// Parse the JSON output to check for missing dependencies
+		$json_output = implode( '', $output );
+		$npm_data    = json_decode( $json_output, true );
+
+		// If we can't parse the output, assume dependencies need installation
+		if ( ! $npm_data ) {
+			return false;
+		}
+
+		// Check if there are problems reported
+		if ( isset( $npm_data['problems'] ) && ! empty( $npm_data['problems'] ) ) {
+			// There are dependency problems, need to reinstall
+			return false;
+		}
+
+		// If dependencies object exists but is empty, no deps needed
+		if ( isset( $npm_data['dependencies'] ) && empty( $npm_data['dependencies'] ) ) {
+			return true;
+		}
+
+		// Dependencies are not properly installed
+		return false;
 	}
 
 	/**
