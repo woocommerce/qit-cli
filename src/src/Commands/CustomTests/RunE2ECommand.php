@@ -156,6 +156,18 @@ class RunE2ECommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
+		if ( $input->getArgument( 'woo_extension' ) === 'woocommerce' &&
+			$input->getArgument( 'test' ) === 'activation'
+		) {
+			$output->writeln( '<info>Running activation test scenario.</info>' );
+			// Mark that we're running an activation test scenario.
+			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
+
+			// Skip automatically activating anything prior to running the test.
+			$input->setOption( 'skip_activating_plugins', true );
+			$input->setOption( 'skip_activating_themes', true );
+		}
+
 		try {
 			$options                    = $this->parse_options( $input );
 			$env_up_options             = $options['env_up'];

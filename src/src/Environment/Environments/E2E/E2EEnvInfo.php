@@ -8,9 +8,6 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var string */
 	public $environment = 'e2e';
 
-	/** @var string The site URL, if any. */
-	public $site_url;
-
 	/** @var string */
 	public $wp = '';
 

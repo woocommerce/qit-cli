@@ -4,6 +4,7 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\IO\Output;
 use function QIT_CLI\normalize_path;
@@ -79,6 +80,9 @@ abstract class EnvInfo implements \JsonSerializable {
 	 */
 	public $tunnel = false;
 
+	/** @var string The site URL, if any. */
+	public $site_url;
+
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize() {
 		return $this;
@@ -104,12 +108,22 @@ abstract class EnvInfo implements \JsonSerializable {
 	 * @param array<string,scalar|array<scalar>> $env_info_array
 	 */
 	public static function from_array( array $env_info_array ): EnvInfo {
-		switch ( $env_info_array['environment'] ?? 'e2e' ) {
+		$environment_type = $env_info_array['environment'] ?? 'e2e';
+
+		switch ( $environment_type ) {
 			case 'e2e':
 				$env_info = new E2EEnvInfo();
 				break;
+			case 'performance':
+				$env_info = new PerformanceEnvInfo();
+				break;
 			default:
-				throw new \RuntimeException( 'Invalid environment type.' );
+				// Fallback to e2e for unknown environment types.
+				App::make( Output::class )->writeln( sprintf( '<warning>Warning: Unknown environment type "%s" found in cache. Falling back to "e2e" environment type.</warning>', $environment_type ) );
+				$env_info = new E2EEnvInfo();
+				// Override the environment type to e2e to prevent future issues.
+				$env_info_array['environment'] = 'e2e';
+				break;
 		}
 
 		$env_info->environment   = $env_info_array['environment'] ?? 'e2e';
@@ -122,14 +136,12 @@ abstract class EnvInfo implements \JsonSerializable {
 			$env_info->tunnel = true;
 		}
 
-		if ( $env_info instanceof E2EEnvInfo ) {
-			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
-				// Environment accessible from inside Docker containers.
-				$env_info->domain = "qitenvnginx{$env_info->env_id}";
-			} else {
-				// Environment accessible from host.
-				$env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
-			}
+		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
+			// Environment accessible from inside Docker containers.
+			$env_info->domain = "qitenvnginx{$env_info->env_id}";
+		} else {
+			// Environment accessible from host.
+			$env_info->domain = getenv( 'QIT_DOMAIN' ) ?: 'localhost';
 		}
 
 		foreach ( $env_info_array as $key => $value ) {

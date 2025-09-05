@@ -8,6 +8,9 @@ use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\MetricsExtractor;
+use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
@@ -34,13 +37,17 @@ class LocalTestRunNotifier {
 	/** @var PlaywrightToPuppeteerConverter */
 	protected $playwright_to_puppeteer_converter;
 
+	/** @var MetricsExtractor */
+	protected $metrics_extractor;
+
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
 		PrepareQMLog $prepare_qm_log,
-		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter
+		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter,
+		?MetricsExtractor $metrics_extractor = null
 	) {
 		$this->zipper                            = $zipper;
 		$this->output                            = $output;
@@ -48,23 +55,29 @@ class LocalTestRunNotifier {
 		$this->prepare_debug_log                 = $prepare_debug_log;
 		$this->prepare_qm_log                    = $prepare_qm_log;
 		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
+		$this->metrics_extractor                 = $metrics_extractor ?: new MetricsExtractor();
 	}
 
 	/**
 	 * @suppress PhanTypeArraySuspicious
 	 *
-	 * @param int        $woo_extension_id
-	 * @param string     $woocommerce_version
-	 * @param E2EEnvInfo $env_info
-	 * @param bool       $is_development
-	 * @param bool       $notify
+	 * @param int                           $woo_extension_id
+	 * @param string                        $woocommerce_version
+	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
+	 * @param bool                          $is_development
+	 * @param bool                          $notify
 	 */
-	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, E2EEnvInfo $env_info, bool $is_development, bool $notify ): void {
+	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, $env_info, bool $is_development, bool $notify ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
 
 		$test_type = 'e2e';
+
+		// Check if we're running a performance test.
+		if ( getenv( 'QIT_ENVIRONMENT_TYPE' ) === 'performance' ) {
+			$test_type = 'performance';
+		}
 
 		foreach ( $env_info->plugins as $plugin ) {
 			// Are we running an activation test?
@@ -134,11 +147,11 @@ class LocalTestRunNotifier {
 	}
 
 	/**
-	 * @param TestResult $test_result
+	 * @param TestResult|PerformanceTestResult $test_result
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
-	public function notify_test_finished( TestResult $test_result ): array {
+	public function notify_test_finished( $test_result ): array {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {
@@ -175,7 +188,13 @@ class LocalTestRunNotifier {
 			}
 
 			$test_result_json_original = $result_json;
-			$result_json               = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+
+			// Skip Playwright to Puppeteer conversion for performance tests.
+			if ( $test_result instanceof PerformanceTestResult ) {
+				$result_json = json_decode( $result_json, true );
+			} else {
+				$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+			}
 		} else {
 			$result_json = [];
 		}
@@ -225,9 +244,19 @@ class LocalTestRunNotifier {
 			$status = 'cancelled';
 		}
 
-		// If it has failed any assertion, it's a failure.
-		if ( is_null( $status ) && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
+		// Check for E2E test failures.
+		if ( is_null( $status ) && $test_result instanceof TestResult && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
 			$status = 'failed';
+		}
+
+		// Check for Performance test failures.
+		if ( is_null( $status ) && $test_result instanceof PerformanceTestResult ) {
+			$metrics      = $test_result->get_metrics();
+			$k6_exit_code = $metrics['k6_exit_code'] ?? null;
+
+			if ( $k6_exit_code !== null && $k6_exit_code !== 0 ) {
+				$status = 'failed';
+			}
 		}
 
 		// If there's anything on debug.log, it's a warning.
@@ -262,6 +291,15 @@ class LocalTestRunNotifier {
 			'ctrf_json'                 => $ctrf_json,
 		];
 
+		// Extract performance metrics for performance tests.
+		if ( $test_result instanceof PerformanceTestResult ) {
+			$performance_results = $this->extract_combined_performance_metrics( $test_result );
+
+			if ( ! empty( $performance_results ) ) {
+				$data['cd_performance_results'] = json_encode( $performance_results );
+			}
+		}
+
 		$r = App::make( RequestBuilder::class )
 				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
 				->with_method( 'POST' )
@@ -287,5 +325,89 @@ class LocalTestRunNotifier {
 		}
 
 		return [ $response['report_url'], $exit_status_code_override ];
+	}
+
+	/**
+	 * Extract and combine performance metrics from both baseline and main test results.
+	 *
+	 * @param PerformanceTestResult $test_result The main test result.
+	 *
+	 * @return array<string, mixed> The combined performance metrics.
+	 */
+	private function extract_combined_performance_metrics( PerformanceTestResult $test_result ): array {
+		$performance_results = [
+			'has_baseline' => false,
+			'extension'    => [],
+			'baseline'     => [],
+			'comparison'   => [],
+		];
+
+		// Extract main test (extension) metrics from the test result itself.
+		$performance_results['extension'] = $this->metrics_extractor->extract_metrics( $test_result->get_metrics() );
+
+		// Add failed checks for extension.
+		$performance_results['extension']['failed_checks'] = $this->extract_failed_checks_from_result( $test_result );
+
+		// Check if we have baseline results.
+		$baseline_result = $test_result->get_baseline_result();
+		if ( $baseline_result !== null ) {
+			$performance_results['has_baseline'] = true;
+			$performance_results['baseline']     = $this->metrics_extractor->extract_metrics( $baseline_result->get_metrics() );
+			$performance_results['comparison']   = $this->extract_comparison_metrics( $test_result );
+
+			// Add failed checks for baseline.
+			$performance_results['baseline']['failed_checks'] = $this->extract_failed_checks_from_result( $baseline_result );
+		}
+
+		return $performance_results;
+	}
+
+	/**
+	 * Extract comparison metrics from a test result.
+	 *
+	 * @param PerformanceTestResult $test_result The main test result.
+	 *
+	 * @return array<string, mixed> The comparison metrics.
+	 */
+	private function extract_comparison_metrics( PerformanceTestResult $test_result ): array {
+		$comparison_metrics = [];
+		$all_metrics        = $test_result->get_metrics();
+
+		// Look for comparison metrics (those ending with _vs_baseline_percent or _vs_baseline_diff).
+		foreach ( $all_metrics as $metric_name => $metric_value ) {
+			if ( str_contains( $metric_name, '_vs_baseline_' ) ) {
+				$comparison_metrics[ $metric_name ] = $metric_value;
+			}
+		}
+
+		return $comparison_metrics;
+	}
+
+	/**
+	 * Extract failed checks from a performance test result.
+	 *
+	 * @param PerformanceTestResult $test_result The test result to extract failed checks from.
+	 *
+	 * @return array<mixed> Array of failed check details.
+	 */
+	private function extract_failed_checks_from_result( PerformanceTestResult $test_result ): array {
+		$result_file = $test_result->get_results_dir() . '/result.json';
+
+		if ( ! file_exists( $result_file ) ) {
+			return [];
+		}
+
+		$result_content = file_get_contents( $result_file );
+		$result_data    = json_decode( $result_content, true );
+
+		$checks = $result_data['root_group']['checks'] ?? [];
+		if ( ! is_array( $checks ) ) {
+			return [];
+		}
+
+		// Return checks that have failures (k6 format: "fails" > 0).
+		return array_filter( $checks, function ( $check ) {
+			return ( $check['fails'] ?? 0 ) > 0;
+		} );
 	}
 }

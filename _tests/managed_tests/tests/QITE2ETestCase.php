@@ -255,6 +255,9 @@ class QITE2ETestCase extends TestCase {
 					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
 					if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 						foreach ( $value['results']['tests'] as &$test ) {
+							// Ignore retries.
+							$test['retryAttempts'] = [];
+
 							/* -----------------------------------------------------------------
 							 * Playwright hook-step normalisation
 							 * -----------------------------------------------------------------
@@ -302,6 +305,11 @@ class QITE2ETestCase extends TestCase {
 										continue;
 									}
 
+									// Normalize timings in lines like these: "[8.45s] Found 3 plugins to process\\n",
+									if ( preg_match( '/\[\d+(\.\d+)?s\]/', $line ) ) {
+										$line = preg_replace( '/\[\d+(\.\d+)?s\]/', '[TIMING NORMALIZED]', $line );
+									}
+
 									// 2) If this line starts with "Console ", ensure we show it only once, as they can cause flakiness.
 									if ( strpos( $line, 'Console ' ) === 0 ) {
 										if ( ! in_array( $line, $processes_console, true ) ) {
@@ -347,9 +355,17 @@ class QITE2ETestCase extends TestCase {
 						unset( $test );
 					}
 
-					// 5) Now traverse the CTRF JSON to normalize ephemeral fields
+					// 5) Normalize top-level CTRF fields
+					if ( isset( $value['reportId'] ) ) {
+						$value['reportId'] = 'normalized-report-id';
+					}
+					if ( isset( $value['timestamp'] ) ) {
+						$value['timestamp'] = '2025-01-01T00:00:00.000Z';
+					}
+
+					// 6) Now traverse the CTRF JSON to normalize ephemeral fields
 					if ( isset( $value['results'] ) && is_array( $value['results'] ) ) {
-						// 5a) Summary-level ephemeral data
+						// 6a) Summary-level ephemeral data
 						if ( isset( $value['results']['summary'] ) && is_array( $value['results']['summary'] ) ) {
 							if ( isset( $value['results']['summary']['start'] ) ) {
 								$value['results']['summary']['start'] = 1111111111; // Or any placeholder
@@ -359,7 +375,7 @@ class QITE2ETestCase extends TestCase {
 							}
 						}
 
-						// 5b) Test-level ephemeral data
+						// 6b) Test-level ephemeral data
 						if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 							foreach ( $value['results']['tests'] as &$test ) {
 								if ( isset( $test['start'] ) ) {
@@ -614,6 +630,12 @@ class QITE2ETestCase extends TestCase {
 
 		foreach ( $json as &$j ) {
 			foreach ( $j as $k => &$v ) {
+				// Remove unwanted keys
+				if ( $k === 'ai_suggestion_status' ) {
+					unset( $j[$k] );
+					continue;
+				}
+
 				// Check if the current key is in the processing rules.
 				if ( array_key_exists( $k, $rules ) ) {
 					// Validate the existing value.

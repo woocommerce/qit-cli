@@ -62,10 +62,10 @@ class ListTestTagsCommand extends QITCommand {
 
 		// Tags of all extensions this user has access to.
 		$table = new Table( $output );
-		$table->setHeaders( [ 'Slug', 'E2E Tests', 'Type' ] );
+		$table->setHeaders( [ 'Slug', 'E2E Tests', 'Performance Tests' , 'Type' ] );
 
 		foreach ( $test_tags as $tag => $data ) {
-			$table->addRow( [ $data['slug'], implode( ', ', $data['tests']['e2e'] ?? [] ), $data['type'] ] );
+			$table->addRow( [ $data['slug'], implode( ', ', $data['tests']['e2e'] ?? [] ), implode( ', ', $data['tests']['performance'] ?? [] ), $data['type'] ] );
 		}
 
 		$table->render();
