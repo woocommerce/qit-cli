@@ -227,6 +227,13 @@ class CreateRunCommands extends DynamicCommandCreator {
 				/****************************************************************
 				 * 9.  Handle async vs sync execution (QIT 1.0 behavior)
 				 */
+				// Show deprecation warning if --wait is used
+				if ( $input->getOption( 'wait' ) ) {
+					$output->writeln( '<comment>Warning: The --wait flag is deprecated and will be removed in a future version.</comment>' );
+					$output->writeln( '<comment>Tests now wait for completion by default. Use --async to run tests asynchronously.</comment>' );
+					$output->writeln( '' );
+				}
+				
 				// In QIT 1.0, we wait by default unless --async is specified
 				if ( $input->getOption( 'async' ) ) {
 					// Async mode: enqueue and return immediately
@@ -652,6 +659,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, '(Optional) Local ZIP / dir / URL build to test' )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, '(Optional) Output raw JSON response', false )
 			->addOption( 'async', null, InputOption::VALUE_NEGATABLE, '(Optional) Enqueue test and return immediately without waiting', false )
+			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated) Wait for test completion - this is now the default behavior', false )
 			->addOption( 'print-report-url', null, InputOption::VALUE_NEGATABLE, '(Optional) Print the test report URL (contains sensitive data - use cautiously in public logs)', false )
 			->addOption( 'timeout', 't', InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false );
