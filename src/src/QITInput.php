@@ -90,7 +90,26 @@ class QITInput implements InputInterface {
 			if ( ! isset( $this->resolved_config['test_types'][ $this->test_type ] ) ) {
 				$this->current_test_profile = [];
 			} else {
-				$profile_name               = $this->getProfileName();
+				$profile_name = $this->getProfileName();
+
+				// Check if the profile exists for this test type
+				if ( ! isset( $this->resolved_config['test_types'][ $this->test_type ][ $profile_name ] ) ) {
+					// Get available profiles for error message
+					$available_profiles = array_keys( $this->resolved_config['test_types'][ $this->test_type ] );
+
+					// Only throw error if profile was explicitly requested via CLI and is not 'default'
+					// We allow 'default' to not exist for backward compatibility
+					if ( $this->hasOption( 'profile' ) && $this->getOption( 'profile' ) === $profile_name && $profile_name !== 'default' ) {
+						$available_list = empty( $available_profiles )
+							? 'No profiles are defined for this test type'
+							: 'Available profiles: ' . implode( ', ', $available_profiles );
+
+						throw new \InvalidArgumentException(
+							"Profile '{$profile_name}' does not exist for test type '{$this->test_type}'. {$available_list}"
+						);
+					}
+				}
+
 				$this->current_test_profile = $this->resolved_config['test_types'][ $this->test_type ][ $profile_name ] ?? [];
 			}
 		}

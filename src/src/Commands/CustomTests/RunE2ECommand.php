@@ -537,6 +537,7 @@ class RunE2ECommand extends QITCommand {
 			'local_command' => 'qit report',
 			'remote_url'    => $should_show_url ? ( $report_url ?? '' ) : '',
 		];
+
 		$orchestrator->summary( $summary_data );
 
 		// Always try to save debug.log to artifacts directory for inspection

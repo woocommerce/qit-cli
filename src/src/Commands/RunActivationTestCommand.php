@@ -42,6 +42,11 @@ class RunActivationTestCommand extends RunE2ECommand {
 			return self::SUCCESS;
 		}
 
+		// Validate profile exists if explicitly provided
+		$profile_name = $input->getProfileName();
+		// This will throw an exception if the profile doesn't exist
+		$this->get_current_test_profile( $this->test_type, $profile_name );
+
 		/****************************************************************
 		 * Inject activation‑specific defaults BEFORE delegating to parent
 		 */
@@ -54,7 +59,6 @@ class RunActivationTestCommand extends RunE2ECommand {
 		$input->setOption( 'test-package', [ "woocommerce/activation:$woo_version" ] );
 		$input->setOption( 'skip_activating_plugins', true );
 		$input->setOption( 'skip_activating_themes', true );
-		$input->setOption( 'pw_options', '--retries=0' );
 
 		// Flag for anything downstream that needs to know we are in activation mode
 		App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );

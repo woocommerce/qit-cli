@@ -73,7 +73,7 @@ abstract class QITCommand extends Command {
 
 			// Call doExecute with QITInput (which implements InputInterface)
 			return $this->doExecute( $qit_input, $output );
-		} catch ( \RuntimeException $e ) {
+		} catch ( \RuntimeException | \InvalidArgumentException $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
 			return Command::FAILURE;
@@ -139,6 +139,40 @@ abstract class QITCommand extends Command {
 	 */
 	public function get_current_test_profile( string $test_type, string $profile = 'default' ): array {
 		$config = $this->get_resolved_config();
+
+		// Check if test type exists in config
+		if ( ! isset( $config['test_types'][ $test_type ] ) ) {
+			// If no config exists but a non-default profile was explicitly requested, fail
+			if ( $profile !== 'default' ) {
+				throw new \InvalidArgumentException(
+					"Profile '{$profile}' does not exist. No profiles are configured for test type '{$test_type}'."
+				);
+			}
+			return [];
+		}
+
+		// Check if profile exists for this test type
+		if ( ! isset( $config['test_types'][ $test_type ][ $profile ] ) ) {
+			// Get available profiles for error message
+			$available_profiles = array_keys( $config['test_types'][ $test_type ] );
+
+			// Only throw error if:
+			// 1. Profile is not 'default' (explicitly requested non-default profile)
+			// 2. AND the profile doesn't exist
+			// We allow 'default' to not exist for backward compatibility
+			if ( $profile !== 'default' ) {
+				$available_list = empty( $available_profiles )
+					? 'No profiles are defined for this test type'
+					: 'Available profiles: ' . implode( ', ', $available_profiles );
+
+				throw new \InvalidArgumentException(
+					"Profile '{$profile}' does not exist for test type '{$test_type}'. {$available_list}"
+				);
+			}
+
+			// For 'default' profile that doesn't exist, return empty array (backward compatibility)
+			return [];
+		}
 
 		return $config['test_types'][ $test_type ][ $profile ] ?? [];
 	}
