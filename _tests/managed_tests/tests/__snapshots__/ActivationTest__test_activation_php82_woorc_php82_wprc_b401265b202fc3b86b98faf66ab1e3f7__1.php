@@ -15,6 +15,7 @@
                 "woocommerce"
             ],
             "test_log": "",
+            "performance_results": "",
             "status": "warning",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
