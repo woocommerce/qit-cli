@@ -49,6 +49,7 @@ class AllureUploadTest extends TestCase {
 			'run:e2e',
 			'woocommerce',
 			'--config=' . $config,
+			'--print-report-url',
 		], return_process: true );
 
 		$output = $proc->getOutput();
