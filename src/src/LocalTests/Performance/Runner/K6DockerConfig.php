@@ -28,7 +28,6 @@ class K6DockerConfig {
 			$this->get_base_docker_args( $env_info, $container_name ),
 			$this->get_volume_mounts( $env_info, $results_dir, $test_infos ),
 			$this->get_environment_variables( $env_info ),
-			$this->get_user_args(),
 			$this->get_k6_command()
 		);
 	}
@@ -45,6 +44,8 @@ class K6DockerConfig {
 			'--rm',
 			'--init',
 			'--add-host=host.docker.internal:host-gateway',
+			'-p',
+			'5665:5665', // Port for k6 live web dashboard.
 		];
 	}
 
@@ -55,7 +56,7 @@ class K6DockerConfig {
 	 * @return array<string>
 	 */
 	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir, array $test_infos = [] ): array {
-		// Base volumes for K6 operation.
+		// Base volumes for k6 operation.
 		$volumes = [
 			Config::get_qit_dir() . 'cache/k6' => '/k6-cache',
 			$results_dir                       => '/results',
@@ -94,6 +95,12 @@ class K6DockerConfig {
 			sprintf( 'QIT_INTERNAL_NGINX=%s', $internal_nginx_name ),
 		];
 
+		// Enable k6 web dashboard and export HTML report.
+		$args[] = '-e';
+		$args[] = 'K6_WEB_DASHBOARD=true';
+		$args[] = '-e';
+		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/dashboard-report.html';
+
 		// Pass additional env vars to the test environment.
 		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
 			$args[] = '-e';
@@ -106,30 +113,14 @@ class K6DockerConfig {
 	/**
 	 * @return array<string>
 	 */
-	private function get_user_args(): array {
-		if ( Docker::should_set_user() ) {
-			return [
-				'--user',
-				implode( ':', Docker::get_user_and_group() ),
-			];
-		}
-
-		return [];
-	}
-
-	/**
-	 * @return array<string>
-	 */
 	private function get_k6_command(): array {
 		return [
-			'grafana/k6:latest',
+			'grafana/k6:master-with-browser',
 			'run',
-			'--duration',
-			'30s',
-			'--vus',
-			'10',
 			'--out',
-			'json=/results/k6-results.json',
+			'json=/results/result-extended.json',
+			'--summary-export',
+			'/results/result.json',
 		];
 	}
 }

@@ -11,6 +11,7 @@ use QIT_CLI\IO\Output;
 use QIT_CLI\Environment\PackageOrchestrator;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\MetricsExtractor;
 use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -38,13 +39,17 @@ class LocalTestRunNotifier {
 	/** @var \QIT_CLI\Environment\CTRFValidator */
 	protected $ctrf_validator;
 
+	/** @var MetricsExtractor */
+	protected $metrics_extractor;
+
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
 		PrepareQMLog $prepare_qm_log,
-		\QIT_CLI\Environment\CTRFValidator $ctrf_validator
+		\QIT_CLI\Environment\CTRFValidator $ctrf_validator,
+		?MetricsExtractor $metrics_extractor = null
 	) {
 		$this->zipper            = $zipper;
 		$this->output            = $output;
@@ -52,6 +57,7 @@ class LocalTestRunNotifier {
 		$this->prepare_debug_log = $prepare_debug_log;
 		$this->prepare_qm_log    = $prepare_qm_log;
 		$this->ctrf_validator    = $ctrf_validator;
+		$this->metrics_extractor = $metrics_extractor ?: new MetricsExtractor();
 	}
 
 	/**
@@ -344,6 +350,15 @@ class LocalTestRunNotifier {
 			'ctrf_json'                 => $result_json,
 		];
 
+		// Extract performance metrics for performance tests.
+		if ( $test_result instanceof PerformanceTestResult ) {
+			$performance_results = $this->extract_combined_performance_metrics( $test_result );
+
+			if ( ! empty( $performance_results ) ) {
+				$data['cd_performance_results'] = json_encode( $performance_results );
+			}
+		}
+
 		$r = App::make( RequestBuilder::class )
 				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
 				->with_method( 'POST' )
@@ -392,5 +407,89 @@ class LocalTestRunNotifier {
 		$failed_count = (int) $failed;
 
 		return $failed_count > 0;
+	}
+
+	/**
+	 * Extract and combine performance metrics from both baseline and main test results.
+	 *
+	 * @param PerformanceTestResult $test_result The main test result.
+	 *
+	 * @return array<string, mixed> The combined performance metrics.
+	 */
+	private function extract_combined_performance_metrics( PerformanceTestResult $test_result ): array {
+		$performance_results = [
+			'has_baseline' => false,
+			'extension'    => [],
+			'baseline'     => [],
+			'comparison'   => [],
+		];
+
+		// Extract main test (extension) metrics from the test result itself.
+		$performance_results['extension'] = $this->metrics_extractor->extract_metrics( $test_result->get_metrics() );
+
+		// Add failed checks for extension.
+		$performance_results['extension']['failed_checks'] = $this->extract_failed_checks_from_result( $test_result );
+
+		// Check if we have baseline results.
+		$baseline_result = $test_result->get_baseline_result();
+		if ( $baseline_result !== null ) {
+			$performance_results['has_baseline'] = true;
+			$performance_results['baseline']     = $this->metrics_extractor->extract_metrics( $baseline_result->get_metrics() );
+			$performance_results['comparison']   = $this->extract_comparison_metrics( $test_result );
+
+			// Add failed checks for baseline.
+			$performance_results['baseline']['failed_checks'] = $this->extract_failed_checks_from_result( $baseline_result );
+		}
+
+		return $performance_results;
+	}
+
+	/**
+	 * Extract comparison metrics from a test result.
+	 *
+	 * @param PerformanceTestResult $test_result The main test result.
+	 *
+	 * @return array<string, mixed> The comparison metrics.
+	 */
+	private function extract_comparison_metrics( PerformanceTestResult $test_result ): array {
+		$comparison_metrics = [];
+		$all_metrics        = $test_result->get_metrics();
+
+		// Look for comparison metrics (those ending with _vs_baseline_percent or _vs_baseline_diff).
+		foreach ( $all_metrics as $metric_name => $metric_value ) {
+			if ( str_contains( $metric_name, '_vs_baseline_' ) ) {
+				$comparison_metrics[ $metric_name ] = $metric_value;
+			}
+		}
+
+		return $comparison_metrics;
+	}
+
+	/**
+	 * Extract failed checks from a performance test result.
+	 *
+	 * @param PerformanceTestResult $test_result The test result to extract failed checks from.
+	 *
+	 * @return array<mixed> Array of failed check details.
+	 */
+	private function extract_failed_checks_from_result( PerformanceTestResult $test_result ): array {
+		$result_file = $test_result->get_results_dir() . '/result.json';
+
+		if ( ! file_exists( $result_file ) ) {
+			return [];
+		}
+
+		$result_content = file_get_contents( $result_file );
+		$result_data    = json_decode( $result_content, true );
+
+		$checks = $result_data['root_group']['checks'] ?? [];
+		if ( ! is_array( $checks ) ) {
+			return [];
+		}
+
+		// Return checks that have failures (k6 format: "fails" > 0).
+		return array_filter( $checks, function ( $check ) {
+			return ( $check['fails'] ?? 0 ) > 0;
+		} );
 	}
 }

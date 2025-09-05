@@ -148,7 +148,9 @@ class PerformanceEnvironment extends Environment {
 
 		$this->install_php_extensions();
 		$this->setup_wordpress();
+		$this->activate_required_plugins();
 		$this->activate_plugins_and_themes();
+		$this->enable_payment_method();
 	}
 
 	/**
@@ -183,6 +185,15 @@ class PerformanceEnvironment extends Environment {
 	}
 
 	/**
+	 * Activate required plugins.
+	 * This method installs and activates plugins that are required for the performance environment.
+	 */
+	private function activate_required_plugins(): void {
+		$this->output->writeln( '<info>Activating required plugins...</info>' );
+		$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp plugin install https://github.com/WP-API/Basic-Auth/archive/master.zip --force --activate' ] );
+	}
+
+	/**
 	 * Activate plugins and themes.
 	 */
 	private function activate_plugins_and_themes(): void {
@@ -202,6 +213,15 @@ class PerformanceEnvironment extends Environment {
 
 		$theme_activation->maybe_activate_theme_that_is_dependency_of_sut();
 	}
+
+	/**
+	 * Enable payment methods.
+	 */
+	private function enable_payment_method(): void {
+		$this->output->writeln( '<info>Enabling Cash-on-delivery payment method...</info>' );
+		$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp wc payment_gateway update cod --enabled=true --user=admin' ] );
+	}
+
 
 	protected function get_generate_docker_compose_envs(): array {
 		return [

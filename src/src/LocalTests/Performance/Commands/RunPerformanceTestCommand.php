@@ -11,6 +11,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\PerformanceTestConfig;
 use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PreCommand\Objects\Extension;
@@ -79,7 +80,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'The slug or WooCommerce ID of the main extension under test.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
-			// ->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
+			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run.', '' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php' )
@@ -92,9 +93,10 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' )
-			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
-			// ->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
 			->addOption( 'extension_set', null, InputOption::VALUE_OPTIONAL, 'The extension set to use for the test.' )
+			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
+			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests before the main tests.' )
+			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
@@ -218,12 +220,17 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
 		}
 
-		$test_tag = $input->getArgument( 'test' ) ?? '';
+		$test_tag     = $input->getArgument( 'test' ) ?? '';
+		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
+		$no_baseline  = $input->getOption( 'no_baseline' );
 
 		if ( $env_info instanceof PerformanceEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut_slug = $woo_extension_slug;
-			$env_info->sut_type = $sut_type;
-			$env_info->test_tag = $test_tag;
+			$env_info->sut_slug     = $woo_extension_slug;
+			$env_info->sut_id       = $woo_extension_id;
+			$env_info->sut_type     = $sut_type;
+			$env_info->test_tag     = $test_tag;
+			$env_info->k6_test_file = $k6_test_file;
+			$env_info->run_baseline = ! $no_baseline;
 
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
@@ -351,8 +358,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		$woo_extension_raw = $input->getArgument( 'woo_extension' );
 		if ( empty( $woo_extension_raw ) ) {
-			if ( ! empty( $input->getOption( 'source' ) ) || ! empty( $input->getOption( 'sut_action' ) ) ) {
-				$output->writeln( '<error>The extension parameter is required when source or sut_action is set.</error>' );
+			if ( ! empty( $input->getOption( 'source' ) ) ) {
+				$output->writeln( '<error>The extension parameter is required when source is set.</error>' );
 
 				return Command::INVALID;
 			}
@@ -387,7 +394,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
 
 		// Gather CLI overrides.
-		$cli_action    = $input->getOption( 'sut_action' );
 		$cli_test      = $input->getArgument( 'test' );
 		$cli_test_tags = $cli_test ? explode( ',', $cli_test ) : [];
 		$cli_source    = $input->getOption( 'source' );
@@ -424,11 +430,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$extension_data['source'] = $cli_source;
 		}
 
-		// If CLI explicitly sets an action, override the old one.
-		if ( $cli_action ) {
-			$extension_data['action'] = $cli_action;
-		}
-
 		// Currently, CLI test tags override any existing test_tags.
 		// We could change it to array_merge below to merge instead.
 		if ( ! empty( $cli_test_tags ) ) {
@@ -436,7 +437,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		} else {
 			// If we never set test_tags, ensure it at least exists.
 			if ( empty( $extension_data['test_tags'] ) ) {
-				$extension_data['test_tags'] = [ 'default' ];
+				$extension_data['test_tags'] = PerformanceTestConfig::DEFAULT_TEST_TAGS;
 			}
 		}
 

@@ -233,7 +233,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 					$output->writeln( '<comment>Tests now wait for completion by default. Use --async to run tests asynchronously.</comment>' );
 					$output->writeln( '' );
 				}
-				
+
 				// In QIT 1.0, we wait by default unless --async is specified
 				if ( $input->getOption( 'async' ) ) {
 					// Async mode: enqueue and return immediately
