@@ -5,7 +5,9 @@ namespace QIT_CLI\LocalTests\Performance\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\DynamicCommand;
+use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
+use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Environment\Extension;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
@@ -16,14 +18,18 @@ use QIT_CLI\LocalTests\Performance\PerformanceTestConfig;
 use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PluginDependencies;
+use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
 use QIT_CLI\Tunnel\TunnelRunner;
+use QIT_CLI\Upload;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use function QIT_CLI\get_manager_url;
 
 class RunPerformanceTestCommand extends DynamicCommand {
 	use OptionReuseTrait;
@@ -80,17 +86,40 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		$this
 			->setDescription( 'Run Performance tests.' )
-			->setHelp( 'Run k6 performance tests against a given extension.' )
+			->setHelp( 'Run k6 performance tests against a given extension.' );
+
+		// Apply schema-driven options like other managed tests
+		DynamicCommandCreator::add_schema_to_command(
+			$this,
+			$schemas['performance'],
+			[], // No exceptions - include all schema properties
+			[]  // No whitelist - include all properties
+		);
+
+		// Add performance-specific arguments and options not covered by schema
+		$this
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'The slug or WooCommerce ID of the main extension under test.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
-			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] )
+			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] );
+
+		// Add performance-specific options that might not be in the current schema
+		// These are needed for local execution and will also work for remote execution
+		$this
 			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run.', '' )
+			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests before the main tests.' )
+			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' );
+
+		// Add version aliases that local code expects (reuse from UpEnvironmentCommand)
+		$this
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' );
+
+		// Local execution specific options (not part of remote schema)
+		$this
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'require' )
@@ -102,12 +131,18 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env_file' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'extension_set' )
 			->addOption( 'no_upload_report', null, InputOption::VALUE_NONE, 'Do not upload the report to QIT Manager.' )
-			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests before the main tests.' )
-			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' )
 			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
-			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' )
+			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
+
+		// Hybrid execution options
+		$this
+			->addOption( 'local', null, InputOption::VALUE_NONE, 'Run tests locally instead of on QIT infrastructure' )
+			->addOption( 'wait', null, InputOption::VALUE_NONE, 'Wait for remote test completion and display results' )
+			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, 'Timeout in seconds for waiting for test completion (min: 10, max: 7200)', null );
+
+		// Group options
+		$this
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
@@ -130,6 +165,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			return $result;
 		}
 
+		// Check if we should run locally (default is remote execution)
+		$run_local = $input->getOption( 'local' );
+		if ( ! $run_local ) {
+			return $this->execute_remote_test( $input, $output );
+		}
+
 		$this->parse_env_vars( $input->getOption( 'env' ) );
 
 		$woo_extension_raw = $input->getArgument( 'woo_extension' );
@@ -145,7 +186,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		if ( $group ) {
 			$group_options = [
 				'woo_id' => $woo_extension_id,
-				'local'  => true,
+				'local'  => $run_local,
 			];
 
 			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
@@ -360,9 +401,17 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	private function validate_input( InputInterface $input, OutputInterface $output, bool $wait ): int {
 		$woo     = $input->getOption( 'woo' );
 		$plugins = $input->getOption( 'plugin' );
+		$run_local = $input->getOption( 'local' );
 
 		if ( ! empty( $woo ) && ! empty( $plugins ) && in_array( 'woocommerce', $plugins, true ) ) {
 			$output->writeln( '<error>Cannot use both "--woo" and "--plugin woocommerce" together.</error>' );
+
+			return Command::INVALID;
+		}
+
+		// Remote tests don't support --up_only mode
+		if ( ! $run_local && $input->getOption( 'up_only' ) ) {
+			$output->writeln( '<error>--up_only is only supported for local tests (--local).</error>' );
 
 			return Command::INVALID;
 		}
@@ -374,8 +423,13 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 				return Command::INVALID;
 			}
-			if ( ! $wait ) {
+			if ( ! $wait && $run_local ) {
 				$output->writeln( '<error>The extension parameter is required unless in --up_only mode.</error>' );
+
+				return Command::INVALID;
+			}
+			if ( ! $run_local ) {
+				$output->writeln( '<error>The extension parameter is required for remote tests.</error>' );
 
 				return Command::INVALID;
 			}
@@ -507,5 +561,188 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		} catch ( \Exception $e ) { // phpcs:ignore
 			// no-op.
 		}
+	}
+
+	/**
+	 * Execute performance tests remotely on QIT infrastructure.
+	 *
+	 * @param InputInterface  $input
+	 * @param OutputInterface $output
+	 *
+	 * @return int Command exit code
+	 */
+	protected function execute_remote_test( InputInterface $input, OutputInterface $output ): int {
+		// Parse and prepare options using managed test patterns
+		try {
+			$options = $this->parse_options( $input );
+		} catch ( \Exception $e ) {
+			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			return Command::FAILURE;
+		}
+
+		$woo_extension_raw = $input->getArgument( 'woo_extension' );
+		[ $woo_extension_id, $woo_extension_slug, $sut_type_or_code ] = $this->resolve_woo_extension( $woo_extension_raw, $output );
+		
+		if ( $sut_type_or_code === Command::INVALID ) {
+			return Command::INVALID;
+		}
+
+		// Handle group creation for remote tests
+		$group = $input->getOption( 'group' );
+		if ( $group ) {
+			$group_options = [
+				'woo_id' => $woo_extension_id,
+				'local'  => false, // This is a remote test
+			];
+
+			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
+				$group_options['extension_set'] = $input->getOption( 'extension_set' );
+			}
+
+			$test_type = 'performance';
+
+			try {
+				$env_vars      = getenv();
+				$input_options = $input;
+				$this->test_group->create_or_update( $group_options, $test_type, $output, $input_options, $env_vars );
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
+				return Command::FAILURE;
+			}
+
+			$output->writeln( '<info>Group item successfully added.</info>' );
+			return Command::SUCCESS;
+		}
+
+		// Add woo_id to options (following managed test pattern)
+		$options['woo_id'] = $woo_extension_id;
+
+		// Handle ZIP upload if testing local file (following CreateRunCommands pattern)
+		$source = $input->getOption( 'source' );
+		if ( ! empty( $source ) && file_exists( $source ) ) {
+			try {
+				$upload_instance = App::make( Upload::class );
+				$options['upload_id'] = $upload_instance->upload_build( 'build', $options['woo_id'], $source, $output );
+				$options['event'] = 'cli_development_extension_test';
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<error>Failed to upload file: %s</error>', $e->getMessage() ) );
+				return Command::FAILURE;
+			}
+		} else {
+			$options['event'] = 'cli_published_extension_test';
+		}
+
+		// Enqueue the remote test following managed test pattern
+		try {
+			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/enqueue-performance' ) )
+				->with_method( 'POST' )
+				->with_post_body( $options )
+				->request();
+
+		} catch ( \Exception $e ) {
+			$output->writeln( "<error>{$e->getMessage()}</error>" );
+			return Command::FAILURE;
+		}
+
+		// Process response following managed test pattern
+		$response = json_decode( $json, true );
+
+		if ( ! is_array( $response ) ) {
+			$output->writeln( '<error>Invalid response from server.</error>' );
+			return Command::FAILURE;
+		}
+
+		if ( ! isset( $response['test_run_id'] ) || ! isset( $response['test_results_manager_url'] ) ) {
+			$output->writeln( '<error>Unexpected response. Missing "test_run_id" or "test_results_manager_url".</error>' );
+			return Command::FAILURE;
+		}
+
+		$test_run_id = $response['test_run_id'];
+		$output->writeln( sprintf( '<info>Test enqueued with ID: %s</info>', $test_run_id ) );
+		$output->writeln( sprintf( '<info>Test URL: %s</info>', $response['test_results_manager_url'] ) );
+
+		// Wait for completion if requested
+		$wait = $input->getOption( 'wait' );
+		if ( $wait ) {
+			return $this->wait_for_remote_test_completion( $test_run_id, $input, $output );
+		}
+
+		return Command::SUCCESS;
+	}
+
+	/**
+	 * Wait for remote test completion and show results using managed test pattern.
+	 *
+	 * @param string          $test_run_id
+	 * @param InputInterface  $input
+	 * @param OutputInterface $output
+	 *
+	 * @return int Command exit code
+	 */
+	protected function wait_for_remote_test_completion( string $test_run_id, InputInterface $input, OutputInterface $output ): int {
+		// Configure timeout following managed test pattern
+		$timeout = $input->getOption( 'timeout' ) ?? null;
+		
+		if ( is_null( $timeout ) ) {
+			$timeout = 1800; // 30 minutes for performance tests (less than woo-e2e's 2 hours)
+		}
+
+		// Minimum timeout is 10 seconds, maximum is 2 hours
+		$timeout = max( 10, $timeout );
+		$timeout = min( 3600 * 2, $timeout );
+
+		// Get polling interval from environment or default
+		$poll_interval = (int) ( getenv( 'QIT_POLL_INTERVAL' ) ?: 10 );
+		$poll_interval = max( 1, $poll_interval );
+
+		// Register signal handlers for graceful interruption (following CreateRunCommands pattern)
+		if ( function_exists( 'pcntl_signal' ) ) {
+			$handler = static function ( $signal ) use ( $output ) {
+				$output->writeln( '<comment>Received termination signal. Exiting gracefully...</comment>' );
+				exit( 130 );
+			};
+			pcntl_signal( SIGINT, $handler );
+			pcntl_signal( SIGTERM, $handler );
+		}
+
+		$start_time = time();
+		$get_command = App::make( GetCommand::class );
+
+		do {
+			sleep( $poll_interval );
+
+			if ( function_exists( 'pcntl_signal_dispatch' ) ) {
+				pcntl_signal_dispatch();
+			}
+
+			// Use GetCommand for status checking (following CreateRunCommands pattern)
+			try {
+				$finished = $get_command->run( 
+					new ArrayInput( [
+						'test_run_id'      => $test_run_id,
+						'--check_finished' => true,
+					] ), 
+					$output 
+				);
+
+				if ( $finished === 0 ) {
+					// Test finished, get final results
+					return $get_command->run(
+						new ArrayInput( [ 'test_run_id' => $test_run_id ] ),
+						$output
+					);
+				}
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<comment>Error checking test status: %s</comment>', $e->getMessage() ) );
+			}
+
+			// Check timeout
+			$elapsed_time = time() - $start_time;
+			if ( $elapsed_time >= $timeout ) {
+				$output->writeln( sprintf( '<error>Test did not complete within %d seconds.</error>', $timeout ) );
+				return Command::FAILURE;
+			}
+
+		} while ( true );
 	}
 }
