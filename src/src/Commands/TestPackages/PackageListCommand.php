@@ -49,6 +49,26 @@ class PackageListCommand extends QITCommand {
 				'o',
 				InputOption::VALUE_NONE,
 				'Show only packages owned by the current partner'
+			)
+			->addOption(
+				'limit',
+				'l',
+				InputOption::VALUE_REQUIRED,
+				'Number of parent packages to display per page (subpackages always included)',
+				'20'
+			)
+			->addOption(
+				'page',
+				'p',
+				InputOption::VALUE_REQUIRED,
+				'Page number to display',
+				'1'
+			)
+			->addOption(
+				'no-pagination',
+				null,
+				InputOption::VALUE_NONE,
+				'Disable pagination and show all packages'
 			);
 	}
 
@@ -61,13 +81,22 @@ class PackageListCommand extends QITCommand {
 			$format = 'json';
 		}
 
-		$test_type  = $input->getOption( 'test-type' );
-		$namespace  = $input->getOption( 'namespace' );
-		$owned_only = $input->getOption( 'owned-only' );
+		$test_type     = $input->getOption( 'test-type' );
+		$namespace     = $input->getOption( 'namespace' );
+		$owned_only    = $input->getOption( 'owned-only' );
+		$limit         = (int) $input->getOption( 'limit' );
+		$page          = (int) $input->getOption( 'page' );
+		$no_pagination = $input->getOption( 'no-pagination' );
+
+		// If no-pagination is set, use a very high limit
+		if ( $no_pagination ) {
+			$limit = 9999;
+			$page  = 1;
+		}
 
 		try {
-			$packages = $this->fetch_packages_from_manager( $test_type, $namespace, $owned_only, $output );
-			$this->output_packages( $packages, $format, $output, $io );
+			$packages = $this->fetch_packages_from_manager( $test_type, $namespace, $owned_only, $limit, $page, $output );
+			$this->output_packages( $packages, $format, $output, $io, $input );
 
 			return 0;
 		} catch ( \Exception $e ) {
@@ -90,10 +119,14 @@ class PackageListCommand extends QITCommand {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function fetch_packages_from_manager( ?string $test_type, ?string $namespace_param, bool $owned_only, OutputInterface $output ): array {
+	private function fetch_packages_from_manager( ?string $test_type, ?string $namespace_param, bool $owned_only, int $limit, int $page, OutputInterface $output ): array {
 		$output->writeln( '📦 Fetching available packages...' );
 
-		$post_body = [];
+		$post_body = [
+			'limit' => $limit,
+			'page'  => $page,
+		];
+		
 		if ( $test_type ) {
 			$post_body['test_type'] = $test_type;
 		}
@@ -119,6 +152,10 @@ class PackageListCommand extends QITCommand {
 
 		if ( isset( $data['code'] ) && $data['code'] !== 200 ) {
 			$error_message = $data['message'] ?? 'Failed to fetch packages';
+			// For pagination out of bounds, show a helpful message
+			if ( $data['code'] === 400 && strpos( $error_message, 'Page' ) === 0 ) {
+				throw new \RuntimeException( $error_message );
+			}
 			throw new \RuntimeException( $error_message );
 		}
 
@@ -130,19 +167,27 @@ class PackageListCommand extends QITCommand {
 	 *
 	 * @param array<string, mixed> $response
 	 */
-	private function output_packages( array $response, string $format, OutputInterface $output, SymfonyStyle $io ): void {
-		$packages     = $response['packages'] ?? [];
-		$total        = $response['total'] ?? count( $packages );
-		$owned_count  = $response['owned_count'] ?? 0;
-		$public_count = $response['public_count'] ?? 0;
+	private function output_packages( array $response, string $format, OutputInterface $output, SymfonyStyle $io, QITInput $input ): void {
+		$packages      = $response['packages'] ?? [];
+		$total         = $response['total'] ?? count( $packages );
+		$total_parents = $response['total_parents'] ?? 0;
+		$owned_count   = $response['owned_count'] ?? 0;
+		$public_count  = $response['public_count'] ?? 0;
+		$page          = $response['page'] ?? 1;
+		$limit         = $response['limit'] ?? 50;
+		$total_pages   = $response['total_pages'] ?? 1;
 
 		if ( $format === 'json' ) {
 			$output->writeln( json_encode( [
-				'success'      => true,
-				'total'        => $total,
-				'owned_count'  => $owned_count,
-				'public_count' => $public_count,
-				'packages'     => $packages,
+				'success'       => true,
+				'total'         => $total,
+				'total_parents' => $total_parents,
+				'owned_count'   => $owned_count,
+				'public_count'  => $public_count,
+				'page'          => $page,
+				'limit'         => $limit,
+				'total_pages'   => $total_pages,
+				'packages'      => $packages,
 			], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			return;
@@ -157,25 +202,34 @@ class PackageListCommand extends QITCommand {
 
 		$io->title( 'Available Test Packages' );
 
+		// Show pagination info
+		if ( $total_pages > 1 && ! $input->getOption( 'no-pagination' ) ) {
+			$io->text( sprintf(
+				'Page %d of %d (showing %d parent packages with their subpackages)',
+				$page,
+				$total_pages,
+				min( $limit, $total_parents - ( ( $page - 1 ) * $limit ) )
+			) );
+		}
+
 		if ( $owned_count > 0 && $public_count > 0 ) {
 			$io->text( sprintf(
-				'Found %d packages total (%d owned by you, %d public)',
+				'Found %d packages total (%d parent packages, %d owned by you, %d public)',
 				$total,
+				$total_parents,
 				$owned_count,
 				$public_count
 			) );
 		} elseif ( $owned_count > 0 ) {
-			$io->text( sprintf( 'Found %d packages owned by you', $owned_count ) );
+			$io->text( sprintf( 'Found %d packages owned by you (%d parent packages)', $owned_count, $total_parents ) );
 		} elseif ( $public_count > 0 ) {
-			$io->text( sprintf( 'Found %d public packages', $public_count ) );
+			$io->text( sprintf( 'Found %d public packages (%d parent packages)', $public_count, $total_parents ) );
 		}
 
 		$table = new Table( $output );
 		$table->setHeaders( [
 			'Package ID',
 			'Namespace',
-			'Package',
-			'Test Type',
 			'Version',
 			'Size',
 			'Visibility',
@@ -202,8 +256,6 @@ class PackageListCommand extends QITCommand {
 			$table->addRow( [
 				$package_id,
 				$package['namespace'] ?? 'N/A',
-				$package['package'] ?? 'N/A',
-				$package['test_type'] ?? 'N/A',
 				$package['version'] ?? 'N/A',
 				$size,
 				$visibility,
@@ -216,6 +268,18 @@ class PackageListCommand extends QITCommand {
 		$io->newLine();
 		$io->text( '💡 Use <info>qit package:download <package-id></info> to download a package' );
 		$io->text( '💡 Use <info>qit package:delete <package-id></info> to delete packages you own' );
+		
+		// Show pagination navigation hints
+		if ( $total_pages > 1 && ! $input->getOption( 'no-pagination' ) ) {
+			$io->newLine();
+			if ( $page < $total_pages ) {
+				$io->text( sprintf( '📄 Use <info>--page %d</info> to see the next page', $page + 1 ) );
+			}
+			if ( $page > 1 ) {
+				$io->text( sprintf( '📄 Use <info>--page %d</info> to see the previous page', $page - 1 ) );
+			}
+			$io->text( '📄 Use <info>--no-pagination</info> to see all packages at once' );
+		}
 	}
 
 	/**
