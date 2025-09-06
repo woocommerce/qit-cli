@@ -99,6 +99,9 @@ class UpEnvironmentCommand extends QITCommand {
 		$env_config = $this->get_environment_config( $env_name );
 		$env_config = $this->applyCliOverrides( $env_config, $input );
 
+		/* ─ 1.5. Process test package requirements and add missing dependencies ─ */
+		$this->process_test_package_requirements( $env_config, $input, $output );
+
 		/* ─ 2. Resolve extensions using the merged config (includes CLI overrides) ─ */
 		$resolved_ext = $this->download_extensions_from_config( $env_config );
 
@@ -724,6 +727,107 @@ class UpEnvironmentCommand extends QITCommand {
 		// Convert slug to title case
 		$name = str_replace( [ '-', '_' ], ' ', $slug );
 		return ucwords( $name );
+	}
+
+	/**
+	 * Process test package requirements and add missing dependencies.
+	 *
+	 * @param array<string,mixed> $env_config Environment configuration (modified by reference).
+	 * @param InputInterface      $input Input interface.
+	 * @param OutputInterface     $output Output interface.
+	 */
+	private function process_test_package_requirements( array &$env_config, InputInterface $input, OutputInterface $output ): void {
+		// Get pre-processed test package requirements from DI container (set by RunE2ECommand)
+		$required_plugins = \QIT_CLI\App::getVar( 'test_package_required_plugins' );
+		$required_themes = \QIT_CLI\App::getVar( 'test_package_required_themes' );
+		
+		if ( empty( $required_plugins ) && empty( $required_themes ) ) {
+			return;
+		}
+		
+		// Ensure arrays
+		$required_plugins = $required_plugins ?: [];
+		$required_themes = $required_themes ?: [];
+
+		// Initialize arrays if they don't exist
+		if ( ! isset( $env_config['plugins'] ) ) {
+			$env_config['plugins'] = [];
+		}
+		if ( ! isset( $env_config['themes'] ) ) {
+			$env_config['themes'] = [];
+		}
+
+		// Track what's already provided
+		$existing_plugins = [];
+		$existing_themes  = [];
+
+		// Extract existing plugin slugs
+		foreach ( $env_config['plugins'] as $plugin ) {
+			$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+			if ( $slug ) {
+				$existing_plugins[] = $slug;
+			}
+		}
+
+		// Extract existing theme slugs
+		foreach ( $env_config['themes'] as $theme ) {
+			$slug = is_string( $theme ) ? $theme : ( $theme['slug'] ?? null );
+			if ( $slug ) {
+				$existing_themes[] = $slug;
+			}
+		}
+
+		// Also check SUT to avoid duplication
+		$sut_slug = null;
+		if ( isset( $env_config['sut'] ) && is_array( $env_config['sut'] ) && isset( $env_config['sut']['slug'] ) ) {
+			$sut_slug = $env_config['sut']['slug'];
+		}
+
+		// Add missing plugins
+		$added_plugins = [];
+		foreach ( $required_plugins as $plugin_slug => $required_by ) {
+			// Skip if it's the SUT
+			if ( $sut_slug && $plugin_slug === $sut_slug ) {
+				continue;
+			}
+
+			// Add if not already present
+			if ( ! in_array( $plugin_slug, $existing_plugins, true ) ) {
+				$env_config['plugins'][]       = $plugin_slug;
+				$added_plugins[ $plugin_slug ] = $required_by;
+			}
+		}
+
+		// Add missing themes
+		$added_themes = [];
+		foreach ( $required_themes as $theme_slug => $required_by ) {
+			// Skip if it's the SUT
+			if ( $sut_slug && $theme_slug === $sut_slug ) {
+				continue;
+			}
+
+			// Add if not already present
+			if ( ! in_array( $theme_slug, $existing_themes, true ) ) {
+				$env_config['themes'][]       = $theme_slug;
+				$added_themes[ $theme_slug ] = $required_by;
+			}
+		}
+
+		// Report what was added
+		if ( ! empty( $added_plugins ) || ! empty( $added_themes ) ) {
+			$output->writeln( '' );
+			$output->writeln( '<info>Auto-installing test package dependencies:</info>' );
+
+			foreach ( $added_plugins as $plugin_slug => $required_by ) {
+				$packages = implode( ', ', array_unique( $required_by ) );
+				$output->writeln( sprintf( '  → Plugin <comment>%s</comment> (required by %s)', $plugin_slug, $packages ) );
+			}
+
+			foreach ( $added_themes as $theme_slug => $required_by ) {
+				$packages = implode( ', ', array_unique( $required_by ) );
+				$output->writeln( sprintf( '  → Theme <comment>%s</comment> (required by %s)', $theme_slug, $packages ) );
+			}
+		}
 	}
 
 	/*******************************************************************

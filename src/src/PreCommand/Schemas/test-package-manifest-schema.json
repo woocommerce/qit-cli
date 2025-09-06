@@ -78,26 +78,22 @@
       "additionalProperties": false,
       "properties": {
         "plugins": {
-          "type": "object",
-          "description": "Required plugins with version constraints",
-          "patternProperties": {
-            "^[a-zA-Z0-9_.-]+$": {
-              "type": "string",
-              "description": "Semantic version constraint (e.g., ^9.8.0, >=6.0.0)"
-            }
+          "type": "array",
+          "description": "Required plugins (will be installed and activated)",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$"
           },
-          "additionalProperties": false
+          "uniqueItems": true
         },
         "themes": {
-          "type": "object",
-          "description": "Required themes with version constraints",
-          "patternProperties": {
-            "^[a-zA-Z0-9_.-]+$": {
-              "type": "string",
-              "description": "Semantic version constraint"
-            }
+          "type": "array",
+          "description": "Required themes (will be installed but not activated)",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$"
           },
-          "additionalProperties": false
+          "uniqueItems": true
         },
         "wordpress": {
           "type": "string",

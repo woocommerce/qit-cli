@@ -234,7 +234,7 @@ class RealTimeTestReporter implements Extension
         // Clear the line and show result
         $this->write("\r" . str_repeat(' ', 100) . "\r");
         $this->write(sprintf("[%3d/%3d] %s %s %s\n",
-            $this->executedTests,
+            $this->executedTests + 1,
             $this->totalTests,
             $icon,
             $this->currentTestName,

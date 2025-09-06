@@ -337,9 +337,56 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
+		// Process test package requirements for env:up
+		$required_plugins = [];
+		$required_themes = [];
+		
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( ! isset( $meta['manifest'] ) ) {
+				continue;
+			}
+
+			// Get manifest object
+			if ( $meta['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+				$manifest = $meta['manifest'];
+			} else {
+				// Convert array to manifest object if needed
+				$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $meta['manifest'] );
+			}
+
+			// Get a short package name for display
+			$pkg_display = basename( $pkg_id );
+
+			// Collect plugin requirements
+			$plugins = $manifest->get_required_plugins();
+			foreach ( $plugins as $plugin_slug ) {
+				if ( ! isset( $required_plugins[ $plugin_slug ] ) ) {
+					$required_plugins[ $plugin_slug ] = [];
+				}
+				$required_plugins[ $plugin_slug ][] = $pkg_display;
+			}
+			
+			// Collect theme requirements
+			$themes = $manifest->get_required_themes();
+			foreach ( $themes as $theme_slug ) {
+				if ( ! isset( $required_themes[ $theme_slug ] ) ) {
+					$required_themes[ $theme_slug ] = [];
+				}
+				$required_themes[ $theme_slug ][] = $pkg_display;
+			}
+		}
+		
+		// Pass processed requirements via DI container for env:up
+		if ( ! empty( $required_plugins ) ) {
+			App::setVar( 'test_package_required_plugins', $required_plugins );
+		}
+		if ( ! empty( $required_themes ) ) {
+			App::setVar( 'test_package_required_themes', $required_themes );
+		}
+
 		// Always output JSON for parsing
 		$env_up_options['--json'] = true;
-
+		
 		// Run env:up and get the environment info
 		try {
 			/** @var E2EEnvInfo $env_info */
@@ -350,6 +397,9 @@ class RunE2ECommand extends QITCommand {
 
 			return Command::FAILURE;
 		} finally {
+			// Clean up temporary DI container variables
+			App::offsetUnset( 'test_package_required_plugins' );
+			App::offsetUnset( 'test_package_required_themes' );
 			putenv( 'QIT_HIDE_SITE_INFO' );
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' );
 		}
