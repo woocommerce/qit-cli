@@ -339,20 +339,11 @@ class RunE2ECommand extends QITCommand {
 
 		// Process test package requirements for env:up
 		$required_plugins = [];
-		$required_themes = [];
-		
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( ! isset( $meta['manifest'] ) ) {
-				continue;
-			}
+		$required_themes  = [];
 
-			// Get manifest object
-			if ( $meta['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
-				$manifest = $meta['manifest'];
-			} else {
-				// Convert array to manifest object if needed
-				$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $meta['manifest'] );
-			}
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			// Get manifest object - it's always set based on the type definition
+			$manifest = $meta['manifest'];
 
 			// Get a short package name for display
 			$pkg_display = basename( $pkg_id );
@@ -365,7 +356,7 @@ class RunE2ECommand extends QITCommand {
 				}
 				$required_plugins[ $plugin_slug ][] = $pkg_display;
 			}
-			
+
 			// Collect theme requirements
 			$themes = $manifest->get_required_themes();
 			foreach ( $themes as $theme_slug ) {
@@ -375,7 +366,7 @@ class RunE2ECommand extends QITCommand {
 				$required_themes[ $theme_slug ][] = $pkg_display;
 			}
 		}
-		
+
 		// Pass processed requirements via DI container for env:up
 		if ( ! empty( $required_plugins ) ) {
 			App::setVar( 'test_package_required_plugins', $required_plugins );
@@ -386,7 +377,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Always output JSON for parsing
 		$env_up_options['--json'] = true;
-		
+
 		// Run env:up and get the environment info
 		try {
 			/** @var E2EEnvInfo $env_info */

@@ -739,15 +739,15 @@ class UpEnvironmentCommand extends QITCommand {
 	private function process_test_package_requirements( array &$env_config, InputInterface $input, OutputInterface $output ): void {
 		// Get pre-processed test package requirements from DI container (set by RunE2ECommand)
 		$required_plugins = \QIT_CLI\App::getVar( 'test_package_required_plugins' );
-		$required_themes = \QIT_CLI\App::getVar( 'test_package_required_themes' );
-		
+		$required_themes  = \QIT_CLI\App::getVar( 'test_package_required_themes' );
+
 		if ( empty( $required_plugins ) && empty( $required_themes ) ) {
 			return;
 		}
-		
+
 		// Ensure arrays
 		$required_plugins = $required_plugins ?: [];
-		$required_themes = $required_themes ?: [];
+		$required_themes  = $required_themes ?: [];
 
 		// Initialize arrays if they don't exist
 		if ( ! isset( $env_config['plugins'] ) ) {
@@ -808,7 +808,7 @@ class UpEnvironmentCommand extends QITCommand {
 
 			// Add if not already present
 			if ( ! in_array( $theme_slug, $existing_themes, true ) ) {
-				$env_config['themes'][]       = $theme_slug;
+				$env_config['themes'][]      = $theme_slug;
 				$added_themes[ $theme_slug ] = $required_by;
 			}
 		}

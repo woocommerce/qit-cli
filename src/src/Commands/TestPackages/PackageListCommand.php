@@ -126,7 +126,7 @@ class PackageListCommand extends QITCommand {
 			'limit' => $limit,
 			'page'  => $page,
 		];
-		
+
 		if ( $test_type ) {
 			$post_body['test_type'] = $test_type;
 		}
@@ -268,7 +268,7 @@ class PackageListCommand extends QITCommand {
 		$io->newLine();
 		$io->text( '💡 Use <info>qit package:download <package-id></info> to download a package' );
 		$io->text( '💡 Use <info>qit package:delete <package-id></info> to delete packages you own' );
-		
+
 		// Show pagination navigation hints
 		if ( $total_pages > 1 && ! $input->getOption( 'no-pagination' ) ) {
 			$io->newLine();

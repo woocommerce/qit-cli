@@ -24,14 +24,13 @@ class EnvironmentRunner {
 	public function run_environment( array $env_up_options ): EnvInfo {
 		$env_up_options['--json'] = true;
 
-		$env_up_command   = App::make( Application::class )->find( UpEnvironmentCommand::getDefaultName() );
-		$resource_stream  = fopen( 'php://temp', 'w+' );
-		
+		$env_up_command  = App::make( Application::class )->find( UpEnvironmentCommand::getDefaultName() );
+		$resource_stream = fopen( 'php://temp', 'w+' );
+
 		// Attach the JSON filter when in JSON mode to filter out non-JSON output
-		if ( ! empty( $env_up_options['--json'] ) ) {
-			stream_filter_append( $resource_stream, 'qit_json' );
-		}
-		
+		// The --json option is always set to true above, so we always attach the filter
+		stream_filter_append( $resource_stream, 'qit_json' );
+
 		$exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
 			new StreamOutput( $resource_stream )

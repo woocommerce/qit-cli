@@ -352,14 +352,12 @@ final class TestPackageManifest {
 	public function requires_plugin( string $slug ): bool {
 		// Now plugins is an array, check if slug is in the array
 		return isset( $this->requires['plugins'] ) &&
-				is_array( $this->requires['plugins'] ) &&
 				in_array( $slug, $this->requires['plugins'], true );
 	}
 
 	public function requires_theme( string $slug ): bool {
 		// Now themes is an array, check if slug is in the array
 		return isset( $this->requires['themes'] ) &&
-				is_array( $this->requires['themes'] ) &&
 				in_array( $slug, $this->requires['themes'], true );
 	}
 
@@ -369,7 +367,7 @@ final class TestPackageManifest {
 	 * @return array<string> Array of plugin slugs.
 	 */
 	public function get_required_plugins(): array {
-		return isset( $this->requires['plugins'] ) && is_array( $this->requires['plugins'] )
+		return isset( $this->requires['plugins'] )
 			? $this->requires['plugins']
 			: [];
 	}
@@ -380,7 +378,7 @@ final class TestPackageManifest {
 	 * @return array<string> Array of theme slugs.
 	 */
 	public function get_required_themes(): array {
-		return isset( $this->requires['themes'] ) && is_array( $this->requires['themes'] )
+		return isset( $this->requires['themes'] )
 			? $this->requires['themes']
 			: [];
 	}
