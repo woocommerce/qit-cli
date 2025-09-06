@@ -71,7 +71,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 	}
 
-	protected function configure() {
+	protected function configure(): void {
 		$schemas = $this->cache->get_manager_sync_data( 'schemas' );
 
 		if ( ! is_array( $schemas['performance']['properties'] ) ) {
@@ -112,7 +112,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
 		try {
 			$options                    = $this->parse_options( $input );
 			$env_up_options             = $options['env_up'];
