@@ -252,7 +252,9 @@ BASH;
 
 		$manifest = array_merge( $manifest, [
 			'package'          => $namespace . '/' . $package_name,
-			'requires_network' => false, // Explicitly show this field for clarity
+			'requires'         => [
+				'network' => false, // Explicitly show this field for clarity
+			],
 			'test'             => [
 				'phases'  => [
 					'globalSetup'    => [ './bootstrap/global-setup.sh' ],

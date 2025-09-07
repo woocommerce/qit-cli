@@ -73,59 +73,8 @@
       "maxLength": 500
     },
     "requires": {
-      "type": "object",
-      "description": "Requirements for running this test package",
-      "additionalProperties": false,
-      "properties": {
-        "plugins": {
-          "type": "array",
-          "description": "Required plugins (will be installed and activated)",
-          "items": {
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9_.-]+$"
-          },
-          "uniqueItems": true
-        },
-        "themes": {
-          "type": "array",
-          "description": "Required themes (will be installed but not activated)",
-          "items": {
-            "type": "string",
-            "pattern": "^[a-zA-Z0-9_.-]+$"
-          },
-          "uniqueItems": true
-        },
-        "wordpress": {
-          "type": "string",
-          "description": "WordPress version constraint"
-        },
-        "php": {
-          "type": "string",
-          "description": "PHP version constraint"
-        },
-        "secrets": {
-          "type": "array",
-          "description": "Required environment secrets/API keys",
-          "items": {
-            "type": "string",
-            "pattern": "^[A-Z_][A-Z0-9_]*$"
-          },
-          "uniqueItems": true
-        },
-        "external_services": {
-          "type": "array",
-          "description": "External services needed (for documentation purposes)",
-          "items": {
-            "type": "string"
-          },
-          "uniqueItems": true
-        }
-      }
-    },
-    "requires_network": {
-      "type": "boolean",
-      "description": "Whether this test package requires network access (defaults to false)",
-      "default": false
+      "$ref": "#/definitions/requires",
+      "description": "Requirements for running this test package"
     },
     "test": {
       "type": "object",
@@ -234,6 +183,10 @@
               },
               "uniqueItems": true
             },
+            "requires": {
+              "$ref": "#/definitions/requires",
+              "description": "Requirement overrides for this subpackage"
+            },
             "test": {
               "type": "object",
               "description": "Test configuration overrides for this subpackage",
@@ -260,6 +213,65 @@
     }
   },
   "definitions": {
+    "requires": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plugins": {
+          "type": "array",
+          "description": "Required plugins (will be installed and activated)",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$"
+          },
+          "uniqueItems": true
+        },
+        "themes": {
+          "type": "array",
+          "description": "Required themes (will be installed but not activated)",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$"
+          },
+          "uniqueItems": true
+        },
+        "wordpress": {
+          "type": "string",
+          "description": "WordPress version constraint"
+        },
+        "php": {
+          "type": "string",
+          "description": "PHP version constraint"
+        },
+        "secrets": {
+          "type": "array",
+          "description": "Required environment secrets/API keys",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z_][A-Z0-9_]*$"
+          },
+          "uniqueItems": true
+        },
+        "external_services": {
+          "type": "array",
+          "description": "External services needed (for documentation purposes)",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "network": {
+          "type": "boolean",
+          "description": "Whether this test package requires network access (defaults to false)",
+          "default": false
+        },
+        "tunnel": {
+          "type": "boolean",
+          "description": "Whether this test package requires a tunnel for external access (defaults to false)",
+          "default": false
+        }
+      }
+    },
     "lifecycleCommands": {
       "type": "array",
       "description": "Array of commands to execute",

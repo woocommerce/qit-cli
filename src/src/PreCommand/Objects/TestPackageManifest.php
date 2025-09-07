@@ -110,13 +110,12 @@ final class TestPackageManifest {
 		$this->subpackages    = $data['subpackages'] ?? [];
 		$this->parent_package = $data['parent_package'] ?? null;
 
-		// Network requirement - optional field, defaults to false (offline)
-		if ( isset( $data['requires_network'] ) ) {
-			// Handle string values properly (JSON might provide strings)
-			if ( is_string( $data['requires_network'] ) ) {
-				$this->requires_network = filter_var( $data['requires_network'], FILTER_VALIDATE_BOOLEAN );
+		// Network requirement - only support new format (requires.network)
+		if ( isset( $data['requires']['network'] ) ) {
+			if ( is_string( $data['requires']['network'] ) ) {
+				$this->requires_network = filter_var( $data['requires']['network'], FILTER_VALIDATE_BOOLEAN );
 			} else {
-				$this->requires_network = (bool) $data['requires_network'];
+				$this->requires_network = (bool) $data['requires']['network'];
 			}
 		} else {
 			// Default to offline (false) when not specified
@@ -146,13 +145,12 @@ final class TestPackageManifest {
 		$this->retry          = $data['retry'];
 		$this->subpackages    = $data['subpackages'];
 		$this->parent_package = $data['parent_package'];
-		// For normalized data, requires_network defaults to false if not present
-		if ( isset( $data['requires_network'] ) ) {
-			// Handle string values properly (even in normalized data)
-			if ( is_string( $data['requires_network'] ) ) {
-				$this->requires_network = filter_var( $data['requires_network'], FILTER_VALIDATE_BOOLEAN );
+		// For normalized data, only support new format (requires.network)
+		if ( isset( $data['requires']['network'] ) ) {
+			if ( is_string( $data['requires']['network'] ) ) {
+				$this->requires_network = filter_var( $data['requires']['network'], FILTER_VALIDATE_BOOLEAN );
 			} else {
-				$this->requires_network = (bool) $data['requires_network'];
+				$this->requires_network = (bool) $data['requires']['network'];
 			}
 		} else {
 			$this->requires_network = false;

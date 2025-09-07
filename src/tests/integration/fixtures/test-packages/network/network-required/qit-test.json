@@ -2,8 +2,10 @@
   "$schema": "https://qit.woo.com/json-schema/test-package",
   "package": "woocommerce/network-required",
   "test_type": "e2e",
-  "description": "Test package with requires_network: true",
-  "requires_network": true,
+  "description": "Test package with requires.network: true",
+  "requires": {
+    "network": true
+  },
   "test": {
     "phases": {
       "run": [
