@@ -113,7 +113,9 @@ class RunE2ECommand extends QITCommand {
 	protected function configureMainOptions(): void {
 		$this->setDescription( 'Run E2E tests' )
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
-			->addArgument( 'runner_args', InputArgument::IS_ARRAY, 'Arguments after --' )
+			->addArgument( 'passthrough', InputArgument::IS_ARRAY, 'Arguments after --' )
+			->addOption( 'passthrough_target', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Test packages that should receive passthrough arguments (multiple allowed)', [] )
 			/* ─────────────── SUT‑related options ─────────────── */
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
 			'Use a custom ZIP (or directory/URL) as the SUT build' )
@@ -450,12 +452,15 @@ class RunE2ECommand extends QITCommand {
 			);
 		}
 
-		// Get runner args to pass through to test framework
-		$runner_args = $input->getArgument( 'runner_args' ) ?? [];
+		// Get passthrough args to pass through to test framework
+		$passthrough_args = $input->getArgument( 'passthrough' ) ?? [];
+		
+		// Get passthrough targets for explicit control
+		$passthrough_targets = $input->getOption( 'passthrough_target' ) ?? [];
 
 		// Run tests with test packages
 		$io = new SymfonyStyle( $input, $output );
-		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io, $runner_args, $parsed_env_vars );
+		[ $exit_status, $orchestrator_from_run, $artifacts_dir ] = $this->runTestPackages( $env_info, $test_packages, $io, $passthrough_args, $parsed_env_vars, $passthrough_targets );
 
 		// Notify test finished
 		if ( isset( $env_info->sut['slug'] ) ) {
@@ -1080,12 +1085,13 @@ class RunE2ECommand extends QITCommand {
 	 * @param \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info The environment information.
 	 * @param array<string,mixed>                              $test_packages The test packages to run.
 	 * @param SymfonyStyle                                     $io The IO interface.
-	 * @param array<string>                                    $runner_args Arguments to pass to test framework after --.
+	 * @param array<string>                                    $passthrough_args Arguments to pass to test framework after --.
 	 * @param array<string,string>                             $parsed_env_vars Parsed environment variables passed from CLI/env files.
+	 * @param array<string>                                    $passthrough_targets Explicit packages to receive passthrough_args.
 	 *
 	 * @return array{int, \QIT_CLI\Environment\PackageOrchestrator, string} Returns [exit_status, orchestrator, artifacts_dir].
 	 */
-	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io, array $runner_args = [], array $parsed_env_vars = [] ): array {
+	protected function runTestPackages( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, array $test_packages, SymfonyStyle $io, array $passthrough_args = [], array $parsed_env_vars = [], array $passthrough_targets = [] ): array {
 		// Create orchestrator early so it's available in catch/finally blocks
 		$ctrf_validator = App::make( \QIT_CLI\Environment\CTRFValidator::class );
 		$orchestrator   = new \QIT_CLI\Environment\PackageOrchestrator( $io, $ctrf_validator );
@@ -1369,7 +1375,38 @@ class RunE2ECommand extends QITCommand {
 					if ( $manifest->has_phase( 'run' ) ) {
 						try {
 							$orchestrator->phase_start( 'run' );
-							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $runner_args, $manifest );
+							
+							// Determine if this package should receive passthrough_args
+							$should_pass_args = false;
+							$has_explicit_targets = ! empty( $passthrough_targets );
+							
+							if ( $has_explicit_targets ) {
+								// Explicit targets specified - check if this package matches
+								// Support multiple ways to identify the package
+								$package_identifiers = [
+									$pkg_id,                           // Internal ID
+									$package_path,                      // Full path
+									$manifest->get_package_id(),       // Package ID from manifest
+									$display_name,                      // Full display name with version
+								];
+								
+								foreach ( $package_identifiers as $identifier ) {
+									if ( in_array( $identifier, $passthrough_targets, true ) ) {
+										$should_pass_args = true;
+										break;
+									}
+								}
+							} else {
+								// No explicit targets - use default behavior (local packages only)
+								// Check if package is local based on metadata
+								// Metadata has 'remote' => false for local packages
+								$is_local = isset( $metadata['remote'] ) && $metadata['remote'] === false;
+								
+								$should_pass_args = $is_local;
+							}
+							
+							$package_passthrough_args = $should_pass_args ? $passthrough_args : [];
+							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $package_passthrough_args, $manifest );
 							// Normal CTRF collection for successful runs
 							if ( $manifest->has_results() ) {
 								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );

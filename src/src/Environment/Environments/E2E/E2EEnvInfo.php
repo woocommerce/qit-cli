@@ -12,7 +12,7 @@ class E2EEnvInfo extends EnvInfo {
 	public string $site_url = '';
 
 	/** @var array<string,string> */
-	public array $runner_args = [];
+	public array $passthrough_args = [];
 
 	/** @var string */
 	public string $wp = '';
