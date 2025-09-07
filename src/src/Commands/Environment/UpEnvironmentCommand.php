@@ -77,6 +77,8 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
 			->addOption( 'offline', null, InputOption::VALUE_NONE, 'Override: Force offline mode - will error if any test requires network' )
 			->addOption( 'online', null, InputOption::VALUE_NONE, 'Override: Force online mode - enable network regardless of test requirements' )
+			->addOption( 'skip-setup', null, InputOption::VALUE_NONE, 'Skip running setup phases even if qit-test.json is found' )
+			->addOption( 'setup', null, InputOption::VALUE_OPTIONAL, 'Run setup phases from test package in specified directory', false )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
 			->setHelp( $this->getHelpText() );
 	}
@@ -92,6 +94,12 @@ class UpEnvironmentCommand extends QITCommand {
 			$output->writeln( '<comment>QIT environments require WSL on Windows.</comment>' );
 
 			return Command::FAILURE;
+		}
+		
+		/* ─ 0. Check for local test manifest and process requirements ─ */
+		// This must happen BEFORE environment creation so requirements can be included
+		if ( ! $input->getOption( 'skip-setup' ) ) {
+			$this->processLocalTestManifestForRequirements( $input, $output );
 		}
 
 		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
@@ -251,6 +259,24 @@ class UpEnvironmentCommand extends QITCommand {
 		$environment->init( $env_info );
 		$environment->up();
 
+		/* ─ 8.5. Run setup phases if qit-test.json exists or --setup is specified ─ */
+		if ( ! $input->getOption( 'skip-setup' ) ) {
+			$setup_dir = null;
+			
+			// Check if --setup option is provided
+			if ( $input->hasOption( 'setup' ) && $input->getOption( 'setup' ) !== false ) {
+				// --setup provided with a value
+				$setup_dir = $input->getOption( 'setup' ) ?: './';
+			} elseif ( file_exists( './qit-test.json' ) ) {
+				// No --setup option, but qit-test.json exists in current directory
+				$setup_dir = './';
+			}
+			
+			if ( $setup_dir !== null ) {
+				$this->runTestSetupPhases( $env_info, $output, $setup_dir );
+			}
+		}
+
 		/* ─ 9. Save environment info and generate source files ─ */
 		$this->save_environment_info( $env_info );
 		$files = $this->environment_vars->save_environment_file( $env_info );
@@ -273,6 +299,10 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
+		// Clean up DI container variables if we set them
+		\QIT_CLI\App::offsetUnset( 'test_package_required_plugins' );
+		\QIT_CLI\App::offsetUnset( 'test_package_required_themes' );
+		
 		return Command::SUCCESS;
 	}
 
@@ -851,6 +881,231 @@ Examples
 
   <info>qit env:up --tunnel=cloudflare</info>
       Exposes the site publicly through Cloudflare Tunnel
+
+  <info>qit env:up --setup=./tests/e2e</info>
+      Run setup phases from test package in specified directory
+      
+  <info>qit env:up --skip-setup</info>
+      Skip automatic setup even if qit-test.json exists in current directory
 HELP;
+	}
+
+	/**
+	 * Run test setup phases from qit-test.json if present.
+	 *
+	 * @param EnvInfo         $env_info The environment info.
+	 * @param OutputInterface $output   The output interface.
+	 * @param string          $test_dir The directory containing the test package.
+	 */
+	private function runTestSetupPhases( EnvInfo $env_info, OutputInterface $output, string $test_dir = './' ): void {
+		try {
+			// Normalize directory path and make it absolute
+			$test_dir = rtrim( $test_dir, '/' );
+			if ( substr( $test_dir, 0, 1 ) !== '/' ) {
+				$test_dir = getcwd() . '/' . $test_dir;
+			}
+			$test_dir = realpath( $test_dir );
+			
+			$manifest_path = $test_dir . '/qit-test.json';
+			
+			if ( ! file_exists( $manifest_path ) ) {
+				$output->writeln( "<error>No qit-test.json found in {$test_dir}</error>" );
+				return;
+			}
+
+			$output->writeln( "<info>Found qit-test.json, running setup phases...</info>" );
+
+			// Parse the manifest
+			$manifest_content = file_get_contents( $manifest_path );
+			$manifest         = json_decode( $manifest_content, true );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				$output->writeln( '<error>Failed to parse qit-test.json: ' . json_last_error_msg() . '</error>' );
+				return;
+			}
+			
+			// Get Docker instance for executing commands
+			$docker = \QIT_CLI\App::make( \QIT_CLI\Environment\Docker::class );
+			
+			// Copy the test directory to the container under /qit for consistency with run:e2e
+			// This ensures WP-CLI can find /qit/wp-cli.yml through parent directory traversal
+			$container_test_dir = '/qit/setup/' . uniqid( 'env-setup-' );
+			
+			// Ensure the /qit/setup directory exists
+			try {
+				$docker->run_inside_docker( $env_info, [ 'mkdir', '-p', '/qit/setup' ] );
+			} catch ( \Exception $e ) {
+				// Directory might already exist, that's fine
+			}
+			
+			// Copy the entire test directory to the container
+			$output->write( "Copying test package to container..." );
+			try {
+				$docker->copy_into_docker( $env_info, $test_dir, $container_test_dir );
+				$output->writeln( ' Done!' );
+				
+				// Debug: List what was copied
+				if ( $output->isVerbose() ) {
+					$output->writeln( "Debug: Test package copied to {$container_test_dir}" );
+					$ls_result = $docker->run_inside_docker( $env_info, [ 'sh', '-c', "ls -la {$container_test_dir}/" ] );
+					$output->writeln( $ls_result );
+				}
+			} catch ( \Exception $e ) {
+				$output->writeln( ' Failed!' );
+				$output->writeln( '<error>Failed to copy test package: ' . $e->getMessage() . '</error>' );
+				return;
+			}
+
+			// Run globalSetup if exists
+			if ( isset( $manifest['test']['phases']['globalSetup'] ) && is_array( $manifest['test']['phases']['globalSetup'] ) ) {
+				$output->writeln( 'Running globalSetup...' );
+				foreach ( $manifest['test']['phases']['globalSetup'] as $cmd ) {
+					try {
+						// Run in test package directory - WP-CLI will find /qit/wp-cli.yml through parent directory traversal
+						$full_cmd = "cd {$container_test_dir} && {$cmd}";
+						$cmd_parts = [ 'sh', '-c', $full_cmd ];
+						$result = $docker->run_inside_docker( $env_info, $cmd_parts );
+						if ( $output->isVerbose() && ! empty( $result ) ) {
+							$output->writeln( $result );
+						}
+					} catch ( \Exception $e ) {
+						$output->writeln( '<warning>globalSetup command failed: ' . $e->getMessage() . '</warning>' );
+					}
+				}
+			}
+
+			// Run setup if exists
+			if ( isset( $manifest['test']['phases']['setup'] ) && is_array( $manifest['test']['phases']['setup'] ) ) {
+				$output->writeln( 'Running setup...' );
+				foreach ( $manifest['test']['phases']['setup'] as $cmd ) {
+					try {
+						// Run in test package directory - WP-CLI will find /qit/wp-cli.yml through parent directory traversal
+						$full_cmd = "cd {$container_test_dir} && {$cmd}";
+						$cmd_parts = [ 'sh', '-c', $full_cmd ];
+						$result = $docker->run_inside_docker( $env_info, $cmd_parts );
+						if ( $output->isVerbose() && ! empty( $result ) ) {
+							$output->writeln( $result );
+						}
+					} catch ( \Exception $e ) {
+						$output->writeln( '<warning>Setup command failed: ' . $e->getMessage() . '</warning>' );
+					}
+				}
+			}
+
+			// Backup the database
+			$this->backupDatabaseState( $env_info, $output, $test_dir );
+
+			$output->writeln( '<info>✓ Setup complete! Use "qit env:reset" to restore this state.</info>' );
+
+		} catch ( \Exception $e ) {
+			$output->writeln( '<error>Setup failed: ' . $e->getMessage() . '</error>' );
+			$output->writeln( '<comment>You can skip setup with --skip-setup</comment>' );
+		}
+	}
+
+	/**
+	 * Process local test manifest to extract requirements BEFORE environment creation.
+	 * This allows the requirements to be included in the environment setup.
+	 *
+	 * @param InputInterface  $input  The input interface.
+	 * @param OutputInterface $output The output interface.
+	 */
+	private function processLocalTestManifestForRequirements( InputInterface $input, OutputInterface $output ): void {
+		// Determine which directory to check for manifest
+		$setup_dir = $input->getOption( 'setup' );
+		if ( $setup_dir ) {
+			$test_dir = $setup_dir;
+		} else {
+			$test_dir = getcwd();
+		}
+		
+		// Normalize path
+		$test_dir = rtrim( $test_dir, '/' );
+		if ( substr( $test_dir, 0, 1 ) !== '/' ) {
+			$test_dir = getcwd() . '/' . $test_dir;
+		}
+		
+		$manifest_path = $test_dir . '/qit-test.json';
+		if ( ! file_exists( $manifest_path ) ) {
+			// No manifest, nothing to do
+			return;
+		}
+		
+		// Parse the manifest
+		try {
+			$manifest_content = file_get_contents( $manifest_path );
+			$manifest = json_decode( $manifest_content, true );
+			
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				return; // Invalid JSON, skip silently
+			}
+			
+			// Extract plugin requirements
+			$required_plugins = [];
+			if ( isset( $manifest['requires']['plugins'] ) && is_array( $manifest['requires']['plugins'] ) ) {
+				foreach ( $manifest['requires']['plugins'] as $plugin ) {
+					$required_plugins[ $plugin ] = [ 'local-manifest' ];
+				}
+			}
+			
+			// Extract theme requirements
+			$required_themes = [];
+			if ( isset( $manifest['requires']['themes'] ) && is_array( $manifest['requires']['themes'] ) ) {
+				foreach ( $manifest['requires']['themes'] as $theme ) {
+					$required_themes[ $theme ] = [ 'local-manifest' ];
+				}
+			}
+			
+			// Store in DI container for process_test_package_requirements to pick up
+			if ( ! empty( $required_plugins ) ) {
+				\QIT_CLI\App::setVar( 'test_package_required_plugins', $required_plugins );
+			}
+			if ( ! empty( $required_themes ) ) {
+				\QIT_CLI\App::setVar( 'test_package_required_themes', $required_themes );
+			}
+			
+		} catch ( \Exception $e ) {
+			// Silently ignore errors in early processing
+			return;
+		}
+	}
+	
+	/**
+	 * Backup the database state after setup.
+	 *
+	 * @param EnvInfo         $env_info The environment info.
+	 * @param OutputInterface $output   The output interface.
+	 * @param string          $test_dir The directory containing the test package.
+	 */
+	private function backupDatabaseState( EnvInfo $env_info, OutputInterface $output, string $test_dir = './' ): void {
+		$output->write( 'Backing up database state...' );
+
+		// Create backup directory
+		$backup_dir = sys_get_temp_dir() . '/qit-env-backups/' . $env_info->env_id;
+		if ( ! is_dir( $backup_dir ) ) {
+			mkdir( $backup_dir, 0755, true );
+		}
+
+		try {
+			// Get Docker instance
+			$docker = \QIT_CLI\App::make( \QIT_CLI\Environment\Docker::class );
+
+			// Export database - run in WordPress directory with defaults
+			$sql_dump = $docker->run_inside_docker( $env_info, [ 'sh', '-c', 'cd /var/www/html && wp db export --defaults --quiet - 2>/dev/null' ] );
+			file_put_contents( $backup_dir . '/setup-complete.sql', $sql_dump );
+
+			// Save metadata
+			file_put_contents( $backup_dir . '/metadata.json', json_encode( [
+				'created'  => time(),
+				'manifest' => $test_dir . '/qit-test.json',
+				'test_dir' => $test_dir,
+				'env_id'   => $env_info->env_id,
+			] ) );
+
+			$output->writeln( ' Done!' );
+		} catch ( \Exception $e ) {
+			$output->writeln( ' Failed!' );
+			$output->writeln( '<warning>Database backup failed: ' . $e->getMessage() . '</warning>' );
+		}
 	}
 }
