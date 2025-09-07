@@ -22,7 +22,7 @@
     "tunnel": false,
     "tunnel_type": "no_tunnel",
     "site_url": "http://localhost:8080",
-    "runner_args": [],
+    "passthrough_args": [],
     "wp": "6.2",
     "object_cache": false,
     "php": "8.1",

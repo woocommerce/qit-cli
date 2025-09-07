@@ -1,0 +1,12 @@
+{
+  "name": "passthrough-remote-tests",
+  "version": "1.0.0",
+  "description": "Remote test package for passthrough testing",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.37.0",
+    "playwright-ctrf-json-reporter": "^0.0.8"
+  }
+}

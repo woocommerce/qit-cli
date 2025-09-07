@@ -22,7 +22,7 @@ class NetworkRequirementsTest extends \PHPUnit\Framework\TestCase {
 	
 	
 	/**
-	 * Test that a package without requires_network field runs offline by default.
+	 * Test that a package without requires.network field runs offline by default.
 	 */
 	public function test_package_without_network_field_runs_offline() {
 		$statusFile = tempnam( sys_get_temp_dir(), 'network-status-' );
@@ -41,13 +41,13 @@ class NetworkRequirementsTest extends \PHPUnit\Framework\TestCase {
 		// Check network status
 		$networkStatus = trim( file_get_contents( $statusFile ) );
 		$this->assertEquals( 'NO_NETWORK', $networkStatus, 
-			'Package without requires_network should run offline' );
+			'Package without requires.network should run offline' );
 		
 		@unlink( $statusFile );
 	}
 	
 	/**
-	 * Test that a package with requires_network: false runs offline.
+	 * Test that a package with requires.network: false runs offline.
 	 */
 	public function test_package_with_requires_network_false_runs_offline() {
 		$statusFile = tempnam( sys_get_temp_dir(), 'network-status-' );
@@ -64,13 +64,13 @@ class NetworkRequirementsTest extends \PHPUnit\Framework\TestCase {
 		
 		$networkStatus = trim( file_get_contents( $statusFile ) );
 		$this->assertEquals( 'NO_NETWORK', $networkStatus,
-			'Package with requires_network=false should run offline' );
+			'Package with requires.network=false should run offline' );
 		
 		@unlink( $statusFile );
 	}
 	
 	/**
-	 * Test that a package with requires_network: true runs with network enabled.
+	 * Test that a package with requires.network: true runs with network enabled.
 	 */
 	public function test_package_with_requires_network_true_runs_online() {
 		$statusFile = tempnam( sys_get_temp_dir(), 'network-status-' );
@@ -87,7 +87,7 @@ class NetworkRequirementsTest extends \PHPUnit\Framework\TestCase {
 		
 		$networkStatus = trim( file_get_contents( $statusFile ) );
 		$this->assertEquals( 'NETWORK', $networkStatus, 
-			'Package with requires_network=true should have network access' );
+			'Package with requires.network=true should have network access' );
 		
 		@unlink( $statusFile );
 	}

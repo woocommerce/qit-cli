@@ -1,0 +1,69 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "woocommerce/test-requires-override",
+  "test_type": "e2e",
+  "description": "Test package for testing subpackage requires overrides",
+  "requires": {
+    "plugins": ["woocommerce"],
+    "network": false
+  },
+  "test": {
+    "phases": {
+      "globalSetup": [
+        "echo '[GLOBAL_SETUP] Parent setup'"
+      ],
+      "run": [
+        "echo 'Parent test running'"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./blob-report"
+    }
+  },
+  "subpackages": {
+    "woocommerce/test-requires-plugins-override": {
+      "description": "Subpackage that overrides plugins requirement",
+      "requires": {
+        "plugins": ["woocommerce", "woocommerce-subscriptions", "woocommerce-memberships"]
+      },
+      "test": {
+        "phases": {
+          "run": [
+            "echo 'Subpackage with additional plugins'"
+          ]
+        }
+      }
+    },
+    "woocommerce/test-requires-network-override": {
+      "description": "Subpackage that overrides network requirement",
+      "requires": {
+        "network": true
+      },
+      "test": {
+        "phases": {
+          "run": [
+            "echo 'Subpackage requiring network access'"
+          ]
+        }
+      }
+    },
+    "woocommerce/test-requires-full-override": {
+      "description": "Subpackage that overrides all requires fields",
+      "requires": {
+        "plugins": ["woocommerce", "jetpack"],
+        "themes": ["storefront"],
+        "network": true,
+        "wordpress": ">=6.0",
+        "php": ">=8.0"
+      },
+      "test": {
+        "phases": {
+          "run": [
+            "echo 'Subpackage with full requires override'"
+          ]
+        }
+      }
+    }
+  }
+}

@@ -82,7 +82,7 @@
         "tunnel": false,
         "tunnel_type": "no_tunnel",
         "site_url": "",
-        "runner_args": [],
+        "passthrough_args": [],
         "wp_version": "stable",
         "object_cache": false,
         "php_version": "8.2",
