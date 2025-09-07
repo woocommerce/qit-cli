@@ -913,10 +913,9 @@ class TestPackageDownloader {
 	/**
 	 * Extract subpackage manifest from a parent manifest.
 	 * Respects inheritance rules as documented:
-	 * - Inherits globalSetup/globalTeardown from parent (cannot override)
 	 * - Inherits test.results from parent
-	 * - Inherits requires, mu_plugins, envs, timeout, retry from parent
-	 * - Can override: description, tags, test.phases.setup/run/teardown
+	 * - Inherits mu_plugins, envs, timeout, retry from parent
+	 * - Can override: description, tags, requires (including requires.network), all test.phases
 	 *
 	 * @param TestPackageManifest $parent_manifest The parent package manifest.
 	 * @param string              $subpackage_id The subpackage ID to extract.
@@ -966,6 +965,16 @@ class TestPackageDownloader {
 		}
 		if ( isset( $subpackage_config['tags'] ) ) {
 			$subpackage_data['tags'] = $subpackage_config['tags'];
+		}
+
+		// Override requires fields if specified in subpackage
+		if ( isset( $subpackage_config['requires'] ) ) {
+			// Merge subpackage requires with parent requires
+			// Subpackage values override parent values for the same keys
+			$subpackage_data['requires'] = array_merge(
+				$parent_manifest->get_requires(),
+				$subpackage_config['requires']
+			);
 		}
 
 		// Override phases - all phases can now be overridden
