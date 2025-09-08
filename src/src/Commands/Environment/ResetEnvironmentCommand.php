@@ -128,7 +128,7 @@ HELP
 		$metadata_file = $backup_dir . '/metadata.json';
 		if ( file_exists( $metadata_file ) ) {
 			$metadata = json_decode( file_get_contents( $metadata_file ), true );
-			$created  = isset( $metadata['created'] ) ? date( 'Y-m-d H:i:s', $metadata['created'] ) : 'unknown';
+			$created  = isset( $metadata['created'] ) ? gmdate( 'Y-m-d H:i:s', $metadata['created'] ) : 'unknown';
 			$output->writeln( "<info>Restoring database backup from: {$created}</info>" );
 		}
 
@@ -152,7 +152,7 @@ HELP
 			// Clear any caches
 			try {
 				$this->docker->run_inside_docker( $env_info, [ 'sh', '-c', 'wp cache flush --quiet 2>/dev/null' ] );
-			} catch ( \Exception $e ) {
+			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				// Cache flush might fail if no cache plugin active, that's OK
 			}
 

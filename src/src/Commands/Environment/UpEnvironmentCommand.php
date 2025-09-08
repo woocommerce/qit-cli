@@ -98,7 +98,8 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/*
-		─ 0. Check for test packages and process requirements ─ */
+		 * ─ 0. Check for test packages and process requirements ─
+		 */
 		// This must happen BEFORE environment creation so requirements can be included
 
 		// Build ordered list of test packages (local first, then explicit)
@@ -420,7 +421,8 @@ class UpEnvironmentCommand extends QITCommand {
 		$environment->up();
 
 		/*
-		─ 8.5. Setup phases are now handled by E2EEnvironment::up() when test_packages_for_setup is populated ─ */
+		 * ─ 8.5. Setup phases are now handled by E2EEnvironment::up() when test_packages_for_setup is populated ─
+		 */
 		// The E2EEnvironment will automatically run:
 		// - globalSetup for ALL packages in test_packages_for_setup
 		// - setup for the FIRST (main) package only
@@ -1145,7 +1147,7 @@ HELP;
 			// Ensure the /qit/setup directory exists
 			try {
 				$docker->run_inside_docker( $env_info, [ 'mkdir', '-p', '/qit/setup' ] );
-			} catch ( \Exception $e ) {
+			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 				// Directory might already exist, that's fine
 			}
 
