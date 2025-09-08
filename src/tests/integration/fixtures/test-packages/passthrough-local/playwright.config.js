@@ -10,6 +10,9 @@ export default defineConfig({
     ['playwright-ctrf-json-reporter', {
       outputDir: './results',
       outputFile: 'ctrf.json',
+    }],
+    ['blob', {
+      outputDir: './blob-report',
     }]
   ],
   use: {

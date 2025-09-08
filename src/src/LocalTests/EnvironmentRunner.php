@@ -29,7 +29,8 @@ class EnvironmentRunner {
 
 		// Attach the JSON filter when in JSON mode to filter out non-JSON output
 		// The --json option is always set to true above, so we always attach the filter
-		stream_filter_append( $resource_stream, 'qit_json' );
+		// IMPORTANT: Only filter on WRITE to avoid processing data twice
+		stream_filter_append( $resource_stream, 'qit_json', STREAM_FILTER_WRITE );
 
 		$exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
@@ -55,6 +56,17 @@ class EnvironmentRunner {
 		$env_json = json_decode( $up_output, true );
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
 			throw new \RuntimeException( 'Failed to parse environment JSON. Output: ' . $up_output );
+		}
+
+		// Check for invalid package errors (Command::INVALID = 2)
+		if ( $exit_status_code === Command::INVALID ) {
+			$package_errors = App::getVar( 'test_package_errors', [] );
+			if ( ! empty( $package_errors ) ) {
+				// Clean up the errors from DI container
+				App::offsetUnset( 'test_package_errors' );
+				throw new \RuntimeException( 'Invalid test packages: ' . implode( '; ', $package_errors ) );
+			}
+			throw new \RuntimeException( 'Environment configuration is invalid. Output: ' . $up_output );
 		}
 
 		if ( $exit_status_code !== Command::SUCCESS ) {

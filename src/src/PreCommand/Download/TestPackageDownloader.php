@@ -428,13 +428,35 @@ class TestPackageDownloader {
 	 */
 	public function download_single( string $reference, string $cache_dir ): TestPackageManifest {
 		// Always fetch metadata first to get checksum
-		$metadata_array = $this->fetch_download_urls( [ $reference ] );
+		$response = $this->fetch_download_urls( [ $reference ] );
 
-		if ( ! isset( $metadata_array[ $reference ] ) ) {
-			throw new \RuntimeException( "No metadata found for package '$reference'" );
+		$metadata_array  = $response['urls'];
+		$artifact_groups = $response['artifact_groups'] ?? [];
+
+		// Check if we have metadata directly for this reference
+		if ( isset( $metadata_array[ $reference ] ) ) {
+			$metadata = $metadata_array[ $reference ];
+		} else {
+			// Check if this reference is in an artifact group (subpackage case)
+			$found = false;
+			foreach ( $artifact_groups as $group_key => $group_refs ) {
+				if ( in_array( $reference, $group_refs, true ) ) {
+					// Find the primary package in this group that has metadata
+					foreach ( $group_refs as $ref ) {
+						if ( isset( $metadata_array[ $ref ] ) ) {
+							$metadata = $metadata_array[ $ref ];
+							$found    = true;
+							break;
+						}
+					}
+					break;
+				}
+			}
+
+			if ( ! $found ) {
+				throw new \RuntimeException( "No metadata found for package '$reference'" );
+			}
 		}
-
-		$metadata = $metadata_array[ $reference ];
 
 		// Check if we have this exact checksum cached
 		$cached_manifest = $this->validate_and_get_cached_package( $reference, $metadata, $cache_dir );
@@ -935,7 +957,7 @@ class TestPackageDownloader {
 			$this->output->writeln( "Found subpackage $subpackage_id in parent manifest" );
 		}
 
-		// Start with parent's configuration as base (full inheritance)
+		// Start with parent's configuration as base (selective inheritance)
 		$parent_phases   = $parent_manifest->get_phases();
 		$subpackage_data = [
 			'package'        => $subpackage_id,
@@ -944,9 +966,13 @@ class TestPackageDownloader {
 			'test_dir'       => $parent_manifest->get_test_dir(),
 			'test'           => [
 				'phases'  => [
-					// Global phases can be overridden or inherited
+					// Only global phases are inherited from parent
 					'globalSetup'    => $parent_phases['globalSetup'] ?? [],
 					'globalTeardown' => $parent_phases['globalTeardown'] ?? [],
+					// Package-specific phases are NOT inherited - must be explicit
+					'setup'          => [],
+					'run'            => [],
+					'teardown'       => [],
 				],
 				// Results paths inherited from parent
 				'results' => $parent_manifest->get_test_results(),

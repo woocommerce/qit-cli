@@ -126,8 +126,8 @@ class UpEnvironmentCommand extends QITCommand {
 		// Add explicit test packages from --test-package option
 		$explicit_packages = $input->getOption( 'test-package' ) ?? [];
 
-		// Debug logging
-		if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+		// Debug logging (skip in JSON mode to avoid filter issues)
+		if ( ! $input->getOption( 'json' ) && ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) ) {
 			$output->writeln( '[DEBUG] env:up - Has local manifest: ' . ( $has_local_manifest ? 'yes' : 'no' ) );
 			$output->writeln( '[DEBUG] env:up - Explicit packages from --test-package: ' . json_encode( $explicit_packages ) );
 			$output->writeln( '[DEBUG] env:up - All test packages to process: ' . json_encode( $all_test_packages ) );
@@ -347,8 +347,17 @@ class UpEnvironmentCommand extends QITCommand {
 						$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
 						if ( $manifest ) {
 							$metadata = $package_downloader->get_package_metadata( $package_ref );
-							// Use centralized method for consistent container path generation
-							$container_path                          = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
+
+							// For subpackages, use the parent's container path since they share the same files
+							if ( $manifest->is_subpackage() && $manifest->get_parent_package() ) {
+								// Generate container path based on parent package
+								$parent_ref     = $manifest->get_parent_package() . ':' . explode( ':', $package_ref )[1];
+								$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $parent_ref );
+							} else {
+								// Use normal container path for regular packages
+								$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
+							}
+
 							$test_packages_for_setup[ $package_ref ] = [
 								'path'           => $metadata['downloaded_path'] ?? '',
 								'source'         => 'registry',
@@ -359,15 +368,27 @@ class UpEnvironmentCommand extends QITCommand {
 						}
 					}
 				} catch ( \Exception $e ) {
+					// If it's a security error (invalid secrets format), we should fail immediately
+					if ( strpos( $e->getMessage(), 'Invalid secrets format' ) !== false ) {
+						throw $e;  // Re-throw security errors
+					}
+
+					// Collect package errors for later reporting
+					$package_errors   = \QIT_CLI\App::getVar( 'test_package_errors', [] );
+					$package_errors[] = "Invalid test package '{$package_ref}': " . $e->getMessage();
+					\QIT_CLI\App::setVar( 'test_package_errors', $package_errors );
+
+					// Output warning but continue processing
 					$output->writeln( "<warning>Failed to prepare test package {$package_ref}: {$e->getMessage()}</warning>" );
 				}
 			}
 		}
 
-		/* ─ 3.8. Add test package volumes for local packages ─ */
-		foreach ( $test_packages_for_setup as $info ) {
-			if ( $info['source'] === 'local' && ! empty( $info['path'] ) && ! empty( $info['container_path'] ) ) {
-				// Add volume mapping for local test package
+		/* ─ 3.8. Add test package volumes for local and registry packages ─ */
+		foreach ( $test_packages_for_setup as $package_ref => $info ) {
+			// Map both local packages and downloaded registry packages
+			if ( ( $info['source'] === 'local' || $info['source'] === 'registry' ) && ! empty( $info['path'] ) && ! empty( $info['container_path'] ) ) {
+				// Add volume mapping for test package
 				// We need to add this to parsed_volumes, not env_config['volumes']
 				$parsed_volumes[ $info['container_path'] ] = $info['path'];
 			}
@@ -462,6 +483,13 @@ class UpEnvironmentCommand extends QITCommand {
 		// Clean up DI container variables if we set them
 		\QIT_CLI\App::offsetUnset( 'test_package_required_plugins' );
 		\QIT_CLI\App::offsetUnset( 'test_package_required_themes' );
+
+		// Check if there were any package errors
+		$package_errors = \QIT_CLI\App::getVar( 'test_package_errors', [] );
+		if ( ! empty( $package_errors ) ) {
+			// Environment started but with invalid packages
+			return Command::INVALID;
+		}
 
 		return Command::SUCCESS;
 	}

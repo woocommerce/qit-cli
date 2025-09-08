@@ -8,7 +8,7 @@
   "test": {
     "phases": {
       "run": [
-        "npx playwright test"
+        "bash simple-test.sh"
       ]
     },
     "results": {

@@ -279,6 +279,9 @@ class RunE2ECommand extends QITCommand {
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
 			App::singleton( EnvInfo::class, $env_info );
 		} catch ( \Exception $e ) {
+			// Clean up test package errors from DI container if they exist
+			App::offsetUnset( 'test_package_errors' );
+
 			$output->writeln( sprintf( '<error>Failed to start environment: %s</error>', $e->getMessage() ) );
 
 			return Command::FAILURE;
@@ -319,6 +322,7 @@ class RunE2ECommand extends QITCommand {
 						'metadata' => [
 							'downloaded_path' => $pkg_info['path'],
 							'version'         => $version,
+							'remote'          => $pkg_info['source'] === 'registry',  // Set remote based on source
 						],
 					];
 				}

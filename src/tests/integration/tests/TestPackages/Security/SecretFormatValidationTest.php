@@ -48,12 +48,22 @@ class SecretFormatValidationTest extends TestCase {
 
 		$output = $proc->getOutput() . $proc->getErrorOutput();
 		
+		// The error may be wrapped in JSON, so decode if needed
+		$errorMessage = $output;
+		if ( preg_match( '/\{"error":"[^"]+","output":"(.+)"\}/', $output, $matches ) ) {
+			// Properly decode the JSON-escaped string
+			$decoded = json_decode( '{"msg":"' . $matches[1] . '"}', true );
+			if ( $decoded && isset( $decoded['msg'] ) ) {
+				$errorMessage = $decoded['msg'];
+			}
+		}
+		
 		// Should contain our concise error message
-		$this->assertStringContainsString( 'Invalid secrets format', $output );
-		$this->assertStringContainsString( 'must be an array of environment variable names, not key-value pairs', $output );
-		$this->assertStringContainsString( 'Wrong:   "secrets": {"API_KEY": "value"}', $output );
-		$this->assertStringContainsString( 'Correct: "secrets": ["API_KEY"]', $output );
-		$this->assertStringContainsString( 'provided as environment variables when running', $output );
+		$this->assertStringContainsString( 'Invalid secrets format', $errorMessage );
+		$this->assertStringContainsString( 'must be an array of environment variable names, not key-value pairs', $errorMessage );
+		$this->assertStringContainsString( 'Wrong:   "secrets": {"API_KEY": "value"}', $errorMessage );
+		$this->assertStringContainsString( 'Correct: "secrets": ["API_KEY"]', $errorMessage );
+		$this->assertStringContainsString( 'provided as environment variables when running', $errorMessage );
 		
 		// Should NOT show the generic "Schema validation failed" message
 		$this->assertStringNotContainsString( 'Schema validation failed', $output );
@@ -75,8 +85,18 @@ class SecretFormatValidationTest extends TestCase {
 
 		$output = $proc->getOutput() . $proc->getErrorOutput();
 		
+		// The error may be wrapped in JSON, so decode if needed
+		$errorMessage = $output;
+		if ( preg_match( '/\{"error":"[^"]+","output":"(.+)"\}/', $output, $matches ) ) {
+			// Properly decode the JSON-escaped string
+			$decoded = json_decode( '{"msg":"' . $matches[1] . '"}', true );
+			if ( $decoded && isset( $decoded['msg'] ) ) {
+				$errorMessage = $decoded['msg'];
+			}
+		}
+		
 		// The error should start with our custom message, not "Schema validation failed"
-		$lines = explode("\n", $output);
+		$lines = explode("\n", $errorMessage);
 		$found_invalid_format = false;
 		$found_schema_validation = false;
 		
@@ -93,11 +113,11 @@ class SecretFormatValidationTest extends TestCase {
 		$this->assertFalse($found_schema_validation, 'Generic "Schema validation failed" should NOT be present');
 		
 		// Verify the complete message is shown
-		$this->assertStringContainsString('Invalid secrets format', $output);
-		$this->assertStringContainsString('Secrets must be an array of environment variable names, not key-value pairs', $output);
-		$this->assertStringContainsString('Wrong:   "secrets": {"API_KEY": "value"}', $output);
-		$this->assertStringContainsString('Correct: "secrets": ["API_KEY"]', $output);
-		$this->assertStringContainsString('provided as environment variables when running the test', $output);
+		$this->assertStringContainsString('Invalid secrets format', $errorMessage);
+		$this->assertStringContainsString('Secrets must be an array of environment variable names, not key-value pairs', $errorMessage);
+		$this->assertStringContainsString('Wrong:   "secrets": {"API_KEY": "value"}', $errorMessage);
+		$this->assertStringContainsString('Correct: "secrets": ["API_KEY"]', $errorMessage);
+		$this->assertStringContainsString('provided as environment variables when running the test', $errorMessage);
 	}
 
 	/**

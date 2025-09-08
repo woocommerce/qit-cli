@@ -96,11 +96,26 @@ final class TestPackageManifest {
 		$this->phases['teardown']       = $this->phases['teardown'] ?? [];
 
 		// Optional fields with defaults
-		$this->tags           = $data['tags'] ?? [];
-		$this->test_type      = $data['test_type'] ?? 'e2e';
-		$this->test_dir       = $data['test_dir'] ?? './';
-		$this->description    = $data['description'] ?? '';
-		$this->requires       = $data['requires'] ?? [];
+		$this->tags        = $data['tags'] ?? [];
+		$this->test_type   = $data['test_type'] ?? 'e2e';
+		$this->test_dir    = $data['test_dir'] ?? './';
+		$this->description = $data['description'] ?? '';
+		$this->requires    = $data['requires'] ?? [];
+
+		// Validate secrets format if present (security check)
+		if ( isset( $this->requires['secrets'] ) && is_array( $this->requires['secrets'] ) ) {
+			// Check if secrets is an associative array (key-value pairs)
+			$first_key = array_key_first( $this->requires['secrets'] );
+			if ( $first_key !== null && ! is_int( $first_key ) ) {
+				throw new \RuntimeException(
+					"Invalid secrets format\n\n" .
+					"Secrets must be an array of environment variable names, not key-value pairs.\n\n" .
+					"Wrong:   \"secrets\": {\"API_KEY\": \"value\"}\n" .
+					"Correct: \"secrets\": [\"API_KEY\"]\n\n" .
+					'The actual values should be provided as environment variables when running the test.'
+				);
+			}
+		}
 		$this->mu_plugins     = $data['mu_plugins'] ?? [];
 		$this->env_vars       = $this->stringify_env( $data['envs'] ?? [] );
 		$this->timeout        = $data['timeout'] ?? 1800;
