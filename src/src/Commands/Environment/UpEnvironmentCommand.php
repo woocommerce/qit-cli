@@ -192,7 +192,7 @@ class UpEnvironmentCommand extends QITCommand {
 			// Enable tunnel if required by test package
 			if ( ! isset( $env_config['tunnel'] ) || ! $env_config['tunnel'] ) {
 				$env_config['tunnel'] = true;
-				$env_config['tunnel_type'] = 'cloudflare'; // Default tunnel type
+				$env_config['tunnel_type'] = 'auto'; // Let system choose appropriate tunnel type
 				if ( $output->isVerbose() ) {
 					$output->writeln( '<info>Tunnel enabled (required by test package)</info>' );
 				}
@@ -254,7 +254,7 @@ class UpEnvironmentCommand extends QITCommand {
 			// Apply tunnel requirements if any
 			if ( ! empty( $packages_requiring_tunnel ) && ( ! isset( $env_config['tunnel'] ) || ! $env_config['tunnel'] ) ) {
 				$env_config['tunnel'] = true;
-				$env_config['tunnel_type'] = 'cloudflare'; // Default tunnel type
+				$env_config['tunnel_type'] = 'auto'; // Let system choose appropriate tunnel type
 				if ( $output->isVerbose() ) {
 					$output->writeln( sprintf( '<info>Tunnel enabled (required by %d test package(s))</info>', count( $packages_requiring_tunnel ) ) );
 				}
