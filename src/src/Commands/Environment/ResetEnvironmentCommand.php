@@ -19,7 +19,7 @@ use Symfony\Component\Console\Question\ChoiceQuestion;
 class ResetEnvironmentCommand extends QITCommand {
 	/** @var EnvironmentMonitor */
 	private EnvironmentMonitor $environment_monitor;
-	
+
 	/** @var Docker */
 	private Docker $docker;
 
@@ -60,11 +60,11 @@ HELP
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		// Get environment ID
 		$env_id = $input->getArgument( 'env_id' );
-		
+
 		if ( ! $env_id ) {
 			// Get list of all environments
 			$all_environments = $this->environment_monitor->get();
-			
+
 			// Filter to only running environments
 			$environments = [];
 			foreach ( $all_environments as $env ) {
@@ -72,35 +72,35 @@ HELP
 					$environments[ $env->env_id ] = $env;
 				}
 			}
-			
+
 			if ( empty( $environments ) ) {
 				$output->writeln( '<error>No running environments found.</error>' );
 				return Command::FAILURE;
 			}
-			
+
 			if ( count( $environments ) === 1 ) {
 				// Only one environment, use it
 				$env_info = reset( $environments );
 				$env_id   = $env_info->env_id;
 			} else {
 				// Multiple environments, ask user to choose
-				$helper   = $this->getHelper( 'question' );
-				$choices  = [];
-				
+				$helper  = $this->getHelper( 'question' );
+				$choices = [];
+
 				foreach ( $environments as $env ) {
-					$choices[ $env->env_id ] = sprintf( '%s (PHP %s, WP %s)', 
-						$env->env_id, 
+					$choices[ $env->env_id ] = sprintf( '%s (PHP %s, WP %s)',
+						$env->env_id,
 						$env->php ?? 'unknown',
 						$env->wp ?? 'unknown'
 					);
 				}
-				
+
 				$question = new ChoiceQuestion(
 					'Multiple environments found. Please select one:',
 					array_values( $choices ),
 					0
 				);
-				
+
 				$selected = $helper->ask( $input, $output, $question );
 				$env_id   = array_search( $selected, $choices, true );
 				$env_info = $environments[ $env_id ];
@@ -117,7 +117,7 @@ HELP
 		// Check if backup exists
 		$backup_dir  = sys_get_temp_dir() . '/qit-env-backups/' . $env_id;
 		$backup_file = $backup_dir . '/setup-complete.sql';
-		
+
 		if ( ! file_exists( $backup_file ) ) {
 			$output->writeln( '<error>No database backup found for this environment.</error>' );
 			$output->writeln( '<comment>Database backups are created when running "qit env:up" with a qit-test.json file.</comment>' );
@@ -134,30 +134,30 @@ HELP
 
 		// Copy backup to container
 		$output->write( 'Restoring database...' );
-		
+
 		try {
 			// Copy SQL file to container
 			$container_path = '/tmp/restore-' . uniqid() . '.sql';
 			$this->docker->copy_into_docker( $env_info, $backup_file, $container_path );
-			
+
 			// Import the database - run in WordPress directory with defaults
 			$this->docker->run_inside_docker( $env_info, [ 'sh', '-c', "cd /var/www/html && wp db import {$container_path} --defaults --quiet" ] );
-			
+
 			// Clean up the temp file in container
 			$this->docker->run_inside_docker( $env_info, [ 'rm', '-f', $container_path ] );
-			
+
 			$output->writeln( ' <info>Done!</info>' );
 			$output->writeln( '<info>✓ Database restored to post-setup state.</info>' );
-			
+
 			// Clear any caches
 			try {
 				$this->docker->run_inside_docker( $env_info, [ 'sh', '-c', 'wp cache flush --quiet 2>/dev/null' ] );
 			} catch ( \Exception $e ) {
 				// Cache flush might fail if no cache plugin active, that's OK
 			}
-			
+
 			return Command::SUCCESS;
-			
+
 		} catch ( \Exception $e ) {
 			$output->writeln( ' <error>Failed!</error>' );
 			$output->writeln( '<error>Database restore failed: ' . $e->getMessage() . '</error>' );

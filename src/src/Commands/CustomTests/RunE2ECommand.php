@@ -115,7 +115,7 @@ class RunE2ECommand extends QITCommand {
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
 			->addArgument( 'passthrough', InputArgument::IS_ARRAY, 'Arguments after --' )
 			->addOption( 'passthrough_target', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-				'Test packages that should receive passthrough arguments (multiple allowed)', [] )
+			'Test packages that should receive passthrough arguments (multiple allowed)', [] )
 			/* ─────────────── SUT‑related options ─────────────── */
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
 			'Use a custom ZIP (or directory/URL) as the SUT build' )
@@ -240,7 +240,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Skip downloading test packages here - env:up will handle it
 		// We'll reconstruct test_packages from env_info after env:up runs
-		
+
 		// Pass network mode options to env:up (it will determine based on test packages)
 		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
 			$env_up_options['--offline'] = true;
@@ -249,7 +249,6 @@ class RunE2ECommand extends QITCommand {
 		}
 		// If neither flag is set, env:up will use auto mode and check test package requirements
 
-
 		// We'll build the package local map after env:up when we have the packages
 
 		// env:up will now handle adding test package volumes automatically
@@ -257,7 +256,7 @@ class RunE2ECommand extends QITCommand {
 		// Pass original test package references to env:up for requirement processing
 		// env:up will handle downloading (or cache hits) and requirement extraction
 		$original_test_packages = $input->getTestPackages(); // Get the original refs from input
-		
+
 		// Add original test package references to env:up options
 		if ( ! empty( $original_test_packages ) ) {
 			if ( ! isset( $env_up_options['--test-package'] ) ) {
@@ -265,7 +264,7 @@ class RunE2ECommand extends QITCommand {
 			}
 			// Pass the original references directly - env:up will download them (likely cache hits)
 			$env_up_options['--test-package'] = array_merge( $env_up_options['--test-package'], $original_test_packages );
-			
+
 			// CRITICAL: Tell env:up to skip test phases since run:e2e will handle them
 			// This prevents double execution of globalSetup and setup phases
 			$env_up_options['--skip-test-phases'] = true;
@@ -297,7 +296,7 @@ class RunE2ECommand extends QITCommand {
 				'type' => $sut_type,
 			];
 		}
-		
+
 		// Reconstruct test_packages from env_info for validation and display
 		$test_packages = [];
 		if ( ! empty( $env_info->test_packages_for_setup ) ) {
@@ -311,7 +310,7 @@ class RunE2ECommand extends QITCommand {
 						// Extract version from registry package reference
 						[ , $version ] = explode( ':', $original_ref, 2 );
 					}
-					
+
 					// Reconstruct the test_packages array format expected by the rest of the code
 					$test_packages[ $original_ref ] = [
 						'manifest' => new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $pkg_info['manifest'] ),
@@ -324,12 +323,12 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 		}
-		
+
 		// Now validate version consistency for subpackages
 		if ( ! empty( $test_packages ) ) {
 			$this->validate_subpackage_versions( $test_packages );
 		}
-		
+
 		// Build package local map for ResultCollector
 		$package_local_map = [];
 		foreach ( $test_packages as $pkg_id => $meta ) {
@@ -396,7 +395,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Get passthrough args to pass through to test framework
 		$passthrough_args = $input->getArgument( 'passthrough' ) ?? [];
-		
+
 		// Get passthrough targets for explicit control
 		$passthrough_targets = $input->getOption( 'passthrough_target' ) ?? [];
 
@@ -1317,11 +1316,11 @@ class RunE2ECommand extends QITCommand {
 					if ( $manifest->has_phase( 'run' ) ) {
 						try {
 							$orchestrator->phase_start( 'run' );
-							
+
 							// Determine if this package should receive passthrough_args
-							$should_pass_args = false;
+							$should_pass_args     = false;
 							$has_explicit_targets = ! empty( $passthrough_targets );
-							
+
 							if ( $has_explicit_targets ) {
 								// Explicit targets specified - check if this package matches
 								// Support multiple ways to identify the package
@@ -1331,7 +1330,7 @@ class RunE2ECommand extends QITCommand {
 									$manifest->get_package_id(),       // Package ID from manifest
 									$display_name,                      // Full display name with version
 								];
-								
+
 								foreach ( $package_identifiers as $identifier ) {
 									if ( in_array( $identifier, $passthrough_targets, true ) ) {
 										$should_pass_args = true;
@@ -1343,12 +1342,12 @@ class RunE2ECommand extends QITCommand {
 								// Check if package is local based on metadata
 								// Metadata has 'remote' => false for local packages
 								$is_local = isset( $metadata['remote'] ) && $metadata['remote'] === false;
-								
+
 								$should_pass_args = $is_local;
 							}
-							
+
 							$package_passthrough_args = $should_pass_args ? $passthrough_args : [];
-							$run_count = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $package_passthrough_args, $manifest );
+							$run_count                = $this->package_phase_runner->run_phase( $env_info, 'run', $pkg_id, $package_path, $artifacts_dir, $orchestrator, $package_passthrough_args, $manifest );
 							// Normal CTRF collection for successful runs
 							if ( $manifest->has_results() ) {
 								$this->result_collector->collect( $env_info, $pkg_id, $manifest, $artifacts_dir, 'run' );
@@ -1749,5 +1748,4 @@ class RunE2ECommand extends QITCommand {
 		$name = str_replace( [ '-', '_' ], ' ', $slug );
 		return ucwords( $name );
 	}
-
 }

@@ -168,7 +168,7 @@ final class TestPackageManifest {
 		} else {
 			$this->requires_network = false;
 		}
-		
+
 		// Tunnel requirement
 		if ( isset( $data['requires']['tunnel'] ) ) {
 			if ( is_string( $data['requires']['tunnel'] ) ) {

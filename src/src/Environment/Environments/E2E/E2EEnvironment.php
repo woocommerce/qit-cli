@@ -154,7 +154,7 @@ class E2EEnvironment extends Environment {
 					$this->env_info->test_packages_metadata[ $info['package_id'] ] = $info;
 				}
 			}
-			
+
 			$runner = new \QIT_CLI\Environment\PackagePhaseRunner(
 				$this->docker,
 				$this->output,
@@ -178,9 +178,9 @@ class E2EEnvironment extends Environment {
 
 				try {
 					$total_commands = 0;
-					
+
 					// Run globalSetup for ALL packages
-					$commands_run = $runner->run_phase(
+					$commands_run    = $runner->run_phase(
 						$this->env_info,
 						'globalSetup',
 						$package_id,
@@ -189,11 +189,11 @@ class E2EEnvironment extends Environment {
 						$setup_orchestrator
 					);
 					$total_commands += $commands_run;
-					
+
 					// Run setup phase ONLY for the first (main) package
 					// This is for manual testing - run:e2e handles setup per package with DB restore
 					if ( $is_first_package ) {
-						$setup_commands = $runner->run_phase(
+						$setup_commands   = $runner->run_phase(
 							$this->env_info,
 							'setup',
 							$package_id,
@@ -201,7 +201,7 @@ class E2EEnvironment extends Environment {
 							null,  // No artifacts_dir for setup phases
 							$setup_orchestrator
 						);
-						$total_commands += $setup_commands;
+						$total_commands  += $setup_commands;
 						$is_first_package = false;
 					}
 

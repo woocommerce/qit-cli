@@ -796,7 +796,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'UNDERSTANDING HOW TEST PACKAGES ARE EXECUTED IN DIFFERENT CONTEXTS' );
 		$output->writeln( '' );
-		
+
 		// Scenario 1
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'SCENARIO 1: DEVELOPER TESTING THEIR OWN PACKAGE' );
@@ -820,7 +820,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'Use Case: Iterative development and debugging of test packages' );
 		$output->writeln( '' );
-		
+
 		// Scenario 2
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'SCENARIO 2: TESTING WITH MULTIPLE PACKAGES (MANUAL)' );
@@ -844,7 +844,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'Use Case: Testing package interactions and compatibility' );
 		$output->writeln( '' );
-		
+
 		// Scenario 3
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'SCENARIO 3: QA MANUAL EXPLORATION' );
@@ -866,7 +866,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'Use Case: Manual verification and exploratory testing' );
 		$output->writeln( '' );
-		
+
 		// Scenario 4
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'SCENARIO 4: AUTOMATED CI/CD PIPELINE' );
@@ -893,7 +893,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'Use Case: Full automated test execution with proper isolation' );
 		$output->writeln( '' );
-		
+
 		// Scenario 5
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'SCENARIO 5: DEBUGGING FAILED CI TESTS' );
@@ -918,7 +918,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'Use Case: Reproducing and fixing CI failures locally' );
 		$output->writeln( '' );
-		
+
 		// Scenario 6
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'SCENARIO 6: ENVIRONMENT WITHOUT TEST PACKAGES' );
@@ -937,7 +937,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( 'Use Case: Manual testing without test automation' );
 		$output->writeln( '' );
-		
+
 		// Key Architectural Decisions
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'KEY ARCHITECTURAL DECISIONS' );
@@ -969,7 +969,7 @@ HELP
 		$output->writeln( '  • --skip-test-phases: When run:e2e calls env:up' );
 		$output->writeln( '  • Future: --test-package-priority to override main detection' );
 		$output->writeln( '' );
-		
+
 		// Common Patterns
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'COMMON PATTERNS AND BEST PRACTICES' );
@@ -1003,7 +1003,7 @@ HELP
 		$output->writeln( '     --plugin=./ \\' );
 		$output->writeln( '     --plugin=woocommerce-subscriptions:latest' );
 		$output->writeln( '' );
-		
+
 		// Troubleshooting
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'TROUBLESHOOTING GUIDE' );
@@ -1029,7 +1029,7 @@ HELP
 		$output->writeln( 'A: Currently, use separate env:up calls with different --php flags.' );
 		$output->writeln( '   Multi-PHP testing in single run is not yet supported.' );
 		$output->writeln( '' );
-		
+
 		// Cross-references
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( 'NEXT STEPS' );
@@ -1046,7 +1046,7 @@ HELP
 		$output->writeln( '' );
 		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
 		$output->writeln( '' );
-		
+
 		return Command::SUCCESS;
 	}
 }
