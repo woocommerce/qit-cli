@@ -73,6 +73,12 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var array<string,array<string,array<mixed>>> */
 	public array $test_packages = [];
+	
+	/** @var array<string,array{path:string,source:string,container_path:string}> */
+	public array $test_packages_for_setup = [];
+	
+	/** @var bool */
+	public bool $skip_test_phases = false;
 
 	/** @var string|null */
 	public ?string $artifacts_dir = null;

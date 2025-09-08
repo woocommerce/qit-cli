@@ -70,7 +70,7 @@ class UpEnvironmentCommand extends QITCommand {
 			/* ─ Lists ─ */
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
-			->addOption( 'global_setup', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to run global setup', [] )
+			->addOption( 'test-package', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to set up environment from (processes requirements and runs setup phases)', [] )
 			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
@@ -79,6 +79,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'online', null, InputOption::VALUE_NONE, 'Override: Force online mode - enable network regardless of test requirements' )
 			->addOption( 'skip-setup', null, InputOption::VALUE_NONE, 'Skip running setup phases even if qit-test.json is found' )
 			->addOption( 'setup', null, InputOption::VALUE_OPTIONAL, 'Run setup phases from test package in specified directory', false )
+			->addOption( 'skip-test-phases', null, InputOption::VALUE_NONE, 'Skip all test phases (internal use by run:e2e)' )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
 			->setHelp( $this->getHelpText() );
 	}
@@ -96,10 +97,43 @@ class UpEnvironmentCommand extends QITCommand {
 			return Command::FAILURE;
 		}
 		
-		/* ─ 0. Check for local test manifest and process requirements ─ */
+		/* ─ 0. Check for test packages and process requirements ─ */
 		// This must happen BEFORE environment creation so requirements can be included
+		
+		// Build ordered list of test packages (local first, then explicit)
+		$all_test_packages = [];
+		
+		// Check for local test manifest - it's always the primary package
+		$has_local_manifest = false;
 		if ( ! $input->getOption( 'skip-setup' ) ) {
-			$this->processLocalTestManifestForRequirements( $input, $output );
+			$setup_dir = $input->getOption( 'setup' );
+			$test_dir = $setup_dir ? $setup_dir : getcwd();
+			$test_dir = rtrim( $test_dir, '/' );
+			if ( substr( $test_dir, 0, 1 ) !== '/' ) {
+				$test_dir = getcwd() . '/' . $test_dir;
+			}
+			
+			if ( file_exists( $test_dir . '/qit-test.json' ) ) {
+				$has_local_manifest = true;
+				$all_test_packages[] = $test_dir; // Local is always first
+				// Process requirements for local manifest using the same flow as explicit packages
+				$this->processTestPackageRequirements( [ $test_dir ], $output );
+			}
+		}
+		
+		// Add explicit test packages from --test-package option
+		$explicit_packages = $input->getOption( 'test-package' ) ?? [];
+		
+		// Debug logging
+		if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+			$output->writeln( '[DEBUG] env:up - Has local manifest: ' . ( $has_local_manifest ? 'yes' : 'no' ) );
+			$output->writeln( '[DEBUG] env:up - Explicit packages from --test-package: ' . json_encode( $explicit_packages ) );
+			$output->writeln( '[DEBUG] env:up - All test packages to process: ' . json_encode( $all_test_packages ) );
+		}
+		
+		if ( ! empty( $explicit_packages ) ) {
+			$all_test_packages = array_merge( $all_test_packages, $explicit_packages );
+			$this->processTestPackageRequirements( $explicit_packages, $output );
 		}
 
 		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
@@ -141,6 +175,30 @@ class UpEnvironmentCommand extends QITCommand {
 		*/
 		// Process test packages if in auto mode
 		$requires_network = false;
+		
+		// Collect network requirements from all sources
+		$packages_requiring_network = [];
+		$packages_requiring_tunnel = [];
+		
+		// Check if test packages require network (from processTestPackageRequirements)
+		if ( \QIT_CLI\App::getVar( 'test_package_requires_network', false ) ) {
+			$requires_network = true;
+			$packages_requiring_network[] = 'local test package';
+		}
+		
+		// Check if test packages require tunnel (from processTestPackageRequirements)
+		if ( \QIT_CLI\App::getVar( 'test_package_requires_tunnel', false ) ) {
+			$packages_requiring_tunnel[] = 'local test package';
+			// Enable tunnel if required by test package
+			if ( ! isset( $env_config['tunnel'] ) || ! $env_config['tunnel'] ) {
+				$env_config['tunnel'] = true;
+				$env_config['tunnel_type'] = 'cloudflare'; // Default tunnel type
+				if ( $output->isVerbose() ) {
+					$output->writeln( '<info>Tunnel enabled (required by test package)</info>' );
+				}
+			}
+		}
+		
 		if ( isset( $env_config['network_mode'] ) && $env_config['network_mode'] === 'auto' ) {
 			// Check if test packages were passed directly or in environment config
 			$test_packages = [];
@@ -156,60 +214,160 @@ class UpEnvironmentCommand extends QITCommand {
 				foreach ( $test_packages as $package_ref ) {
 					try {
 						$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
-						if ( $manifest && $manifest->requires_network() ) {
-							$requires_network = true;
-							if ( $output->isVerbose() ) {
-								$output->writeln( "<info>Package {$package_ref} requires network access</info>" );
+						if ( $manifest ) {
+							if ( $manifest->requires_network() ) {
+								$requires_network = true;
+								$packages_requiring_network[] = $package_ref;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires network access</info>" );
+								}
 							}
-							break; // If any package requires network, enable it for all
+							if ( $manifest->requires_tunnel() ) {
+								$packages_requiring_tunnel[] = $package_ref;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires tunnel access</info>" );
+								}
+							}
 						}
 					} catch ( \Exception $e ) {
 						// For local packages, try to read the manifest directly
 						if ( is_dir( $package_ref ) && file_exists( $package_ref . '/qit-test.json' ) ) {
 							$manifest_data = json_decode( file_get_contents( $package_ref . '/qit-test.json' ), true );
-							if ( isset( $manifest_data['requires_network'] ) && $manifest_data['requires_network'] ) {
+							if ( isset( $manifest_data['requires']['network'] ) && $manifest_data['requires']['network'] ) {
 								$requires_network = true;
+								$packages_requiring_network[] = $package_ref;
 								if ( $output->isVerbose() ) {
 									$output->writeln( "<info>Package {$package_ref} requires network access</info>" );
 								}
-								break;
+							}
+							if ( isset( $manifest_data['requires']['tunnel'] ) && $manifest_data['requires']['tunnel'] ) {
+								$packages_requiring_tunnel[] = $package_ref;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires tunnel access</info>" );
+								}
 							}
 						}
 					}
+				}
+			}
+			
+			// Apply tunnel requirements if any
+			if ( ! empty( $packages_requiring_tunnel ) && ( ! isset( $env_config['tunnel'] ) || ! $env_config['tunnel'] ) ) {
+				$env_config['tunnel'] = true;
+				$env_config['tunnel_type'] = 'cloudflare'; // Default tunnel type
+				if ( $output->isVerbose() ) {
+					$output->writeln( sprintf( '<info>Tunnel enabled (required by %d test package(s))</info>', count( $packages_requiring_tunnel ) ) );
 				}
 			}
 
 			// Set network restriction based on package requirements
 			$env_config['network_restriction'] = ! $requires_network;
 		} elseif ( isset( $env_config['network_mode'] ) ) {
-			// For explicit modes, convert directly
+			// For explicit modes, validate and convert
+			if ( $env_config['network_mode'] === 'offline' && $requires_network ) {
+				// Error: conflict between forced offline and package requirements
+				$package_list = implode( "\n  - ", $packages_requiring_network );
+				throw new \RuntimeException( sprintf(
+					"Cannot run in offline mode.\n" .
+					"%d package(s) require network access:\n  - %s\n\n" .
+					"Options:\n" .
+					"1. Remove --offline flag to use auto mode\n" .
+					"2. Use --online flag to force network access\n" .
+					'3. Exclude these test packages from the run',
+					count( $packages_requiring_network ),
+					$package_list
+				) );
+			}
 			$env_config['network_restriction'] = $env_config['network_mode'] === 'offline';
 		} else {
-			// Default to restricted (offline)
-			$env_config['network_restriction'] = true;
+			// Default to restricted (offline) unless overridden by test package
+			$env_config['network_restriction'] = ! $requires_network;
 		}
 
-		/* ─ 3.7. Process global setup packages if present ─ */
-		$global_setup_packages = [];
-		if ( ! empty( $env_config['global_setup'] ) ) {
-			// Download and prepare global setup packages
+		/* ─ 3.7. Process test packages for setup phases ─ */
+		$test_packages_for_setup = [];
+		// Always process test packages (for requirement extraction and volume mounting)
+		// The actual phase execution is controlled by the skip_test_phases flag in env_info
+		if ( ! empty( $all_test_packages ) ) {
+			if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+				$output->writeln( '[DEBUG] env:up - Preparing ' . count( $all_test_packages ) . ' packages for setup phases' );
+			}
+			
+			// Determine main package using priority rules
+			$main_package = $this->determineMainPackage( $all_test_packages, $output );
+			if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+				$output->writeln( '[DEBUG] env:up - Main package determined: ' . ( $main_package ?: 'none' ) );
+			}
+			
+			// Download and prepare test packages for setup
+			// Note: E2EEnvironment will run globalSetup for ALL packages and setup for FIRST (main) package
 			$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
-			foreach ( $env_config['global_setup'] as $package_ref ) {
+			
+			// Process main package first if it exists
+			if ( $main_package ) {
+				$packages_to_process = array_unique( array_merge( [ $main_package ], $all_test_packages ) );
+			} else {
+				$packages_to_process = $all_test_packages;
+			}
+			
+			foreach ( $packages_to_process as $package_ref ) {
 				try {
-					$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
-					if ( $manifest ) {
-						$metadata = $package_downloader->get_package_metadata( $package_ref );
-						// Use centralized method for consistent container path generation
-						$container_path                        = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
-						$global_setup_packages[ $package_ref ] = [
-							'path'           => $metadata['downloaded_path'] ?? '',
-							'source'         => 'registry',
+					// For local packages, read the manifest to get the package ID
+					if ( is_dir( $package_ref ) && file_exists( $package_ref . '/qit-test.json' ) ) {
+						// Read manifest to get the package ID
+						$manifest_content = file_get_contents( $package_ref . '/qit-test.json' );
+						$manifest_data = json_decode( $manifest_content, true );
+						
+						if ( json_last_error() !== JSON_ERROR_NONE ) {
+							throw new \RuntimeException( "Invalid JSON in qit-test.json: " . json_last_error_msg() );
+						}
+						
+						// Package ID is required field in the manifest
+						if ( ! isset( $manifest_data['package'] ) ) {
+							throw new \RuntimeException( "Missing required 'package' field in {$package_ref}/qit-test.json" );
+						}
+						
+						$package_id = $manifest_data['package'];
+						
+						// Create manifest object to get consistent container path
+						$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
+						$container_name = $manifest->get_container_directory_name();
+						$container_path = '/qit/packages/' . $container_name;
+						$test_packages_for_setup[ $package_ref ] = [
+							'path'           => $package_ref,
+							'source'         => 'local',
 							'container_path' => $container_path,
+							'package_id'     => $package_id,  // Store the actual package ID
+							'manifest'       => $manifest_data,  // Store manifest for run:e2e
 						];
+					} else {
+						// Remote package - download it
+						$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
+						if ( $manifest ) {
+							$metadata = $package_downloader->get_package_metadata( $package_ref );
+							// Use centralized method for consistent container path generation
+							$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
+							$test_packages_for_setup[ $package_ref ] = [
+								'path'           => $metadata['downloaded_path'] ?? '',
+								'source'         => 'registry',
+								'container_path' => $container_path,
+								'package_id'     => $manifest->get_package_id(),  // Get package ID from manifest
+								'manifest'       => $manifest->get_manifest_data(),  // Store manifest for run:e2e
+							];
+						}
 					}
 				} catch ( \Exception $e ) {
-					$output->writeln( "<warning>Failed to download global setup package {$package_ref}: {$e->getMessage()}</warning>" );
+					$output->writeln( "<warning>Failed to prepare test package {$package_ref}: {$e->getMessage()}</warning>" );
 				}
+			}
+		}
+
+		/* ─ 3.8. Add test package volumes for local packages ─ */
+		foreach ( $test_packages_for_setup as $info ) {
+			if ( $info['source'] === 'local' && ! empty( $info['path'] ) && ! empty( $info['container_path'] ) ) {
+				// Add volume mapping for local test package
+				// We need to add this to parsed_volumes, not env_config['volumes']
+				$parsed_volumes[ $info['container_path'] ] = $info['path'];
 			}
 		}
 
@@ -229,7 +387,8 @@ class UpEnvironmentCommand extends QITCommand {
 			'php_extensions'        => $env_config['php_extensions'] ?? [],
 			'volumes'               => $parsed_volumes,
 			'envs'                  => $env_config['envs'] ?? [],
-			'global_setup_packages' => $global_setup_packages,
+			'test_packages_for_setup' => $test_packages_for_setup,
+			'skip_test_phases'      => $input->getOption( 'skip-test-phases' ),  // Pass the flag to E2EEnvironment
 			'tunnel'                => $env_config['tunnel'] ?? false,
 			'tunnel_type'           => $env_config['tunnel_type'] ?? 'no_tunnel',
 			'network_restriction'   => $env_config['network_restriction'],
@@ -259,23 +418,11 @@ class UpEnvironmentCommand extends QITCommand {
 		$environment->init( $env_info );
 		$environment->up();
 
-		/* ─ 8.5. Run setup phases if qit-test.json exists or --setup is specified ─ */
-		if ( ! $input->getOption( 'skip-setup' ) ) {
-			$setup_dir = null;
-			
-			// Check if --setup option is provided
-			if ( $input->hasOption( 'setup' ) && $input->getOption( 'setup' ) !== false ) {
-				// --setup provided with a value
-				$setup_dir = $input->getOption( 'setup' ) ?: './';
-			} elseif ( file_exists( './qit-test.json' ) ) {
-				// No --setup option, but qit-test.json exists in current directory
-				$setup_dir = './';
-			}
-			
-			if ( $setup_dir !== null ) {
-				$this->runTestSetupPhases( $env_info, $output, $setup_dir );
-			}
-		}
+		/* ─ 8.5. Setup phases are now handled by E2EEnvironment::up() when test_packages_for_setup is populated ─ */
+		// The E2EEnvironment will automatically run:
+		// - globalSetup for ALL packages in test_packages_for_setup
+		// - setup for the FIRST (main) package only
+		// This happens when --skip-test-phases is NOT set
 
 		/* ─ 9. Save environment info and generate source files ─ */
 		$this->save_environment_info( $env_info );
@@ -287,16 +434,14 @@ class UpEnvironmentCommand extends QITCommand {
 		} else {
 			$this->renderHumanSummary( $output, $env_info );
 
-			// Show manual testing instructions (unless only global setup packages were run)
-			if ( empty( $env_info->global_setup_packages ) || ! empty( $env_info->plugins ) || ! empty( $env_info->themes ) ) {
-				$output->writeln( '' );
-				$output->writeln( 'To run manual tests:' );
-				$output->writeln( '  1. Navigate to your test directory' );
-				$output->writeln( '  2. Load environment variables in this terminal:' );
-				$output->writeln( sprintf( '     <info>source "$(qit env:source %s)"</info>', $env_info->env_id ) );
-				$output->writeln( '  3. Run your tests:' );
-				$output->writeln( '     <info>npx playwright test</info>' );
-			}
+			// Show manual testing instructions
+			$output->writeln( '' );
+			$output->writeln( 'To run manual tests:' );
+			$output->writeln( '  1. Navigate to your test directory' );
+			$output->writeln( '  2. Load environment variables in this terminal:' );
+			$output->writeln( sprintf( '     <info>source "$(qit env:source %s)"</info>', $env_info->env_id ) );
+			$output->writeln( '  3. Run your tests:' );
+			$output->writeln( '     <info>npx playwright test</info>' );
 		}
 
 		// Clean up DI container variables if we set them
@@ -536,7 +681,6 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		$merge_simple_list( 'php_extensions', 'php_extension' );
-		$merge_simple_list( 'global_setup', 'global_setup' );
 
 		/*
 		─ Runtime env vars - process files immediately ─
@@ -722,12 +866,23 @@ class UpEnvironmentCommand extends QITCommand {
 				$out->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
 			}
 
-			// Global setup packages (if any were executed)
-			if ( ! empty( $info->global_setup_packages ) ) {
+			// Test packages that were set up
+			if ( ! empty( $info->test_packages_for_setup ) ) {
 				$out->writeln( '' );
-				$out->writeln( '  Global Setup completed:' );
-				foreach ( $info->global_setup_packages as $pkg_id => $pkg_info ) {
-					$out->writeln( sprintf( '    • %s', $pkg_id ) );
+				$out->writeln( '  Test packages prepared:' );
+				if ( $info->skip_test_phases ) {
+					// When phases are skipped, just list the packages
+					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+						$out->writeln( sprintf( '    • %s (phases deferred)', $pkg_id ) );
+					}
+				} else {
+					// When phases ran, show which phases ran for each package
+					$is_first = true;
+					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+						$phases = $is_first ? 'globalSetup + setup' : 'globalSetup only';
+						$out->writeln( sprintf( '    • %s (%s)', $pkg_id, $phases ) );
+						$is_first = false;
+					}
 				}
 			}
 		} elseif ( $info instanceof PerformanceEnvInfo ) {
@@ -891,7 +1046,60 @@ HELP;
 	}
 
 	/**
+	 * Determine the main package based on priority rules.
+	 * 
+	 * Priority:
+	 * 1. Current directory with qit-test.json
+	 * 2. First local package (starts with ./ or /)
+	 * 3. First remote package
+	 *
+	 * @param array           $packages List of package references.
+	 * @param OutputInterface $output   The output interface.
+	 * @return string|null The main package reference, or null if no packages.
+	 */
+	private function determineMainPackage( array $packages, OutputInterface $output ): ?string {
+		if ( empty( $packages ) ) {
+			return null;
+		}
+		
+		// Priority 1: Check if current directory has qit-test.json
+		if ( file_exists( getcwd() . '/qit-test.json' ) ) {
+			// Current directory is the main package if it's in our list
+			$cwd = getcwd();
+			foreach ( $packages as $package ) {
+				// Normalize the package path for comparison
+				if ( is_dir( $package ) ) {
+					$normalized = realpath( $package );
+					if ( $normalized === $cwd ) {
+						if ( $output->isVerbose() ) {
+							$output->writeln( '<info>Main package: Current directory (has qit-test.json)</info>' );
+						}
+						return $package;
+					}
+				}
+			}
+		}
+		
+		// Priority 2: First local package
+		foreach ( $packages as $package ) {
+			if ( is_dir( $package ) || strpos( $package, './' ) === 0 || strpos( $package, '/' ) === 0 ) {
+				if ( $output->isVerbose() ) {
+					$output->writeln( "<info>Main package: {$package} (first local package)</info>" );
+				}
+				return $package;
+			}
+		}
+		
+		// Priority 3: First remote package
+		if ( $output->isVerbose() ) {
+			$output->writeln( "<info>Main package: {$packages[0]} (first remote package)</info>" );
+		}
+		return $packages[0];
+	}
+	
+	/**
 	 * Run test setup phases from qit-test.json if present.
+	 * @deprecated This method is no longer used. Setup phases are handled by E2EEnvironment::up()
 	 *
 	 * @param EnvInfo         $env_info The environment info.
 	 * @param OutputInterface $output   The output interface.
@@ -1004,71 +1212,147 @@ HELP;
 	}
 
 	/**
-	 * Process local test manifest to extract requirements BEFORE environment creation.
-	 * This allows the requirements to be included in the environment setup.
-	 *
-	 * @param InputInterface  $input  The input interface.
+	 * Process test packages to extract requirements.
+	 * 
+	 * @param array<string> $test_packages Array of test package references (local paths or remote IDs).
 	 * @param OutputInterface $output The output interface.
 	 */
-	private function processLocalTestManifestForRequirements( InputInterface $input, OutputInterface $output ): void {
-		// Determine which directory to check for manifest
-		$setup_dir = $input->getOption( 'setup' );
-		if ( $setup_dir ) {
-			$test_dir = $setup_dir;
-		} else {
-			$test_dir = getcwd();
+	private function processTestPackageRequirements( array $test_packages, OutputInterface $output ): void {
+		if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+			$output->writeln( '[DEBUG] env:up->processTestPackageRequirements - Processing ' . count( $test_packages ) . ' packages' );
 		}
 		
-		// Normalize path
-		$test_dir = rtrim( $test_dir, '/' );
-		if ( substr( $test_dir, 0, 1 ) !== '/' ) {
-			$test_dir = getcwd() . '/' . $test_dir;
-		}
+		$required_plugins = \QIT_CLI\App::getVar( 'test_package_required_plugins', [] );
+		$required_themes = \QIT_CLI\App::getVar( 'test_package_required_themes', [] );
+		$requires_network = \QIT_CLI\App::getVar( 'test_package_requires_network', false );
+		$requires_tunnel = \QIT_CLI\App::getVar( 'test_package_requires_tunnel', false );
 		
-		$manifest_path = $test_dir . '/qit-test.json';
-		if ( ! file_exists( $manifest_path ) ) {
-			// No manifest, nothing to do
-			return;
-		}
-		
-		// Parse the manifest
-		try {
-			$manifest_content = file_get_contents( $manifest_path );
-			$manifest = json_decode( $manifest_content, true );
-			
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				return; // Invalid JSON, skip silently
+		foreach ( $test_packages as $package_ref ) {
+			if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+				$output->writeln( "[DEBUG] env:up - Processing test package: $package_ref" );
 			}
 			
-			// Extract plugin requirements
-			$required_plugins = [];
-			if ( isset( $manifest['requires']['plugins'] ) && is_array( $manifest['requires']['plugins'] ) ) {
-				foreach ( $manifest['requires']['plugins'] as $plugin ) {
-					$required_plugins[ $plugin ] = [ 'local-manifest' ];
+			try {
+				// Try to download/process the package (likely cache hit if run:e2e already downloaded)
+				$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
+				// Fix: Use correct method signature and cache dir (same as run:e2e uses)
+				$packages_to_download = [ $package_ref => [] ];
+				$manifests = $package_downloader->download( $packages_to_download, sys_get_temp_dir() . '/qit-cache' );
+				
+				if ( isset( $manifests[ $package_ref ] ) ) {
+					$manifest = $manifests[ $package_ref ];
+					
+					if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+						$output->writeln( "[DEBUG] env:up - Got manifest for $package_ref (likely from cache)" );
+					}
+					
+					// Extract plugin requirements
+					$plugins = $manifest->get_required_plugins();
+					foreach ( $plugins as $plugin ) {
+						if ( ! isset( $required_plugins[ $plugin ] ) ) {
+							$required_plugins[ $plugin ] = [];
+						}
+						$required_plugins[ $plugin ][] = $package_ref;
+					}
+					
+					// Extract theme requirements
+					$themes = $manifest->get_required_themes();
+					foreach ( $themes as $theme ) {
+						if ( ! isset( $required_themes[ $theme ] ) ) {
+							$required_themes[ $theme ] = [];
+						}
+						$required_themes[ $theme ][] = $package_ref;
+					}
+					
+					// Check network requirement
+					if ( $manifest->requires_network() ) {
+						$requires_network = true;
+						if ( $output->isVerbose() ) {
+							$output->writeln( "<info>Test package {$package_ref} requires network access</info>" );
+						}
+					}
+					
+					// Check tunnel requirement
+					if ( $manifest->requires_tunnel() ) {
+						$requires_tunnel = true;
+						if ( $output->isVerbose() ) {
+							$output->writeln( "<info>Test package {$package_ref} requires tunnel access</info>" );
+						}
+					}
+				}
+			} catch ( \Exception $e ) {
+				// For local packages, try to read the manifest directly
+				if ( is_dir( $package_ref ) && file_exists( $package_ref . '/qit-test.json' ) ) {
+					try {
+						$manifest_content = file_get_contents( $package_ref . '/qit-test.json' );
+						$manifest_data = json_decode( $manifest_content, true );
+						
+						if ( json_last_error() === JSON_ERROR_NONE ) {
+							// Use TestPackageManifest to parse it properly
+							$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
+							
+							// Extract plugin requirements
+							$plugins = $manifest->get_required_plugins();
+							foreach ( $plugins as $plugin ) {
+								if ( ! isset( $required_plugins[ $plugin ] ) ) {
+									$required_plugins[ $plugin ] = [];
+								}
+								$required_plugins[ $plugin ][] = $package_ref;
+							}
+							
+							// Extract theme requirements
+							$themes = $manifest->get_required_themes();
+							foreach ( $themes as $theme ) {
+								if ( ! isset( $required_themes[ $theme ] ) ) {
+									$required_themes[ $theme ] = [];
+								}
+								$required_themes[ $theme ][] = $package_ref;
+							}
+							
+							// Check network requirement
+							if ( $manifest->requires_network() ) {
+								$requires_network = true;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Test package {$package_ref} requires network access</info>" );
+								}
+							}
+							
+							// Check tunnel requirement
+							if ( $manifest->requires_tunnel() ) {
+								$requires_tunnel = true;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Test package {$package_ref} requires tunnel access</info>" );
+								}
+							}
+						}
+					} catch ( \Exception $inner_e ) {
+						if ( $output->isVerbose() ) {
+							$output->writeln( "<warning>Could not process test package {$package_ref}: {$inner_e->getMessage()}</warning>" );
+						}
+					}
+				} else {
+					if ( $output->isVerbose() ) {
+						$output->writeln( "<warning>Could not process test package {$package_ref}: {$e->getMessage()}</warning>" );
+					}
 				}
 			}
-			
-			// Extract theme requirements
-			$required_themes = [];
-			if ( isset( $manifest['requires']['themes'] ) && is_array( $manifest['requires']['themes'] ) ) {
-				foreach ( $manifest['requires']['themes'] as $theme ) {
-					$required_themes[ $theme ] = [ 'local-manifest' ];
-				}
-			}
-			
-			// Store in DI container for process_test_package_requirements to pick up
-			if ( ! empty( $required_plugins ) ) {
-				\QIT_CLI\App::setVar( 'test_package_required_plugins', $required_plugins );
-			}
-			if ( ! empty( $required_themes ) ) {
-				\QIT_CLI\App::setVar( 'test_package_required_themes', $required_themes );
-			}
-			
-		} catch ( \Exception $e ) {
-			// Silently ignore errors in early processing
-			return;
+		}
+		
+		// Store the collected requirements back to DI container for process_test_package_requirements to use
+		if ( ! empty( $required_plugins ) ) {
+			\QIT_CLI\App::setVar( 'test_package_required_plugins', $required_plugins );
+		}
+		if ( ! empty( $required_themes ) ) {
+			\QIT_CLI\App::setVar( 'test_package_required_themes', $required_themes );
+		}
+		if ( $requires_network ) {
+			\QIT_CLI\App::setVar( 'test_package_requires_network', true );
+		}
+		if ( $requires_tunnel ) {
+			\QIT_CLI\App::setVar( 'test_package_requires_tunnel', true );
 		}
 	}
+	
 	
 	/**
 	 * Backup the database state after setup.

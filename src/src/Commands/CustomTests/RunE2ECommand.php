@@ -238,143 +238,37 @@ class RunE2ECommand extends QITCommand {
 			App::setVar( 'QIT_SUT_SLUG', $sut_slug );
 		}
 
-		// Download test packages BEFORE env:up so we can mount them as volumes
-		$test_packages = $this->download_test_packages(
-			[
-				[
-					'type' => $this->test_type,
-					'name' => $input->getProfileName(),
-				],
-			],
-			$input->getTestPackages() // This includes both profile and CLI packages
-		);
-
-		// Validate version consistency for subpackages
-		$this->validate_subpackage_versions( $test_packages );
-
-		// Determine network mode based on test packages and CLI options
-		$network_mode = $this->determine_network_mode( $input, $test_packages, $output );
-
-		// Apply network mode to env_up_options
-		if ( $network_mode === 'offline' ) {
+		// Skip downloading test packages here - env:up will handle it
+		// We'll reconstruct test_packages from env_info after env:up runs
+		
+		// Pass network mode options to env:up (it will determine based on test packages)
+		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
 			$env_up_options['--offline'] = true;
-		} elseif ( $network_mode === 'online' ) {
+		} elseif ( $input->hasOption( 'online' ) && $input->getOption( 'online' ) ) {
 			$env_up_options['--online'] = true;
 		}
-		// If 'auto', env:up will handle the default
+		// If neither flag is set, env:up will use auto mode and check test package requirements
 
-		// Prepare test package metadata with container paths BEFORE env:up
-		$test_packages_metadata = [];
-		$seen_remote_packages   = []; // Track remote packages for deduplication
-		$local_package_counter  = []; // Track local packages with same namespace/package
 
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( isset( $meta['path'] ) ) {
-				$is_local = file_exists( $pkg_id ) && is_dir( $pkg_id );
+		// We'll build the package local map after env:up when we have the packages
 
-				if ( $is_local ) {
-					// Local packages - never deduplicate, but need unique names
-					// For local packages, we need a counter to handle duplicates
-					$container_name = $this->get_unique_container_name_for_local( $pkg_id, $local_package_counter );
-					$container_path = '/qit/packages/' . $container_name;
+		// env:up will now handle adding test package volumes automatically
 
-					$test_packages_metadata[ $pkg_id ] = [
-						'path'           => $meta['path'],
-						'container_path' => $container_path,
-					];
-				} else {
-					// Remote packages - deduplicate by package ID
-					if ( isset( $seen_remote_packages[ $pkg_id ] ) ) {
-						if ( $output->isVerbose() ) {
-							$output->writeln( "<comment>Reusing existing mount for remote package: {$pkg_id}</comment>" );
-						}
-						// Reuse the existing metadata
-						$test_packages_metadata[ $pkg_id ] = $seen_remote_packages[ $pkg_id ];
-						continue;
-					}
-
-					// For remote packages, use the centralized method
-					$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $pkg_id );
-
-					$test_packages_metadata[ $pkg_id ] = [
-						'path'           => $meta['path'],
-						'container_path' => $container_path,
-					];
-
-					$seen_remote_packages[ $pkg_id ] = $test_packages_metadata[ $pkg_id ];
-				}
-
-				if ( $output->isVeryVerbose() ) {
-					$output->writeln( "Package mapping: {$pkg_id} -> {$container_path}" );
-				}
+		// Pass original test package references to env:up for requirement processing
+		// env:up will handle downloading (or cache hits) and requirement extraction
+		$original_test_packages = $input->getTestPackages(); // Get the original refs from input
+		
+		// Add original test package references to env:up options
+		if ( ! empty( $original_test_packages ) ) {
+			if ( ! isset( $env_up_options['--test-package'] ) ) {
+				$env_up_options['--test-package'] = [];
 			}
-		}
-
-		// Build package local map for ResultCollector
-		$package_local_map = [];
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( isset( $meta['path'] ) ) {
-				$is_local                     = file_exists( $pkg_id ) && is_dir( $pkg_id );
-				$package_local_map[ $pkg_id ] = $is_local;
-			}
-		}
-		// Set the map in ResultCollector for later use
-		\QIT_CLI\Environment\ResultCollector::set_package_local_map( $package_local_map );
-
-		// Add local test packages as volumes
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
-				// Skip if this was a duplicate that we already processed
-				if ( ! isset( $test_packages_metadata[ $pkg_id ] ) ) {
-					continue;
-				}
-
-				// This is a local path - add it as a volume
-				$container_path = $test_packages_metadata[ $pkg_id ]['container_path'];
-
-				if ( ! isset( $env_up_options['--volume'] ) ) {
-					$env_up_options['--volume'] = [];
-				}
-				$env_up_options['--volume'][] = $meta['path'] . ':' . $container_path . ':ro';
-			}
-		}
-
-		// Process test package requirements for env:up
-		$required_plugins = [];
-		$required_themes  = [];
-
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			// Get manifest object - it's always set based on the type definition
-			$manifest = $meta['manifest'];
-
-			// Get a short package name for display
-			$pkg_display = basename( $pkg_id );
-
-			// Collect plugin requirements
-			$plugins = $manifest->get_required_plugins();
-			foreach ( $plugins as $plugin_slug ) {
-				if ( ! isset( $required_plugins[ $plugin_slug ] ) ) {
-					$required_plugins[ $plugin_slug ] = [];
-				}
-				$required_plugins[ $plugin_slug ][] = $pkg_display;
-			}
-
-			// Collect theme requirements
-			$themes = $manifest->get_required_themes();
-			foreach ( $themes as $theme_slug ) {
-				if ( ! isset( $required_themes[ $theme_slug ] ) ) {
-					$required_themes[ $theme_slug ] = [];
-				}
-				$required_themes[ $theme_slug ][] = $pkg_display;
-			}
-		}
-
-		// Pass processed requirements via DI container for env:up
-		if ( ! empty( $required_plugins ) ) {
-			App::setVar( 'test_package_required_plugins', $required_plugins );
-		}
-		if ( ! empty( $required_themes ) ) {
-			App::setVar( 'test_package_required_themes', $required_themes );
+			// Pass the original references directly - env:up will download them (likely cache hits)
+			$env_up_options['--test-package'] = array_merge( $env_up_options['--test-package'], $original_test_packages );
+			
+			// CRITICAL: Tell env:up to skip test phases since run:e2e will handle them
+			// This prevents double execution of globalSetup and setup phases
+			$env_up_options['--skip-test-phases'] = true;
 		}
 
 		// Always output JSON for parsing
@@ -390,9 +284,7 @@ class RunE2ECommand extends QITCommand {
 
 			return Command::FAILURE;
 		} finally {
-			// Clean up temporary DI container variables
-			App::offsetUnset( 'test_package_required_plugins' );
-			App::offsetUnset( 'test_package_required_themes' );
+			// Clean up temporary environment variables
 			putenv( 'QIT_HIDE_SITE_INFO' );
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' );
 		}
@@ -405,6 +297,49 @@ class RunE2ECommand extends QITCommand {
 				'type' => $sut_type,
 			];
 		}
+		
+		// Reconstruct test_packages from env_info for validation and display
+		$test_packages = [];
+		if ( ! empty( $env_info->test_packages_for_setup ) ) {
+			foreach ( $env_info->test_packages_for_setup as $original_ref => $pkg_info ) {
+				// Use original_ref as the key since that's what was passed to env:up
+				// The package_id might be different (e.g., for local packages)
+				if ( isset( $pkg_info['manifest'] ) ) {
+					// Determine version based on source
+					$version = 'local'; // Default for local packages
+					if ( $pkg_info['source'] === 'registry' && str_contains( $original_ref, ':' ) ) {
+						// Extract version from registry package reference
+						[ , $version ] = explode( ':', $original_ref, 2 );
+					}
+					
+					// Reconstruct the test_packages array format expected by the rest of the code
+					$test_packages[ $original_ref ] = [
+						'manifest' => new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $pkg_info['manifest'] ),
+						'path'     => $pkg_info['path'] ?? null,
+						'metadata' => [
+							'downloaded_path' => $pkg_info['path'] ?? null,
+							'version'         => $version,
+						],
+					];
+				}
+			}
+		}
+		
+		// Now validate version consistency for subpackages
+		if ( ! empty( $test_packages ) ) {
+			$this->validate_subpackage_versions( $test_packages );
+		}
+		
+		// Build package local map for ResultCollector
+		$package_local_map = [];
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			if ( isset( $meta['path'] ) ) {
+				$is_local                     = file_exists( $pkg_id ) && is_dir( $pkg_id );
+				$package_local_map[ $pkg_id ] = $is_local;
+			}
+		}
+		// Set the map in ResultCollector for later use
+		\QIT_CLI\Environment\ResultCollector::set_package_local_map( $package_local_map );
 
 		// Display environment summary (similar to env:up)
 		if ( ! $input->getOption( 'json' ) ) {
@@ -430,7 +365,14 @@ class RunE2ECommand extends QITCommand {
 			return Command::SUCCESS;
 		}
 
-		// Use the pre-calculated test packages metadata
+		// Build test packages metadata from reconstructed test_packages
+		$test_packages_metadata = [];
+		foreach ( $test_packages as $pkg_id => $meta ) {
+			$test_packages_metadata[ $pkg_id ] = [
+				'path'           => $meta['path'],
+				'container_path' => $env_info->test_packages_for_setup[ $pkg_id ]['container_path'] ?? '',
+			];
+		}
 		$env_info->test_packages_metadata = $test_packages_metadata;
 
 		// Initialize e2e environment with the info from env:up
@@ -1808,92 +1750,4 @@ class RunE2ECommand extends QITCommand {
 		return ucwords( $name );
 	}
 
-	/**
-	 * Determine network mode based on test package requirements and CLI overrides.
-	 *
-	 * @param QITInput                                                                                                             $input The command input.
-	 * @param array<string, array{manifest?: \QIT_CLI\PreCommand\Objects\TestPackageManifest|array<string, mixed>, path?: string}> $test_packages Downloaded test packages with manifests.
-	 * @param OutputInterface                                                                                                      $output The command output.
-	 * @return string The network mode: 'offline' or 'online'.
-	 */
-	private function determine_network_mode( QITInput $input, array $test_packages, OutputInterface $output ): string {
-		// Check if any test package requires network
-		$packages_requiring_network     = [];
-		$packages_not_requiring_network = [];
-
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( isset( $meta['manifest'] ) ) {
-				// The manifest may already be a TestPackageManifest object (from local packages)
-				// or an array (from remote packages)
-				if ( $meta['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
-					$manifest = $meta['manifest'];
-				} else {
-					$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $meta['manifest'] );
-				}
-				if ( $manifest->requires_network() ) {
-					$packages_requiring_network[] = $pkg_id;
-				} else {
-					$packages_not_requiring_network[] = $pkg_id;
-				}
-			}
-		}
-
-		// Display network policy information if verbose
-		if ( $output->isVerbose() && count( $test_packages ) > 0 ) {
-			$output->writeln( '' );
-			$output->writeln( '<info>Network Policy: Auto mode</info>' );
-			$output->writeln( sprintf(
-				'Packages: %d offline-only, %d require network',
-				count( $packages_not_requiring_network ),
-				count( $packages_requiring_network )
-			) );
-		}
-
-		// Determine auto mode result
-		$auto_mode_needs_network = count( $packages_requiring_network ) > 0;
-
-		// Check for override flags
-		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
-			// User forcing offline mode
-			if ( $auto_mode_needs_network ) {
-				// Error: conflict between forced offline and package requirements
-				$package_list = implode( "\n  - ", $packages_requiring_network );
-				throw new \RuntimeException( sprintf(
-					"Cannot run in offline mode.\n" .
-					"%d package(s) require network access:\n  - %s\n\n" .
-					"Options:\n" .
-					"1. Remove --offline flag to use auto mode\n" .
-					"2. Use --online flag to force network access\n" .
-					'3. Exclude these test packages from the run',
-					count( $packages_requiring_network ),
-					$package_list
-				) );
-			}
-			if ( $output->isVerbose() ) {
-				$output->writeln( '→ Running in OFFLINE mode (forced by --offline flag)' );
-			}
-			return 'offline';
-		}
-
-		if ( $input->hasOption( 'online' ) && $input->getOption( 'online' ) ) {
-			// User forcing online mode
-			if ( $output->isVerbose() ) {
-				$output->writeln( '→ Running in ONLINE mode (forced by --online flag)' );
-			}
-			return 'online';
-		}
-
-		// Auto mode (default)
-		if ( $auto_mode_needs_network ) {
-			if ( $output->isVerbose() ) {
-				$output->writeln( '→ Running in ONLINE mode (required by test packages)' );
-			}
-			return 'online';
-		} else {
-			if ( $output->isVerbose() ) {
-				$output->writeln( '→ Running in OFFLINE mode (no packages require network)' );
-			}
-			return 'offline';
-		}
-	}
 }

@@ -133,12 +133,28 @@ class E2EEnvironment extends Environment {
 			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		] );
 
+		// Activate plugins BEFORE running test setup phases so WP CLI commands work
+		if ( ! $this->skip_activating_plugins ) {
+			$this->output->writeln( '<info>Activating plugins...</info>' );
+			$activation_output = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
+			App::make( PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
+		}
+
 		/*
 		--------------------------------------------------------------
-		 * Execute global setup packages
+		 * Execute test package setup phases (unless skipped)
 		 * ------------------------------------------------------------
 		 */
-		if ( ! empty( $this->env_info->global_setup_packages ) ) {
+		if ( ! empty( $this->env_info->test_packages_for_setup ) && ! $this->env_info->skip_test_phases ) {
+			// Set up test_packages_metadata for PackagePhaseRunner to find container paths
+			// This maps package_id => metadata (needed by PackagePhaseRunner)
+			$this->env_info->test_packages_metadata = [];
+			foreach ( $this->env_info->test_packages_for_setup as $info ) {
+				if ( isset( $info['package_id'] ) ) {
+					$this->env_info->test_packages_metadata[ $info['package_id'] ] = $info;
+				}
+			}
+			
 			$runner = new \QIT_CLI\Environment\PackagePhaseRunner(
 				$this->docker,
 				$this->output,
@@ -147,39 +163,54 @@ class E2EEnvironment extends Environment {
 			);
 
 			$this->output->writeln( '' );
-			$this->output->writeln( 'Running Global Setup' );
-			$this->output->writeln( str_repeat( '-', 20 ) );
+			$this->output->writeln( 'Running Test Package Setup' );
+			$this->output->writeln( str_repeat( '-', 26 ) );
 
-			// Create a custom orchestrator for global setup packages
+			// Create a custom orchestrator for setup packages
 			$ctrf_validator     = $this->ctrf_validator;
 			$setup_orchestrator = \QIT_CLI\App::make( \QIT_CLI\Environment\GlobalSetupOrchestrator::class );
 
-			foreach ( $this->env_info->global_setup_packages as $pkg_id => $info ) {
-				$setup_orchestrator->start_package( $pkg_id, $info );
+			$is_first_package = true;
+			foreach ( $this->env_info->test_packages_for_setup as $pkg_path => $info ) {
+				// Use the actual package ID from manifest for orchestrator
+				$package_id = $info['package_id'] ?? $pkg_path; // Fallback for backwards compatibility
+				$setup_orchestrator->start_package( $package_id, $info );
 
 				try {
+					$total_commands = 0;
+					
+					// Run globalSetup for ALL packages
 					$commands_run = $runner->run_phase(
 						$this->env_info,
 						'globalSetup',
-						$pkg_id,
+						$package_id,
 						$info['path'],
-						null,  // No artifacts_dir for global setup packages
+						null,  // No artifacts_dir for setup phases
 						$setup_orchestrator
 					);
+					$total_commands += $commands_run;
+					
+					// Run setup phase ONLY for the first (main) package
+					// This is for manual testing - run:e2e handles setup per package with DB restore
+					if ( $is_first_package ) {
+						$setup_commands = $runner->run_phase(
+							$this->env_info,
+							'setup',
+							$package_id,
+							$info['path'],
+							null,  // No artifacts_dir for setup phases
+							$setup_orchestrator
+						);
+						$total_commands += $setup_commands;
+						$is_first_package = false;
+					}
 
-					$setup_orchestrator->end_package( $pkg_id, true, $commands_run );
+					$setup_orchestrator->end_package( $package_id, true, $total_commands );
 				} catch ( \Exception $e ) {
-					$setup_orchestrator->end_package( $pkg_id, false, 0, $e->getMessage() );
+					$setup_orchestrator->end_package( $package_id, false, 0, $e->getMessage() );
 					// Continue with other packages even if one fails
 				}
 			}
-		}
-
-		// Activate plugins.
-		if ( ! $this->skip_activating_plugins ) {
-			$this->output->writeln( '<info>Activating plugins...</info>' );
-			$activation_output = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
-			App::make( PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
 		}
 
 		$theme_activation = new ThemeActivation(
