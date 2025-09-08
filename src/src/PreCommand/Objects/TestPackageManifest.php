@@ -40,6 +40,7 @@ final class TestPackageManifest {
 	private array $subpackages;
 	private ?string $parent_package;
 	private bool $requires_network;
+	private bool $requires_tunnel;
 
 	/**
 	 * Construct from external data (JSON manifest or cached normalized data).
@@ -121,6 +122,18 @@ final class TestPackageManifest {
 			// Default to offline (false) when not specified
 			$this->requires_network = false;
 		}
+
+		// Tunnel requirement
+		if ( isset( $data['requires']['tunnel'] ) ) {
+			if ( is_string( $data['requires']['tunnel'] ) ) {
+				$this->requires_tunnel = filter_var( $data['requires']['tunnel'], FILTER_VALIDATE_BOOLEAN );
+			} else {
+				$this->requires_tunnel = (bool) $data['requires']['tunnel'];
+			}
+		} else {
+			// Default to no tunnel required
+			$this->requires_tunnel = false;
+		}
 	}
 
 	/**
@@ -154,6 +167,17 @@ final class TestPackageManifest {
 			}
 		} else {
 			$this->requires_network = false;
+		}
+		
+		// Tunnel requirement
+		if ( isset( $data['requires']['tunnel'] ) ) {
+			if ( is_string( $data['requires']['tunnel'] ) ) {
+				$this->requires_tunnel = filter_var( $data['requires']['tunnel'], FILTER_VALIDATE_BOOLEAN );
+			} else {
+				$this->requires_tunnel = (bool) $data['requires']['tunnel'];
+			}
+		} else {
+			$this->requires_tunnel = false;
 		}
 	}
 
@@ -200,6 +224,7 @@ final class TestPackageManifest {
 			'subpackages'      => $this->subpackages,
 			'parent_package'   => $this->parent_package,
 			'requires_network' => $this->requires_network,
+			'requires_tunnel'  => $this->requires_tunnel,
 		];
 	}
 
@@ -305,6 +330,10 @@ final class TestPackageManifest {
 
 	public function requires_network(): bool {
 		return $this->requires_network;
+	}
+
+	public function requires_tunnel(): bool {
+		return $this->requires_tunnel;
 	}
 
 	/**
