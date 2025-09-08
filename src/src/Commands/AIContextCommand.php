@@ -45,6 +45,9 @@ AVAILABLE CONTEXT TYPES:
                            
   <info>writing-test-packages</info>        Best practices for creating QIT test packages
                            (Coming soon)
+                           
+  <info>test-execution-scenarios</info>    How test packages are executed in different contexts
+                           Manual testing vs automated runs, phase execution rules
 
 USAGE EXAMPLES:
 
@@ -99,6 +102,8 @@ HELP
 				return $this->showQITBasicsContext( $output );
 			case 'understanding-test-packages':
 				return $this->showTestPackagesContext( $output );
+			case 'test-execution-scenarios':
+				return $this->showTestExecutionScenariosContext( $output );
 			case 'writing-test-packages':
 				$output->writeln( '<comment>Writing test packages context coming soon!</comment>' );
 				$output->writeln( '' );
@@ -135,6 +140,11 @@ HELP
 		$output->writeln( '<comment>understanding-test-packages</comment>' );
 		$output->writeln( '  Test package lifecycle: global setup, setup, teardown phases' );
 		$output->writeln( '  Usage: <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '' );
+
+		$output->writeln( '<comment>test-execution-scenarios</comment>' );
+		$output->writeln( '  How test packages are executed in different contexts' );
+		$output->writeln( '  Usage: <info>qit ai-context test-execution-scenarios</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>writing-test-packages</comment> <fg=gray>(coming soon)</>' );
@@ -774,5 +784,269 @@ HELP
 				++$file_count;
 			}
 		}
+	}
+
+	/**
+	 * Show test execution scenarios context
+	 */
+	private function showTestExecutionScenariosContext( OutputInterface $output ): int {
+		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
+		$output->writeln( 'TEST PACKAGE EXECUTION SCENARIOS - AGENTIC AI CONTEXT' );
+		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
+		$output->writeln( '' );
+		$output->writeln( 'UNDERSTANDING HOW TEST PACKAGES ARE EXECUTED IN DIFFERENT CONTEXTS' );
+		$output->writeln( '' );
+		
+		// Scenario 1
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'SCENARIO 1: DEVELOPER TESTING THEIR OWN PACKAGE' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Command Flow:' );
+		$output->writeln( '  cd /my-plugin/tests/e2e  # Has qit-test.json' );
+		$output->writeln( '  qit env:up --plugin=../../  # Auto-detects test package from qit-test.json' );
+		$output->writeln( '  source $(qit env:source)' );
+		$output->writeln( '  npx playwright test' );
+		$output->writeln( '  qit env:reset  # Return to clean state' );
+		$output->writeln( '  npx playwright test  # Run again' );
+		$output->writeln( '' );
+		$output->writeln( 'What Happens:' );
+		$output->writeln( '  1. Environment spins up with required plugins/themes' );
+		$output->writeln( '  2. GlobalSetup runs for the test package' );
+		$output->writeln( '  3. Setup runs for the test package (creates test-ready state)' );
+		$output->writeln( '  4. Database state is saved' );
+		$output->writeln( '  5. Developer runs tests manually' );
+		$output->writeln( '  6. env:reset restores to post-setup state' );
+		$output->writeln( '' );
+		$output->writeln( 'Use Case: Iterative development and debugging of test packages' );
+		$output->writeln( '' );
+		
+		// Scenario 2
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'SCENARIO 2: TESTING WITH MULTIPLE PACKAGES (MANUAL)' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Command Flow:' );
+		$output->writeln( '  qit env:up --test-package=./checkout-tests --test-package=./payment-tests' );
+		$output->writeln( '  source $(qit env:source)' );
+		$output->writeln( '  cd checkout-tests && npx playwright test' );
+		$output->writeln( '' );
+		$output->writeln( 'What Happens:' );
+		$output->writeln( '  1. Environment includes requirements from BOTH packages' );
+		$output->writeln( '  2. GlobalSetup runs for BOTH packages (combined baseline)' );
+		$output->writeln( '  3. Setup runs for MAIN package only (see detection rules below)' );
+		$output->writeln( '  4. Developer manually runs specific test suites' );
+		$output->writeln( '' );
+		$output->writeln( 'Main Package Detection (priority order):' );
+		$output->writeln( '  1. Package in current directory with qit-test.json' );
+		$output->writeln( '  2. First local package (./checkout-tests in example)' );
+		$output->writeln( '  3. First remote package (if no local packages)' );
+		$output->writeln( '' );
+		$output->writeln( 'Use Case: Testing package interactions and compatibility' );
+		$output->writeln( '' );
+		
+		// Scenario 3
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'SCENARIO 3: QA MANUAL EXPLORATION' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Command Flow:' );
+		$output->writeln( '  qit env:up --test-package=woocommerce/smoke-tests:latest' );
+		$output->writeln( '  source $(qit env:source)' );
+		$output->writeln( '  # Browse WordPress admin at $QIT_SITE_URL/wp-admin' );
+		$output->writeln( '  # Check WooCommerce settings manually' );
+		$output->writeln( '  # Or run specific test files:' );
+		$output->writeln( '  npx -y @playwright/test tests/critical-path.spec.js --headed' );
+		$output->writeln( '' );
+		$output->writeln( 'What Happens:' );
+		$output->writeln( '  1. Downloads remote test package' );
+		$output->writeln( '  2. Sets up environment with package requirements' );
+		$output->writeln( '  3. Runs globalSetup and setup from the package' );
+		$output->writeln( '  4. QA engineer can interact with prepared environment' );
+		$output->writeln( '' );
+		$output->writeln( 'Use Case: Manual verification and exploratory testing' );
+		$output->writeln( '' );
+		
+		// Scenario 4
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'SCENARIO 4: AUTOMATED CI/CD PIPELINE' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Command Flow:' );
+		$output->writeln( '  qit run:e2e woocommerce \\' );
+		$output->writeln( '    --test-package=./integration-tests \\' );
+		$output->writeln( '    --test-package=partner/regression:2.0.0' );
+		$output->writeln( '' );
+		$output->writeln( 'What Happens:' );
+		$output->writeln( '  1. run:e2e calls env:up with --skip-test-phases flag' );
+		$output->writeln( '  2. env:up sets up environment and processes requirements' );
+		$output->writeln( '  3. Test packages are prepared but phases are deferred to run:e2e' );
+		$output->writeln( '  4. run:e2e orchestrates the full lifecycle:' );
+		$output->writeln( '     - GlobalSetup (once for all packages)' );
+		$output->writeln( '     - For each package:' );
+		$output->writeln( '       * DB restore to baseline' );
+		$output->writeln( '       * Package setup' );
+		$output->writeln( '       * Test execution' );
+		$output->writeln( '       * Package teardown' );
+		$output->writeln( '       * Results collection' );
+		$output->writeln( '     - GlobalTeardown (once at end)' );
+		$output->writeln( '' );
+		$output->writeln( 'Use Case: Full automated test execution with proper isolation' );
+		$output->writeln( '' );
+		
+		// Scenario 5
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'SCENARIO 5: DEBUGGING FAILED CI TESTS' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Command Flow:' );
+		$output->writeln( '  # After CI failure...' );
+		$output->writeln( '  qit run:e2e woocommerce --test-package=./failing-tests' );
+		$output->writeln( '  # Observe failure' );
+		$output->writeln( '' );
+		$output->writeln( '  # Recreate exact environment for debugging' );
+		$output->writeln( '  cd failing-plugin/tests/e2e  # Has qit-test.json' );
+		$output->writeln( '  qit env:up --plugin=../../  # Auto-detects test package' );
+		$output->writeln( '  source $(qit env:source)' );
+		$output->writeln( '  npx playwright test --debug --headed' );
+		$output->writeln( '' );
+		$output->writeln( 'What Happens:' );
+		$output->writeln( '  1. env:up creates same environment as CI' );
+		$output->writeln( '  2. Runs same globalSetup and setup' );
+		$output->writeln( '  3. Developer can debug interactively' );
+		$output->writeln( '  4. Environment matches CI state exactly' );
+		$output->writeln( '' );
+		$output->writeln( 'Use Case: Reproducing and fixing CI failures locally' );
+		$output->writeln( '' );
+		
+		// Scenario 6
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'SCENARIO 6: ENVIRONMENT WITHOUT TEST PACKAGES' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Command Flow:' );
+		$output->writeln( '  qit env:up --plugin=woocommerce:latest --theme=storefront' );
+		$output->writeln( '  source $(qit env:source)' );
+		$output->writeln( '  echo "Site URL: $QIT_SITE_URL"' );
+		$output->writeln( '  # Manual testing, no test packages' );
+		$output->writeln( '' );
+		$output->writeln( 'What Happens:' );
+		$output->writeln( '  1. Simple environment with specified extensions' );
+		$output->writeln( '  2. NO test phases run' );
+		$output->writeln( '  3. Clean WordPress/WooCommerce installation' );
+		$output->writeln( '' );
+		$output->writeln( 'Use Case: Manual testing without test automation' );
+		$output->writeln( '' );
+		
+		// Key Architectural Decisions
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'KEY ARCHITECTURAL DECISIONS' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Phase Execution Rules:' );
+		$output->writeln( '┌─────────────────┬────────────────────┬──────────────────────┐' );
+		$output->writeln( '│ Command         │ GlobalSetup        │ Setup                │' );
+		$output->writeln( '├─────────────────┼────────────────────┼──────────────────────┤' );
+		$output->writeln( '│ env:up manual   │ All packages       │ Main package only    │' );
+		$output->writeln( '│ env:up from e2e │ Skip (deferred)    │ Skip (deferred)      │' );
+		$output->writeln( '│ run:e2e         │ All packages once  │ Each package         │' );
+		$output->writeln( '└─────────────────┴────────────────────┴──────────────────────┘' );
+		$output->writeln( '' );
+		$output->writeln( 'Main Package Detection Priority:' );
+		$output->writeln( '  1. Current directory with qit-test.json (auto-detected, no --test-package needed)' );
+		$output->writeln( '  2. First local package (./path/to/package)' );
+		$output->writeln( '  3. First remote package (namespace/package:version)' );
+		$output->writeln( '' );
+		$output->writeln( 'Note: If current directory has qit-test.json, it\'s automatically used as a test package.' );
+		$output->writeln( 'No need to specify --test-package=./ in this case.' );
+		$output->writeln( '' );
+		$output->writeln( 'State Management:' );
+		$output->writeln( '  • env:up saves state after setup (for env:reset)' );
+		$output->writeln( '  • run:e2e manages state per package (DB restore between)' );
+		$output->writeln( '  • Filesystem persists across all operations' );
+		$output->writeln( '' );
+		$output->writeln( 'Flag Usage:' );
+		$output->writeln( '  • --skip-test-phases: When run:e2e calls env:up' );
+		$output->writeln( '  • Future: --test-package-priority to override main detection' );
+		$output->writeln( '' );
+		
+		// Common Patterns
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'COMMON PATTERNS AND BEST PRACTICES' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '1. Single Package Development:' );
+		$output->writeln( '   cd my-plugin/tests/e2e  # Directory with qit-test.json' );
+		$output->writeln( '   qit env:up --plugin=../../  # Auto-detects test package' );
+		$output->writeln( '   source $(qit env:source) && npx playwright test' );
+		$output->writeln( '   qit env:reset  # Return to clean state for next run' );
+		$output->writeln( '' );
+		$output->writeln( '2. Multi-Package Testing:' );
+		$output->writeln( '   Use run:e2e for proper isolation and orchestration' );
+		$output->writeln( '   qit run:e2e woocommerce --test-package=./pkg1 --test-package=./pkg2' );
+		$output->writeln( '' );
+		$output->writeln( '3. Debugging CI Failures:' );
+		$output->writeln( '   # Recreate exact CI environment locally' );
+		$output->writeln( '   cd my-plugin/tests/e2e  # Has qit-test.json' );
+		$output->writeln( '   qit env:up --plugin=../../  # Auto-detects test package' );
+		$output->writeln( '   source $(qit env:source) && npx playwright test --debug' );
+		$output->writeln( '' );
+		$output->writeln( '4. Performance Testing:' );
+		$output->writeln( '   cd my-plugin/tests/performance  # Has qit-test.json' );
+		$output->writeln( '   qit env:up --plugin=../../  # Auto-detects test package' );
+		$output->writeln( '   source $(qit env:source)' );
+		$output->writeln( '   for i in {1..10}; do npx playwright test; done' );
+		$output->writeln( '' );
+		$output->writeln( '5. Compatibility Testing:' );
+		$output->writeln( '   # From project root (no qit-test.json):' );
+		$output->writeln( '   qit env:up --test-package=./tests/e2e \\' );
+		$output->writeln( '     --plugin=./ \\' );
+		$output->writeln( '     --plugin=woocommerce-subscriptions:latest' );
+		$output->writeln( '' );
+		
+		// Troubleshooting
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'TROUBLESHOOTING GUIDE' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Q: Why doesn\'t setup run for all my test packages?' );
+		$output->writeln( 'A: env:up runs setup only for the main package. Use run:e2e for' );
+		$output->writeln( '   multiple package execution with proper isolation.' );
+		$output->writeln( '' );
+		$output->writeln( 'Q: How do I control which package is "main"?' );
+		$output->writeln( 'A: Place qit-e2e.json in your working directory, or ensure your' );
+		$output->writeln( '   target package is listed first in the command.' );
+		$output->writeln( '' );
+		$output->writeln( 'Q: Why does run:e2e take longer than env:up + manual tests?' );
+		$output->writeln( 'A: run:e2e ensures proper isolation by restoring database state' );
+		$output->writeln( '   between each package. This guarantees test independence.' );
+		$output->writeln( '' );
+		$output->writeln( 'Q: Can I skip globalSetup when debugging?' );
+		$output->writeln( 'A: Not recommended - globalSetup creates the baseline that tests' );
+		$output->writeln( '   expect. Skipping it may cause unexpected failures.' );
+		$output->writeln( '' );
+		$output->writeln( 'Q: How do I test packages that require different PHP versions?' );
+		$output->writeln( 'A: Currently, use separate env:up calls with different --php flags.' );
+		$output->writeln( '   Multi-PHP testing in single run is not yet supported.' );
+		$output->writeln( '' );
+		
+		// Cross-references
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'NEXT STEPS' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '• To understand test package structure:' );
+		$output->writeln( '  Run <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '' );
+		$output->writeln( '• To debug a failed test run:' );
+		$output->writeln( '  Run <info>qit ai-context failed-e2e</info>' );
+		$output->writeln( '' );
+		$output->writeln( '• To understand QIT architecture:' );
+		$output->writeln( '  Run <info>qit ai-context qit-basics</info>' );
+		$output->writeln( '' );
+		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
+		$output->writeln( '' );
+		
+		return Command::SUCCESS;
 	}
 }
