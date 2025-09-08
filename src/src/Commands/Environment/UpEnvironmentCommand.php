@@ -354,7 +354,7 @@ class UpEnvironmentCommand extends QITCommand {
 								'source'         => 'registry',
 								'container_path' => $container_path,
 								'package_id'     => $manifest->get_package_id(),  // Get package ID from manifest
-								'manifest'       => $manifest->get_manifest_data(),  // Store manifest for run:e2e
+								'manifest'       => $manifest->jsonSerialize(),  // Store manifest for run:e2e
 							];
 						}
 					}
@@ -427,6 +427,17 @@ class UpEnvironmentCommand extends QITCommand {
 		// - globalSetup for ALL packages in test_packages_for_setup
 		// - setup for the FIRST (main) package only
 		// This happens when --skip-test-phases is NOT set
+
+		/*
+		 * ─ 8.6. Create database backup for env:reset (only for direct env:up calls) ─
+		 */
+		// Only create backup if:
+		// 1. Test packages were set up
+		// 2. Setup phases were NOT skipped (i.e., not called from run:e2e)
+		// This ensures backup is only created for manual testing environments
+		if ( ! empty( $env_info->test_packages_for_setup ) && ! $env_info->skip_test_phases ) {
+			$this->createDatabaseBackup( $env_info, $output );
+		}
 
 		/* ─ 9. Save environment info and generate source files ─ */
 		$this->save_environment_info( $env_info );
@@ -1057,7 +1068,7 @@ HELP;
 	 * 2. First local package (starts with ./ or /)
 	 * 3. First remote package
 	 *
-	 * @param array           $packages List of package references.
+	 * @param array<string>   $packages List of package references.
 	 * @param OutputInterface $output   The output interface.
 	 * @return string|null The main package reference, or null if no packages.
 	 */
@@ -1103,118 +1114,6 @@ HELP;
 
 	/**
 	 * Run test setup phases from qit-test.json if present.
-	 *
-	 * @deprecated This method is no longer used. Setup phases are handled by E2EEnvironment::up()
-	 *
-	 * @param EnvInfo         $env_info The environment info.
-	 * @param OutputInterface $output   The output interface.
-	 * @param string          $test_dir The directory containing the test package.
-	 */
-	private function runTestSetupPhases( EnvInfo $env_info, OutputInterface $output, string $test_dir = './' ): void {
-		try {
-			// Normalize directory path and make it absolute
-			$test_dir = rtrim( $test_dir, '/' );
-			if ( substr( $test_dir, 0, 1 ) !== '/' ) {
-				$test_dir = getcwd() . '/' . $test_dir;
-			}
-			$test_dir = realpath( $test_dir );
-
-			$manifest_path = $test_dir . '/qit-test.json';
-
-			if ( ! file_exists( $manifest_path ) ) {
-				$output->writeln( "<error>No qit-test.json found in {$test_dir}</error>" );
-				return;
-			}
-
-			$output->writeln( '<info>Found qit-test.json, running setup phases...</info>' );
-
-			// Parse the manifest
-			$manifest_content = file_get_contents( $manifest_path );
-			$manifest         = json_decode( $manifest_content, true );
-
-			if ( json_last_error() !== JSON_ERROR_NONE ) {
-				$output->writeln( '<error>Failed to parse qit-test.json: ' . json_last_error_msg() . '</error>' );
-				return;
-			}
-
-			// Get Docker instance for executing commands
-			$docker = \QIT_CLI\App::make( \QIT_CLI\Environment\Docker::class );
-
-			// Copy the test directory to the container under /qit for consistency with run:e2e
-			// This ensures WP-CLI can find /qit/wp-cli.yml through parent directory traversal
-			$container_test_dir = '/qit/setup/' . uniqid( 'env-setup-' );
-
-			// Ensure the /qit/setup directory exists
-			try {
-				$docker->run_inside_docker( $env_info, [ 'mkdir', '-p', '/qit/setup' ] );
-			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-				// Directory might already exist, that's fine
-			}
-
-			// Copy the entire test directory to the container
-			$output->write( 'Copying test package to container...' );
-			try {
-				$docker->copy_into_docker( $env_info, $test_dir, $container_test_dir );
-				$output->writeln( ' Done!' );
-
-				// Debug: List what was copied
-				if ( $output->isVerbose() ) {
-					$output->writeln( "Debug: Test package copied to {$container_test_dir}" );
-					$ls_result = $docker->run_inside_docker( $env_info, [ 'sh', '-c', "ls -la {$container_test_dir}/" ] );
-					$output->writeln( $ls_result );
-				}
-			} catch ( \Exception $e ) {
-				$output->writeln( ' Failed!' );
-				$output->writeln( '<error>Failed to copy test package: ' . $e->getMessage() . '</error>' );
-				return;
-			}
-
-			// Run globalSetup if exists
-			if ( isset( $manifest['test']['phases']['globalSetup'] ) && is_array( $manifest['test']['phases']['globalSetup'] ) ) {
-				$output->writeln( 'Running globalSetup...' );
-				foreach ( $manifest['test']['phases']['globalSetup'] as $cmd ) {
-					try {
-						// Run in test package directory - WP-CLI will find /qit/wp-cli.yml through parent directory traversal
-						$full_cmd  = "cd {$container_test_dir} && {$cmd}";
-						$cmd_parts = [ 'sh', '-c', $full_cmd ];
-						$result    = $docker->run_inside_docker( $env_info, $cmd_parts );
-						if ( $output->isVerbose() && ! empty( $result ) ) {
-							$output->writeln( $result );
-						}
-					} catch ( \Exception $e ) {
-						$output->writeln( '<warning>globalSetup command failed: ' . $e->getMessage() . '</warning>' );
-					}
-				}
-			}
-
-			// Run setup if exists
-			if ( isset( $manifest['test']['phases']['setup'] ) && is_array( $manifest['test']['phases']['setup'] ) ) {
-				$output->writeln( 'Running setup...' );
-				foreach ( $manifest['test']['phases']['setup'] as $cmd ) {
-					try {
-						// Run in test package directory - WP-CLI will find /qit/wp-cli.yml through parent directory traversal
-						$full_cmd  = "cd {$container_test_dir} && {$cmd}";
-						$cmd_parts = [ 'sh', '-c', $full_cmd ];
-						$result    = $docker->run_inside_docker( $env_info, $cmd_parts );
-						if ( $output->isVerbose() && ! empty( $result ) ) {
-							$output->writeln( $result );
-						}
-					} catch ( \Exception $e ) {
-						$output->writeln( '<warning>Setup command failed: ' . $e->getMessage() . '</warning>' );
-					}
-				}
-			}
-
-			// Backup the database
-			$this->backupDatabaseState( $env_info, $output, $test_dir );
-
-			$output->writeln( '<info>✓ Setup complete! Use "qit env:reset" to restore this state.</info>' );
-
-		} catch ( \Exception $e ) {
-			$output->writeln( '<error>Setup failed: ' . $e->getMessage() . '</error>' );
-			$output->writeln( '<comment>You can skip setup with --skip-setup</comment>' );
-		}
-	}
 
 	/**
 	 * Process test packages to extract requirements.
@@ -1358,16 +1257,15 @@ HELP;
 		}
 	}
 
-
 	/**
-	 * Backup the database state after setup.
+	 * Create a database backup for env:reset functionality.
+	 * This backup captures the state after all setup phases have completed.
 	 *
-	 * @param EnvInfo         $env_info The environment info.
+	 * @param E2EEnvInfo      $env_info The environment info.
 	 * @param OutputInterface $output   The output interface.
-	 * @param string          $test_dir The directory containing the test package.
 	 */
-	private function backupDatabaseState( EnvInfo $env_info, OutputInterface $output, string $test_dir = './' ): void {
-		$output->write( 'Backing up database state...' );
+	private function createDatabaseBackup( E2EEnvInfo $env_info, OutputInterface $output ): void {
+		$output->write( 'Creating database backup for env:reset...' );
 
 		// Create backup directory
 		$backup_dir = sys_get_temp_dir() . '/qit-env-backups/' . $env_info->env_id;
@@ -1383,18 +1281,23 @@ HELP;
 			$sql_dump = $docker->run_inside_docker( $env_info, [ 'sh', '-c', 'cd /var/www/html && wp db export --defaults --quiet - 2>/dev/null' ] );
 			file_put_contents( $backup_dir . '/setup-complete.sql', $sql_dump );
 
-			// Save metadata
-			file_put_contents( $backup_dir . '/metadata.json', json_encode( [
-				'created'  => time(),
-				'manifest' => $test_dir . '/qit-test.json',
-				'test_dir' => $test_dir,
-				'env_id'   => $env_info->env_id,
-			] ) );
+			// Save metadata about what was backed up
+			$metadata = [
+				'created'       => time(),
+				'env_id'        => $env_info->env_id,
+				'test_packages' => array_keys( $env_info->test_packages_for_setup ),
+				'php'           => $env_info->php,
+				'wp'            => $env_info->wp,
+				'woo'           => $env_info->woo,
+			];
+			file_put_contents( $backup_dir . '/metadata.json', json_encode( $metadata, JSON_PRETTY_PRINT ) );
 
-			$output->writeln( ' Done!' );
+			$output->writeln( ' <info>Done!</info>' );
 		} catch ( \Exception $e ) {
-			$output->writeln( ' Failed!' );
+			$output->writeln( ' <warning>Failed!</warning>' );
 			$output->writeln( '<warning>Database backup failed: ' . $e->getMessage() . '</warning>' );
+			// Don't fail the whole command, just warn that env:reset won't work
+			$output->writeln( '<comment>Note: env:reset will not be available for this environment.</comment>' );
 		}
 	}
 }

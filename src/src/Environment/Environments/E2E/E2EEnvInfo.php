@@ -74,7 +74,7 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var array<string,array<string,array<mixed>>> */
 	public array $test_packages = [];
 
-	/** @var array<string,array{path:string,source:string,container_path:string}> */
+	/** @var array<string,array{path:string,source:string,container_path:string,package_id?:string,manifest?:array<string,mixed>}> */
 	public array $test_packages_for_setup = [];
 
 	/** @var bool */

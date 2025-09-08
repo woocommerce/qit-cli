@@ -38,6 +38,8 @@
         "is_development_build": false,
         "notify": "",
         "test_packages": [],
+        "test_packages_for_setup": [],
+        "skip_test_phases": false,
         "artifacts_dir": null
     }
 }

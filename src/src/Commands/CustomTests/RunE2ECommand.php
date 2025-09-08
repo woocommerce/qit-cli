@@ -303,7 +303,8 @@ class RunE2ECommand extends QITCommand {
 			foreach ( $env_info->test_packages_for_setup as $original_ref => $pkg_info ) {
 				// Use original_ref as the key since that's what was passed to env:up
 				// The package_id might be different (e.g., for local packages)
-				if ( isset( $pkg_info['manifest'] ) ) {
+				// Check if this package has manifest data (added by env:up)
+				if ( ! empty( $pkg_info['manifest'] ) ) {
 					// Determine version based on source
 					$version = 'local'; // Default for local packages
 					if ( $pkg_info['source'] === 'registry' && str_contains( $original_ref, ':' ) ) {
@@ -314,9 +315,9 @@ class RunE2ECommand extends QITCommand {
 					// Reconstruct the test_packages array format expected by the rest of the code
 					$test_packages[ $original_ref ] = [
 						'manifest' => new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $pkg_info['manifest'] ),
-						'path'     => $pkg_info['path'] ?? null,
+						'path'     => $pkg_info['path'],
 						'metadata' => [
-							'downloaded_path' => $pkg_info['path'] ?? null,
+							'downloaded_path' => $pkg_info['path'],
 							'version'         => $version,
 						],
 					];
@@ -331,10 +332,12 @@ class RunE2ECommand extends QITCommand {
 
 		// Build package local map for ResultCollector
 		$package_local_map = [];
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			if ( isset( $meta['path'] ) ) {
-				$is_local                     = file_exists( $pkg_id ) && is_dir( $pkg_id );
-				$package_local_map[ $pkg_id ] = $is_local;
+		if ( ! empty( $test_packages ) ) {
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				if ( ! empty( $meta['path'] ) ) {
+					$is_local                     = file_exists( $pkg_id ) && is_dir( $pkg_id );
+					$package_local_map[ $pkg_id ] = $is_local;
+				}
 			}
 		}
 		// Set the map in ResultCollector for later use
@@ -366,11 +369,13 @@ class RunE2ECommand extends QITCommand {
 
 		// Build test packages metadata from reconstructed test_packages
 		$test_packages_metadata = [];
-		foreach ( $test_packages as $pkg_id => $meta ) {
-			$test_packages_metadata[ $pkg_id ] = [
-				'path'           => $meta['path'],
-				'container_path' => $env_info->test_packages_for_setup[ $pkg_id ]['container_path'] ?? '',
-			];
+		if ( ! empty( $test_packages ) ) {
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				$test_packages_metadata[ $pkg_id ] = [
+					'path'           => $meta['path'],
+					'container_path' => $env_info->test_packages_for_setup[ $pkg_id ]['container_path'] ?? '',
+				];
+			}
 		}
 		$env_info->test_packages_metadata = $test_packages_metadata;
 
@@ -762,55 +767,6 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 	}
-
-	/**
-	 * Generate a unique container name for a local package.
-	 *
-	 * @param string            $package_id The local package path.
-	 * @param array<string,int> &$counter Counter array to ensure uniqueness.
-	 *
-	 * @return string The container-safe directory name with counter if needed.
-	 * @throws \InvalidArgumentException If manifest is missing or invalid.
-	 */
-	private function get_unique_container_name_for_local( string $package_id, array &$counter ): string {
-		// Read the manifest to get the package name
-		$manifest_path = rtrim( $package_id, '/\\' ) . '/qit-test.json';
-
-		if ( ! file_exists( $manifest_path ) ) {
-			throw new \InvalidArgumentException(
-				"Test package directory must contain qit-test.json: {$package_id}"
-			);
-		}
-
-		$manifest_content = file_get_contents( $manifest_path );
-		$manifest_data    = json_decode( $manifest_content, true );
-
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			throw new \InvalidArgumentException(
-				"Invalid JSON in qit-test.json: {$package_id} - " . json_last_error_msg()
-			);
-		}
-
-		// Create manifest object to use centralized naming
-		$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
-
-		// Get the base container name
-		$base_name = $manifest->get_container_directory_name();
-
-		// Apply counter for uniqueness
-		$key = $base_name;
-		if ( ! isset( $counter[ $key ] ) ) {
-			$counter[ $key ] = 0;
-		}
-		++$counter[ $key ];
-
-		if ( $counter[ $key ] > 1 ) {
-			$base_name .= '-' . $counter[ $key ];
-		}
-
-		return $base_name;
-	}
-
 
 	/**
 	 * Validate version consistency for subpackages from the same parent.

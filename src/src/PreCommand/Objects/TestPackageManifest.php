@@ -124,10 +124,14 @@ final class TestPackageManifest {
 		}
 
 		// Tunnel requirement
+		// @phan-suppress-next-line PhanTypeInvalidDimOffset -- 'tunnel' is an optional field in requires
 		if ( isset( $data['requires']['tunnel'] ) ) {
+			// @phan-suppress-next-line PhanTypeInvalidDimOffset
 			if ( is_string( $data['requires']['tunnel'] ) ) {
+				// @phan-suppress-next-line PhanTypeInvalidDimOffset
 				$this->requires_tunnel = filter_var( $data['requires']['tunnel'], FILTER_VALIDATE_BOOLEAN );
 			} else {
+				// @phan-suppress-next-line PhanTypeInvalidDimOffset
 				$this->requires_tunnel = (bool) $data['requires']['tunnel'];
 			}
 		} else {
@@ -170,10 +174,14 @@ final class TestPackageManifest {
 		}
 
 		// Tunnel requirement
+		// @phan-suppress-next-line PhanTypeInvalidDimOffset -- 'tunnel' is an optional field in requires
 		if ( isset( $data['requires']['tunnel'] ) ) {
+			// @phan-suppress-next-line PhanTypeInvalidDimOffset
 			if ( is_string( $data['requires']['tunnel'] ) ) {
+				// @phan-suppress-next-line PhanTypeInvalidDimOffset
 				$this->requires_tunnel = filter_var( $data['requires']['tunnel'], FILTER_VALIDATE_BOOLEAN );
 			} else {
+				// @phan-suppress-next-line PhanTypeInvalidDimOffset
 				$this->requires_tunnel = (bool) $data['requires']['tunnel'];
 			}
 		} else {

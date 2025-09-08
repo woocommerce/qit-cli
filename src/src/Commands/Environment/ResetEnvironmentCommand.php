@@ -9,7 +9,6 @@ use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -88,11 +87,16 @@ HELP
 				$choices = [];
 
 				foreach ( $environments as $env ) {
-					$choices[ $env->env_id ] = sprintf( '%s (PHP %s, WP %s)',
-						$env->env_id,
-						$env->php ?? 'unknown',
-						$env->wp ?? 'unknown'
-					);
+					// Cast to E2EEnvInfo to access php/wp properties
+					if ( $env instanceof \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo ) {
+						$choices[ $env->env_id ] = sprintf( '%s (PHP %s, WP %s)',
+							$env->env_id,
+							$env->php,
+							$env->wp
+						);
+					} else {
+						$choices[ $env->env_id ] = $env->env_id;
+					}
 				}
 
 				$question = new ChoiceQuestion(
@@ -107,8 +111,9 @@ HELP
 			}
 		} else {
 			// Load specified environment
-			$env_info = $this->environment_monitor->get_env_info_by_id( $env_id );
-			if ( ! $env_info ) {
+			try {
+				$env_info = $this->environment_monitor->get_env_info_by_id( $env_id );
+			} catch ( \Exception $e ) {
 				$output->writeln( "<error>Environment '{$env_id}' not found.</error>" );
 				return Command::FAILURE;
 			}
