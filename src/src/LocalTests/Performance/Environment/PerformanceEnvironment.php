@@ -3,6 +3,7 @@
 namespace QIT_CLI\LocalTests\Performance\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\ThemeActivation;
@@ -355,11 +356,15 @@ class PerformanceEnvironment extends Environment {
 	private function generate_base_data(): void {
 		$this->output->writeln( '<info>Generating test products and orders...</info>' );
 
+		// Get database dump download URL.
+		$cache = App::make( Cache::class );
+		$db_dump_url = $cache->get_manager_sync_data( 'db_dump_file' );
+
 		// Download and import in one command to avoid storing large files.
 		$import_command = implode( ' && ', [
 			'cd /tmp',
 			'echo "Downloading performance database dump..."',
-			'curl -L -o woocommerce_dump.sql.zip https://qit.woo.com/wp-content/uploads/qit-env-db-dumps/woocommerce_dump.sql.zip',
+			"curl -L -o woocommerce_dump.sql.zip {$db_dump_url}",
 			'echo "Importing database..."',
 			"unzip -p woocommerce_dump.sql.zip | mysql -h qit_env_db_{$this->env_info->env_id} -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE --binary-mode=1",
 			'rm -f woocommerce_dump.sql.zip',
