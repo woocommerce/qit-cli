@@ -18,18 +18,13 @@ class PerformanceTestManager {
 	/** @var LocalTestRunNotifier */
 	private $notifier;
 
-	/** @var PerformanceComparisonService */
-	private $comparison_service;
-
 	public function __construct( K6Runner $k6_runner, LocalTestRunNotifier $notifier ) {
-		$this->k6_runner          = $k6_runner;
-		$this->notifier           = $notifier;
-		$this->comparison_service = new PerformanceComparisonService( new MetricsExtractor() );
+		$this->k6_runner = $k6_runner;
+		$this->notifier  = $notifier;
 	}
 
 	public function set_output( OutputInterface $output ): void {
-		$this->output             = $output;
-		$this->comparison_service = new PerformanceComparisonService( new MetricsExtractor() );
+		$this->output = $output;
 	}
 
 	public function run_tests( PerformanceEnvInfo $env_info ): int {
@@ -173,9 +168,6 @@ class PerformanceTestManager {
 		// If we have baseline results, add them to the combined result.
 		if ( $baseline_result ) {
 			$combined_result->set_baseline_result( $baseline_result );
-
-			// Add comparison metrics.
-			$this->comparison_service->calculate_comparisons( $combined_result, $baseline_result );
 		}
 
 		return $combined_result;
