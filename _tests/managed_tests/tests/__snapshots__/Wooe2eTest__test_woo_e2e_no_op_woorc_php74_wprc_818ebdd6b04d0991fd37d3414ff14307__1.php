@@ -13,6 +13,7 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
+            "performance_results": "",
             "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
@@ -32,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "385 total, 321 passed, 0 failed, 64 skipped.",
+            "test_summary": "384 total, 321 passed, 0 failed, 63 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -55,8 +56,8 @@
                 "numTotalTestSuites": 100,
                 "numFailedTests": 0,
                 "numPassedTests": 321,
-                "numPendingTests": 64,
-                "numTotalTests": 385,
+                "numPendingTests": 63,
+                "numTotalTests": 384,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -1069,10 +1070,6 @@
                                 },
                                 {
                                     "title": "Clicking on \\"View store\\" should go to the store home page",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Clicking on \\"Share feedback\\" should open the survey modal",
                                     "status": "pending"
                                 }
                             ]
@@ -2687,26 +2684,26 @@
                         }
                     }
                 ],
-                "summary": "385 total, 321 passed, 0 failed, 64 skipped."
+                "summary": "384 total, 321 passed, 0 failed, 63 skipped."
             }
         },
         {
             "ctrf_json": {
                 "reportFormat": "CTRF",
                 "specVersion": "0.0.0",
-                "reportId": "6bbfe359-9043-4e9f-bac8-e91dd85df57b",
-                "timestamp": "2025-08-26T05:38:32.756Z",
+                "reportId": "normalized-report-id",
+                "timestamp": "2025-01-01T00:00:00.000Z",
                 "generatedBy": "playwright-ctrf-json-reporter",
                 "results": {
                     "tool": {
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 385,
+                        "tests": 384,
                         "passed": 321,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 64,
+                        "skipped": 63,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -7575,39 +7572,6 @@
                         },
                         {
                             "name": "Clicking on \\"View store\\" should go to the store home page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/transitional.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking on \\"Share feedback\\" should open the survey modal",
                             "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,

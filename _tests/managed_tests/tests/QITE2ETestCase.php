@@ -355,9 +355,17 @@ class QITE2ETestCase extends TestCase {
 						unset( $test );
 					}
 
-					// 5) Now traverse the CTRF JSON to normalize ephemeral fields
+					// 5) Normalize top-level CTRF fields
+					if ( isset( $value['reportId'] ) ) {
+						$value['reportId'] = 'normalized-report-id';
+					}
+					if ( isset( $value['timestamp'] ) ) {
+						$value['timestamp'] = '2025-01-01T00:00:00.000Z';
+					}
+
+					// 6) Now traverse the CTRF JSON to normalize ephemeral fields
 					if ( isset( $value['results'] ) && is_array( $value['results'] ) ) {
-						// 5a) Summary-level ephemeral data
+						// 6a) Summary-level ephemeral data
 						if ( isset( $value['results']['summary'] ) && is_array( $value['results']['summary'] ) ) {
 							if ( isset( $value['results']['summary']['start'] ) ) {
 								$value['results']['summary']['start'] = 1111111111; // Or any placeholder
@@ -367,7 +375,7 @@ class QITE2ETestCase extends TestCase {
 							}
 						}
 
-						// 5b) Test-level ephemeral data
+						// 6b) Test-level ephemeral data
 						if ( isset( $value['results']['tests'] ) && is_array( $value['results']['tests'] ) ) {
 							foreach ( $value['results']['tests'] as &$test ) {
 								if ( isset( $test['start'] ) ) {

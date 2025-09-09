@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\LocalTests\Performance\MetricsExtractor;
 use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
@@ -36,13 +37,17 @@ class LocalTestRunNotifier {
 	/** @var PlaywrightToPuppeteerConverter */
 	protected $playwright_to_puppeteer_converter;
 
+	/** @var MetricsExtractor */
+	protected $metrics_extractor;
+
 	public function __construct(
 		Zipper $zipper,
 		OutputInterface $output,
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
 		PrepareQMLog $prepare_qm_log,
-		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter
+		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter,
+		?MetricsExtractor $metrics_extractor = null
 	) {
 		$this->zipper                            = $zipper;
 		$this->output                            = $output;
@@ -50,6 +55,7 @@ class LocalTestRunNotifier {
 		$this->prepare_debug_log                 = $prepare_debug_log;
 		$this->prepare_qm_log                    = $prepare_qm_log;
 		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
+		$this->metrics_extractor                 = $metrics_extractor ?: new MetricsExtractor();
 	}
 
 	/**
@@ -182,7 +188,13 @@ class LocalTestRunNotifier {
 			}
 
 			$test_result_json_original = $result_json;
-			$result_json               = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+
+			// Skip Playwright to Puppeteer conversion for performance tests.
+			if ( $test_result instanceof PerformanceTestResult ) {
+				$result_json = json_decode( $result_json, true );
+			} else {
+				$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
+			}
 		} else {
 			$result_json = [];
 		}
@@ -279,6 +291,15 @@ class LocalTestRunNotifier {
 			'ctrf_json'                 => $ctrf_json,
 		];
 
+		// Extract performance metrics for performance tests.
+		if ( $test_result instanceof PerformanceTestResult ) {
+			$performance_results = $this->extract_combined_performance_metrics( $test_result );
+
+			if ( ! empty( $performance_results ) ) {
+				$data['cd_performance_results'] = json_encode( $performance_results );
+			}
+		}
+
 		$r = App::make( RequestBuilder::class )
 				->with_url( get_manager_url() . '/wp-json/cd/v1/local-test-finished' )
 				->with_method( 'POST' )
@@ -304,5 +325,67 @@ class LocalTestRunNotifier {
 		}
 
 		return [ $response['report_url'], $exit_status_code_override ];
+	}
+
+	/**
+	 * Extract and combine performance metrics from both baseline and main test results.
+	 *
+	 * @param PerformanceTestResult $test_result The main test result.
+	 *
+	 * @return array<string, mixed> The combined performance metrics.
+	 */
+	private function extract_combined_performance_metrics( PerformanceTestResult $test_result ): array {
+		$performance_results = [
+			'has_baseline' => false,
+			'extension'    => [],
+			'baseline'     => [],
+		];
+
+		// Extract main test (extension) metrics from the test result itself.
+		$performance_results['extension'] = $this->metrics_extractor->extract_metrics( $test_result->get_metrics() );
+
+		// Add failed checks for extension.
+		$performance_results['extension']['failed_checks'] = $this->extract_failed_checks_from_result( $test_result );
+
+		// Check if we have baseline results.
+		$baseline_result = $test_result->get_baseline_result();
+		if ( $baseline_result !== null ) {
+			$performance_results['has_baseline'] = true;
+			$performance_results['baseline']     = $this->metrics_extractor->extract_metrics( $baseline_result->get_metrics() );
+
+			// Add failed checks for baseline.
+			$performance_results['baseline']['failed_checks'] = $this->extract_failed_checks_from_result( $baseline_result );
+		}
+
+		return $performance_results;
+	}
+
+
+	/**
+	 * Extract failed checks from a performance test result.
+	 *
+	 * @param PerformanceTestResult $test_result The test result to extract failed checks from.
+	 *
+	 * @return array<mixed> Array of failed check details.
+	 */
+	private function extract_failed_checks_from_result( PerformanceTestResult $test_result ): array {
+		$result_file = $test_result->get_results_dir() . '/result.json';
+
+		if ( ! file_exists( $result_file ) ) {
+			return [];
+		}
+
+		$result_content = file_get_contents( $result_file );
+		$result_data    = json_decode( $result_content, true );
+
+		$checks = $result_data['root_group']['checks'] ?? [];
+		if ( ! is_array( $checks ) ) {
+			return [];
+		}
+
+		// Return checks that have failures (k6 format: "fails" > 0).
+		return array_filter( $checks, function ( $check ) {
+			return ( $check['fails'] ?? 0 ) > 0;
+		} );
 	}
 }

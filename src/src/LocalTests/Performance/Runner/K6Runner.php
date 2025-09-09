@@ -12,8 +12,8 @@ use Symfony\Component\Process\Process;
 /**
  * K6 Performance Test Runner.
  *
- * This class handles K6-specific performance test execution and configuration.
- * K6-specific settings like test duration, virtual users, and test scenarios
+ * This class handles k6-specific performance test execution and configuration.
+ * k6-specific settings like test duration, virtual users, and test scenarios
  * are managed internally by this runner, keeping the PerformanceEnvInfo
  * framework-agnostic.
  */
@@ -87,8 +87,9 @@ class K6Runner {
 		$test_file = $this->determine_test_file( $env_info );
 
 		$this->output->writeln( '<info>Running k6 performance test for WooCommerce extension</info>' );
+		$this->output->writeln( '<comment>Live dashboard available at: http://localhost:5665</comment>' );
 
-		// Execute K6 test.
+		// Execute k6 test.
 		$test_args = array_merge( $k6_args, [ $test_file ] );
 		$process   = new Process( $test_args );
 		$process->setTimeout( 3600 ); // 1 hour timeout
@@ -148,7 +149,7 @@ class K6Runner {
 		}
 
 		// No tests found.
-		$error_context = $target_file ? "specific test file '{$target_file}'" : 'any K6 test files';
+		$error_context = $target_file ? "specific test file '{$target_file}'" : 'any k6 test files';
 		throw new \RuntimeException(
 			"No {$error_context} found for extension: {$env_info->sut_slug} with test tag: " . ( $env_info->test_tag ?: 'default' )
 		);
@@ -158,7 +159,7 @@ class K6Runner {
 	 * Find a test file in the given directory.
 	 *
 	 * @param array<string,string> $test_info Test directory information.
-	 * @param string|null          $target_file Specific file to search for, or null for any K6 file.
+	 * @param string|null          $target_file Specific file to search for, or null for any k6 file.
 	 */
 	private function find_test_file_in_directory( array $test_info, ?string $target_file ): ?string {
 		$host_path = $test_info['path_in_host'];
@@ -168,13 +169,13 @@ class K6Runner {
 		}
 
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( $target_file ? "<info>Debug: Searching for specific test file: {$target_file}</info>" : '<info>Debug: Searching for any K6 test file</info>' );
+			$this->output->writeln( $target_file ? "<info>Debug: Searching for specific test file: {$target_file}</info>" : '<info>Debug: Searching for any k6 test file</info>' );
 		}
 
 		$directory = new \RecursiveDirectoryIterator( $host_path, \RecursiveDirectoryIterator::SKIP_DOTS );
 		$iterator  = new \RecursiveIteratorIterator( $directory );
 
-		// Apply regex filter for K6 files only if no specific file is requested.
+		// Apply regex filter for k6 files only if no specific file is requested.
 		if ( ! $target_file ) {
 			$iterator = new \RegexIterator( $iterator, '/\.js$/i' );
 		}
@@ -213,7 +214,7 @@ class K6Runner {
 	 */
 	private function is_matching_test_file( string $relative_path, ?string $target_file ): bool {
 		if ( ! $target_file ) {
-			// Any K6 file is acceptable (regex filter already applied).
+			// Any k6 file is acceptable (regex filter already applied).
 			return true;
 		}
 
@@ -222,11 +223,11 @@ class K6Runner {
 	}
 
 	private function collect_results( PerformanceTestResult $test_result ): void {
-		$source_results = $test_result->get_results_dir() . '/k6-results.json';
+		$source_results = $test_result->get_results_dir() . '/result-extended.json';
 
 		if ( file_exists( $source_results ) && $this->output->isVerbose() ) {
 			$this->output->writeln(
-				"<info>k6 results saved to: {$test_result->get_results_dir()}/k6-results.json</info>"
+				"<info>k6 results saved to: {$test_result->get_results_dir()}/result.json</info>"
 			);
 		}
 	}

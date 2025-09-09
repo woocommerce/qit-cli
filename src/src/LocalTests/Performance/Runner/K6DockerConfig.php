@@ -43,7 +43,9 @@ class K6DockerConfig {
 			"--network={$env_info->docker_network}",
 			'--rm',
 			'--init',
-			'--add-host=host.docker.internal:host-gateway'
+			'--add-host=host.docker.internal:host-gateway',
+			'-p',
+			'5665:5665', // Port for k6 live web dashboard.
 		];
 	}
 
@@ -54,7 +56,7 @@ class K6DockerConfig {
 	 * @return array<string>
 	 */
 	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir, array $test_infos = [] ): array {
-		// Base volumes for K6 operation.
+		// Base volumes for k6 operation.
 		$volumes = [
 			Config::get_qit_dir() . 'cache/k6' => '/k6-cache',
 			$results_dir                       => '/results',
@@ -93,6 +95,12 @@ class K6DockerConfig {
 			sprintf( 'QIT_INTERNAL_NGINX=%s', $internal_nginx_name ),
 		];
 
+		// Enable k6 web dashboard and export HTML report.
+		$args[] = '-e';
+		$args[] = 'K6_WEB_DASHBOARD=true';
+		$args[] = '-e';
+		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/dashboard-report.html';
+
 		// Pass additional env vars to the test environment.
 		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
 			$args[] = '-e';
@@ -110,7 +118,9 @@ class K6DockerConfig {
 			'grafana/k6:master-with-browser',
 			'run',
 			'--out',
-			'json=/results/k6-results.json',
+			'json=/results/result-extended.json',
+			'--summary-export',
+			'/results/result.json',
 		];
 	}
 }
