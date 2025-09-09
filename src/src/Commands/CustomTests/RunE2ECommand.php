@@ -25,6 +25,7 @@ use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use QIT_CLI\QITInput;
+use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -33,6 +34,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
+use function QIT_CLI\get_manager_url;
 use function QIT_CLI\is_windows;
 
 class RunE2ECommand extends QITCommand {
@@ -387,6 +389,7 @@ class RunE2ECommand extends QITCommand {
 		$this->e2e_environment->init( $env_info );
 
 		// Notify test started
+		$test_run_id = null;
 		if ( isset( $env_info->sut['slug'] ) ) {
 			$woo_extension_id    = $this->woo_extensions_list->get_woo_extension_id_by_slug( $env_info->sut['slug'] );
 			$woocommerce_version = $env_info->woo;
@@ -400,6 +403,9 @@ class RunE2ECommand extends QITCommand {
 				$is_development,
 				$notify
 			);
+			
+			// Get the test run ID from the notifier
+			$test_run_id = App::getVar( 'test_run_id' );
 		}
 
 		// Get passthrough args to pass through to test framework
@@ -534,7 +540,46 @@ class RunE2ECommand extends QITCommand {
 			'remote_url'    => $should_show_url ? ( $report_url ?? '' ) : '',
 		];
 
-		$orchestrator->summary( $summary_data );
+		// Set JSON mode flag for shutdown handler
+		if ( $input->getOption( 'json' ) ) {
+			App::setVar( 'QIT_JSON_MODE', true );
+		}
+		
+		// Output JSON if requested, otherwise show summary
+		if ( $input->getOption( 'json' ) ) {
+			// Fetch the test report from Manager API, just like 'qit get' does
+			if ( $test_run_id ) {
+				try {
+					$json = App::make( RequestBuilder::class )
+						->with_url( get_manager_url() . '/wp-json/cd/v1/get-single' )
+						->with_method( 'POST' )
+						->with_post_body( [
+							'test_run_id' => $test_run_id,
+						] )
+						->with_retry( 3 )
+						->request();
+					
+					// Output the Manager API response directly
+					$output->write( $json );
+				} catch ( \Exception $e ) {
+					// If we can't fetch from Manager, output minimal info
+					$output->write( json_encode( [
+						'test_run_id' => $test_run_id,
+						'status' => $exit_status === Command::SUCCESS ? 'success' : 'failed',
+						'error' => 'Could not fetch full test report from Manager'
+					] ) );
+				}
+			} else {
+				// No test_run_id available (no SUT), output minimal info
+				$output->write( json_encode( [
+					'status' => $exit_status === Command::SUCCESS ? 'success' : 'failed',
+					'message' => 'No test run ID available (test run without SUT)'
+				] ) );
+			}
+		} else {
+			// Normal output - show summary
+			$orchestrator->summary( $summary_data );
+		}
 
 		// Always try to save debug.log to artifacts directory for inspection
 		try {
