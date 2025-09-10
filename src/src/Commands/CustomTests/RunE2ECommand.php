@@ -911,9 +911,9 @@ class RunE2ECommand extends QITCommand {
 		// (normal flow already shows this information)
 		$show_summary = App::getVar( 'qit_test_interrupted', false );
 
-		// Show report information before shutting down
+		// Show report information before shutting down (skip in JSON mode)
 		$artifacts_dir = App::getVar( 'qit_test_artifacts_dir' );
-		if ( $show_summary && ! empty( $artifacts_dir ) && is_dir( $artifacts_dir ) ) {
+		if ( $show_summary && ! empty( $artifacts_dir ) && is_dir( $artifacts_dir ) && ! App::getVar( 'QIT_JSON_MODE' ) ) {
 			// Wait a moment for any final output from Playwright
 			usleep( 500000 ); // 0.5 seconds
 
@@ -993,8 +993,10 @@ class RunE2ECommand extends QITCommand {
 			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 		}
 
-		// Show environment shutdown message
-		echo "\nShutting down environment...\n";
+		// Show environment shutdown message (only in non-JSON mode)
+		if ( ! App::getVar( 'QIT_JSON_MODE' ) ) {
+			echo "\nShutting down environment...\n";
+		}
 
 		$env_to_shutdown = App::getVar( 'env_to_shutdown' );
 		if ( ! empty( $env_to_shutdown ) ) {
@@ -1753,4 +1755,5 @@ class RunE2ECommand extends QITCommand {
 		$name = str_replace( [ '-', '_' ], ' ', $slug );
 		return ucwords( $name );
 	}
+
 }
