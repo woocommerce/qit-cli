@@ -82,32 +82,44 @@ HELP
 				$env_info = reset( $environments );
 				$env_id   = $env_info->env_id;
 			} else {
-				// Multiple environments, ask user to choose
-				$helper  = $this->getHelper( 'question' );
-				$choices = [];
+				// Multiple environments found
+				// In non-interactive contexts (like tests), use the most recent environment
+				if ( ! $input->isInteractive() ) {
+					// Sort by env_id (which contains timestamp) to get most recent
+					uksort( $environments, function( $a, $b ) {
+						return strcmp( $b, $a ); // Reverse sort for most recent first
+					} );
+					$env_info = reset( $environments );
+					$env_id   = $env_info->env_id;
+					$output->writeln( "<info>Multiple environments found. Using most recent: {$env_id}</info>" );
+				} else {
+					// Interactive mode - ask user to choose
+					$helper  = $this->getHelper( 'question' );
+					$choices = [];
 
-				foreach ( $environments as $env ) {
-					// Cast to E2EEnvInfo to access php/wp properties
-					if ( $env instanceof \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo ) {
-						$choices[ $env->env_id ] = sprintf( '%s (PHP %s, WP %s)',
-							$env->env_id,
-							$env->php,
-							$env->wp
-						);
-					} else {
-						$choices[ $env->env_id ] = $env->env_id;
+					foreach ( $environments as $env ) {
+						// Cast to E2EEnvInfo to access php/wp properties
+						if ( $env instanceof \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo ) {
+							$choices[ $env->env_id ] = sprintf( '%s (PHP %s, WP %s)',
+								$env->env_id,
+								$env->php,
+								$env->wp
+							);
+						} else {
+							$choices[ $env->env_id ] = $env->env_id;
+						}
 					}
+
+					$question = new ChoiceQuestion(
+						'Multiple environments found. Please select one:',
+						array_values( $choices ),
+						0
+					);
+
+					$selected = $helper->ask( $input, $output, $question );
+					$env_id   = array_search( $selected, $choices, true );
+					$env_info = $environments[ $env_id ];
 				}
-
-				$question = new ChoiceQuestion(
-					'Multiple environments found. Please select one:',
-					array_values( $choices ),
-					0
-				);
-
-				$selected = $helper->ask( $input, $output, $question );
-				$env_id   = array_search( $selected, $choices, true );
-				$env_info = $environments[ $env_id ];
 			}
 		} else {
 			// Load specified environment
