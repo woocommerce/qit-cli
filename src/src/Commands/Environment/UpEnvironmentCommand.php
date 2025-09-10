@@ -881,6 +881,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'php_container' => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
 			'db_container'  => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
 			'nginx_port'    => $env_info->nginx_port ?? '',
+			'envs'          => $env_info->envs ?? [], // Include custom environment variables
 		];
 
 		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
