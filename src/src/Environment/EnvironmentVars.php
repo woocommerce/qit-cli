@@ -78,6 +78,11 @@ class EnvironmentVars {
 	 */
 	public function generate_source_file( E2EEnvInfo $env_info ): string {
 		$vars = $this->get_mapping( $env_info );
+		
+		// Merge in custom environment variables (including secrets)
+		if ( ! empty( $env_info->envs ) && is_array( $env_info->envs ) ) {
+			$vars = array_merge( $vars, $env_info->envs );
+		}
 
 		$content  = "#!/bin/bash\n";
 		$content .= "# QIT Test Environment Configuration\n";
