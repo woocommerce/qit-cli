@@ -395,7 +395,11 @@ abstract class Environment {
 
 		if ( ! $up_process->isSuccessful() ) {
 			static::down( $this->env_info );
-			$this->output->writeln( file_get_contents( $this->env_info->temporary_env . '/docker-compose.yml' ) );
+			// Check if docker-compose.yml exists before trying to read it
+			$compose_file = $this->env_info->temporary_env . '/docker-compose.yml';
+			if ( file_exists( $compose_file ) ) {
+				$this->output->writeln( file_get_contents( $compose_file ) );
+			}
 			throw new \RuntimeException( "Failed to start the environment. Output: \n" . $up_process->getOutput() . $up_process->getErrorOutput() );
 		}
 
