@@ -706,6 +706,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$options           = $context['options'];
 		$options['woo_id'] = $context['woo_id'];
 
+		// Add test tag to options for remote execution.
+		$test_argument = $input->getArgument( 'test' );
+		if ( ! empty( $test_argument ) ) {
+			$options['test'] = $test_argument;
+		}
+
 		// Handle ZIP upload if testing local file (following CreateRunCommands pattern).
 		$source = $input->getOption( 'source' );
 		if ( ! empty( $source ) && file_exists( $source ) ) {
