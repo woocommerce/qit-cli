@@ -13,8 +13,11 @@ use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
  */
 class MetricAveragerTest extends TestCase {
 
-    private MetricAverager $metric_averager;
-    private PerformanceEnvInfo $env_info;
+    /** @var MetricAverager */
+    private $metric_averager;
+
+    /** @var PerformanceEnvInfo */
+    private $env_info;
 
     protected function setUp(): void {
         $this->metric_averager = new MetricAverager();
