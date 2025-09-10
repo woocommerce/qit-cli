@@ -50,13 +50,8 @@ class RunActivationTestCommand extends RunE2ECommand {
 		/****************************************************************
 		 * Inject activation‑specific defaults BEFORE delegating to parent
 		 */
-		// Determine WooCommerce version to match test package version
-		$woo_version = 'stable';
-		if ( $input->hasOption( 'woo' ) ) {
-			$woo_version = $input->getOption( 'woo' );
-		}
-
-		$input->setOption( 'test-package', [ "woocommerce/activation:$woo_version" ] );
+		// Always use 'latest' version for activation test package
+		$input->setOption( 'test-package', [ "woocommerce/activation:latest" ] );
 		$input->setOption( 'skip_activating_plugins', true );
 		$input->setOption( 'skip_activating_themes', true );
 
