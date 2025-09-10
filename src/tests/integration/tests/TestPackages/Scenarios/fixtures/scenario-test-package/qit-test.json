@@ -1,0 +1,17 @@
+{
+  "package": "scenario/test-package",
+  "test_type": "e2e",
+  "test": {
+    "phases": {
+      "globalSetup": ["bash global-setup.sh"],
+      "setup": ["bash setup.sh"],
+      "run": ["bash run.sh"],
+      "teardown": ["bash teardown.sh"],
+      "globalTeardown": ["bash global-teardown.sh"]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./blobs"
+    }
+  }
+}
