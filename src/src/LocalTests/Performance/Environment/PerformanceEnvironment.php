@@ -357,7 +357,7 @@ class PerformanceEnvironment extends Environment {
 		$this->output->writeln( '<info>Generating test products and orders...</info>' );
 
 		// Get database dump download URL.
-		$cache = App::make( Cache::class );
+		$cache       = App::make( Cache::class );
 		$db_dump_url = $cache->get_manager_sync_data( 'db_dump_file' );
 
 		// Download and import in one command to avoid storing large files.
@@ -368,7 +368,7 @@ class PerformanceEnvironment extends Environment {
 			'echo "Importing database..."',
 			"unzip -p woocommerce_dump.sql.zip | mysql -h qit_env_db_{$this->env_info->env_id} -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE --binary-mode=1",
 			'rm -f woocommerce_dump.sql.zip',
-			'echo "Database import completed"'
+			'echo "Database import completed"',
 		] );
 
 		try {
