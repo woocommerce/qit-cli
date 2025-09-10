@@ -56,6 +56,9 @@ class MetricAverager {
 
 	/**
 	 * Collect all metrics from all test results.
+	 *
+	 * @param PerformanceTestResult[] $test_results Array of test results.
+	 * @return array<string,array<mixed>> Array of metric names to arrays of metric values.
 	 */
 	private function collect_all_metrics( array $test_results ): array {
 		$all_metrics = [];
@@ -71,6 +74,9 @@ class MetricAverager {
 
 	/**
 	 * Average a specific metric across multiple values.
+	 *
+	 * @param array<mixed> $metric_values Array of metric values to average.
+	 * @return mixed Averaged metric value.
 	 */
 	private function average_metric( array $metric_values ) {
 		// Filter out nulls once at the beginning.
@@ -97,6 +103,9 @@ class MetricAverager {
 
 	/**
 	 * Filter out null values from array and reindex.
+	 *
+	 * @param array<mixed> $values Array of values to filter.
+	 * @return array<mixed> Array with null values removed.
 	 */
 	private function filter_nulls( array $values ): array {
 		return array_values( array_filter( $values, function ( $v ) {
@@ -106,6 +115,9 @@ class MetricAverager {
 
 	/**
 	 * Average array-based metrics (e.g., Core Web Vitals statistics).
+	 *
+	 * @param array<array<string,mixed>> $metric_arrays Array of metric arrays to average.
+	 * @return array<string,mixed> Averaged array with same keys.
 	 */
 	private function average_array_values( array $metric_arrays ): array {
 		$first_array = $metric_arrays[0];
@@ -127,6 +139,9 @@ class MetricAverager {
 
 	/**
 	 * Average checks metric (passes/fails counts).
+	 *
+	 * @param array<array<string,int>> $metric_arrays Array of checks metrics to average.
+	 * @return array<string,float> Averaged checks with passes/fails keys.
 	 */
 	private function average_checks_metric( array $metric_arrays ): array {
 		$count = count( $metric_arrays );
@@ -138,6 +153,10 @@ class MetricAverager {
 
 	/**
 	 * Extract numeric values for a specific key from array of arrays.
+	 *
+	 * @param array<array<string,mixed>> $metric_arrays Array of metric arrays.
+	 * @param string $key Key to extract values for.
+	 * @return array<mixed> Array of numeric values for the key.
 	 */
 	private function extract_key_values( array $metric_arrays, string $key ): array {
 		$values = array_column( $metric_arrays, $key );
@@ -148,6 +167,9 @@ class MetricAverager {
 
 	/**
 	 * Get the most common non-null value from an array.
+	 *
+	 * @param array<mixed> $values Array of values to find most common from.
+	 * @return mixed Most common non-null value.
 	 */
 	private function get_most_common_value( array $values ) {
 		if ( empty( $values ) ) {
