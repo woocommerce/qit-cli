@@ -102,10 +102,14 @@ class UpEnvironmentCommand extends QITCommand {
 		 */
 		// This must happen BEFORE environment creation so requirements can be included
 
-		// Build ordered list of test packages (local first, then explicit)
+		// Build ordered list of test packages respecting command-line order
 		$all_test_packages = [];
 
-		// Check for local test manifest - it's always the primary package
+		// Get explicit test packages from --test-package option FIRST
+		$explicit_packages = $input->getOption( 'test-package' ) ?? [];
+		
+		// Check for local test manifest
+		$local_test_dir = null;
 		$has_local_manifest = false;
 		if ( ! $input->getOption( 'skip-setup' ) ) {
 			$setup_dir = $input->getOption( 'setup' );
@@ -116,26 +120,43 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 
 			if ( file_exists( $test_dir . '/qit-test.json' ) ) {
-				$has_local_manifest  = true;
-				$all_test_packages[] = $test_dir; // Local is always first
-				// Process requirements for local manifest using the same flow as explicit packages
-				$this->processTestPackageRequirements( [ $test_dir ], $output );
+				$has_local_manifest = true;
+				$local_test_dir = $test_dir;
 			}
 		}
 
-		// Add explicit test packages from --test-package option
-		$explicit_packages = $input->getOption( 'test-package' ) ?? [];
+		// Add packages in the right order:
+		// 1. Explicit packages in command-line order
+		// 2. Local directory last (if it has qit-test.json and wasn't already in explicit list)
+		if ( ! empty( $explicit_packages ) ) {
+			$all_test_packages = $explicit_packages;
+			$this->processTestPackageRequirements( $explicit_packages, $output );
+		}
+		
+		// Add local directory last if it exists and wasn't explicitly specified
+		if ( $has_local_manifest && ! in_array( $local_test_dir, $all_test_packages, true ) ) {
+			// Check if any explicit package points to the same directory (different path representations)
+			$local_realpath = realpath( $local_test_dir );
+			$already_added = false;
+			foreach ( $all_test_packages as $pkg ) {
+				if ( is_dir( $pkg ) && realpath( $pkg ) === $local_realpath ) {
+					$already_added = true;
+					break;
+				}
+			}
+			
+			if ( ! $already_added ) {
+				$all_test_packages[] = $local_test_dir;
+				// Process requirements for local manifest
+				$this->processTestPackageRequirements( [ $local_test_dir ], $output );
+			}
+		}
 
 		// Debug logging (skip in JSON mode to avoid filter issues)
 		if ( ! $input->getOption( 'json' ) && ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) ) {
 			$output->writeln( '[DEBUG] env:up - Has local manifest: ' . ( $has_local_manifest ? 'yes' : 'no' ) );
 			$output->writeln( '[DEBUG] env:up - Explicit packages from --test-package: ' . json_encode( $explicit_packages ) );
 			$output->writeln( '[DEBUG] env:up - All test packages to process: ' . json_encode( $all_test_packages ) );
-		}
-
-		if ( ! empty( $explicit_packages ) ) {
-			$all_test_packages = array_merge( $all_test_packages, $explicit_packages );
-			$this->processTestPackageRequirements( $explicit_packages, $output );
 		}
 
 		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
@@ -305,12 +326,9 @@ class UpEnvironmentCommand extends QITCommand {
 			// Note: E2EEnvironment will run globalSetup for ALL packages and setup for FIRST (main) package
 			$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
 
-			// Process main package first if it exists
-			if ( $main_package ) {
-				$packages_to_process = array_unique( array_merge( [ $main_package ], $all_test_packages ) );
-			} else {
-				$packages_to_process = $all_test_packages;
-			}
+			// Use the packages in their already-determined order
+			// (they're already ordered correctly: explicit packages first, then local if auto-detected)
+			$packages_to_process = $all_test_packages;
 
 			foreach ( $packages_to_process as $package_ref ) {
 				try {
@@ -1089,12 +1107,12 @@ HELP;
 	}
 
 	/**
-	 * Determine the main package based on priority rules.
-	 *
-	 * Priority:
-	 * 1. Current directory with qit-test.json
-	 * 2. First local package (starts with ./ or /)
-	 * 3. First remote package
+	 * Determine the main package based on execution order.
+	 * The main package is the one that will have its setup phase run.
+	 * 
+	 * With the new order-respecting logic, the main package is simply
+	 * the first package in the list, as they're already ordered correctly
+	 * by command-line specification.
 	 *
 	 * @param array<string>   $packages List of package references.
 	 * @param OutputInterface $output   The output interface.
@@ -1105,35 +1123,8 @@ HELP;
 			return null;
 		}
 
-		// Priority 1: Check if current directory has qit-test.json
-		if ( file_exists( getcwd() . '/qit-test.json' ) ) {
-			// Current directory is the main package if it's in our list
-			$cwd = getcwd();
-			foreach ( $packages as $package ) {
-				// Normalize the package path for comparison
-				if ( is_dir( $package ) ) {
-					$normalized = realpath( $package );
-					if ( $normalized === $cwd ) {
-						if ( $output->isVerbose() ) {
-							$output->writeln( '<info>Main package: Current directory (has qit-test.json)</info>' );
-						}
-						return $package;
-					}
-				}
-			}
-		}
-
-		// Priority 2: First local package
-		foreach ( $packages as $package ) {
-			if ( is_dir( $package ) || strpos( $package, './' ) === 0 || strpos( $package, '/' ) === 0 ) {
-				if ( $output->isVerbose() ) {
-					$output->writeln( "<info>Main package: {$package} (first local package)</info>" );
-				}
-				return $package;
-			}
-		}
-
-		// Priority 3: First remote package
+		// The first package in the list is the main package
+		// (packages are already ordered correctly by command-line order)
 		if ( $output->isVerbose() ) {
 			$output->writeln( "<info>Main package: {$packages[0]} (first remote package)</info>" );
 		}
