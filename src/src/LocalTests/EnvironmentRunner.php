@@ -60,12 +60,6 @@ class EnvironmentRunner {
 
 		// Check for invalid package errors (Command::INVALID = 2)
 		if ( $exit_status_code === Command::INVALID ) {
-			$package_errors = App::getVar( 'test_package_errors', [] );
-			if ( ! empty( $package_errors ) ) {
-				// Clean up the errors from DI container
-				App::offsetUnset( 'test_package_errors' );
-				throw new \RuntimeException( 'Invalid test packages: ' . implode( '; ', $package_errors ) );
-			}
 			throw new \RuntimeException( 'Environment configuration is invalid. Output: ' . $up_output );
 		}
 

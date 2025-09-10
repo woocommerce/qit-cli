@@ -269,6 +269,9 @@ class UpEnvironmentCommand extends QITCommand {
 									$output->writeln( "<info>Package {$package_ref} requires tunnel access</info>" );
 								}
 							}
+						} else {
+							// Remote package failed to download - fail fast
+							throw new \RuntimeException( "Failed to download test package '{$package_ref}': " . $e->getMessage() );
 						}
 					}
 				}
@@ -391,13 +394,8 @@ class UpEnvironmentCommand extends QITCommand {
 						throw $e;  // Re-throw security errors
 					}
 
-					// Collect package errors for later reporting
-					$package_errors   = \QIT_CLI\App::getVar( 'test_package_errors', [] );
-					$package_errors[] = "Invalid test package '{$package_ref}': " . $e->getMessage();
-					\QIT_CLI\App::setVar( 'test_package_errors', $package_errors );
-
-					// Output warning but continue processing
-					$output->writeln( "<warning>Failed to prepare test package {$package_ref}: {$e->getMessage()}</warning>" );
+					// Fail fast for test package errors - no point continuing if packages are missing
+					throw new \RuntimeException( "Failed to prepare test package '{$package_ref}': " . $e->getMessage() );
 				}
 			}
 		}
@@ -501,13 +499,6 @@ class UpEnvironmentCommand extends QITCommand {
 		// Clean up DI container variables if we set them
 		\QIT_CLI\App::offsetUnset( 'test_package_required_plugins' );
 		\QIT_CLI\App::offsetUnset( 'test_package_required_themes' );
-
-		// Check if there were any package errors
-		$package_errors = \QIT_CLI\App::getVar( 'test_package_errors', [] );
-		if ( ! empty( $package_errors ) ) {
-			// Environment started but with invalid packages
-			return Command::INVALID;
-		}
 
 		return Command::SUCCESS;
 	}
