@@ -88,23 +88,23 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->setDescription( 'Run Performance tests.' )
 			->setHelp( 'Run k6 performance tests against a given extension.' );
 
-		// Apply schema-driven options like other managed tests
+		// Apply schema-driven options like other managed tests.
 		DynamicCommandCreator::add_schema_to_command(
 			$this,
 			$schemas['performance'],
-			[], // No exceptions - include all schema properties
-			[]  // No whitelist - include all properties
+			[], // No exceptions - include all schema properties.
+			[]  // No whitelist - include all properties.
 		);
 
-		// Add performance-specific arguments and options not covered by schema
+		// Add performance-specific arguments and options not covered by schema.
 		$this
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'The slug or WooCommerce ID of the main extension under test.' )
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'sut_action', null, InputOption::VALUE_OPTIONAL, 'What action to take on the SUT. Possible values: ' . implode( ', ', Extension::ACTIONS ), Extension::ACTIONS['test'] );
 
-		// Add performance-specific options that might not be in the current schema
-		// These are needed for local execution and will also work for remote execution
+		// Add performance-specific options that might not be in the current schema.
+		// These are needed for local execution and will also work for remote execution.
 		$this
 			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run.', '' )
 			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests before the main tests.' )
@@ -119,7 +119,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' );
 
-		// Local execution specific options (not part of remote schema)
+		// Local execution specific options (not part of remote schema).
 		$this
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
@@ -136,146 +136,156 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_test'] ), PluginDependencies::DEPENDENCY_MODES['env_test']['bootstrap'] )
 			->addOption( 'up_only', 'u', InputOption::VALUE_NONE, 'If set, it will just start the environment and keep it running until shut down.' );
 
-		// Hybrid execution options
+		// Hybrid execution options.
 		$this
 			->addOption( 'local', null, InputOption::VALUE_NONE, 'Run tests locally instead of on QIT infrastructure' )
 			->addOption( 'wait', null, InputOption::VALUE_NONE, 'Wait for remote test completion and display results' )
 			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, 'Timeout in seconds for waiting for test completion (min: 10, max: 7200)', null );
 
-		// Group options
+		// Group options.
 		$this
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the test run into a group.', false )
 			->addOption( 'no_group', 'ng', InputOption::VALUE_NEGATABLE, 'If set, the CLI will not attempt to match the local test run with a group.', false );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
+		// Initialize common test context.
+		$context = $this->initialize_test_context( $input, $output );
+
+		// Early return on validation failure.
+		if ( $context['validation_result'] !== Command::SUCCESS ) {
+			return $context['validation_result'];
+		}
+
+		// Early return if invalid extension.
+		if ( $context['sut_type'] === Command::INVALID ) {
+			return Command::INVALID;
+		}
+
+		// Handle group registration (same for local and remote).
+		$is_local     = $input->getOption( 'local' );
+		$group_result = $this->handle_group_registration(
+			$input,
+			$output,
+			$context['woo_id'],
+			$is_local
+		);
+		if ( $group_result !== null ) {
+			return $group_result;
+		}
+
+		// Route to appropriate execution path.
+		return $is_local
+			? $this->execute_local_test( $input, $output, $context )
+			: $this->execute_remote_test( $input, $output, $context );
+	}
+
+	/**
+	 * Initialize common test context for both local and remote execution.
+	 *
+	 * @param InputInterface  $input
+	 * @param OutputInterface $output
+	 * @return array<string,mixed> Test context including options, validation result, and extension info.
+	 */
+	protected function initialize_test_context( InputInterface $input, OutputInterface $output ): array {
 		try {
+			// Parse options once.
 			$options                    = $this->parse_options( $input );
 			$env_up_options             = $options['env_up'];
 			$env_up_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
+
+			// Validate input once.
+			$wait              = $input->getOption( 'up_only' );
+			$validation_result = $this->validate_input( $input, $output, $wait );
+
+			// Resolve extension once.
+			$woo_extension_raw                = $input->getArgument( 'woo_extension' );
+			[ $woo_id, $woo_slug, $sut_type ] = $this->resolve_woo_extension( $woo_extension_raw, $output );
+
+			return compact(
+				'options',
+				'env_up_options',
+				'validation_result',
+				'woo_id',
+				'woo_slug',
+				'sut_type',
+				'wait'
+			);
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+			return [
+				'validation_result' => Command::FAILURE,
+				'options'           => [],
+				'env_up_options'    => [],
+				'woo_id'            => null,
+				'woo_slug'          => null,
+				'sut_type'          => null,
+				'wait'              => false,
+			];
+		}
+	}
 
+	/**
+	 * Handle group registration for both local and remote tests.
+	 *
+	 * @param InputInterface  $input
+	 * @param OutputInterface $output
+	 * @param int|null        $woo_id
+	 * @param bool            $is_local
+	 * @return int|null Command exit code or null if no group option.
+	 */
+	protected function handle_group_registration( InputInterface $input, OutputInterface $output, ?int $woo_id, bool $is_local ): ?int {
+		if ( ! $input->getOption( 'group' ) ) {
+			return null;
+		}
+
+		$group_options = [
+			'woo_id' => $woo_id,
+			'local'  => $is_local,
+		];
+
+		if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
+			$group_options['extension_set'] = $input->getOption( 'extension_set' );
+		}
+
+		try {
+			$this->test_group->create_or_update(
+				$group_options,
+				'performance',
+				$output,
+				$input,
+				getenv()
+			);
+			$output->writeln( '<info>Group item successfully added.</info>' );
+			return Command::SUCCESS;
+		} catch ( \Exception $e ) {
+			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 			return Command::FAILURE;
 		}
+	}
 
-		$wait = $input->getOption( 'up_only' );
-
-		$result = $this->validate_input( $input, $output, $wait );
-		if ( $result !== Command::SUCCESS ) {
-			return $result;
-		}
-
-		// Check if we should run locally (default is remote execution)
-		$run_local = $input->getOption( 'local' );
-		if ( ! $run_local ) {
-			return $this->execute_remote_test( $input, $output );
-		}
-
+	/**
+	 * Execute performance tests locally.
+	 *
+	 * @param InputInterface      $input
+	 * @param OutputInterface     $output
+	 * @param array<string,mixed> $context Test context from initialize_test_context.
+	 * @return int Command exit code.
+	 */
+	protected function execute_local_test( InputInterface $input, OutputInterface $output, array $context ): int {
+		// Parse environment variables for local execution.
 		$this->parse_env_vars( $input->getOption( 'env' ) );
 
-		$woo_extension_raw = $input->getArgument( 'woo_extension' );
-		[ $woo_extension_id, $woo_extension_slug, $sut_type_or_code ] = $this->resolve_woo_extension( $woo_extension_raw, $output );
-		if ( $sut_type_or_code === Command::INVALID ) {
-			// Failed to resolve extension.
-			return Command::INVALID;
-		}
-		$sut_type = $sut_type_or_code;
+		// Setup local environment configuration.
+		$env_up_options = $this->setup_local_environment( $input, $output, $context );
 
-		$group = $input->getOption( 'group' );
+		// Create test configuration.
+		$env_info = $this->create_test_configuration( $input, $context );
 
-		if ( $group ) {
-			$group_options = [
-				'woo_id' => $woo_extension_id,
-				'local'  => $run_local,
-			];
-
-			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
-				$group_options['extension_set'] = $input->getOption( 'extension_set' );
-			}
-
-			$test_type = 'performance';
-
-			try {
-				$env_vars      = getenv();
-				$input_options = $input;
-				$this->test_group->create_or_update( $group_options, $test_type, $output, $input_options, $env_vars );
-			} catch ( \Exception $e ) {
-				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
-				return Command::FAILURE;
-			}
-
-			$output->writeln( sprintf( '<info>Group item successfully added.</info>' ) );
-
-			return Command::SUCCESS;
-		}
-
-		if ( ! empty( $input->getOption( 'config' ) ) ) {
-			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
-		}
-
-		$additional_volumes         = [];
-		$env_up_options['--volume'] = $additional_volumes;
-		$env_up_options['--json']   = true;
-
-		if ( $output->isVerbose() ) {
-			$env_up_options['--verbose'] = true;
-		} elseif ( $output->isVeryVerbose() ) {
-			$env_up_options['--very-verbose'] = true;
-		}
-
-		if ( $input->getOption( 'object_cache' ) ) {
-			$env_up_options['--object_cache'] = true;
-		}
-
-		$this->handle_termination();
-
-		if ( ! empty( $woo_extension_slug ) ) {
-			App::setVar( 'QIT_SUT', $woo_extension_id );
-			App::setVar( 'QIT_SUT_SLUG', $woo_extension_slug );
-		}
-
-		$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $woo_extension_slug, $sut_type );
-
-		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
-		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
-
-		if ( $wait ) {
-			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		} else {
-			putenv( 'QIT_HIDE_SITE_INFO=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		}
-
-		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		putenv( 'QIT_ENVIRONMENT_TYPE=performance' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-
-		// Add the environment type to the env:up options.
-		$env_up_options['--environment_type'] = 'performance';
-
-		$test_tag     = $input->getArgument( 'test' ) ?? '';
-		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
-		$no_baseline  = $input->getOption( 'no_baseline' );
-		$iterations   = (int) ( $input->getOption( 'iterations' ) ?? 3 );
-
-		// Validate iterations parameter.
-		if ( $iterations < 1 || $iterations > 10 ) {
-			$output->writeln( '<error>Iterations must be between 1 and 10.</error>' );
-			return Command::FAILURE;
-		}
-
-		// Create a placeholder environment info with test configuration.
-		$env_info               = new PerformanceEnvInfo();
-		$env_info->sut_slug     = $woo_extension_slug;
-		$env_info->sut_id       = $woo_extension_id;
-		$env_info->sut_type     = $sut_type;
-		$env_info->test_tag     = $test_tag;
-		$env_info->k6_test_file = $k6_test_file;
-		$env_info->run_baseline = ! $no_baseline;
-
-		if ( ! empty( $woo_extension_id ) ) {
+		// Notify test started.
+		if ( ! empty( $context['woo_id'] ) ) {
 			$this->test_run_notifier->notify_test_started(
-				$woo_extension_id,
+				$context['woo_id'],
 				$input->getOption( 'woo' ) ?? 'latest',
 				$env_info,
 				$input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
@@ -283,15 +293,131 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			);
 		}
 
+		// Handle self-test mode.
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->write( json_encode( $env_info ) );
-
 			return Command::SUCCESS;
 		}
 
-		// If "up_only", don't run tests, just keep environment running.
-		if ( $wait ) {
+		// Handle up_only mode.
+		if ( $context['wait'] ) {
 			return Command::SUCCESS;
+		}
+
+		// Execute the actual performance tests.
+		return $this->execute_performance_tests( $input, $env_info, $env_up_options, $output );
+	}
+
+	/**
+	 * Setup local environment configuration.
+	 *
+	 * @param InputInterface      $input
+	 * @param OutputInterface     $output
+	 * @param array<string,mixed> $context Test context.
+	 * @return array<string,mixed> Environment up options.
+	 */
+	protected function setup_local_environment( InputInterface $input, OutputInterface $output, array $context ): array {
+		$env_up_options = $context['env_up_options'];
+
+		// Configure app settings.
+		if ( ! empty( $input->getOption( 'config' ) ) ) {
+			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
+		}
+
+		// Setup volumes.
+		$env_up_options['--volume'] = [];
+		$env_up_options['--json']   = true;
+
+		// Configure verbosity.
+		if ( $output->isVerbose() ) {
+			$env_up_options['--verbose'] = true;
+		} elseif ( $output->isVeryVerbose() ) {
+			$env_up_options['--very-verbose'] = true;
+		}
+
+		// Configure object cache.
+		if ( $input->getOption( 'object_cache' ) ) {
+			$env_up_options['--object_cache'] = true;
+		}
+
+		// Setup termination handling.
+		$this->handle_termination();
+
+		// Set SUT variables.
+		if ( ! empty( $context['woo_slug'] ) ) {
+			App::setVar( 'QIT_SUT', $context['woo_id'] );
+			App::setVar( 'QIT_SUT_SLUG', $context['woo_slug'] );
+		}
+
+		// Add SUT to environment options.
+		$env_up_options = $this->add_sut_to_env_up_options(
+			$input,
+			$env_up_options,
+			$context['woo_slug'],
+			$context['sut_type']
+		);
+
+		// Configure upload settings.
+		App::setVar( 'should_upload_report', ! $input->getOption( 'no_upload_report' ) );
+		App::setVar( 'QIT_ENV_UP_OPTIONS', $env_up_options );
+
+		// Configure environment display.
+		if ( $context['wait'] ) {
+			putenv( 'QIT_HIDE_SITE_INFO=0' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		} else {
+			putenv( 'QIT_HIDE_SITE_INFO=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO=DOCKER' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		}
+
+		// Set performance environment flags.
+		putenv( 'QIT_UP_AND_TEST=1' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+		putenv( 'QIT_ENVIRONMENT_TYPE=performance' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
+
+		$env_up_options['--environment_type'] = 'performance';
+
+		return $env_up_options;
+	}
+
+	/**
+	 * Create test configuration for performance tests.
+	 *
+	 * @param InputInterface      $input
+	 * @param array<string,mixed> $context Test context.
+	 * @return PerformanceEnvInfo Test configuration.
+	 */
+	protected function create_test_configuration( InputInterface $input, array $context ): PerformanceEnvInfo {
+		$test_tag     = $input->getArgument( 'test' ) ?? '';
+		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
+		$no_baseline  = $input->getOption( 'no_baseline' );
+
+		$env_info               = new PerformanceEnvInfo();
+		$env_info->sut_slug     = $context['woo_slug'];
+		$env_info->sut_id       = $context['woo_id'];
+		$env_info->sut_type     = $context['sut_type'];
+		$env_info->test_tag     = $test_tag;
+		$env_info->k6_test_file = $k6_test_file;
+		$env_info->run_baseline = ! $no_baseline;
+
+		return $env_info;
+	}
+
+	/**
+	 * Execute the actual performance tests using the test manager.
+	 *
+	 * @param InputInterface      $input
+	 * @param PerformanceEnvInfo  $env_info Test configuration.
+	 * @param array<string,mixed> $env_up_options Environment options.
+	 * @param OutputInterface     $output
+	 * @return int Command exit code.
+	 */
+	protected function execute_performance_tests( InputInterface $input, PerformanceEnvInfo $env_info, array $env_up_options, OutputInterface $output ): int {
+		// Get iterations from input.
+		$iterations = (int) ( $input->getOption( 'iterations' ) ?? 3 );
+
+		// Validate iterations parameter.
+		if ( $iterations < 1 || $iterations > 10 ) {
+			$output->writeln( '<error>Iterations must be between 1 and 10.</error>' );
+			return Command::FAILURE;
 		}
 
 		// Run tests with complete environment lifecycle management.
@@ -391,8 +517,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	}
 
 	private function validate_input( InputInterface $input, OutputInterface $output, bool $wait ): int {
-		$woo     = $input->getOption( 'woo' );
-		$plugins = $input->getOption( 'plugin' );
+		$woo       = $input->getOption( 'woo' );
+		$plugins   = $input->getOption( 'plugin' );
 		$run_local = $input->getOption( 'local' );
 
 		if ( ! empty( $woo ) && ! empty( $plugins ) && in_array( 'woocommerce', $plugins, true ) ) {
@@ -401,7 +527,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			return Command::INVALID;
 		}
 
-		// Remote tests don't support --up_only mode
+		// Remote tests don't support --up_only mode.
 		if ( ! $run_local && $input->getOption( 'up_only' ) ) {
 			$output->writeln( '<error>--up_only is only supported for local tests (--local).</error>' );
 
@@ -558,64 +684,35 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	/**
 	 * Execute performance tests remotely on QIT infrastructure.
 	 *
-	 * @param InputInterface  $input
-	 * @param OutputInterface $output
+	 * @param InputInterface           $input
+	 * @param OutputInterface          $output
+	 * @param array<string,mixed>|null $context Optional pre-computed test context.
 	 *
 	 * @return int Command exit code
 	 */
-	protected function execute_remote_test( InputInterface $input, OutputInterface $output ): int {
-		// Parse and prepare options using managed test patterns
-		try {
-			$options = $this->parse_options( $input );
-		} catch ( \Exception $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-			return Command::FAILURE;
-		}
-
-		$woo_extension_raw = $input->getArgument( 'woo_extension' );
-		[ $woo_extension_id, $woo_extension_slug, $sut_type_or_code ] = $this->resolve_woo_extension( $woo_extension_raw, $output );
-		
-		if ( $sut_type_or_code === Command::INVALID ) {
-			return Command::INVALID;
-		}
-
-		// Handle group creation for remote tests
-		$group = $input->getOption( 'group' );
-		if ( $group ) {
-			$group_options = [
-				'woo_id' => $woo_extension_id,
-				'local'  => false, // This is a remote test
-			];
-
-			if ( ! empty( $input->getOption( 'extension_set' ) ) ) {
-				$group_options['extension_set'] = $input->getOption( 'extension_set' );
+	protected function execute_remote_test( InputInterface $input, OutputInterface $output, ?array $context = null ): int {
+		// Use pre-computed context if available, otherwise initialize.
+		if ( ! $context ) {
+			$context = $this->initialize_test_context( $input, $output );
+			if ( $context['validation_result'] !== Command::SUCCESS ) {
+				return $context['validation_result'];
 			}
-
-			$test_type = 'performance';
-
-			try {
-				$env_vars      = getenv();
-				$input_options = $input;
-				$this->test_group->create_or_update( $group_options, $test_type, $output, $input_options, $env_vars );
-			} catch ( \Exception $e ) {
-				$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
-				return Command::FAILURE;
+			if ( $context['sut_type'] === Command::INVALID ) {
+				return Command::INVALID;
 			}
-
-			$output->writeln( '<info>Group item successfully added.</info>' );
-			return Command::SUCCESS;
 		}
 
-		// Add woo_id to options (following managed test pattern)
-		$options['woo_id'] = $woo_extension_id;
+		// Add woo_id to options (following managed test pattern).
+		$options           = $context['options'];
+		$options['woo_id'] = $context['woo_id'];
 
-		// Handle ZIP upload if testing local file (following CreateRunCommands pattern)
+		// Handle ZIP upload if testing local file (following CreateRunCommands pattern).
 		$source = $input->getOption( 'source' );
 		if ( ! empty( $source ) && file_exists( $source ) ) {
 			try {
-				$upload_instance = App::make( Upload::class );
+				$upload_instance      = App::make( Upload::class );
 				$options['upload_id'] = $upload_instance->upload_build( 'build', $options['woo_id'], $source, $output );
-				$options['event'] = 'cli_development_extension_test';
+				$options['event']     = 'cli_development_extension_test';
 			} catch ( \Exception $e ) {
 				$output->writeln( sprintf( '<error>Failed to upload file: %s</error>', $e->getMessage() ) );
 				return Command::FAILURE;
@@ -624,7 +721,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$options['event'] = 'cli_published_extension_test';
 		}
 
-		// Enqueue the remote test following managed test pattern
+		// Enqueue the remote test following managed test pattern.
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/enqueue-performance' ) )
 				->with_method( 'POST' )
@@ -636,7 +733,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			return Command::FAILURE;
 		}
 
-		// Process response following managed test pattern
+		// Process response following managed test pattern.
 		$response = json_decode( $json, true );
 
 		if ( ! is_array( $response ) ) {
@@ -653,7 +750,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$output->writeln( sprintf( '<info>Test enqueued with ID: %s</info>', $test_run_id ) );
 		$output->writeln( sprintf( '<info>Test URL: %s</info>', $response['test_results_manager_url'] ) );
 
-		// Wait for completion if requested
+		// Wait for completion if requested.
 		$wait = $input->getOption( 'wait' );
 		if ( $wait ) {
 			return $this->wait_for_remote_test_completion( $test_run_id, $input, $output );
@@ -672,24 +769,24 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	 * @return int Command exit code
 	 */
 	protected function wait_for_remote_test_completion( string $test_run_id, InputInterface $input, OutputInterface $output ): int {
-		// Configure timeout following managed test pattern
+		// Configure timeout following managed test pattern.
 		$timeout = $input->getOption( 'timeout' ) ?? null;
-		
+
 		if ( is_null( $timeout ) ) {
-			$timeout = 1800; // 30 minutes for performance tests (less than woo-e2e's 2 hours)
+			$timeout = 1800; // 30 minutes for performance tests (less than woo-e2e's 2 hours).
 		}
 
-		// Minimum timeout is 10 seconds, maximum is 2 hours
+		// Minimum timeout is 10 seconds, maximum is 2 hours.
 		$timeout = max( 10, $timeout );
 		$timeout = min( 3600 * 2, $timeout );
 
-		// Get polling interval from environment or default
+		// Get polling interval from environment or default.
 		$poll_interval = (int) ( getenv( 'QIT_POLL_INTERVAL' ) ?: 10 );
 		$poll_interval = max( 1, $poll_interval );
 
-		// Register signal handlers for graceful interruption (following CreateRunCommands pattern)
+		// Register signal handlers for graceful interruption (following CreateRunCommands pattern).
 		if ( function_exists( 'pcntl_signal' ) ) {
-			$handler = static function ( $signal ) use ( $output ) {
+			$handler = static function () use ( $output ) {
 				$output->writeln( '<comment>Received termination signal. Exiting gracefully...</comment>' );
 				exit( 130 );
 			};
@@ -697,7 +794,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			pcntl_signal( SIGTERM, $handler );
 		}
 
-		$start_time = time();
+		$start_time  = time();
 		$get_command = App::make( GetCommand::class );
 
 		do {
@@ -707,18 +804,18 @@ class RunPerformanceTestCommand extends DynamicCommand {
 				pcntl_signal_dispatch();
 			}
 
-			// Use GetCommand for status checking (following CreateRunCommands pattern)
+			// Use GetCommand for status checking (following CreateRunCommands pattern).
 			try {
-				$finished = $get_command->run( 
+				$finished = $get_command->run(
 					new ArrayInput( [
 						'test_run_id'      => $test_run_id,
 						'--check_finished' => true,
-					] ), 
-					$output 
+					] ),
+					$output
 				);
 
 				if ( $finished === 0 ) {
-					// Test finished, get final results
+					// Test finished, get final results.
 					return $get_command->run(
 						new ArrayInput( [ 'test_run_id' => $test_run_id ] ),
 						$output
@@ -728,13 +825,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 				$output->writeln( sprintf( '<comment>Error checking test status: %s</comment>', $e->getMessage() ) );
 			}
 
-			// Check timeout
+			// Check timeout.
 			$elapsed_time = time() - $start_time;
 			if ( $elapsed_time >= $timeout ) {
 				$output->writeln( sprintf( '<error>Test did not complete within %d seconds.</error>', $timeout ) );
 				return Command::FAILURE;
 			}
-
 		} while ( true );
 	}
 }
