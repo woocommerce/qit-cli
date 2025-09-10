@@ -612,6 +612,9 @@ class TestPackageDownloader {
 			throw new \RuntimeException( 'Downloaded test package artifact failed validation: ' . $e->getMessage() );
 		}
 
+		// Make all shell scripts executable
+		$this->set_shell_script_permissions( $package_dir );
+
 		// Install dependencies if package.json exists
 		if ( file_exists( $package_dir . '/package.json' ) ) {
 			$this->install_npm_dependencies( $package_dir );
@@ -1032,6 +1035,29 @@ class TestPackageDownloader {
 
 		// Create and return the subpackage manifest
 		return new TestPackageManifest( $subpackage_data );
+	}
+
+	/**
+	 * Set executable permissions on all shell scripts in the package directory.
+	 *
+	 * @param string $package_dir The package directory.
+	 */
+	protected function set_shell_script_permissions( string $package_dir ): void {
+		// Find all .sh files recursively
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $package_dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() && $file->getExtension() === 'sh' ) {
+				// Make the script executable
+				chmod( $file->getPathname(), 0755 );
+				if ( $this->output->isVeryVerbose() ) {
+					$this->output->writeln( 'Made executable: ' . $file->getPathname() );
+				}
+			}
+		}
 	}
 
 	/**
