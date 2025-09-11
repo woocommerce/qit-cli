@@ -197,7 +197,7 @@ class TestCleanupHelper {
 			}
 			
 			// Build the request with proper authentication
-			$request_builder = new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/cleanup-integration-test-packages' );
+			$request_builder = new RequestBuilder( get_manager_url() . '/wp-json/cd/v2/cli/cleanup-integration-test-packages' );
 			$request_builder->with_method( 'POST' );
 			$request_builder->with_post_body( [
 				'manager_secret' => $manager_secret,

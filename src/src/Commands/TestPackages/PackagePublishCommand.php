@@ -364,7 +364,7 @@ class PackagePublishCommand extends QITCommand {
 		$post_data['checksum'] = $checksum;
 
 		try {
-			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/publish-test-package' ) )
+			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v2/cli/publish-test-package' ) )
 				->with_method( 'POST' )
 				->with_file( 'file', $zip_path )
 				->with_post_body( $post_data )

@@ -490,7 +490,7 @@ class TestPackageDownloader {
 			return $cached['data'] ?? $cached; // Support both old and new cache format
 		}
 
-		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
+		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v2/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
 				'package_ids' => array_values( $references ),
