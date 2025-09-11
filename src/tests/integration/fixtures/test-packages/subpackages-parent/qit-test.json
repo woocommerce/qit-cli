@@ -32,9 +32,6 @@
       "tags": ["checkout", "payments"],
       "test": {
         "phases": {
-          "setup": [
-            "echo '[SETUP] Checkout-specific setup'"
-          ],
           "run": [
             "npx playwright test tests/checkout.spec.js"
           ]
@@ -57,14 +54,8 @@
       "tags": ["account", "user"],
       "test": {
         "phases": {
-          "setup": [
-            "echo '[SETUP] Account-specific setup'"
-          ],
           "run": [
             "npx playwright test tests/account.spec.js"
-          ],
-          "teardown": [
-            "echo '[TEARDOWN] Account-specific cleanup'"
           ]
         }
       }

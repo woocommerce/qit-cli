@@ -126,6 +126,9 @@ final class TestPackageManifest {
 		$this->subpackages    = $data['subpackages'] ?? [];
 		$this->parent_package = $data['parent_package'] ?? null;
 
+		// Validate subpackages only override allowed phases
+		$this->validate_subpackages();
+
 		// Network requirement - only support new format (requires.network)
 		if ( isset( $data['requires']['network'] ) ) {
 			if ( is_string( $data['requires']['network'] ) ) {
@@ -526,6 +529,48 @@ final class TestPackageManifest {
 	 */
 	public static function create_container_path( string $package_id ): string {
 		return '/qit/packages/' . self::create_container_directory_name( $package_id );
+	}
+
+	/**
+	 * Validate that subpackages only override allowed phases.
+	 * Subpackages must be pure subsets that only differ in test selection.
+	 *
+	 * @throws InvalidArgumentException If subpackage overrides disallowed phases.
+	 */
+	private function validate_subpackages(): void {
+		if ( empty( $this->subpackages ) ) {
+			return;
+		}
+
+		$disallowed_phases = [ 'globalSetup', 'globalTeardown', 'setup', 'teardown' ];
+
+		foreach ( $this->subpackages as $subpackage_id => $subpackage_config ) {
+			// Skip if no test configuration
+			if ( ! isset( $subpackage_config['test']['phases'] ) ) {
+				continue;
+			}
+
+			$phases = $subpackage_config['test']['phases'];
+
+			// Check for disallowed phase overrides
+			foreach ( $disallowed_phases as $phase ) {
+				if ( isset( $phases[ $phase ] ) && ! empty( $phases[ $phase ] ) ) {
+					throw new InvalidArgumentException(
+						"Subpackage '{$subpackage_id}' cannot override '{$phase}' phase. " .
+						"Subpackages are pure subsets and can only override the 'run' phase to select which tests to execute. " .
+						"If you need different setup/teardown, create a separate test package instead."
+					);
+				}
+			}
+
+			// Ensure run phase is specified (it's the only thing they should override)
+			if ( ! isset( $phases['run'] ) || empty( $phases['run'] ) ) {
+				throw new InvalidArgumentException(
+					"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
+					"Subpackages exist to run a subset of tests from the parent package."
+				);
+			}
+		}
 	}
 
 	public function jsonSerialize(): mixed { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Required by JsonSerializable interface.

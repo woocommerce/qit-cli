@@ -937,10 +937,8 @@ class TestPackageDownloader {
 
 	/**
 	 * Extract subpackage manifest from a parent manifest.
-	 * Respects inheritance rules as documented:
-	 * - Inherits test.results from parent
-	 * - Inherits mu_plugins, envs, timeout, retry from parent
-	 * - Can override: description, tags, requires (including requires.network), all test.phases
+	 * Subpackages are pure subsets that inherit all configuration from parent
+	 * except for the 'run' phase which they must override to select test subset.
 	 *
 	 * @param TestPackageManifest $parent_manifest The parent package manifest.
 	 * @param string              $subpackage_id The subpackage ID to extract.
@@ -960,7 +958,7 @@ class TestPackageDownloader {
 			$this->output->writeln( "Found subpackage $subpackage_id in parent manifest" );
 		}
 
-		// Start with parent's configuration as base (selective inheritance)
+		// Start with parent's complete configuration (subpackages inherit everything)
 		$parent_phases   = $parent_manifest->get_phases();
 		$subpackage_data = [
 			'package'        => $subpackage_id,
@@ -969,18 +967,17 @@ class TestPackageDownloader {
 			'test_dir'       => $parent_manifest->get_test_dir(),
 			'test'           => [
 				'phases'  => [
-					// Only global phases are inherited from parent
+					// Inherit ALL phases from parent
 					'globalSetup'    => $parent_phases['globalSetup'] ?? [],
 					'globalTeardown' => $parent_phases['globalTeardown'] ?? [],
-					// Package-specific phases are NOT inherited - must be explicit
-					'setup'          => [],
-					'run'            => [],
-					'teardown'       => [],
+					'setup'          => $parent_phases['setup'] ?? [],
+					'run'            => [], // Will be overridden below
+					'teardown'       => $parent_phases['teardown'] ?? [],
 				],
 				// Results paths inherited from parent
 				'results' => $parent_manifest->get_test_results(),
 			],
-			// Inherit other configurations from parent
+			// Inherit all other configurations from parent
 			'requires'       => $parent_manifest->get_requires(),
 			'mu_plugins'     => $parent_manifest->get_mu_plugins(),
 			'envs'           => $parent_manifest->get_env(),
@@ -988,7 +985,7 @@ class TestPackageDownloader {
 			'retry'          => $parent_manifest->get_retry(),
 		];
 
-		// Apply subpackage-specific overrides (only for allowed fields)
+		// Apply subpackage-specific overrides (only metadata fields)
 		if ( isset( $subpackage_config['description'] ) ) {
 			$subpackage_data['description'] = $subpackage_config['description'];
 		}
@@ -996,36 +993,23 @@ class TestPackageDownloader {
 			$subpackage_data['tags'] = $subpackage_config['tags'];
 		}
 
-		// Override requires fields if specified in subpackage
+		// Subpackages can still override requires if needed (for metadata purposes)
 		if ( isset( $subpackage_config['requires'] ) ) {
-			// Merge subpackage requires with parent requires
-			// Subpackage values override parent values for the same keys
 			$subpackage_data['requires'] = array_merge(
 				$parent_manifest->get_requires(),
 				$subpackage_config['requires']
 			);
 		}
 
-		// Override phases - all phases can now be overridden
-		if ( isset( $subpackage_config['test']['phases'] ) ) {
-			$subpackage_phases = $subpackage_config['test']['phases'];
-
-			// Allow overriding all phases including global ones
-			if ( isset( $subpackage_phases['globalSetup'] ) ) {
-				$subpackage_data['test']['phases']['globalSetup'] = $subpackage_phases['globalSetup'];
-			}
-			if ( isset( $subpackage_phases['globalTeardown'] ) ) {
-				$subpackage_data['test']['phases']['globalTeardown'] = $subpackage_phases['globalTeardown'];
-			}
-			if ( isset( $subpackage_phases['setup'] ) ) {
-				$subpackage_data['test']['phases']['setup'] = $subpackage_phases['setup'];
-			}
-			if ( isset( $subpackage_phases['run'] ) ) {
-				$subpackage_data['test']['phases']['run'] = $subpackage_phases['run'];
-			}
-			if ( isset( $subpackage_phases['teardown'] ) ) {
-				$subpackage_data['test']['phases']['teardown'] = $subpackage_phases['teardown'];
-			}
+		// Override ONLY the run phase - this is the key difference for subpackages
+		if ( isset( $subpackage_config['test']['phases']['run'] ) ) {
+			$subpackage_data['test']['phases']['run'] = $subpackage_config['test']['phases']['run'];
+		} else {
+			// Subpackage must specify run phase
+			throw new \RuntimeException(
+				"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
+				"Subpackages exist to run a subset of tests from the parent package."
+			);
 		}
 
 		// Debug the package field before creating manifest
