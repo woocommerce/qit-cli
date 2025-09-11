@@ -402,8 +402,9 @@ class UpEnvironmentCommand extends QITCommand {
 
 		/* ─ 3.8. Add test package volumes for local and registry packages ─ */
 		foreach ( $test_packages_for_setup as $package_ref => $info ) {
-			// Map both local packages and downloaded registry packages
-			if ( ( $info['source'] === 'local' || $info['source'] === 'registry' ) && ! empty( $info['path'] ) && ! empty( $info['container_path'] ) ) {
+			// Map test packages to their container paths
+			// All test packages should have both 'path' and 'container_path' set
+			if ( ! empty( $info['path'] ) && ! empty( $info['container_path'] ) ) {
 				// Add volume mapping for test package
 				// We need to add this to parsed_volumes, not env_config['volumes']
 				$parsed_volumes[ $info['container_path'] ] = $info['path'];

@@ -65,7 +65,7 @@ class EnvSourceCommand extends QITCommand {
 			$vars = $this->environment_vars->get_mapping( $env_info );
 
 			// Merge in custom environment variables (including secrets)
-			if ( ! empty( $env_info->envs ) && is_array( $env_info->envs ) ) {
+			if ( ! empty( $env_info->envs ) ) {
 				$vars = array_merge( $vars, $env_info->envs );
 			}
 

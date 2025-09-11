@@ -1675,7 +1675,8 @@
                     "wccom-plugin-5"
                 ],
                 "empty-set": []
-            }
+            },
+            "db_dump_file": "https:\/\/qit.woo.com\/wp-content\/uploads\/qit-env-db-dumps\/woocommerce_dump.sql.zip"
         }
     }
 }

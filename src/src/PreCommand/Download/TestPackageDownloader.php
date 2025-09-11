@@ -433,27 +433,27 @@ class TestPackageDownloader {
 		$metadata_array  = $response['urls'];
 		$artifact_groups = $response['artifact_groups'] ?? [];
 
+		// Initialize metadata variable
+		$metadata = null;
+
 		// Check if we have metadata directly for this reference
 		if ( isset( $metadata_array[ $reference ] ) ) {
 			$metadata = $metadata_array[ $reference ];
 		} else {
 			// Check if this reference is in an artifact group (subpackage case)
-			$found = false;
 			foreach ( $artifact_groups as $group_key => $group_refs ) {
 				if ( in_array( $reference, $group_refs, true ) ) {
 					// Find the primary package in this group that has metadata
 					foreach ( $group_refs as $ref ) {
 						if ( isset( $metadata_array[ $ref ] ) ) {
 							$metadata = $metadata_array[ $ref ];
-							$found    = true;
-							break;
+							break 2; // Break out of both loops
 						}
 					}
-					break;
 				}
 			}
 
-			if ( ! $found ) {
+			if ( $metadata === null ) {
 				throw new \RuntimeException( "No metadata found for package '$reference'" );
 			}
 		}

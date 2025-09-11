@@ -127,8 +127,8 @@ class E2EEnvironment extends Environment {
 		if ( ! empty( $this->env_info->test_packages_for_setup ) ) {
 			foreach ( $this->env_info->test_packages_for_setup as $info ) {
 				// Check if manifest exists and has mu_plugins
-				if ( ! empty( $info['manifest'] ) && is_array( $info['manifest'] ) && ! empty( $info['manifest']['mu_plugins'] ) ) {
-					$container_path = $info['container_path'] ?? '';
+				if ( ! empty( $info['manifest'] ) && ! empty( $info['manifest']['mu_plugins'] ) ) {
+					$container_path = $info['container_path'];
 					if ( empty( $container_path ) ) {
 						continue;
 					}
