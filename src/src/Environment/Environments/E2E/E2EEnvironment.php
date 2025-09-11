@@ -366,13 +366,13 @@ class E2EEnvironment extends Environment {
 			'busybox',
 			'sh',
 			'-c',
-			'mkdir -p /var/www/html/wp-content/plugins && mkdir -p /var/www/html/wp-content/themes && mkdir -p /var/www/html/wp-content/mu-plugins && chown -R 1000:1000 /var/www/html',
+			'mkdir -p /var/www/html/wp-content/plugins && mkdir -p /var/www/html/wp-content/themes && mkdir -p /var/www/html/wp-content/mu-plugins && chown -R 82:82 /var/www/html',
 		];
 
 		/*
 		 * Create "wp-content/plugins", "wp-content/themes", and "wp-content/mu-plugins" directories with correct permissions.
-		 * Owned by 1000:1000 to ensure the cp command in post_up succeeds without root or 777.
-		 * Fixuid skips the mounted volume /var/www/html, so we set ownership directly.
+		 * We make them owned by 82:82, which is the UID of "www-data" in our alpine PHP images.
+		 * Once the container starts and the entrypoint is triggered, FixUID will map these to the runtime UID.
 		 */
 		$dirs_process = new Process( $args );
 		$dirs_process->mustRun( function ( $type, $buffer ) {
