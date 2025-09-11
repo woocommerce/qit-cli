@@ -97,6 +97,19 @@ class UpEnvironmentCommand extends QITCommand {
 			return Command::FAILURE;
 		}
 
+		/* ─ Display experimental warning when using qit.json ─ */
+		// Check if we're using a qit.json file (either via --config or auto-detected)
+		$config_file = $input->getOption( 'config' );
+		if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {
+			$config_file = getcwd() . '/qit.json';
+		}
+		
+		// Show warning only when qit.json is being used and not in JSON output mode
+		if ( $config_file !== null && ! $input->getOption( 'json' ) ) {
+			$output->writeln( '<comment>[EXPERIMENTAL]</comment> Using qit.json - this feature is highly experimental. Please report any issues or feedback at https://github.com/woocommerce/qit-cli/issues' );
+			$output->writeln( '' );
+		}
+
 		/*
 		 * ─ 0. Check for test packages and process requirements ─
 		 */
