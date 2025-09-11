@@ -164,6 +164,45 @@ class UpEnvironmentCommand extends QITCommand {
 		$env_config = $this->get_environment_config( $env_name );
 		$env_config = $this->applyCliOverrides( $env_config, $input );
 
+		/* ─ 1.1. Add SUT as a plugin/theme if defined in qit.json ─ */
+		$sut = $this->get_resolved_sut();
+		if ( $sut !== null && isset( $sut['type'] ) && isset( $sut['slug'] ) && isset( $sut['source'] ) ) {
+			// Convert SUT to extension format and add to the appropriate list
+			$sut_extension = $this->convert_sut_to_extension( $sut );
+			
+			if ( $sut['type'] === 'plugin' ) {
+				$env_config['plugins'] = $env_config['plugins'] ?? [];
+				// Check if the SUT plugin is not already in the list
+				$sut_exists = false;
+				foreach ( $env_config['plugins'] as $plugin ) {
+					$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+					if ( $slug === $sut['slug'] ) {
+						$sut_exists = true;
+						break;
+					}
+				}
+				if ( ! $sut_exists ) {
+					// Add SUT as the first plugin so it takes precedence
+					array_unshift( $env_config['plugins'], $sut_extension );
+				}
+			} elseif ( $sut['type'] === 'theme' ) {
+				$env_config['themes'] = $env_config['themes'] ?? [];
+				// Check if the SUT theme is not already in the list
+				$sut_exists = false;
+				foreach ( $env_config['themes'] as $theme ) {
+					$slug = is_string( $theme ) ? $theme : ( $theme['slug'] ?? null );
+					if ( $slug === $sut['slug'] ) {
+						$sut_exists = true;
+						break;
+					}
+				}
+				if ( ! $sut_exists ) {
+					// Add SUT as the first theme so it takes precedence
+					array_unshift( $env_config['themes'], $sut_extension );
+				}
+			}
+		}
+
 		/* ─ 1.5. Process test package requirements and add missing dependencies ─ */
 		$this->process_test_package_requirements( $env_config, $input, $output );
 
@@ -1267,6 +1306,58 @@ HELP;
 		if ( $requires_tunnel ) {
 			\QIT_CLI\App::setVar( 'test_package_requires_tunnel', true );
 		}
+	}
+
+	/**
+	 * Convert SUT configuration to extension format for environment.
+	 *
+	 * @param array<string,mixed> $sut The SUT configuration from qit.json.
+	 * @return array<string,mixed> Extension configuration.
+	 */
+	private function convert_sut_to_extension( array $sut ): array {
+		$extension = [
+			'slug' => $sut['slug'],
+			'added_automatically' => 'Added as SUT from qit.json',
+		];
+
+		// Handle different source types
+		switch ( $sut['source']['type'] ) {
+			case 'local':
+				$extension['from'] = 'local';
+				// Use resolved_path if available, otherwise use path
+				$extension['source'] = $sut['source']['resolved_path'] ?? $sut['source']['path'];
+				break;
+
+			case 'url':
+				$extension['from'] = 'url';
+				$extension['source'] = $sut['source']['url'];
+				break;
+
+			case 'wporg':
+				$extension['from'] = 'wporg';
+				$extension['version'] = $sut['source']['version'] ?? 'stable';
+				break;
+
+			case 'wccom':
+				$extension['from'] = 'wccom';
+				$extension['version'] = $sut['source']['version'] ?? 'stable';
+				if ( isset( $sut['source']['wccom_id'] ) ) {
+					$extension['wccom_id'] = $sut['source']['wccom_id'];
+				}
+				break;
+
+			case 'build':
+				// For build sources, we need to run the build command first
+				// This is handled elsewhere, for now just set as local with the output path
+				$extension['from'] = 'local';
+				$extension['source'] = $sut['source']['resolved_output'] ?? $sut['source']['output'];
+				break;
+
+			default:
+				throw new \RuntimeException( "Unknown SUT source type: {$sut['source']['type']}" );
+		}
+
+		return $extension;
 	}
 
 	/**
