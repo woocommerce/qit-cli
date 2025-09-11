@@ -123,6 +123,30 @@ class E2EEnvironment extends Environment {
 		// Copy mu-plugins.
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
 
+		// Copy mu-plugins from test packages
+		if ( ! empty( $this->env_info->test_packages_for_setup ) ) {
+			foreach ( $this->env_info->test_packages_for_setup as $info ) {
+				// Check if manifest exists and has mu_plugins
+				if ( ! empty( $info['manifest'] ) && is_array( $info['manifest'] ) && ! empty( $info['manifest']['mu_plugins'] ) ) {
+					$container_path = $info['container_path'] ?? '';
+					if ( empty( $container_path ) ) {
+						continue;
+					}
+					
+					foreach ( $info['manifest']['mu_plugins'] as $mu_plugin ) {
+						// Resolve the mu-plugin path relative to the test package directory
+						$mu_plugin_path = $container_path . '/' . ltrim( $mu_plugin, './' );
+						$copy_command = sprintf( 
+							'if [ -f "%s" ]; then cp "%s" /var/www/html/wp-content/mu-plugins/ 2>&1; fi',
+							$mu_plugin_path,
+							$mu_plugin_path
+						);
+						$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', $copy_command ] );
+					}
+				}
+			}
+		}
+
 		// Setup WordPress.
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
