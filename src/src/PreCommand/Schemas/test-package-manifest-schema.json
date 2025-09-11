@@ -3,7 +3,7 @@
   "title": "QIT Test Package Schema",
   "description": "Schema for QIT test package manifest files",
   "type": "object",
-  "required": ["package", "test"],
+  "required": ["package", "test", "test_type"],
   "additionalProperties": false,
   "allOf": [
     {
