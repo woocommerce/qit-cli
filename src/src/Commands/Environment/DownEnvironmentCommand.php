@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Helper\QuestionHelper;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -31,7 +32,8 @@ class DownEnvironmentCommand extends QITCommand {
 		parent::configure();
 		$this
 			->setDescription( 'Stops a local test environment.' )
-			->setAliases( [ 'env:stop' ] );
+			->setAliases( [ 'env:stop' ] )
+			->addArgument( 'environment', InputArgument::OPTIONAL, 'Environment ID to stop, or "all" to stop all environments' );
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
@@ -44,12 +46,40 @@ class DownEnvironmentCommand extends QITCommand {
 		}
 
 		$selected_environment = null;
+		$environment_arg = $input->getArgument( 'environment' );
 
-		if ( count( $running_environments ) === 1 ) {
+		// If an argument was provided, use it
+		if ( $environment_arg ) {
+			if ( $environment_arg === 'all' ) {
+				$selected_environment = 'all';
+			} else {
+				// Try to find the environment by ID
+				$found = false;
+				foreach ( $running_environments as $env_id => $env_info ) {
+					if ( $env_id === $environment_arg ) {
+						$selected_environment = $env_info;
+						$found = true;
+						break;
+					}
+				}
+				
+				if ( ! $found ) {
+					$output->writeln( sprintf( '<error>Environment "%s" not found.</error>', $environment_arg ) );
+					$output->writeln( '<info>Running environments:</info>' );
+					foreach ( $running_environments as $env_id => $env_info ) {
+						$output->writeln( sprintf( '  - %s (Created: %s)', 
+							$env_id,
+							format_elapsed_time( time() - $env_info->created_at )
+						) );
+					}
+					return self::FAILURE;
+				}
+			}
+		} elseif ( count( $running_environments ) === 1 ) {
+			// If no argument and only one environment, select it
 			$selected_environment = array_shift( $running_environments );
-		}
-
-		if ( is_null( $selected_environment ) ) {
+		} else {
+			// Multiple environments and no argument - show interactive menu
 			$environment_choices = array_map( function ( EnvInfo $environment ) {
 				return sprintf( 'Created: %s, Status: %s',
 					format_elapsed_time( time() - $environment->created_at ),
