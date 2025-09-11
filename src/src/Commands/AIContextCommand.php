@@ -46,6 +46,9 @@ AVAILABLE CONTEXT TYPES:
   <info>writing-test-packages</info>        Best practices for creating QIT test packages
                            (Coming soon)
                            
+  <info>test-script-execution</info>        How test package scripts are executed in QIT
+                           Working directories, file paths, and environment variables
+                           
   <info>test-execution-scenarios</info>    How test packages are executed in different contexts
                            Manual testing vs automated runs, phase execution rules
 
@@ -102,6 +105,8 @@ HELP
 				return $this->showQITBasicsContext( $output );
 			case 'understanding-test-packages':
 				return $this->showTestPackagesContext( $output );
+			case 'test-script-execution':
+				return $this->showTestScriptExecutionContext( $output );
 			case 'test-execution-scenarios':
 				return $this->showTestExecutionScenariosContext( $output );
 			case 'writing-test-packages':
@@ -140,6 +145,12 @@ HELP
 		$output->writeln( '<comment>understanding-test-packages</comment>' );
 		$output->writeln( '  Test package lifecycle: global setup, setup, teardown phases' );
 		$output->writeln( '  Usage: <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '' );
+
+		$output->writeln( '<comment>test-script-execution</comment>' );
+		$output->writeln( '  How test package scripts are executed in QIT' );
+		$output->writeln( '  Working directories, file paths, and environment variables' );
+		$output->writeln( '  Usage: <info>qit ai-context test-script-execution</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>test-execution-scenarios</comment>' );
@@ -784,6 +795,225 @@ HELP
 				++$file_count;
 			}
 		}
+	}
+
+	/**
+	 * Show test script execution context
+	 */
+	private function showTestScriptExecutionContext( OutputInterface $output ): int {
+		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
+		$output->writeln( 'TEST SCRIPT EXECUTION IN QIT - AGENTIC AI CONTEXT' );
+		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
+		$output->writeln( '' );
+		$output->writeln( 'This context explains how QIT executes test package scripts,' );
+		$output->writeln( 'including working directories, file paths, and environment setup.' );
+		$output->writeln( '' );
+
+		// Working Directory Section
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'WORKING DIRECTORY BEHAVIOR' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'When QIT executes test package scripts (globalSetup, setup, run, etc.),' );
+		$output->writeln( 'it ALWAYS changes to the test package directory first:' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># QIT internally does:</comment>' );
+		$output->writeln( '  cd /qit/packages/{package-name}' );
+		$output->writeln( '  ./bootstrap/global-setup.sh' );
+		$output->writeln( '' );
+		$output->writeln( 'This means:' );
+		$output->writeln( '  • Scripts execute FROM the test package root directory' );
+		$output->writeln( '  • Relative paths work as expected (./test-data/, ./config/, etc.)' );
+		$output->writeln( '  • No need to determine package location dynamically' );
+		$output->writeln( '' );
+		$output->writeln( '<info>Key Insight:</info> Your scripts can safely use relative paths!' );
+		$output->writeln( '' );
+
+		// File Path Resolution
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'FILE PATH RESOLUTION' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'CORRECT - Using relative paths:' );
+		$output->writeln( '  ✓ <info>./test-data/images/logo.png</info>' );
+		$output->writeln( '  ✓ <info>./config/test-settings.json</info>' );
+		$output->writeln( '  ✓ <info>../other-package/shared-data.csv</info> (if mounted)' );
+		$output->writeln( '' );
+		$output->writeln( 'INCORRECT - Hardcoded paths that will fail:' );
+		$output->writeln( '  ✗ <error>/var/www/html/wp-content/plugins/my-plugin/test-data/</error>' );
+		$output->writeln( '  ✗ <error>/home/user/projects/test-data/</error>' );
+		$output->writeln( '  ✗ <error>C:\\Users\\Developer\\test-data\\</error>' );
+		$output->writeln( '' );
+		$output->writeln( 'Example in bash script:' );
+		$output->writeln( '  <comment>#!/bin/bash</comment>' );
+		$output->writeln( '  <comment># In global-setup.sh</comment>' );
+		$output->writeln( '  ' );
+		$output->writeln( '  <comment># Upload test images - using relative path</comment>' );
+		$output->writeln( '  for image in ./test-data/images/*.png; do' );
+		$output->writeln( '      wp media import "$image" --title="$(basename ${image%.*})" \\' );
+		$output->writeln( '        --allow-root' );
+		$output->writeln( '  done' );
+		$output->writeln( '' );
+
+		// Container Paths
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'CONTAINER PATHS AND MOUNTING' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Test packages are mounted at:' );
+		$output->writeln( '  <info>/qit/packages/{package-name}/</info>' );
+		$output->writeln( '' );
+		$output->writeln( 'The package name is derived from:' );
+		$output->writeln( '  • Local packages: directory name or manifest package field' );
+		$output->writeln( '  • Remote packages: {vendor}/{package} from manifest' );
+		$output->writeln( '' );
+		$output->writeln( 'Examples:' );
+		$output->writeln( '  • woocommerce/e2e → /qit/packages/woocommerce-e2e/' );
+		$output->writeln( '  • my-tests → /qit/packages/my-tests/' );
+		$output->writeln( '  • partner/integration:1.0 → /qit/packages/partner-integration/' );
+		$output->writeln( '' );
+		$output->writeln( 'WordPress installation:' );
+		$output->writeln( '  • WordPress root: <info>/var/www/html/</info>' );
+		$output->writeln( '  • Plugins: <info>/var/www/html/wp-content/plugins/</info>' );
+		$output->writeln( '  • Uploads: <info>/var/www/html/wp-content/uploads/</info>' );
+		$output->writeln( '' );
+
+		// Environment Variables
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'ENVIRONMENT VARIABLES' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'QIT provides these environment variables to scripts:' );
+		$output->writeln( '' );
+		$output->writeln( '  <info>QIT_ENV_ID</info>         - Unique environment identifier' );
+		$output->writeln( '                      Example: qitenv0583dcbd67cf4a9c' );
+		$output->writeln( '' );
+		$output->writeln( '  <info>QIT_SITE_URL</info>       - WordPress site URL' );
+		$output->writeln( '                      Example: http://localhost:32797' );
+		$output->writeln( '' );
+		$output->writeln( '  <info>QIT_ADMIN_EMAIL</info>    - Admin user email' );
+		$output->writeln( '                      Default: admin@example.com' );
+		$output->writeln( '' );
+		$output->writeln( '  <info>QIT_ADMIN_PASSWORD</info> - Admin user password' );
+		$output->writeln( '                      Default: password' );
+		$output->writeln( '' );
+		$output->writeln( '  <info>QIT_ADMIN_USERNAME</info> - Admin username' );
+		$output->writeln( '                      Default: admin' );
+		$output->writeln( '' );
+		$output->writeln( 'Using in scripts:' );
+		$output->writeln( '  <comment>if [ -n "$QIT_ENV_ID" ]; then</comment>' );
+		$output->writeln( '      <comment># Running in QIT environment</comment>' );
+		$output->writeln( '      qit env:exec --env_id=$QIT_ENV_ID "wp cache flush --allow-root"' );
+		$output->writeln( '  <comment>else</comment>' );
+		$output->writeln( '      <comment># Running locally (wp-env, etc.)</comment>' );
+		$output->writeln( '      wp cache flush' );
+		$output->writeln( '  <comment>fi</comment>' );
+		$output->writeln( '' );
+
+		// Real-World Examples
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'REAL-WORLD EXAMPLES' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '<comment>Example 1: Importing test data in global-setup.sh</comment>' );
+		$output->writeln( '' );
+		$output->writeln( '  #!/bin/bash' );
+		$output->writeln( '  # Upload product images' );
+		$output->writeln( '  for img in ./test-data/products/*.jpg; do' );
+		$output->writeln( '      [ -f "$img" ] || continue' );
+		$output->writeln( '      wp media import "$img" --title="$(basename ${img%.*})" \\' );
+		$output->writeln( '        --porcelain --allow-root' );
+		$output->writeln( '  done' );
+		$output->writeln( '' );
+		$output->writeln( '  # Import WooCommerce products from CSV' );
+		$output->writeln( '  wp wc product_csv import ./test-data/products.csv --user=1 \\' );
+		$output->writeln( '    --allow-root' );
+		$output->writeln( '' );
+		$output->writeln( '<comment>Example 2: Loading configuration in JavaScript/TypeScript tests</comment>' );
+		$output->writeln( '' );
+		$output->writeln( '  // In tests/setup.js' );
+		$output->writeln( '  const path = require(\'path\');' );
+		$output->writeln( '  const testDataDir = path.join(__dirname, \'../test-data\');' );
+		$output->writeln( '  const config = require(\'../config/test-config.json\');' );
+		$output->writeln( '' );
+		$output->writeln( '<comment>Example 3: Conditional execution based on environment</comment>' );
+		$output->writeln( '' );
+		$output->writeln( '  #!/bin/bash' );
+		$output->writeln( '  if [ -n "$QIT_ENV_ID" ]; then' );
+		$output->writeln( '      echo "Running in QIT environment: $QIT_ENV_ID"' );
+		$output->writeln( '      # QIT-specific setup' );
+		$output->writeln( '      TEST_URL="$QIT_SITE_URL"' );
+		$output->writeln( '  else' );
+		$output->writeln( '      echo "Running in local environment"' );
+		$output->writeln( '      # Local environment setup' );
+		$output->writeln( '      TEST_URL="http://localhost:8888"' );
+		$output->writeln( '  fi' );
+		$output->writeln( '' );
+
+		// Common Mistakes
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'COMMON MISTAKES AND SOLUTIONS' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '<error>Mistake 1:</error> Hardcoding WordPress paths' );
+		$output->writeln( '  Wrong: /var/www/html/wp-content/plugins/my-plugin/test-data/' );
+		$output->writeln( '  Right: ./test-data/ (relative to test package)' );
+		$output->writeln( '' );
+		$output->writeln( '<error>Mistake 2:</error> Assuming package name in container path' );
+		$output->writeln( '  Wrong: /qit/packages/my-custom-name/ (hardcoded)' );
+		$output->writeln( '  Right: Use relative paths or detect via $PWD' );
+		$output->writeln( '' );
+		$output->writeln( '<error>Mistake 3:</error> Not checking for file existence' );
+		$output->writeln( '  Wrong: wp media import ./images/*.png' );
+		$output->writeln( '  Right: [ -f "$file" ] && wp media import "$file"' );
+		$output->writeln( '' );
+		$output->writeln( '<error>Mistake 4:</error> Using wp-env specific commands' );
+		$output->writeln( '  Wrong: pnpm exec wp-env run tests-cli -- wp ...' );
+		$output->writeln( '  Right: Use QIT_ENV_ID check (see examples above)' );
+		$output->writeln( '' );
+
+		// Debugging Tips
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'DEBUGGING SCRIPT EXECUTION' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( 'Add debug output to your scripts:' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment>#!/bin/bash</comment>' );
+		$output->writeln( '  <comment>set -x  # Enable debug output</comment>' );
+		$output->writeln( '  ' );
+		$output->writeln( '  echo "Current directory: $(pwd)"' );
+		$output->writeln( '  echo "Directory contents: $(ls -la)"' );
+		$output->writeln( '  echo "QIT_ENV_ID: $QIT_ENV_ID"' );
+		$output->writeln( '  echo "Package directory structure:"' );
+		$output->writeln( '  find . -type d -maxdepth 2' );
+		$output->writeln( '' );
+		$output->writeln( 'View script output in verbose mode:' );
+		$output->writeln( '  <info>qit env:up --test-package=./my-tests -v</info>' );
+		$output->writeln( '' );
+		$output->writeln( 'Execute commands directly in environment:' );
+		$output->writeln( '  <info>qit env:exec --env_id=$QIT_ENV_ID "pwd"</info>' );
+		$output->writeln( '  <info>qit env:exec --env_id=$QIT_ENV_ID "ls -la /qit/packages/"</info>' );
+		$output->writeln( '' );
+
+		// Cross-references
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'RELATED CONTEXTS' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '• For test package structure:' );
+		$output->writeln( '  Run <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '' );
+		$output->writeln( '• For execution scenarios:' );
+		$output->writeln( '  Run <info>qit ai-context test-execution-scenarios</info>' );
+		$output->writeln( '' );
+		$output->writeln( '• For QIT architecture:' );
+		$output->writeln( '  Run <info>qit ai-context qit-basics</info>' );
+		$output->writeln( '' );
+		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
+		$output->writeln( '' );
+
+		return Command::SUCCESS;
 	}
 
 	/**
