@@ -107,9 +107,9 @@ class UpEnvironmentCommand extends QITCommand {
 
 		// Get explicit test packages from --test-package option FIRST
 		$explicit_packages = $input->getOption( 'test-package' ) ?? [];
-		
+
 		// Check for local test manifest
-		$local_test_dir = null;
+		$local_test_dir     = null;
 		$has_local_manifest = false;
 		if ( ! $input->getOption( 'skip-setup' ) ) {
 			$setup_dir = $input->getOption( 'setup' );
@@ -121,7 +121,7 @@ class UpEnvironmentCommand extends QITCommand {
 
 			if ( file_exists( $test_dir . '/qit-test.json' ) ) {
 				$has_local_manifest = true;
-				$local_test_dir = $test_dir;
+				$local_test_dir     = $test_dir;
 			}
 		}
 
@@ -132,19 +132,19 @@ class UpEnvironmentCommand extends QITCommand {
 			$all_test_packages = $explicit_packages;
 			$this->processTestPackageRequirements( $explicit_packages, $output );
 		}
-		
+
 		// Add local directory last if it exists and wasn't explicitly specified
 		if ( $has_local_manifest && ! in_array( $local_test_dir, $all_test_packages, true ) ) {
 			// Check if any explicit package points to the same directory (different path representations)
 			$local_realpath = realpath( $local_test_dir );
-			$already_added = false;
+			$already_added  = false;
 			foreach ( $all_test_packages as $pkg ) {
 				if ( is_dir( $pkg ) && realpath( $pkg ) === $local_realpath ) {
 					$already_added = true;
 					break;
 				}
 			}
-			
+
 			if ( ! $already_added ) {
 				$all_test_packages[] = $local_test_dir;
 				// Process requirements for local manifest
@@ -1101,7 +1101,7 @@ HELP;
 	/**
 	 * Determine the main package based on execution order.
 	 * The main package is the one that will have its setup phase run.
-	 * 
+	 *
 	 * With the new order-respecting logic, the main package is simply
 	 * the first package in the list, as they're already ordered correctly
 	 * by command-line specification.

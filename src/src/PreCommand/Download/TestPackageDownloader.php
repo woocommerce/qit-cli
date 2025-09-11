@@ -1008,7 +1008,7 @@ class TestPackageDownloader {
 			// Subpackage must specify run phase
 			throw new \RuntimeException(
 				"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
-				"Subpackages exist to run a subset of tests from the parent package."
+				'Subpackages exist to run a subset of tests from the parent package.'
 			);
 		}
 

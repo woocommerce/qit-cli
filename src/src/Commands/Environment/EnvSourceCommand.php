@@ -63,12 +63,12 @@ class EnvSourceCommand extends QITCommand {
 		// In verbose mode, show all environment variables
 		if ( $output->isVerbose() ) {
 			$vars = $this->environment_vars->get_mapping( $env_info );
-			
+
 			// Merge in custom environment variables (including secrets)
 			if ( ! empty( $env_info->envs ) && is_array( $env_info->envs ) ) {
 				$vars = array_merge( $vars, $env_info->envs );
 			}
-			
+
 			$output->writeln( '', OutputInterface::VERBOSITY_VERBOSE );
 			$output->writeln( '<comment>Environment variables that will be exported:</comment>', OutputInterface::VERBOSITY_VERBOSE );
 			foreach ( $vars as $key => $value ) {

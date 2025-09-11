@@ -46,7 +46,7 @@ class DownEnvironmentCommand extends QITCommand {
 		}
 
 		$selected_environment = null;
-		$environment_arg = $input->getArgument( 'environment' );
+		$environment_arg      = $input->getArgument( 'environment' );
 
 		// If an argument was provided, use it
 		if ( $environment_arg ) {
@@ -58,16 +58,16 @@ class DownEnvironmentCommand extends QITCommand {
 				foreach ( $running_environments as $env_id => $env_info ) {
 					if ( $env_id === $environment_arg ) {
 						$selected_environment = $env_info;
-						$found = true;
+						$found                = true;
 						break;
 					}
 				}
-				
+
 				if ( ! $found ) {
 					$output->writeln( sprintf( '<error>Environment "%s" not found.</error>', $environment_arg ) );
 					$output->writeln( '<info>Running environments:</info>' );
 					foreach ( $running_environments as $env_id => $env_info ) {
-						$output->writeln( sprintf( '  - %s (Created: %s)', 
+						$output->writeln( sprintf( '  - %s (Created: %s)',
 							$env_id,
 							format_elapsed_time( time() - $env_info->created_at )
 						) );

@@ -558,7 +558,7 @@ final class TestPackageManifest {
 					throw new InvalidArgumentException(
 						"Subpackage '{$subpackage_id}' cannot override '{$phase}' phase. " .
 						"Subpackages are pure subsets and can only override the 'run' phase to select which tests to execute. " .
-						"If you need different setup/teardown, create a separate test package instead."
+						'If you need different setup/teardown, create a separate test package instead.'
 					);
 				}
 			}
@@ -567,7 +567,7 @@ final class TestPackageManifest {
 			if ( ! isset( $phases['run'] ) || empty( $phases['run'] ) ) {
 				throw new InvalidArgumentException(
 					"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
-					"Subpackages exist to run a subset of tests from the parent package."
+					'Subpackages exist to run a subset of tests from the parent package.'
 				);
 			}
 		}

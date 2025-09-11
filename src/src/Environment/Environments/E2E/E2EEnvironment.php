@@ -132,11 +132,11 @@ class E2EEnvironment extends Environment {
 					if ( empty( $container_path ) ) {
 						continue;
 					}
-					
+
 					foreach ( $info['manifest']['mu_plugins'] as $mu_plugin ) {
 						// Resolve the mu-plugin path relative to the test package directory
 						$mu_plugin_path = $container_path . '/' . ltrim( $mu_plugin, './' );
-						$copy_command = sprintf( 
+						$copy_command   = sprintf(
 							'if [ -f "%s" ]; then cp "%s" /var/www/html/wp-content/mu-plugins/ 2>&1; fi',
 							$mu_plugin_path,
 							$mu_plugin_path

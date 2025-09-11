@@ -400,7 +400,7 @@ class RunE2ECommand extends QITCommand {
 				$is_development,
 				$notify
 			);
-			
+
 			// Get the test run ID from the notifier
 			$test_run_id = App::getVar( 'test_run_id' );
 		}
@@ -541,7 +541,7 @@ class RunE2ECommand extends QITCommand {
 		if ( $input->getOption( 'json' ) ) {
 			App::setVar( 'QIT_JSON_MODE', true );
 		}
-		
+
 		// Output JSON if requested, otherwise show summary
 		if ( $input->getOption( 'json' ) ) {
 			// Fetch the test report from Manager API, just like 'qit get' does
@@ -555,22 +555,22 @@ class RunE2ECommand extends QITCommand {
 						] )
 						->with_retry( 3 )
 						->request();
-					
+
 					// Output the Manager API response directly
 					$output->write( $json );
 				} catch ( \Exception $e ) {
 					// If we can't fetch from Manager, output minimal info
 					$output->write( json_encode( [
 						'test_run_id' => $test_run_id,
-						'status' => $exit_status === Command::SUCCESS ? 'success' : 'failed',
-						'error' => 'Could not fetch full test report from Manager'
+						'status'      => $exit_status === Command::SUCCESS ? 'success' : 'failed',
+						'error'       => 'Could not fetch full test report from Manager',
 					] ) );
 				}
 			} else {
 				// No test_run_id available (no SUT), output minimal info
 				$output->write( json_encode( [
-					'status' => $exit_status === Command::SUCCESS ? 'success' : 'failed',
-					'message' => 'No test run ID available (test run without SUT)'
+					'status'  => $exit_status === Command::SUCCESS ? 'success' : 'failed',
+					'message' => 'No test run ID available (test run without SUT)',
 				] ) );
 			}
 		} else {
@@ -1752,5 +1752,4 @@ class RunE2ECommand extends QITCommand {
 		$name = str_replace( [ '-', '_' ], ' ', $slug );
 		return ucwords( $name );
 	}
-
 }

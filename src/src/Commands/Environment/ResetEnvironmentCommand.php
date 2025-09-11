@@ -86,7 +86,7 @@ HELP
 				// In non-interactive contexts (like tests), use the most recent environment
 				if ( ! $input->isInteractive() ) {
 					// Sort by env_id (which contains timestamp) to get most recent
-					uksort( $environments, function( $a, $b ) {
+					uksort( $environments, function ( $a, $b ) {
 						return strcmp( $b, $a ); // Reverse sort for most recent first
 					} );
 					$env_info = reset( $environments );
