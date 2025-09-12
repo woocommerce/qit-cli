@@ -809,13 +809,11 @@ class TestPackageDownloader {
 	 * @throws \RuntimeException If npm install fails.
 	 */
 	protected function install_npm_dependencies( string $package_dir ): void {
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( "Installing npm dependencies in $package_dir" );
-		}
+		// Always show feedback about npm dependencies
+		$this->output->writeln( 'Installing npm dependencies...' );
 
-		// Use npm ci if package-lock.json exists, otherwise use npm install
-		$use_ci      = file_exists( $package_dir . '/package-lock.json' );
-		$npm_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
+		// Always use npm install to avoid sync issues
+		$npm_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npm install';
 
 		$npm_output      = [];
 		$npm_return_code = 0;
@@ -823,13 +821,10 @@ class TestPackageDownloader {
 		exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
 
 		if ( $npm_return_code !== 0 ) {
-			$command_used = $use_ci ? 'npm ci' : 'npm install';
-			throw new \RuntimeException( $command_used . ' failed: ' . implode( "\n", $npm_output ) );
+			throw new \RuntimeException( 'npm install failed: ' . implode( "\n", $npm_output ) );
 		}
 
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( 'npm dependencies installed successfully' );
-		}
+		$this->output->writeln( 'npm dependencies installed successfully' );
 
 		// Ensure Playwright browsers are installed if Playwright is present
 		$this->install_playwright_browsers_if_needed( $package_dir );
@@ -841,10 +836,16 @@ class TestPackageDownloader {
 	 * @param string $package_dir The directory containing the package.
 	 */
 	protected function install_playwright_browsers_if_needed( string $package_dir ): void {
+		// Always show feedback about browser check
+		$this->output->writeln( 'Checking for Playwright browsers...' );
+
 		// Check if Playwright is installed
 		if ( ! file_exists( $package_dir . '/node_modules/@playwright/test' ) &&
 			! file_exists( $package_dir . '/node_modules/playwright' ) &&
 			! file_exists( $package_dir . '/node_modules/playwright-core' ) ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( 'Playwright not detected, skipping browser installation' );
+			}
 			return;
 		}
 
@@ -874,14 +875,12 @@ class TestPackageDownloader {
 		}
 
 		if ( ! $browsers_needed ) {
-			if ( $this->output->isVerbose() ) {
-				$this->output->writeln( 'Playwright browsers already installed, skipping...' );
-			}
+			$this->output->writeln( 'Playwright browsers already installed' );
 			return;
 		}
 
 		// Browsers need to be installed
-		$this->output->writeln( 'Installing Playwright browsers...' );
+		$this->output->writeln( 'Installing Playwright browsers (this may take a few minutes)...' );
 
 		$playwright_command     = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install';
 		$playwright_output      = [];
