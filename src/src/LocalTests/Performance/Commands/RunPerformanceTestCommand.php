@@ -712,6 +712,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$options['test_tag'] = $test_argument;
 		}
 
+		// Add iterations option for remote execution.
+		$iterations = $input->getOption( 'iterations' );
+		if ( ! empty( $iterations ) ) {
+			$options['iterations'] = (int) $iterations;
+		}
+
 		// Handle ZIP upload if testing local file (following CreateRunCommands pattern).
 		$source = $input->getOption( 'source' );
 		if ( ! empty( $source ) && file_exists( $source ) ) {
