@@ -72,7 +72,7 @@ class ShowReportCommand extends Command {
 		// Also handle --url_only option early.
 		if ( $input->getOption( 'url_only' ) ) {
 			if ( ! is_null( $supplied_report_dir ) ) {
-				throw new \RuntimeException( 'The --url_only option cannot be used with the --report_dir option.' );
+				throw new \RuntimeException( 'The --url_only option cannot be used when the report directory is provided.' );
 			}
 
 			if ( empty( $remote_report ) ) {
