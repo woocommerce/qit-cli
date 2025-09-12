@@ -97,13 +97,15 @@ class UpEnvironmentCommand extends QITCommand {
 			return Command::FAILURE;
 		}
 
-		/* ─ Display experimental warning when using qit.json ─ */
+		/*
+		─ Display experimental warning when using qit.json ─
+		*/
 		// Check if we're using a qit.json file (either via --config or auto-detected)
 		$config_file = $input->getOption( 'config' );
 		if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {
 			$config_file = getcwd() . '/qit.json';
 		}
-		
+
 		// Show warning only when qit.json is being used and not in JSON output mode
 		if ( $config_file !== null && ! $input->getOption( 'json' ) ) {
 			$output->writeln( '<comment>[EXPERIMENTAL]</comment> Using qit.json - this feature is highly experimental. Please report any issues or feedback at https://github.com/woocommerce/qit-cli/issues' );
@@ -182,7 +184,7 @@ class UpEnvironmentCommand extends QITCommand {
 		if ( $sut !== null && isset( $sut['type'] ) && isset( $sut['slug'] ) && isset( $sut['source'] ) ) {
 			// Convert SUT to extension format and add to the appropriate list
 			$sut_extension = $this->convert_sut_to_extension( $sut );
-			
+
 			if ( $sut['type'] === 'plugin' ) {
 				$env_config['plugins'] = $env_config['plugins'] ?? [];
 				// Check if the SUT plugin is not already in the list
@@ -1329,7 +1331,7 @@ HELP;
 	 */
 	private function convert_sut_to_extension( array $sut ): array {
 		$extension = [
-			'slug' => $sut['slug'],
+			'slug'                => $sut['slug'],
 			'added_automatically' => 'Added as SUT from qit.json',
 		];
 
@@ -1342,17 +1344,17 @@ HELP;
 				break;
 
 			case 'url':
-				$extension['from'] = 'url';
+				$extension['from']   = 'url';
 				$extension['source'] = $sut['source']['url'];
 				break;
 
 			case 'wporg':
-				$extension['from'] = 'wporg';
+				$extension['from']    = 'wporg';
 				$extension['version'] = $sut['source']['version'] ?? 'stable';
 				break;
 
 			case 'wccom':
-				$extension['from'] = 'wccom';
+				$extension['from']    = 'wccom';
 				$extension['version'] = $sut['source']['version'] ?? 'stable';
 				if ( isset( $sut['source']['wccom_id'] ) ) {
 					$extension['wccom_id'] = $sut['source']['wccom_id'];
@@ -1362,7 +1364,7 @@ HELP;
 			case 'build':
 				// For build sources, we need to run the build command first
 				// This is handled elsewhere, for now just set as local with the output path
-				$extension['from'] = 'local';
+				$extension['from']   = 'local';
 				$extension['source'] = $sut['source']['resolved_output'] ?? $sut['source']['output'];
 				break;
 

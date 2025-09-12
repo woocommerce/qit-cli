@@ -122,9 +122,6 @@ $container->singleton( Cache::class );
 $container->singleton( TunnelRunner::class );
 $container->bind( 'src_dir', __DIR__ );
 
-// Register shared services
-$container->singleton( \QIT_CLI\TestPackageDownloader::class );
-
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
 require_once __DIR__ . '/json-filter.php';
