@@ -48,7 +48,7 @@ class K6DockerConfig {
 			'5665:5665', // Port for k6 live web dashboard.
 		];
 
-		// Run k6 as current user to match file ownership
+		// Run k6 as current user to match file ownership.
 		if ( Docker::should_set_user() ) {
 			$args[] = '--user';
 			$args[] = implode( ':', Docker::get_user_and_group() );
@@ -109,7 +109,7 @@ class K6DockerConfig {
 		$args[] = '-e';
 		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/dashboard-report.html';
 
-		// Set HOME for browser support when running with --user
+		// Set HOME for browser support when running with --user.
 		if ( Docker::should_set_user() ) {
 			$args[] = '-e';
 			$args[] = 'HOME=/tmp';
@@ -136,7 +136,6 @@ class K6DockerConfig {
 			'--summary-export',
 			'/results/result.json',
 		];
-
 
 		return $args;
 	}
