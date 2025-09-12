@@ -28,13 +28,15 @@ class ShowReportCommand extends Command {
 			->addArgument( 'report_dir', InputArgument::OPTIONAL, '(Optional) The report directory. If not set, will show the last report.' )
 			->addOption( 'local', null, null, 'Force showing the local report instead of the remote one.' )
 			->addOption( 'dir_only', null, null, 'Only output the local report directory path.' )
+			->addOption( 'url_only', null, null, 'Only output the remote report URL.' )
 			->setDescription( 'Shows a test report.' );
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
 		// Determine the report directories.
-		if ( ! is_null( $input->getArgument( 'report_dir' ) ) ) {
-			$local_report  = $input->getArgument( 'report_dir' );
+		$supplied_report_dir = $input->getArgument( 'report_dir' );
+		if ( ! is_null( $supplied_report_dir ) ) {
+			$local_report  = $supplied_report_dir;
 			$remote_report = null; // Assuming no remote report when report_dir is specified.
 		} else {
 			$report_dir = json_decode( $this->cache->get( 'last_e2e_report' ) ?: '', true );
@@ -63,6 +65,21 @@ class ShowReportCommand extends Command {
 			}
 
 			$output->writeln( $directory );
+
+			return Command::SUCCESS;
+		}
+
+		// Also handle --url_only option early.
+		if ( $input->getOption( 'url_only' ) ) {
+			if ( ! is_null( $supplied_report_dir ) ) {
+				throw new \RuntimeException( 'The --url_only option cannot be used with the --report_dir option.' );
+			}
+
+			if ( empty( $remote_report ) ) {
+				throw new \RuntimeException( 'No remote report was found.' );
+			}
+
+			$output->writeln( $remote_report );
 
 			return Command::SUCCESS;
 		}
