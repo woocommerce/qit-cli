@@ -702,9 +702,13 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			}
 		}
 
-		// Add woo_id to options (following managed test pattern).
-		$options           = $context['options'];
-		$options['woo_id'] = $context['woo_id'];
+		// Parse options that should be sent to the API.
+		$parsed_options = parent::parse_options( $input, true );
+		
+		// Build options for remote API request.
+		$options = array_merge( $parsed_options, [
+			'woo_id' => $context['woo_id'],
+		] );
 
 		// Add test tag to options for remote execution.
 		$test_argument = $input->getArgument( 'test' );
