@@ -98,7 +98,7 @@ class PerformanceTestResult {
 		$results_dir = normalize_path( $base_dir, false ) . '/' . $this->env_info->env_id;
 
 		if ( ! file_exists( $results_dir ) ) {
-			if ( ! mkdir( $results_dir, 0755, true ) ) {
+			if ( ! mkdir( $results_dir, 0777, true ) ) {
 				throw new \RuntimeException( 'Could not create results directory: ' . $results_dir );
 			}
 		}
