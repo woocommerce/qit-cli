@@ -6,13 +6,9 @@ use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\QITInput;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use function QIT_CLI\format_elapsed_time;
 
 class EnterEnvironmentCommand extends QITCommand {
 	use EnvironmentSelectionTrait;

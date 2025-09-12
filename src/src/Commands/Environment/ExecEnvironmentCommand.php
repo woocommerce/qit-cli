@@ -5,16 +5,12 @@ namespace QIT_CLI\Commands\Environment;
 use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvParser;
 use QIT_CLI\QITInput;
-use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use function QIT_CLI\format_elapsed_time;
 
 class ExecEnvironmentCommand extends QITCommand {
 	use EnvironmentSelectionTrait;
