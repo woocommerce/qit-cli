@@ -48,10 +48,11 @@ class K6DockerConfig {
 			'5665:5665', // Port for k6 live web dashboard.
 		];
 
-		// Run k6 as root to avoid permission issues when writing results.
-		// This is safe since k6 runs in an isolated container.
-		$args[] = '--user';
-		$args[] = 'root';
+		// Run k6 as current user to match file ownership
+		if ( Docker::should_set_user() ) {
+			$args[] = '--user';
+			$args[] = implode( ':', Docker::get_user_and_group() );
+		}
 
 		return $args;
 	}
