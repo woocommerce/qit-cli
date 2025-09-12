@@ -109,6 +109,12 @@ class K6DockerConfig {
 		$args[] = '-e';
 		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/dashboard-report.html';
 
+		// Set HOME for browser support when running with --user
+		if ( Docker::should_set_user() ) {
+			$args[] = '-e';
+			$args[] = 'HOME=/tmp';
+		}
+
 		// Pass additional env vars to the test environment.
 		foreach ( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ?? [] as $env_key => $env_value ) {
 			$args[] = '-e';
@@ -122,7 +128,7 @@ class K6DockerConfig {
 	 * @return array<string>
 	 */
 	private function get_k6_command(): array {
-		return [
+		$args = [
 			'grafana/k6:master-with-browser',
 			'run',
 			'--out',
@@ -130,5 +136,8 @@ class K6DockerConfig {
 			'--summary-export',
 			'/results/result.json',
 		];
+
+
+		return $args;
 	}
 }
