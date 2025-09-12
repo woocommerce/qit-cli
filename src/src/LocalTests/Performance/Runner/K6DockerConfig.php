@@ -36,7 +36,7 @@ class K6DockerConfig {
 	 * @return array<string>
 	 */
 	private function get_base_docker_args( PerformanceEnvInfo $env_info, string $container_name ): array {
-		return [
+		$args = [
 			$this->docker->find_docker(),
 			'run',
 			"--name=$container_name",
@@ -47,6 +47,13 @@ class K6DockerConfig {
 			'-p',
 			'5665:5665', // Port for k6 live web dashboard.
 		];
+
+		// Run k6 as root to avoid permission issues when writing results.
+		// This is safe since k6 runs in an isolated container.
+		$args[] = '--user';
+		$args[] = 'root';
+
+		return $args;
 	}
 
 	/**
@@ -65,8 +72,7 @@ class K6DockerConfig {
 		$args = [];
 		foreach ( $volumes as $host_path => $container_path ) {
 			$args[] = '-v';
-			// Mount with read-write permissions explicitly
-			$args[] = "$host_path:$container_path:rw";
+			$args[] = "$host_path:$container_path";
 		}
 
 		// Mount test directories.
