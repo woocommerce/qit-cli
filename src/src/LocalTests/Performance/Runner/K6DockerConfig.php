@@ -65,7 +65,8 @@ class K6DockerConfig {
 		$args = [];
 		foreach ( $volumes as $host_path => $container_path ) {
 			$args[] = '-v';
-			$args[] = "$host_path:$container_path";
+			// Mount with read-write permissions explicitly
+			$args[] = "$host_path:$container_path:rw";
 		}
 
 		// Mount test directories.

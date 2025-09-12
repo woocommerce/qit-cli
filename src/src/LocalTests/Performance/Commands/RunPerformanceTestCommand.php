@@ -709,7 +709,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		// Add test tag to options for remote execution.
 		$test_argument = $input->getArgument( 'test' );
 		if ( ! empty( $test_argument ) ) {
-			$options['test'] = $test_argument;
+			$options['test_tag'] = $test_argument;
 		}
 
 		// Handle ZIP upload if testing local file (following CreateRunCommands pattern).
