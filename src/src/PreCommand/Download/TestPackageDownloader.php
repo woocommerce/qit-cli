@@ -9,6 +9,7 @@ use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 use QIT_CLI\Validation\ArtifactValidator;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\get_manager_url;
 
 /**
@@ -574,58 +575,11 @@ class TestPackageDownloader {
 			}
 		}
 
-		// Download the package
+		// Download the package using shared logic
 		$package_dir = $cache_dir . '/packages/' . md5( $reference );
-		$zip_file    = $package_dir . '.zip';
 
-		if ( ! file_exists( dirname( $zip_file ) ) ) {
-			mkdir( dirname( $zip_file ), 0755, true );
-		}
-
-		if ( ! isset( $metadata['url'] ) ) {
-			throw new \RuntimeException( "No download URL for package '$reference'" );
-		}
-
-		if ( $this->output->isVeryVerbose() ) {
-			$this->output->writeln( "Downloading test package '$reference' from {$metadata['url']}" );
-		}
-
-		RequestBuilder::download_file( $metadata['url'], $zip_file );
-
-		// Validate and extract
-		$this->zipper->validate_zip( $zip_file );
-
-		if ( is_dir( $package_dir ) ) {
-			// Clean existing directory
-			$this->recursive_rmdir( $package_dir );
-		}
-
-		// Allow extraction into the cache directory
-		// This is needed for custom cache directories that aren't in the default whitelist
-		$parent_dir = dirname( $package_dir );
-		if ( is_dir( $parent_dir ) ) {
-			$this->zipper->allow_extract_into( [ $parent_dir ] );
-		}
-
-		$this->zipper->extract_zip( $zip_file, $package_dir );
-
-		// Validate test package artifact integrity
-		try {
-			$this->artifact_validator->validate_test_package( $package_dir, $reference );
-		} catch ( \Exception $e ) {
-			// Invalid artifact, clean up
-			$this->recursive_rmdir( $package_dir );
-			unlink( $zip_file );
-			throw new \RuntimeException( 'Downloaded test package artifact failed validation: ' . $e->getMessage() );
-		}
-
-		// Make all shell scripts executable
-		$this->set_shell_script_permissions( $package_dir );
-
-		// Install dependencies if package.json exists
-		if ( file_exists( $package_dir . '/package.json' ) ) {
-			$this->install_npm_dependencies( $package_dir );
-		}
+		// Use the shared download and prepare method (always install deps for regular flow)
+		$package_dir = $this->download_and_prepare_package( $reference, $metadata, $package_dir, true, true );
 
 		// Find and parse manifest
 		$manifest_file = $this->find_manifest( $package_dir );
@@ -717,9 +671,6 @@ class TestPackageDownloader {
 				'metadata' => $metadata,
 			], DAY_IN_SECONDS );
 		}
-
-		// Clean up zip file
-		unlink( $zip_file );
 
 		// Return the TestPackageManifest object
 		return $manifest_object;
@@ -1052,28 +1003,151 @@ class TestPackageDownloader {
 	}
 
 	/**
-	 * Recursively remove directory
+	 * Recursively remove directory with safety validations
+	 *
+	 * Uses Symfony Filesystem to properly handle symlinks and validates
+	 * that we're only deleting expected directories for safety.
 	 */
 	protected function recursive_rmdir( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			return;
 		}
 
-		$objects = scandir( $dir );
-		foreach ( $objects as $object ) {
-			if ( $object === '.' || $object === '..' ) {
-				continue;
-			}
+		// Normalize the directory path
+		$normalized_dir = rtrim( $dir, '/' );
 
-			$path = $dir . '/' . $object;
-			if ( is_dir( $path ) ) {
-				$this->recursive_rmdir( $path );
-			} else {
-				unlink( $path );
+		// Define patterns for directories we're allowed to delete
+		$allowed_patterns = [
+			'/\/packages\/[a-f0-9]{32}$/',  // Package cache dirs (MD5 hash)
+			'/\/node_modules$/',             // Node modules directories
+			'/\/\.cache$/',                  // Cache directories
+		];
+
+		// Check if this is a safe directory to delete
+		$is_safe = false;
+		foreach ( $allowed_patterns as $pattern ) {
+			if ( preg_match( $pattern, $normalized_dir ) ) {
+				$is_safe = true;
+				break;
 			}
 		}
 
-		rmdir( $dir );
+		// Also allow if it's inside the cache directory
+		$cache_dir = sys_get_temp_dir() . '/qit-cache';
+		if ( strpos( $normalized_dir, $cache_dir ) === 0 ) {
+			$is_safe = true;
+		}
+
+		// For safety, only delete directories we recognize
+		if ( ! $is_safe ) {
+			// Log warning but don't throw - this is cleanup code
+			if ( $this->output && $this->output->isVerbose() ) {
+				$this->output->writeln( "<comment>Warning: Skipping deletion of unexpected directory: $dir</comment>" );
+			}
+			return;
+		}
+
+		// Use Symfony Filesystem which properly handles symlinks
+		$filesystem = new Filesystem();
+		$filesystem->remove( $dir );
+	}
+
+	/**
+	 * Shared logic for downloading and preparing a package.
+	 * Used by both the regular flow (with caching) and package:download flow.
+	 *
+	 * @param string              $reference Package reference (e.g., "woocommerce/e2e:latest").
+	 * @param array<string,mixed> $metadata Package metadata including URL and checksum.
+	 * @param string              $target_dir Target directory for extraction.
+	 * @param bool                $cleanup_zip Whether to delete ZIP after extraction.
+	 * @param bool                $install_deps Whether to install npm dependencies (default true for backward compat).
+	 * @return string Path to the extracted package directory.
+	 * @throws \RuntimeException On download, extraction, or validation failure.
+	 */
+	private function download_and_prepare_package( string $reference, array $metadata, string $target_dir, bool $cleanup_zip = true, bool $install_deps = true ): string {
+		// Ensure we have a download URL
+		if ( ! isset( $metadata['url'] ) ) {
+			throw new \RuntimeException( "No download URL for package '$reference'" );
+		}
+
+		// Create target directory if needed
+		if ( ! is_dir( $target_dir ) ) {
+			if ( ! is_dir( dirname( $target_dir ) ) ) {
+				mkdir( dirname( $target_dir ), 0755, true );
+			}
+		}
+
+		// Download the package
+		$zip_file = $target_dir . '.zip';
+
+		if ( $this->output && ! $this->output->isQuiet() ) {
+			$this->output->writeln( "Downloading package: $reference" );
+		}
+
+		RequestBuilder::download_file( $metadata['url'], $zip_file );
+
+		// Validate the ZIP file
+		$this->zipper->validate_zip( $zip_file );
+
+		// Clean existing directory if it exists
+		if ( is_dir( $target_dir ) ) {
+			$this->recursive_rmdir( $target_dir );
+		}
+
+		// Allow extraction into parent directory
+		$parent_dir = dirname( $target_dir );
+		if ( is_dir( $parent_dir ) ) {
+			$this->zipper->allow_extract_into( [ $parent_dir ] );
+		}
+
+		// Extract the package
+		$this->zipper->extract_zip( $zip_file, $target_dir );
+
+		// Validate test package artifact integrity
+		try {
+			$this->artifact_validator->validate_test_package( $target_dir, $reference );
+		} catch ( \Exception $e ) {
+			// Invalid artifact, clean up
+			$this->recursive_rmdir( $target_dir );
+			if ( file_exists( $zip_file ) ) {
+				unlink( $zip_file );
+			}
+			throw new \RuntimeException( 'Downloaded test package artifact failed validation: ' . $e->getMessage() );
+		}
+
+		// Make all shell scripts executable
+		$this->set_shell_script_permissions( $target_dir );
+
+		// Install npm dependencies if requested and package.json exists
+		if ( $install_deps && file_exists( $target_dir . '/package.json' ) ) {
+			if ( $this->output && ! $this->output->isQuiet() ) {
+				$this->output->writeln( 'Installing npm dependencies...' );
+			}
+
+			// Always use npm install for consistency
+			$npm_command     = 'cd ' . escapeshellarg( $target_dir ) . ' && npm install';
+			$npm_output      = [];
+			$npm_return_code = 0;
+			exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
+
+			if ( $npm_return_code !== 0 ) {
+				throw new \RuntimeException( 'npm install failed: ' . implode( "\n", $npm_output ) );
+			}
+
+			if ( $this->output && ! $this->output->isQuiet() ) {
+				$this->output->writeln( 'npm dependencies installed successfully' );
+			}
+
+			// Install Playwright browsers if needed
+			$this->install_playwright_browsers_if_needed( $target_dir );
+		}
+
+		// Clean up ZIP file if requested
+		if ( $cleanup_zip && file_exists( $zip_file ) ) {
+			unlink( $zip_file );
+		}
+
+		return $target_dir;
 	}
 
 	/**
@@ -1182,61 +1256,67 @@ class TestPackageDownloader {
 		$filename  = $this->generate_filename( $package_id );
 		$file_path = rtrim( $output_dir, '/' ) . '/' . $filename;
 
-		// Check if file exists and handle force flag
-		if ( file_exists( $file_path ) && ! $force ) {
+		// Check if file exists and handle force flag (for non-extracted downloads)
+		if ( ! $extract && file_exists( $file_path ) && ! $force ) {
 			throw new \RuntimeException( 'File already exists (use --force to overwrite)' );
-		}
-
-		// Download the package
-		$this->download_file( $url_info['url'], $file_path );
-
-		// Verify checksum if enabled and available
-		if ( $verify && ! empty( $url_info['checksum'] ) ) {
-			if ( ! $this->verify_checksum( $file_path, $url_info['checksum'] ) ) {
-				unlink( $file_path ); // Clean up failed download
-				throw new \RuntimeException( 'Checksum verification failed' );
-			}
 		}
 
 		$result = [
 			'package'       => $package_id,
-			'downloaded_to' => $file_path,
-			'size'          => filesize( $file_path ),
 			'checksum'      => $url_info['checksum'] ?? null,
 			'version'       => $url_info['version'] ?? 'unknown',
 		];
 
-		// Extract if requested
+		// If extracting, use the shared download and prepare logic
 		if ( $extract ) {
 			$extract_dir = rtrim( $output_dir, '/' ) . '/' . pathinfo( $filename, PATHINFO_FILENAME );
 
-			try {
-				$this->extract_package_to_dir( $file_path, $extract_dir, $force );
-				$result['extracted_to'] = $extract_dir;
+			// Check if directory exists and handle force flag
+			if ( is_dir( $extract_dir ) && ! $force ) {
+				throw new \RuntimeException( 'Directory already exists (use --force to overwrite)' );
+			}
 
-				// Clean up ZIP file after successful extraction if requested
-				if ( $cleanup_zip && file_exists( $file_path ) ) {
-					unlink( $file_path );
+			try {
+				// Use the shared download and prepare method which handles:
+				// - Download, checksum validation, extraction, artifact validation
+				// - Shell script permissions, npm install (if $install is true)
+				$prepared_dir = $this->download_and_prepare_package(
+					$package_id,
+					$url_info,
+					$extract_dir,
+					$cleanup_zip,
+					$install  // Pass through the install flag
+				);
+
+				$result['extracted_to'] = $prepared_dir;
+				$result['size'] = $this->get_directory_size( $prepared_dir );
+
+				if ( $cleanup_zip ) {
 					$result['zip_cleaned_up'] = true;
 				}
-			} catch ( \Exception $e ) {
-				// Clean up the downloaded file if extraction fails
-				unlink( $file_path );
-				throw new \RuntimeException( 'Extraction failed: ' . $e->getMessage() );
-			}
-		}
 
-		// Install dependencies if requested and package was extracted
-		if ( $install && isset( $result['extracted_to'] ) ) {
-			try {
-				$this->install_dependencies_in_dir( $result['extracted_to'] );
-				$result['dependencies_installed'] = true;
+				// The shared method already installed dependencies
+				if ( $install && file_exists( $prepared_dir . '/package.json' ) ) {
+					$result['dependencies_installed'] = true;
+				}
+
 			} catch ( \Exception $e ) {
-				// If installation fails, don't fail the entire download
-				// Just log the error and continue
-				$result['dependencies_installed'] = false;
-				$result['install_error']          = $e->getMessage();
+				throw new \RuntimeException( 'Package processing failed: ' . $e->getMessage() );
 			}
+		} else {
+			// Just download without extracting
+			$this->download_file( $url_info['url'], $file_path );
+
+			// Verify checksum if enabled and available
+			if ( $verify && ! empty( $url_info['checksum'] ) ) {
+				if ( ! $this->verify_checksum( $file_path, $url_info['checksum'] ) ) {
+					unlink( $file_path ); // Clean up failed download
+					throw new \RuntimeException( 'Checksum verification failed' );
+				}
+			}
+
+			$result['downloaded_to'] = $file_path;
+			$result['size'] = filesize( $file_path );
 		}
 
 		// Add verification status to result
@@ -1245,6 +1325,29 @@ class TestPackageDownloader {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Get the total size of a directory in bytes.
+	 *
+	 * @param string $dir Directory path.
+	 * @return int Total size in bytes.
+	 */
+	private function get_directory_size( string $dir ): int {
+		$size = 0;
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() ) {
+				$size += $file->getSize();
+			}
+		}
+
+		return $size;
 	}
 
 	/**
