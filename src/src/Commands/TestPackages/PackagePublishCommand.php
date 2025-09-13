@@ -286,12 +286,19 @@ class PackagePublishCommand extends QITCommand {
 
 			// Comprehensive exclude list for test packages
 			$exclude_patterns = [
-				// Version control
+				// All hidden files and directories (starting with dot)
+				'.*',           // All hidden files at root
+				'*/.*',         // Hidden files in subdirectories
+
+				// QIT runtime files (should not be packaged)
+				'qit.json',     // QIT runtime config
+
+				// Version control (redundant with .* but kept for clarity)
 				'.git/*',
 				'.gitignore',
 				'.svn/*',
 
-				// System files
+				// System files (redundant with .* but kept for clarity)
 				'.DS_Store',
 				'Thumbs.db',
 				'*.swp',
@@ -321,11 +328,43 @@ class PackagePublishCommand extends QITCommand {
 				'*.tmp',
 				'logs/*',
 
-				// IDE files
+				// IDE files (redundant with .* but kept for clarity)
 				'.idea/*',
 				'.vscode/*',
 				'*.sublime-*',
 			];
+
+			// Count what's being excluded for informative message
+			$excluded_types = [];
+			if ( is_dir( $path . '/node_modules' ) ) {
+				$excluded_types[] = 'node_modules';
+			}
+			if ( is_dir( $path . '/vendor' ) ) {
+				$excluded_types[] = 'vendor';
+			}
+			if ( is_dir( $path . '/.git' ) ) {
+				$excluded_types[] = '.git';
+			}
+			if ( file_exists( $path . '/qit.json' ) ) {
+				$excluded_types[] = 'qit.json';
+			}
+
+			// Count hidden files/dirs
+			$entries = scandir( $path );
+			$hidden_count = 0;
+			foreach ( $entries as $entry ) {
+				if ( $entry !== '.' && $entry !== '..' && strpos( $entry, '.' ) === 0 ) {
+					$hidden_count++;
+				}
+			}
+			if ( $hidden_count > 0 ) {
+				$excluded_types[] = "$hidden_count hidden files/dirs";
+			}
+
+			// Show informative message about exclusions (non-spammy)
+			if ( ! empty( $excluded_types ) ) {
+				$output->writeln( sprintf( '<comment>Excluding from package: %s</comment>', implode( ', ', $excluded_types ) ) );
+			}
 
 			$this->zipper->zip_directory( $path, $zip_path, $exclude_patterns );
 
