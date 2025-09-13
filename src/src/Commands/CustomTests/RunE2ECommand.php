@@ -333,8 +333,8 @@ class RunE2ECommand extends QITCommand {
 		$duplicates_found = [];
 
 		foreach ( $test_packages as $ref => $meta ) {
-			$manifest    = $meta['manifest'];
-			$package_id  = $manifest->get_package_id();
+			$manifest   = $meta['manifest'];
+			$package_id = $manifest->get_package_id();
 
 			// Strip version if present for comparison (e.g., "woocommerce/e2e:latest" -> "woocommerce/e2e")
 			$base_package_id = preg_replace( '/:.*$/', '', $package_id );
@@ -388,7 +388,7 @@ class RunE2ECommand extends QITCommand {
 						"Duplicate test package '{$package_id}' specified:\n" .
 						implode( "\n", array_map( fn( $r ) => "  - $r", $references ) ) . "\n" .
 						"\n" .
-						"Please specify each test package only once."
+						'Please specify each test package only once.'
 					);
 				}
 			}
@@ -1001,7 +1001,7 @@ class RunE2ECommand extends QITCommand {
 				echo "\nTest package location:\n";
 				foreach ( $test_packages as $pkg_id => $meta ) {
 					if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
-						echo "  " . $meta['path'] . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+						echo '  ' . $meta['path'] . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 				}
 
