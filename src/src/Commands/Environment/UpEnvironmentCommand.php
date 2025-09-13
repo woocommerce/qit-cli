@@ -195,18 +195,17 @@ class UpEnvironmentCommand extends QITCommand {
 								"  2. Don't specify --test-package (use local version)";
 
 							// In JSON mode, output JSON error and exit cleanly
-							if ( $input->getOption( 'json' ) ) {
-								$output->write( json_encode( [
-									'error' => 'duplicate_package',
-									'message' => $error_message,
-									'env_id' => null, // EnvironmentRunner expects env_id
-								] ) );
-								return Command::FAILURE;
-							}
+						if ( $input->getOption( 'json' ) ) {
+							$output->write( json_encode( [
+								'error'   => 'duplicate_package',
+								'message' => $error_message,
+								'env_id'  => null, // EnvironmentRunner expects env_id
+							] ) );
+							return Command::FAILURE;
+						}
 
 							// In normal mode, throw exception
 							throw new \RuntimeException( $error_message );
-						}
 					}
 				}
 			}
@@ -1463,5 +1462,4 @@ HELP;
 			$output->writeln( '<comment>Note: env:reset will not be available for this environment.</comment>' );
 		}
 	}
-
 }

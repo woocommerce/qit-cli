@@ -97,7 +97,7 @@ class PackageReferenceUtils {
 		}
 
 		$manifest_content = file_get_contents( $manifest_path );
-		$manifest_data = json_decode( $manifest_content, true );
+		$manifest_data    = json_decode( $manifest_content, true );
 
 		if ( json_last_error() !== JSON_ERROR_NONE ) {
 			return null;
