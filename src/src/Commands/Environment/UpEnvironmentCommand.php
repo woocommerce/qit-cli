@@ -15,6 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use QIT_CLI\Utils\PackageReferenceUtils;
 use function QIT_CLI\is_windows;
 
 /**
@@ -164,6 +165,50 @@ class UpEnvironmentCommand extends QITCommand {
 				$all_test_packages[] = $local_test_dir;
 				// Process requirements for local manifest
 				$this->processTestPackageRequirements( [ $local_test_dir ], $output );
+			}
+		}
+
+		// Check for duplicate test packages (same package in both local auto-detect and explicit --test-package)
+		if ( $has_local_manifest && ! empty( $explicit_packages ) ) {
+			// Read the local package ID using utility
+			$local_package_id = PackageReferenceUtils::read_local_package_id( $local_test_dir );
+
+			if ( $local_package_id ) {
+				// Check if any explicit package matches the local package ID
+				foreach ( $explicit_packages as $pkg ) {
+					// Extract package ID using utility (returns null for local paths)
+					$pkg_id = PackageReferenceUtils::extract_package_id( $pkg );
+
+					if ( $pkg_id === $local_package_id ) {
+							// Found duplicate - prepare error message
+							$error_message = "Duplicate test package '{$local_package_id}' detected.\n" .
+								"\n" .
+								"You are running from a directory containing this test package,\n" .
+								"and also explicitly specified it via --test-package.\n" .
+								"\n" .
+								"Conflicting sources:\n" .
+								"  - {$pkg}\n" .
+								"  - {$local_test_dir}\n" .
+								"\n" .
+								"To fix this, either:\n" .
+								"  1. Run from a different directory, OR\n" .
+								"  2. Don't specify --test-package (use local version)";
+
+							// In JSON mode, output JSON error and exit cleanly
+							if ( $input->getOption( 'json' ) ) {
+								$output->write( json_encode( [
+									'error' => 'duplicate_package',
+									'message' => $error_message,
+									'env_id' => null, // EnvironmentRunner expects env_id
+								] ) );
+								return Command::FAILURE;
+							}
+
+							// In normal mode, throw exception
+							throw new \RuntimeException( $error_message );
+						}
+					}
+				}
 			}
 		}
 
@@ -1418,4 +1463,5 @@ HELP;
 			$output->writeln( '<comment>Note: env:reset will not be available for this environment.</comment>' );
 		}
 	}
+
 }

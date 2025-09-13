@@ -281,8 +281,7 @@ class RunE2ECommand extends QITCommand {
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
 			App::singleton( EnvInfo::class, $env_info );
 		} catch ( \Exception $e ) {
-			$output->writeln( sprintf( '<error>Failed to start environment: %s</error>', $e->getMessage() ) );
-
+			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 			return Command::FAILURE;
 		} finally {
 			// Clean up temporary environment variables
@@ -328,71 +327,8 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-		// Check for duplicate package IDs and handle them intelligently
-		$package_ids_map  = [];
-		$duplicates_found = [];
-
-		foreach ( $test_packages as $ref => $meta ) {
-			$manifest   = $meta['manifest'];
-			$package_id = $manifest->get_package_id();
-
-			// Strip version if present for comparison (e.g., "woocommerce/e2e:latest" -> "woocommerce/e2e")
-			$base_package_id = preg_replace( '/:.*$/', '', $package_id );
-
-			if ( isset( $package_ids_map[ $base_package_id ] ) ) {
-				// Track duplicates for better error messaging
-				if ( ! isset( $duplicates_found[ $base_package_id ] ) ) {
-					$duplicates_found[ $base_package_id ] = [ $package_ids_map[ $base_package_id ] ];
-				}
-				$duplicates_found[ $base_package_id ][] = $ref;
-			} else {
-				$package_ids_map[ $base_package_id ] = $ref;
-			}
-		}
-
-		// If duplicates found, handle them
-		if ( ! empty( $duplicates_found ) ) {
-			foreach ( $duplicates_found as $package_id => $references ) {
-				// Check if one is local (auto-detected) and others are explicit
-				$has_local           = false;
-				$has_explicit_remote = false;
-
-				foreach ( $references as $ref ) {
-					// Check if it's a local path (starts with / or .)
-					if ( preg_match( '/^[\.\/]/', $ref ) || is_dir( $ref ) ) {
-						$has_local = true;
-					} elseif ( preg_match( '/^[\w-]+\/[\w-]+/', $ref ) ) {
-						$has_explicit_remote = true;
-					}
-				}
-
-				// If user explicitly specified a remote package and local was auto-detected,
-				// this is likely the issue you mentioned - fail with helpful message
-				if ( $has_local && $has_explicit_remote ) {
-					throw new \RuntimeException(
-						"Duplicate test package '{$package_id}' detected.\n" .
-						"\n" .
-						"You are running from a directory containing this test package,\n" .
-						"and also explicitly specified it via --test-package.\n" .
-						"\n" .
-						"Conflicting sources:\n" .
-						implode( "\n", array_map( fn( $r ) => "  - $r", $references ) ) . "\n" .
-						"\n" .
-						"To fix this, either:\n" .
-						"  1. Run from a different directory, OR\n" .
-						"  2. Don't specify --test-package (use local version)"
-					);
-				} else {
-					// Other types of duplicates - generic error
-					throw new \RuntimeException(
-						"Duplicate test package '{$package_id}' specified:\n" .
-						implode( "\n", array_map( fn( $r ) => "  - $r", $references ) ) . "\n" .
-						"\n" .
-						'Please specify each test package only once.'
-					);
-				}
-			}
-		}
+		// Duplicate detection has been moved to UpEnvironmentCommand to fail earlier
+		// before any expensive operations like environment setup
 
 		// Now validate version consistency for subpackages
 		if ( ! empty( $test_packages ) ) {
