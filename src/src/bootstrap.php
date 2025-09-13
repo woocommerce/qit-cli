@@ -19,7 +19,6 @@ use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
 use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
-use QIT_CLI\Commands\Environment\ReloadEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ResetEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
@@ -178,7 +177,6 @@ try {
 	$application->add( $container->make( UpEnvironmentCommand::class ) );
 	$application->add( $container->make( DownEnvironmentCommand::class ) );
 	$application->add( $container->make( ListEnvironmentCommand::class ) );
-	$application->add( $container->make( ReloadEnvironmentCommand::class ) );
 	$application->add( $container->make( EnterEnvironmentCommand::class ) );
 	$application->add( $container->make( ExecEnvironmentCommand::class ) );
 	$application->add( $container->make( EnvSourceCommand::class ) );
