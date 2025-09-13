@@ -350,11 +350,11 @@ class PackagePublishCommand extends QITCommand {
 			}
 
 			// Count hidden files/dirs
-			$entries = scandir( $path );
+			$entries      = scandir( $path );
 			$hidden_count = 0;
 			foreach ( $entries as $entry ) {
 				if ( $entry !== '.' && $entry !== '..' && strpos( $entry, '.' ) === 0 ) {
-					$hidden_count++;
+					++$hidden_count;
 				}
 			}
 			if ( $hidden_count > 0 ) {

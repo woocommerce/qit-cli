@@ -1041,7 +1041,7 @@ class TestPackageDownloader {
 		// For safety, only delete directories we recognize
 		if ( ! $is_safe ) {
 			// Log warning but don't throw - this is cleanup code
-			if ( $this->output && $this->output->isVerbose() ) {
+			if ( $this->output->isVerbose() ) {
 				$this->output->writeln( "<comment>Warning: Skipping deletion of unexpected directory: $dir</comment>" );
 			}
 			return;
@@ -1080,7 +1080,7 @@ class TestPackageDownloader {
 		// Download the package
 		$zip_file = $target_dir . '.zip';
 
-		if ( $this->output && ! $this->output->isQuiet() ) {
+		if ( ! $this->output->isQuiet() ) {
 			$this->output->writeln( "Downloading package: $reference" );
 		}
 
@@ -1120,7 +1120,7 @@ class TestPackageDownloader {
 
 		// Install npm dependencies if requested and package.json exists
 		if ( $install_deps && file_exists( $target_dir . '/package.json' ) ) {
-			if ( $this->output && ! $this->output->isQuiet() ) {
+			if ( ! $this->output->isQuiet() ) {
 				$this->output->writeln( 'Installing npm dependencies...' );
 			}
 
@@ -1134,7 +1134,7 @@ class TestPackageDownloader {
 				throw new \RuntimeException( 'npm install failed: ' . implode( "\n", $npm_output ) );
 			}
 
-			if ( $this->output && ! $this->output->isQuiet() ) {
+			if ( ! $this->output->isQuiet() ) {
 				$this->output->writeln( 'npm dependencies installed successfully' );
 			}
 
@@ -1262,9 +1262,9 @@ class TestPackageDownloader {
 		}
 
 		$result = [
-			'package'       => $package_id,
-			'checksum'      => $url_info['checksum'] ?? null,
-			'version'       => $url_info['version'] ?? 'unknown',
+			'package'  => $package_id,
+			'checksum' => $url_info['checksum'] ?? null,
+			'version'  => $url_info['version'] ?? 'unknown',
 		];
 
 		// If extracting, use the shared download and prepare logic
@@ -1289,7 +1289,7 @@ class TestPackageDownloader {
 				);
 
 				$result['extracted_to'] = $prepared_dir;
-				$result['size'] = $this->get_directory_size( $prepared_dir );
+				$result['size']         = $this->get_directory_size( $prepared_dir );
 
 				if ( $cleanup_zip ) {
 					$result['zip_cleaned_up'] = true;
@@ -1299,7 +1299,6 @@ class TestPackageDownloader {
 				if ( $install && file_exists( $prepared_dir . '/package.json' ) ) {
 					$result['dependencies_installed'] = true;
 				}
-
 			} catch ( \Exception $e ) {
 				throw new \RuntimeException( 'Package processing failed: ' . $e->getMessage() );
 			}
@@ -1316,7 +1315,7 @@ class TestPackageDownloader {
 			}
 
 			$result['downloaded_to'] = $file_path;
-			$result['size'] = filesize( $file_path );
+			$result['size']          = filesize( $file_path );
 		}
 
 		// Add verification status to result
