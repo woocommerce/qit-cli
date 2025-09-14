@@ -60,6 +60,93 @@ class EnvironmentVars {
 			'QIT_DB_CONTAINER'  => $env_info->db_container ?? '',
 		];
 
+		// Add SUT (System Under Test) information if available
+		if ( ! empty( $env_info->sut ) ) {
+			$vars['QIT_SUT_SLUG'] = $env_info->sut['slug'] ?? '';
+			$vars['QIT_SUT_TYPE'] = $env_info->sut['type'] ?? '';
+
+			// Try to find SUT entrypoint from plugins or themes
+			if ( ! empty( $env_info->sut['slug'] ) ) {
+				foreach ( $env_info->plugins as $plugin ) {
+					if ( $plugin->slug === $env_info->sut['slug'] ) {
+						$vars['QIT_SUT_ENTRYPOINT'] = $plugin->entrypoint ?? '';
+						break;
+					}
+				}
+				foreach ( $env_info->themes as $theme ) {
+					if ( $theme->slug === $env_info->sut['slug'] ) {
+						$vars['QIT_SUT_ENTRYPOINT'] = $theme->entrypoint ?? '';
+						break;
+					}
+				}
+			}
+		}
+
+		// Add information about ALL active plugins (including WooCommerce and SUT)
+		$active_plugins = [];
+		foreach ( $env_info->plugins as $plugin ) {
+			$active_plugins[] = $plugin->slug;
+		}
+		if ( ! empty( $active_plugins ) ) {
+			$vars['QIT_ACTIVE_PLUGINS'] = implode( ',', $active_plugins );
+		}
+
+		// Add information about additional plugins (excluding SUT if it's a plugin)
+		$additional_plugins = [];
+		foreach ( $env_info->plugins as $plugin ) {
+			if ( empty( $env_info->sut ) || $env_info->sut['type'] !== 'plugin' || $plugin->slug !== $env_info->sut['slug'] ) {
+				$additional_plugins[] = $plugin->slug;
+			}
+		}
+		if ( ! empty( $additional_plugins ) ) {
+			$vars['QIT_ADDITIONAL_PLUGINS'] = implode( ',', $additional_plugins );
+		}
+
+		// Add information about installed themes (excluding SUT if it's a theme)
+		$additional_themes = [];
+		foreach ( $env_info->themes as $theme ) {
+			// Skip default WordPress themes
+			if ( in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
+				continue;
+			}
+			if ( empty( $env_info->sut ) || $env_info->sut['type'] !== 'theme' || $theme->slug !== $env_info->sut['slug'] ) {
+				$additional_themes[] = $theme->slug;
+			}
+		}
+		if ( ! empty( $additional_themes ) ) {
+			$vars['QIT_ADDITIONAL_THEMES'] = implode( ',', $additional_themes );
+		}
+
+		// Add test package information if available
+		if ( ! empty( $env_info->test_packages ) ) {
+			$test_package_names = [];
+			foreach ( $env_info->test_packages as $package ) {
+				if ( is_object( $package ) && isset( $package->slug ) ) {
+					$test_package_names[] = $package->slug;
+				} elseif ( is_array( $package ) && isset( $package['slug'] ) ) {
+					$test_package_names[] = $package['slug'];
+				} elseif ( is_string( $package ) ) {
+					$test_package_names[] = $package;
+				}
+			}
+			if ( ! empty( $test_package_names ) ) {
+				$vars['QIT_TEST_PACKAGES'] = implode( ',', $test_package_names );
+			}
+		}
+
+		// Add WordPress and WooCommerce versions
+		if ( ! empty( $env_info->wp ) ) {
+			$vars['QIT_WP_VERSION'] = $env_info->wp;
+		}
+		if ( ! empty( $env_info->woo ) ) {
+			$vars['QIT_WOO_VERSION'] = $env_info->woo;
+		}
+
+		// Add PHP version
+		if ( ! empty( $env_info->php ) ) {
+			$vars['QIT_PHP_VERSION'] = $env_info->php;
+		}
+
 		// Add any dynamic environment-specific variables
 		if ( property_exists( $env_info, 'additional_vars' ) && ! empty( $env_info->additional_vars ) ) {
 			$vars = array_merge( $vars, $env_info->additional_vars );
