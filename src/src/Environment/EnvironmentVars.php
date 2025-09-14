@@ -119,19 +119,8 @@ class EnvironmentVars {
 
 		// Add test package information if available
 		if ( ! empty( $env_info->test_packages ) ) {
-			$test_package_names = [];
-			foreach ( $env_info->test_packages as $package ) {
-				if ( is_object( $package ) && isset( $package->slug ) ) {
-					$test_package_names[] = $package->slug;
-				} elseif ( is_array( $package ) && isset( $package['slug'] ) ) {
-					$test_package_names[] = $package['slug'];
-				} elseif ( is_string( $package ) ) {
-					$test_package_names[] = $package;
-				}
-			}
-			if ( ! empty( $test_package_names ) ) {
-				$vars['QIT_TEST_PACKAGES'] = implode( ',', $test_package_names );
-			}
+			$test_package_names        = array_keys( $env_info->test_packages );
+			$vars['QIT_TEST_PACKAGES'] = implode( ',', $test_package_names );
 		}
 
 		// Add WordPress and WooCommerce versions

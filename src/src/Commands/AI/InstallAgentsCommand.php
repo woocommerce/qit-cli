@@ -86,10 +86,10 @@ HELP
 			// Write the file
 			if ( file_put_contents( $target_file, $content ) !== false ) {
 				$output->writeln( sprintf( '  <info>✓</info> %s: %s', $action, $filename ) );
-				$copied_count++;
+				++$copied_count;
 			} else {
 				$output->writeln( sprintf( '  <error>✗</error> Failed to write: %s', $filename ) );
-				$failed_count++;
+				++$failed_count;
 			}
 		}
 
@@ -130,7 +130,7 @@ HELP
 	 */
 	private function getAgents(): array {
 		return [
-			'qit-context.md' => <<<'AGENT'
+			'qit-context.md'               => <<<'AGENT'
 ---
 name: qit-context
 description: Manages QIT environment context and sourcing for AI command isolation
@@ -274,7 +274,7 @@ When users are confused about modes:
 5. **CHECK** `qit env:list` when debugging connection issues
 AGENT
 			,
-			'qit-test-runner.md' => <<<'AGENT'
+			'qit-test-runner.md'           => <<<'AGENT'
 ---
 name: qit-test-runner
 description: Executes QIT tests - understands remote queue-based tests vs local Test Package orchestration
@@ -381,7 +381,8 @@ When encountering a failure, tell the user, and ask them if they want to trigger
 qit run:performance my-plugin
 qit run:performance my-plugin --metrics=backend
 ```
-AGENT,
+AGENT
+			,
 			'qit-test-package-debugger.md' => <<<'AGENT'
 ---
 name: qit-test-package-debugger
@@ -731,6 +732,7 @@ Fatal error: Call to undefined function stripe_init() in /wp-content/plugins/my-
 5. **Incremental progress**: Fix one issue at a time
 6. **User communication**: Explain what you're checking and why
 AGENT
+			,
 		];
 	}
 }
