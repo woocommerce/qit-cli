@@ -13,7 +13,8 @@ use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\CustomTests\ShowReportCommand;
 use QIT_CLI\Commands\DevModeCommand;
-use QIT_CLI\Commands\AIContextCommand;
+use QIT_CLI\Commands\AI\ContextCommand as AIContextCommand;
+use QIT_CLI\Commands\AI\InstallAgentsCommand as AIInstallAgentsCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
@@ -249,6 +250,7 @@ if ( $is_connected_to_backend ) {
 
 	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( AIContextCommand::class ) );
+	$application->add( $container->make( AIInstallAgentsCommand::class ) );
 
 	// Group Commands.
 	$application->add( $container->make( GroupRunCommand::class ) );

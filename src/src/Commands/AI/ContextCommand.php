@@ -1,18 +1,19 @@
 <?php
 
-namespace QIT_CLI\Commands;
+namespace QIT_CLI\Commands\AI;
 
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Config;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class AIContextCommand extends QITCommand {
+class ContextCommand extends QITCommand {
 	/** @var Config */
 	private Config $config;
 
-	protected static $defaultName = 'ai-context'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected static $defaultName = 'ai:context'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( Config $config ) {
 		$this->config = $config;
@@ -36,38 +37,38 @@ AVAILABLE CONTEXT TYPES:
 
   <info>failed-e2e</info>                  Investigation context for debugging E2E test failures
                            Provides failure details, logs, commands, and debugging steps
-                           
+
   <info>qit-basics</info>                  Understanding QIT's orchestration model and architecture
                            Explains how QIT differs from standard test runners
-                           
+
   <info>understanding-test-packages</info>  Test package lifecycle: global setup, setup, teardown phases
                            Knowledge decoupling and state management concepts
-                           
+
   <info>writing-test-packages</info>        Best practices for creating QIT test packages
                            (Coming soon)
-                           
+
   <info>test-script-execution</info>        How test package scripts are executed in QIT
                            Working directories, file paths, and environment variables
-                           
+
   <info>test-execution-scenarios</info>    How test packages are executed in different contexts
                            Manual testing vs automated runs, phase execution rules
 
 USAGE EXAMPLES:
 
   # Get context for debugging a failed test run
-  qit ai-context failed-e2e
-  
+  qit ai:context failed-e2e
+
   # Get context for a specific test run
-  qit ai-context failed-e2e run-abc123
-  
+  qit ai:context failed-e2e run-abc123
+
   # Understand QIT's architecture
-  qit ai-context qit-basics
-  
+  qit ai:context qit-basics
+
   # Learn about test package structure
-  qit ai-context understanding-test-packages
-  
+  qit ai:context understanding-test-packages
+
   # List all available contexts
-  qit ai-context
+  qit ai:context
 
 AGENTIC AI WORKFLOW:
 
@@ -113,8 +114,8 @@ HELP
 				$output->writeln( '<comment>Writing test packages context coming soon!</comment>' );
 				$output->writeln( '' );
 				$output->writeln( 'For now, try:' );
-				$output->writeln( '  • <info>qit ai-context understanding-test-packages</info> - Learn about test structure' );
-				$output->writeln( '  • <info>qit ai-context qit-basics</info> - Understand QIT architecture' );
+				$output->writeln( '  • <info>qit ai:context understanding-test-packages</info> - Learn about test structure' );
+				$output->writeln( '  • <info>qit ai:context qit-basics</info> - Understand QIT architecture' );
 				return Command::SUCCESS;
 			default:
 				$output->writeln( sprintf( '<error>Unknown context type: %s</error>', $type ) );
@@ -134,35 +135,35 @@ HELP
 
 		$output->writeln( '<comment>failed-e2e</comment>' );
 		$output->writeln( '  Investigation context for debugging E2E test failures' );
-		$output->writeln( '  Usage: <info>qit ai-context failed-e2e [run_id]</info>' );
+		$output->writeln( '  Usage: <info>qit ai:context failed-e2e [run_id]</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>qit-basics</comment>' );
 		$output->writeln( '  Understanding QIT\'s orchestration model and architecture' );
-		$output->writeln( '  Usage: <info>qit ai-context qit-basics</info>' );
+		$output->writeln( '  Usage: <info>qit ai:context qit-basics</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>understanding-test-packages</comment>' );
 		$output->writeln( '  Test package lifecycle: global setup, setup, teardown phases' );
-		$output->writeln( '  Usage: <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '  Usage: <info>qit ai:context understanding-test-packages</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>test-script-execution</comment>' );
 		$output->writeln( '  How test package scripts are executed in QIT' );
 		$output->writeln( '  Working directories, file paths, and environment variables' );
-		$output->writeln( '  Usage: <info>qit ai-context test-script-execution</info>' );
+		$output->writeln( '  Usage: <info>qit ai:context test-script-execution</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>test-execution-scenarios</comment>' );
 		$output->writeln( '  How test packages are executed in different contexts' );
-		$output->writeln( '  Usage: <info>qit ai-context test-execution-scenarios</info>' );
+		$output->writeln( '  Usage: <info>qit ai:context test-execution-scenarios</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>writing-test-packages</comment> <fg=gray>(coming soon)</>' );
 		$output->writeln( '  Best practices for creating QIT test packages' );
 		$output->writeln( '' );
 
-		$output->writeln( '<info>TIP:</info> Start with <comment>qit ai-context qit-basics</comment> if you\'re new to QIT' );
+		$output->writeln( '<info>TIP:</info> Start with <comment>qit ai:context qit-basics</comment> if you\'re new to QIT' );
 		$output->writeln( '' );
 
 		return Command::SUCCESS;
@@ -224,10 +225,10 @@ HELP
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>NEXT STEP:</comment>' );
-		$output->writeln( '• <info>STRONGLY RECOMMENDED (if not already run):</info> <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '• <info>STRONGLY RECOMMENDED (if not already run):</info> <info>qit ai:context understanding-test-packages</info>' );
 		$output->writeln( '  → Learn how test packages work with this architecture' );
 		$output->writeln( '' );
-		$output->writeln( '• For all available contexts: Run <info>qit ai-context --help</info>' );
+		$output->writeln( '• For all available contexts: Run <info>qit ai:context --help</info>' );
 		$output->writeln( '' );
 
 		return Command::SUCCESS;
@@ -331,10 +332,10 @@ HELP
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>NEXT STEPS:</comment>' );
-		$output->writeln( '• Currently debugging a test failure? Run <info>qit ai-context failed-e2e</info>' );
+		$output->writeln( '• Currently debugging a test failure? Run <info>qit ai:context failed-e2e</info>' );
 		$output->writeln( '  → Provides specific investigation commands and context' );
 		$output->writeln( '' );
-		$output->writeln( '• For all available contexts: Run <info>qit ai-context --help</info>' );
+		$output->writeln( '• For all available contexts: Run <info>qit ai:context --help</info>' );
 		$output->writeln( '' );
 
 		return Command::SUCCESS;
@@ -711,12 +712,12 @@ HELP
 
 		// Cross-references to other contexts
 		$output->writeln( '<comment>CRITICAL CONTEXT FOR DEBUGGING:</comment>' );
-		$output->writeln( '• <error>HIGHLY RECOMMENDED (if not already run):</error> <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '• <error>HIGHLY RECOMMENDED (if not already run):</error> <info>qit ai:context understanding-test-packages</info>' );
 		$output->writeln( '  → Explains why DB resets but filesystem persists' );
 		$output->writeln( '  → Clarifies global setup vs package setup failures' );
 		$output->writeln( '  → Essential for understanding test isolation' );
 		$output->writeln( '' );
-		$output->writeln( '• For all other contexts: Run <info>qit ai-context --help</info>' );
+		$output->writeln( '• For all other contexts: Run <info>qit ai:context --help</info>' );
 		$output->writeln( '' );
 
 		return Command::SUCCESS;
@@ -1002,13 +1003,13 @@ HELP
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( '' );
 		$output->writeln( '• For test package structure:' );
-		$output->writeln( '  Run <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '  Run <info>qit ai:context understanding-test-packages</info>' );
 		$output->writeln( '' );
 		$output->writeln( '• For execution scenarios:' );
-		$output->writeln( '  Run <info>qit ai-context test-execution-scenarios</info>' );
+		$output->writeln( '  Run <info>qit ai:context test-execution-scenarios</info>' );
 		$output->writeln( '' );
 		$output->writeln( '• For QIT architecture:' );
-		$output->writeln( '  Run <info>qit ai-context qit-basics</info>' );
+		$output->writeln( '  Run <info>qit ai:context qit-basics</info>' );
 		$output->writeln( '' );
 		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
 		$output->writeln( '' );
@@ -1266,13 +1267,13 @@ HELP
 		$output->writeln( '──────────────────────────────────────────────────────────────────' );
 		$output->writeln( '' );
 		$output->writeln( '• To understand test package structure:' );
-		$output->writeln( '  Run <info>qit ai-context understanding-test-packages</info>' );
+		$output->writeln( '  Run <info>qit ai:context understanding-test-packages</info>' );
 		$output->writeln( '' );
 		$output->writeln( '• To debug a failed test run:' );
-		$output->writeln( '  Run <info>qit ai-context failed-e2e</info>' );
+		$output->writeln( '  Run <info>qit ai:context failed-e2e</info>' );
 		$output->writeln( '' );
 		$output->writeln( '• To understand QIT architecture:' );
-		$output->writeln( '  Run <info>qit ai-context qit-basics</info>' );
+		$output->writeln( '  Run <info>qit ai:context qit-basics</info>' );
 		$output->writeln( '' );
 		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
 		$output->writeln( '' );
