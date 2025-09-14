@@ -30,19 +30,21 @@ This command installs QIT-specific AI agent configurations that help Claude Code
 understand QIT commands, architecture, and best practices.
 
 The agents will be installed to: ~/.claude/agents/
-(Following Anthropic's official documentation for Claude Code agents)
+The slash command will be installed to: ~/.claude/commands/
+(Following Anthropic's official documentation for Claude Code)
 
-After installation, Claude Code will have better context for:
-- QIT command suggestions
-- Test package creation
-- Debugging assistance
-- Architecture understanding
+After installation, Claude Code will have:
+- A /qit slash command for all QIT-related tasks
+- Specialized agents for different QIT workflows
+- Better context for test creation and debugging
 
 Example usage:
   <info>qit ai:install_agents</info>
 
-To verify installation:
-  <info>ls ~/.claude/agents/</info>
+To use in Claude Code:
+  <info>/qit help</info>
+  <info>/qit run my-plugin</info>
+  <info>/qit debug test failure</info>
 
 Note: You may need to restart Claude Code after installation for changes to take effect.
 HELP
@@ -56,34 +58,36 @@ HELP
 			return Command::FAILURE;
 		}
 
-		// Target directory for Claude Code agents (correct path per Anthropic docs)
+		// Target directories for Claude Code
 		$agents_dir = $home . '/.claude/agents';
+		$commands_dir = $home . '/.claude/commands';
 
-		// Create target directory if it doesn't exist
-		if ( ! is_dir( $agents_dir ) ) {
-			if ( ! mkdir( $agents_dir, 0755, true ) ) {
-				$output->writeln( '<error>Failed to create directory: ' . $agents_dir . '</error>' );
-				return Command::FAILURE;
+		// Create target directories if they don't exist
+		$directories = [ $agents_dir, $commands_dir ];
+		foreach ( $directories as $dir ) {
+			if ( ! is_dir( $dir ) ) {
+				if ( ! mkdir( $dir, 0755, true ) ) {
+					$output->writeln( '<error>Failed to create directory: ' . $dir . '</error>' );
+					return Command::FAILURE;
+				}
+				$output->writeln( '<info>Created directory: ' . $dir . '</info>' );
 			}
-			$output->writeln( '<info>Created directory: ' . $agents_dir . '</info>' );
 		}
 
-		// Define agents with their content inlined
+		// Get all agents and slash command
 		$agents = $this->getAgents();
+		$slash_command = $this->getSlashCommand();
 
-		// Write each agent file
+		// Install agents
+		$output->writeln( '<comment>Installing QIT agents...</comment>' );
 		$copied_count = 0;
 		$failed_count = 0;
+
 		foreach ( $agents as $filename => $content ) {
 			$target_file = $agents_dir . '/' . $filename;
 
-			// Check if file already exists
-			$action = 'Installed';
-			if ( file_exists( $target_file ) ) {
-				$action = 'Updated';
-			}
+			$action = file_exists( $target_file ) ? 'Updated' : 'Installed';
 
-			// Write the file
 			if ( file_put_contents( $target_file, $content ) !== false ) {
 				$output->writeln( sprintf( '  <info>✓</info> %s: %s', $action, $filename ) );
 				++$copied_count;
@@ -93,23 +97,41 @@ HELP
 			}
 		}
 
+		// Install slash command
+		$output->writeln( '<comment>Installing /qit slash command...</comment>' );
+		$command_file = $commands_dir . '/qit.md';
+		$command_action = file_exists( $command_file ) ? 'Updated' : 'Installed';
+
+		if ( file_put_contents( $command_file, $slash_command ) !== false ) {
+			$output->writeln( sprintf( '  <info>✓</info> %s: /qit command', $command_action ) );
+			++$copied_count;
+		} else {
+			$output->writeln( sprintf( '  <error>✗</error> Failed to write: qit.yaml', ) );
+			++$failed_count;
+		}
+
 		// Final summary
 		$output->writeln( '' );
 		if ( $failed_count === 0 ) {
 			$output->writeln( sprintf(
-				'<info>✓ Successfully installed %d QIT AI agent%s to ~/.claude/agents/</info>',
-				$copied_count,
-				$copied_count === 1 ? '' : 's'
+				'<info>✓ Successfully installed %d QIT AI components to ~/.claude/</info>',
+				$copied_count
 			) );
 			$output->writeln( '<info>Claude Code will now understand QIT commands better!</info>' );
+			$output->writeln( '' );
+			$output->writeln( '<comment>You can now use the /qit command in Claude Code:</comment>' );
+			$output->writeln( '  <info>/qit help</info>                    - Show QIT capabilities' );
+			$output->writeln( '  <info>/qit run my-plugin</info>           - Run tests for your plugin' );
+			$output->writeln( '  <info>/qit debug</info>                   - Debug test failures' );
+			$output->writeln( '  <info>/qit create test</info>             - Create new test packages' );
 
 			if ( $output->isVerbose() ) {
 				$output->writeln( '' );
-				$output->writeln( 'Installed agents provide context for:' );
-				$output->writeln( '  • QIT command structure and usage' );
-				$output->writeln( '  • Test package creation and lifecycle' );
-				$output->writeln( '  • Environment management' );
-				$output->writeln( '  • Debugging and troubleshooting' );
+				$output->writeln( 'Installed components provide context for:' );
+				$output->writeln( '  • QIT command orchestration via /qit' );
+				$output->writeln( '  • Environment context management' );
+				$output->writeln( '  • Test execution and lifecycle' );
+				$output->writeln( '  • Systematic debugging workflows' );
 			}
 
 			return Command::SUCCESS;
@@ -124,12 +146,93 @@ HELP
 	}
 
 	/**
+	 * Get the slash command YAML definition.
+	 *
+	 * @return string
+	 */
+	private function getSlashCommand(): string {
+		return <<<'YAML'
+name: qit
+description: "QIT - Quality Insights Toolkit for WooCommerce testing and development"
+agent: qit
+YAML;
+	}
+
+	/**
 	 * Get agent definitions with their content.
 	 *
 	 * @return array<string, string> Array of filename => content
 	 */
 	private function getAgents(): array {
 		return [
+			// Main orchestrator agent
+			'qit.md' => <<<'AGENT'
+---
+name: qit
+description: Main QIT orchestrator - coordinates QIT workflows and delegates to specialized agents
+tools: Bash, Read, Write, Grep, Glob
+model: inherit
+---
+
+You are the main QIT (Quality Insights Toolkit) orchestrator agent. You are invoked by the /qit slash command and coordinate between specialized QIT agents.
+
+# SPECIALIZED AGENTS AVAILABLE
+
+You have access to three specialized QIT agents that you should delegate to when appropriate:
+
+## qit-context
+**Specializes in**: Environment context and sourcing issues
+**Delegate when**:
+- User has "connection refused" errors
+- Environment variables are missing
+- `npx playwright test` commands fail
+- Questions about sourcing or shell isolation
+
+## qit-test-runner  
+**Specializes in**: Test execution and lifecycle
+**Delegate when**:
+- User wants to run any QIT tests
+- Questions about test types (e2e, api, security, etc.)
+- Confusion about managed vs manual mode
+- Need help with test command options
+
+## qit-test-package-debugger
+**Specializes in**: Systematic debugging of test failures
+**Delegate when**:
+- Playwright tests are failing
+- User needs help debugging test failures
+- Error analysis and root cause identification
+- Need to examine logs, screenshots, or application state
+
+# DIRECT HANDLING
+
+Handle these directly without delegating:
+- General QIT information and overview
+- Simple command syntax questions
+- Installation and setup
+- Best practices
+- Quick status checks
+
+# COORDINATION WORKFLOW
+
+1. Assess the user's request
+2. If it matches a specialist's domain clearly → Delegate immediately
+3. If it spans multiple domains → Coordinate between agents
+4. If it's simple → Handle directly
+5. If unclear → Ask clarifying questions
+
+# DELEGATION PHRASES
+
+When delegating, be clear and helpful:
+- "This looks like an environment context issue. Let me have our qit-context specialist help you..."
+- "For test execution, our qit-test-runner agent is perfect for this..."
+- "To debug this systematically, let's use our qit-test-package-debugger specialist..."
+
+Always maintain context between agent handoffs and explain why you're delegating.
+AGENT
+			,
+
+			// Keep the existing specialized agents
 			'qit-context.md'               => <<<'AGENT'
 ---
 name: qit-context
