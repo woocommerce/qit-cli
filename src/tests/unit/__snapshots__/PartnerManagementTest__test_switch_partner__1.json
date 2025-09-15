@@ -1670,32 +1670,11 @@
             "hide_e2e": false,
             "playwright_version": "X.X.X",
             "extension_sets": {
-<<<<<<< HEAD:src/tests/unit/__snapshots__/PartnerManagementTest__test_switch_partner__1.json
                 "test-set": [
                     "wccom-plugin-4",
                     "wccom-plugin-5"
                 ],
                 "empty-set": []
-=======
-                "compatibility": [
-                    "woocommerce-gift-cards",
-                    "woocommerce-product-addons",
-                    "woocommerce-min-max-quantities",
-                    "woocommerce-product-bundles",
-                    "woocommerce-product-recommendations",
-                    "woocommerce-payments",
-                    "automatewoo",
-                    "woocommerce-shipping",
-                    "woocommerce-subscriptions",
-                    "woocommerce-composite-products",
-                    "woocommerce-services",
-                    "woocommerce-bookings",
-                    "woocommerce-shipment-tracking",
-                    "woocommerce-google-analytics-integration",
-                    "mailpoet",
-                    "jetpack"
-                ]
->>>>>>> trunk:src/tests/__snapshots__/PartnerManagementTest__test_switch_partner__1.json
             },
             "db_dump_file": "https:\/\/qit.woo.com\/wp-content\/uploads\/qit-env-db-dumps\/woocommerce_dump.sql.zip"
         }
