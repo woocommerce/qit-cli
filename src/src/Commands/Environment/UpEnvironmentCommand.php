@@ -492,6 +492,21 @@ class UpEnvironmentCommand extends QITCommand {
 						throw $e;  // Re-throw security errors
 					}
 
+					// Check if this is a missing version error
+					if ( strpos( $e->getMessage(), 'missing a version number' ) !== false ||
+						strpos( $e->getMessage(), 'must include a version number' ) !== false ) {
+						// For JSON output, format the error properly
+						if ( $input->getOption( 'json' ) ) {
+							$output->writeln( json_encode( [
+								'error'   => true,
+								'message' => $e->getMessage(),
+							] ) );
+							return Command::FAILURE;
+						}
+						// Don't wrap the message, it's already clear
+						throw new \RuntimeException( $e->getMessage() );
+					}
+
 					// Fail fast for test package errors - no point continuing if packages are missing
 					throw new \RuntimeException( "Failed to prepare test package '{$package_ref}': " . $e->getMessage() );
 				}

@@ -63,11 +63,11 @@ class PackageReferenceUtils {
 	 * Examples:
 	 * - "woocommerce/e2e:latest" -> "latest"
 	 * - "woocommerce/e2e:1.0.0" -> "1.0.0"
-	 * - "woocommerce/e2e" -> "latest" (default)
+	 * - "woocommerce/e2e" -> null (no version specified)
 	 * - "./local/path" -> null
 	 *
 	 * @param string $reference The package reference.
-	 * @return string|null The version, or null if it's a local path.
+	 * @return string|null The version, or null if it's a local path or no version specified.
 	 */
 	public static function extract_version( string $reference ): ?string {
 		// Local paths don't have versions
@@ -75,12 +75,79 @@ class PackageReferenceUtils {
 			return null;
 		}
 
-		// Extract version after colon, default to 'latest'
+		// Extract version after colon, return null if no version specified
 		if ( strpos( $reference, ':' ) !== false ) {
 			return substr( $reference, strpos( $reference, ':' ) + 1 );
 		}
 
-		return 'latest';
+		return null;
+	}
+
+	/**
+	 * Check if a reference has a version specified.
+	 *
+	 * @param string $reference The package reference.
+	 * @return bool True if the reference has a version, false otherwise.
+	 */
+	public static function has_version( string $reference ): bool {
+		// Local paths don't need versions
+		if ( self::is_local_reference( $reference ) ) {
+			return true; // Consider local paths as "having a version" since they don't need one
+		}
+
+		return strpos( $reference, ':' ) !== false;
+	}
+
+	/**
+	 * Validate a package reference.
+	 *
+	 * Ensures remote packages have explicit versions (no fallback to 'latest').
+	 * Local paths are always valid.
+	 *
+	 * @param string $reference The package reference to validate.
+	 * @throws \RuntimeException If the reference is invalid.
+	 */
+	public static function validate_reference( string $reference ): void {
+		// Local paths are always valid
+		if ( self::is_local_reference( $reference ) ) {
+			return;
+		}
+
+		// Remote packages must have an explicit version
+		if ( ! self::has_version( $reference ) ) {
+			$package_id = self::extract_package_id( $reference );
+
+			// Determine if this looks like a subpackage reference
+			$parts                = explode( '/', $package_id );
+			$is_likely_subpackage = count( $parts ) > 2 ||
+				( count( $parts ) === 2 && strpos( $parts[1], '/' ) !== false );
+
+			if ( $is_likely_subpackage ) {
+				throw new \RuntimeException(
+					"Package reference '$reference' is missing a version number.\n" .
+					"Subpackages must include a version, e.g., '$reference:1.0.0'\n" .
+					'To see available versions, run: qit package:list'
+				);
+			} else {
+				throw new \RuntimeException(
+					"Package reference '$reference' is missing a version number.\n" .
+					"Remote packages must include an explicit version (e.g., '$reference:latest' or '$reference:1.0.0')\n" .
+					'To see available versions, run: qit package:list'
+				);
+			}
+		}
+	}
+
+	/**
+	 * Validate multiple package references.
+	 *
+	 * @param array<string> $references Array of package references to validate.
+	 * @throws \RuntimeException If any reference is invalid.
+	 */
+	public static function validate_references( array $references ): void {
+		foreach ( $references as $reference ) {
+			self::validate_reference( $reference );
+		}
 	}
 
 	/**

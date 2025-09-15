@@ -41,7 +41,7 @@ class PackagePublishCommand extends QITCommand {
 				'  - [version]: specified as argument (you choose this now)'
 			)
 			->addArgument( 'path', InputArgument::REQUIRED, 'Path to directory or zip file containing qit-test.json' )
-			->addArgument( 'version', InputArgument::OPTIONAL, 'Version for this release (e.g. 1.0.0, 1.0.0-beta.1, latest) [default: latest]' )
+			->addArgument( 'version', InputArgument::REQUIRED, 'Version for this release (e.g. 1.0.0, 1.0.0-beta.1, latest)' )
 			->addOption( 'skip-validate', null, InputOption::VALUE_NONE, 'Skip manifest validation' );
 	}
 
@@ -50,12 +50,6 @@ class PackagePublishCommand extends QITCommand {
 		$path          = $input->getArgument( 'path' );
 		$version       = $input->getArgument( 'version' );
 		$skip_validate = $input->getOption( 'skip-validate' );
-
-		// Set default version if none provided
-		$version_was_provided = $version !== null;
-		if ( $version === null ) {
-			$version = 'latest';
-		}
 
 		/*
 		---------------------------------------------------------------------
@@ -119,12 +113,7 @@ class PackagePublishCommand extends QITCommand {
 			$io->writeln( sprintf( '   Namespace: <info>%s</info>', $namespace ) );
 			$io->writeln( sprintf( '   Package name: <info>%s</info>', $package_name ) );
 
-			// Show version with note if using default
-			$version_display = $version;
-			if ( $version === 'latest' && ! $version_was_provided ) {
-				$version_display = sprintf( '%s <comment>(default, no version specified)</comment>', $version );
-			}
-			$io->writeln( sprintf( '   Version: <info>%s</info>', $version_display ) );
+			$io->writeln( sprintf( '   Version: <info>%s</info>', $version ) );
 			$io->writeln( sprintf( '   Test type: <info>%s</info>', $test_type ) );
 
 			/*

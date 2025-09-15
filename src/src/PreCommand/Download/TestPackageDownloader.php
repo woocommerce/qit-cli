@@ -7,6 +7,7 @@ use QIT_CLI\Zipper;
 use QIT_CLI\Cache;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
+use QIT_CLI\Utils\PackageReferenceUtils;
 use QIT_CLI\Validation\ArtifactValidator;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -479,6 +480,9 @@ class TestPackageDownloader {
 	 * @return array{urls: array<string,array<string,mixed>>, artifact_groups?: array<string,array<string>>}
 	 */
 	public function fetch_download_urls( array $references ): array {
+		// Validate all package references before making the API call
+		PackageReferenceUtils::validate_references( $references );
+
 		// Check cache first to prevent API rate limiting
 		// Cache key includes all references to handle bulk requests
 		$cache_key = 'test_package_urls_' . md5( implode( '|', $references ) );
