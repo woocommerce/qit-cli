@@ -59,7 +59,7 @@ HELP
 		}
 
 		// Target directories for Claude Code
-		$agents_dir = $home . '/.claude/agents';
+		$agents_dir   = $home . '/.claude/agents';
 		$commands_dir = $home . '/.claude/commands';
 
 		// Create target directories if they don't exist
@@ -75,7 +75,7 @@ HELP
 		}
 
 		// Get all agents and slash command
-		$agents = $this->getAgents();
+		$agents        = $this->getAgents();
 		$slash_command = $this->getSlashCommand();
 
 		// Install agents
@@ -99,7 +99,7 @@ HELP
 
 		// Install slash command
 		$output->writeln( '<comment>Installing /qit slash command...</comment>' );
-		$command_file = $commands_dir . '/qit.md';
+		$command_file   = $commands_dir . '/qit.md';
 		$command_action = file_exists( $command_file ) ? 'Updated' : 'Installed';
 
 		if ( file_put_contents( $command_file, $slash_command ) !== false ) {
@@ -166,7 +166,7 @@ YAML;
 	private function getAgents(): array {
 		return [
 			// Main orchestrator agent
-			'qit.md' => <<<'AGENT'
+			'qit.md'                       => <<<'AGENT'
 ---
 name: qit
 description: Main QIT orchestrator - coordinates QIT workflows and delegates to specialized agents
