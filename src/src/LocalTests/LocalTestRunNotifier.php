@@ -423,7 +423,6 @@ class LocalTestRunNotifier {
 			'has_baseline' => false,
 			'extension'    => [],
 			'baseline'     => [],
-			'comparison'   => [],
 		];
 
 		// Extract main test (extension) metrics from the test result itself.
@@ -437,7 +436,6 @@ class LocalTestRunNotifier {
 		if ( $baseline_result !== null ) {
 			$performance_results['has_baseline'] = true;
 			$performance_results['baseline']     = $this->metrics_extractor->extract_metrics( $baseline_result->get_metrics() );
-			$performance_results['comparison']   = $this->extract_comparison_metrics( $test_result );
 
 			// Add failed checks for baseline.
 			$performance_results['baseline']['failed_checks'] = $this->extract_failed_checks_from_result( $baseline_result );
@@ -446,26 +444,6 @@ class LocalTestRunNotifier {
 		return $performance_results;
 	}
 
-	/**
-	 * Extract comparison metrics from a test result.
-	 *
-	 * @param PerformanceTestResult $test_result The main test result.
-	 *
-	 * @return array<string, mixed> The comparison metrics.
-	 */
-	private function extract_comparison_metrics( PerformanceTestResult $test_result ): array {
-		$comparison_metrics = [];
-		$all_metrics        = $test_result->get_metrics();
-
-		// Look for comparison metrics (those ending with _vs_baseline_percent or _vs_baseline_diff).
-		foreach ( $all_metrics as $metric_name => $metric_value ) {
-			if ( str_contains( $metric_name, '_vs_baseline_' ) ) {
-				$comparison_metrics[ $metric_name ] = $metric_value;
-			}
-		}
-
-		return $comparison_metrics;
-	}
 
 	/**
 	 * Extract failed checks from a performance test result.

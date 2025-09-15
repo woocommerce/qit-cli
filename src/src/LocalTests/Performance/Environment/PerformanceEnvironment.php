@@ -3,6 +3,7 @@
 namespace QIT_CLI\LocalTests\Performance\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\ThemeActivation;
@@ -196,6 +197,9 @@ class PerformanceEnvironment extends Environment {
 			'SITE_URL'          => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
 		] );
+
+		// Generate base data for performance testing.
+		$this->generate_base_data();
 	}
 
 	/**
@@ -357,5 +361,42 @@ class PerformanceEnvironment extends Environment {
 		}
 
 		$io->writeln( '' );
+	}
+
+	/**
+	 * Download and import the performance database dump.
+	 */
+	private function generate_base_data(): void {
+		$this->output->writeln( '<info>Generating test products and orders...</info>' );
+
+		// Get database dump download URL.
+		$cache       = App::make( Cache::class );
+		$db_dump_url = $cache->get_manager_sync_data( 'db_dump_file' );
+
+		// Download and import in one command to avoid storing large files.
+		$import_command = implode( ' && ', [
+			'cd /tmp',
+			'echo "Downloading performance database dump..."',
+			"curl -L -o woocommerce_dump.sql.zip {$db_dump_url}",
+			'echo "Importing database..."',
+			"unzip -p woocommerce_dump.sql.zip | mysql -h qit_env_db_{$this->env_info->env_id} -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE --binary-mode=1",
+			'rm -f woocommerce_dump.sql.zip',
+			'echo "Database import completed"',
+		] );
+
+		try {
+			$this->docker->run_inside_docker(
+				$this->env_info,
+				[ '/bin/bash', '-c', $import_command ],
+				[],
+				null,
+				600 // 10 minute timeout for download and import.
+			);
+		} catch ( \Exception $e ) {
+			$this->output->writeln( '<comment>Warning: Could not import performance database. Continuing with fresh installation.</comment>' );
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( '<comment>Error: ' . $e->getMessage() . '</comment>' );
+			}
+		}
 	}
 }
