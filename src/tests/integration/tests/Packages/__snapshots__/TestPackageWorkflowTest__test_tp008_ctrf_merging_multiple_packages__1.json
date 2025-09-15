@@ -1,0 +1,154 @@
+{
+    "results": {
+        "tool": {
+            "name": "qit-bash-scripts"
+        },
+        "summary": {
+            "tests": 6,
+            "passed": 6,
+            "failed": 0,
+            "pending": 0,
+            "skipped": 0,
+            "other": 0,
+            "start": 1000000000000,
+            "stop": 1000000001000,
+            "suites": 0
+        },
+        "tests": [
+            {
+                "name": "global-setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/global-setup.sh",
+                "stdout": [
+                    "[globalSetup] Starting global configuration...",
+                    "[globalSetup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "globalSetup",
+                    "packageSlug": "package-local",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "global-setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/global-setup.sh",
+                "stdout": [
+                    "[globalSetup] Starting global configuration...",
+                    "[globalSetup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "globalSetup",
+                    "packageSlug": "qit-test-plugin-tp008-published-1.0.0",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/setup.sh",
+                "stdout": [
+                    "[setup] Creating sample data ...",
+                    "[setup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "setup",
+                    "packageSlug": "package-local",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "setup.sh",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "type": "script",
+                "filePath": "./bootstrap/setup.sh",
+                "stdout": [
+                    "[setup] Creating sample data ...",
+                    "[setup] Done."
+                ],
+                "stderr": [],
+                "extra": {
+                    "phase": "setup",
+                    "packageSlug": "qit-test-plugin-tp008-published-1.0.0",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin",
+                    "scriptType": "bash"
+                }
+            },
+            {
+                "name": "site is reachable and has a body",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "rawStatus": "passed",
+                "tags": [],
+                "type": "e2e",
+                "filePath": "/tmp/qit_test_NORMALIZED/downloaded/qit-test-plugin-tp008-published-1.0.0/tests/example.spec.js",
+                "retries": 0,
+                "flaky": false,
+                "steps": [],
+                "suite": "chromium > example.spec.js",
+                "attachments": [],
+                "stdout": [],
+                "stderr": [],
+                "extra": {
+                    "annotations": [],
+                    "packageSlug": "/tmp/qit_test_NORMALIZED/downloaded/qit-test-plugin-tp008-published-1.0.0",
+                    "phase": "run",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin"
+                }
+            },
+            {
+                "name": "site is reachable and has a body",
+                "status": "passed",
+                "duration": 100,
+                "start": 1000000000,
+                "stop": 1000000000,
+                "rawStatus": "passed",
+                "tags": [],
+                "type": "e2e",
+                "filePath": "/tmp/qit_test_NORMALIZED/package-local/tests/example.spec.js",
+                "retries": 0,
+                "flaky": false,
+                "steps": [],
+                "suite": "chromium > example.spec.js",
+                "attachments": [],
+                "stdout": [],
+                "stderr": [],
+                "extra": {
+                    "annotations": [],
+                    "packageSlug": "/tmp/qit_test_NORMALIZED/package-local",
+                    "phase": "run",
+                    "testType": "e2e",
+                    "namespace": "qit-test-plugin"
+                }
+            }
+        ]
+    }
+}

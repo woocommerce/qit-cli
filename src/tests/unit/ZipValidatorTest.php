@@ -106,9 +106,9 @@ class ZipValidatorTest extends QITTestCase {
 		$this->assertTrue( true );
 	}
 
-	function test_zip_created_by_Archive_Utility_OSX_is_invalid() {
-		$file_name = 'zip-created-by-archive-utility-osx.zip';
-		$slug      = 'zip-created-by-archive-utility-osx';
+	function test_corrupted_zip_is_invalid() {
+		$file_name = 'corrupted.zip';
+		$slug      = 'corrupted-plugin';
 
 		$zip_validator      = App::make( ZipValidator::class );
 

@@ -6,7 +6,9 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CustomTests\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
+use QIT_CLI\Environment\PackageOrchestrator;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\MetricsExtractor;
@@ -34,8 +36,8 @@ class LocalTestRunNotifier {
 	/** @var PrepareQMLog */
 	protected $prepare_qm_log;
 
-	/** @var PlaywrightToPuppeteerConverter */
-	protected $playwright_to_puppeteer_converter;
+	/** @var \QIT_CLI\Environment\CTRFValidator */
+	protected $ctrf_validator;
 
 	/** @var MetricsExtractor */
 	protected $metrics_extractor;
@@ -46,16 +48,16 @@ class LocalTestRunNotifier {
 		Upload $uploader,
 		PrepareDebugLog $prepare_debug_log,
 		PrepareQMLog $prepare_qm_log,
-		PlaywrightToPuppeteerConverter $playwright_to_puppeteer_converter,
+		\QIT_CLI\Environment\CTRFValidator $ctrf_validator,
 		?MetricsExtractor $metrics_extractor = null
 	) {
-		$this->zipper                            = $zipper;
-		$this->output                            = $output;
-		$this->uploader                          = $uploader;
-		$this->prepare_debug_log                 = $prepare_debug_log;
-		$this->prepare_qm_log                    = $prepare_qm_log;
-		$this->playwright_to_puppeteer_converter = $playwright_to_puppeteer_converter;
-		$this->metrics_extractor                 = $metrics_extractor ?: new MetricsExtractor();
+		$this->zipper            = $zipper;
+		$this->output            = $output;
+		$this->uploader          = $uploader;
+		$this->prepare_debug_log = $prepare_debug_log;
+		$this->prepare_qm_log    = $prepare_qm_log;
+		$this->ctrf_validator    = $ctrf_validator;
+		$this->metrics_extractor = $metrics_extractor ?: new MetricsExtractor();
 	}
 
 	/**
@@ -81,9 +83,9 @@ class LocalTestRunNotifier {
 
 		foreach ( $env_info->plugins as $plugin ) {
 			// Are we running an activation test?
-			if ( $plugin['type'] === 'plugin' && $plugin['slug'] === 'woocommerce' ) {
-				if ( ! empty( $plugin['test_tags'] ) && is_array( $plugin['test_tags'] ) ) {
-					foreach ( $plugin['test_tags'] as $t ) {
+			if ( $plugin->type === 'plugin' && $plugin->slug === 'woocommerce' ) {
+				if ( property_exists( $plugin, 'test_tags' ) && ! empty( $plugin->test_tags ) && is_array( $plugin->test_tags ) ) {
+					foreach ( $plugin->test_tags as $t ) {
 						if ( $t === 'activation' ) {
 							$test_type = 'activation';
 						}
@@ -91,8 +93,8 @@ class LocalTestRunNotifier {
 				}
 			}
 
-			if ( $plugin['type'] === 'plugin' && $plugin['slug'] !== $env_info->sut_slug ) {
-				$additional_plugins[] = $plugin['slug'];
+			if ( $plugin->type === 'plugin' && isset( $env_info->sut ) && $plugin->slug !== $env_info->sut['slug'] ) {
+				$additional_plugins[] = $plugin->slug;
 			}
 		}
 
@@ -100,11 +102,11 @@ class LocalTestRunNotifier {
 
 		$body = [
 			'woo_id'                  => $woo_extension_id,
-			'woocommerce_version'     => $woocommerce_version,
-			'wordpress_version'       => $env_info->wp,
-			'php_version'             => $env_info->php_version,
+			'woo'                     => $woocommerce_version,
+			'wp'                      => $env_info->wp,
+			'php'                     => $env_info->php,
 			'additional_plugins'      => $additional_plugins,
-			'will_have_allure_report' => App::getVar( 'should_upload_report' ) ? 'true' : 'false',
+			'will_have_allure_report' => 'true', // Always true now, Allure uploads only on failure
 			'test_type'               => $test_type,
 			'event'                   => $event,
 			'is_development_build'    => $is_development ? 'true' : 'false',
@@ -148,22 +150,51 @@ class LocalTestRunNotifier {
 
 	/**
 	 * @param TestResult|PerformanceTestResult $test_result
+	 * @param PackageOrchestrator|null         $orchestrator Optional orchestrator for progress display.
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
-	public function notify_test_finished( $test_result ): array {
+	public function notify_test_finished( $test_result, $orchestrator = null ): array {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {
 			throw new \RuntimeException( 'Test run ID not set.' );
 		}
 
+		$env_info    = $test_result->get_env_info();
 		$results_dir = $test_result->get_results_dir();
 
-		$result_file               = $results_dir . '/result.json';
-		$ctrf_file                 = $results_dir . '/ctrf/ctrf-report.json';
+		// Use artifacts directory if available, otherwise fall back to results directory
+		if ( isset( $env_info->artifacts_dir ) && ! empty( $env_info->artifacts_dir ) ) {
+			$ctrf_file = $env_info->artifacts_dir . '/final/ctrf/ctrf-report.json';
+		} else {
+			$ctrf_file = $results_dir . '/final/ctrf/ctrf-report.json';
+		}
 		$qm_logs_path              = $results_dir . '/logs';
 		$test_result_json_original = '';
+
+		// Try to read test_result_json_original from manifest's json property
+		$env_info = $test_result->get_env_info();
+		if ( ! empty( $env_info->test_packages_metadata ) ) {
+			foreach ( $env_info->test_packages_metadata as $pkg_id => $pkg_info ) {
+				if ( isset( $pkg_info['manifest'] ) && $pkg_info['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+					$manifest     = $pkg_info['manifest'];
+					$test_results = $manifest->get_test_results();
+
+					// Check if 'json' property exists in manifest results
+					if ( isset( $test_results['json'] ) ) {
+						$json_file_path = $pkg_info['path'] . '/' . ltrim( $test_results['json'], './' );
+
+						// Read the JSON file if it exists
+						if ( file_exists( $json_file_path ) && is_readable( $json_file_path ) ) {
+							$test_result_json_original = file_get_contents( $json_file_path );
+							$test_result_json_original = base64_encode( gzcompress( $test_result_json_original ) );
+							break; // Use the first found JSON file
+						}
+					}
+				}
+			}
+		}
 
 		/**
 		 * If the logs directory exists, we will send the Query Monitor logs as well.
@@ -177,50 +208,76 @@ class LocalTestRunNotifier {
 			],
 		];
 
-		$this->prepare_debug_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
-		$this->prepare_qm_log->set_sut_slug( $test_result->get_env_info()->sut_slug ?: '' );
+		$env_info = $test_result->get_env_info();
+		$sut_slug = isset( $env_info->sut ) ? ( $env_info->sut['slug'] ?? '' ) : '';
+		$this->prepare_debug_log->set_sut_slug( $sut_slug );
+		$this->prepare_qm_log->set_sut_slug( $sut_slug );
 
-		if ( file_exists( $result_file ) ) {
-			$result_json = file_get_contents( $result_file );
+		if ( file_exists( $ctrf_file ) ) {
+			$result_json = json_decode( file_get_contents( $ctrf_file ), true );
 
-			if ( empty( json_decode( $result_json, true ) ) ) {
+			if ( empty( $result_json ) ) {
 				throw new \RuntimeException( 'Result file not a JSON.' );
-			}
-
-			$test_result_json_original = $result_json;
-
-			// Skip Playwright to Puppeteer conversion for performance tests.
-			if ( $test_result instanceof PerformanceTestResult ) {
-				$result_json = json_decode( $result_json, true );
-			} else {
-				$result_json = $this->playwright_to_puppeteer_converter->convert_pw_to_puppeteer( json_decode( $result_json, true ) );
 			}
 		} else {
 			$result_json = [];
 		}
 
-		if ( file_exists( $ctrf_file ) ) {
-			$ctrf_json = json_decode( file_get_contents( $ctrf_file ), true );
-
-			if ( ! empty( $ctrf_json ) ) {
-				$ctrf_json = $ctrf_json;
-			}
-		} else {
-			$ctrf_json = [];
-		}
-
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
 			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
-			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::getVar( E2EEnvInfo::class ) );
+			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::make( EnvInfo::class ) );
 			$debug_log['debug_log'] = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 		}
 
-		if ( file_exists( $results_dir . '/allure-playwright' ) && App::getVar( 'should_upload_report' ) ) {
-			$this->zipper->zip_directory( $results_dir . '/allure-playwright', $results_dir . '/allure-playwright.zip' );
-			if ( filesize( $results_dir . '/allure-playwright.zip' ) > 200 * 1024 * 1024 ) {
-				$this->output->writeln( '<error>Report is too large to upload. Skipping...</error>' );
+		// Use artifacts directory if available, otherwise fall back to results directory
+		if ( isset( $env_info->artifacts_dir ) && ! empty( $env_info->artifacts_dir ) ) {
+			$allure_dir = $env_info->artifacts_dir . '/final/allure';
+		} else {
+			$allure_dir = $results_dir . '/allure';
+		}
+
+		// Check if Allure directory exists and we're not skipping
+		$has_allure = is_dir( $allure_dir )
+			&& ! App::getVar( 'skip_allure_upload' );
+
+		// Determine if tests failed (we'll know after processing CTRF)
+		$tests_failed = false;
+		if ( $test_result instanceof TestResult ) {
+			$tests_failed = $this->ctrf_has_failed( $result_json );
+		}
+
+		if ( $has_allure ) {
+			if ( ! $tests_failed ) {
+				// Tests passed - don't upload Allure to save bandwidth
+				if ( $orchestrator ) {
+					$orchestrator->post_processing_message( 'Allure report available locally (not uploaded - tests passed)', false );
+				}
 			} else {
-				$this->uploader->upload_build( 'test-report', $test_run_id, $results_dir . '/allure-playwright.zip', $this->output, 'e2e' );
+				// Tests failed - upload Allure for debugging
+				$zip_path = $results_dir . '/allure-raw.zip';
+				$this->zipper->zip_directory( $allure_dir, $zip_path );
+
+				if ( filesize( $zip_path ) > 200 * 1024 * 1024 ) {
+					if ( $orchestrator ) {
+						$orchestrator->post_processing_message( 'Allure results too large to upload', false );
+					} else {
+						$this->output->writeln( '<error>Allure raw results are too large to upload. Skipping...</error>' );
+					}
+				} else {
+					if ( $orchestrator ) {
+						$orchestrator->post_processing_message( 'Uploading Allure report (tests failed)...' );
+					}
+					$this->uploader->upload_build(
+						'test-report',
+						$test_run_id,
+						$zip_path,
+						$orchestrator ? new \Symfony\Component\Console\Output\NullOutput() : $this->output,
+						'e2e'
+					);
+					if ( $orchestrator ) {
+						$orchestrator->post_processing_message( 'Allure report uploaded for debugging' );
+					}
+				}
 			}
 		}
 
@@ -244,9 +301,15 @@ class LocalTestRunNotifier {
 			$status = 'cancelled';
 		}
 
-		// Check for E2E test failures.
-		if ( is_null( $status ) && $test_result instanceof TestResult && $this->playwright_to_puppeteer_converter->has_failed( $result_json ) ) {
-			$status = 'failed';
+		// Check for E2E test failures - use CTRF approach
+		if ( is_null( $status ) ) {
+			// Only check CTRF failures if we have actual test results
+			// Empty result_json array means no CTRF file was generated (e.g., utility packages)
+			if ( $test_result instanceof TestResult && ! empty( $result_json ) && $this->ctrf_has_failed( $result_json ) ) {
+				// We consider it a test failure.
+				$exit_status_code_override = Command::FAILURE; // i.e., exit code 1.
+				$status                    = 'failed';
+			}
 		}
 
 		// Check for Performance test failures.
@@ -277,18 +340,14 @@ class LocalTestRunNotifier {
 			$status = 'success';
 		}
 
-		if ( function_exists( 'gzcompress' ) && ! empty( $test_result_json_original ) ) {
-			$test_result_json_original = base64_encode( gzcompress( $test_result_json_original ) );
-		}
-
 		$data = [
 			'test_run_id'               => $test_run_id,
-			'test_result_json'          => $result_json,
+			'test_result_json'          => '',
 			'test_result_json_original' => $test_result_json_original,
 			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
 			'debug_log'                 => json_encode( $debug_log ),
 			'status'                    => $status,
-			'ctrf_json'                 => $ctrf_json,
+			'ctrf_json'                 => $result_json,
 		];
 
 		// Extract performance metrics for performance tests.
@@ -325,6 +384,31 @@ class LocalTestRunNotifier {
 		}
 
 		return [ $response['report_url'], $exit_status_code_override ];
+	}
+
+	/**
+	 * Checks if the CTRF report indicates a failing test.
+	 *
+	 * Note: ctrf-cli merge tool may produce null values for integer fields,
+	 * which violates the schema but we need to handle gracefully.
+	 *
+	 * @param array<string, mixed> $ctrf
+	 */
+	private function ctrf_has_failed( array $ctrf ): bool {
+		// Basic structure check
+		if ( ! isset( $ctrf['results']['summary'] ) ) {
+			// No summary = cannot determine status
+			return true;
+		}
+
+		// Get failed count - handle both valid (integer) and invalid (null) values
+		// that ctrf-cli merge might produce
+		$failed = $ctrf['results']['summary']['failed'] ?? 0;
+
+		// Convert to integer - null becomes 0, numeric strings become integers
+		$failed_count = (int) $failed;
+
+		return $failed_count > 0;
 	}
 
 	/**

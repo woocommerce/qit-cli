@@ -6,37 +6,44 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 
 class E2EEnvInfo extends EnvInfo {
 	/** @var string */
-	public $environment = 'e2e';
+	public string $environment = 'e2e';
 
 	/** @var string */
-	public $wp = '';
+	public string $site_url = '';
+
+	/** @var array<string,string> */
+	public array $passthrough_args = [];
+
+	/** @var string */
+	public string $wp = '';
 
 	/** @var bool */
-	public $object_cache = false;
+	public bool $object_cache = false;
 
 	/** @var string */
-	public $php_version;
+	public string $php = '';
+
+	/** @var bool */
+	public bool $network_restriction = true;
 
 	/** @var string */
-	public $nginx_port;
+	public string $nginx_port = '';
 
-	/** @var string The slug of the extension under test. */
-	public $sut_slug;
+	/** @var int */
+	public int $db_port = 0;
 
-	/** @var string The type of the SUT, either "plugin" or "theme". */
-	public $sut_type;
+	/** @var string */
+	public string $php_container = '';
 
-	/** @var string The entrypoint of the extension under test. */
-	public $sut_entrypoint;
+	/** @var string */
+	public string $db_container = '';
 
-	/** @var string The path to the SUT on the host. */
-	public $sut_path;
+	/** @var array<string,mixed> */
+	public array $sut = [];
 
-	/** @var int The Woo ID of the extension under test. */
-	public $sut_id;
+	public bool $skip_activating_plugins = false;
 
-	/** @var string The domain being used. */
-	public $domain;
+	public bool $skip_activating_themes = false;
 
 	/** @var array<int,array{
 	 *     slug:string,
@@ -45,13 +52,34 @@ class E2EEnvInfo extends EnvInfo {
 	 *     action:string,
 	 *     path_in_php_container:string,
 	 *     path_in_host:string
-	 * }> $tests
+	 * }>
 	 */
-	public $tests = [];
+	public array $tests = [];
 
-	/** @var array<mixed>> */
-	public $playwright_config = [];
+	/** @var array<mixed> */
+	public array $playwright_config = [];
 
-	/** @var string The playwright test tag to be executed*/
-	public $pw_test_tag = '';
+	/** @var string */
+	public string $pw_test_tag = '';
+
+	/** @var string */
+	public string $woo = '';
+
+	/** @var bool */
+	public bool $is_development_build = false;
+
+	/** @var string */
+	public string $notify = '';
+
+	/** @var array<string,array<string,array<mixed>>> */
+	public array $test_packages = [];
+
+	/** @var array<string,array{path:string,source:string,container_path:string,package_id?:string,manifest?:array<string,mixed>}> */
+	public array $test_packages_for_setup = [];
+
+	/** @var bool */
+	public bool $skip_test_phases = false;
+
+	/** @var string|null */
+	public ?string $artifacts_dir = null;
 }

@@ -202,7 +202,7 @@ class QitRunner {
 			$qit,
 			"run:{$test_type}",
 			'--json',
-			'--ignore-fail',
+			'--async',  // Add async flag to get old behavior (return immediately with test_run_id)
 			"--zip={$t['path']}/sut.zip",
 		];
 

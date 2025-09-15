@@ -24,8 +24,14 @@ class EnvironmentRunner {
 	public function run_environment( array $env_up_options ): EnvInfo {
 		$env_up_options['--json'] = true;
 
-		$env_up_command   = App::make( Application::class )->find( UpEnvironmentCommand::getDefaultName() );
-		$resource_stream  = fopen( 'php://temp', 'w+' );
+		$env_up_command  = App::make( Application::class )->find( UpEnvironmentCommand::getDefaultName() );
+		$resource_stream = fopen( 'php://temp', 'w+' );
+
+		// Attach the JSON filter when in JSON mode to filter out non-JSON output
+		// The --json option is always set to true above, so we always attach the filter
+		// IMPORTANT: Only filter on WRITE to avoid processing data twice
+		stream_filter_append( $resource_stream, 'qit_json', STREAM_FILTER_WRITE );
+
 		$exit_status_code = $env_up_command->run(
 			new ArrayInput( $env_up_options ),
 			new StreamOutput( $resource_stream )
@@ -48,12 +54,29 @@ class EnvironmentRunner {
 		}
 
 		$env_json = json_decode( $up_output, true );
+
+		// Check if it's an error JSON from env:up
+		if ( is_array( $env_json ) && isset( $env_json['error'] ) && isset( $env_json['message'] ) ) {
+			// It's a properly formatted error from env:up, throw it with the message
+			throw new \RuntimeException( $env_json['message'] );
+		}
+
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
 			throw new \RuntimeException( 'Failed to parse environment JSON. Output: ' . $up_output );
 		}
 
+		// Check for invalid package errors (Command::INVALID = 2)
+		if ( $exit_status_code === Command::INVALID ) {
+			throw new \RuntimeException( 'Environment configuration is invalid. Output: ' . $up_output );
+		}
+
 		if ( $exit_status_code !== Command::SUCCESS ) {
 			throw new \RuntimeException( 'Failed to start the environment. Output: ' . $up_output );
+		}
+
+		// Use the appropriate EnvInfo class based on environment type
+		if ( isset( $env_json['environment'] ) && $env_json['environment'] === 'e2e' ) {
+			return \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo::from_array( $env_json );
 		}
 
 		return EnvInfo::from_array( $env_json );

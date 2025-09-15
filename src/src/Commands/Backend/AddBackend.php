@@ -6,9 +6,9 @@ use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\ManagerBackend;
+use QIT_CLI\QITInput;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -40,7 +40,7 @@ class AddBackend extends QITCommand {
 			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$qit_secret      = $input->getOption( 'qit_secret' );
 		$manager_url     = $input->getOption( 'manager_url' );
 		$manager_backend = $input->getOption( 'environment' );

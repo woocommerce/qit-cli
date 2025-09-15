@@ -1,0 +1,21 @@
+{
+    "package": "woocommerce/network-test",
+    "test_type": "e2e",
+    "test": {
+        "phases": {
+            "run": [
+                "echo 'Testing network logging...'",
+                "cd /var/www/html && wp eval 'wp_remote_get(\"https://api.wordpress.org/core/version-check/1.7/\"); echo \"Made version check request\";'",
+                "cd /var/www/html && wp eval 'wp_remote_get(\"https://api.wordpress.org/plugins/info/1.2/\"); echo \"Made plugin info request\";'",
+                "sleep 1",
+                "host: mkdir -p ./results ./blob-report",
+                "host: echo '{\"results\":{\"tool\":{\"name\":\"network-test\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"Network test\",\"status\":\"passed\",\"duration\":1000}]}}' > ./results/ctrf.json",
+                "host: echo 'test' > test.txt && zip -q ./blob-report/report.zip test.txt && rm test.txt"
+            ]
+        },
+        "results": {
+            "ctrf-json": "./results/ctrf.json",
+            "blob-dir": "./blob-report"
+        }
+    }
+}

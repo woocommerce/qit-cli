@@ -71,7 +71,7 @@ class JsonOutput {
 	public static function output_throwable_as_json( \Throwable $throwable ): void {
 		if ( ! App::make( Output::class )->isVerbose() ) {
 			// If not verbose, just output the message.
-			echo json_encode( [ 'error' => $throwable->getMessage() ] ), "\n";
+			echo json_encode( [ 'error' => $throwable->getMessage() ], JSON_UNESCAPED_SLASHES ), "\n";
 			exit( 1 );
 		}
 
@@ -86,7 +86,7 @@ class JsonOutput {
 		];
 
 		// Echo valid JSON.
-		echo json_encode( $error_data ), "\n";
+		echo json_encode( $error_data, JSON_UNESCAPED_SLASHES ), "\n";
 		exit( 1 );
 	}
 }

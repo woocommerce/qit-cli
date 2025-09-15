@@ -75,6 +75,7 @@ build:
 	@rm -rf src-tmp
 	@rm -f ./_build/box.json
 
+.PHONY: tests
 tests:
 	$(MAKE) phpcs
 	$(MAKE) phpstan
@@ -94,8 +95,9 @@ phpcs:
 	$(MAKE) phpcbf || true
 	$(call execPhpAlpine,/app/src/vendor/bin/phpcs /app/src/qit-cli.php /app/src/src -s --standard=/app/src/.phpcs.xml.dist)
 
-# Added --memory-limit=1G here
+# Run PHPStan without baseline
 phpstan:
+	@echo "Running PHPStan..."
 	$(call execPhpAlpine,/app/src/vendor/bin/phpstan -vvv analyse -c /app/src/phpstan.neon --memory-limit=1G)
 
 phpunit:

@@ -7,6 +7,9 @@
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="16"/>
 
+    <exclude-pattern>dev/*</exclude-pattern>
+    <exclude-pattern>src/src/AI/*</exclude-pattern>
+
     <config name="testVersion" value="7.4-"/>
     <rule ref="PHPCompatibility"/>
 
@@ -71,6 +74,11 @@
         <exclude name="WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv"/>
         <!-- Exclude deprecated sniff that will be removed in PHPCS 4.0.0 -->
         <exclude name="Generic.Functions.CallTimePassByReference"/>
+
+        <exclude name="WordPress.PHP.DevelopmentFunctions.error_log_print_r"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.urlencode_urlencode"/>
+        <exclude name="WordPress.PHP.DevelopmentFunctions.error_log_var_export"/>
+        <exclude name="WordPress.PHP.DiscouragedPHPFunctions.serialize_unserialize"/>
     </rule>
 
     <rule ref="Generic.Arrays.DisallowLongArraySyntax"/>

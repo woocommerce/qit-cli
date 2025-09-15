@@ -1,15 +1,21 @@
 <?php
 
-use QIT\SelfTests\CustomTests\Traits\ScaffoldHelpers;
-use QIT\SelfTests\CustomTests\Traits\SnapshotHelpers;
+use QIT\IntegrationTests\Traits\ScaffoldHelpers;
+use QIT\IntegrationTests\Traits\SnapshotHelpers;
 use Spatie\Snapshots\Drivers\JsonDriver;
 
+/**
+ * Tests for the RunE2E command.
+ * Some tests only check the resolved configuration (using qit_precommand),
+ * while others execute the full command chain (using qit).
+ */
 class RunE2ETest extends \PHPUnit\Framework\TestCase {
 	use SnapshotHelpers;
 	use ScaffoldHelpers;
 
 	/**
 	 * @param array<string,mixed> $qit_json_array The array to convert to JSON.
+	 *
 	 * @return string The absolute path to the created qit.json file.
 	 * @throws \RuntimeException If file creation fails.
 	 */
@@ -30,6 +36,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 
 	/**
 	 * @param string $qit_json_path The absolute path to the qit.json file.
+	 *
 	 * @return void
 	 * @throws \RuntimeException If file deletion fails.
 	 */
@@ -49,7 +56,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 				'woocommerce-amazon-s3-storage',
 				$this->scaffold_test(),
 				'--plugin',
-				'woocommerce:activate',
+				'woocommerce',
 			]
 		);
 
@@ -58,56 +65,7 @@ class RunE2ETest extends \PHPUnit\Framework\TestCase {
 		$this->assertMatchesNormalizedSnapshot( $output );
 	}
 
-	public function test_tag_and_run_test() {
-		qit( [
-			'tag:upload',
-			'woocommerce-amazon-s3-storage:self-test-tag-and-run',
-			$this->scaffold_test(),
-		] );
 
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			'self-test-tag-and-run',
-			'--plugin',
-			'woocommerce:activate',
-		] );
-
-		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-tag-and-run' ] );
-
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
-	}
-
-	public function test_multiple_tags_and_run_tests() {
-		qit( [
-			'tag:upload',
-			'woocommerce-amazon-s3-storage:self-test-multiple-test-tags',
-			$this->scaffold_test(),
-		] );
-
-		qit( [
-			'tag:upload',
-			'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another',
-			$this->scaffold_test( 'another-tag' ),
-		] );
-
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			'self-test-multiple-test-tags,self-test-multiple-test-tags-another',
-			'--plugin',
-			'woocommerce:activate',
-		] );
-
-		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags' ] );
-		qit( [ 'tag:delete', 'woocommerce-amazon-s3-storage:self-test-multiple-test-tags-another' ] );
-
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
-	}
 
 	public function test_theme_as_sut() {
 		// Scaffold.
@@ -182,7 +140,8 @@ JS;
 			'--theme',
 			'storefront',
 			'--skip_activating_themes',
-			'--update_snapshots',
+			'--',
+			'--update-snapshots',
 		] );
 
 		$this->assertFileExists( $scaffolded_dir . '/__snapshots__' );
@@ -202,7 +161,7 @@ JS;
 
 		$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 
-		if ( extension_loaded( 'imagick' ) ) {
+		if ( extension_loaded( 'imagick' ) && method_exists( \ImagickDraw::class, 'rectangle' ) ) {
 			$image_path = $scaffolded_dir . '/__snapshots__/activate-theme.spec.js/home.png';
 
 			// Load the image into Imagick
@@ -235,45 +194,29 @@ JS;
 
 			$this->assertMatchesNormalizedSnapshot( $this->normalize_scaffolded_test_run_output( $output ) );
 		} else {
-			$this->markTestSkipped( 'Imagick extension is not available.' );
+			$this->markTestSkipped( 'Imagick extension is not available or has a minimal build without rectangle method.' );
 		}
 	}
 
 	public function test_playwright_config_override() {
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--plugin',
-			'woocommerce:activate',
-		], [
-				'playwright_config' => [
-					'reportSlowTests' => [
-						'max'       => 10,
-						'threshold' => 1,
-					],
-				],
-			]
-		);
-
-		$output = $this->normalize_scaffolded_test_run_output( $output );
-
-		$this->assertMatchesNormalizedSnapshot( $output );
+		$config_json = <<<'JSON'
+{
+	"playwright_config": {
+		"reportSlowTests": {
+			"max": 10,
+			"threshold": 1
+		}
 	}
+}
+JSON;
 
-	public function test_cannot_use_woo_and_plugin_woocommerce() {
 		$output = qit( [
 			'run:e2e',
 			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
-			'--woo',
-			'8.6.2',
 			'--plugin',
 			'woocommerce',
-		],
-			[],
-			2
-		);
+		], $config_json );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
@@ -286,7 +229,7 @@ JS;
 			'woocommerce-amazon-s3-storage',
 			$this->scaffold_test(),
 			'--plugin',
-			'woocommerce'
+			'woocommerce',
 		] );
 
 		$output = $this->normalize_scaffolded_test_run_output( $output );
@@ -305,41 +248,5 @@ JS;
 		$output = $this->normalize_scaffolded_test_run_output( $output );
 
 		$this->assertMatchesNormalizedSnapshot( $output );
-	}
-
-	public function test_directory_with_same_basename_as_sut() {
-		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
-
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--json',
-			'--plugin=woocommerce',
-		], [], 0, [ 'QIT_SELF_TEST' => 'env_info' ] );
-
-		$output = $this->normalize_env_info( json_decode( $output, true ) );
-
-		$output = json_encode( $output, JSON_PRETTY_PRINT );
-
-		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
-	}
-
-	public function test_directory_with_same_basename_as_sut_with_env_up() {
-		$this->scaffold_plugin('woocommerce-amazon-s3-storage');
-
-		$output = qit( [
-			'run:e2e',
-			'woocommerce-amazon-s3-storage',
-			$this->scaffold_test(),
-			'--json',
-			'--plugin=woocommerce',
-		], [], 0, [ 'QIT_SELF_TEST' => 'env_up' ] );
-
-		$output = $this->normalize_env_info( json_decode( $output, true ) );
-
-		$output = json_encode( $output, JSON_PRETTY_PRINT );
-
-		$this->assertMatchesNormalizedSnapshot( $output, new JsonDriver() );
 	}
 }

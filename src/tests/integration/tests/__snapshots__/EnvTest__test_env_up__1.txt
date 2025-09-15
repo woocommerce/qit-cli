@@ -1,3 +1,7 @@
+DEBUG: PreCommandHandler called for QIT_CLI\Commands\Environment\UpEnvironmentCommand
+Resolving configuration...
+Configuration resolved successfully!
+Downloading plugins and themes...
 Starting Docker Environment...
 Installing WordPress...
 Activating plugins...
@@ -5,9 +9,16 @@ Activating plugins...
 * URL: http://localhost:PORT
 * Admin URL: http://localhost:PORT/wp-admin
 * Admin Credentials: admin/password
-* PHP Version: 7.4
+* PHP Version: 8.2
 * WordPress Version: NORMALIZED
 * Redis Object Cache? No
 * Path: QIT_HOME/temporary-envs/e2e-ENV_ID/
 To see additional info, run with the "--verbose" flag.
-http://localhost:PORT
+Environment started successfully!
+Environment ID: ENV_ID
+PHP Version: 8.2
+WordPress Version: NORMALIZED
+WooCommerce Version: stable
+Installed Plugins:
+- test-plugin (undefined)
+Site URL: http://localhost:PORT

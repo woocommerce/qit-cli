@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Config;
-use Symfony\Component\Console\Input\InputInterface;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ConfigDirCommand extends QITCommand {
@@ -15,7 +15,7 @@ class ConfigDirCommand extends QITCommand {
 			->setDescription( 'Prints the QIT config directory path.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$output->writeln( Config::get_qit_dir() );
 		return self::SUCCESS;
 	}

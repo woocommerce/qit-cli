@@ -2,10 +2,10 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
@@ -25,7 +25,7 @@ class GetMultipleCommand extends QITCommand {
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if all tests have finished. Failure if any not finished.', null );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$test_run_ids = $input->getArgument( 'test_run_ids' );
 		$test_run_ids = array_filter( array_map( 'trim', explode( ',', $test_run_ids ) ) );
 

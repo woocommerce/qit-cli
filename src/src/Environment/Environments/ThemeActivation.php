@@ -44,7 +44,7 @@ class ThemeActivation {
 		$theme_slug = $theme_slugs[0];
 
 		// Skip activating if the theme is the SUT.
-		if ( $theme_slug === $this->env_info->sut_slug ) {
+		if ( isset( $this->env_info->sut ) && $theme_slug === $this->env_info->sut['slug'] ) {
 			$this->output->writeln(
 				sprintf( '<comment>Skipping auto-activation of SUT theme: %s</comment>', $theme_slug )
 			);

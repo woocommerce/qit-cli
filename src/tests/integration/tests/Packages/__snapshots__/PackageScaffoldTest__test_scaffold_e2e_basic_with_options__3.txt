@@ -1,0 +1,9 @@
+#!/bin/bash
+# Example isolated setup script.
+# 🛈 The plugin under test is already active.
+# Add commands below; they run inside the Docker container used by QIT.
+# Examples:
+# wp theme install storefront --activate
+# wp option update blogname "My e2e test site"
+
+echo "Setup complete"

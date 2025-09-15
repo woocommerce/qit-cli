@@ -45,8 +45,9 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->application_tester->run( [
 			'command'              => 'run:woo-e2e',
-			'woo_extension'        => 'foo-extension', // Using slug.
-			'--additional_plugins' => '456,789', // Using IDs.
+			'sut'                  => 'wccom-plugin-1', // Using slug.
+			'--additional_plugins' => '10002,1000245', // Using IDs.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -54,8 +55,9 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->application_tester->run( [
 			'command'              => 'run:woo-e2e',
-			'woo_extension'        => '123', // Using ID.
-			'--additional_plugins' => 'bar-extension,baz-extension', // Using Slugs.
+			'sut'                  => '10001', // Using ID.
+			'--additional_plugins' => 'wccom-plugin-2,wccom-plugin-4', // Using Slugs.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		// If this fails, debug "$this->application_tester->getDisplay()".
@@ -64,8 +66,9 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->application_tester->run( [
 			'command'              => 'run:woo-e2e',
-			'woo_extension'        => 'foo-extension', // Using ID.
-			'--additional_plugins' => '456,baz-extension', // Using mixed.
+			'sut'                  => 'wccom-plugin-1', // Using slug.
+			'--additional_plugins' => '10002,wccom-plugin-5', // Using mixed.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
@@ -73,27 +76,25 @@ class RunTestsTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->application_tester->run( [
 			'command'              => 'run:woo-e2e',
-			'woo_extension'        => 'foo-extension',
+			'sut'                  => 'wccom-plugin-1',
 			'--additional_plugins' => '1234567890', // If the user passes an invalid ID, the Manager should flag that.
+			'--async'              => true,
 		], [ 'capture_stderr_separately' => true ] );
 
 		$this->assertCommandIsSuccessful( $this->application_tester );
 	}
 
 	public function test_run_with_additional_plugins_invalid() {
-		App::setVar( sprintf( 'mock_%s', get_manager_url() . '/wp-json/cd/v1/enqueue-woo-e2e' ), 'NULL_RESPONSE' );
+		$exitCode = $this->application_tester->run( [
+			'command' => 'run:woo-e2e',
+			'sut' => 'non-existing-extension',
+			'--async' => true,
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->expectException( \RuntimeException::class );
-
-		try {
-			$this->application_tester->run( [
-				'command'       => 'run:woo-e2e',
-				'woo_extension' => 'non-existing-extension',
-			], [ 'capture_stderr_separately' => true ] );
-		} catch ( \Exception $e ) {
-			$this->assertStringContainsString( 'Could not find Woo Extension with slug non-existing-extension.', $e->getMessage() );
-
-			throw $e;
-		}
+		$this->assertNotEquals( 0, $exitCode, 'Expected command to fail' );
+		$output = $this->application_tester->getDisplay();
+		$errorOutput = $this->application_tester->getErrorOutput();
+		$allOutput = $output . $errorOutput;
+		$this->assertStringContainsString( 'Could not find Woo Extension with slug non-existing-extension.', $allOutput );
 	}
 }

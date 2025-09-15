@@ -1,0 +1,15 @@
+{
+  "name": "my-woo-test-package",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Custom WooCommerce test package",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1",
+    "allure-playwright": "^3.3.3",
+    "playwright-ctrf-json-reporter": "^0"
+  }
+}

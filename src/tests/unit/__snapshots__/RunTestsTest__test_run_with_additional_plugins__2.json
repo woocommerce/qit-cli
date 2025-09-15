@@ -2,13 +2,9 @@
     "url": "https:\/\/qit.woo.com\/wp-json\/cd\/v1\/enqueue-woo-e2e",
     "method": "POST",
     "post_body": {
-        "wordpress_version": "X.X.X",
-        "woocommerce_version": "X.X.X",
-        "php_version": "",
-        "optional_features": [],
-        "additional_plugins": "bar-extension,baz-extension",
-        "woo_id": "123",
-        "event": "cli_published_extension_test"
+        "woo_id": 10001,
+        "event": "cli_published_extension_test",
+        "client": "qit_cli"
     },
     "curl_opts": [],
     "expected_status_codes": [

@@ -2,12 +2,19 @@
 
 namespace QIT_CLI;
 
+use QIT_CLI\IO\Output;
+use Symfony\Component\Console\Input\ArgvInput;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Style\SymfonyStyle;
+
 function is_windows(): bool {
 	if ( defined( 'UNIT_TESTS' ) && UNIT_TESTS ) {
 		if ( App::getVar( 'MIMICK_WINDOWS' ) ) {
 			return true;
 		}
 	}
+
 	return defined( 'PHP_WINDOWS_VERSION_BUILD' );
 }
 
@@ -58,9 +65,8 @@ function validate_authentication( string $username, string $qit_token ): void {
  *
  * @param string $url The URL to open in the browser.
  *
- * @throws \InvalidArgumentException When the URL is invalid.
- *
  * @return void
+ * @throws \InvalidArgumentException When the URL is invalid.
  */
 function open_in_browser( string $url ): void {
 	$url = htmlspecialchars_decode( $url );
@@ -188,4 +194,122 @@ function format_elapsed_time( int $seconds ): string {
 	}
 
 	return "$seconds $periods[$i] ago";
+}
+
+function banner( SymfonyStyle $io, string $label, bool $line_before = true, bool $line_after = true, string $icon = '' ): void {
+	$line = str_repeat( '─', max( 0, 60 - mb_strlen( $label ) ) );
+
+	if ( $line_before ) {
+		$io->writeln( '' );
+	}
+	$io->writeln( "<fg=bright-cyan;options=bold>── $icon {$label} {$line}</>" );
+	if ( $line_after ) {
+		$io->writeln( '' );
+	}
+}
+
+/**
+ * Checks if an option was explicitly provided in the input.
+ *
+ * @param InputInterface $input The input interface.
+ * @param string         $option_name The name of the option to check (e.g., 'profile').
+ *
+ * @return bool True if the option was explicitly provided, false otherwise.
+ */
+function is_option_explicitly_provided( InputInterface $input, string $option_name ): bool {
+	// Handle QITInput wrapper
+	if ( $input instanceof \QIT_CLI\QITInput ) {
+		$input = $input->getSymfonyInput();
+	}
+
+	if ( $input instanceof ArgvInput ) {
+		// For ArgvInput, check if the option appears in the raw argv array
+		$argv = $_SERVER['argv'] ?? [];
+		foreach ( $argv as $arg ) {
+			if ( preg_match( "/^--{$option_name}(=.*)?$/", $arg ) || preg_match( '/^-p(=.*)?$/', $arg ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	} elseif ( $input instanceof ArrayInput ) {
+		// For ArrayInput, check if the option is present using hasParameterOption
+		return $input->hasParameterOption( [ "--{$option_name}", '-p' ], true );
+	}
+
+	// Default to false for other input types
+	return false;
+}
+
+/**
+ * Write debug output only when verbose mode is enabled
+ *
+ * @param string|array<string> $messages The message(s) to output.
+ * @param string               $type The type of message (info, comment, error, etc.).
+ * @return void
+ */
+function debug_log( $messages, string $type = 'comment' ): void {
+	$output = App::make( Output::class );
+
+	if ( ! $output->isVerbose() ) {
+		return;
+	}
+
+	if ( ! is_array( $messages ) ) {
+		$messages = [ $messages ];
+	}
+
+	foreach ( $messages as $message ) {
+		switch ( $type ) {
+			case 'info':
+				$output->writeln( "<info>[DEBUG] $message</info>" );
+				break;
+			case 'error':
+				$output->writeln( "<e>[DEBUG] $message</e>" );
+				break;
+			case 'comment':
+			default:
+				$output->writeln( "<comment>[DEBUG] $message</comment>" );
+				break;
+		}
+	}
+}
+
+/**
+ * Write very verbose debug output (requires -vv or -vvv)
+ *
+ * @param string|array<string> $messages The message(s) to output.
+ * @param string               $type The type of message.
+ * @return void
+ */
+function debug_log_verbose( $messages, string $type = 'comment' ): void {
+	$output = App::make( Output::class );
+
+	if ( ! $output->isVeryVerbose() ) {
+		return;
+	}
+
+	debug_log( $messages, $type );
+}
+
+/**
+ * Dump a variable for debugging (only in verbose mode)
+ *
+ * @param mixed  $variable The variable to dump.
+ * @param string $label Optional label for the dump.
+ * @return void
+ */
+function debug_dump( $variable, string $label = '' ): void {
+	$output = App::make( Output::class );
+
+	if ( ! $output->isVerbose() ) {
+		return;
+	}
+
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_var_export -- Debug function in CLI tool
+	$dump = var_export( $variable, true );
+	if ( $label ) {
+		$output->writeln( "<comment>[DEBUG] $label:</comment>" );
+	}
+	$output->writeln( "<comment>$dump</comment>" );
 }

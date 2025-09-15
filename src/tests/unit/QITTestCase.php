@@ -44,4 +44,44 @@ abstract class QITTestCase extends TestCase {
 		}
 		$application->assertCommandIsSuccessful( $application->getDisplay() . $application->getErrorOutput() );
 	}
+
+	protected function createMinimalPluginZip( string $slug, string $version ): string {
+		$filename = "{$slug}.php";
+		$content  = "<?php\n/**\n * Plugin Name: " . ucwords( str_replace( '-', ' ', $slug ) ) . "\n * Version: {$version}\n */";
+
+		$zip  = new \ZipArchive();
+		$temp = tempnam( sys_get_temp_dir(), 'zip' );
+		if ( $temp === false ) {
+			$this->fail( "Failed to create temporary file for ZIP" );
+		}
+		try {
+			if ( ! $zip->open( $temp, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) ) {
+				$this->fail( "Failed to create ZIP file at $temp" );
+			}
+			$zip->addFromString( "{$slug}/{$filename}", $content );
+			$zip->close();
+
+			$zipContent = file_get_contents( $temp );
+			if ( $zipContent === false ) {
+				$this->fail( "Failed to read ZIP content from $temp" );
+			}
+
+			return $zipContent;
+		} finally {
+			unlink( $temp );
+		}
+	}
+
+	protected function recursive_rmdir( string $dir ): void {
+		if ( ! is_dir( $dir ) ) {
+			return;
+		}
+		
+		$files = array_diff( scandir( $dir ), [ '.', '..' ] );
+		foreach ( $files as $file ) {
+			$path = $dir . '/' . $file;
+			is_dir( $path ) ? $this->recursive_rmdir( $path ) : unlink( $path );
+		}
+		rmdir( $dir );
+	}
 }

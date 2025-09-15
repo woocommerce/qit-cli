@@ -4,8 +4,8 @@ namespace QIT_CLI\Commands\Tunnel;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Cache;
+use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 
@@ -26,7 +26,7 @@ class TunnelSetDefaultCommand extends QITCommand {
 			->setHelp( 'Allows you to set your preferred default tunneling method.' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$available_methods = array_keys( TunnelRunner::$tunnel_map );
 
 		$usable_methods = [];

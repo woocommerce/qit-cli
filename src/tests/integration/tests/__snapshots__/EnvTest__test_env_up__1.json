@@ -1,0 +1,118 @@
+{
+    "configuration": {
+        "sut": {
+            "type": "plugin",
+            "slug": "test-plugin",
+            "source": {
+                "type": "local",
+                "path": "./",
+                "resolved_path": "/tmp-normalised/./"
+            }
+        },
+        "sut_extension": {
+            "slug": "test-plugin",
+            "type": "plugin",
+            "from": "local",
+            "version": "undefined",
+            "source": "/tmp-normalised/./",
+            "directory": "/tmp-normalised/./",
+            "downloaded_source": "/tmp-normalised/./",
+            "entrypoint": "test-plugin/qit-tmp-plugin.php",
+            "priority": 100
+        },
+        "environments": {
+            "default": {
+                "php_version": "8.2",
+                "wp_version": "stable"
+            }
+        },
+        "test_types": [],
+        "groups": [],
+        "test_packages": [],
+        "resolved_plugins": [
+            {
+                "slug": "test-plugin",
+                "type": "plugin",
+                "from": "local",
+                "version": "undefined",
+                "source": "/tmp-normalised/./",
+                "directory": "/tmp-normalised/./",
+                "downloaded_source": "/tmp-normalised/./",
+                "entrypoint": "test-plugin/qit-tmp-plugin.php",
+                "priority": 100
+            }
+        ],
+        "resolved_themes": [],
+        "php_extensions": [],
+        "required_secrets": [],
+        "required_services": [],
+        "metadata": {
+            "config_file": "/tmp-normalised/qit-env-<hash>.json"
+        },
+        "cache_dir": "/repo/integration/tmp-normalised/tmp_qit_config-qit_custom_tests_NORMALISED/cache/"
+    },
+    "env_info": {
+        "extra": [],
+        "environment": "e2e",
+        "temporary_env": "/tmp-normalised/temporary-env/",
+        "created_at": 0,
+        "status": "pending",
+        "env_id": "ENV_ID",
+        "volumes": {
+            "/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php:ro": "/repo/integration/helpers/custom-test-mu-plugin.php"
+        },
+        "docker_images": [],
+        "docker_network": "",
+        "php_extensions": [],
+        "plugins": [
+            {
+                "slug": "test-plugin",
+                "type": "plugin",
+                "from": "local",
+                "version": "undefined",
+                "source": "/tmp-normalised/./",
+                "directory": "/tmp-normalised/./",
+                "downloaded_source": "/tmp-normalised/./",
+                "entrypoint": "test-plugin/qit-tmp-plugin.php",
+                "priority": 100
+            }
+        ],
+        "themes": [],
+        "env": [],
+        "tunnel": false,
+        "tunnel_type": "no_tunnel",
+        "site_url": "",
+        "passthrough_args": [],
+        "wp_version": "stable",
+        "object_cache": false,
+        "php_version": "8.2",
+        "nginx_port": "PORT",
+        "sut": [],
+        "domain": "localhost",
+        "skip_activating_plugins": false,
+        "skip_activating_themes": false,
+        "tests": [],
+        "playwright_config": [],
+        "pw_test_tag": "",
+        "woo_version": "stable",
+        "is_development_build": false,
+        "notify": "",
+        "test_packages": []
+    },
+    "resolved_extensions": [
+        {
+            "slug": "test-plugin",
+            "type": "plugin",
+            "from": "local",
+            "version": "undefined",
+            "source": "/tmp-normalised/./",
+            "directory": "/tmp-normalised/./",
+            "downloaded_source": "/tmp-normalised/./",
+            "entrypoint": "test-plugin/qit-tmp-plugin.php",
+            "priority": 100
+        }
+    ],
+    "downloaded_paths": {
+        "test-plugin": "/tmp-normalised/./"
+    }
+}

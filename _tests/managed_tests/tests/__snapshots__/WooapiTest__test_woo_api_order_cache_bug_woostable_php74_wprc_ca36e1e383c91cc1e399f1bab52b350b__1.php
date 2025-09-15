@@ -28,7 +28,7 @@
             "client": "qit_cli",
             "event": "cli_development_extension_test",
             "optional_features": {
-                "hpos": true,
+                "hpos": false,
                 "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",

@@ -1,0 +1,318 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QIT Test Package Schema",
+  "description": "Schema for QIT test package manifest files",
+  "type": "object",
+  "required": ["package", "test", "test_type"],
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "test": {
+            "properties": {
+              "phases": {
+                "required": ["run"]
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "test": {
+            "required": ["phases", "results"],
+            "properties": {
+              "results": {
+                "required": ["ctrf-json", "blob-dir"]
+              }
+            }
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://qit.woo.com/json-schema/test-package",
+      "description": "Schema reference for IDE support"
+    },
+    "package": {
+      "type": "string", 
+      "description": "Package identifier in format 'namespace/name' (e.g., 'woocommerce/checkout-tests')",
+      "pattern": "^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$",
+      "minLength": 3,
+      "maxLength": 128
+    },
+    "tags": {
+      "type": "array",
+      "description": "Tags for categorizing and searching test packages",
+      "items": {
+        "type": "string",
+        "pattern": "^[a-zA-Z0-9_.-]+$"
+      },
+      "uniqueItems": true
+    },
+    "test_type": {
+      "type": "string",
+      "description": "Type of test (defaults to 'e2e')",
+      "pattern": "^[a-zA-Z0-9_.-]+$",
+      "enum": ["e2e"],
+      "default": "e2e"
+    },
+    "test_dir": {
+      "type": "string",
+      "description": "Directory containing test files",
+      "pattern": "^\\./.*$",
+      "default": "./"
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of what this test package does",
+      "maxLength": 500
+    },
+    "requires": {
+      "$ref": "#/definitions/requires",
+      "description": "Requirements for running this test package"
+    },
+    "test": {
+      "type": "object",
+      "description": "Test configuration",
+      "additionalProperties": false,
+      "properties": {
+        "phases": {
+          "type": "object",
+          "description": "Execution phases. If 'run' phase is present, it must produce test results.",
+          "additionalProperties": false,
+          "properties": {
+            "globalSetup": { "$ref": "#/definitions/lifecycleCommands" },
+            "setup":            { "$ref": "#/definitions/lifecycleCommands" },
+            "run":              { "$ref": "#/definitions/lifecycleCommands" },
+            "teardown":         { "$ref": "#/definitions/lifecycleCommands" },
+            "globalTeardown":  { "$ref": "#/definitions/lifecycleCommands" }
+          }
+        },
+        "results": {
+          "type": "object",
+          "description": "Produced artefacts: key → relative path",
+          "properties": {
+            "ctrf-json": {
+              "type": "string",
+              "description": "Relative path for CTRF JSON result artefact"
+            },
+            "json": {
+              "type": "string",
+              "description": "Relative path for original JSON test results artefact"
+            },
+            "allure-dir": {
+              "type": "string",
+              "description": "Relative path for Allure directory result artefact"
+            },
+            "blob-dir": {
+              "type": "string",
+              "description": "Relative path for Playwright blob reporter output directory"
+            }
+          },
+          "required": ["ctrf-json", "blob-dir"],
+          "additionalProperties": false
+        }
+      },
+      "required": ["phases"]
+    },
+    "mu_plugins": {
+      "type": "array",
+      "description": "Must-use plugins to install",
+      "items": {
+        "type": "string",
+        "description": "Path to mu-plugin file"
+      }
+    },
+    "envs": {
+      "type": "object",
+      "description": "Environment variables to set during test execution",
+      "additionalProperties": {
+        "type": ["string", "boolean", "number"],
+        "description": "Environment variable value"
+      }
+    },
+    "timeout": {
+      "type": "integer",
+      "description": "Test timeout in seconds",
+      "minimum": 1,
+      "maximum": 3600
+    },
+    "retry": {
+      "type": "object",
+      "description": "Retry configuration for flaky tests",
+      "additionalProperties": false,
+      "properties": {
+        "times": {
+          "type": "integer",
+          "description": "Number of retry attempts",
+          "minimum": 0,
+          "maximum": 5
+        },
+        "delay": {
+          "type": "integer",
+          "description": "Delay between retries in seconds",
+          "minimum": 0,
+          "maximum": 60
+        }
+      }
+    },
+    "subpackages": {
+      "type": "object",
+      "description": "Additional packages derived from this codebase that can be published separately",
+      "patternProperties": {
+        "^[a-zA-Z0-9_.-]+/[a-zA-Z0-9_.-]+$": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Human-readable description of this subpackage",
+              "maxLength": 500
+            },
+            "tags": {
+              "type": "array",
+              "description": "Tags for categorizing and searching this subpackage",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_.-]+$"
+              },
+              "uniqueItems": true
+            },
+            "requires": {
+              "$ref": "#/definitions/requires",
+              "description": "Requirement overrides for this subpackage"
+            },
+            "test": {
+              "type": "object",
+              "description": "Test configuration overrides for this subpackage",
+              "additionalProperties": false,
+              "properties": {
+                "phases": {
+                  "type": "object",
+                  "description": "Phase overrides for this subpackage",
+                  "additionalProperties": false,
+                  "properties": {
+                    "globalSetup": { "$ref": "#/definitions/lifecycleCommands" },
+                    "globalTeardown": { "$ref": "#/definitions/lifecycleCommands" },
+                    "setup": { "$ref": "#/definitions/lifecycleCommands" },
+                    "run": { "$ref": "#/definitions/lifecycleCommands" },
+                    "teardown": { "$ref": "#/definitions/lifecycleCommands" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "requires": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "plugins": {
+          "type": "array",
+          "description": "Required plugins (will be installed and activated)",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$"
+          },
+          "uniqueItems": true
+        },
+        "themes": {
+          "type": "array",
+          "description": "Required themes (will be installed but not activated)",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_.-]+$"
+          },
+          "uniqueItems": true
+        },
+        "wordpress": {
+          "type": "string",
+          "description": "WordPress version constraint"
+        },
+        "php": {
+          "type": "string",
+          "description": "PHP version constraint"
+        },
+        "secrets": {
+          "type": "array",
+          "description": "Required environment secrets/API keys",
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Z_][A-Z0-9_]*$"
+          },
+          "uniqueItems": true
+        },
+        "external_services": {
+          "type": "array",
+          "description": "External services needed (for documentation purposes)",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        },
+        "network": {
+          "type": "boolean",
+          "description": "Whether this test package requires network access (defaults to false)",
+          "default": false
+        },
+        "tunnel": {
+          "type": "boolean",
+          "description": "Whether this test package requires a tunnel for external access (defaults to false)",
+          "default": false
+        }
+      }
+    },
+    "lifecycleCommands": {
+      "type": "array",
+      "description": "Array of commands to execute",
+      "minItems": 0,
+      "items": {
+        "oneOf": [
+          {
+            "type": "string",
+            "description": "Simple command string (execution context determined by command type)"
+          },
+          {
+            "type": "object",
+            "description": "Command with explicit configuration",
+            "required": ["command"],
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "type": "string",
+                "description": "Command to execute",
+                "minLength": 1
+              },
+              "runs_on": {
+                "type": "string",
+                "enum": ["host", "docker"],
+                "description": "Where to execute this command (default: smart detection)"
+              },
+              "timeout": {
+                "type": "integer",
+                "description": "Command timeout in seconds",
+                "minimum": 1,
+                "maximum": 3600
+              },
+              "continue_on_error": {
+                "type": "boolean",
+                "description": "Continue execution even if this command fails",
+                "default": false
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}

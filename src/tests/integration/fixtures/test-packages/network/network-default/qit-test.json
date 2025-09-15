@@ -1,0 +1,19 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "woocommerce/network-default",
+  "test_type": "e2e",
+  "description": "Test package with no requires.network field (should default to offline)",
+  "test": {
+    "phases": {
+      "run": [
+        "host: mkdir -p ./results ./blob-report",
+        "php test-network.php",
+        "host: echo '{\"results\":{\"tool\":{\"name\":\"network-test\"},\"summary\":{\"tests\":1,\"passed\":1,\"failed\":0,\"skipped\":0,\"pending\":0,\"other\":0,\"start\":0,\"stop\":1000},\"tests\":[{\"name\":\"network-connectivity-test\",\"status\":\"passed\",\"duration\":100}]}}' > ./results/ctrf.json"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./blob-report"
+    }
+  }
+}

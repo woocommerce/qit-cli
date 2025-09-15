@@ -1,209 +1,630 @@
 <?php
+declare( strict_types=1 );
 
 namespace QIT_CLI\Commands\Environment;
 
-use Dotenv\Dotenv;
-use QIT_CLI\App;
-use QIT_CLI\Cache;
-use QIT_CLI\ExtensionSetResolver;
-use QIT_CLI\Commands\DynamicCommand;
-use QIT_CLI\Commands\DynamicCommandCreator;
-use QIT_CLI\Environment\EnvConfigLoader;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
-use QIT_CLI\Environment\Environments\Environment;
-use QIT_CLI\Environment\EnvironmentVersionResolver;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
-use QIT_CLI\PluginDependencies;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use QIT_CLI\Utils\PackageReferenceUtils;
 use function QIT_CLI\is_windows;
 
-class UpEnvironmentCommand extends DynamicCommand {
+/**
+ * Qit env:up  – create a disposable local E2E environment.
+ */
+class UpEnvironmentCommand extends QITCommand {
 	/** @var E2EEnvironment */
-	protected $e2e_environment;
-
+	private E2EEnvironment $e2e_environment;
 	/** @var PerformanceEnvironment */
-	protected $performance_environment;
-
-	/** @var Cache */
-	protected $cache;
-
-	/** @var OutputInterface */
-	protected $output;
-
+	private PerformanceEnvironment $performance_environment;
 	/** @var TunnelRunner */
-	protected $tunnel_runner;
+	private TunnelRunner $tunnel_runner;
+	/** @var \QIT_CLI\PreCommand\Extensions\VersionResolver */
+	private \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver;
+	/** @var \QIT_CLI\Environment\EnvironmentVars */
+	private \QIT_CLI\Environment\EnvironmentVars $environment_vars;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, Cache $cache, OutputInterface $output, TunnelRunner $tunnel_runner ) {
+	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver, \QIT_CLI\Environment\EnvironmentVars $environment_vars ) {
 		$this->e2e_environment         = $e2e_environment;
 		$this->performance_environment = $performance_environment;
-		$this->cache                   = $cache;
-		$this->output                  = $output;
 		$this->tunnel_runner           = $tunnel_runner;
-		parent::__construct( static::$defaultName ); // phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
+		$this->version_resolver        = $version_resolver;
+		$this->environment_vars        = $environment_vars;
+		parent::__construct();
 	}
 
+	/*******************************************************************
+	 * CLI definition
+	 ******************************************************************/
 	protected function configure(): void {
-		$schemas = $this->cache->get_manager_sync_data( 'schemas' );
+		parent::configure(); // adds --config and --environment
 
-		if ( ! is_array( $schemas['e2e']['properties'] ) ) {
-			throw new \RuntimeException( 'E2E schema not set or incomplete.' );
+		$this->setDescription( 'Creates a temporary local test environment that is completely ephemeral' )
+			->setAliases( [ 'env:start' ] )
+			/* ─ Environment selection ─ */
+			->addOption(
+				'environment', 'e',
+				InputOption::VALUE_OPTIONAL,
+				'Pick an <comment>environment block</comment> from qit.json (e.g. --environment=legacy)',
+				'default'
+			)
+			->addOption( 'environment_type', null, InputOption::VALUE_OPTIONAL, 'The type of environment to create. Valid values: "e2e", "performance".', 'e2e' )
+			/* ─ Runtime env‑vars ─ */
+			->addOption( 'env', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Set env var  --env KEY=VAL', [] )
+			->addOption( 'env_file', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load vars from file  --env_file ./prod.env', [] )
+			/* ─ Scalars ─ */
+			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3)', '8.2' )
+			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6)', 'stable' )
+			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version', null )
+			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
+			/* ─ Lists ─ */
+			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
+			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
+			->addOption( 'test-package', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to set up environment from (processes requirements and runs setup phases)', [] )
+			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
+			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			/* ─ Misc ─ */
+			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
+			->addOption( 'offline', null, InputOption::VALUE_NONE, 'Override: Force offline mode - will error if any test requires network' )
+			->addOption( 'online', null, InputOption::VALUE_NONE, 'Override: Force online mode - enable network regardless of test requirements' )
+			->addOption( 'skip-setup', null, InputOption::VALUE_NONE, 'Skip running setup phases even if qit-test.json is found' )
+			->addOption( 'setup', null, InputOption::VALUE_OPTIONAL, 'Run setup phases from test package in specified directory', false )
+			->addOption( 'skip-test-phases', null, InputOption::VALUE_NONE, 'Skip all test phases (internal use by run:e2e)' )
+			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
+			->setHelp( $this->getHelpText() );
+	}
+
+	/*******************************************************************
+	 * Execution
+	 ******************************************************************/
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		/** @var \QIT_CLI\QITInput $input */
+
+		/* ─ Safety guard ─ */
+		if ( is_windows() ) {
+			$output->writeln( '<comment>QIT environments require WSL on Windows.</comment>' );
+
+			return Command::FAILURE;
 		}
 
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['e2e'], [], [
-			'php_version',
-		] );
+		/*
+		─ Display experimental warning when using qit.json ─
+		*/
+		// Check if we're using a qit.json file (either via --config or auto-detected)
+		$config_file = $input->getOption( 'config' );
+		if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {
+			$config_file = getcwd() . '/qit.json';
+		}
 
-		$this
-			->setDescription( 'Creates a temporary local test environment that is completely ephemeral — no data is persisted. Every time you stop and restart the environment, it\'s like starting fresh.' )
-			->addOption( 'environment_type', null, InputOption::VALUE_OPTIONAL, 'The type of environment to create. Valid values: "e2e", "performance".', 'e2e' )
-			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'The WordPress version. Accepts "stable", "nightly", "rc", or a version number.', 'stable' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'The WooCommerce Version. Accepts "stable", "nightly", "rc", or a GitHub Tag (eg: 8.6.1).' )
-			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Plugin to activate in the environment. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Theme install, if multiple provided activates the last. Accepts paths, Woo.com slugs/product IDs, WordPress.org slugs or GitHub URLs.', [] )
-			->addOption( 'volume', 'l', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '(Optional) Additional volume mappings, eg: /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin.', [] )
-			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions to install in the environment.', [] )
-			->addOption( 'require', 'r', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load PHP file before running the command (may be used more than once).' )
-			->addOption( 'config', null, InputOption::VALUE_OPTIONAL, '(Optional) QIT config file to use.' )
-			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, '(Optional) Whether to enable Object Cache (Redis) in the environment.' )
-			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins in the environment.' )
-			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes in the environment.' )
-			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
-			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunneling. Optionally specify the tunnel method to use. Valid options: ' . implode( ', ', array_keys( TunnelRunner::$tunnel_map ) ), 'no_tunnel' )
-			->addOption( 'env', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests.', [] )
-			->addOption( 'env_file', null, InputOption::VALUE_IS_ARRAY | InputOption::VALUE_OPTIONAL, 'Environment variables to pass to the tests from a file.', [] )
-			->addOption( 'dependencies_mode', null, InputOption::VALUE_OPTIONAL, 'How to handle dependencies for recognized WooCommerce plugins. Possible values: ' . implode( ', ', PluginDependencies::DEPENDENCY_MODES['env_only'] ), PluginDependencies::DEPENDENCY_MODES['env_only']['activate'] )
-			->setAliases( [ 'env:start' ]
-			);
+		// Show warning only when qit.json is being used and not in JSON output mode
+		if ( $config_file !== null && ! $input->getOption( 'json' ) ) {
+			$output->writeln( '<comment>[EXPERIMENTAL]</comment> Using qit.json - this feature is highly experimental. Please report any issues or feedback at https://github.com/woocommerce/qit-cli/issues' );
+			$output->writeln( '' );
+		}
 
-		DynamicCommandCreator::add_schema_to_command( $this, $schemas['activation'], [], [
-			'extension_set',
-		] );
+		/*
+		 * ─ 0. Check for test packages and process requirements ─
+		 */
+		// This must happen BEFORE environment creation so requirements can be included
 
-		$options_example = [];
+		// Build ordered list of test packages respecting command-line order
+		$all_test_packages = [];
 
-		foreach ( $this->options_to_send as $option => $value ) {
-			$opt = $this->getDefinition()->getOption( $option );
+		// Get explicit test packages from --test-package option FIRST
+		$explicit_packages = $input->getOption( 'test-package' ) ?? [];
 
-			switch ( $opt->getName() ) {
-				case 'plugin':
-					$options_example[ $opt->getName() ] = [
-						'woocommerce',
-						'wordpress-importer',
-						'automatewoo',
-					];
-					break;
-				case 'theme':
-					$options_example[ $opt->getName() ] = [
-						'storefront',
-					];
-					break;
-				case 'volume':
-					$options_example[ $opt->getName() ] = [
-						'/home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin',
-					];
-					break;
-				case 'php_extension':
-					$options_example[ $opt->getName() ] = [
-						'gd',
-						'imagick',
-					];
-					break;
-				case 'wp':
-					$options_example[ $opt->getName() ] = 'nightly';
-					break;
-				default:
-					$options_example[ $opt->getName() ] = $opt->getDefault();
-					break;
+		// Check for local test manifest
+		$local_test_dir     = null;
+		$has_local_manifest = false;
+		if ( ! $input->getOption( 'skip-setup' ) ) {
+			$setup_dir = $input->getOption( 'setup' );
+			$test_dir  = $setup_dir ? $setup_dir : getcwd();
+			$test_dir  = rtrim( $test_dir, '/' );
+			if ( substr( $test_dir, 0, 1 ) !== '/' ) {
+				$test_dir = getcwd() . '/' . $test_dir;
+			}
+
+			if ( file_exists( $test_dir . '/qit-test.json' ) ) {
+				$has_local_manifest = true;
+				$local_test_dir     = $test_dir;
 			}
 		}
 
-		$possible_options = implode( "\n- ", array_keys( $options_example ) );
-		$json_example     = json_encode( $options_example, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
-		$yml_example      = App::make( \Symfony\Component\Yaml\Yaml::class )->dump( $options_example, 2, 2 );
+		// Add packages in the right order:
+		// 1. Explicit packages in command-line order
+		// 2. Local directory last (if it has qit-test.json and wasn't already in explicit list)
+		if ( ! empty( $explicit_packages ) ) {
+			$all_test_packages = $explicit_packages;
+			$this->processTestPackageRequirements( $explicit_packages, $output );
+		}
 
-		$this
-			->setHelp( <<<HELP
-Creates a configurable, temporary, disposable test environment.
+		// Add local directory last if it exists and wasn't explicitly specified
+		if ( $has_local_manifest && ! in_array( $local_test_dir, $all_test_packages, true ) ) {
+			// Check if any explicit package points to the same directory (different path representations)
+			$local_realpath = realpath( $local_test_dir );
+			$already_added  = false;
+			foreach ( $all_test_packages as $pkg ) {
+				if ( is_dir( $pkg ) && realpath( $pkg ) === $local_realpath ) {
+					$already_added = true;
+					break;
+				}
+			}
 
-<comment>Usage</comment>
-<info>qit env:up</info>
+			if ( ! $already_added ) {
+				$all_test_packages[] = $local_test_dir;
+				// Process requirements for local manifest
+				$this->processTestPackageRequirements( [ $local_test_dir ], $output );
+			}
+		}
 
-<comment>Config File:</comment>
-Create a config file (JSON or YML) to set default environment options.
-Valid names include qit.json, qit.yml, .qit.json, and .qit.yml.
-Override defaults with qit.override.json, qit.override.yml, etc., typically ignored in version control.
+		// Check for duplicate test packages (same package in both local auto-detect and explicit --test-package)
+		if ( $has_local_manifest && ! empty( $explicit_packages ) ) {
+			// Read the local package ID using utility
+			$local_package_id = PackageReferenceUtils::read_local_package_id( $local_test_dir );
 
-The possible options are:
+			if ( $local_package_id ) {
+				// Check if any explicit package matches the local package ID
+				foreach ( $explicit_packages as $pkg ) {
+					// Extract package ID using utility (returns null for local paths)
+					$pkg_id = PackageReferenceUtils::extract_package_id( $pkg );
 
-- $possible_options
+					if ( $pkg_id === $local_package_id ) {
+							// Found duplicate - prepare error message
+							$error_message = "Duplicate test package '{$local_package_id}' detected.\n" .
+								"\n" .
+								"You are running from a directory containing this test package,\n" .
+								"and also explicitly specified it via --test-package.\n" .
+								"\n" .
+								"Conflicting sources:\n" .
+								"  - {$pkg}\n" .
+								"  - {$local_test_dir}\n" .
+								"\n" .
+								"To fix this, either:\n" .
+								"  1. Run from a different directory, OR\n" .
+								"  2. Don't specify --test-package (use local version)";
 
-<comment>Example JSON file</comment>
-$json_example
+							// In JSON mode, output JSON error and exit cleanly
+						if ( $input->getOption( 'json' ) ) {
+							$output->write( json_encode( [
+								'error'   => 'duplicate_package',
+								'message' => $error_message,
+								'env_id'  => null, // EnvironmentRunner expects env_id
+							] ) );
+							return Command::FAILURE;
+						}
 
-<comment>Example YML file</comment>
-$yml_example
+							// In normal mode, throw exception
+							throw new \RuntimeException( $error_message );
+					}
+				}
+			}
+		}
 
-<comment>Where to Place Config:</comment>
-The command searches for a config file in the current directory from which it's executed. For example:
-A config file located at /home/mycomputer/my-plugin/qit.json is detected when you run <info>cd /home/mycomputer/my-plugin && qit env:up</info>.
-If the config file is placed in the root directory of your plugin, the command automatically includes that plugin in the environment.
+		// Debug logging (skip in JSON mode to avoid filter issues)
+		if ( ! $input->getOption( 'json' ) && ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) ) {
+			$output->writeln( '[DEBUG] env:up - Has local manifest: ' . ( $has_local_manifest ? 'yes' : 'no' ) );
+			$output->writeln( '[DEBUG] env:up - Explicit packages from --test-package: ' . json_encode( $explicit_packages ) );
+			$output->writeln( '[DEBUG] env:up - All test packages to process: ' . json_encode( $all_test_packages ) );
+		}
 
-You can also pass a "--config" parameter and point it to a file path.
+		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
+		$env_name   = $input->getOption( 'environment' ) ?? 'default';
+		$env_config = $this->get_environment_config( $env_name );
+		$env_config = $this->applyCliOverrides( $env_config, $input );
 
-<comment>Parameters:</comment>
-Parameters specified at runtime override config file settings.
-Example: <info>qit env:up --php_version 8.3</info> forces PHP version 8.3 regardless of config files.
+		/* ─ 1.1. Add SUT as a plugin/theme if defined in qit.json ─ */
+		$sut = $this->get_resolved_sut();
+		if ( $sut !== null && isset( $sut['type'] ) && isset( $sut['slug'] ) && isset( $sut['source'] ) ) {
+			// Convert SUT to extension format and add to the appropriate list
+			$sut_extension = $this->convert_sut_to_extension( $sut );
 
-<comment>Plugins and Themes</comment>
-Install additional plugins in the environment using the --plugins and --themes flag.
-Repeat multiple times to install many, e.g:
-<info>qit env:up --plugin automatewoo --plugin contact-form-7</info>
+			if ( $sut['type'] === 'plugin' ) {
+				$env_config['plugins'] = $env_config['plugins'] ?? [];
+				// Check if the SUT plugin is not already in the list
+				$sut_exists = false;
+				foreach ( $env_config['plugins'] as $plugin ) {
+					$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+					if ( $slug === $sut['slug'] ) {
+						$sut_exists = true;
+						break;
+					}
+				}
+				if ( ! $sut_exists ) {
+					// Add SUT as the first plugin so it takes precedence
+					array_unshift( $env_config['plugins'], $sut_extension );
+				}
+			} elseif ( $sut['type'] === 'theme' ) {
+				$env_config['themes'] = $env_config['themes'] ?? [];
+				// Check if the SUT theme is not already in the list
+				$sut_exists = false;
+				foreach ( $env_config['themes'] as $theme ) {
+					$slug = is_string( $theme ) ? $theme : ( $theme['slug'] ?? null );
+					if ( $slug === $sut['slug'] ) {
+						$sut_exists = true;
+						break;
+					}
+				}
+				if ( ! $sut_exists ) {
+					// Add SUT as the first theme so it takes precedence
+					array_unshift( $env_config['themes'], $sut_extension );
+				}
+			}
+		}
 
-PS: To install premium plugins from the Woo.com Marketplace, you need to have access to them.
-PS 2: Plugins are activated automatically in the test environment. Themes are only installed.
+		/* ─ 1.5. Process test package requirements and add missing dependencies ─ */
+		$this->process_test_package_requirements( $env_config, $input, $output );
 
-<comment>PHP Version</comment>
-To set the PHP version, use the --php_version flag, e.g.:
-<info>qit env:up --php_version=8.3</info>
+		/* ─ 2. Resolve extensions using the merged config (includes CLI overrides) ─ */
+		$resolved_ext = $this->download_extensions_from_config( $env_config );
 
-<comment>WordPress Version</comment>
-To set the WordPress version, use the --wp flag, e.g.:
-<info>qit env:up --wp 6.5.2</info>
+		/* ─ 3. Use the fully-resolved extension lists ─ */
+		$final_plugins = $resolved_ext->get_plugins();
+		$final_themes  = $resolved_ext->get_themes();
 
-<comment>Object Cache</comment>
-To enable Object Cache (Redis) in the environment, use the --object_cache flag, e.g.:
-<info>qit env:up --object_cache</info>
+		// Convert Extension objects to arrays for serialization
+		$plugin_arrays = [];
+		foreach ( $final_plugins as $plugin ) {
+			// Use jsonSerialize to get the array representation
+			$plugin_arrays[] = $plugin->jsonSerialize();
+		}
 
-<comment>Volumes</comment>
-To map a local directory to the test environment, use the --volume flag, e.g.:
-<info>qit env:up --volume /home/mycomputer/my-plugin:/var/www/html/wp-content/plugins/my-plugin</info>
-This will map the local directory /home/mycomputer/my-plugin to the test environment at /var/www/html/wp-content/plugins/my-plugin.
+		$theme_arrays = [];
+		foreach ( $final_themes as $theme ) {
+			// Use jsonSerialize to get the array representation
+			$theme_arrays[] = $theme->jsonSerialize();
+		}
 
-<comment>PHP Extensions</comment>
-To install PHP extensions in the test environment, use the --php_extension flag, e.g.:
-<info>qit env:up --php_extension gd --php_extension imagick</info>
+		/* ─ 3.5. Parse volumes to get proper associative array structure ─ */
+		$parsed_volumes = [];
+		if ( ! empty( $env_config['volumes'] ) ) {
+			$parsed_volumes = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvVolumeParser::class )->parse_volumes( $env_config['volumes'] );
+		}
 
-<comment>Accessing the Test Website:</comment>
-- URL provided at command completion. Default: "http://localhost:<RANDOM_PORT>"
+		/*
+		─ 3.6. Determine network restriction based on network_mode ─
+		*/
+		// Process test packages if in auto mode
+		$requires_network = false;
 
-<comment>Example:</comment>
-<info>qit env:up --wp nightly --php_version=8.3 --php_extension gd --object_cache --plugin gutenberg --plugin automatewoo --theme storefront</info>
+		// Collect network requirements from all sources
+		$packages_requiring_network = [];
+		$packages_requiring_tunnel  = [];
 
-This will create a disposable test environment with the nightly version of WordPress, PHP 8.3, the GD extension, Object Cache enabled, Gutenberg from WordPress.org Plugin Repository and AutomateWoo from the Woo.com Marketplace installed and active, and Storefront installed.
-HELP
-			);
+		// Check if test packages require network (from processTestPackageRequirements)
+		if ( \QIT_CLI\App::getVar( 'test_package_requires_network', false ) ) {
+			$requires_network             = true;
+			$packages_requiring_network[] = 'local test package';
+		}
+
+		// Check if test packages require tunnel (from processTestPackageRequirements)
+		if ( \QIT_CLI\App::getVar( 'test_package_requires_tunnel', false ) ) {
+			$packages_requiring_tunnel[] = 'local test package';
+			// Enable tunnel if required by test package
+			if ( ! isset( $env_config['tunnel'] ) || ! $env_config['tunnel'] ) {
+				$env_config['tunnel']      = true;
+				$env_config['tunnel_type'] = 'auto'; // Let system choose appropriate tunnel type
+				if ( $output->isVerbose() ) {
+					$output->writeln( '<info>Tunnel enabled (required by test package)</info>' );
+				}
+			}
+		}
+
+		if ( isset( $env_config['network_mode'] ) && $env_config['network_mode'] === 'auto' ) {
+			// Check if test packages were passed directly or in environment config
+			$test_packages = [];
+
+			// First check if test packages are in the environment config
+			if ( isset( $env_config['test_packages'] ) ) {
+				$test_packages = (array) $env_config['test_packages'];
+			}
+
+			// Download and check manifests
+			if ( ! empty( $test_packages ) ) {
+				$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
+				foreach ( $test_packages as $package_ref ) {
+					try {
+						$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
+						if ( $manifest ) {
+							if ( $manifest->requires_network() ) {
+								$requires_network             = true;
+								$packages_requiring_network[] = $package_ref;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires network access</info>" );
+								}
+							}
+							if ( $manifest->requires_tunnel() ) {
+								$packages_requiring_tunnel[] = $package_ref;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires tunnel access</info>" );
+								}
+							}
+						}
+					} catch ( \Exception $e ) {
+						// For local packages, try to read the manifest directly
+						if ( is_dir( $package_ref ) && file_exists( $package_ref . '/qit-test.json' ) ) {
+							$manifest_data = json_decode( file_get_contents( $package_ref . '/qit-test.json' ), true );
+							if ( isset( $manifest_data['requires']['network'] ) && $manifest_data['requires']['network'] ) {
+								$requires_network             = true;
+								$packages_requiring_network[] = $package_ref;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires network access</info>" );
+								}
+							}
+							if ( isset( $manifest_data['requires']['tunnel'] ) && $manifest_data['requires']['tunnel'] ) {
+								$packages_requiring_tunnel[] = $package_ref;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Package {$package_ref} requires tunnel access</info>" );
+								}
+							}
+						} else {
+							// Remote package failed to download - fail fast
+							throw new \RuntimeException( "Failed to download test package '{$package_ref}': " . $e->getMessage() );
+						}
+					}
+				}
+			}
+
+			// Apply tunnel requirements if any
+			if ( ! empty( $packages_requiring_tunnel ) && ( ! isset( $env_config['tunnel'] ) || ! $env_config['tunnel'] ) ) {
+				$env_config['tunnel']      = true;
+				$env_config['tunnel_type'] = 'auto'; // Let system choose appropriate tunnel type
+				if ( $output->isVerbose() ) {
+					$output->writeln( sprintf( '<info>Tunnel enabled (required by %d test package(s))</info>', count( $packages_requiring_tunnel ) ) );
+				}
+			}
+
+			// Set network restriction based on package requirements
+			$env_config['network_restriction'] = ! $requires_network;
+		} elseif ( isset( $env_config['network_mode'] ) ) {
+			// For explicit modes, validate and convert
+			if ( $env_config['network_mode'] === 'offline' && $requires_network ) {
+				// Error: conflict between forced offline and package requirements
+				$package_list = implode( "\n  - ", $packages_requiring_network );
+				throw new \RuntimeException( sprintf(
+					"Cannot run in offline mode.\n" .
+					"%d package(s) require network access:\n  - %s\n\n" .
+					"Options:\n" .
+					"1. Remove --offline flag to use auto mode\n" .
+					"2. Use --online flag to force network access\n" .
+					'3. Exclude these test packages from the run',
+					count( $packages_requiring_network ),
+					$package_list
+				) );
+			}
+			$env_config['network_restriction'] = $env_config['network_mode'] === 'offline';
+		} else {
+			// Default to restricted (offline) unless overridden by test package
+			$env_config['network_restriction'] = ! $requires_network;
+		}
+
+		/* ─ 3.7. Process test packages for setup phases ─ */
+		$test_packages_for_setup = [];
+		// Always process test packages (for requirement extraction and volume mounting)
+		// The actual phase execution is controlled by the skip_test_phases flag in env_info
+		if ( ! empty( $all_test_packages ) ) {
+			if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+				$output->writeln( '[DEBUG] env:up - Preparing ' . count( $all_test_packages ) . ' packages for setup phases' );
+			}
+
+			// Determine main package using priority rules
+			$main_package = $this->determineMainPackage( $all_test_packages, $output );
+			if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+				$output->writeln( '[DEBUG] env:up - Main package determined: ' . ( $main_package ?: 'none' ) );
+			}
+
+			// Download and prepare test packages for setup
+			// Note: E2EEnvironment will run globalSetup for ALL packages and setup for FIRST (main) package
+			$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
+
+			// Use the packages in their already-determined order
+			// (they're already ordered correctly: explicit packages first, then local if auto-detected)
+			$packages_to_process = $all_test_packages;
+
+			foreach ( $packages_to_process as $package_ref ) {
+				try {
+					// For local packages, read the manifest to get the package ID
+					if ( is_dir( $package_ref ) && file_exists( $package_ref . '/qit-test.json' ) ) {
+						// Read manifest to get the package ID
+						$manifest_content = file_get_contents( $package_ref . '/qit-test.json' );
+						$manifest_data    = json_decode( $manifest_content, true );
+
+						if ( json_last_error() !== JSON_ERROR_NONE ) {
+							throw new \RuntimeException( 'Invalid JSON in qit-test.json: ' . json_last_error_msg() );
+						}
+
+						// Package ID is required field in the manifest
+						if ( ! isset( $manifest_data['package'] ) ) {
+							throw new \RuntimeException( "Missing required 'package' field in {$package_ref}/qit-test.json" );
+						}
+
+						$package_id = $manifest_data['package'];
+
+						// Create manifest object to get consistent container path
+						$manifest                                = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
+						$container_name                          = $manifest->get_container_directory_name();
+						$container_path                          = '/qit/packages/' . $container_name;
+						$test_packages_for_setup[ $package_ref ] = [
+							'path'           => $package_ref,
+							'source'         => 'local',
+							'container_path' => $container_path,
+							'package_id'     => $package_id,  // Store the actual package ID
+							'manifest'       => $manifest_data,  // Store manifest for run:e2e
+						];
+					} else {
+						// Remote package - download it
+						$manifest = $package_downloader->download_single( $package_ref, sys_get_temp_dir() . '/qit-cache' );
+						if ( $manifest ) {
+							$metadata = $package_downloader->get_package_metadata( $package_ref );
+
+							// For subpackages, use the parent's container path since they share the same files
+							if ( $manifest->is_subpackage() && $manifest->get_parent_package() ) {
+								// Generate container path based on parent package
+								$parent_ref     = $manifest->get_parent_package() . ':' . explode( ':', $package_ref )[1];
+								$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $parent_ref );
+							} else {
+								// Use normal container path for regular packages
+								$container_path = \QIT_CLI\PreCommand\Objects\TestPackageManifest::create_container_path( $package_ref );
+							}
+
+							$test_packages_for_setup[ $package_ref ] = [
+								'path'           => $metadata['downloaded_path'] ?? '',
+								'source'         => 'registry',
+								'container_path' => $container_path,
+								'package_id'     => $manifest->get_package_id(),  // Get package ID from manifest
+								'manifest'       => $manifest->jsonSerialize(),  // Store manifest for run:e2e
+							];
+						}
+					}
+				} catch ( \Exception $e ) {
+					// If it's a security error (invalid secrets format), we should fail immediately
+					if ( strpos( $e->getMessage(), 'Invalid secrets format' ) !== false ) {
+						throw $e;  // Re-throw security errors
+					}
+
+					// Check if this is a missing version error
+					if ( strpos( $e->getMessage(), 'missing a version number' ) !== false ||
+						strpos( $e->getMessage(), 'must include a version number' ) !== false ) {
+						// For JSON output, format the error properly
+						if ( $input->getOption( 'json' ) ) {
+							$output->writeln( json_encode( [
+								'error'   => true,
+								'message' => $e->getMessage(),
+							] ) );
+							return Command::FAILURE;
+						}
+						// Don't wrap the message, it's already clear
+						throw new \RuntimeException( $e->getMessage() );
+					}
+
+					// Fail fast for test package errors - no point continuing if packages are missing
+					throw new \RuntimeException( "Failed to prepare test package '{$package_ref}': " . $e->getMessage() );
+				}
+			}
+		}
+
+		/* ─ 3.8. Add test package volumes for local and registry packages ─ */
+		foreach ( $test_packages_for_setup as $package_ref => $info ) {
+			// Map test packages to their container paths
+			// All test packages should have both 'path' and 'container_path' set
+			if ( ! empty( $info['path'] ) && ! empty( $info['container_path'] ) ) {
+				// Add volume mapping for test package
+				// We need to add this to parsed_volumes, not env_config['volumes']
+				$parsed_volumes[ $info['container_path'] ] = $info['path'];
+			}
+		}
+
+		/*
+		─ 4. Materialise E2EEnvInfo DTO ─
+		*/
+
+		/** @var E2EEnvInfo $env_info */ $env_info = E2EEnvInfo::from_array( [
+			'env_id'                  => 'qitenv' . bin2hex( random_bytes( 8 ) ),
+			'environment'             => 'e2e',
+			'php'                     => $env_config['php'] ?? '8.2',
+			'wp'                      => $env_config['wp'] ?? 'stable',
+			'woo'                     => $env_config['woo'] ?? '',
+			'object_cache'            => $env_config['object_cache'] ?? false,
+			'plugins'                 => $plugin_arrays,
+			'themes'                  => $theme_arrays,
+			'php_extensions'          => $env_config['php_extensions'] ?? [],
+			'volumes'                 => $parsed_volumes,
+			'envs'                    => $env_config['envs'] ?? [],
+			'test_packages_for_setup' => $test_packages_for_setup,
+			'skip_test_phases'        => $input->getOption( 'skip-test-phases' ),  // Pass the flag to E2EEnvironment
+			'tunnel'                  => $env_config['tunnel'] ?? false,
+			'tunnel_type'             => $env_config['tunnel_type'] ?? 'no_tunnel',
+			'network_restriction'     => $env_config['network_restriction'],
+			'site_url'                => 'http://localhost:8080',
+		] );
+
+		/* ─ 5. Add QIT_ENV_ID and QIT_NETWORK_RESTRICTION to environment variables ─ */
+		$env_info->envs['QIT_ENV_ID']              = $env_info->env_id;
+		$env_info->envs['QIT_NETWORK_RESTRICTION'] = $env_info->network_restriction ? 'true' : 'false';
+
+		/* ─ 6. Honour --tunnel (validated against TunnelRunner) ─ */
+		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
+			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
+			$env_info->tunnel = true;
+		}
+
+		/* ─ 7. SELF‑TEST shortcut ─ */
+		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
+			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
+
+			return Command::SUCCESS;
+		}
+
+		/* ─ 8. Bring the environment up ─ */
+		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
+		$environment      = $this->get_environment( $environment_type );
+		$environment->init( $env_info );
+		$environment->up();
+
+		/*
+		 * ─ 8.5. Setup phases are now handled by E2EEnvironment::up() when test_packages_for_setup is populated ─
+		 */
+		// The E2EEnvironment will automatically run:
+		// - globalSetup for ALL packages in test_packages_for_setup
+		// - setup for the FIRST (main) package only
+		// This happens when --skip-test-phases is NOT set
+
+		/*
+		 * ─ 8.6. Create database backup for env:reset (only for direct env:up calls) ─
+		 */
+		// Only create backup if:
+		// 1. Test packages were set up
+		// 2. Setup phases were NOT skipped (i.e., not called from run:e2e)
+		// This ensures backup is only created for manual testing environments
+		if ( ! empty( $env_info->test_packages_for_setup ) && ! $env_info->skip_test_phases ) {
+			$this->createDatabaseBackup( $env_info, $output );
+		}
+
+		/* ─ 9. Save environment info and generate source files ─ */
+		$this->save_environment_info( $env_info );
+		$files = $this->environment_vars->save_environment_file( $env_info );
+
+		/* ─ 10. Print result ─ */
+		if ( $input->getOption( 'json' ) ) {
+			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
+		} else {
+			$this->renderHumanSummary( $output, $env_info );
+
+			// Show manual testing instructions
+			$output->writeln( '' );
+			$output->writeln( 'To run manual tests:' );
+			$output->writeln( '  1. Navigate to your test directory' );
+			$output->writeln( '  2. Load environment variables in this terminal:' );
+			$output->writeln( sprintf( '     <info>source "$(qit env:source %s)"</info>', $env_info->env_id ) );
+			$output->writeln( '  3. Run your tests:' );
+			$output->writeln( '     <info>npx playwright test</info>' );
+		}
+
+		// Clean up DI container variables if we set them
+		\QIT_CLI\App::offsetUnset( 'test_package_required_plugins' );
+		\QIT_CLI\App::offsetUnset( 'test_package_required_themes' );
+
+		return Command::SUCCESS;
 	}
+
+	/*******************************************************************
+	 * Helpers
+	 ******************************************************************/
 
 	/**
 	 * Get the appropriate environment instance based on the environment type.
 	 */
-	protected function get_environment( string $environment_type ): Environment {
+	protected function get_environment( string $environment_type ): \QIT_CLI\Environment\Environments\Environment {
 		switch ( $environment_type ) {
 			case 'performance':
 				return $this->performance_environment;
@@ -213,240 +634,847 @@ HELP
 		}
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		if ( is_windows() ) {
-			$output->writeln( '<comment>To use QIT Environments on Window, please use WSL. Check our guide here: https://qit.woo.com/docs/environment/getting-started#getting-started---windows</comment>' );
+	/**
+	 * Download extensions from the given environment configuration.
+	 * This method processes the merged config that includes CLI overrides.
+	 *
+	 * @param array<string,mixed> $env_config
+	 *
+	 * @return \QIT_CLI\PreCommand\Extensions\ResolvedExtensions
+	 */
+	private function download_extensions_from_config( array $env_config ): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions {
+		$extensions = [];
 
-			return Command::FAILURE;
-		}
+		// Create Extension objects from plugins in the merged config
+		if ( isset( $env_config['plugins'] ) ) {
+			foreach ( $env_config['plugins'] as $plugin_config ) {
+				if ( is_string( $plugin_config ) ) {
+					// Use the new parser for string inputs
+					try {
+						$extension    = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $plugin_config, 'plugin' );
+						$extensions[] = $extension;
+					} catch ( \InvalidArgumentException $e ) {
+						throw new \RuntimeException( 'Invalid plugin specification: ' . $e->getMessage() );
+					}
+				} else {
+					// Handle array configuration
+					$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $plugin_config['slug'], 'plugin' );
+					$extension->added_automatically = 'Added from CLI or environment configuration';
 
-		$environment_type        = $input->getOption( 'environment_type' );
-		$woo                     = $input->getOption( 'woo' );
-		$skip_activating_plugins = $input->getOption( 'skip_activating_plugins' );
-		$skip_activating_themes  = $input->getOption( 'skip_activating_themes' );
-		$input->setOption( 'woo', null );
-		$input->setOption( 'skip_activating_plugins', null );
-		$input->setOption( 'skip_activating_themes', null );
-		$input->setOption( 'environment_type', null );
-		$this->parse_env_vars( $input->getOption( 'env' ), $input->getOption( 'env_file' ) );
+					if ( isset( $plugin_config['from'] ) ) {
+						$extension->from = $plugin_config['from'];
 
-		// Set the environment type for EnvConfigLoader.
-		putenv( "QIT_ENVIRONMENT_TYPE=$environment_type" ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-
-		$environment = $this->get_environment( $environment_type );
-		$tunnel      = TunnelRunner::get_tunnel_value( $input );
-
-		try {
-			$options_to_env_info = $this->parse_options( $input );
-		} catch ( \Exception $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
-			return Command::FAILURE;
-		}
-
-		/*
-		 * Process the "--woo" command line option to determine the appropriate WooCommerce plugin version or build.
-		 * This includes resolving specific versions like "8.6.1" or special tags like "nightly".
-		 * Example inputs:
-		 * - "--woo nightly" targets the latest nightly build.
-		 * - "--woo 8.6.1" targets a specific GitHub release.
-		 *
-		 * The code also handles complex scenarios, such as:
-		 * "--woo nightly --plugin woocommerce:test:activation"
-		 * where it configures the environment to use the nightly build of WooCommerce and run a specific 'activation' test suite.
-		 */
-		if ( ! empty( $woo ) ) {
-			// Resolve the WooCommerce version or build based on the "--woo" option.
-			// Example of 'plugin' option before resolution: ["woocommerce:test:activation"].
-			$options_to_env_info['overrides']['plugin'][] = EnvironmentVersionResolver::resolve_woo( $woo, $input->getOption( 'plugin' ) );
-
-			// In the case a Woo Test tag was also requested, remove duplicated WooCommerce plugin entries in the environment settings.
-			// At this point, we have this: ["woocommerce:test:activation", {"slug":"woocommerce", "source":"https:\/\/downloads.wordpress.org\/plugin\/woocommerce.latest-stable.zip", "action":"test", "test_tags":["activation"]}]
-			// And we will remove the first entry.
-			foreach ( $options_to_env_info['overrides']['plugin'] as $k => $p ) {
-				// Check if $p starts with "woocommerce:".
-				if ( is_string( $p ) && strpos( $p, 'woocommerce:' ) === 0 ) {
-					// If it does, check if there is already a parsed version of Woo.
-					foreach ( $options_to_env_info['overrides']['plugin'] as $k2 => $p2 ) {
-						if ( ! is_array( $p2 ) || empty( $p2['slug'] ) || $p2['slug'] !== 'woocommerce' ) {
-							continue;
+						switch ( $plugin_config['from'] ) {
+							case 'wporg':
+								$extension->version = $plugin_config['version'] ?? 'stable';
+								break;
+							case 'wccom':
+								$extension->version  = $plugin_config['version'] ?? 'stable';
+								$extension->wccom_id = $plugin_config['wccom_id'] ?? null;
+								break;
+							case 'local':
+								$extension->directory = $plugin_config['directory'] ?? null;
+								$extension->source    = $plugin_config['source'] ?? null;
+								break;
+							case 'url':
+								$extension->source  = $plugin_config['source'] ?? null;
+								$extension->version = $plugin_config['version'] ?? 'stable';
+								break;
 						}
-						// Here we found a parsed version of Woo, so we remove the original entry.
-						unset( $options_to_env_info['overrides']['plugin'][ $k ] );
+					} else {
+						// Don't set $extension->from - let ExtensionResolver determine the correct source
+						$extension->version = 'stable';
+					}
+
+					$extensions[] = $extension;
+				}
+			}
+		}
+
+		// Create Extension objects from themes in the merged config
+		if ( isset( $env_config['themes'] ) ) {
+			foreach ( $env_config['themes'] as $theme_config ) {
+				if ( is_string( $theme_config ) ) {
+					// Use the new parser for string inputs
+					try {
+						$extension    = \QIT_CLI\PreCommand\Extensions\ExtensionInputParser::parse( $theme_config, 'theme' );
+						$extensions[] = $extension;
+					} catch ( \InvalidArgumentException $e ) {
+						throw new \RuntimeException( 'Invalid theme specification: ' . $e->getMessage() );
+					}
+				} else {
+					// Handle array configuration
+					$extension                      = new \QIT_CLI\PreCommand\Objects\Extension( $theme_config['slug'], 'theme' );
+					$extension->added_automatically = 'Added from CLI or environment configuration';
+
+					if ( isset( $theme_config['from'] ) ) {
+						$extension->from = $theme_config['from'];
+
+						switch ( $theme_config['from'] ) {
+							case 'wporg':
+								$extension->version = $theme_config['version'] ?? 'stable';
+								break;
+							case 'local':
+								$extension->directory = $theme_config['directory'] ?? null;
+								$extension->source    = $theme_config['source'] ?? null;
+								break;
+							case 'url':
+								$extension->source = $theme_config['source'] ?? null;
+								break;
+						}
+					} else {
+						// Don't set $extension->from - let ExtensionResolver determine the correct source
+						$extension->version = 'stable';
+					}
+
+					$extensions[] = $extension;
+				}
+			}
+		}
+
+		// Remove duplicates by slug
+		$unique = [];
+		foreach ( $extensions as $ext ) {
+			$key = $ext->slug . '_' . $ext->type;
+			if ( ! isset( $unique[ $key ] ) ) {
+				$unique[ $key ] = $ext;
+			}
+		}
+		$extensions = array_values( $unique );
+
+		// Resolve/download them using ExtensionResolver
+		$env_info = \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo::from_array( [
+			'env_id'      => 'temp_' . bin2hex( random_bytes( 4 ) ),
+			'environment' => 'e2e',
+		] );
+		$resolver = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Extensions\ExtensionResolver::class );
+
+		// Use the proper QIT cache directory
+		$cache_dir = \QIT_CLI\Config::get_qit_dir() . 'cache';
+
+		return $resolver->resolve( $extensions, $cache_dir );
+	}
+
+	/**
+	 * Merge *explicit* CLI options into the resolved environment config.
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function applyCliOverrides( array $config, InputInterface $input ): array {
+		// $input is actually a QITInput instance when called from our commands
+
+		/* ─ Scalars ─ */
+		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
+			if ( $input->hasOption( $opt ) ) {
+				$option_value = $input->getOption( $opt );
+				if ( $option_value !== null ) {
+					if ( $opt === 'tunnel' ) {
+						$config['tunnel_type'] = $option_value;
+						$config['tunnel']      = $option_value !== 'no_tunnel';
+					} else {
+						$config[ $opt ] = $option_value;
 					}
 				}
 			}
 		}
 
-		if ( $skip_activating_plugins ) {
-			if ( $environment instanceof E2EEnvironment || $environment instanceof PerformanceEnvironment ) {
-				$environment->set_skip_activating_plugins( true );
-			}
-		}
-
-		if ( $skip_activating_themes ) {
-			if ( $environment instanceof E2EEnvironment || $environment instanceof PerformanceEnvironment ) {
-				$environment->set_skip_activating_themes( true );
-			}
-		}
-
-		if ( ! empty( $input->getOption( 'config' ) ) ) {
-			App::setVar( 'QIT_CONFIG_OVERRIDE', $input->getOption( 'config' ) );
-		}
-
-		$env_info = App::make( EnvConfigLoader::class )->init_env_info( $options_to_env_info );
-
-		// Parse the extension set here.
-		if ( ! empty( $options_to_env_info['overrides']['extension_set'] ) ) {
-			$env_info = App::make( ExtensionSetResolver::class )->resolve( $env_info, $options_to_env_info );
-		}
-
-		if ( $tunnel !== 'no_tunnel' ) {
-			try {
-				$this->tunnel_runner->check_tunnel_support( $tunnel );
-				$env_info->tunnel = true;
-			} catch ( \Exception $e ) {
-				$output->writeln( '<error>' . $e->getMessage() . '</error>' );
-				return Command::FAILURE;
-			}
+		/* ─ Handle network mode options ─ */
+		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
+			$config['network_mode'] = 'offline';
+		} elseif ( $input->hasOption( 'online' ) && $input->getOption( 'online' ) ) {
+			$config['network_mode'] = 'online';
 		} else {
-			// Tunneling is disabled.
-			$env_info->tunnel = false;
+			// Default to auto mode (will be determined based on test packages in RunE2ECommand)
+			$config['network_mode'] = 'auto';
 		}
 
-		if ( $output->isVeryVerbose() ) {
-			$this->output->writeln( 'Environment info: ' . json_encode( $env_info, JSON_PRETTY_PRINT ) );
+		/* ─ Resolve special versions and add plugins explicitly ─ */
+		$config = $this->resolve_woo( $config, $input );
+		$config = $this->resolve_wp( $config, $input );
+		if ( $input->hasOption( 'object_cache' ) ) {
+			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
 		}
 
-		$environment->init( $env_info );
+		/* ─ Array‑merge helpers with slug-keyed deduplication ─ */
+		$merge_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
+			if ( ! $input->hasOption( $opt_name ) ) {
+				return;
+			}
+			$cfg = $config[ $key ] ?? [];
+			$cli = (array) $input->getOption( $opt_name );
 
-		// Helper utility to test the environment.
-		if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
-			$output->write( json_encode( $env_info ) );
+			// Use slug-keyed merge to handle mixed string/array entries properly
+			$index = [];
+			foreach ( array_merge( $cfg, $cli ) as $entry ) {
+				$slug = is_string( $entry ) ? $entry : ( $entry['slug'] ?? null );
+				if ( ! $slug ) {
+					continue;
+				}
 
-			return 137;
+				/**
+				 * Precedence: later entries override earlier ones.
+				 * We iterate            →   first config, then CLI.
+				 * Therefore:            →   anything from the CLI wins ‑
+				 *                          regardless of whether it is a string
+				 *                          or a rich object.
+				 */
+				$index[ $slug ] = $entry;
+			}
+			$config[ $key ] = array_values( $index );
+		};
+
+		$merge_list( 'plugins', 'plugin' );
+		$merge_list( 'themes', 'theme' );
+
+		/* ─ Simple array merge for non-extension lists ─ */
+		$merge_simple_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
+			if ( ! $input->hasOption( $opt_name ) ) {
+				return;
+			}
+			$cli            = (array) $input->getOption( $opt_name );
+			$cfg            = $config[ $key ] ?? [];
+			$config[ $key ] = array_values( array_unique( array_merge( $cfg, $cli ) ) );
+		};
+
+		// Volumes should stay as simple arrays until parsed later
+		if ( $input->hasOption( 'volume' ) ) {
+			$cli_volumes = (array) $input->getOption( 'volume' );
+			$cfg_volumes = $config['volumes'] ?? [];
+			// Just merge the arrays without re-indexing
+			$config['volumes'] = array_merge( $cfg_volumes, $cli_volumes );
 		}
 
-		// "up_and_test" is when we are using an environment to run a custom test. "up" is spinning up the environment on-demand.
-		$environment->up( getenv( 'QIT_UP_AND_TEST' ) ? 'up_and_test' : 'up' );
+		$merge_simple_list( 'php_extensions', 'php_extension' );
 
-		if ( $input->getOption( 'json' ) ) {
-			$output->write( json_encode( $env_info ) );
-		} else {
-			// Print the site URL in the last line for easy scripting with "wc -l" or similar.
-			$output->writeln( $env_info->site_url );
-		}
-
-		return Command::SUCCESS;
-	}
-
-	protected function parse_options( InputInterface $input, bool $filter_to_send = true ): array {
-		$options = parent::parse_options( $input, false );
-
-		$options_to_env_info = [
-			'defaults'  => [],
-			'overrides' => [],
+		/*
+		─ Runtime env vars - process files immediately ─
+		*/
+		// Set default environment variables for QIT environments
+		// Note: QIT_ENV_ID is added later when env_info is created
+		$default_env_vars = [
+			'QIT_DISABLE_UPDATE_CHECKS' => 'true',  // Disable WordPress update checks by default
+			'QIT_NETWORK_LOGGING'       => 'false', // Network logging disabled by default
 		];
 
-		$shortcuts = [];
+		$existing_env_vars = $config['envs'] ?? [];
+		$env_files         = array_merge(
+			$config['env_files'] ?? [],
+			$input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : []
+		);
 
-		foreach ( $this->getDefinition()->getOptions() as $o ) {
-			$shortcuts[ $o->getShortcut() ] = $o->getName();
-		}
+		// Get CLI env vars as array of key=value strings (EnvParser expects this format)
+		$cli_env_vars = $input->hasOption( 'env' ) ? (array) $input->getOption( 'env' ) : [];
 
-		if ( ! empty( App::getVar( 'QIT_ENV_UP_OPTIONS' ) ) ) {
-			$user_input = [];
-			foreach ( App::getVar( 'QIT_ENV_UP_OPTIONS' ) as $k => $v ) {
-				if ( array_key_exists( ltrim( $k, '-' ), $this->getDefinition()->getOptions() ) ) {
-					$o = $this->getDefinition()->getOption( ltrim( $k, '-' ) );
-					if ( $o->getDefault() === $v ) {
-						continue;
-					}
-				}
+		// Parse and merge everything using EnvParser
+		$parsed_vars = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvParser::class )->parse( $cli_env_vars, $env_files );
 
-				$user_input[] = $k;
-			}
-		} else {
-			$user_input = $GLOBALS['argv'];
-		}
+		// Merge with existing env vars (defaults < existing < parsed)
+		// This ensures user can override defaults via config file or CLI
+		$config['envs'] = array_merge( $default_env_vars, $existing_env_vars, $parsed_vars );
 
-		/*
-		 * Options can be explicitly set by the user or be a default value.
-		 *
-		 * This affects the order of precedence that each option gets.
-		 *
-		 * 1: Option set at runtime (will be in $GLOBALS['argv'])
-		 * 2: Option in config file (will be in .?qit.(json|yml))
-		 * 3. Default value
-		 */
-		foreach ( $options as $key => $value ) {
-			$found_override = false;
+		// Remove env_files - no longer needed
+		unset( $config['env_files'] );
 
-			foreach ( $user_input as $arg ) {
-				// Remove leading dashes.
-				// Example: --woo=8.6.1 => woo=8.6.1.
-				$normalized_arg = ltrim( $arg, '-' );
-
-				// Extract the part before the equals sign if it exists.
-				// Example: woo=8.6.1 => woo.
-				$normalized_arg = preg_match( '/^([a-zA-Z0-9_]+)=/', $normalized_arg, $matches ) ? $matches[1] : $normalized_arg;
-
-				if ( $normalized_arg === $key || ( isset( $shortcuts[ $normalized_arg ] ) && $shortcuts[ $normalized_arg ] === $key ) ) {
-					$options_to_env_info['overrides'][ $key ] = $value;
-					$found_override                           = true;
-					break;
-				}
-			}
-
-			if ( ! $found_override ) {
-				$options_to_env_info['defaults'][ $key ] = $value;
-			}
-		}
-
-		return $options_to_env_info;
+		return $config;
 	}
+
+	/**
+	 * Resolve --woo option explicitly.
+	 * Adds WooCommerce plugin with the specified version.
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function resolve_woo( array $config, InputInterface $input ): array {
+		/** @var \QIT_CLI\QITInput $input */
+		if ( ! $input->hasOption( 'woo' ) ) {
+			return $config;
+		}
+
+		$woo_version = $input->getOption( 'woo' );
+
+		if ( empty( $woo_version ) ) {
+			return $config;
+		}
+
+		$resolved_source = $this->version_resolver->resolve_woo( $woo_version );
+
+		if ( $resolved_source !== null ) {
+			// Special version (rc, nightly) - resolve to URL
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'url',
+				'source'              => $resolved_source,
+				'version'             => $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
+		} else {
+			// Regular version - add as wporg plugin
+			$woo_plugin = [
+				'slug'                => 'woocommerce',
+				'from'                => 'wporg',
+				'version'             => $woo_version === 'stable' ? 'stable' : $woo_version,
+				'added_automatically' => 'Added via --woo option',
+			];
+		}
+
+		// Add WooCommerce to plugins list, avoiding duplicates
+		$config['plugins'] = $config['plugins'] ?? [];
+
+		// Remove any existing WooCommerce plugin to avoid conflicts
+		$config['plugins'] = array_filter( $config['plugins'], function ( $plugin ) {
+			$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+			return $slug !== 'woocommerce';
+		});
+
+		// Add the resolved WooCommerce plugin
+		$config['plugins'][] = $woo_plugin;
+
+		return $config;
+	}
+
+	/**
+	 * Resolve --wp option explicitly.
+	 * Resolves WordPress special versions (like rc).
+	 *
+	 * @param array<string,mixed> $config
+	 * @param InputInterface      $input
+	 * @return array<string,mixed>
+	 */
+	private function resolve_wp( array $config, InputInterface $input ): array {
+		/** @var \QIT_CLI\QITInput $input */
+		if ( ! $input->hasOption( 'wp' ) ) {
+			return $config;
+		}
+
+		$wp_version = $input->getOption( 'wp' );
+
+		$resolved_wp = $this->version_resolver->resolve_wp( $wp_version );
+
+		if ( $resolved_wp !== null ) {
+			$config['wp'] = $resolved_wp;
+		}
+
+		return $config;
+	}
+
 
 
 	/**
-	 * We take the "--env" option as "--env FOO=bar" and convert it to ["FOO" => "bar"].
-	 * We also take "--env_file" option and parse the file content as env vars.
-	 * We store this value as QIT_DOCKER_ENV_VARS and pass it to the test context.
-	 *
-	 * @param array<string> $env_vars
-	 * @param array<string> $env_files
-	 *
-	 * @return void
+	 * Nicely formatted human output.
 	 */
-	protected function parse_env_vars( array $env_vars, array $env_files ): void {
-		$parsed_vars = [];
+	/**
+	 * Save environment info to a JSON file for later use.
+	 *
+	 * @param E2EEnvInfo $env_info The environment info to save.
+	 */
+	private function save_environment_info( E2EEnvInfo $env_info ): void {
+		$env_dir   = $this->environment_vars->get_env_directory();
+		$info_file = $env_dir . '/' . $env_info->env_id . '.json';
 
-		foreach ( $env_files as $env_file ) {
-			if ( ! file_exists( $env_file ) ) {
-				throw new \RuntimeException( sprintf( 'Environment file "%s" does not exist.', $env_file ) );
+		// Store essential information for later retrieval
+		$data = [
+			'env_id'        => $env_info->env_id,
+			'site_url'      => $env_info->site_url,
+			'php'           => $env_info->php,
+			'wp'            => $env_info->wp,
+			'woo'           => $env_info->woo,
+			'db_port'       => $env_info->db_port ?? 0,
+			'php_container' => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
+			'db_container'  => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
+			'nginx_port'    => $env_info->nginx_port ?? '',
+			'envs'          => $env_info->envs ?? [], // Include custom environment variables
+		];
+
+		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
+	}
+
+	private function renderHumanSummary( OutputInterface $out, EnvInfo $info ): void {
+		$out->writeln( '' );
+		$out->writeln( sprintf( '<info>✅ Environment ready: %s</info>', $info->env_id ) );
+		$out->writeln( '' );
+
+		// URL and credentials
+		$out->writeln( sprintf( '  URL:         %s', $info->site_url ) );
+		$out->writeln( '  Credentials: admin/password' );
+
+		// Stack information
+		if ( $info instanceof E2EEnvInfo ) {
+			$stack_parts   = [];
+			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
+			$stack_parts[] = sprintf( 'PHP %s', $info->php );
+			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
+
+			// Plugins line (only if plugins exist)
+			$plugin_names = [];
+			foreach ( $info->plugins as $plugin ) {
+				if ( $plugin->slug === 'woocommerce' && $info->woo ) {
+					$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
+				} elseif ( $plugin->slug !== 'woocommerce' ) {
+					$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version );
+				}
+			}
+			if ( ! empty( $plugin_names ) ) {
+				$out->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
 			}
 
-			$parsed_vars = array_merge( $parsed_vars, Dotenv::parse( file_get_contents( $env_file ) ) );
+			// Theme line (only if non-default theme exists)
+			$theme_names = [];
+			foreach ( $info->themes as $theme ) {
+				// Skip default themes
+				if ( ! in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
+					$theme_names[] = sprintf( '%s %s', $this->format_plugin_name( $theme->slug ), $theme->version );
+				}
+			}
+			if ( ! empty( $theme_names ) ) {
+				$out->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
+			}
+
+			// Test packages that were set up
+			if ( ! empty( $info->test_packages_for_setup ) ) {
+				$out->writeln( '' );
+				$out->writeln( '  Test packages prepared:' );
+				if ( $info->skip_test_phases ) {
+					// When phases are skipped, just list the packages
+					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+						$out->writeln( sprintf( '    • %s (phases deferred)', $pkg_id ) );
+					}
+				} else {
+					// When phases ran, show which phases ran for each package
+					$is_first = true;
+					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+						$phases = $is_first ? 'globalSetup + setup' : 'globalSetup only';
+						$out->writeln( sprintf( '    • %s (%s)', $pkg_id, $phases ) );
+						$is_first = false;
+					}
+				}
+			}
+		} elseif ( $info instanceof PerformanceEnvInfo ) {
+			$stack_parts   = [];
+			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
+			$stack_parts[] = sprintf( 'PHP %s', $info->php_version );
+			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
+
+			if ( property_exists( $info, 'woo' ) && $info->woo ) {
+				$out->writeln( sprintf( '  Plugins:     WooCommerce %s', $info->woo ) );
+			}
 		}
 
-		foreach ( $env_vars as $env_var ) {
-			$env_var = explode( '=', $env_var, 2 );
+		// Tunnel information (only if enabled)
+		if ( $info->tunnel ) {
+			$out->writeln( sprintf( '  Tunnel:      %s', $info->tunnel_type ) );
+		}
+	}
 
-			if ( count( $env_var ) !== 2 ) {
-				throw new \RuntimeException( 'Invalid environment variable format. Should be in the format "--env FOO=bar".' );
-			}
+	/**
+	 * Format plugin/theme name for display.
+	 *
+	 * @param string $slug The plugin/theme slug.
+	 * @return string Formatted name.
+	 */
+	private function format_plugin_name( string $slug ): string {
+		// Convert slug to title case
+		$name = str_replace( [ '-', '_' ], ' ', $slug );
+		return ucwords( $name );
+	}
 
-			$key   = trim( $env_var[0] );
-			$value = trim( $env_var[1] );
+	/**
+	 * Process test package requirements and add missing dependencies.
+	 *
+	 * @param array<string,mixed> $env_config Environment configuration (modified by reference).
+	 * @param InputInterface      $input Input interface.
+	 * @param OutputInterface     $output Output interface.
+	 */
+	private function process_test_package_requirements( array &$env_config, InputInterface $input, OutputInterface $output ): void {
+		// Get pre-processed test package requirements from DI container (set by RunE2ECommand)
+		$required_plugins = \QIT_CLI\App::getVar( 'test_package_required_plugins' );
+		$required_themes  = \QIT_CLI\App::getVar( 'test_package_required_themes' );
 
-			if ( ! preg_match( '/^[A-Za-z0-9_]+$/', $key ) ) {
-				throw new \RuntimeException( 'Invalid environment variable name. Must contain only letters, numbers, and underscores.' );
-			}
-
-			$parsed_vars[ $key ] = $value;
+		if ( empty( $required_plugins ) && empty( $required_themes ) ) {
+			return;
 		}
 
-		$parsed_vars['WP_CLI_CONFIG_PATH'] = '/qit/wp-cli.yml';
+		// Ensure arrays
+		$required_plugins = $required_plugins ?: [];
+		$required_themes  = $required_themes ?: [];
 
-		App::setVar( 'QIT_DOCKER_ENV_VARS', $parsed_vars );
+		// Initialize arrays if they don't exist
+		if ( ! isset( $env_config['plugins'] ) ) {
+			$env_config['plugins'] = [];
+		}
+		if ( ! isset( $env_config['themes'] ) ) {
+			$env_config['themes'] = [];
+		}
+
+		// Track what's already provided
+		$existing_plugins = [];
+		$existing_themes  = [];
+
+		// Extract existing plugin slugs
+		foreach ( $env_config['plugins'] as $plugin ) {
+			$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
+			if ( $slug ) {
+				$existing_plugins[] = $slug;
+			}
+		}
+
+		// Extract existing theme slugs
+		foreach ( $env_config['themes'] as $theme ) {
+			$slug = is_string( $theme ) ? $theme : ( $theme['slug'] ?? null );
+			if ( $slug ) {
+				$existing_themes[] = $slug;
+			}
+		}
+
+		// Also check SUT to avoid duplication
+		$sut_slug = null;
+		if ( isset( $env_config['sut'] ) && is_array( $env_config['sut'] ) && isset( $env_config['sut']['slug'] ) ) {
+			$sut_slug = $env_config['sut']['slug'];
+		}
+
+		// Add missing plugins
+		$added_plugins = [];
+		foreach ( $required_plugins as $plugin_slug => $required_by ) {
+			// Skip if it's the SUT
+			if ( $sut_slug && $plugin_slug === $sut_slug ) {
+				continue;
+			}
+
+			// Add if not already present
+			if ( ! in_array( $plugin_slug, $existing_plugins, true ) ) {
+				$env_config['plugins'][]       = $plugin_slug;
+				$added_plugins[ $plugin_slug ] = $required_by;
+			}
+		}
+
+		// Add missing themes
+		$added_themes = [];
+		foreach ( $required_themes as $theme_slug => $required_by ) {
+			// Skip if it's the SUT
+			if ( $sut_slug && $theme_slug === $sut_slug ) {
+				continue;
+			}
+
+			// Add if not already present
+			if ( ! in_array( $theme_slug, $existing_themes, true ) ) {
+				$env_config['themes'][]      = $theme_slug;
+				$added_themes[ $theme_slug ] = $required_by;
+			}
+		}
+
+		// Report what was added
+		if ( ! empty( $added_plugins ) || ! empty( $added_themes ) ) {
+			$output->writeln( '' );
+			$output->writeln( '<info>Auto-installing test package dependencies:</info>' );
+
+			foreach ( $added_plugins as $plugin_slug => $required_by ) {
+				$packages = implode( ', ', array_unique( $required_by ) );
+				$output->writeln( sprintf( '  → Plugin <comment>%s</comment> (required by %s)', $plugin_slug, $packages ) );
+			}
+
+			foreach ( $added_themes as $theme_slug => $required_by ) {
+				$packages = implode( ', ', array_unique( $required_by ) );
+				$output->writeln( sprintf( '  → Theme <comment>%s</comment> (required by %s)', $theme_slug, $packages ) );
+			}
+		}
+	}
+
+	/*******************************************************************
+	 * Long help text
+	 ******************************************************************/
+	private function getHelpText(): string {
+		return <<<'HELP'
+Creates a fully‑configured, disposable local environment.
+
+Precedence: CLI defaults → qit.json → explicit CLI overrides.
+
+Examples
+  <info>qit env:up</info>
+      Uses the "default" environment from qit.json
+
+  <info>qit env:up --environment=legacy</info>
+      Spins up the "legacy" block from qit.json
+
+  <info>qit env:up --php=8.3 --plugin=gutenberg</info>
+      Overrides PHP version and adds Gutenberg, leaving the rest untouched
+
+  <info>qit env:up --tunnel=cloudflare</info>
+      Exposes the site publicly through Cloudflare Tunnel
+
+  <info>qit env:up --setup=./tests/e2e</info>
+      Run setup phases from test package in specified directory
+      
+  <info>qit env:up --skip-setup</info>
+      Skip automatic setup even if qit-test.json exists in current directory
+HELP;
+	}
+
+	/**
+	 * Determine the main package based on execution order.
+	 * The main package is the one that will have its setup phase run.
+	 *
+	 * With the new order-respecting logic, the main package is simply
+	 * the first package in the list, as they're already ordered correctly
+	 * by command-line specification.
+	 *
+	 * @param array<string>   $packages List of package references.
+	 * @param OutputInterface $output   The output interface.
+	 * @return string|null The main package reference, or null if no packages.
+	 */
+	private function determineMainPackage( array $packages, OutputInterface $output ): ?string {
+		if ( empty( $packages ) ) {
+			return null;
+		}
+
+		// The first package in the list is the main package
+		// (packages are already ordered correctly by command-line order)
+		if ( $output->isVerbose() ) {
+			$output->writeln( "<info>Main package: {$packages[0]} (first remote package)</info>" );
+		}
+		return $packages[0];
+	}
+
+	/**
+	 * Run test setup phases from qit-test.json if present.
+
+	/**
+	 * Process test packages to extract requirements.
+	 *
+	 * @param array<string>   $test_packages Array of test package references (local paths or remote IDs).
+	 * @param OutputInterface $output The output interface.
+	 */
+	private function processTestPackageRequirements( array $test_packages, OutputInterface $output ): void {
+		if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+			$output->writeln( '[DEBUG] env:up->processTestPackageRequirements - Processing ' . count( $test_packages ) . ' packages' );
+		}
+
+		$required_plugins = \QIT_CLI\App::getVar( 'test_package_required_plugins', [] );
+		$required_themes  = \QIT_CLI\App::getVar( 'test_package_required_themes', [] );
+		$requires_network = \QIT_CLI\App::getVar( 'test_package_requires_network', false );
+		$requires_tunnel  = \QIT_CLI\App::getVar( 'test_package_requires_tunnel', false );
+
+		foreach ( $test_packages as $package_ref ) {
+			if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+				$output->writeln( "[DEBUG] env:up - Processing test package: $package_ref" );
+			}
+
+			try {
+				// Try to download/process the package (likely cache hit if run:e2e already downloaded)
+				$package_downloader = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Download\TestPackageDownloader::class );
+				// Fix: Use correct method signature and cache dir (same as run:e2e uses)
+				$packages_to_download = [ $package_ref => [] ];
+				$manifests            = $package_downloader->download( $packages_to_download, sys_get_temp_dir() . '/qit-cache' );
+
+				if ( isset( $manifests[ $package_ref ] ) ) {
+					$manifest = $manifests[ $package_ref ];
+
+					if ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) {
+						$output->writeln( "[DEBUG] env:up - Got manifest for $package_ref (likely from cache)" );
+					}
+
+					// Extract plugin requirements
+					$plugins = $manifest->get_required_plugins();
+					foreach ( $plugins as $plugin ) {
+						if ( ! isset( $required_plugins[ $plugin ] ) ) {
+							$required_plugins[ $plugin ] = [];
+						}
+						$required_plugins[ $plugin ][] = $package_ref;
+					}
+
+					// Extract theme requirements
+					$themes = $manifest->get_required_themes();
+					foreach ( $themes as $theme ) {
+						if ( ! isset( $required_themes[ $theme ] ) ) {
+							$required_themes[ $theme ] = [];
+						}
+						$required_themes[ $theme ][] = $package_ref;
+					}
+
+					// Check network requirement
+					if ( $manifest->requires_network() ) {
+						$requires_network = true;
+						if ( $output->isVerbose() ) {
+							$output->writeln( "<info>Test package {$package_ref} requires network access</info>" );
+						}
+					}
+
+					// Check tunnel requirement
+					if ( $manifest->requires_tunnel() ) {
+						$requires_tunnel = true;
+						if ( $output->isVerbose() ) {
+							$output->writeln( "<info>Test package {$package_ref} requires tunnel access</info>" );
+						}
+					}
+				}
+			} catch ( \Exception $e ) {
+				// For local packages, try to read the manifest directly
+				if ( is_dir( $package_ref ) && file_exists( $package_ref . '/qit-test.json' ) ) {
+					try {
+						$manifest_content = file_get_contents( $package_ref . '/qit-test.json' );
+						$manifest_data    = json_decode( $manifest_content, true );
+
+						if ( json_last_error() === JSON_ERROR_NONE ) {
+							// Use TestPackageManifest to parse it properly
+							$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
+
+							// Extract plugin requirements
+							$plugins = $manifest->get_required_plugins();
+							foreach ( $plugins as $plugin ) {
+								if ( ! isset( $required_plugins[ $plugin ] ) ) {
+									$required_plugins[ $plugin ] = [];
+								}
+								$required_plugins[ $plugin ][] = $package_ref;
+							}
+
+							// Extract theme requirements
+							$themes = $manifest->get_required_themes();
+							foreach ( $themes as $theme ) {
+								if ( ! isset( $required_themes[ $theme ] ) ) {
+									$required_themes[ $theme ] = [];
+								}
+								$required_themes[ $theme ][] = $package_ref;
+							}
+
+							// Check network requirement
+							if ( $manifest->requires_network() ) {
+								$requires_network = true;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Test package {$package_ref} requires network access</info>" );
+								}
+							}
+
+							// Check tunnel requirement
+							if ( $manifest->requires_tunnel() ) {
+								$requires_tunnel = true;
+								if ( $output->isVerbose() ) {
+									$output->writeln( "<info>Test package {$package_ref} requires tunnel access</info>" );
+								}
+							}
+						}
+					} catch ( \Exception $inner_e ) {
+						if ( $output->isVerbose() ) {
+							$output->writeln( "<warning>Could not process test package {$package_ref}: {$inner_e->getMessage()}</warning>" );
+						}
+					}
+				} else {
+					if ( $output->isVerbose() ) {
+						$output->writeln( "<warning>Could not process test package {$package_ref}: {$e->getMessage()}</warning>" );
+					}
+				}
+			}
+		}
+
+		// Store the collected requirements back to DI container for process_test_package_requirements to use
+		if ( ! empty( $required_plugins ) ) {
+			\QIT_CLI\App::setVar( 'test_package_required_plugins', $required_plugins );
+		}
+		if ( ! empty( $required_themes ) ) {
+			\QIT_CLI\App::setVar( 'test_package_required_themes', $required_themes );
+		}
+		if ( $requires_network ) {
+			\QIT_CLI\App::setVar( 'test_package_requires_network', true );
+		}
+		if ( $requires_tunnel ) {
+			\QIT_CLI\App::setVar( 'test_package_requires_tunnel', true );
+		}
+	}
+
+	/**
+	 * Convert SUT configuration to extension format for environment.
+	 *
+	 * @param array<string,mixed> $sut The SUT configuration from qit.json.
+	 * @return array<string,mixed> Extension configuration.
+	 */
+	private function convert_sut_to_extension( array $sut ): array {
+		$extension = [
+			'slug'                => $sut['slug'],
+			'added_automatically' => 'Added as SUT from qit.json',
+		];
+
+		// Handle different source types
+		switch ( $sut['source']['type'] ) {
+			case 'local':
+				$extension['from'] = 'local';
+				// Use resolved_path if available, otherwise use path
+				$extension['source'] = $sut['source']['resolved_path'] ?? $sut['source']['path'];
+				break;
+
+			case 'url':
+				$extension['from']   = 'url';
+				$extension['source'] = $sut['source']['url'];
+				break;
+
+			case 'wporg':
+				$extension['from']    = 'wporg';
+				$extension['version'] = $sut['source']['version'] ?? 'stable';
+				break;
+
+			case 'wccom':
+				$extension['from']    = 'wccom';
+				$extension['version'] = $sut['source']['version'] ?? 'stable';
+				if ( isset( $sut['source']['wccom_id'] ) ) {
+					$extension['wccom_id'] = $sut['source']['wccom_id'];
+				}
+				break;
+
+			case 'build':
+				// For build sources, we need to run the build command first
+				// This is handled elsewhere, for now just set as local with the output path
+				$extension['from']   = 'local';
+				$extension['source'] = $sut['source']['resolved_output'] ?? $sut['source']['output'];
+				break;
+
+			default:
+				throw new \RuntimeException( "Unknown SUT source type: {$sut['source']['type']}" );
+		}
+
+		return $extension;
+	}
+
+	/**
+	 * Create a database backup for env:reset functionality.
+	 * This backup captures the state after all setup phases have completed.
+	 *
+	 * @param E2EEnvInfo      $env_info The environment info.
+	 * @param OutputInterface $output   The output interface.
+	 */
+	private function createDatabaseBackup( E2EEnvInfo $env_info, OutputInterface $output ): void {
+		$output->write( 'Creating database backup for env:reset...' );
+
+		// Create backup directory
+		$backup_dir = sys_get_temp_dir() . '/qit-env-backups/' . $env_info->env_id;
+		if ( ! is_dir( $backup_dir ) ) {
+			mkdir( $backup_dir, 0755, true );
+		}
+
+		try {
+			// Get Docker instance
+			$docker = \QIT_CLI\App::make( \QIT_CLI\Environment\Docker::class );
+
+			// Export database - run in WordPress directory with defaults
+			$sql_dump = $docker->run_inside_docker( $env_info, [ 'sh', '-c', 'cd /var/www/html && wp db export --defaults --quiet - 2>/dev/null' ] );
+			file_put_contents( $backup_dir . '/setup-complete.sql', $sql_dump );
+
+			// Save metadata about what was backed up
+			$metadata = [
+				'created'       => time(),
+				'env_id'        => $env_info->env_id,
+				'test_packages' => array_keys( $env_info->test_packages_for_setup ),
+				'php'           => $env_info->php,
+				'wp'            => $env_info->wp,
+				'woo'           => $env_info->woo,
+			];
+			file_put_contents( $backup_dir . '/metadata.json', json_encode( $metadata, JSON_PRETTY_PRINT ) );
+
+			$output->writeln( ' <info>Done!</info>' );
+		} catch ( \Exception $e ) {
+			$output->writeln( ' <warning>Failed!</warning>' );
+			$output->writeln( '<warning>Database backup failed: ' . $e->getMessage() . '</warning>' );
+			// Don't fail the whole command, just warn that env:reset won't work
+			$output->writeln( '<comment>Note: env:reset will not be available for this environment.</comment>' );
+		}
 	}
 }

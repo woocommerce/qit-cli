@@ -2,19 +2,19 @@
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
-use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Commands\QITCommand;
-use Symfony\Component\Console\Helper\QuestionHelper;
+use QIT_CLI\Environment\EnvParser;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ChoiceQuestion;
-use function QIT_CLI\format_elapsed_time;
 
 class ExecEnvironmentCommand extends QITCommand {
+	use EnvironmentSelectionTrait;
+
 	protected EnvironmentMonitor $environment_monitor;
 
 	protected Docker $docker;
@@ -47,53 +47,17 @@ class ExecEnvironmentCommand extends QITCommand {
 			->addOption( 'image', null, InputOption::VALUE_OPTIONAL, 'The Docker image to use', 'php' );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
-		$running_environments = $this->environment_monitor->get();
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		// Use the trait method to select environment
+		$environment = $this->select_environment( $this->environment_monitor, $input, $output, 'env_id' );
 
-		if ( empty( $running_environments ) ) {
-			$output->writeln( '<info>No environments running.</info>' );
-
-			return self::SUCCESS;
-		}
-
-		if ( ! empty( $input->getOption( 'env_id' ) ) ) {
-			$running_environments = array_filter( $running_environments, function ( EnvInfo $env ) use ( $input ) {
-				return $env->env_id === $input->getOption( 'env_id' );
-			} );
-		}
-
-		if ( count( $running_environments ) === 1 ) {
-			$environment = array_shift( $running_environments );
-		} else {
-			$environment_choices = array_map( function ( EnvInfo $environment ) {
-				return sprintf( 'ID: %s, Created: %s, Status: %s',
-					$environment->env_id,
-					format_elapsed_time( time() - $environment->created_at ),
-					$environment->status
-				);
-			}, $running_environments );
-
-			$helper   = new QuestionHelper();
-			$question = new ChoiceQuestion(
-				'Please select the environment to execute the command:',
-				$environment_choices
-			);
-			$question->setErrorMessage( 'Environment %s is invalid.' );
-
-			$selected_environment_id = $helper->ask( $input, $output, $question );
-			$environment             = $this->environment_monitor->get_env_info_by_id( $selected_environment_id );
-		}
-
-		// @phpstan-ignore-next-line
 		if ( ! $environment ) {
-			$output->writeln( '<error>Selected environment not found.</error>' );
-
 			return self::FAILURE;
 		}
 
 		$command_to_run = $input->getArgument( 'command_to_run' );
 		// Use "PAGER=more" because we run Alpine images that have a minimalist version of "less".
-		$env_vars = array_merge( [ 'PAGER' => 'more' ], $this->parse_env_vars( $input->getOption( 'env_var' ) ) );
+		$env_vars = array_merge( [ 'PAGER' => 'more' ], App::make( EnvParser::class )->parse( $input->getOption( 'env_var' ) ) );
 		$user     = $input->getOption( 'user' );
 		$timeout  = $input->getOption( 'timeout' ) !== null ? (int) $input->getOption( 'timeout' ) : 300;
 		$image    = $input->getOption( 'image' ) ?: 'php';
@@ -113,7 +77,7 @@ class ExecEnvironmentCommand extends QITCommand {
 	 * @param array<string,scalar> $env_var_options
 	 *
 	 * @return array<string,string>
-	 */
+	 *
 	private function parse_env_vars( array $env_var_options ): array {
 		$env_vars = [];
 		foreach ( $env_var_options as $e ) {
@@ -125,4 +89,5 @@ class ExecEnvironmentCommand extends QITCommand {
 
 		return $env_vars;
 	}
+	 */
 }

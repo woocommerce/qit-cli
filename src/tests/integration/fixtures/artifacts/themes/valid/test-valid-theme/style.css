@@ -1,0 +1,23 @@
+/*
+Theme Name: Test Valid Theme
+Theme URI: https://example.com/test-valid-theme
+Author: QIT Tests
+Author URI: https://example.com
+Description: A valid theme fixture for testing artifact validation
+Version: 1.0.0
+License: GPL v2 or later
+Text Domain: test-valid-theme
+*/
+
+/* Theme styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}

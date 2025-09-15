@@ -2,11 +2,11 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
@@ -19,14 +19,14 @@ class GetCommand extends QITCommand {
 		parent::configure();
 		$this
 			->setDescription( 'Get a single test run.' )
-			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed), 2 (warning), 3 (others).' )
+			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed), 3 (warning).' )
 			->addArgument( 'test_run_id', InputArgument::REQUIRED, 'The ID of the test run.' )
 			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		try {
 			$json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 				->with_method( 'POST' )
@@ -55,10 +55,10 @@ class GetCommand extends QITCommand {
 				$exit_status_code = 1;
 				break;
 			case 'warning':
-				$exit_status_code = 2;
+				$exit_status_code = 3; // 2 is reserved by OS
 				break;
 			default:
-				$exit_status_code = 3;
+				$exit_status_code = 1; // Default to failure for unknown status
 		}
 
 		if ( $input->getOption( 'json' ) ) {

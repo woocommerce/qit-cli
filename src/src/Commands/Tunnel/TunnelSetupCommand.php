@@ -3,10 +3,10 @@
 namespace QIT_CLI\Commands\Tunnel;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use QIT_CLI\Cache;
 use QIT_CLI\Tunnel\TunnelRunner;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -72,7 +72,7 @@ TXT
 			);
 	}
 
-	protected function doExecute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'reset' ) ) {
 			$this->cache->delete( 'tunnel_configs' );
 			$this->cache->delete( 'tunnel_default' );

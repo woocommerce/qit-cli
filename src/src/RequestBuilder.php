@@ -39,6 +39,9 @@ class RequestBuilder {
 	/** @var array<string> */
 	protected $additional_headers = [];
 
+	/** @var array<string,mixed> */
+	protected $files = [];
+
 	public function __construct( string $url = '' ) {
 		$this->url = $url;
 	}
@@ -131,25 +134,56 @@ class RequestBuilder {
 		return $this;
 	}
 
-
 	/**
 	 * Allows adding your own headers (like "Header-Name: value").
 	 *
 	 * @param string[] $headers
+	 *
 	 * @return $this
 	 */
 	public function with_additional_headers( array $headers ): self {
 		// Merge them into our $additional_headers property.
 		$this->additional_headers = array_merge( $this->additional_headers, $headers );
+
+		return $this;
+	}
+
+	/**
+	 * @param string $field_name
+	 * @param string $file_path
+	 *
+	 * @return $this
+	 */
+	public function with_file( string $field_name, string $file_path ): self {
+		$this->files[ $field_name ] = $file_path;
+
 		return $this;
 	}
 
 	public function request(): string {
 		retry_request: // phpcs:ignore Generic.PHP.DiscourageGoto.Found
+
+		// Apply rate limiting before making the request
+		self::apply_rate_limit( $this->url );
+
+		// Add client early so it's included in mocks
+		$this->post_body['client'] = 'qit_cli';
+
+		// Integration test mocking - check this first to allow override of unit tests
+		if ( getenv( 'QIT_MOCK_DIR' ) ) {
+			return $this->handle_file_mock();
+		}
+
 		if ( defined( 'UNIT_TESTS' ) ) {
 			$mocked = App::getVar( 'mock_' . $this->url );
 			if ( is_null( $mocked ) ) {
 				throw new \LogicException( 'No mock found for ' . $this->url );
+			}
+
+			// Convert error strings to exceptions
+			if ( is_string( $mocked ) && strpos( $mocked, 'exception: ' ) === 0 ) {
+				$error_message = substr( $mocked, strlen( 'exception: ' ) );
+				throw new \RuntimeException( $error_message );
 			}
 
 			App::setVar( 'mocked_request', $this->to_array() );
@@ -203,8 +237,6 @@ class RequestBuilder {
 			$this->additional_headers = array_merge( $this->additional_headers, $parsed_env_headers );
 		}
 
-		$this->post_body['client'] = 'qit_cli';
-
 		$proxied = false;
 
 		if ( $this->onboarding ) {
@@ -232,16 +264,28 @@ class RequestBuilder {
 				$curl_parameters[ CURLOPT_HTTPHEADER ] = $this->additional_headers;
 				break;
 			case 'POST':
-				$json_data                             = json_encode( $this->post_body );
-				$curl_parameters[ CURLOPT_POST ]       = true;
-				$curl_parameters[ CURLOPT_POSTFIELDS ] = $json_data;
-				$curl_parameters[ CURLOPT_HTTPHEADER ] = array_merge(
-					[
-						'Content-Type: application/json',
-						'Content-Length: ' . strlen( $json_data ),
-					],
-					$this->additional_headers
-				);
+				$curl_parameters[ CURLOPT_POST ] = true;
+
+				if ( ! empty( $this->files ) ) {
+					// Handle multipart/form-data for file uploads
+					$post_fields = $this->post_body;
+					foreach ( $this->files as $field_name => $file_path ) {
+						$post_fields[ $field_name ] = new \CURLFile( $file_path );
+					}
+					$curl_parameters[ CURLOPT_POSTFIELDS ] = $post_fields;
+					$curl_parameters[ CURLOPT_HTTPHEADER ] = $this->additional_headers;
+				} else {
+					// Handle JSON for regular requests
+					$json_data                             = json_encode( $this->post_body );
+					$curl_parameters[ CURLOPT_POSTFIELDS ] = $json_data;
+					$curl_parameters[ CURLOPT_HTTPHEADER ] = array_merge(
+						[
+							'Content-Type: application/json',
+							'Content-Length: ' . strlen( $json_data ),
+						],
+						$this->additional_headers
+					);
+				}
 				break;
 			default:
 				$curl_parameters[ CURLOPT_HTTPHEADER ]    = $this->additional_headers;
@@ -331,7 +375,6 @@ class RequestBuilder {
 					$response_status_code
 				);
 			} else {
-
 				$json_decoded = json_decode( $body, true );
 
 				/**
@@ -349,7 +392,6 @@ class RequestBuilder {
 		return $body;
 	}
 
-
 	/**
 	 * Downloads a file from the specified URL and writes it to the specified path.
 	 *
@@ -357,12 +399,41 @@ class RequestBuilder {
 	 * @param string $file_path The path of the file to write to.
 	 *
 	 * @throws \RuntimeException If an error occurs during downloading or file handling.
+	 * @throws \LogicException If no mock is found for the URL during unit tests.
 	 */
 	public static function download_file( string $url, string $file_path ): void {
 		$output = App::make( Output::class );
 
 		if ( $output->isVeryVerbose() ) {
 			$output->writeln( "Downloading $url into $file_path..." );
+		}
+
+		// Apply rate limiting for downloads
+		self::apply_rate_limit( $url );
+
+		// Check for mock response in unit tests
+		if ( defined( 'UNIT_TESTS' ) ) {
+			$mocked = App::getVar( 'mock_' . $url );
+			if ( is_null( $mocked ) ) {
+				throw new \LogicException( 'No mock found for ' . $url );
+			}
+
+			// Convert error strings to exceptions
+			if ( is_string( $mocked ) && strpos( $mocked, 'exception: ' ) === 0 ) {
+				$error_message = substr( $mocked, strlen( 'exception: ' ) );
+				throw new \RuntimeException( $error_message );
+			}
+
+			// Write mock response to file
+			if ( file_put_contents( $file_path, $mocked ) === false ) {
+				throw new \RuntimeException( 'Could not write mock response to file: ' . $file_path );
+			}
+
+			if ( $output->isVerbose() ) {
+				$output->writeln( "Used mock response for $url, written to $file_path" );
+			}
+
+			return;
 		}
 
 		// Open file for writing, create it if it doesn't exist.
@@ -485,5 +556,96 @@ class RequestBuilder {
 			'curl_opts'             => $this->curl_opts,
 			'expected_status_codes' => $this->expected_status_codes,
 		];
+	}
+
+	private function handle_file_mock(): string {
+		$mock_dir = getenv( 'QIT_MOCK_DIR' );
+
+		// Record the request
+		$this->record_request( $mock_dir );
+
+		// Return mock response
+		$url_hash  = sha1( $this->url );
+		$mock_file = $mock_dir . '/' . $url_hash . '.json';
+		if ( ! file_exists( $mock_file ) ) {
+			throw new \LogicException( 'No mock for: ' . $this->url );
+		}
+
+		return file_get_contents( $mock_file );
+	}
+
+	private function record_request( string $mock_dir ): void {
+		$entry = [
+			'url'  => $this->url,
+			'hash' => sha1( $this->url ),
+			'body' => $this->to_array(),
+		];
+
+		// ➊ keep last‑request semantics
+		file_put_contents( $mock_dir . '/last_request.json', json_encode( $entry, JSON_PRETTY_PRINT ) );
+
+		// ➋ append to the chronological log
+		$log_file = $mock_dir . '/_requests.json';
+		$log      = is_file( $log_file ) ? json_decode( file_get_contents( $log_file ), true ) : [];
+		$log[]    = $entry;
+		file_put_contents( $log_file, json_encode( $log, JSON_PRETTY_PRINT ) );
+	}
+
+
+	/**
+	 * Apply rate limiting to prevent hitting API rate limits.
+	 * Ensures at least 1 second delay between requests to the same domain.
+	 *
+	 * @param string $url The URL to rate limit.
+	 * @return void
+	 */
+	protected static function apply_rate_limit( string $url ): void {
+		// Local static variables to keep state between calls
+		static $last_request_time   = [];
+		static $rate_limit_delay_us = 1000000; // 1 second in microseconds
+
+		// Skip rate limiting for unit tests and local/mock environments
+		if ( defined( 'UNIT_TESTS' ) || getenv( 'QIT_MOCK_DIR' ) ) {
+			return;
+		}
+
+		// Extract domain from URL
+		$parsed_url = parse_url( $url );
+		if ( ! isset( $parsed_url['host'] ) ) {
+			return;
+		}
+
+		$domain = $parsed_url['host'];
+
+		// Check if we've made a request to this domain recently
+		if ( isset( $last_request_time[ $domain ] ) ) {
+			$time_since_last    = microtime( true ) - $last_request_time[ $domain ];
+			$time_since_last_us = (int) ( $time_since_last * 1000000 );
+
+			// If less than the delay threshold, sleep for the remaining time
+			if ( $time_since_last_us < $rate_limit_delay_us ) {
+				$sleep_time = $rate_limit_delay_us - $time_since_last_us;
+
+				// Log the rate limiting if verbose output is enabled
+				try {
+					$output = App::make( Output::class );
+					if ( $output->isVerbose() ) {
+						$output->writeln(
+							sprintf( 'Rate limiting: Waiting %dms before request to %s',
+								(int) ( $sleep_time / 1000 ),
+								$domain
+							)
+						);
+					}
+				} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
+					// Output might not be available in all contexts - silently continue
+				}
+
+				usleep( $sleep_time );
+			}
+		}
+
+		// Update the last request time for this domain
+		$last_request_time[ $domain ] = microtime( true );
 	}
 }

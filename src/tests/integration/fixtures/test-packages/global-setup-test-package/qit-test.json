@@ -1,0 +1,23 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "woocommerce/global-setup-package",
+  "test_type": "e2e",
+  "description": "Test package with globalSetup and globalTeardown phases",
+  "test": {
+    "phases": {
+      "globalSetup": [
+        "echo 'Running global setup...' && echo 'GLOBAL_STATE_VALUE' > /tmp/qit-global-state.txt && echo 'Global setup: Created state file'"
+      ],
+      "run": [
+        "npx playwright test"
+      ],
+      "globalTeardown": [
+        "echo 'Running global teardown...' && ls -la /tmp/qit-result-*.txt 2>/dev/null | wc -l | xargs -I {} echo 'Global teardown: Found {} result files'"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./blob-report"
+    }
+  }
+}

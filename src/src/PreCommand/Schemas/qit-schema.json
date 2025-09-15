@@ -1,0 +1,508 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "QIT Configuration Schema",
+  "description": "Schema for QIT configuration files (qit.json)",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string",
+      "const": "https://qit.woo.com/json-schema/qit",
+      "description": "Schema reference for IDE support"
+    },
+    "extends": {
+      "type": "string",
+      "description": "Path or URL to base configuration file to extend from"
+    },
+    "sut": {
+      "description": "System Under Test - the plugin or theme being tested",
+      "$ref": "#/definitions/sut"
+    },
+    "test_types": {
+      "type": "object",
+      "description": "Configuration for different test types and their profiles",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/testTypeProfiles"
+        }
+      },
+      "additionalProperties": false
+    },
+    "groups": {
+      "type": "object",
+      "description": "Named groups of test configurations for batch execution",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/testGroup"
+        }
+      },
+      "additionalProperties": false
+    },
+    "environments": {
+      "type": "object",
+      "description": "Environment configurations with WordPress, PHP, and plugin settings",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/environment"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "definitions": {
+    "sut": {
+      "type": "object",
+      "required": ["type", "slug", "source"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["plugin", "theme"],
+          "description": "Type of system under test"
+        },
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "minLength": 1,
+          "description": "Unique identifier for the plugin/theme"
+        },
+        "source": {
+          "$ref": "#/definitions/source"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "required": ["type"],
+      "additionalProperties": true,
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["local", "url", "wccom", "wporg"],
+          "description": "Source type for the plugin/theme"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"type": {"const": "local"}}
+          },
+          "then": {
+            "required": ["path"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {"const": "local"},
+              "path": {
+                "type": "string",
+                "description": "Path to local directory or zip file"
+              },
+              "build": {
+                "type": "string",
+                "description": "Optional build command to run before using the path"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"type": {"const": "url"}}
+          },
+          "then": {
+            "required": ["url"],
+            "additionalProperties": false,
+            "properties": {
+              "type": {"const": "url"},
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https?://.*\\.zip$",
+                "description": "URL to zip file"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"type": {"enum": ["wccom", "wporg"]}}
+          },
+          "then": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "enum": ["wccom", "wporg"]
+              },
+              "version": {
+                "type": "string",
+                "description": "Version to download (default: stable)"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "testTypeProfiles": {
+      "type": "object",
+      "description": "Profiles for a specific test type",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "$ref": "#/definitions/testProfile"
+        }
+      },
+      "additionalProperties": false
+    },
+    "testProfile": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Configuration for a test profile",
+          "additionalProperties": true,
+          "properties": {
+            "extends": {
+              "type": "string",
+              "description": "Base profile to extend from"
+            },
+            "environment": {
+              "type": "string",
+              "description": "Environment to use for this test profile"
+            },
+            "test_packages": {
+              "type": "array",
+              "description": "Test packages to run",
+              "items": {
+                "type": "string"
+              }
+            },
+            "php": {
+              "type": "string",
+              "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+              "description": "PHP version override"
+            },
+            "phpstan_level": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 9,
+              "description": "PHPStan analysis level"
+            },
+            "tweaks": {
+              "type": "object",
+              "description": "Test-specific tweaks and modifications",
+              "properties": {
+                "skip": {
+                  "type": "array",
+                  "description": "Tests to skip (exact match or regex)",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "additionalProperties": true
+            }
+          }
+        },
+        {
+          "type": "array",
+          "maxItems": 0,
+          "description": "Empty test profile configuration"
+        }
+      ]
+    },
+    "testGroup": {
+      "type": "object",
+      "description": "Group of test type/profile combinations",
+      "patternProperties": {
+        "^[a-zA-Z0-9_-]+$": {
+          "type": "array",
+          "description": "List of profiles for this test type",
+          "items": {
+            "type": "string",
+            "pattern": "^[a-zA-Z0-9_-]+$"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "environment": {
+      "oneOf": [
+        {
+          "type": "object",
+          "description": "Environment configuration",
+          "additionalProperties": false,
+          "properties": {
+            "extends": {
+              "type": "string",
+              "description": "Base environment to extend from"
+            },
+            "php": {
+              "type": "string",
+              "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+              "description": "PHP version for this environment"
+            },
+            "wp": {
+              "type": "string",
+              "description": "WordPress version (e.g., 'stable', '6.5', 'latest')"
+            },
+            "woo": {
+              "type": "string",
+              "description": "WooCommerce version (e.g., 'stable', '8.7.0')"
+            },
+            "object_cache": {
+              "type": "boolean",
+              "description": "Enable object caching"
+            },
+            "envs": {
+              "type": "object",
+              "description": "Environment variables",
+              "additionalProperties": {
+                "type": "string"
+              }
+            },
+            "plugins": {
+              "type": "array",
+              "description": "Plugins to install in this environment",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_-]+$",
+                    "description": "Plugin slug from WordPress.org (latest stable version)"
+                  },
+                  {
+                    "$ref": "#/definitions/pluginConfig"
+                  }
+                ]
+              }
+            },
+            "themes": {
+              "type": "array",
+              "description": "Themes to install in this environment",
+              "items": {
+                "oneOf": [
+                  {
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_-]+$",
+                    "description": "Theme slug from WordPress.org (latest stable version)"
+                  },
+                  {
+                    "$ref": "#/definitions/themeConfig"
+                  }
+                ]
+              }
+            },
+            "global_setup": {
+              "type": "array",
+              "description": "Test packages to run only during global setup phase",
+              "items": {
+                "type": "string"
+              }
+            },
+            "volumes": {
+              "type": "array",
+              "description": "Docker volume mappings",
+              "items": {
+                "type": "string",
+                "pattern": "^[^:]+:[^:]+$"
+              }
+            },
+            "php_extensions": {
+              "type": "array",
+              "description": "PHP extensions to enable in this environment",
+              "items": {
+                "type": "string",
+                "pattern": "^[a-zA-Z0-9_-]+$"
+              }
+            }
+          }
+        },
+        {
+          "type": "array",
+          "maxItems": 0,
+          "description": "Empty environment configuration"
+        }
+      ]
+    },
+    "pluginConfig": {
+      "type": "object",
+      "required": ["slug", "from"],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Plugin slug"
+        },
+        "from": {
+          "type": "string",
+          "enum": ["wporg", "wccom", "local", "url"],
+          "description": "Source for the plugin"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"from": {"const": "wporg"}}
+          },
+          "then": {
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "wporg"},
+              "version": {
+                "type": "string",
+                "default": "stable",
+                "description": "Version: stable, latest, or specific like 8.0.0"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"from": {"const": "wccom"}}
+          },
+          "then": {
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "wccom"},
+              "version": {
+                "type": "string",
+                "default": "stable",
+                "description": "Version to install"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"from": {"const": "local"}}
+          },
+          "then": {
+            "required": ["path"],
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "local"},
+              "path": {
+                "type": "string",
+                "description": "Path to local plugin directory"
+              },
+              "build": {
+                "type": "string",
+                "description": "Optional build command to run before using the path"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"from": {"const": "url"}}
+          },
+          "then": {
+            "required": ["url"],
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "url"},
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https?://.*\\.zip$",
+                "description": "URL to plugin zip file"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "themeConfig": {
+      "type": "object",
+      "required": ["slug", "from"],
+      "properties": {
+        "slug": {
+          "type": "string",
+          "pattern": "^[a-zA-Z0-9_-]+$",
+          "description": "Theme slug"
+        },
+        "from": {
+          "type": "string",
+          "enum": ["wporg", "wccom", "local", "url"],
+          "description": "Source for the theme"
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {"from": {"const": "wporg"}}
+          },
+          "then": {
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "wporg"},
+              "version": {
+                "type": "string",
+                "default": "stable",
+                "description": "Version: stable, latest, or specific like 2.0.0"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"from": {"const": "wccom"}}
+          },
+          "then": {
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "wccom"},
+              "version": {
+                "type": "string",
+                "default": "stable",
+                "description": "Version to install"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"from": {"const": "local"}}
+          },
+          "then": {
+            "required": ["path"],
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "local"},
+              "path": {
+                "type": "string",
+                "description": "Path to local theme directory"
+              },
+              "build": {
+                "type": "string",
+                "description": "Optional build command to run before using the path"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {"from": {"const": "url"}}
+          },
+          "then": {
+            "required": ["url"],
+            "additionalProperties": false,
+            "properties": {
+              "slug": {"type": "string"},
+              "from": {"const": "url"},
+              "url": {
+                "type": "string",
+                "format": "uri",
+                "pattern": "^https?://.*\\.zip$",
+                "description": "URL to theme zip file"
+              }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

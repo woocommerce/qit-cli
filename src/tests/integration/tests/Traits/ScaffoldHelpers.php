@@ -1,16 +1,28 @@
 <?php
 
-namespace QIT\SelfTests\CustomTests\Traits;
+namespace QIT\IntegrationTests\Traits;
+
+use QIT\IntegrationTests\Utils\Normalizer;
 
 trait ScaffoldHelpers {
 	/**
 	 * @param string|null $spec_name This can be used to differentiate between different scaffolded tests.
+	 * @param string|null $namespace The namespace (extension slug) for the test package.
+	 * @param string|null $package The package slug for the test package.
 	 *
 	 * @return string The path to the scaffolded directory.
 	 */
-	protected function scaffold_test( ?string $spec_name = null ): string {
+	protected function scaffold_test( ?string $spec_name = null, ?string $namespace = 'woocommerce', ?string $package = 'internal-integration-test' ): string {
 		$scaffolded_dir = sys_get_temp_dir() . '/qit_scaffolded_e2e-' . uniqid();
-		qit( [ 'scaffold:e2e', $scaffolded_dir ] );
+		
+		$command = [ 'scaffold:e2e', $scaffolded_dir ];
+		
+		if ( $namespace && $package ) {
+			$command[] = '--namespace=' . $namespace;
+			$command[] = '--package=' . $package;
+		}
+		
+		qit( $command );
 
 		if ( $spec_name ) {
 			if ( ! rename( $scaffolded_dir . '/example.spec.js', $scaffolded_dir . "/$spec_name.spec.js" ) ) {
@@ -64,53 +76,15 @@ PHP;
 		} );
 	}
 
-	protected function normalize_env_info( array $env_info ): array {
-		$id = $env_info['env_id'];
-
-		// Decode, str_replace, encode
-		$env_info = json_encode( $env_info, JSON_UNESCAPED_SLASHES );
-
-		$d = __DIR__;
-
-		while ( true ) {
-			$d = dirname( $d );
-			if ( basename( $d ) === 'custom_tests' ) {
-				$dir_to_replace = realpath( $d );
-				break;
-			}
-
-			if ( $d === '/' ) {
-				throw new \RuntimeException( 'Could not find the "custom_tests" directory.' );
-			}
-		}
-
-		$env_info = str_replace( $id, 'ENV_ID_NORMALIZED', $env_info );
-		$env_info = str_replace( $dir_to_replace, '/path/normalized/', $env_info );
-		$env_info = str_replace( rtrim( sys_get_temp_dir(), '/' ) . '/', '/tmp-normalized/', $env_info );
-		$env_info = str_replace( '/tmp/', '/tmp-normalized/', $env_info );
-		$env_info = preg_replace( '/qit_scaffolded_e2e-[a-f0-9]+/', 'qit_scaffolded_e2e-NORMALIZED_ID', $env_info );
-		$env_info = preg_replace( '/qit_config-qit_custom_tests_[a-f0-9]+/', 'qit_config-qit_custom_tests_NORMALIZED_ID', $env_info );
-
-		$env_info = json_decode( $env_info, true );
-
-		$env_info['created_at'] = '1700000000';
-		$env_info['sut_id']     = '123';
-
-		foreach ( $env_info['plugins'] as &$p ) {
-			if ( strpos( $p['source'], 'http' ) !== false ) {
-				$filename    = explode( '/', parse_url( $p['source'], PHP_URL_PATH ) );
-				$filename    = end( $filename );
-				$p['source'] = 'https://normalized-remote-source/' . $filename;
-			}
-			if ( ! empty( $p['version'] ) ) {
-				$p['version'] = 'NORMALIZED_VERSION';
-			}
-			if ( ! empty( $p['downloaded_source'] ) ) {
-				$p['downloaded_source'] = '/normalized/downloaded-path/file.zip';
-			}
-		}
-
-		return $env_info;
+	/**
+	 * Accept either the whole Pre‑Command result *or* just the env_info
+	 * subtree and normalise all volatile fields.
+	 *
+	 * @param array<string,mixed> $payload
+	 */
+	protected function normalize_env_info( array $payload ): array {
+		// Delegates to the shared helper and returns immediately
+		return Normalizer::precommand( $payload );
 	}
 
 	protected function normalize_snapshot_diff( string $output, int $expected_diff ): string {
@@ -138,7 +112,7 @@ PHP;
 		 * Lines that start with "***" will be normalized.
 		 *
 		 * Warning: Key "skip_activating_plugins" not found in environment info.
-		 * Downloading plugins and themes...
+		 * Processing plugins and themes...
 		 * Setting up Docker...
 		 * First-time setup is pulling Docker images and caching downloads. Subsequent runs will be faster.
 		 * Setting up WordPress...
@@ -161,7 +135,7 @@ PHP;
 		 *** npm notice Run `npm install -g npm@10.6.0` to update!
 		 * npm notice
 		 *
-		 * To open last HTML report run: qit e2e-report
+		 * To open last HTML report run: qit report
 		 *
 		 * Shutting down environment...
 		 */

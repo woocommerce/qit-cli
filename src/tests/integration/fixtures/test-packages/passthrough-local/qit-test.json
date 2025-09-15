@@ -1,0 +1,19 @@
+{
+  "package": "test/passthrough-local",
+  "test_type": "e2e",
+  "description": "Passthrough Local Test Package",
+  "requires": {
+    "network": false
+  },
+  "test": {
+    "phases": {
+      "run": [
+        "bash simple-test.sh"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./blob-report"
+    }
+  }
+}

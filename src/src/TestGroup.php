@@ -134,7 +134,7 @@ class TestGroup {
 				'client' => 'qit_cli',
 				'hash'   => $hash,
 			],
-			'env_vars'      => $filtered_env_vars,
+			'envs'          => $filtered_env_vars,
 			'input_options' => is_null( $input ) ? [] : $input->getOptions(),
 			'input_args'    => is_null( $input ) ? [] : $input->getArguments(),
 		];
@@ -180,11 +180,11 @@ class TestGroup {
 		$group['enqueue'] = $enqueue;
 
 		/**
-		 * Input and env vars are not needed on the QIT servers.
+		 * Input and env are not needed on the QIT servers.
 		 */
 		// @phan-suppress-next-line PhanTypeMismatchForeach
 		foreach ( $group['tests'] as $test ) {
-			unset( $test['env_vars'] );
+			unset( $test['envs'] );
 			unset( $test['input'] );
 		}
 
@@ -474,10 +474,10 @@ class TestGroup {
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
 		$options   = $test['input_options'];
-		$env_vars  = $test['env_vars'];
+		$env       = $test['envs'];
 		$arguments = $test['input_args'];
 
-		foreach ( $env_vars as $key => $value ) {
+		foreach ( $env as $key => $value ) {
 			putenv( sprintf( '%s=%s', $key, $value ) );
 		}
 
@@ -495,7 +495,7 @@ class TestGroup {
 			throw new \Exception( $run_e2e_output );
 		}
 
-		foreach ( $env_vars as $key => $value ) {
+		foreach ( $env as $key => $value ) {
 			putenv( $key );
 		}
 	}

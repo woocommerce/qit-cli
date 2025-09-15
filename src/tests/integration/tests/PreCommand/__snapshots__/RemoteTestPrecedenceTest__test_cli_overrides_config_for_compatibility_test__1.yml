@@ -1,0 +1,12 @@
+profile: default
+php_version: '7.4'
+optional_features: {  }
+wait: false
+ignore-fail: false
+group: false
+wordpress_version: '6.2'
+woocommerce_version: 9.0.0
+config: /tmp/qit_test_asnpki7dgo394lJoeEy
+json: true
+woo_id: 18734003134382
+event: cli_published_extension_test
