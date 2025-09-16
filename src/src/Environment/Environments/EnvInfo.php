@@ -188,9 +188,9 @@ abstract class EnvInfo implements \JsonSerializable {
 		// Handle plugins and themes
 		if ( isset( $env_info_array['plugins'] ) && is_array( $env_info_array['plugins'] ) ) {
 			$env_info->plugins = array_map( function ( $plugin_data ) {
-				// Handle non-array data
+				// Skip non-array data (cleanup bad cached data)
 				if ( ! is_array( $plugin_data ) ) {
-					return Extension::fromArray( [] );
+					return null;
 				}
 				// Skip invalid plugins with empty slugs (cleanup bad cached data)
 				if ( empty( $plugin_data['slug'] ) ) {
@@ -205,9 +205,9 @@ abstract class EnvInfo implements \JsonSerializable {
 
 		if ( isset( $env_info_array['themes'] ) && is_array( $env_info_array['themes'] ) ) {
 			$env_info->themes = array_map( function ( $theme_data ) {
-				// Handle non-array data
+				// Skip non-array data (cleanup bad cached data)
 				if ( ! is_array( $theme_data ) ) {
-					return Extension::fromArray( [] );
+					return null;
 				}
 				// Skip invalid themes with empty slugs (cleanup bad cached data)
 				if ( empty( $theme_data['slug'] ) ) {

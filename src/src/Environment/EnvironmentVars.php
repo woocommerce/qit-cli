@@ -94,7 +94,7 @@ class EnvironmentVars {
 		// Add information about additional plugins (excluding SUT if it's a plugin)
 		$additional_plugins = [];
 		foreach ( $env_info->plugins as $plugin ) {
-			if ( empty( $env_info->sut ) || $env_info->sut['type'] !== 'plugin' || $plugin->slug !== $env_info->sut['slug'] ) {
+			if ( empty( $env_info->sut ) || ! isset( $env_info->sut['type'] ) || $env_info->sut['type'] !== 'plugin' || ! isset( $env_info->sut['slug'] ) || $plugin->slug !== $env_info->sut['slug'] ) {
 				$additional_plugins[] = $plugin->slug;
 			}
 		}
@@ -109,7 +109,7 @@ class EnvironmentVars {
 			if ( in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
 				continue;
 			}
-			if ( empty( $env_info->sut ) || $env_info->sut['type'] !== 'theme' || $theme->slug !== $env_info->sut['slug'] ) {
+			if ( empty( $env_info->sut ) || ! isset( $env_info->sut['type'] ) || $env_info->sut['type'] !== 'theme' || ! isset( $env_info->sut['slug'] ) || $theme->slug !== $env_info->sut['slug'] ) {
 				$additional_themes[] = $theme->slug;
 			}
 		}
