@@ -215,7 +215,7 @@ flowchart TD
     B --> C[Extract SHA256 Checksum]
     C --> D[Generate Cache Key]
 
-    D --> E[checksum_[hash]]
+    D --> E[checksum_hash_key]
     E --> F{Cache Key Exists?}
     F -->|Yes| G[Validate Cache Integrity]
     F -->|No| H[Download Package]
