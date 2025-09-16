@@ -155,7 +155,7 @@ class MetricAverager {
 	 * Extract numeric values for a specific key from array of arrays.
 	 *
 	 * @param array<array<string,mixed>> $metric_arrays Array of metric arrays.
-	 * @param string $key Key to extract values for.
+	 * @param string                     $key Key to extract values for.
 	 * @return array<mixed> Array of numeric values for the key.
 	 */
 	private function extract_key_values( array $metric_arrays, string $key ): array {

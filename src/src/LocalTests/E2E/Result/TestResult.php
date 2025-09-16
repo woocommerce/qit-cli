@@ -21,9 +21,6 @@ class TestResult {
 	/** @var E2EEnvInfo */
 	protected $env_info;
 
-	protected function __construct() {
-	}
-
 	public static function init_from( E2EEnvInfo $env_info ): TestResult {
 		$instance           = new self();
 		$instance->status   = 'pending';

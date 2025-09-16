@@ -2,12 +2,38 @@
 
 namespace QIT_CLI\Commands;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 
-abstract class DynamicCommand extends Command {
+abstract class DynamicCommand extends QITCommand {
 	/** @var array<mixed> $options_to_send */
 	protected $options_to_send = [];
+
+	public function __construct( ?string $test_type = null ) {
+		// Set test_type before calling parent constructor
+		if ( $test_type !== null ) {
+			$this->test_type = $test_type;
+		}
+		parent::__construct();
+	}
+
+
+	public function get_test_profile(): string {
+		// Use QITInput's smart profile resolution if available
+		if ( $this->input instanceof \QIT_CLI\QITInput ) {
+			return $this->input->getProfileName();
+		}
+		return $this->input->getOption( 'profile' ) ?? 'default';
+	}
+
+	protected function configureProfileOption(): void {
+		$this->addOption(
+			'profile',
+			'',
+			\Symfony\Component\Console\Input\InputOption::VALUE_OPTIONAL,
+			'Test profile to use',
+			'default'
+		);
+	}
 
 	public function add_option_to_send( string $option_name ): void {
 		$this->options_to_send[ $option_name ] = '';

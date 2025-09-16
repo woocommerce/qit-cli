@@ -6,7 +6,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 
 class PerformanceEnvInfo extends EnvInfo {
 	/** @var string */
-	public $environment = 'performance';
+	public string $environment = 'performance';
 
 	/** @var string */
 	public $wp = '';
@@ -34,9 +34,6 @@ class PerformanceEnvInfo extends EnvInfo {
 
 	/** @var int The Woo ID of the extension under test. */
 	public $sut_id;
-
-	/** @var string The domain being used. */
-	public $domain;
 
 	/** @var string The performance test tag to be executed */
 	public $test_tag = '';

@@ -13,9 +13,34 @@ class Zipper {
 	/** @var Docker */
 	private $docker;
 
+	/** @var array<string,string> */
+	private array $extra_allowed_dirs = [];
+
 	public function __construct( OutputInterface $output, Docker $docker ) {
 		$this->output = $output;
 		$this->docker = $docker;
+	}
+
+	/**
+	 * Whitelist directories that extraction is allowed to write into.
+	 *
+	 * @param array<string> $paths
+	 */
+	public function allow_extract_into( array $paths ): void {
+		foreach ( $paths as $p ) {
+			// Only add existing directories to whitelist
+			if ( ! is_dir( $p ) ) {
+				throw new \RuntimeException( "Cannot whitelist non-existent directory: $p" );
+			}
+
+			// Store the canonical path to defeat "../../" tricks
+			$real = realpath( $p );
+			if ( $real === false ) {
+				throw new \RuntimeException( "Cannot resolve directory: $p" );
+			}
+
+			$this->extra_allowed_dirs[] = rtrim( $real, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
+		}
 	}
 
 	/**
@@ -50,10 +75,71 @@ class Zipper {
 			}
 		}
 
-		// Make sure $extract_to is within Config Dir or sys_get_temp_dir.
+		// Make sure $extract_to is within allowed directories.
 		if ( ! file_exists( '/.dockerenv' ) ) {
-			if ( strpos( normalize_path( $extract_to ), Config::get_qit_dir() ) !== 0 && strpos( normalize_path( $extract_to ), normalize_path( sys_get_temp_dir() ) ) !== 0 ) {
-				throw new \RuntimeException( 'Invalid directory.' );
+			// Get parent directory and new directory name
+			$parent_dir   = dirname( $extract_to );
+			$new_dir_name = basename( $extract_to );
+
+			// Parent directory MUST exist for extraction to work
+			if ( ! is_dir( $parent_dir ) ) {
+				throw new \RuntimeException( "Parent directory does not exist: $parent_dir" );
+			}
+
+			// Get canonical path of parent directory (always succeeds for existing directories)
+			$parent_canonical = realpath( $parent_dir );
+			if ( $parent_canonical === false ) {
+				throw new \RuntimeException( "Cannot resolve parent directory: $parent_dir" );
+			}
+
+			// Build the full canonical path deterministically
+			$extract_to_canonical = rtrim( $parent_canonical, DIRECTORY_SEPARATOR ) .
+									DIRECTORY_SEPARATOR . $new_dir_name . DIRECTORY_SEPARATOR;
+
+			// Build whitelist with canonical paths
+			$allowed = [];
+
+			// Add QIT directory if it exists
+			$qit_dir = Config::get_qit_dir();
+			if ( is_dir( $qit_dir ) ) {
+				$qit_canonical = realpath( $qit_dir );
+				if ( $qit_canonical !== false ) {
+					$allowed[] = rtrim( $qit_canonical, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
+				}
+			}
+
+			// Add system temp directory if it exists
+			$temp_dir = sys_get_temp_dir();
+			if ( is_dir( $temp_dir ) ) {
+				$temp_canonical = realpath( $temp_dir );
+				if ( $temp_canonical !== false ) {
+					$allowed[] = rtrim( $temp_canonical, DIRECTORY_SEPARATOR ) . DIRECTORY_SEPARATOR;
+				}
+			}
+
+			// Add extra allowed directories (also canonicalized)
+			foreach ( $this->extra_allowed_dirs as $dir ) {
+				// extra_allowed_dirs are already canonicalized in allow_extract_into()
+				$allowed[] = $dir;
+			}
+
+			// Check if extraction path starts with any allowed path
+			$ok = false;
+			foreach ( $allowed as $base ) {
+				if ( strpos( $extract_to_canonical, $base ) === 0 ) {
+					$ok = true;
+					break;
+				}
+			}
+
+			if ( ! $ok ) {
+				$error_msg = "Extraction directory not whitelisted: $extract_to_canonical\n";
+				if ( ! empty( $allowed ) ) {
+					$error_msg .= "Allowed paths:\n  - " . implode( "\n  - ", $allowed );
+				} else {
+					$error_msg .= 'No allowed paths configured.';
+				}
+				throw new \RuntimeException( $error_msg );
 			}
 		}
 
@@ -225,7 +311,7 @@ class Zipper {
 			'-c',
 		];
 
-		$zip_command = 'cd /home/docker/source && zip -r /home/docker/dest/output.zip .';
+		$zip_command = 'cd /home/docker/source && zip -r /home/docker/dest/output.zip ./*';
 
 		if ( ! empty( $exclude_string ) ) {
 			$zip_command .= " -x $exclude_string";

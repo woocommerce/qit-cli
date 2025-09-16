@@ -2,7 +2,7 @@
   "config": {
     "platform-check": false,
     "platform": {
-      "php": "7.2.5"
+      "php": "7.4"
     },
     "allow-plugins": {
       "dealerdirect/phpcodesniffer-composer-installer": true
@@ -17,11 +17,11 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "QIT_CLI_Tests\\": "tests/"
+      "QIT_CLI_Tests\\": "tests/unit"
     }
   },
   "require": {
-    "php": "^7.2.5 | ^8",
+    "php": "^7.4 | ^8",
     "ext-curl": "*",
     "ext-zip": "*",
     "symfony/console": "^5",
@@ -32,7 +32,8 @@
     "composer/ca-bundle": "^1.4",
     "symfony/serializer": "^5",
     "symfony/yaml": "^5",
-    "vlucas/phpdotenv": "^5"
+    "vlucas/phpdotenv": "^5",
+    "opis/json-schema": "^2.4"
   },
   "require-dev": {
     "phpunit/phpunit": "^8",
@@ -40,7 +41,7 @@
     "dealerdirect/phpcodesniffer-composer-installer": "^1",
     "wp-coding-standards/wpcs": "dev-develop",
     "phpcompatibility/php-compatibility": "^9",
-    "spatie/phpunit-snapshot-assertions": "^3.0",
+    "spatie/phpunit-snapshot-assertions": "^4.0",
     "phan/phan": "^5.4"
   }
 }

@@ -4,26 +4,21 @@ namespace QIT_CLI\Commands;
 
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
-class ListCommand extends Command {
+class ListCommand extends QITCommand {
 	protected static $defaultName = 'list-tests'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Cache $cache */
-	protected $cache;
-
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var WooExtensionsList $woo_extensions_list */
-	protected $woo_extensions_list;
+	protected Cache $cache;
+	protected Auth $auth;
+	protected WooExtensionsList $woo_extensions_list;
 
 	public function __construct( Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->cache               = $cache;
@@ -32,7 +27,8 @@ class ListCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$test_types_list = implode( ', ', $this->cache->get_manager_sync_data( 'test_types' ) );
 		$this
 			->setDescription( 'List test runs.' )
@@ -49,7 +45,7 @@ HELP
 			);
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		if ( $input->getOption( 'extensions' ) ) {
 			foreach ( explode( ',', $input->getOption( 'extensions' ) ) as $e ) {
 				if ( is_numeric( $e ) ) {
@@ -188,10 +184,10 @@ HELP
 					case 'test_type':
 						$t['Test'] = $v;
 						break;
-					case 'wordpress_version':
+					case 'wp_version':
 						$t['WP'] = $v;
 						break;
-					case 'woocommerce_version':
+					case 'woo_version':
 						$t['WC'] = $v;
 						break;
 					case 'test_result_aws_url':
@@ -239,6 +235,6 @@ HELP
 			->setRows( $test_runs );
 		$table->render();
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

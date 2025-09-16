@@ -4,7 +4,9 @@ namespace QIT_CLI\LocalTests;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
+use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use SplFileObject;
 
 class PrepareDebugLog {
@@ -22,8 +24,21 @@ class PrepareDebugLog {
 		$this->sut_slug = $sut_slug;
 	}
 
-	public function prepare_debug_log( string $debug_log_file, string $new_debug_log_file, E2EEnvInfo $env_info ): void {
-		$sut_slug = $env_info->sut_slug;
+	public function prepare_debug_log( string $debug_log_file, string $new_debug_log_file, ?EnvInfo $env_info ): void {
+		// Handle null env_info
+		if ( ! $env_info ) {
+			// Just copy the file as-is if no env_info
+			copy( $debug_log_file, $new_debug_log_file );
+			return;
+		}
+
+		// Extract SUT slug based on EnvInfo type
+		$sut_slug = '';
+		if ( $env_info instanceof E2EEnvInfo ) {
+			$sut_slug = isset( $env_info->sut ) ? ( $env_info->sut['slug'] ?? '' ) : '';
+		} elseif ( $env_info instanceof PerformanceEnvInfo ) {
+			$sut_slug = $env_info->sut_slug;
+		}
 
 		$output = App::make( Output::class );
 
@@ -129,7 +144,17 @@ class PrepareDebugLog {
 				 * If we are running PHP 8+ on WordPress 6.1 or lower, ignore the following notices.
 				 * @link https://core.trac.wordpress.org/ticket/54504
 				 */
-				if ( version_compare( $env_info->php_version, '8', '>=' ) && version_compare( $env_info->wp, '6.2', '<' ) ) {
+				$php_version = '';
+				$wp_version  = '';
+				if ( $env_info instanceof E2EEnvInfo ) {
+					$php_version = $env_info->php ?? '';
+					$wp_version  = $env_info->wp ?? '';
+				} elseif ( $env_info instanceof PerformanceEnvInfo ) {
+					$php_version = $env_info->php_version;
+					$wp_version  = $env_info->wp;
+				}
+
+				if ( $php_version && $wp_version && version_compare( $php_version, '8', '>=' ) && version_compare( $wp_version, '6.2', '<' ) ) {
 					if (
 						stripos( $line, 'attribute should be used to temporarily suppress the notice in /var/www/html/wp-includes/Requests/Cookie/Jar.php' ) !== false
 						|| stripos( $line, 'attribute should be used to temporarily suppress the notice in /var/www/html/wp-includes/Requests/Utility/CaseInsensitiveDictionary.php' ) !== false

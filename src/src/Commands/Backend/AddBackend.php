@@ -4,30 +4,24 @@ namespace QIT_CLI\Commands\Backend;
 
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
+use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\ManagerBackend;
+use QIT_CLI\QITInput;
 use QIT_CLI\WooExtensionsList;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use Symfony\Component\Console\Question\Question;
 
-class AddBackend extends Command {
+class AddBackend extends QITCommand {
 	protected static $defaultName = 'backend:add'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var WooExtensionsList $woo_extensions_list */
-	protected $woo_extensions_list;
-
-	/** @var ManagerBackend $manager_backend */
-	protected $manager_backend;
-
-	/** @var Cache $cache */
-	protected $cache;
+	protected Auth $auth;
+	protected WooExtensionsList $woo_extensions_list;
+	protected ManagerBackend $manager_backend;
+	protected Cache $cache;
 
 	public function __construct( ManagerBackend $manager_backend, Cache $cache, Auth $auth, WooExtensionsList $woo_extensions_list ) {
 		$this->manager_backend     = $manager_backend;
@@ -37,7 +31,8 @@ class AddBackend extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Configure a new environment that the QIT CLI can connect to.' )
 			->addOption( 'environment', 'e', InputOption::VALUE_OPTIONAL, '(Optional) The environment to add.', '' )
@@ -45,7 +40,7 @@ class AddBackend extends Command {
 			->addOption( 'manager_url', 'u', InputOption::VALUE_OPTIONAL, '(Optional) The Manager URL to use. Eg: http://manager.loc (local), or Manager Staging/Prod URLs.', '' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$qit_secret      = $input->getOption( 'qit_secret' );
 		$manager_url     = $input->getOption( 'manager_url' );
 		$manager_backend = $input->getOption( 'environment' );

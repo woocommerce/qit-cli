@@ -27,28 +27,25 @@ dev/
 _build/docker/php83/xdebug/*
 !_build/docker/php83/xdebug/.gitkeep
 !_build/docker/php83/xdebug/README.md
-_tests/custom_tests/.env
-_tests/custom_tests/tmp_qit_config*
-_tests/custom_tests/cache
-_tests/custom_tests/tmp/
-_tests/group_tests/.env
-_tests/group_tests/tmp_qit_config*
-_tests/group_tests/cache
-_tests/group_tests/tmp/
 
-_tests/custom_tests/.env.staging
-
-_tests/custom_tests/.env.local
-
-_tests/custom_tests/.env.bk
-
-_tests/group_tests/.env.bk
+src/tests/integration/.env
+src/tests/integration/tmp_qit_config*
+src/tests/integration/cache
+src/tests/integration/tmp/
+src/tests/integration/.env.staging
+src/tests/integration/.env.local
+src/tests/integration/.env.bk
 
 _tests/managed_tests/last-self-test.log
 
-src/tests/data/sync.json
+src/tests/unit/data/sync.json
 
 
-src/tests/integration/
+src/tests/integration/cache/
 
 src/tests/unit/data/sync.json
+src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-main-package/results/ctrf.json
+
+src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-secondary-package/results/ctrf.json
+
+src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-test-package/results/ctrf.json

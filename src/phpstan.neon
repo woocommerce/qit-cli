@@ -5,6 +5,12 @@ parameters:
     - /app/src/qit-cli.php
   scanDirectories:
     - /app/src/vendor
+  excludePaths:
+    analyse:
+      - /app/src/src/Commands/AI
+      - /app/src/src/AI
+    analyseAndScan:
+      - /app/src/*/dev/*
   tmpDir: /app/.cache
   parallel:
     jobSize: 10
@@ -12,6 +18,7 @@ parameters:
     minimumNumberOfJobsPerProcess: 2
   inferPrivatePropertyTypeFromConstructor: true
   reportUnmatchedIgnoredErrors: false
+  checkDynamicProperties: true
   ignoreErrors:
     # Can't set this, as we are extending Symfony Console command class.
     - '#.*::configure\(\) has no return type specified.$#'

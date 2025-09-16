@@ -21,7 +21,7 @@ class PerformanceEnvironment extends Environment {
 	/**
 	 * @var PerformanceEnvInfo
 	 */
-	protected $env_info;
+	protected \QIT_CLI\Environment\Environments\EnvInfo $env_info;
 
 	/** @var bool */
 	protected $skip_activating_plugins = false;
@@ -97,14 +97,25 @@ class PerformanceEnvironment extends Environment {
 		$this->copy_environment();
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
-		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
-			$this->output->writeln( '<info>Downloading plugins and themes...</info>' );
-		}
+		// Extensions will be installed by parent class up() method
+		// Skip manual installation here since install_extensions() is private
 
-		$this->extension_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes );
+		if ( $type === 'up_and_test' && ! empty( $this->env_info->test_packages_metadata ) ) {
+			// Download test packages if needed
+			$packages_to_download = [];
+			foreach ( $this->env_info->test_packages_metadata as $package_id => $metadata ) {
+				if ( isset( $metadata['manifest'] ) && $metadata['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
+					// Package already downloaded and has manifest
+					continue;
+				}
+				// Add package to download list
+				$packages_to_download[ $package_id ] = $metadata;
+			}
 
-		if ( $type === 'up_and_test' ) {
-			$this->custom_tests_downloader->download( $this->env_info, $this->cache_dir, $this->env_info->plugins, $this->env_info->themes, 'performance' );
+			if ( ! empty( $packages_to_download ) ) {
+				// Download all packages at once
+				$this->test_package_downloader->download( $packages_to_download, $this->cache_dir );
+			}
 		}
 
 		$this->output->writeln( '<info>Starting Docker Environment...</info>' );
@@ -305,6 +316,8 @@ class PerformanceEnvironment extends Environment {
 				$volumes = [];
 
 				foreach ( $this->volumes as $v ) {
+					// Volumes are in the format: array{local: string, in_container: string}
+					// Type is guaranteed by PHPDoc, so we can directly access the keys
 					$volumes[] = [ $v['local'], $v['in_container'] ];
 				}
 

@@ -11,13 +11,16 @@ use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
-use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
 use QIT_CLI\Commands\CustomTests\ShowReportCommand;
 use QIT_CLI\Commands\DevModeCommand;
+use QIT_CLI\Commands\AI\ContextCommand as AIContextCommand;
+use QIT_CLI\Commands\AI\InstallAgentsCommand as AIInstallAgentsCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
+use QIT_CLI\Commands\Environment\EnvSourceCommand;
 use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
+use QIT_CLI\Commands\Environment\ResetEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\GetMultipleCommand;
@@ -35,16 +38,17 @@ use QIT_CLI\Commands\RunActivationTestCommand;
 use QIT_CLI\LocalTests\Performance\Commands\RunPerformanceTestCommand;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
-use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
-use QIT_CLI\Commands\Tags\ListTestTagsCommand;
-use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\TestPackages\PackageDeleteCommand;
+use QIT_CLI\Commands\TestPackages\PackageDownloadCommand;
+use QIT_CLI\Commands\TestPackages\PackageListCommand;
+use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
+use QIT_CLI\Commands\TestPackages\PackagePublishCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
-use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\EnvironmentDanglingCleanup;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
@@ -116,7 +120,7 @@ $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
 $container->singleton( Cache::class );
 $container->singleton( TunnelRunner::class );
-$container->singleton( EnvConfigLoader::class );
+$container->bind( 'src_dir', __DIR__ );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
@@ -176,6 +180,8 @@ try {
 	$application->add( $container->make( ListEnvironmentCommand::class ) );
 	$application->add( $container->make( EnterEnvironmentCommand::class ) );
 	$application->add( $container->make( ExecEnvironmentCommand::class ) );
+	$application->add( $container->make( EnvSourceCommand::class ) );
+	$application->add( $container->make( ResetEnvironmentCommand::class ) );
 } catch ( \Exception $e ) {
 	App::make( Output::class )->writeln( $e->getMessage() );
 }
@@ -234,12 +240,17 @@ if ( $is_connected_to_backend ) {
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );
 
-	$application->add( $container->make( ListTestTagsCommand::class ) );
-	$application->add( $container->make( UploadTestTagsCommand::class ) );
-	$application->add( $container->make( DeleteTestTagsCommand::class ) );
+
+	// Test Package commands.
+	$application->add( $container->make( PackageDeleteCommand::class ) );
+	$application->add( $container->make( PackageDownloadCommand::class ) );
+	$application->add( $container->make( PackageListCommand::class ) );
+	$application->add( $container->make( PackagePublishCommand::class ) );
+	$application->add( $container->make( PackageScaffoldCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
-	$application->add( $container->make( ScaffoldE2ECommand::class ) );
+	$application->add( $container->make( AIContextCommand::class ) );
+	$application->add( $container->make( AIInstallAgentsCommand::class ) );
 
 	// Group Commands.
 	$application->add( $container->make( GroupRunCommand::class ) );

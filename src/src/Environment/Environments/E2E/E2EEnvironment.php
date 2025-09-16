@@ -21,7 +21,7 @@ class E2EEnvironment extends Environment {
 	/**
 	 * @var E2EEnvInfo
 	 */
-	protected $env_info;
+	protected \QIT_CLI\Environment\Environments\EnvInfo $env_info;
 
 	/** @var bool */
 	protected $skip_activating_plugins = false;
@@ -83,6 +83,30 @@ class E2EEnvironment extends Environment {
 			}
 		}
 
+		// Set container names for reference
+		$this->env_info->php_container = sprintf( 'qit_env_php_%s', $this->env_info->env_id );
+		$this->env_info->db_container  = sprintf( 'qit_env_db_%s', $this->env_info->env_id );
+
+		// Try to get the database port (if exposed)
+		try {
+			$db_container = $this->env_info->get_docker_container( 'db' );
+			if ( $db_container ) {
+				$docker              = $this->docker->find_docker();
+				$get_db_port_process = new Process( [ $docker, 'port', $db_container, '3306' ] );
+				$get_db_port_process->run();
+
+				if ( $get_db_port_process->isSuccessful() ) {
+					$output = $get_db_port_process->getOutput();
+					if ( preg_match( '/0\.0\.0\.0:(\d+)/', $output, $matches ) ) {
+						$this->env_info->db_port = (int) $matches[1];
+					}
+				}
+			}
+		} catch ( \Exception $e ) {
+			// Database port might not be exposed, that's okay
+			$this->env_info->db_port = 0;
+		}
+
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 
 		/**
@@ -99,20 +123,118 @@ class E2EEnvironment extends Environment {
 		// Copy mu-plugins.
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'cp /qit/mu-plugins/* /var/www/html/wp-content/mu-plugins 2>&1' ] );
 
+		// Copy mu-plugins from test packages
+		if ( ! empty( $this->env_info->test_packages_for_setup ) ) {
+			foreach ( $this->env_info->test_packages_for_setup as $info ) {
+				// Check if manifest exists and has mu_plugins
+				if ( ! empty( $info['manifest'] ) && ! empty( $info['manifest']['mu_plugins'] ) ) {
+					$container_path = $info['container_path'];
+					if ( empty( $container_path ) ) {
+						continue;
+					}
+
+					foreach ( $info['manifest']['mu_plugins'] as $mu_plugin ) {
+						// Resolve the mu-plugin path relative to the test package directory
+						$mu_plugin_path = $container_path . '/' . ltrim( $mu_plugin, './' );
+						$copy_command   = sprintf(
+							'if [ -f "%s" ]; then cp "%s" /var/www/html/wp-content/mu-plugins/ 2>&1; fi',
+							$mu_plugin_path,
+							$mu_plugin_path
+						);
+						$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', $copy_command ] );
+					}
+				}
+			}
+		}
+
 		// Setup WordPress.
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
-			'TUNNEL'            => $this->env_info->tunnel ? 'yes' : 'no',
-			'WORDPRESS_VERSION' => $this->env_info->wp,
-			'SITE_URL'          => $this->env_info->site_url,
-			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
+			'TUNNEL'                  => $this->env_info->tunnel ? 'yes' : 'no',
+			'WORDPRESS_VERSION'       => $this->env_info->wp === 'stable' ? 'latest' : $this->env_info->wp,
+			'SITE_URL'                => $this->env_info->site_url,
+			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
+			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		] );
 
-		// Activate plugins.
+		// Activate plugins BEFORE running test setup phases so WP CLI commands work
 		if ( ! $this->skip_activating_plugins ) {
 			$this->output->writeln( '<info>Activating plugins...</info>' );
 			$activation_output = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
 			App::make( PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
+		}
+
+		/*
+		--------------------------------------------------------------
+		 * Execute test package setup phases (unless skipped)
+		 * ------------------------------------------------------------
+		 */
+		if ( ! empty( $this->env_info->test_packages_for_setup ) && ! $this->env_info->skip_test_phases ) {
+			// Set up test_packages_metadata for PackagePhaseRunner to find container paths
+			// This maps package_id => metadata (needed by PackagePhaseRunner)
+			$this->env_info->test_packages_metadata = [];
+			foreach ( $this->env_info->test_packages_for_setup as $info ) {
+				if ( isset( $info['package_id'] ) ) {
+					$this->env_info->test_packages_metadata[ $info['package_id'] ] = $info;
+				}
+			}
+
+			$runner = new \QIT_CLI\Environment\PackagePhaseRunner(
+				$this->docker,
+				$this->output,
+				$this->environment_vars,
+				$this->manifest_parser
+			);
+
+			$this->output->writeln( '' );
+			$this->output->writeln( 'Running Test Package Setup' );
+			$this->output->writeln( str_repeat( '-', 26 ) );
+
+			// Create a custom orchestrator for setup packages
+			$ctrf_validator     = $this->ctrf_validator;
+			$setup_orchestrator = \QIT_CLI\App::make( \QIT_CLI\Environment\GlobalSetupOrchestrator::class );
+
+			$is_first_package = true;
+			foreach ( $this->env_info->test_packages_for_setup as $pkg_path => $info ) {
+				// Use the actual package ID from manifest for orchestrator
+				$package_id = $info['package_id'] ?? $pkg_path; // Fallback for backwards compatibility
+				$setup_orchestrator->start_package( $package_id, $info );
+
+				try {
+					$total_commands = 0;
+
+					// Run globalSetup for ALL packages
+					$commands_run    = $runner->run_phase(
+						$this->env_info,
+						'globalSetup',
+						$package_id,
+						$info['path'],
+						null,  // No artifacts_dir for setup phases
+						$setup_orchestrator
+					);
+					$total_commands += $commands_run;
+
+					// Run setup phase ONLY for the first (main) package
+					// This is for manual testing - run:e2e handles setup per package with DB restore
+					if ( $is_first_package ) {
+						$setup_commands   = $runner->run_phase(
+							$this->env_info,
+							'setup',
+							$package_id,
+							$info['path'],
+							null,  // No artifacts_dir for setup phases
+							$setup_orchestrator
+						);
+						$total_commands  += $setup_commands;
+						$is_first_package = false;
+					}
+
+					$setup_orchestrator->end_package( $package_id, true, $total_commands );
+				} catch ( \Exception $e ) {
+					$setup_orchestrator->end_package( $package_id, false, 0, $e->getMessage() );
+					// Continue with other packages even if one fails
+				}
+			}
 		}
 
 		$theme_activation = new ThemeActivation(
@@ -143,6 +265,8 @@ class E2EEnvironment extends Environment {
 				$volumes = [];
 
 				foreach ( $this->volumes as $k => $v ) {
+					// Volumes are in the format: array{local: string, in_container: string}
+					// Type is guaranteed by PHPDoc, so we can directly access the keys
 					$volumes[] = [ $v['local'], $v['in_container'] ];
 				}
 
@@ -161,7 +285,8 @@ class E2EEnvironment extends Environment {
 			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', 'wp theme list --skip-plugins --skip-themes' ] );
 		}
 
-		if ( $this->output->isVerbose() || ! getenv( 'QIT_HIDE_SITE_INFO' ) ) {
+		// Only show verbose output if explicitly requested
+		if ( $this->output->isVerbose() ) {
 			if ( ! getenv( 'QIT_CODEGEN' ) ) {
 				$io->success( 'Temporary test environment created. (' . $this->env_info->env_id . ')' );
 			}
@@ -170,20 +295,22 @@ class E2EEnvironment extends Environment {
 				sprintf( 'URL: %s', $this->env_info->site_url ),
 				sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
 				'Admin Credentials: admin/password',
-				sprintf( 'PHP Version: %s', $this->env_info->php_version ),
+				sprintf( 'PHP Version: %s', $this->env_info->php ),
 				sprintf( 'WordPress Version: %s', $this->env_info->wp ),
-				sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
-				sprintf( 'Path: %s', $this->env_info->temporary_env ),
 			];
 
-			$io->listing( $listing );
-
-			if ( ! $this->output->isVerbose() ) {
-				$io->writeln( sprintf( 'To see additional info, run with the "--verbose" flag.' ) );
+			if ( ! empty( $this->env_info->woo ) ) {
+				$listing[] = sprintf( 'WooCommerce: %s', $this->env_info->woo );
 			}
-		} else {
+
+			$listing[] = sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' );
+			$listing[] = sprintf( 'Path: %s', $this->env_info->temporary_env );
+
+			$io->listing( $listing );
+		} elseif ( getenv( 'QIT_HIDE_SITE_INFO' ) ) {
 			$this->output->writeln( '<info>Environment ready.</info>' );
 		}
+		// Otherwise, show nothing here - the compact summary will be shown by UpEnvironmentCommand
 
 		// Try to connect to the website if we are exposing this environment to host.
 		if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) !== 'DOCKER' ) {
@@ -198,9 +325,10 @@ class E2EEnvironment extends Environment {
 	 */
 	protected function get_generate_docker_compose_envs(): array {
 		return [
-			'PHP_VERSION'      => $this->env_info->php_version,
-			'QIT_DOCKER_REDIS' => $this->env_info->object_cache ? 'yes' : 'no',
-			'DOMAIN'           => $this->env_info->domain,
+			'PHP_VERSION'             => $this->env_info->php,
+			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
+			'DOMAIN'                  => $this->env_info->domain,
+			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		];
 	}
 
@@ -242,7 +370,7 @@ class E2EEnvironment extends Environment {
 		];
 
 		/*
-		 * Create "wp-content/plugins" and "wp-content/themes" directories mount binds have correct parent directory permissions.
+		 * Create "wp-content/plugins", "wp-content/themes", and "wp-content/mu-plugins" directories with correct permissions.
 		 * We make them owned by 82:82, which is the UID of "www-data" in our alpine PHP images.
 		 * Once the container starts and the entrypoint is triggered, FixUID will map these to the runtime UID.
 		 */

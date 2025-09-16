@@ -2,31 +2,32 @@
 
 namespace QIT_CLI\Commands\Group;
 
+use QIT_CLI\QITInput;
 use QIT_CLI\TestGroup;
+use QIT_CLI\Commands\QITCommand;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GroupRunCommand extends Command {
+class GroupRunCommand extends QITCommand {
 	protected static $defaultName = 'group:run'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var TestGroup */
-	protected $test_group;
+	protected TestGroup $test_group;
 
 	public function __construct( TestGroup $test_group ) {
 		$this->test_group = $test_group;
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Run a group of tests.' )
 			->addOption( 'group-identifier', 'i', InputOption::VALUE_OPTIONAL, 'The group identifier.' )
 			->addOption( 'skip-grouping', 's', InputOption::VALUE_NEGATABLE, 'Skip triggering tests as a logical group and instead treats them as a batch.', false );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ) {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$group_identifier = $input->getOption( 'group-identifier' );
 		$skip_grouping    = $input->getOption( 'skip-grouping' );
 		$group            = $this->test_group->get();
