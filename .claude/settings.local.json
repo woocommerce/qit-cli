@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git reset:*)",
+      "Bash(git rev-parse:*)",
+      "Bash(git fetch:*)",
+      "Bash(awk:*)",
+      "Bash(grep:*)",
+      "Bash(git ls-tree:*)",
+      "Bash(find:*)",
+      "Bash(cat:*)",
+      "Bash(/tmp/categorize_production_files.sh:*)",
+      "Bash(git checkout:*)",
+      "Bash(git cherry-pick:*)",
+      "Bash(git push:*)",
+      "Bash(git add:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

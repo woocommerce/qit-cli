@@ -35,7 +35,7 @@ flowchart TD
     F --> U[Configuration Merging]
     F --> V[CLI Override Handling]
 
-    I --> W[Source Resolution wporg/wccom/local/url]
+    I --> W[Source Resolution wporg wccom local url]
     I --> X[Cache-First Resolution]
     I --> Y[Metadata Fetching]
 
@@ -65,14 +65,14 @@ flowchart TD
     I --> J
 
     J --> K[Look for Override Files]
-    K --> L[Load qit.override.json/yml]
+    K --> L[Load qit.override.json or yml]
     L --> M[Type Validation & Merging]
 
     M --> N{Validation Errors?}
     N -->|Yes| O[Report Configuration Errors]
     N -->|No| P[Normalize Keys]
 
-    P --> Q[Handle Plural/Singular Forms]
+    P --> Q[Handle Plural and Singular Forms]
     Q --> R[Final Merged Configuration]
 
     style B fill:#ffeb3b

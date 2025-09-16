@@ -235,7 +235,7 @@ flowchart TD
     P --> Q[Package Ready for Use]
     J --> Q
 
-    R[Rolling Version nightly/latest] --> B
+    R[Rolling Version nightly or latest] --> B
     S[Immutable Version 1.0.0] --> B
 
     style E fill:#ffeb3b

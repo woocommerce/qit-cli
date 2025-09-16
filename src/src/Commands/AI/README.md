@@ -19,9 +19,9 @@ flowchart TD
     D --> I[test-script-execution]
 
     C --> J[Claude Code Integration]
-    J --> K[~/.claude/agents/]
-    J --> L[~/.claude/commands/]
-    J --> M[/qit slash command]
+    J --> K[claude agents directory]
+    J --> L[claude commands directory]
+    J --> M[qit slash command]
 
     E --> N[Failure Analysis]
     N --> O[Logs & Debugging Steps]
@@ -30,7 +30,7 @@ flowchart TD
     P --> Q[Orchestration Model]
 
     G --> R[Test Package Lifecycle]
-    R --> S[Global Setup/Teardown]
+    R --> S[Global Setup and Teardown]
 ```
 
 ## Core Components
