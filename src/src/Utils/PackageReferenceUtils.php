@@ -40,10 +40,39 @@ class PackageReferenceUtils {
 	/**
 	 * Check if a reference is a local path.
 	 *
+	 * Distinguishes local paths from remote package references based on patterns:
+	 * - Local: absolute paths (/path), relative paths (./path, ../path),
+	 *   simple directories, or paths with 3+ slashes
+	 * - Remote: namespace/package (1 slash) or namespace/package/subpackage (2 slashes)
+	 *
 	 * @param string $reference The package reference.
 	 * @return bool True if it's a local path, false otherwise.
 	 */
 	public static function is_local_reference( string $reference ): bool {
+		// Absolute paths
+		if ( strpos( $reference, '/' ) === 0 ) {
+			return true;
+		}
+
+		// Relative paths with ./ or ../
+		if ( strpos( $reference, './' ) === 0 || strpos( $reference, '../' ) === 0 ) {
+			return true;
+		}
+
+		$slash_count = substr_count( $reference, '/' );
+
+		// Simple directory name (no slashes)
+		if ( $slash_count === 0 ) {
+			return true;
+		}
+
+		// 3 or more slashes - definitely a local path
+		if ( $slash_count >= 3 ) {
+			return true;
+		}
+
+		// 1 or 2 slashes - could be remote package/subpackage or existing local directory
+		// Check if it's an existing directory as a fallback
 		return is_dir( $reference );
 	}
 
