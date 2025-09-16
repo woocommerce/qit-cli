@@ -53,7 +53,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 
 	$env = [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
-		'QIT_DISABLE_CLEANUP' => '1', // We need to disable it because of parallelization with individualized QIT_HOMEs.
+		'QIT_DISABLE_CLEANUP' => ( getenv( 'TEST_TOKEN' ) && strpos( getenv( 'TEST_TOKEN' ), 'serial-' ) !== 0 ) ? '1' : '0', // Only disable cleanup in parallel mode (ParaTest)
 		'QIT_SELF_TESTS'      => '1',
 		'QIT_NO_PULL'         => '1',
 		'CI'                  => '1',

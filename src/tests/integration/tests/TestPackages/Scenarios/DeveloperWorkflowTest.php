@@ -41,8 +41,7 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 		
 		try {
 			// Run env:up without specifying --test-package (should auto-detect)
-			$output = qit( [ 'env:up', '--json' ] );
-			$data = json_decode( $output, true );
+			$data = $this->runEnvUp( [] );
 			
 			$this->assertIsArray( $data );
 			$this->assertArrayHasKey( 'env_id', $data );
@@ -165,8 +164,8 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 		] );
 		$this->assertEquals( 'modified_by_test', trim( $modifiedMarker ) );
 		
-		// Run env:reset
-		qit( [ 'env:reset' ] );
+		// Run env:reset with explicit env_id for deterministic behavior
+		qit( [ 'env:reset', $envId ] );
 		
 		// Check that database was restored to post-setup state
 		$restoredMarker = qit( [ 
@@ -188,8 +187,7 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 		
 		try {
 			// Step 2: Run env:up (auto-detects test package)
-			$envOutput = qit( [ 'env:up', '--json' ] );
-			$envData = json_decode( $envOutput, true );
+			$envData = $this->runEnvUp( [] );
 			$envId = $envData['env_id'];
 			
 			// Step 3: Get environment variables
@@ -209,7 +207,7 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 			$this->assertNotEmpty( trim( $wpVersion ) );
 			
 			// Step 6: Reset environment for another test run
-			qit( [ 'env:reset' ] );
+			qit( [ 'env:reset', $envId ] );
 			
 			// Environment should still be up and ready for more testing
 			$wpVersionAfterReset = qit( [ 

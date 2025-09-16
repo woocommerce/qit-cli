@@ -33,21 +33,12 @@ abstract class BaseScenarioTestCase extends TestCase {
 		foreach ( $this->created_env_ids as $env_id ) {
 			$this->cleanupEnvironment( $env_id );
 		}
-		
+
 		// Clean up temp directory
 		if ( isset( $this->test_temp_dir ) && is_dir( $this->test_temp_dir ) ) {
 			$this->recursiveRemoveDirectory( $this->test_temp_dir );
 		}
-		
-		// Clean up any orphaned Docker resources periodically
-		static $test_count = 0;
-		$test_count++;
-		
-		// Every 10 tests, do a more thorough cleanup
-		if ( $test_count % 10 === 0 ) {
-			$this->cleanupOrphanedDockerResources();
-		}
-		
+
 		parent::tearDown();
 	}
 	
@@ -67,44 +58,13 @@ abstract class BaseScenarioTestCase extends TestCase {
 	 */
 	private function cleanupEnvironment( string $env_id ): void {
 		try {
-			// Try to stop the environment gracefully
-			$proc = qit( [ 'env:down', $env_id ], return_process: true );
-			
-			// Force cleanup of Docker resources if graceful shutdown failed
-			if ( $proc->getExitCode() !== 0 ) {
-				$this->forceCleanupDockerResources( $env_id );
-			}
+			// Stop the environment - no fallbacks
+			qit( [ 'env:down', $env_id ] );
 		} catch ( \Exception $e ) {
-			// Force cleanup on any error
-			$this->forceCleanupDockerResources( $env_id );
+			// If env:down fails, that's a problem to fix in the main code, not here
+			// Just log it and move on
+			fprintf( STDERR, "Warning: Failed to clean up environment %s: %s\n", $env_id, $e->getMessage() );
 		}
-	}
-	
-	/**
-	 * Force cleanup of Docker resources for an environment.
-	 *
-	 * @param string $env_id Environment ID
-	 */
-	private function forceCleanupDockerResources( string $env_id ): void {
-		// Remove containers
-		exec( "docker ps -a --filter 'name={$env_id}' -q | xargs -r docker rm -f 2>/dev/null" );
-		
-		// Remove networks  
-		exec( "docker network ls --filter 'name={$env_id}' -q | xargs -r docker network rm 2>/dev/null" );
-		
-		// Remove volumes
-		exec( "docker volume ls --filter 'name={$env_id}' -q | xargs -r docker volume rm 2>/dev/null" );
-	}
-	
-	/**
-	 * Clean up orphaned Docker resources from failed tests.
-	 */
-	private function cleanupOrphanedDockerResources(): void {
-		// Clean up containers older than 1 hour
-		exec( "docker ps -a --filter 'name=qitenv' --filter 'name=e2e-qitenv' --format '{{.ID}} {{.CreatedAt}}' | while read id created; do age=$(( $(date +%s) - $(date -d \"$created\" +%s) )); if [ $age -gt 3600 ]; then docker rm -f $id 2>/dev/null; fi; done" );
-		
-		// Clean up networks with no containers
-		exec( "docker network ls --filter 'name=qitenv' --filter 'name=e2e-qitenv' -q | while read net; do if [ -z \"$(docker ps -q --filter network=$net)\" ]; then docker network rm $net 2>/dev/null; fi; done" );
 	}
 	
 	/**

@@ -2,36 +2,30 @@
 
 namespace integration\tests\TestPackages\Scenarios;
 
-use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\TestCleanupHelper;
 use function qit;
 
+require_once __DIR__ . '/BaseScenarioTestCase.php';
+
 /**
  * Test Scenario 4: Automated CI/CD Pipeline
- * 
+ *
  * Tests the automated CI workflow:
  * - run:e2e calls env:up with --skip-test-phases flag
  * - env:up sets up environment and processes requirements
  * - Test packages are prepared but phases are deferred to run:e2e
  * - run:e2e orchestrates the full lifecycle
  */
-class AutomatedCIPipelineTest extends TestCase {
+class AutomatedCIPipelineTest extends BaseScenarioTestCase {
 	
 	private string $mainPackageDir;
 	private string $secondaryPackageDir;
-	
+
 	protected function setUp(): void {
 		parent::setUp();
 		TestCleanupHelper::cleanup_all_test_packages();
 		$this->mainPackageDir = __DIR__ . '/fixtures/scenario-main-package';
 		$this->secondaryPackageDir = __DIR__ . '/fixtures/scenario-secondary-package';
-	}
-	
-	protected function tearDown(): void {
-		parent::tearDown();
-		// Clean up any running environments
-		// env:down without arguments will interactively select if multiple exist
-		// This is handled by the test framework cleanup
 	}
 	
 	/**
@@ -95,8 +89,8 @@ class AutomatedCIPipelineTest extends TestCase {
 	 */
 	public function test_database_restoration_between_packages() {
 		// Create test packages that modify the database
-		$package1Dir = sys_get_temp_dir() . '/qit-test-db1-' . uniqid();
-		$package2Dir = sys_get_temp_dir() . '/qit-test-db2-' . uniqid();
+		$package1Dir = $this->test_temp_dir . '/qit-test-db1';
+		$package2Dir = $this->test_temp_dir . '/qit-test-db2';
 		mkdir( $package1Dir, 0777, true );
 		mkdir( $package2Dir, 0777, true );
 		mkdir( $package1Dir . '/results', 0777, true );
@@ -216,7 +210,7 @@ fi' );
 	 */
 	public function test_ci_pipeline_with_requirements() {
 		// Create package with specific requirements
-		$ciPackageDir = sys_get_temp_dir() . '/qit-test-ci-req-' . uniqid();
+		$ciPackageDir = $this->test_temp_dir . '/qit-test-ci-req';
 		mkdir( $ciPackageDir, 0777, true );
 		mkdir( $ciPackageDir . '/results', 0777, true );
 		

@@ -113,9 +113,6 @@ class ParentSubpackageCombinationTest extends TestCase {
 					'tags'        => ['child1'],
 					'test'        => [
 						'phases' => [
-							'setup' => [
-								'echo "CHILD1_SETUP" >> ' . $trackingFile,
-							],
 							'run'   => [
 								'echo "CHILD1_RUN" >> ' . $trackingFile . ' && mkdir -p ./results && echo ' . escapeshellarg(json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf())) . ' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > ./blob-report/report.zip',
 							],
@@ -127,9 +124,6 @@ class ParentSubpackageCombinationTest extends TestCase {
 					'tags'        => ['child2'],
 					'test'        => [
 						'phases' => [
-							'globalSetup' => [
-								'echo "CHILD2_GLOBAL_SETUP" >> ' . $trackingFile,
-							],
 							'run'         => [
 								'echo "CHILD2_RUN" >> ' . $trackingFile . ' && mkdir -p ./results && echo ' . escapeshellarg(json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf())) . ' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > ./blob-report/report.zip',
 							],
@@ -335,36 +329,14 @@ class ParentSubpackageCombinationTest extends TestCase {
 			'echo "PARENT_RUN" >> ' . $trackingFile . ' && mkdir -p ./results && echo ' . escapeshellarg(json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf())) . ' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > ./blob-report/report.zip'
 		];
 		
-		// Modify subpackages to write to tracking - we know they exist in the fixture
+		// Modify subpackages to write to tracking - only modify run phase since that's all that's allowed
 		foreach ( $manifest['subpackages'] as $subPkgName => &$subPkg ) {
 			$prefix = strtoupper( str_replace( ['woocommerce/qit-integration-test-', '-'], ['', '_'], $subPkgName ) );
-			
-			// The fixture has different phases for different subpackages, handle accordingly
-			if ( $subPkgName === 'woocommerce/qit-integration-test-checkout' || 
-			     $subPkgName === 'woocommerce/qit-integration-test-account' ) {
-				// These have setup phases in the fixture
-				$subPkg['test']['phases']['setup'] = [
-					'echo "' . $prefix . '_SETUP" >> ' . $trackingFile
-				];
-			}
-			
-			if ( $subPkgName === 'woocommerce/qit-integration-test-account' ) {
-				// Account also has teardown in the fixture
-				$subPkg['test']['phases']['teardown'] = [
-					'echo "' . $prefix . '_TEARDOWN" >> ' . $trackingFile
-				];
-			}
-			
-			// All subpackages have run phase - last one copies tracking file to results
-			if ( $subPkgName === 'woocommerce/qit-integration-test-account' ) {
-				$subPkg['test']['phases']['run'] = [
-					'echo "' . $prefix . '_RUN" >> ' . $trackingFile . ' && mkdir -p ./results && echo ' . escapeshellarg(json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf())) . ' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > ./blob-report/report.zip'
-				];
-			} else {
-				$subPkg['test']['phases']['run'] = [
-					'echo "' . $prefix . '_RUN" >> ' . $trackingFile . ' && mkdir -p ./results && echo ' . escapeshellarg(json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf())) . ' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > ./blob-report/report.zip'
-				];
-			}
+
+			// All subpackages can only override the run phase
+			$subPkg['test']['phases']['run'] = [
+				'echo "' . $prefix . '_RUN" >> ' . $trackingFile . ' && mkdir -p ./results && echo ' . escapeshellarg(json_encode(\QIT\IntegrationTests\Helpers\CTRFHelper::generate_valid_ctrf())) . ' > ./results/ctrf.json && mkdir -p ./blob-report && echo "test" > ./blob-report/report.zip'
+			];
 		}
 		
 		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );

@@ -33,24 +33,44 @@ class PackageReferenceUtilsTest extends TestCase {
 		$this->assertTrue( PackageReferenceUtils::is_local_reference( __DIR__ ) );  // Current test directory
 		$this->assertTrue( PackageReferenceUtils::is_local_reference( '.' ) );
 
-		// Remote references (not existing directories)
+		// Non-existent local paths should still be detected as local
+		$this->assertTrue( PackageReferenceUtils::is_local_reference( '/this/path/does/not/exist/test-package' ) );
+		$this->assertTrue( PackageReferenceUtils::is_local_reference( './relative/path' ) );
+		$this->assertTrue( PackageReferenceUtils::is_local_reference( '../parent/path' ) );
+		$this->assertTrue( PackageReferenceUtils::is_local_reference( 'simple-directory' ) );
+		$this->assertTrue( PackageReferenceUtils::is_local_reference( 'deep/path/to/test/package' ) );  // 3+ slashes
+
+		// Remote references (namespace/package pattern with exactly 1 slash)
 		$this->assertFalse( PackageReferenceUtils::is_local_reference( 'woocommerce/e2e:latest' ) );
 		$this->assertFalse( PackageReferenceUtils::is_local_reference( 'woocommerce/e2e' ) );
-		$this->assertFalse( PackageReferenceUtils::is_local_reference( 'non-existent/path' ) );
+		$this->assertFalse( PackageReferenceUtils::is_local_reference( 'automatewoo/test' ) );
+
+		// Remote subpackages (namespace/package/subpackage with exactly 2 slashes)
+		$this->assertFalse( PackageReferenceUtils::is_local_reference( 'woocommerce/e2e/checkout' ) );
+		$this->assertFalse( PackageReferenceUtils::is_local_reference( 'woocommerce/e2e/checkout:1.0.0' ) );
 	}
 
 	/**
 	 * Test checking if reference is remote.
 	 */
 	public function test_is_remote_reference(): void {
-		// Remote references (not existing directories)
+		// Remote references (namespace/package pattern with exactly 1 slash)
 		$this->assertTrue( PackageReferenceUtils::is_remote_reference( 'woocommerce/e2e:latest' ) );
 		$this->assertTrue( PackageReferenceUtils::is_remote_reference( 'woocommerce/e2e' ) );
-		$this->assertTrue( PackageReferenceUtils::is_remote_reference( 'non-existent/path' ) );
+		$this->assertTrue( PackageReferenceUtils::is_remote_reference( 'automatewoo/test' ) );
 
-		// Local directories that exist
+		// Remote subpackages (namespace/package/subpackage with exactly 2 slashes)
+		$this->assertTrue( PackageReferenceUtils::is_remote_reference( 'woocommerce/e2e/checkout' ) );
+		$this->assertTrue( PackageReferenceUtils::is_remote_reference( 'woocommerce/e2e/checkout:1.0.0' ) );
+
+		// Local paths (existing or not)
 		$this->assertFalse( PackageReferenceUtils::is_remote_reference( __DIR__ ) );  // Current test directory
 		$this->assertFalse( PackageReferenceUtils::is_remote_reference( '.' ) );
+		$this->assertFalse( PackageReferenceUtils::is_remote_reference( '/this/path/does/not/exist/test-package' ) );
+		$this->assertFalse( PackageReferenceUtils::is_remote_reference( './relative/path' ) );
+		$this->assertFalse( PackageReferenceUtils::is_remote_reference( '../parent/path' ) );
+		$this->assertFalse( PackageReferenceUtils::is_remote_reference( 'simple-directory' ) );
+		$this->assertFalse( PackageReferenceUtils::is_remote_reference( 'deep/path/to/package' ) );  // 3+ slashes
 	}
 
 	/**
@@ -98,9 +118,16 @@ class PackageReferenceUtilsTest extends TestCase {
 		PackageReferenceUtils::validate_reference( 'woocommerce/e2e:1.0.0' );
 		PackageReferenceUtils::validate_reference( 'woocommerce/e2e/checkout:1.0.0' );
 
-		// Valid local paths
+		// Valid local paths (existing)
 		PackageReferenceUtils::validate_reference( __DIR__ );
 		PackageReferenceUtils::validate_reference( '.' );
+
+		// Valid local paths (non-existent) - should NOT throw
+		PackageReferenceUtils::validate_reference( '/this/path/does/not/exist/test-package' );
+		PackageReferenceUtils::validate_reference( './relative/path' );
+		PackageReferenceUtils::validate_reference( '../parent/path' );
+		PackageReferenceUtils::validate_reference( 'simple-directory' );
+		PackageReferenceUtils::validate_reference( 'deep/path/to/package' );  // 3+ slashes
 
 		// This should not throw - we've validated successfully
 		$this->assertTrue( true );
