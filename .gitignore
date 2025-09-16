@@ -44,3 +44,8 @@ src/tests/unit/data/sync.json
 src/tests/integration/cache/
 
 src/tests/unit/data/sync.json
+src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-main-package/results/ctrf.json
+
+src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-secondary-package/results/ctrf.json
+
+src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-test-package/results/ctrf.json

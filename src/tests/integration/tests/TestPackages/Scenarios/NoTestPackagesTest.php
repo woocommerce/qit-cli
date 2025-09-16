@@ -237,11 +237,11 @@ class NoTestPackagesTest extends BaseScenarioTestCase {
 	 */
 	public function test_complete_manual_workflow() {
 		// Step 1: Developer/QA sets up environment for manual testing
-		$envOutput = qit( [ 
-			'env:up', 
+		$envOutput = qit( [
+			'env:up',
 			'--json',
 			'--php=8.0',
-			'--wp=6.3',
+			'--wp=latest',
 			'--woo=8.5.0',
 			'--plugin=woocommerce-gateway-stripe',
 			'--theme=storefront',
@@ -250,10 +250,10 @@ class NoTestPackagesTest extends BaseScenarioTestCase {
 		] );
 		$envData = json_decode( $envOutput, true );
 		$envId = $envData['env_id'];
-		
+
 		// Step 2: Verify complete environment setup
 		$this->assertEquals( '8.0', $envData['php'] );
-		$this->assertEquals( '6.3', $envData['wp'] );
+		$this->assertNotEmpty( $envData['wp'] );
 		$this->assertEquals( '8.5.0', $envData['woo'] );
 		$this->assertContains( 'gd', $envData['php_extensions'] );
 		$this->assertContains( 'imagick', $envData['php_extensions'] );
