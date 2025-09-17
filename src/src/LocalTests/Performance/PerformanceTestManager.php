@@ -33,6 +33,9 @@ class PerformanceTestManager {
 	/** @var array<string,mixed> */
 	private $env_up_options;
 
+	/** @var array<string,mixed>|null */
+	private $notification_params;
+
 	public function __construct( K6Runner $k6_runner, LocalTestRunNotifier $notifier, EnvironmentRunner $environment_runner ) {
 		$this->k6_runner          = $k6_runner;
 		$this->notifier           = $notifier;
@@ -63,19 +66,45 @@ class PerformanceTestManager {
 		$this->env_up_options = $env_up_options;
 	}
 
+	/**
+	 * Set notification parameters for test start notification.
+	 *
+	 * @param array<string,mixed> $notification_params Parameters for test start notification.
+	 */
+	public function set_notification_params( array $notification_params ): void {
+		$this->notification_params = $notification_params;
+	}
+
+	/**
+	 * Set the test run notifier instance.
+	 *
+	 * @param LocalTestRunNotifier $notifier The notifier instance.
+	 */
+	public function set_test_run_notifier( LocalTestRunNotifier $notifier ): void {
+		$this->notifier = $notifier;
+	}
+
 	public function run_tests( PerformanceEnvInfo $env_info ): int {
 		$baseline_result = null;
 		$main_exit_code  = 0;
 
 		// Run baseline tests in separate environment if enabled.
 		if ( $env_info->run_baseline ) {
+			$this->output->writeln( '<comment>Starting baseline tests...</comment>' );
 			$baseline_result = $this->run_baseline_tests_isolated( $env_info );
 			if ( $baseline_result === null ) {
 				$this->output->writeln( '<error>Baseline tests failed, continuing with extension tests.</error>' );
+			} elseif ( $baseline_result->status === 'cancelled' ) {
+				// If baseline is cancelled, cancel the entire test run.
+				$this->output->writeln( '<error>Baseline tests were cancelled, cancelling entire test run.</error>' );
+				return 143;
+			} else {
+				$this->output->writeln( '<comment>Baseline tests completed successfully.</comment>' );
 			}
 		}
 
 		// Run extension tests in completely separate environment.
+		$this->output->writeln( '<comment>Proceeding to extension tests...</comment>' );
 		$main_result    = $this->run_extension_tests_isolated( $env_info );
 		$main_exit_code = $main_result['exit_code'];
 
@@ -122,7 +151,18 @@ class PerformanceTestManager {
 			$this->output->writeln( '<comment>Running baseline tests...</comment>' );
 			$results = $this->run_test_iterations( $baseline_env_info, 'baseline', true );
 
-			return $results ? $this->metric_averager->average_test_results( $results, $baseline_env_info ) : null;
+			if ( ! $results ) {
+				return null;
+			}
+
+			foreach ( $results as $result ) {
+				if ( $result->status === 'cancelled' ) {
+					$this->output->writeln( '<comment>Baseline tests were cancelled, returning cancelled result</comment>' );
+					return $result;
+				}
+			}
+
+			return $this->metric_averager->average_test_results( $results, $baseline_env_info );
 
 		} catch ( \Exception $e ) {
 			$this->output->writeln( sprintf( '<error>Failed to run baseline tests: %s</error>', $e->getMessage() ) );
@@ -156,13 +196,25 @@ class PerformanceTestManager {
 			$extension_env_info = $this->create_environment( $this->env_up_options );
 			$this->copy_test_config( $extension_env_info, $test_config );
 
+			// Notify test started now that environment is ready.
+			$this->notify_test_started_if_configured( $extension_env_info );
+
 			$this->output->writeln( '<comment>Running extension tests...</comment>' );
 			$results = $this->run_test_iterations( $extension_env_info, 'extension', false );
 
 			if ( ! $results ) {
+				$failed_result = new PerformanceTestResult( $extension_env_info );
+				$failed_result->set_status( 'failed' );
 				return [
-					'test_result' => new PerformanceTestResult( $extension_env_info ),
+					'test_result' => $failed_result,
 					'exit_code'   => 1,
+				];
+			}
+
+			if ( count( $results ) === 1 && $results[0]->status === 'cancelled' ) {
+				return [
+					'test_result' => $results[0],
+					'exit_code'   => 143,
 				];
 			}
 
@@ -175,8 +227,10 @@ class PerformanceTestManager {
 			$this->output->writeln( sprintf( '<error>Failed to run extension tests: %s</error>', $e->getMessage() ) );
 			$fallback_env         = clone $test_config;
 			$fallback_env->env_id = 'failed_extension_' . uniqid();
+			$failed_result = new PerformanceTestResult( $fallback_env );
+			$failed_result->set_status( 'failed' );
 			return [
-				'test_result' => new PerformanceTestResult( $fallback_env ),
+				'test_result' => $failed_result,
 				'exit_code'   => 1,
 			];
 		} finally {
@@ -221,7 +275,7 @@ class PerformanceTestManager {
 	 * @param PerformanceEnvInfo $env_info The environment to test against.
 	 * @param string             $test_type Test type for logging ('baseline' or 'extension').
 	 * @param bool               $is_baseline Whether this is a baseline test.
-	 * @return PerformanceTestResult[]|null Array of test results or null if cancelled.
+	 * @return PerformanceTestResult[]|null Array of test results or null if failed to create results.
 	 */
 	private function run_test_iterations( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline ): ?array {
 		$results = [];
@@ -233,7 +287,11 @@ class PerformanceTestManager {
 
 			$result = $this->run_single_iteration( $env_info, $test_type, $is_baseline, $i );
 			if ( ! $result ) {
-				return null; // Cancelled or failed.
+				return null; // Failed to create result - this is a real failure
+			}
+
+			if ( $result->status === 'cancelled' ) {
+				return [ $result ];
 			}
 
 			$results[] = $result;
@@ -252,7 +310,7 @@ class PerformanceTestManager {
 	 * @param string             $test_type Test type for logging.
 	 * @param bool               $is_baseline Whether this is a baseline test.
 	 * @param int                $iteration_number Current iteration number.
-	 * @return PerformanceTestResult|null Test result or null if cancelled.
+	 * @return PerformanceTestResult|null Test result or null if failed to create result.
 	 */
 	private function run_single_iteration( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline, int $iteration_number ): ?PerformanceTestResult {
 		// Create nested iteration directory.
@@ -273,7 +331,7 @@ class PerformanceTestManager {
 		if ( $exit_code === 143 ) {
 			$test_result->set_status( 'cancelled' );
 			$this->output->writeln( sprintf( '<error>%s iteration %d was cancelled</error>', ucfirst( $test_type ), $iteration_number ) );
-			return null;
+			return $test_result;
 		}
 
 		$test_result->set_status( 'completed' );
@@ -422,5 +480,24 @@ class PerformanceTestManager {
 		}
 
 		$this->output->writeln( '' );
+	}
+
+	/**
+	 * Notify test started if notification parameters are configured.
+	 *
+	 * @param PerformanceEnvInfo $env_info The environment info after setup.
+	 */
+	private function notify_test_started_if_configured( PerformanceEnvInfo $env_info ): void {
+		if ( $this->notification_params === null ) {
+			return;
+		}
+
+		$this->notifier->notify_test_started(
+			$this->notification_params['woo_id'],
+			$this->notification_params['woo_version'],
+			$env_info,
+			$this->notification_params['is_development'],
+			$this->notification_params['notify']
+		);
 	}
 }

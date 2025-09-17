@@ -282,17 +282,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		// Create test configuration.
 		$env_info = $this->create_test_configuration( $input, $context );
 
-		// Notify test started.
-		if ( ! empty( $context['woo_id'] ) ) {
-			$this->test_run_notifier->notify_test_started(
-				$context['woo_id'],
-				$input->getOption( 'woo' ) ?? 'latest',
-				$env_info,
-				$input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
-				$input->getOption( 'notify' )
-			);
-		}
-
 		// Handle self-test mode.
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->write( json_encode( $env_info ) );
@@ -304,8 +293,19 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			return Command::SUCCESS;
 		}
 
+		// Prepare notification parameters for the test manager.
+		$notification_params = null;
+		if ( ! empty( $context['woo_id'] ) ) {
+			$notification_params = [
+				'woo_id'          => $context['woo_id'],
+				'woo_version'     => $input->getOption( 'woo' ) ?? 'latest',
+				'is_development'  => $input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
+				'notify'          => $input->getOption( 'notify' ),
+			];
+		}
+
 		// Execute the actual performance tests.
-		return $this->execute_performance_tests( $input, $env_info, $env_up_options, $output );
+		return $this->execute_performance_tests( $input, $env_info, $env_up_options, $output, $notification_params );
 	}
 
 	/**
@@ -404,13 +404,14 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	/**
 	 * Execute the actual performance tests using the test manager.
 	 *
-	 * @param InputInterface      $input
-	 * @param PerformanceEnvInfo  $env_info Test configuration.
-	 * @param array<string,mixed> $env_up_options Environment options.
-	 * @param OutputInterface     $output
+	 * @param InputInterface           $input
+	 * @param PerformanceEnvInfo       $env_info Test configuration.
+	 * @param array<string,mixed>      $env_up_options Environment options.
+	 * @param OutputInterface          $output
+	 * @param array<string,mixed>|null $notification_params Notification parameters or null to skip notification.
 	 * @return int Command exit code.
 	 */
-	protected function execute_performance_tests( InputInterface $input, PerformanceEnvInfo $env_info, array $env_up_options, OutputInterface $output ): int {
+	protected function execute_performance_tests( InputInterface $input, PerformanceEnvInfo $env_info, array $env_up_options, OutputInterface $output, ?array $notification_params = null ): int {
 		// Get iterations from input.
 		$iterations = (int) ( $input->getOption( 'iterations' ) ?? 3 );
 
@@ -424,6 +425,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$this->performance_test_manager->set_output( $output );
 		$this->performance_test_manager->set_test_iterations( $iterations );
 		$this->performance_test_manager->set_env_up_options( $env_up_options );
+
+		if ( $notification_params !== null ) {
+			$this->performance_test_manager->set_notification_params( $notification_params );
+			$this->performance_test_manager->set_test_run_notifier( $this->test_run_notifier );
+		}
+
 		$exit_status_code = $this->performance_test_manager->run_tests( $env_info );
 
 		if ( $exit_status_code === Command::SUCCESS ) {
