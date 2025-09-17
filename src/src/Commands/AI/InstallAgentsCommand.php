@@ -12,7 +12,7 @@ class InstallAgentsCommand extends QITCommand {
 	/** @var Config */
 	private Config $config;
 
-	protected static $defaultName = 'ai:install_agents'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
+	protected static $defaultName = 'ai:install-agents'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	public function __construct( Config $config ) {
 		$this->config = $config;
@@ -39,7 +39,7 @@ After installation, Claude Code will have:
 - Better context for test creation and debugging
 
 Example usage:
-  <info>qit ai:install_agents</info>
+  <info>qit ai:install-agents</info>
 
 To use in Claude Code:
   <info>/qit help</info>
@@ -55,6 +55,14 @@ HELP
 		$home = getenv( 'HOME' );
 		if ( empty( $home ) ) {
 			$output->writeln( '<error>Could not determine home directory. HOME environment variable not set.</error>' );
+			return Command::FAILURE;
+		}
+
+		// Check if Claude Code is installed
+		$claude_dir = $home . '/.claude';
+		if ( ! is_dir( $claude_dir ) ) {
+			$output->writeln( '<error>Claude Code is not installed. The ~/.claude directory does not exist.</error>' );
+			$output->writeln( '<error>Please install Claude Code first: https://claude.ai/download</error>' );
 			return Command::FAILURE;
 		}
 
@@ -75,8 +83,25 @@ HELP
 		}
 
 		// Get all agents and slash command
-		$agents        = $this->getAgents();
-		$slash_command = $this->getSlashCommand();
+		$agents        = $this->get_agents();
+		$slash_command = $this->get_slash_command();
+
+		// Calculate current version
+		$current_version   = $this->calculate_version( $agents, $slash_command );
+		$installed_version = $this->get_installed_version( $agents_dir );
+
+		// Check if update is needed
+		$is_update = false;
+		if ( $installed_version !== null ) {
+			if ( $installed_version === $current_version ) {
+				$output->writeln( '<info>✓ QIT AI agents are already up to date (version ' . $current_version . ')</info>' );
+				return Command::SUCCESS;
+			}
+			$is_update = true;
+			$output->writeln( '<comment>Updating QIT agents from version ' . $installed_version . ' to ' . $current_version . '</comment>' );
+		} else {
+			$output->writeln( '<comment>Installing QIT agents version ' . $current_version . '</comment>' );
+		}
 
 		// Install agents
 		$output->writeln( '<comment>Installing QIT agents...</comment>' );
@@ -110,12 +135,21 @@ HELP
 			++$failed_count;
 		}
 
+		// Save version information
+		if ( $failed_count === 0 ) {
+			if ( ! $this->save_version( $agents_dir, $current_version ) ) {
+				$output->writeln( '<warning>Warning: Could not save version information</warning>' );
+			}
+		}
+
 		// Final summary
 		$output->writeln( '' );
 		if ( $failed_count === 0 ) {
 			$output->writeln( sprintf(
-				'<info>✓ Successfully installed %d QIT AI components to ~/.claude/</info>',
-				$copied_count
+				'<info>✓ Successfully %s %d QIT AI components to ~/.claude/ (version %s)</info>',
+				$is_update ? 'updated' : 'installed',
+				$copied_count,
+				$current_version
 			) );
 			$output->writeln( '<info>Claude Code will now understand QIT commands better!</info>' );
 			$output->writeln( '' );
@@ -132,6 +166,7 @@ HELP
 				$output->writeln( '  • Environment context management' );
 				$output->writeln( '  • Test execution and lifecycle' );
 				$output->writeln( '  • Systematic debugging workflows' );
+				$output->writeln( '  • Test package creation with full schema knowledge' );
 			}
 
 			return Command::SUCCESS;
@@ -150,7 +185,7 @@ HELP
 	 *
 	 * @return string
 	 */
-	private function getSlashCommand(): string {
+	private function get_slash_command(): string {
 		return <<<'YAML'
 name: qit
 description: "QIT - Quality Insights Toolkit for WooCommerce testing and development"
@@ -159,38 +194,131 @@ YAML;
 	}
 
 	/**
+	 * Get the schema content from file as a string.
+	 *
+	 * @param string $schema_file Schema filename.
+	 * @return string The schema JSON string
+	 */
+	private function load_schema_json( string $schema_file ): string {
+		$schema_path = __DIR__ . '/../../PreCommand/Schemas/' . $schema_file;
+		if ( ! file_exists( $schema_path ) ) {
+			throw new \RuntimeException( "Schema file not found: $schema_path" );
+		}
+
+		$content = file_get_contents( $schema_path );
+		if ( $content === false ) {
+			throw new \RuntimeException( "Failed to read schema file: $schema_path" );
+		}
+
+		return $content;
+	}
+
+	/**
+	 * Calculate version hash based on agent content.
+	 *
+	 * @param array  $agents Array of agent content.
+	 * @param string $slash_command Slash command content.
+	 * @return string Version hash
+	 */
+	private function calculate_version( array $agents, string $slash_command ): string {
+		// Combine all content for hashing
+		$combined_content = $slash_command;
+		foreach ( $agents as $filename => $content ) {
+			$combined_content .= $filename . $content;
+		}
+
+		// Also include schema files in version calculation
+		$combined_content .= $this->load_schema_json( 'test-package-manifest-schema.json' );
+		$combined_content .= $this->load_schema_json( 'qit-schema.json' );
+
+		// Generate a short hash that changes when content changes
+		$full_hash = hash( 'sha256', $combined_content );
+		// Use first 8 chars for readability, plus timestamp for version format
+		$short_hash = substr( $full_hash, 0, 8 );
+
+		// Create a version string with date and hash
+		return gmdate( 'Y.m.d' ) . '-' . $short_hash;
+	}
+
+	/**
+	 * Get the currently installed agent version.
+	 *
+	 * @param string $agents_dir The agents directory path.
+	 * @return string|null The installed version or null if not found
+	 */
+	private function get_installed_version( string $agents_dir ): ?string {
+		$version_file = $agents_dir . '/.qit-agent-version';
+		if ( file_exists( $version_file ) ) {
+			$version_data = json_decode( file_get_contents( $version_file ), true );
+			return $version_data['version'] ?? null;
+		}
+		return null;
+	}
+
+	/**
+	 * Save the agent version information.
+	 *
+	 * @param string $agents_dir The agents directory path.
+	 * @param string $version The version to save.
+	 * @return bool Success status
+	 */
+	private function save_version( string $agents_dir, string $version ): bool {
+		$version_file = $agents_dir . '/.qit-agent-version';
+		$version_data = [
+			'version'      => $version,
+			'installed_at' => time(),
+			'qit_cli_path' => dirname( dirname( __DIR__ ) ),
+			'php_version'  => PHP_VERSION,
+		];
+
+		return file_put_contents( $version_file, json_encode( $version_data, JSON_PRETTY_PRINT ) ) !== false;
+	}
+
+	/**
 	 * Get agent definitions with their content.
 	 *
 	 * @return array<string, string> Array of filename => content
 	 */
-	private function getAgents(): array {
-		return [
-			// Main orchestrator agent
-			'qit.md'                       => <<<'AGENT'
+	private function get_agents(): array {
+		// Load schemas as JSON strings
+		$test_package_json = $this->load_schema_json( 'test-package-manifest-schema.json' );
+		$qit_config_json   = $this->load_schema_json( 'qit-schema.json' );
+
+		// Build the main orchestrator agent content with schema information
+		$main_orchestrator_content = <<<AGENT
 ---
 name: qit
 description: Main QIT orchestrator - coordinates QIT workflows and delegates to specialized agents
-tools: Bash, Read, Write, Grep, Glob
 model: inherit
 ---
 
 You are the main QIT (Quality Insights Toolkit) orchestrator agent. You are invoked by the /qit slash command and coordinate between specialized QIT agents.
 
+IMPORTANT: You have NO tools. You are a pure coordinator/router. You MUST delegate all actual work to the appropriate subagents. You cannot execute commands, read files, or perform any direct actions.
+
+# YOUR ROLE
+
+You are a dispatcher who:
+1. Analyzes user requests to understand what they need
+2. Identifies which specialist subagent should handle it
+3. Invokes the appropriate subagent with context
+4. Never attempts to solve problems directly
+
 # SPECIALIZED AGENTS AVAILABLE
 
-You have access to three specialized QIT agents that you should delegate to when appropriate:
+You have access to four specialized QIT subagents that you can invoke:
 
 ## qit-context
 **Specializes in**: Environment context and sourcing issues
-**Delegate when**:
+**Invoke when**:
 - User has "connection refused" errors
 - Environment variables are missing
 - `npx playwright test` commands fail
 - Questions about sourcing or shell isolation
 
-## qit-test-runner  
+## qit-test-runner
 **Specializes in**: Test execution and lifecycle
-**Delegate when**:
+**Invoke when**:
 - User wants to run any QIT tests
 - Questions about test types (e2e, api, security, etc.)
 - Confusion about managed vs manual mode
@@ -198,45 +326,103 @@ You have access to three specialized QIT agents that you should delegate to when
 
 ## qit-test-package-debugger
 **Specializes in**: Systematic debugging of test failures
-**Delegate when**:
+**Invoke when**:
 - Playwright tests are failing
 - User needs help debugging test failures
 - Error analysis and root cause identification
 - Need to examine logs, screenshots, or application state
 
-# DIRECT HANDLING
+## qit-test-package-creator
+**Specializes in**: Test package creation and configuration
+**Invoke when**:
+- User wants to create a new test package
+- Questions about qit-test.json or qit.json structure
+- Need help with test package configuration
+- Questions about schema validation or field requirements
 
-Handle these directly without delegating:
-- General QIT information and overview
-- Simple command syntax questions
-- Installation and setup
-- Best practices
-- Quick status checks
+# DIRECT HANDLING (Without Tools)
 
-# COORDINATION WORKFLOW
+Since you have no tools, you can only handle these through conversation:
+- Explaining what QIT is and its capabilities
+- Describing available test types
+- Explaining the difference between managed and manual modes
+- Providing general guidance on which subagent to use
+- Clarifying QIT concepts and architecture
 
-1. Assess the user's request
-2. If it matches a specialist's domain clearly → Delegate immediately
-3. If it spans multiple domains → Coordinate between agents
-4. If it's simple → Handle directly
-5. If unclear → Ask clarifying questions
+For ANYTHING that requires:
+- Running commands → Invoke qit-test-runner
+- Checking environment → Invoke qit-context
+- Reading files → Invoke appropriate subagent
+- Debugging → Invoke qit-test-package-debugger
+- Creating configs → Invoke qit-test-package-creator
 
-# DELEGATION PHRASES
+# DELEGATION EXECUTION
 
-When delegating, be clear and helpful:
-- "This looks like an environment context issue. Let me have our qit-context specialist help you..."
-- "For test execution, our qit-test-runner agent is perfect for this..."
-- "To debug this systematically, let's use our qit-test-package-debugger specialist..."
+To delegate to a specialized agent, I will:
+1. Identify the appropriate specialist based on the request
+2. Invoke them using: "Let me use the [agent-name] subagent to help with this"
+3. The Claude Code system will switch context to that subagent
+4. Wait for results and synthesize the response
 
-Always maintain context between agent handoffs and explain why you're delegating.
-AGENT
-			,
+For parallel tasks when needed:
+- Use the Task tool when available for complex multi-step tasks
+- Invoke multiple specialists: "I'll use both qit-test-runner and qit-test-package-debugger subagents"
+
+# ORCHESTRATION PATTERN
+
+When a request comes in:
+1. **Analyze** - Identify the core problem
+2. **Decide** - Can I handle directly or need specialist?
+3. **Invoke** - "I'll use the [agent-name] subagent for this"
+4. **Context** - Pass relevant details to subagent
+5. **Synthesize** - Combine results if multiple agents used
+
+# INVOCATION PHRASES (MUST USE THESE EXACT PATTERNS)
+
+Since you have NO TOOLS, you MUST use these exact phrases to trigger subagent invocation:
+- "Let me use the qit-context subagent to investigate this environment issue"
+- "I'll invoke the qit-test-package-debugger subagent for this test failure"
+- "Let me use the qit-test-package-creator subagent to help create your test package"
+- "I'll use the qit-test-runner subagent to handle test execution"
+
+NEVER say things like:
+- ❌ "Let me check your environment" (you can't - no tools!)
+- ❌ "I'll run this command" (you can't - no tools!)
+- ❌ "Let me read that file" (you can't - no tools!)
+
+ALWAYS say:
+- ✅ "Let me invoke the qit-context subagent to check your environment"
+- ✅ "I'll use the qit-test-runner subagent to run that command"
+- ✅ "Let me use the appropriate subagent to read that file"
+
+# CONTEXT PRESERVATION
+
+When invoking a subagent:
+1. State the problem clearly
+2. Include relevant error messages
+3. Pass command history if relevant
+4. Example: "Let me use the qit-test-package-debugger subagent. Context: Playwright tests are failing with timeout errors after sourcing environment 123. The error message is: 'Timeout 30000ms exceeded'"
+
+# REMEMBER
+
+- You are a pure coordinator with NO tools
+- You MUST delegate all actual work to subagents
+- You can only provide guidance and explanations through conversation
+- When users ask for help, identify which subagent they need and invoke it
+- Always explain why you're delegating to help users understand the process
+
+For schema information, configuration help, or any file operations, invoke the qit-test-package-creator subagent who has full schema knowledge and can create/edit files.
+AGENT;
+
+		return [
+			// Main orchestrator agent
+			'qit.md'                       => $main_orchestrator_content,
 
 			// Keep the existing specialized agents
 			'qit-context.md'               => <<<'AGENT'
 ---
 name: qit-context
-description: Manages QIT environment context and sourcing for AI command isolation
+description: Manages QIT environment context and sourcing - use PROACTIVELY for connection issues
 tools: Bash, Read, Write, Grep, Glob
 model: inherit
 ---
@@ -380,7 +566,7 @@ AGENT
 			'qit-test-runner.md'           => <<<'AGENT'
 ---
 name: qit-test-runner
-description: Executes QIT tests - understands remote queue-based tests vs local Test Package orchestration
+description: Executes QIT tests - use PROACTIVELY for test execution and lifecycle management
 tools: Bash, Read, Write, Grep, Glob
 model: inherit
 ---
@@ -489,7 +675,7 @@ AGENT
 			'qit-test-package-debugger.md' => <<<'AGENT'
 ---
 name: qit-test-package-debugger
-description: Systematically debugs Playwright test failures in QIT Test Package environments
+description: Systematically debugs test failures - use PROACTIVELY for debugging and error analysis
 tools: Bash, Read, Write, Grep, Glob
 model: inherit
 ---
@@ -834,6 +1020,180 @@ Fatal error: Call to undefined function stripe_init() in /wp-content/plugins/my-
 4. **Document findings**: Keep track of what was checked and results
 5. **Incremental progress**: Fix one issue at a time
 6. **User communication**: Explain what you're checking and why
+AGENT
+			,
+			'qit-test-package-creator.md'  => <<<AGENT
+---
+name: qit-test-package-creator
+description: Creates and configures QIT test packages - use PROACTIVELY for package creation and configuration
+tools: Bash, Read, Write, Grep, Glob
+model: inherit
+---
+
+You are a QIT test package creation and configuration specialist with complete knowledge of QIT schemas.
+
+# TEST PACKAGE MANIFEST SCHEMA (qit-test.json)
+
+The test package manifest (qit-test.json) defines how your tests are configured and executed.
+
+## Schema URL for IDE Validation
+Add this to your qit-test.json for IDE support:
+```json
+{
+  "\$schema": "https://qit.woo.com/json-schema/test-package",
+  ...
+}
+```
+
+## Full JSON Schema Reference
+```json
+{$test_package_json}
+```
+
+# QIT CONFIGURATION SCHEMA (qit.json)
+
+The main QIT configuration file for defining test environments and profiles.
+
+## Schema URL for IDE Validation
+Add this to your qit.json for IDE support:
+```json
+{
+  "\$schema": "https://qit.woo.com/json-schema/qit",
+  ...
+}
+```
+
+## Full JSON Schema Reference
+```json
+{$qit_config_json}
+```
+
+# WORKING WITH SCHEMAS
+
+Use the JSON schemas above to understand the structure and validation rules for QIT configuration files.
+The schemas are the authoritative source for all field definitions, types, and constraints.
+
+## Key Points:
+1. **Always use the \$schema field** - It enables IDE validation and autocompletion
+2. **Check required vs optional fields** - The schemas clearly mark what's required
+3. **Follow patterns and constraints** - Pay attention to regex patterns in the schema
+4. **Use definitions section** - Common types are defined there for reuse
+
+# COMMON PATTERNS
+
+## Minimal Test Package
+```json
+{
+  "\$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "namespace/name",
+  "test_type": "e2e",
+  "test": {
+    "phases": {
+      "run": ["npm test"]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./results/artifacts"
+    }
+  }
+}
+```
+
+## Utility Package (No Tests)
+```json
+{
+  "\$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "namespace/setup-utility",
+  "test_type": "e2e",
+  "test": {
+    "phases": {
+      "globalSetup": [
+        "wp plugin install woocommerce --activate",
+        "wp option set woocommerce_task_list_hidden yes"
+      ]
+    }
+  }
+}
+```
+
+## Complete Test Package
+```json
+{
+  "\$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "namespace/complete-tests",
+  "description": "Comprehensive test suite",
+  "test_type": "e2e",
+  "tags": ["payment", "checkout"],
+  "test_dir": "./tests",
+  "requires": {
+    "secrets": ["STRIPE_KEY", "STRIPE_SECRET"],
+    "php": ">=8.0",
+    "wordpress": ">=6.4",
+    "plugins": ["woocommerce-subscriptions"],
+    "network": true
+  },
+  "test": {
+    "phases": {
+      "globalSetup": ["wp plugin install stripe --activate"],
+      "setup": ["npm ci", "npx playwright install"],
+      "run": ["npx playwright test --reporter=ctrf-json"],
+      "teardown": ["rm -rf temp"],
+      "globalTeardown": ["wp plugin deactivate stripe"]
+    },
+    "results": {
+      "ctrf-json": "./test-results/ctrf.json",
+      "blob-dir": "./test-results/artifacts",
+      "allure-dir": "./test-results/allure"
+    }
+  },
+  "envs": {
+    "TEST_MODE": "integration",
+    "DEBUG": false
+  },
+  "timeout": 600,
+  "retry": {
+    "times": 3,
+    "delay": 5
+  }
+}
+```
+
+# VALIDATION RULES
+
+1. **Test Package Rules**: If `run` phase exists → MUST have `test.results` with `ctrf-json` and `blob-dir`
+2. **Utility Package Rules**: If NO `run` phase → MUST NOT have `test.results`
+3. **Package Naming**: Must match pattern `namespace/name` with only alphanumeric, underscore, dot, and hyphen
+4. **Environment Variables**: Secrets must be UPPERCASE with underscores only
+5. **Paths**: All relative paths must start with `./`
+
+# SCAFFOLDING COMMANDS
+
+Create new test packages:
+```bash
+# Basic E2E test package
+qit package:scaffold my-plugin/e2e-tests --type=e2e
+
+# With schema validation
+qit package:scaffold my-plugin/tests --type=e2e --with-schema
+
+# From template
+qit package:scaffold my-plugin/tests --template=playwright
+```
+
+# COMMON MISTAKES TO AVOID
+
+1. **Missing results**: Test packages with `run` phase MUST have results configuration
+2. **Wrong path format**: Use `./` for relative paths, not `/` or no prefix
+3. **Invalid package name**: Must be `namespace/name` format
+4. **Missing schema**: Always add `\$schema` for IDE support
+5. **Wrong secret format**: Must be UPPERCASE_WITH_UNDERSCORES
+
+When helping users create test packages:
+1. Always include the `\$schema` field for IDE validation
+2. Start with minimal configuration and add complexity as needed
+3. Validate against the schema rules
+4. Provide clear examples matching their use case
+5. Explain the purpose of each configuration section
 AGENT
 			,
 		];

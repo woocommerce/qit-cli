@@ -165,6 +165,38 @@ try {
 
 $is_connected_to_backend = false;
 
+// Check AI agents status (once per day, only if not doing autocompletion or JSON output)
+// Skip check if running ai:install-agents command to avoid circular notification
+$is_install_agents = in_array( 'ai:install-agents', $GLOBALS['argv'] ?? [], true );
+if ( ! $container->getVar( 'doing_autocompletion' ) && ! in_array( '--json', $GLOBALS['argv'] ?? [], true ) && ! $is_install_agents ) {
+	try {
+		$agent_checker = new \QIT_CLI\AI\AgentVersionChecker();
+		$agent_status  = $agent_checker->check_agent_status();
+
+		if ( $agent_status !== null && isset( $agent_status['message'] ) ) {
+			$output = App::make( Output::class );
+
+			// Display notification based on status
+			switch ( $agent_status['status'] ) {
+				case 'not_installed':
+					$output->writeln( '<comment>' . $agent_status['message'] . '</comment>' );
+					break;
+				case 'outdated':
+					$output->writeln( '<fg=yellow>' . $agent_status['message'] . '</>' );
+					break;
+				case 'unknown':
+					$output->writeln( '<warning>' . $agent_status['message'] . '</warning>' );
+					break;
+			}
+			$output->writeln( '' ); // Add spacing after notification
+		}
+	} catch ( \Exception $e ) {
+		// Silently ignore agent check errors to not disrupt normal flow.
+		// Agent checks are optional and should not affect CLI functionality.
+		unset( $e ); // Satisfy PHPCS empty catch requirement.
+	}
+}
+
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
