@@ -1,0 +1,565 @@
+# QIT (Quality Insights Toolkit) Context for Claude Code
+
+**Full documentation**: https://qit.woo.com/docs
+
+## Overview
+
+QIT is a quality assurance platform for the WordPress ecosystem that acts as a quality gateway for the WooCommerce.com marketplace. It ensures extensions meet consistent quality standards before reaching users through two complementary testing approaches:
+
+- **Managed Tests**: Industry-standard quality checks maintained by the QIT team (security, compatibility, performance, etc.)
+- **Test Packages**: Standardized E2E tests that enable cross-plugin compatibility testing
+
+This document assumes QIT is already installed and authenticated. For authentication details, see the [documentation](https://qit.woo.com/docs).
+
+## Managed Tests
+
+Pre-built quality checks that run with zero setup. The QIT team maintains these tests to reflect current best practices and standards.
+
+### Available Test Types
+
+- `qit run:activation` - Clean install and activation testing
+- `qit run:api` or `run:woo-api` - REST API endpoint validation
+- `qit run:compatibility` - Extension compatibility testing
+- `qit run:e2e` - Run test packages (custom E2E tests)
+- `qit run:malware` - Malicious code detection
+- `qit run:performance` - Performance benchmarking with K6
+- `qit run:phpcompatibility` - PHP version compatibility checks
+- `qit run:phpstan` - Static code analysis
+- `qit run:plugin-check` - WordPress.org coding standards
+- `qit run:security` - Vulnerability and security scanning
+- `qit run:validation` - WooCommerce marketplace requirements
+- `qit run:woo-e2e` - Core WooCommerce checkout flows
+
+**Important**: Use `qit <command> --help` to discover ALL available options for each test type. Different tests support different parameters (versions, flags, etc.)
+
+## Test Packages
+
+Test Packages are standardized E2E tests that solve the cross-plugin compatibility challenge. For the first time, developers can test their plugins with actual test suites from other vendors.
+
+**Key benefits**:
+- Share your tests so others can validate compatibility with your plugin
+- Test your plugin against real tests from payment gateways, shipping providers, etc.
+- Combine multiple test packages to verify complex multi-plugin scenarios
+- Run any combination across different WordPress/WooCommerce/PHP versions
+
+Example:
+```bash
+# Test your plugin with tests from other vendors
+qit run:e2e my-plugin \
+  --test-package=woocommerce/checkout-tests \
+  --test-package=stripe/payment-tests \
+  --test-package=./my-custom-tests
+```
+
+### Understanding Test Package Phases
+
+Test packages use different phases for different purposes. The most important distinction is between `globalSetup` and `setup`:
+
+#### globalSetup: Knowledge Encapsulation for Cross-Compatibility
+
+The `globalSetup` phase enables **knowledge encapsulation** - each package owns its setup knowledge, eliminating coupling between unrelated packages.
+
+**Key Concepts:**
+- Runs **once** to create the baseline environment (persistent in database snapshot)
+- Each package configures **only its own plugin/extension**
+- Enables composition without coupling
+- Idempotent operations (running twice produces same result)
+
+**What belongs in globalSetup:**
+- Dismiss onboarding wizards
+- Configure payment gateways
+- Set default plugin settings
+- Install required plugins
+- Configure API credentials
+
+**Example:** Testing with multiple payment gateways
+```bash
+# Each package contributes its setup knowledge
+qit run:e2e your-plugin \
+  --test-package=woocommerce/minimal:latest \  # WooCommerce dismisses its own onboarding
+  --test-package=stripe/checkout:latest \      # Stripe configures its own gateway
+  --test-package=paypal/checkout:latest \      # PayPal configures its own gateway
+  --test-package=your-plugin/e2e:latest        # Your tests run in fully configured environment
+```
+
+#### setup: Package-Specific Test Preparation
+
+The `setup` phase runs for **each test package** and creates temporary test-specific data.
+
+**What belongs in setup:**
+- Install test dependencies (npm install)
+- Create test products
+- Generate test orders
+- Create test users
+- Load test-specific data
+- Mock external services
+
+#### Phase Comparison
+
+| globalSetup | setup |
+|------------|-------|
+| Runs once across all packages | Runs for each test package |
+| Creates persistent baseline | Creates temporary test data |
+| Shared by all tests | Specific to one test package |
+| Stored in database snapshot | Not persisted |
+| Knowledge encapsulation | Test preparation |
+
+**Complete Example:**
+```json
+{
+  "package": "woocommerce/minimal",
+  "test": {
+    "phases": {
+      "globalSetup": [
+        "./scripts/dismiss-onboarding.sh",     // Persistent: WooCommerce knows HOW
+        "wp option update woocommerce_task_list_hidden yes"
+      ],
+      "setup": ["npm install"],                // Temporary: Install dependencies
+      "run": ["npx playwright test"],
+      "teardown": ["npm run cleanup"]
+    }
+  }
+}
+```
+
+This architecture enables testing complex multi-plugin scenarios without any test package needing to know how other plugins work internally.
+
+## Environment Management
+
+QIT provides two ways to run test packages:
+
+### Automated Execution (Recommended for CI)
+QIT manages the entire environment lifecycle automatically:
+```bash
+qit run:e2e my-plugin --test-package=./tests
+# Environment is created, tests run, then environment is destroyed
+```
+
+### Manual Environment Management (For Debugging)
+You control the environment lifecycle for iterative testing:
+
+1. Start environment: `qit env:up`
+2. Get environment ID from output (e.g., `env_123`)
+3. Source environment: `source $(qit env:source env_123)`
+4. Run tests: `npx playwright test`
+5. Stop environment: `qit env:down env_123`
+
+**Critical for AI/Claude**: Environment variables don't persist between commands. You must source the environment for EVERY command:
+```bash
+source $(qit env:source <env-id>) && npx playwright test
+source $(qit env:source <env-id>) && curl $QIT_SITE_URL
+source $(qit env:source <env-id>) && qit env:exec "wp plugin list"
+```
+
+### WP-CLI Commands
+Execute WordPress CLI commands in the test environment:
+```bash
+# With explicit env-id
+qit env:exec <env-id> "wp plugin list"
+qit env:exec <env-id> "wp user create test test@example.com"
+qit env:exec <env-id> "wp option get woocommerce_version"
+
+# Or with sourcing (in AI context)
+source $(qit env:source <env-id>) && qit env:exec "wp plugin list"
+```
+
+## Available Commands
+
+{{COMMAND_LIST}}
+
+## Configuration Files
+
+### qit.json (Plugin/Theme Configuration)
+
+The main configuration file for your plugin/theme project. It tells QIT what to test (your plugin), how to test it (which test packages to run), and in what environments (WordPress/PHP versions). Place this in your plugin's root directory.
+
+Key sections:
+
+- **sut**: System Under Test - your plugin/theme details
+- **test_types**: Configure different test profiles
+- **environments**: Define WordPress/PHP/plugin combinations
+- **groups**: Batch multiple test configurations
+
+Example:
+```json
+{
+  "$schema": "https://qit.woo.com/json-schema/qit",
+  "sut": {
+    "type": "plugin",
+    "slug": "my-plugin",
+    "source": {
+      "type": "local",
+      "path": "./build"
+    }
+  },
+  "test_types": {
+    "e2e": {
+      "default": {
+        "test_packages": ["./tests/e2e"]
+      }
+    }
+  },
+  "environments": {
+    "default": {
+      "wp": "stable",
+      "php": "8.2",
+      "woo": "stable"
+    },
+    "legacy": {
+      "wp": "6.4",
+      "php": "7.4",
+      "woo": "8.0"
+    }
+  }
+}
+```
+
+**Full qit.json schema**:
+{{QIT_CONFIG_SCHEMA}}
+
+### qit-test.json (Test Package Manifest)
+
+The manifest file that defines a test package - a collection of E2E tests that can be published, shared, and combined with other test packages. This goes in the root of your test package directory (e.g., `tests/e2e/qit-test.json`). It describes what the tests need to run and where to find the results.
+
+Required fields:
+- **package**: Namespace/name identifier (e.g., "woocommerce/checkout-tests")
+- **test_type**: Type of tests (currently "e2e")
+- **test.phases**: Lifecycle commands (at minimum "run" phase)
+- **test.results**: Output paths for test results
+
+Example:
+```json
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "my-plugin/checkout-tests",
+  "test_type": "e2e",
+  "description": "Tests checkout flow with my plugin",
+  "requires": {
+    "plugins": ["woocommerce"],
+    "themes": ["storefront"]
+  },
+  "test": {
+    "phases": {
+      "setup": ["npm install"],
+      "run": ["npx playwright test"],
+      "teardown": ["npm run cleanup"]
+    },
+    "results": {
+      "ctrf-json": "./results/report.json",
+      "blob-dir": "./results/blob"
+    }
+  },
+  "envs": {
+    "BASE_URL": "$QIT_SITE_URL"
+  }
+}
+```
+
+**Subpackages**: Test packages can define subpackages for publishing different test subsets:
+```json
+{
+  "subpackages": {
+    "my-plugin/smoke-tests": {
+      "description": "Quick smoke tests",
+      "test": {
+        "phases": {
+          "run": ["npx playwright test tests/smoke"]
+        }
+      }
+    }
+  }
+}
+```
+
+**Full qit-test.json schema**:
+{{TEST_PACKAGE_SCHEMA}}
+
+## Getting Command Help
+
+For detailed information about any command, use:
+```bash
+qit <command> --help
+```
+
+Example:
+```bash
+qit run:e2e --help      # See all options for E2E testing
+qit env:up --help       # See environment creation options
+qit package:publish --help  # See how to publish test packages
+```
+
+## Writing Tests with Claude Code
+
+### Prerequisites: Install Playwright MCP
+
+To write and interact with Playwright tests effectively, Claude Code needs the Playwright MCP tool:
+
+```bash
+# Install Playwright MCP for browser automation
+claude mcp add playwright npx @playwright/mcp@latest
+```
+
+This enables Claude to:
+- Navigate and interact with web pages
+- Take screenshots for visual debugging
+- Fill forms and click elements
+- Write Playwright test code based on actual page exploration
+
+### Writing Tests Workflow
+
+#### Step 1: Navigate to Test Directory
+```bash
+# Navigate to your test package directory
+cd tests/e2e  # or wherever your tests are located
+```
+
+#### Step 2: Start QIT Environment
+```bash
+# Start environment with your plugin and dependencies
+qit env:up --plugin=your-plugin --plugin=woocommerce
+
+# Note the env-id from output (e.g., env_123)
+```
+
+#### Step 3: Connect Playwright MCP to QIT Environment
+```bash
+# Get the site URL
+source $(qit env:source <env-id>) && echo $QIT_SITE_URL
+
+# Use Playwright MCP to navigate to the site
+# Claude can now interact with: mcp__playwright__browser_navigate
+```
+
+#### Step 4: Explore and Write Tests
+
+**Claude can now:**
+1. Navigate to your QIT site using Playwright MCP
+2. Explore the UI by taking snapshots (`mcp__playwright__browser_snapshot`)
+3. Interact with elements (`mcp__playwright__browser_click`, `mcp__playwright__browser_type`)
+4. Fill forms (`mcp__playwright__browser_fill_form`)
+5. Take screenshots for debugging (`mcp__playwright__browser_take_screenshot`)
+
+**Example Test Writing Process:**
+```javascript
+// Claude can generate tests based on exploration
+test('checkout flow', async ({ page }) => {
+  await page.goto(process.env.QIT_SITE_URL + '/shop');
+
+  // Claude explores the page and writes assertions
+  await page.locator('.add_to_cart_button').first().click();
+  await page.goto(process.env.QIT_SITE_URL + '/checkout');
+
+  // Fill checkout form based on what Claude sees
+  await page.fill('#billing_first_name', 'Test');
+  await page.fill('#billing_last_name', 'User');
+  // ... more form fields
+
+  await page.click('#place_order');
+  await expect(page.locator('.woocommerce-thankyou')).toBeVisible();
+});
+```
+
+#### Step 5: Run and Iterate
+```bash
+# Run the test Claude just wrote
+source $(qit env:source <env-id>) && npx playwright test tests/checkout.spec.js
+
+# If it fails, Claude can debug using Playwright MCP
+source $(qit env:source <env-id>) && npx playwright test --debug
+```
+
+### Best Practices for Test Writing
+
+1. **Always use environment variables**: Tests should use `process.env.QIT_SITE_URL` not hardcoded URLs
+2. **Make tests idempotent**: Tests should create their own test data
+3. **Use data-testid attributes**: More reliable than CSS selectors
+4. **Clean up after tests**: Remove test data in teardown phase
+
+### Test Package Structure for New Tests
+
+```json
+{
+  "package": "your-plugin/e2e-tests",
+  "test": {
+    "phases": {
+      "setup": ["npm install"],
+      "run": ["npx playwright test"],
+      "teardown": ["npm run cleanup"]
+    },
+    "results": {
+      "ctrf-json": "./test-results/results.json",
+      "blob-dir": "./test-results/blob"
+    }
+  }
+}
+```
+
+**Important**: When writing tests, Claude should first explore the actual page using Playwright MCP tools, then write tests based on the real UI structure rather than making assumptions.
+
+## Test Package Debugging
+
+### Systematic Debugging Workflow
+
+When tests fail, follow this structured approach to identify root causes:
+
+#### Phase 1: Error Analysis
+
+**Capture and Parse Test Output:**
+```bash
+# Run test and capture output
+source $(qit env:source <env-id>) && npx playwright test --reporter=list 2>&1 | tee test-output.log
+
+# For specific test file
+source $(qit env:source <env-id>) && npx playwright test path/to/failing.test.js --reporter=list
+```
+
+**Common Error Patterns:**
+- `Timeout 30000ms exceeded` - Element or page load timeout
+- `locator.click: element not found` - UI element missing
+- `page.goto: net::ERR_CONNECTION_REFUSED` - Environment not running
+- `expect(received).toBe(expected)` - Assertion failure
+- `page.evaluate: ReferenceError` - JavaScript error
+
+#### Phase 2: Application State Investigation
+
+**WordPress Debug Logs:**
+```bash
+# Check for PHP errors/warnings
+qit env:exec <env-id> "tail -50 wp-content/debug.log"
+
+# Filter for critical errors
+qit env:exec <env-id> "cat wp-content/debug.log | grep -i 'fatal\|error\|critical'"
+```
+
+**Plugin Stack Analysis:**
+```bash
+# List active plugins
+qit env:exec <env-id> "wp plugin list --status=active"
+
+# Check specific plugin
+qit env:exec <env-id> "wp plugin get <plugin-slug>"
+
+# Database state check
+qit env:exec <env-id> "wp option get woocommerce_version"
+```
+
+#### Phase 3: Runtime Behavior Analysis
+
+**API Endpoint Testing:**
+```bash
+# Test WooCommerce REST API
+source $(qit env:source <env-id>) && curl -s $QIT_SITE_URL/wp-json/wc/v3/ | head -20
+
+# Test specific endpoints
+source $(qit env:source <env-id>) && curl -s $QIT_SITE_URL/wp-json/wc/v3/products
+
+# Check frontend pages
+source $(qit env:source <env-id>) && curl -s $QIT_SITE_URL/shop/ | grep "<title>"
+```
+
+#### Phase 4: Playwright Debug Tools
+
+**Interactive Debugging:**
+```bash
+# Run with Playwright Inspector
+source $(qit env:source <env-id>) && npx playwright test --debug path/to/test.spec.js
+
+# Slow down execution (1 second between actions)
+source $(qit env:source <env-id>) && npx playwright test --slow-mo=1000
+
+# Run specific test by name
+source $(qit env:source <env-id>) && npx playwright test -g "test name pattern"
+
+# Verbose logging
+source $(qit env:source <env-id>) && DEBUG=pw:api npx playwright test
+```
+
+### Common Failure Patterns & Solutions
+
+#### Pattern 1: Timeout Waiting for Element
+**Investigation:**
+```bash
+# Check if element exists in HTML
+source $(qit env:source <env-id>) && curl -s $QIT_SITE_URL/page/ | grep "element-selector"
+
+# Verify JavaScript loads
+source $(qit env:source <env-id>) && curl -s $QIT_SITE_URL | grep -c "<script"
+```
+
+#### Pattern 2: Connection Refused
+**Investigation:**
+```bash
+# Verify environment is running
+qit env:list
+
+# Check site response
+source $(qit env:source <env-id>) && curl -I $QIT_SITE_URL
+
+# Test environment health
+source $(qit env:source <env-id>) && echo "Site URL: $QIT_SITE_URL"
+```
+
+#### Pattern 3: Plugin Conflicts
+**Investigation:**
+```bash
+# Deactivate suspect plugin
+qit env:exec <env-id> "wp plugin deactivate <suspect-plugin>"
+
+# Re-run test
+source $(qit env:source <env-id>) && npx playwright test
+
+# Reactivate if not the cause
+qit env:exec <env-id> "wp plugin activate <suspect-plugin>"
+```
+
+### Quick Reference Commands
+```bash
+# Environment health check
+qit env:list
+source $(qit env:source <env-id>) && echo $QIT_SITE_URL
+
+# WordPress state
+qit env:exec <env-id> "wp plugin list --status=active"
+qit env:exec <env-id> "tail -50 wp-content/debug.log"
+
+# Test execution
+source $(qit env:source <env-id>) && npx playwright test --debug
+source $(qit env:source <env-id>) && npx playwright test -g "specific test"
+
+# API testing
+source $(qit env:source <env-id>) && curl -s $QIT_SITE_URL/wp-json/wc/v3/
+```
+
+**Remember**: In AI context, always source environment variables for EVERY command using `source $(qit env:source <env-id>) && command`
+
+### Network Control
+By default, tests run offline (no external requests) unless a test package explicitly requires network access via `"requires": {"network": true}` in its manifest.
+
+Override network behavior with flags:
+```bash
+# Force offline mode even if test requires network
+qit run:e2e my-plugin --offline
+
+# Force online mode even if test doesn't require network
+qit run:e2e my-plugin --online
+
+# Default: offline unless test package requires network
+qit run:e2e my-plugin
+```
+
+## Important Notes
+
+1. **NEVER** invent command flags - always check with `--help`
+2. Test packages and managed tests are completely different systems
+3. Environment variables don't persist between AI commands
+4. Always use absolute paths for file operations
+5. Subpackages are for organization, not automatic execution
+
+## Getting Help
+
+- Command help: `qit <command> --help`
+- List all commands: `qit list`
+- Documentation: https://qit.woo.com/docs
+
+---
+*This file was auto-generated by QIT CLI to provide context for Claude Code.*
