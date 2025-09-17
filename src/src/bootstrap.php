@@ -15,6 +15,7 @@ use QIT_CLI\Commands\CustomTests\ShowReportCommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\AI\ContextCommand as AIContextCommand;
 use QIT_CLI\Commands\AI\InstallAgentsCommand as AIInstallAgentsCommand;
+use QIT_CLI\Commands\AI\ClaudeSetupCommand as AIClaudeSetupCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
@@ -282,7 +283,13 @@ if ( $is_connected_to_backend ) {
 
 	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( AIContextCommand::class ) );
-	$application->add( $container->make( AIInstallAgentsCommand::class ) );
+	$application->add( $container->make( AIClaudeSetupCommand::class ) );
+
+	// Experimental AI agents - hidden behind env var due to hallucination issues
+	// Only enable if QIT_USE_EXPERIMENTAL_AI_AGENTS=1 is set
+	if ( getenv( 'QIT_USE_EXPERIMENTAL_AI_AGENTS' ) === '1' ) {
+		$application->add( $container->make( AIInstallAgentsCommand::class ) );
+	}
 
 	// Group Commands.
 	$application->add( $container->make( GroupRunCommand::class ) );
