@@ -15,6 +15,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use QIT_CLI\Utils\PackageReferenceUtils;
 use function QIT_CLI\is_windows;
 
 /**
@@ -97,13 +98,15 @@ class UpEnvironmentCommand extends QITCommand {
 			return Command::FAILURE;
 		}
 
-		/* ─ Display experimental warning when using qit.json ─ */
+		/*
+		─ Display experimental warning when using qit.json ─
+		*/
 		// Check if we're using a qit.json file (either via --config or auto-detected)
 		$config_file = $input->getOption( 'config' );
 		if ( $config_file === null && file_exists( getcwd() . '/qit.json' ) ) {
 			$config_file = getcwd() . '/qit.json';
 		}
-		
+
 		// Show warning only when qit.json is being used and not in JSON output mode
 		if ( $config_file !== null && ! $input->getOption( 'json' ) ) {
 			$output->writeln( '<comment>[EXPERIMENTAL]</comment> Using qit.json - this feature is highly experimental. Please report any issues or feedback at https://github.com/woocommerce/qit-cli/issues' );
@@ -120,6 +123,51 @@ class UpEnvironmentCommand extends QITCommand {
 
 		// Get explicit test packages from --test-package option FIRST
 		$explicit_packages = $input->getOption( 'test-package' ) ?? [];
+
+		// Expand relative paths early (especially './' and '.') to absolute paths
+		// This ensures consistent handling throughout the system
+		if ( ! empty( $explicit_packages ) ) {
+			foreach ( $explicit_packages as &$package ) {
+				// Skip if empty
+				if ( empty( $package ) ) {
+					continue;
+				}
+
+				// Skip absolute paths (already absolute)
+				if ( substr( $package, 0, 1 ) === '/' ) {
+					continue;
+				}
+
+				// Check if it's a relative path starting with . (includes ./, ., ../, etc.)
+				if ( substr( $package, 0, 1 ) === '.' ) {
+					// Try realpath first, fall back to manual construction if it fails
+					$resolved = @realpath( $package );
+					if ( $resolved === false ) {
+						// realpath failed (possibly due to permissions or non-existent path)
+						// For simple . and ./, use getcwd
+						if ( $package === '.' || $package === './' ) {
+							$package = getcwd();
+						} else {
+							// For other relative paths, construct manually
+							// This preserves the relative path structure even if intermediate dirs don't exist
+							$package = getcwd() . '/' . $package;
+						}
+					} else {
+						$package = $resolved;
+					}
+				} else {
+					// For other paths (not starting with . or /), try to resolve as local path
+					// If it exists locally, expand it; otherwise assume it's a package reference
+					$resolved = @realpath( $package );
+					if ( $resolved !== false ) {
+						// Path exists locally, use the resolved absolute path
+						$package = $resolved;
+					}
+					// If realpath fails, leave it unchanged (likely a package reference like vendor/package:1.0.0)
+				}
+			}
+			unset( $package ); // Break the reference
+		}
 
 		// Check for local test manifest
 		$local_test_dir     = null;
@@ -165,6 +213,49 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
+		// Check for duplicate test packages (same package in both local auto-detect and explicit --test-package)
+		if ( $has_local_manifest && ! empty( $explicit_packages ) ) {
+			// Read the local package ID using utility
+			$local_package_id = PackageReferenceUtils::read_local_package_id( $local_test_dir );
+
+			if ( $local_package_id ) {
+				// Check if any explicit package matches the local package ID
+				foreach ( $explicit_packages as $pkg ) {
+					// Extract package ID using utility (returns null for local paths)
+					$pkg_id = PackageReferenceUtils::extract_package_id( $pkg );
+
+					if ( $pkg_id === $local_package_id ) {
+							// Found duplicate - prepare error message
+							$error_message = "Duplicate test package '{$local_package_id}' detected.\n" .
+								"\n" .
+								"You are running from a directory containing this test package,\n" .
+								"and also explicitly specified it via --test-package.\n" .
+								"\n" .
+								"Conflicting sources:\n" .
+								"  - {$pkg}\n" .
+								"  - {$local_test_dir}\n" .
+								"\n" .
+								"To fix this, either:\n" .
+								"  1. Run from a different directory, OR\n" .
+								"  2. Don't specify --test-package (use local version)";
+
+							// In JSON mode, output JSON error and exit cleanly
+						if ( $input->getOption( 'json' ) ) {
+							$output->write( json_encode( [
+								'error'   => 'duplicate_package',
+								'message' => $error_message,
+								'env_id'  => null, // EnvironmentRunner expects env_id
+							] ) );
+							return Command::FAILURE;
+						}
+
+							// In normal mode, throw exception
+							throw new \RuntimeException( $error_message );
+					}
+				}
+			}
+		}
+
 		// Debug logging (skip in JSON mode to avoid filter issues)
 		if ( ! $input->getOption( 'json' ) && ( $output->isVeryVerbose() || getenv( 'QIT_DEBUG' ) ) ) {
 			$output->writeln( '[DEBUG] env:up - Has local manifest: ' . ( $has_local_manifest ? 'yes' : 'no' ) );
@@ -182,7 +273,7 @@ class UpEnvironmentCommand extends QITCommand {
 		if ( $sut !== null && isset( $sut['type'] ) && isset( $sut['slug'] ) && isset( $sut['source'] ) ) {
 			// Convert SUT to extension format and add to the appropriate list
 			$sut_extension = $this->convert_sut_to_extension( $sut );
-			
+
 			if ( $sut['type'] === 'plugin' ) {
 				$env_config['plugins'] = $env_config['plugins'] ?? [];
 				// Check if the SUT plugin is not already in the list
@@ -444,6 +535,21 @@ class UpEnvironmentCommand extends QITCommand {
 					// If it's a security error (invalid secrets format), we should fail immediately
 					if ( strpos( $e->getMessage(), 'Invalid secrets format' ) !== false ) {
 						throw $e;  // Re-throw security errors
+					}
+
+					// Check if this is a missing version error
+					if ( strpos( $e->getMessage(), 'missing a version number' ) !== false ||
+						strpos( $e->getMessage(), 'must include a version number' ) !== false ) {
+						// For JSON output, format the error properly
+						if ( $input->getOption( 'json' ) ) {
+							$output->writeln( json_encode( [
+								'error'   => true,
+								'message' => $e->getMessage(),
+							] ) );
+							return Command::FAILURE;
+						}
+						// Don't wrap the message, it's already clear
+						throw new \RuntimeException( $e->getMessage() );
 					}
 
 					// Fail fast for test package errors - no point continuing if packages are missing
@@ -1329,7 +1435,7 @@ HELP;
 	 */
 	private function convert_sut_to_extension( array $sut ): array {
 		$extension = [
-			'slug' => $sut['slug'],
+			'slug'                => $sut['slug'],
 			'added_automatically' => 'Added as SUT from qit.json',
 		];
 
@@ -1342,17 +1448,17 @@ HELP;
 				break;
 
 			case 'url':
-				$extension['from'] = 'url';
+				$extension['from']   = 'url';
 				$extension['source'] = $sut['source']['url'];
 				break;
 
 			case 'wporg':
-				$extension['from'] = 'wporg';
+				$extension['from']    = 'wporg';
 				$extension['version'] = $sut['source']['version'] ?? 'stable';
 				break;
 
 			case 'wccom':
-				$extension['from'] = 'wccom';
+				$extension['from']    = 'wccom';
 				$extension['version'] = $sut['source']['version'] ?? 'stable';
 				if ( isset( $sut['source']['wccom_id'] ) ) {
 					$extension['wccom_id'] = $sut['source']['wccom_id'];
@@ -1362,7 +1468,7 @@ HELP;
 			case 'build':
 				// For build sources, we need to run the build command first
 				// This is handled elsewhere, for now just set as local with the output path
-				$extension['from'] = 'local';
+				$extension['from']   = 'local';
 				$extension['source'] = $sut['source']['resolved_output'] ?? $sut['source']['output'];
 				break;
 

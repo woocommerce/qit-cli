@@ -271,7 +271,7 @@ fi
 		$this->assertEquals( 'test2', trim( $check2 ) );
 		
 		// Use env:reset to go back to post-setup state
-		qit( [ 'env:reset' ] );
+		qit( [ 'env:reset', $envId ] );
 		
 		// Original CI state should be restored
 		$ciFlag = qit( [ 

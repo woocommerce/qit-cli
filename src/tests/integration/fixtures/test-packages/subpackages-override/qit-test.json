@@ -35,11 +35,6 @@
       "tags": ["3ds", "security"],
       "test": {
         "phases": {
-          "globalSetup": [
-            "echo '[GLOBAL_SETUP] Dismissing WooCommerce onboarding'",
-            "echo '[GLOBAL_SETUP] Configuring basic Stripe gateway'",
-            "echo '[GLOBAL_SETUP] Enabling 3D Secure authentication'"
-          ],
           "run": [
             "npx playwright test tests/3ds.spec.js"
           ]
@@ -51,9 +46,8 @@
       "tags": ["utility", "setup"],
       "test": {
         "phases": {
-          "globalSetup": [
-            "echo '[GLOBAL_SETUP] Dismissing WooCommerce onboarding'",
-            "echo '[GLOBAL_SETUP] Configuring full Stripe gateway with all payment methods'"
+          "run": [
+            "echo '[SETUP] Running Stripe setup utility'"
           ]
         }
       }

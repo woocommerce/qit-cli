@@ -4,7 +4,7 @@ namespace QIT_CLI\Commands\TestPackages;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\QITInput;
-use QIT_CLI\TestPackageDownloader;
+use QIT_CLI\PreCommand\Download\TestPackageDownloader;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -171,7 +171,8 @@ class PackageDownloadCommand extends QITCommand {
 		// Fetch download URLs from QIT Manager.
 		try {
 			$io->writeln( '🔍 Fetching download URLs from QIT registry...' );
-			$download_urls = $this->package_downloader->fetch_download_urls( $packages );
+			$response      = $this->package_downloader->fetch_download_urls( $packages );
+			$download_urls = $response['urls'];
 			$io->writeln( '✓ Download URLs retrieved' );
 		} catch ( \Exception $e ) {
 			$io->error( sprintf( 'Failed to fetch download URLs: %s', $e->getMessage() ) );

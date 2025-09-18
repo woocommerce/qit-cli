@@ -2,23 +2,25 @@
 
 namespace integration\tests\TestPackages\Scenarios;
 
-use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\TestCleanupHelper;
+use function qit;
+
+require_once __DIR__ . '/BaseScenarioTestCase.php';
 
 /**
  * Test Scenario 2: Testing with Multiple Packages (Manual)
- * 
+ *
  * Tests the workflow with multiple test packages:
  * - Environment includes requirements from BOTH packages
  * - GlobalSetup runs for BOTH packages (combined baseline)
  * - Setup runs for MAIN package only
  * - Main package detection rules work correctly
  */
-class MultiPackageManualTest extends TestCase {
+class MultiPackageManualTest extends BaseScenarioTestCase {
 	
 	private string $mainPackageDir;
 	private string $secondaryPackageDir;
-	
+
 	protected function setUp(): void {
 		parent::setUp();
 		TestCleanupHelper::cleanup_all_test_packages();
@@ -26,23 +28,15 @@ class MultiPackageManualTest extends TestCase {
 		$this->secondaryPackageDir = __DIR__ . '/fixtures/scenario-secondary-package';
 	}
 	
-	protected function tearDown(): void {
-		parent::tearDown();
-		// Environment cleanup handled by test framework
-	}
-	
 	/**
 	 * Test that globalSetup runs for ALL packages, but setup only for MAIN.
 	 */
 	public function test_multiple_packages_phase_execution() {
 		// Run env:up with two test packages
-		$output = qit( [ 
-			'env:up', 
-			'--json',
+		$data = $this->runEnvUp( [
 			'--test-package=' . $this->mainPackageDir,
 			'--test-package=' . $this->secondaryPackageDir
 		] );
-		$data = json_decode( $output, true );
 		
 		$this->assertIsArray( $data );
 		$this->assertArrayHasKey( 'env_id', $data );
@@ -61,13 +55,10 @@ class MultiPackageManualTest extends TestCase {
 	 */
 	public function test_main_package_detection_first_local() {
 		// Secondary package first, main package second
-		$output = qit( [ 
-			'env:up', 
-			'--json',
+		$data = $this->runEnvUp( [
 			'--test-package=' . $this->secondaryPackageDir,
 			'--test-package=' . $this->mainPackageDir
 		] );
-		$data = json_decode( $output, true );
 		
 		// The FIRST local package should be main (secondary in this case)
 		// In env:up, the main package detection determines which package's setup runs
@@ -84,12 +75,9 @@ class MultiPackageManualTest extends TestCase {
 		
 		try {
 			// Run env:up from directory with qit-test.json, plus another package
-			$output = qit( [ 
-				'env:up', 
-				'--json',
+			$data = $this->runEnvUp( [
 				'--test-package=' . $this->secondaryPackageDir
 			] );
-			$data = json_decode( $output, true );
 			
 			// Should auto-detect current directory package
 			$this->assertArrayHasKey( 'test_packages_for_setup', $data );
@@ -108,8 +96,8 @@ class MultiPackageManualTest extends TestCase {
 	 */
 	public function test_combined_requirements_from_multiple_packages() {
 		// Create modified fixtures with different requirements
-		$package1Dir = sys_get_temp_dir() . '/qit-test-multi-req1-' . uniqid();
-		$package2Dir = sys_get_temp_dir() . '/qit-test-multi-req2-' . uniqid();
+		$package1Dir = $this->test_temp_dir . '/qit-test-multi-req1';
+		$package2Dir = $this->test_temp_dir . '/qit-test-multi-req2';
 		mkdir( $package1Dir, 0777, true );
 		mkdir( $package2Dir, 0777, true );
 		
@@ -117,7 +105,7 @@ class MultiPackageManualTest extends TestCase {
 		file_put_contents( $package1Dir . '/qit-test.json', json_encode( [
 			'package' => 'test/req-package1',
 			'test_type' => 'e2e',
-			'requirements' => [
+			'requires' => [
 				'php' => '8.2'
 			],
 			'test' => [
@@ -134,8 +122,8 @@ class MultiPackageManualTest extends TestCase {
 		file_put_contents( $package2Dir . '/qit-test.json', json_encode( [
 			'package' => 'test/req-package2',
 			'test_type' => 'e2e',
-			'requirements' => [
-				'plugins' => [ 'akismet' ]
+			'requires' => [
+				'plugins' => [ 'woocommerce-gateway-stripe' ]
 			],
 			'test' => [
 				'phases' => [
@@ -148,21 +136,26 @@ class MultiPackageManualTest extends TestCase {
 		] ) );
 		
 		// Run env:up with both packages
-		$output = qit( [ 
-			'env:up', 
-			'--json',
+		$data = $this->runEnvUp( [
 			'--test-package=' . $package1Dir,
 			'--test-package=' . $package2Dir
 		] );
-		$data = json_decode( $output, true );
 		
 		// Environment should include requirements from both
 		// PHP from package1
 		$this->assertEquals( '8.2', $data['php'] );
 		
-		// Plugin from package2
-		$pluginSlugs = array_column( $data['plugins'] ?? [], 'slug' );
-		$this->assertContains( 'akismet', $pluginSlugs );
+		// Plugin from package2 - verify it's actually installed in the environment
+		// Note: Test package requirements don't appear in JSON output but are installed
+		$pluginList = qit( [
+			'env:exec',
+			'--env_id=' . $data['env_id'],
+			'wp plugin list --field=name --path=/var/www/html'
+		] );
+		$installedPlugins = array_filter( explode( "\n", trim( $pluginList ) ) );
+
+		$this->assertContains( 'woocommerce-gateway-stripe', $installedPlugins,
+			'Plugin required by test package should be installed in environment' );
 		
 		// Let OS clean up temp files
 	}
@@ -172,13 +165,10 @@ class MultiPackageManualTest extends TestCase {
 	 */
 	public function test_multiple_packages_volume_mounting() {
 		// Run env:up with multiple test packages
-		$output = qit( [ 
-			'env:up', 
-			'--json',
+		$data = $this->runEnvUp( [
 			'--test-package=' . $this->mainPackageDir,
 			'--test-package=' . $this->secondaryPackageDir
 		] );
-		$data = json_decode( $output, true );
 		$envId = $data['env_id'];
 		
 		// Both packages should be mounted in the container

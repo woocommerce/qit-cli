@@ -409,10 +409,11 @@ class SubpackageExecutionTest extends TestCase {
 			'echo "[VERSION] This version has updated checkout flow and new features"'
 		];
 		// Update subpackage to show it's v2 (using the unique name)
+		// Note: Subpackages can only override the run phase, not setup
 		if ( $checkoutName && isset( $manifest['subpackages'][$checkoutName] ) ) {
-			$manifest['subpackages'][$checkoutName]['test']['phases']['setup'] = [
-				'echo "[VERSION] Checkout v2.0.0 - New payment methods added"'
-			];
+			// Append version info to the run phase instead of trying to override setup
+			$manifest['subpackages'][$checkoutName]['test']['phases']['run'][] =
+				'echo "[VERSION] Checkout v2.0.0 - New payment methods added"';
 		}
 		file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 		
@@ -661,8 +662,9 @@ class SubpackageExecutionTest extends TestCase {
 		// Should run ONLY the checkout subpackage
 		$this->assertStringContainsString( 'checkout.spec.js', $output,
 			'Checkout subpackage test should execute' );
-		$this->assertStringContainsString( '[SETUP] Checkout-specific setup', $output,
-			'Checkout subpackage setup should execute' );
+		// Subpackages inherit parent's setup, not their own
+		$this->assertStringContainsString( '[SETUP] Package-specific setup', $output,
+			'Should execute parent\'s setup phase' );
 		
 		// Should NOT run parent or other subpackages
 		$this->assertStringNotContainsString( 'all.spec.js', $output,
@@ -790,19 +792,17 @@ class SubpackageExecutionTest extends TestCase {
 		$this->assertStringContainsString( '[GLOBAL_TEARDOWN] Cleaning up WordPress environment', $output,
 			'Subpackage should inherit and execute parent\'s globalTeardown' );
 		
-		// 3. Verify subpackage's own setup phase runs
-		$this->assertStringContainsString( '[SETUP] Checkout-specific setup', $output,
-			'Subpackage should execute its own setup phase' );
-		
+		// 3. Verify subpackage inherits parent's setup phase (cannot override)
+		$this->assertStringContainsString( '[SETUP] Package-specific setup', $output,
+			'Subpackage should inherit parent\'s setup phase' );
+
 		// 4. Verify subpackage's run phase
 		$this->assertStringContainsString( 'checkout.spec.js', $output,
 			'Subpackage should execute its specific test file' );
-		
-		// 5. Verify parent's setup/teardown are NOT executed (only global phases inherited)
-		$this->assertStringNotContainsString( '[SETUP] Package-specific setup', $output,
-			'Parent\'s package-specific setup should NOT execute for subpackage' );
-		$this->assertStringNotContainsString( '[TEARDOWN] Package-specific teardown', $output,
-			'Parent\'s package-specific teardown should NOT execute for subpackage' );
+
+		// 5. Verify parent's teardown is also inherited
+		$this->assertStringContainsString( '[TEARDOWN] Package-specific teardown', $output,
+			'Subpackage should inherit parent\'s teardown phase' );
 		
 		// Clean up
 		qit( [
@@ -854,21 +854,18 @@ class SubpackageExecutionTest extends TestCase {
 		$this->assertEquals( 1, $globalTeardownCount,
 			'globalTeardown should run exactly once for all subpackages' );
 		
-		// Verify each subpackage's specific phases ran
-		$this->assertStringContainsString( '[SETUP] Checkout-specific setup', $output,
-			'Checkout subpackage setup should run' );
+		// Verify subpackages inherit parent's setup (cannot have their own)
+		$this->assertStringContainsString( '[SETUP] Package-specific setup', $output,
+			'Subpackages inherit parent\'s setup' );
 		$this->assertStringContainsString( 'checkout.spec.js', $output,
 			'Checkout tests should run' );
 		
 		$this->assertStringContainsString( 'cart.spec.js', $output,
 			'Cart tests should run' );
 		
-		$this->assertStringContainsString( '[SETUP] Account-specific setup', $output,
-			'Account subpackage setup should run' );
+		// Account subpackage inherits parent's setup/teardown (can't override anymore)
 		$this->assertStringContainsString( 'account.spec.js', $output,
 			'Account tests should run' );
-		$this->assertStringContainsString( '[TEARDOWN] Account-specific cleanup', $output,
-			'Account subpackage teardown should run' );
 		
 		// Verify we see 3 packages executed
 		$this->assertStringContainsString( 'PACKAGE [1/3]', $output,
@@ -887,40 +884,112 @@ class SubpackageExecutionTest extends TestCase {
 	}
 
 	/**
-	 * Test that subpackages CAN override global phases.
-	 * Verifies that globalSetup/globalTeardown in subpackage config are allowed and executed.
+	 * Test that subpackages CANNOT override global phases.
+	 * Verifies that only the 'run' phase can be overridden in subpackages.
 	 */
-	public function test_subpackage_can_override_global_phases(): void {
-		// Use the existing fixture that has proper structure
+	public function test_subpackage_cannot_override_global_phases(): void {
+		// Create a test fixture with invalid subpackage config (attempting to override globalSetup)
+		$tempDir = sys_get_temp_dir() . '/qit_invalid_subpkg_' . uniqid();
+		$this->tempDirs[] = $tempDir;
+		mkdir( $tempDir, 0755, true );
+
+		$manifest = [
+			'package' => 'test/invalid-subpackages',
+			'test_type' => 'e2e',
+			'description' => 'Test package with invalid subpackage overrides',
+			'test' => [
+				'phases' => [
+					'globalSetup' => [
+						'echo "[GLOBAL_SETUP] Parent setup"'
+					],
+					'run' => [
+						'echo "[RUN] Parent tests"'
+					]
+				],
+				'results' => [
+					'ctrf-json' => './results/ctrf.json',
+					'blob-dir' => './blob-report'
+				]
+			],
+			'subpackages' => [
+				'test/invalid-sub' => [
+					'description' => 'Subpackage trying to override globalSetup',
+					'test' => [
+						'phases' => [
+							'globalSetup' => [
+								'echo "[GLOBAL_SETUP] Invalid subpackage override"'
+							],
+							'run' => [
+								'echo "[RUN] Subpackage tests"'
+							]
+						]
+					]
+				]
+			]
+		];
+
+		file_put_contents( $tempDir . '/qit-test.json', json_encode( $manifest, JSON_PRETTY_PRINT ) );
+
+		// Create a config using this invalid package
+		$config = $this->createConfig( [ $tempDir ] );
+
+		// Run should fail with validation error
+		$proc = qit( [
+			'run:e2e',
+			'woocommerce',
+			'--config=' . $config,
+		], expected_exit_code: 1, return_process: true );
+
+		$output = $proc->getOutput();
+
+		// Should fail with appropriate error message
+		$this->assertNotEquals( 0, $proc->getExitCode(),
+			'Should fail when subpackage tries to override globalSetup' );
+
+		$this->assertStringContainsString( 'cannot override', $output,
+			'Error message should mention override restriction' );
+		$this->assertStringContainsString( 'globalSetup', $output,
+			'Error should specifically mention globalSetup phase' );
+		$this->assertStringContainsString( 'Subpackages are pure subsets', $output,
+			'Error should explain the subpackage philosophy' );
+	}
+
+	/**
+	 * Test that subpackages with only 'run' phase overrides work correctly.
+	 * Uses the corrected subpackages-override fixture.
+	 */
+	public function test_subpackage_with_valid_run_override(): void {
+		// Use the corrected fixture that only overrides 'run' phase
 		$config = $this->createConfig( [
 			$this->fixturesDir . '/subpackages-override'
 		] );
-		
-		// Run the parent package to test that it works with subpackages defined
+
+		// Run the parent package - should work now that fixture is valid
 		$proc = qit( [
 			'run:e2e',
 			'woocommerce',
 			'--config=' . $config,
 		], return_process: true );
-		
+
 		$output = $proc->getOutput();
-		
-		// The test should run successfully
+
+		// The test should run successfully with valid subpackages
 		$this->assertEquals( 0, $proc->getExitCode(),
-			'Should run parent package successfully. Output: ' . $output );
-		
+			'Should run parent package successfully with valid subpackages. Output: ' . $output );
+
 		// Verify the parent's globalSetup executed
 		$this->assertStringContainsString( '[GLOBAL_SETUP] Dismissing WooCommerce onboarding', $output,
-			'Parent\'s globalSetup dismiss-onboarding.sh should execute' );
+			'Parent\'s globalSetup should execute' );
 		$this->assertStringContainsString( '[GLOBAL_SETUP] Configuring basic Stripe gateway', $output,
-			'Parent\'s globalSetup configure-stripe-basic.sh should execute' );
-		
+			'Parent\'s globalSetup should execute' );
+
 		// Verify the parent's test runs
 		$this->assertStringContainsString( 'npx playwright test tests/all.spec.js', $output,
 			'Parent\'s all.spec.js test should execute' );
-		
-		// This demonstrates that the schema correctly allows globalSetup/globalTeardown in subpackages
-		// (the fixture wouldn't pass schema validation if this was blocked)
+
+		// Subpackages are defined but parent runs independently
+		$this->assertStringNotContainsString( '3ds.spec.js', $output,
+			'Subpackage tests should not run when parent is executed' );
 	}
 	
 	/**
@@ -1002,9 +1071,9 @@ class SubpackageExecutionTest extends TestCase {
 		$this->assertStringContainsString( '[GLOBAL_TEARDOWN] Cleaning up WordPress environment', $output,
 			'Subpackage should inherit and execute parent\'s globalTeardown' );
 		
-		// Check that the checkout-specific setup runs
-		$this->assertStringContainsString( '[SETUP] Checkout-specific setup', $output,
-			'Subpackage should run its own setup phase' );
+		// Check that subpackage inherits parent's setup (cannot have its own)
+		$this->assertStringContainsString( '[SETUP] Package-specific setup', $output,
+			'Subpackage should inherit parent\'s setup phase' );
 		
 		// The env vars test would work if they were actually set in the parent's envs field
 		// For now, just verify the echo commands ran
@@ -1323,16 +1392,11 @@ class SubpackageExecutionTest extends TestCase {
 		$checkoutName = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'dedup-checkout' );
 		$cartName = TestCleanupHelper::generate_test_package_name( 'woocommerce', 'dedup-cart' );
 		
-		// Subpackage 1 repeats some commands and adds new ones
+		// Subpackage 1 can only override run phase
 		$manifest['subpackages'][$checkoutName] = [
 			'description' => 'Checkout flow tests',
 			'test' => [
 				'phases' => [
-					'globalSetup' => [
-						'echo "[DEDUP] Command A"',  // Duplicate
-						'echo "[DEDUP] Command B"',  // Duplicate
-						'echo "[DEDUP] Command C"'   // New
-					],
 					'run' => [
 						'npx playwright test tests/checkout.spec.js'
 					]
@@ -1340,15 +1404,11 @@ class SubpackageExecutionTest extends TestCase {
 			]
 		];
 		
-		// Subpackage 2 has different overlap
+		// Subpackage 2 can also only override run phase
 		$manifest['subpackages'][$cartName] = [
 			'description' => 'Cart tests',
 			'test' => [
 				'phases' => [
-					'globalSetup' => [
-						'echo "[DEDUP] Command B"',  // Duplicate
-						'echo "[DEDUP] Command D"'   // New
-					],
 					'run' => [
 						'npx playwright test tests/cart.spec.js'
 					]
@@ -1401,14 +1461,14 @@ class SubpackageExecutionTest extends TestCase {
 			'Command A should execute exactly once (deduplicated)' );
 		$this->assertEquals( 1, $commandB_count,
 			'Command B should execute exactly once (deduplicated)' );
-		$this->assertEquals( 1, $commandC_count,
-			'Command C should execute exactly once' );
-		$this->assertEquals( 1, $commandD_count,
-			'Command D should execute exactly once' );
-		
+		$this->assertEquals( 0, $commandC_count,
+			'Command C should not execute (subpackages cannot override globalSetup)' );
+		$this->assertEquals( 0, $commandD_count,
+			'Command D should not execute (subpackages cannot override globalSetup)' );
+
 		// Verify the message about deduplication
-		$this->assertStringContainsString( 'Executed 4 unique commands', $runOutput,
-			'Should report the number of unique commands' );
+		$this->assertStringContainsString( 'Executed 2 unique commands', $runOutput,
+			'Should report the number of unique commands (only A and B from parent)' );
 		
 		// Clean up
 		qit( [

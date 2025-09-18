@@ -33,7 +33,6 @@ class ResetEnvironmentCommand extends QITCommand {
 	protected function configure(): void {
 		parent::configure(); // Call parent to set up base options
 		$this->setDescription( 'Reset the database to the post-setup state' )
-			->setAliases( [ 'env:restore' ] )
 			->addArgument( 'env_id', InputArgument::OPTIONAL, 'Environment ID (uses current if not specified)' )
 			->setHelp( <<<HELP
 The <info>env:reset</info> command restores the database to the state saved after running setup phases.

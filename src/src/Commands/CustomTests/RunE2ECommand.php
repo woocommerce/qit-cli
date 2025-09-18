@@ -281,8 +281,7 @@ class RunE2ECommand extends QITCommand {
 			$env_info = $this->environment_runner->run_environment( $env_up_options );
 			App::singleton( EnvInfo::class, $env_info );
 		} catch ( \Exception $e ) {
-			$output->writeln( sprintf( '<error>Failed to start environment: %s</error>', $e->getMessage() ) );
-
+			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
 			return Command::FAILURE;
 		} finally {
 			// Clean up temporary environment variables
@@ -327,6 +326,9 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 		}
+
+		// Duplicate detection has been moved to UpEnvironmentCommand to fail earlier
+		// before any expensive operations like environment setup
 
 		// Now validate version consistency for subpackages
 		if ( ! empty( $test_packages ) ) {
@@ -595,14 +597,14 @@ class RunE2ECommand extends QITCommand {
 			unset( $e );
 		}
 
-		// Save run information for qit ai-context failed-e2e command
+		// Save run information for qit ai:context failed-e2e command
 		$this->save_run_info( $env_info, $test_packages, $exit_status, $artifacts_dir, $report_url ?? null );
 
 		return $exit_status;
 	}
 
 	/**
-	 * Save run information for the qit ai-context failed-e2e command.
+	 * Save run information for the qit ai:context failed-e2e command.
 	 *
 	 * This creates a JSON file with all the information an AI agent would need to debug a test failure:
 	 * - Environment configuration to understand the test context
@@ -613,8 +615,8 @@ class RunE2ECommand extends QITCommand {
 	 * Example scenario for an AI agent:
 	 * 1. AI runs: qit run:e2e --plugin=my-plugin
 	 * 2. Tests fail with "1 failed" in the summary
-	 * 3. AI sees "Agentic AI: qit ai-context failed-e2e" in the output
-	 * 4. AI runs: qit ai-context failed-e2e
+	 * 3. AI sees "Agentic AI: qit ai:context failed-e2e" in the output
+	 * 4. AI runs: qit ai:context failed-e2e
 	 * 5. AI receives JSON with:
 	 *    - WordPress version that was tested (e.g., "6.7-RC1")
 	 *    - Failed test package path to read the test code
@@ -863,20 +865,31 @@ class RunE2ECommand extends QITCommand {
 
 		if ( function_exists( 'pcntl_signal' ) ) {
 			$signal_handler = static function ( $signo ): void { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found
-				echo "\n\nTest interrupted by user (Ctrl+C). Cleaning up...\n";
+				echo "\n\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
+				echo "⚠️  Test interrupted by user (Ctrl+C)\n";
+				echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 
 				// Mark that we were interrupted
 				App::setVar( 'qit_test_interrupted', true );
 
-				// Terminate the current test process if it exists
+				// Forward SIGINT to Playwright and wait for graceful shutdown
 				$current_process = App::getVar( 'qit_current_test_process' );
 				if ( $current_process instanceof Process ) {
 					try {
-						// Send SIGTERM to allow graceful shutdown
-						$current_process->stop( 5, SIGTERM );
-						// If still running after 5 seconds, force kill
+						// Send SIGINT to Playwright
+						$current_process->signal( SIGINT );
+
+						// Wait for Playwright to finish gracefully (up to 30 seconds)
+						// This allows Playwright to show failure details and generate reports
+						$timeout = 30;
+						$start   = time();
+						while ( $current_process->isRunning() && ( time() - $start ) < $timeout ) {
+							usleep( 100000 ); // 0.1 second
+						}
+
+						// If still running after timeout, force stop
 						if ( $current_process->isRunning() ) {
-							$current_process->stop( 0, SIGKILL );
+							$current_process->stop( 0 );
 						}
 					} catch ( \Exception $e ) {
 						// Ignore errors during process termination
@@ -884,9 +897,7 @@ class RunE2ECommand extends QITCommand {
 					}
 				}
 
-				// Small delay to let final output flush
-				usleep( 500000 ); // 0.5 seconds
-
+				// Playwright has finished, now show our additional info
 				static::shutdown_test_run();
 				exit( 0 );
 			};
@@ -911,80 +922,27 @@ class RunE2ECommand extends QITCommand {
 		// Show report information before shutting down (skip in JSON mode)
 		$artifacts_dir = App::getVar( 'qit_test_artifacts_dir' );
 		if ( $show_summary && ! empty( $artifacts_dir ) && is_dir( $artifacts_dir ) && ! App::getVar( 'QIT_JSON_MODE' ) ) {
+			// Don't try to generate/merge reports on interrupt - show raw reports instead
 			// Wait a moment for any final output from Playwright
 			usleep( 500000 ); // 0.5 seconds
 
 			echo "\n";
 			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-			echo "QIT Test Information:\n";
+			echo "📋 Test Information\n";
 			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
-			echo "\nTest artifacts directory:\n";
-			echo "  $artifacts_dir\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 
-			// Try to find HTML reports in multiple locations
-			$html_reports = [];
-
-			// Look in artifacts directory
-			$html_reports = array_merge( $html_reports, glob( $artifacts_dir . '/**/index.html', GLOB_BRACE ) );
-
-			// Also check if there are test package results directories
+			// Just show where the test packages were running
 			$test_packages = App::getVar( 'qit_test_packages' );
 			if ( ! empty( $test_packages ) ) {
+				echo "\nTest package location:\n";
 				foreach ( $test_packages as $pkg_id => $meta ) {
 					if ( isset( $meta['path'] ) && is_dir( $meta['path'] ) ) {
-						// Check common report locations in test packages
-						$pkg_reports = glob( $meta['path'] . '/playwright-report/index.html' );
-						if ( empty( $pkg_reports ) ) {
-							$pkg_reports = glob( $meta['path'] . '/test-results/*/index.html', GLOB_BRACE );
-						}
-						if ( empty( $pkg_reports ) ) {
-							$pkg_reports = glob( $meta['path'] . '/results/*/index.html', GLOB_BRACE );
-						}
-						$html_reports = array_merge( $html_reports, $pkg_reports );
+						echo '  ' . $meta['path'] . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 					}
 				}
-			}
 
-			$report_found = false;
-			if ( ! empty( $html_reports ) ) {
-				// Find the best report (prefer playwright-report directories)
-				$best_report = null;
-				foreach ( $html_reports as $report ) {
-					if ( strpos( $report, 'playwright-report' ) !== false ) {
-						$best_report = $report;
-						break;
-					}
-				}
-				if ( ! $best_report ) {
-					$best_report = reset( $html_reports );
-				}
-
-				// Update cache for e2e-report command
-				try {
-					$cache = App::make( \QIT_CLI\Cache::class );
-					$cache->set( 'last_e2e_report', json_encode( [
-						'local_playwright' => dirname( $best_report ),
-					] ), DAY_IN_SECONDS );
-					$report_found = true;
-				} catch ( \Exception $e ) {
-					// Cache update failure is non-critical
-					unset( $e ); // Mark as intentionally unused
-				}
-			}
-
-			if ( $report_found ) {
-				echo "\nView full Playwright report:  qit report\n";
-			} else {
-				echo "\nNo HTML reports generated yet. Check the artifacts directory.\n";
-
-				// Look for CTRF reports as alternative
-				$ctrf_reports = glob( $artifacts_dir . '/**/*ctrf*.json', GLOB_BRACE );
-				if ( ! empty( $ctrf_reports ) ) {
-					echo "\nCTRF reports available:\n";
-					foreach ( array_slice( $ctrf_reports, 0, 2 ) as $ctrf ) {
-						echo '  - ' . basename( $ctrf ) . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-					}
-				}
+				echo "\nTest interrupted before completion - no post-processing performed.\n";
+				echo "You can check for any partial results in the test package directory above.\n";
 			}
 
 			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";

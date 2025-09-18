@@ -81,6 +81,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) The tests for the main extension under test. Accepts test tags, or a test directory. If not set, will use the "default" test tag of this extension.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, 'The source of the main extension under test. Accepts a slug, a file, a URL. If not provided, the source will be the slug.' )
 			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run.', '' )
+			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests before the main tests.' )
+			->addOption( 'iterations', null, InputOption::VALUE_OPTIONAL, 'Number of test iterations to run for metric stability (default: 3)', 3 )
+			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' );
+
+		// Add version aliases that local code expects (reuse from UpEnvironmentCommand).
+		$this
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php' )
@@ -200,38 +206,27 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		// Add the environment type to the env:up options.
 		$env_up_options['--environment_type'] = 'performance';
 
-		try {
-			/** @var PerformanceEnvInfo $env_info */
-			$env_info = $this->environment_runner->run_environment( $env_up_options );
-
-			$GLOBALS['env_to_shutdown'] = $env_info;
-
-			if ( getenv( 'QIT_SELF_TEST' ) === 'env_info' ) {
-				$output->write( json_encode( $env_info ) );
-
-				return Command::SUCCESS;
-			}
-		} catch ( \Exception $e ) {
-			$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-
-			return Command::FAILURE;
-		} finally {
-			putenv( 'QIT_HIDE_SITE_INFO' );    // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.runtime_configuration_putenv
-		}
-
 		$test_tag     = $input->getArgument( 'test' ) ?? '';
 		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
 		$no_baseline  = $input->getOption( 'no_baseline' );
+		$iterations   = (int) ( $input->getOption( 'iterations' ) ?? 3 );
 
-		if ( $env_info instanceof PerformanceEnvInfo && ! empty( $woo_extension_id ) ) {
-			$env_info->sut_slug     = $woo_extension_slug;
-			$env_info->sut_id       = $woo_extension_id;
-			$env_info->sut_type     = $sut_type;
-			$env_info->test_tag     = $test_tag;
-			$env_info->k6_test_file = $k6_test_file;
-			$env_info->run_baseline = ! $no_baseline;
+		// Validate iterations parameter.
+		if ( $iterations < 1 || $iterations > 10 ) {
+			$output->writeln( '<error>Iterations must be between 1 and 10.</error>' );
+			return Command::FAILURE;
+		}
 
+		// Create a placeholder environment info with test configuration.
+		$env_info               = new PerformanceEnvInfo();
+		$env_info->sut_slug     = $woo_extension_slug;
+		$env_info->sut_id       = $woo_extension_id;
+		$env_info->sut_type     = $sut_type;
+		$env_info->test_tag     = $test_tag;
+		$env_info->k6_test_file = $k6_test_file;
+		$env_info->run_baseline = ! $no_baseline;
+
+		if ( ! empty( $woo_extension_id ) ) {
 			$this->test_run_notifier->notify_test_started(
 				$woo_extension_id,
 				$input->getOption( 'woo' ) ?? 'latest',
@@ -252,8 +247,10 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			return Command::SUCCESS;
 		}
 
-		// Run tests.
+		// Run tests with complete environment lifecycle management.
 		$this->performance_test_manager->set_output( $output );
+		$this->performance_test_manager->set_test_iterations( $iterations );
+		$this->performance_test_manager->set_env_up_options( $env_up_options );
 		$exit_status_code = $this->performance_test_manager->run_tests( $env_info );
 
 		if ( $exit_status_code === Command::SUCCESS ) {

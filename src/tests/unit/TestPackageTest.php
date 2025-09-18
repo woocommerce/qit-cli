@@ -31,13 +31,13 @@ class TestPackageTest extends TestCase {
 	}
 	
 	/**
-	 * Test fromString factory without version returns empty string.
+	 * Test fromString factory without version throws exception.
 	 */
-	public function test_from_string_without_version(): void {
-		$package = TestPackage::fromString( 'woocommerce/checkout:' );
-		
-		$this->assertEquals( 'woocommerce/checkout', $package->slug );
-		$this->assertEquals( '', $package->version );
+	public function test_from_string_without_version_throws_exception(): void {
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( "Package specification 'woocommerce/checkout' is missing a version" );
+
+		TestPackage::fromString( 'woocommerce/checkout' );
 	}
 	
 	/**
@@ -90,7 +90,7 @@ class TestPackageTest extends TestCase {
 		$this->assertEquals( 'woocommerce/checkout/smoke', $package->slug );
 		$this->assertEquals( '1.0.0', $package->version );
 		
-		// Subpackage without version
+		// Subpackage with empty version after colon
 		$package = TestPackage::fromString( 'woocommerce/checkout/regression:' );
 		$this->assertEquals( 'woocommerce/checkout/regression', $package->slug );
 		$this->assertEquals( '', $package->version );
@@ -122,6 +122,16 @@ class TestPackageTest extends TestCase {
 		$this->assertEquals( 'v1:special', $package->version );
 	}
 	
+	/**
+	 * Test that subpackage without version throws exception.
+	 */
+	public function test_subpackage_without_version_throws_exception(): void {
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( "Package specification 'woocommerce/e2e/checkout' is missing a version" );
+
+		TestPackage::fromString( 'woocommerce/e2e/checkout' );
+	}
+
 	/**
 	 * Test immutability - properties are public but should not be changed.
 	 */

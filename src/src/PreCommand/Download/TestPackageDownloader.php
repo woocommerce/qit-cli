@@ -7,8 +7,10 @@ use QIT_CLI\Zipper;
 use QIT_CLI\Cache;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
+use QIT_CLI\Utils\PackageReferenceUtils;
 use QIT_CLI\Validation\ArtifactValidator;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Filesystem\Filesystem;
 use function QIT_CLI\get_manager_url;
 
 /**
@@ -472,12 +474,15 @@ class TestPackageDownloader {
 	}
 
 	/**
-	 * Fetch download URLs from QIT Manager
+	 * Fetch download URLs from QIT Manager.
 	 *
 	 * @param string[] $references
 	 * @return array{urls: array<string,array<string,mixed>>, artifact_groups?: array<string,array<string>>}
 	 */
-	protected function fetch_download_urls( array $references ): array {
+	public function fetch_download_urls( array $references ): array {
+		// Validate all package references before making the API call
+		PackageReferenceUtils::validate_references( $references );
+
 		// Check cache first to prevent API rate limiting
 		// Cache key includes all references to handle bulk requests
 		$cache_key = 'test_package_urls_' . md5( implode( '|', $references ) );
@@ -574,51 +579,11 @@ class TestPackageDownloader {
 			}
 		}
 
-		// Download the package
+		// Download the package using shared logic
 		$package_dir = $cache_dir . '/packages/' . md5( $reference );
-		$zip_file    = $package_dir . '.zip';
 
-		if ( ! file_exists( dirname( $zip_file ) ) ) {
-			mkdir( dirname( $zip_file ), 0755, true );
-		}
-
-		if ( ! isset( $metadata['url'] ) ) {
-			throw new \RuntimeException( "No download URL for package '$reference'" );
-		}
-
-		if ( $this->output->isVeryVerbose() ) {
-			$this->output->writeln( "Downloading test package '$reference' from {$metadata['url']}" );
-		}
-
-		RequestBuilder::download_file( $metadata['url'], $zip_file );
-
-		// Validate and extract
-		$this->zipper->validate_zip( $zip_file );
-
-		if ( is_dir( $package_dir ) ) {
-			// Clean existing directory
-			$this->recursive_rmdir( $package_dir );
-		}
-
-		$this->zipper->extract_zip( $zip_file, $package_dir );
-
-		// Validate test package artifact integrity
-		try {
-			$this->artifact_validator->validate_test_package( $package_dir, $reference );
-		} catch ( \Exception $e ) {
-			// Invalid artifact, clean up
-			$this->recursive_rmdir( $package_dir );
-			unlink( $zip_file );
-			throw new \RuntimeException( 'Downloaded test package artifact failed validation: ' . $e->getMessage() );
-		}
-
-		// Make all shell scripts executable
-		$this->set_shell_script_permissions( $package_dir );
-
-		// Install dependencies if package.json exists
-		if ( file_exists( $package_dir . '/package.json' ) ) {
-			$this->install_npm_dependencies( $package_dir );
-		}
+		// Use the shared download and prepare method (always install deps for regular flow)
+		$package_dir = $this->download_and_prepare_package( $reference, $metadata, $package_dir, true, true );
 
 		// Find and parse manifest
 		$manifest_file = $this->find_manifest( $package_dir );
@@ -711,9 +676,6 @@ class TestPackageDownloader {
 			], DAY_IN_SECONDS );
 		}
 
-		// Clean up zip file
-		unlink( $zip_file );
-
 		// Return the TestPackageManifest object
 		return $manifest_object;
 	}
@@ -802,13 +764,11 @@ class TestPackageDownloader {
 	 * @throws \RuntimeException If npm install fails.
 	 */
 	protected function install_npm_dependencies( string $package_dir ): void {
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( "Installing npm dependencies in $package_dir" );
-		}
+		// Always show feedback about npm dependencies
+		$this->output->writeln( 'Installing npm dependencies...' );
 
-		// Use npm ci if package-lock.json exists, otherwise use npm install
-		$use_ci      = file_exists( $package_dir . '/package-lock.json' );
-		$npm_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
+		// Always use npm install to avoid sync issues
+		$npm_command = 'cd ' . escapeshellarg( $package_dir ) . ' && npm install';
 
 		$npm_output      = [];
 		$npm_return_code = 0;
@@ -816,13 +776,10 @@ class TestPackageDownloader {
 		exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
 
 		if ( $npm_return_code !== 0 ) {
-			$command_used = $use_ci ? 'npm ci' : 'npm install';
-			throw new \RuntimeException( $command_used . ' failed: ' . implode( "\n", $npm_output ) );
+			throw new \RuntimeException( 'npm install failed: ' . implode( "\n", $npm_output ) );
 		}
 
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( 'npm dependencies installed successfully' );
-		}
+		$this->output->writeln( 'npm dependencies installed successfully' );
 
 		// Ensure Playwright browsers are installed if Playwright is present
 		$this->install_playwright_browsers_if_needed( $package_dir );
@@ -834,10 +791,16 @@ class TestPackageDownloader {
 	 * @param string $package_dir The directory containing the package.
 	 */
 	protected function install_playwright_browsers_if_needed( string $package_dir ): void {
+		// Always show feedback about browser check
+		$this->output->writeln( 'Checking for Playwright browsers...' );
+
 		// Check if Playwright is installed
 		if ( ! file_exists( $package_dir . '/node_modules/@playwright/test' ) &&
 			! file_exists( $package_dir . '/node_modules/playwright' ) &&
 			! file_exists( $package_dir . '/node_modules/playwright-core' ) ) {
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( 'Playwright not detected, skipping browser installation' );
+			}
 			return;
 		}
 
@@ -867,14 +830,12 @@ class TestPackageDownloader {
 		}
 
 		if ( ! $browsers_needed ) {
-			if ( $this->output->isVerbose() ) {
-				$this->output->writeln( 'Playwright browsers already installed, skipping...' );
-			}
+			$this->output->writeln( 'Playwright browsers already installed' );
 			return;
 		}
 
 		// Browsers need to be installed
-		$this->output->writeln( 'Installing Playwright browsers...' );
+		$this->output->writeln( 'Installing Playwright browsers (this may take a few minutes)...' );
 
 		$playwright_command     = 'cd ' . escapeshellarg( $package_dir ) . ' && npx playwright install';
 		$playwright_output      = [];
@@ -908,7 +869,8 @@ class TestPackageDownloader {
 		// For backward compatibility, we need to fetch metadata first
 		// This is not ideal but maintains compatibility
 		try {
-			$metadata_array = $this->fetch_download_urls( [ $reference ] );
+			$response       = $this->fetch_download_urls( [ $reference ] );
+			$metadata_array = $response['urls'];
 			if ( isset( $metadata_array[ $reference ] ) ) {
 				return $this->validate_and_get_cached_package( $reference, $metadata_array[ $reference ], $cache_dir );
 			}
@@ -1045,28 +1007,151 @@ class TestPackageDownloader {
 	}
 
 	/**
-	 * Recursively remove directory
+	 * Recursively remove directory with safety validations
+	 *
+	 * Uses Symfony Filesystem to properly handle symlinks and validates
+	 * that we're only deleting expected directories for safety.
 	 */
 	protected function recursive_rmdir( string $dir ): void {
 		if ( ! is_dir( $dir ) ) {
 			return;
 		}
 
-		$objects = scandir( $dir );
-		foreach ( $objects as $object ) {
-			if ( $object === '.' || $object === '..' ) {
-				continue;
-			}
+		// Normalize the directory path
+		$normalized_dir = rtrim( $dir, '/' );
 
-			$path = $dir . '/' . $object;
-			if ( is_dir( $path ) ) {
-				$this->recursive_rmdir( $path );
-			} else {
-				unlink( $path );
+		// Define patterns for directories we're allowed to delete
+		$allowed_patterns = [
+			'/\/packages\/[a-f0-9]{32}$/',  // Package cache dirs (MD5 hash)
+			'/\/node_modules$/',             // Node modules directories
+			'/\/\.cache$/',                  // Cache directories
+		];
+
+		// Check if this is a safe directory to delete
+		$is_safe = false;
+		foreach ( $allowed_patterns as $pattern ) {
+			if ( preg_match( $pattern, $normalized_dir ) ) {
+				$is_safe = true;
+				break;
 			}
 		}
 
-		rmdir( $dir );
+		// Also allow if it's inside the cache directory
+		$cache_dir = sys_get_temp_dir() . '/qit-cache';
+		if ( strpos( $normalized_dir, $cache_dir ) === 0 ) {
+			$is_safe = true;
+		}
+
+		// For safety, only delete directories we recognize
+		if ( ! $is_safe ) {
+			// Log warning but don't throw - this is cleanup code
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( "<comment>Warning: Skipping deletion of unexpected directory: $dir</comment>" );
+			}
+			return;
+		}
+
+		// Use Symfony Filesystem which properly handles symlinks
+		$filesystem = new Filesystem();
+		$filesystem->remove( $dir );
+	}
+
+	/**
+	 * Shared logic for downloading and preparing a package.
+	 * Used by both the regular flow (with caching) and package:download flow.
+	 *
+	 * @param string              $reference Package reference (e.g., "woocommerce/e2e:latest").
+	 * @param array<string,mixed> $metadata Package metadata including URL and checksum.
+	 * @param string              $target_dir Target directory for extraction.
+	 * @param bool                $cleanup_zip Whether to delete ZIP after extraction.
+	 * @param bool                $install_deps Whether to install npm dependencies (default true for backward compat).
+	 * @return string Path to the extracted package directory.
+	 * @throws \RuntimeException On download, extraction, or validation failure.
+	 */
+	private function download_and_prepare_package( string $reference, array $metadata, string $target_dir, bool $cleanup_zip = true, bool $install_deps = true ): string {
+		// Ensure we have a download URL
+		if ( ! isset( $metadata['url'] ) ) {
+			throw new \RuntimeException( "No download URL for package '$reference'" );
+		}
+
+		// Create target directory if needed
+		if ( ! is_dir( $target_dir ) ) {
+			if ( ! is_dir( dirname( $target_dir ) ) ) {
+				mkdir( dirname( $target_dir ), 0755, true );
+			}
+		}
+
+		// Download the package
+		$zip_file = $target_dir . '.zip';
+
+		if ( ! $this->output->isQuiet() ) {
+			$this->output->writeln( "Downloading package: $reference" );
+		}
+
+		RequestBuilder::download_file( $metadata['url'], $zip_file );
+
+		// Validate the ZIP file
+		$this->zipper->validate_zip( $zip_file );
+
+		// Clean existing directory if it exists
+		if ( is_dir( $target_dir ) ) {
+			$this->recursive_rmdir( $target_dir );
+		}
+
+		// Allow extraction into parent directory
+		$parent_dir = dirname( $target_dir );
+		if ( is_dir( $parent_dir ) ) {
+			$this->zipper->allow_extract_into( [ $parent_dir ] );
+		}
+
+		// Extract the package
+		$this->zipper->extract_zip( $zip_file, $target_dir );
+
+		// Validate test package artifact integrity
+		try {
+			$this->artifact_validator->validate_test_package( $target_dir, $reference );
+		} catch ( \Exception $e ) {
+			// Invalid artifact, clean up
+			$this->recursive_rmdir( $target_dir );
+			if ( file_exists( $zip_file ) ) {
+				unlink( $zip_file );
+			}
+			throw new \RuntimeException( 'Downloaded test package artifact failed validation: ' . $e->getMessage() );
+		}
+
+		// Make all shell scripts executable
+		$this->set_shell_script_permissions( $target_dir );
+
+		// Install npm dependencies if requested and package.json exists
+		if ( $install_deps && file_exists( $target_dir . '/package.json' ) ) {
+			if ( ! $this->output->isQuiet() ) {
+				$this->output->writeln( 'Installing npm dependencies...' );
+			}
+
+			// Always use npm install for consistency
+			$npm_command     = 'cd ' . escapeshellarg( $target_dir ) . ' && npm install';
+			$npm_output      = [];
+			$npm_return_code = 0;
+			exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
+
+			if ( $npm_return_code !== 0 ) {
+				throw new \RuntimeException( 'npm install failed: ' . implode( "\n", $npm_output ) );
+			}
+
+			if ( ! $this->output->isQuiet() ) {
+				$this->output->writeln( 'npm dependencies installed successfully' );
+			}
+
+			// Install Playwright browsers if needed
+			$this->install_playwright_browsers_if_needed( $target_dir );
+		}
+
+		// Clean up ZIP file if requested
+		if ( $cleanup_zip && file_exists( $zip_file ) ) {
+			unlink( $zip_file );
+		}
+
+		return $target_dir;
 	}
 
 	/**
@@ -1144,5 +1229,243 @@ class TestPackageDownloader {
 	 */
 	public function get_metadata( string $reference ): array {
 		return $this->package_metadata[ $reference ] ?? [];
+	}
+
+	/**
+	 * Validate package identifier format.
+	 *
+	 * @param string $package_id
+	 * @return bool
+	 */
+	public function is_valid_package_identifier( string $package_id ): bool {
+		return preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $package_id ) === 1;
+	}
+
+	/**
+	 * Process a single package for direct download (no caching).
+	 * Used by PackageDownloadCommand for user-initiated downloads.
+	 *
+	 * @param string                                                 $package_id Package identifier.
+	 * @param array{url:string,checksum:string|null,version?:string} $url_info Package URL info.
+	 * @param string                                                 $output_dir Output directory.
+	 * @param bool                                                   $verify Whether to verify checksums.
+	 * @param bool                                                   $extract Whether to extract the package.
+	 * @param bool                                                   $force Whether to overwrite existing files.
+	 * @param bool                                                   $install Whether to install dependencies (npm/composer).
+	 * @param bool                                                   $cleanup_zip Whether to delete ZIP file after extraction.
+	 * @return array<string,mixed> Processing result.
+	 * @throws \RuntimeException On any failure.
+	 */
+	public function process_package( string $package_id, array $url_info, string $output_dir, bool $verify = true, bool $extract = true, bool $force = false, bool $install = false, bool $cleanup_zip = true ): array {
+		$filename  = $this->generate_filename( $package_id );
+		$file_path = rtrim( $output_dir, '/' ) . '/' . $filename;
+
+		// Check if file exists and handle force flag (for non-extracted downloads)
+		if ( ! $extract && file_exists( $file_path ) && ! $force ) {
+			throw new \RuntimeException( 'File already exists (use --force to overwrite)' );
+		}
+
+		$result = [
+			'package'  => $package_id,
+			'checksum' => $url_info['checksum'] ?? null,
+			'version'  => $url_info['version'] ?? 'unknown',
+		];
+
+		// If extracting, use the shared download and prepare logic
+		if ( $extract ) {
+			$extract_dir = rtrim( $output_dir, '/' ) . '/' . pathinfo( $filename, PATHINFO_FILENAME );
+
+			// Check if directory exists and handle force flag
+			if ( is_dir( $extract_dir ) && ! $force ) {
+				throw new \RuntimeException( 'Directory already exists (use --force to overwrite)' );
+			}
+
+			try {
+				// Use the shared download and prepare method which handles:
+				// - Download, checksum validation, extraction, artifact validation
+				// - Shell script permissions, npm install (if $install is true)
+				$prepared_dir = $this->download_and_prepare_package(
+					$package_id,
+					$url_info,
+					$extract_dir,
+					$cleanup_zip,
+					$install  // Pass through the install flag
+				);
+
+				$result['extracted_to'] = $prepared_dir;
+				$result['size']         = $this->get_directory_size( $prepared_dir );
+
+				if ( $cleanup_zip ) {
+					$result['zip_cleaned_up'] = true;
+				}
+
+				// The shared method already installed dependencies
+				if ( $install && file_exists( $prepared_dir . '/package.json' ) ) {
+					$result['dependencies_installed'] = true;
+				}
+			} catch ( \Exception $e ) {
+				throw new \RuntimeException( 'Package processing failed: ' . $e->getMessage() );
+			}
+		} else {
+			// Just download without extracting
+			$this->download_file( $url_info['url'], $file_path );
+
+			// Verify checksum if enabled and available
+			if ( $verify && ! empty( $url_info['checksum'] ) ) {
+				if ( ! $this->verify_checksum( $file_path, $url_info['checksum'] ) ) {
+					unlink( $file_path ); // Clean up failed download
+					throw new \RuntimeException( 'Checksum verification failed' );
+				}
+			}
+
+			$result['downloaded_to'] = $file_path;
+			$result['size']          = filesize( $file_path );
+		}
+
+		// Add verification status to result
+		if ( $verify && ! empty( $url_info['checksum'] ) ) {
+			$result['checksum_verified'] = true;
+		}
+
+		return $result;
+	}
+
+	/**
+	 * Get the total size of a directory in bytes.
+	 *
+	 * @param string $dir Directory path.
+	 * @return int Total size in bytes.
+	 */
+	private function get_directory_size( string $dir ): int {
+		$size = 0;
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
+			\RecursiveIteratorIterator::SELF_FIRST
+		);
+
+		foreach ( $iterator as $file ) {
+			if ( $file->isFile() ) {
+				$size += $file->getSize();
+			}
+		}
+
+		return $size;
+	}
+
+	/**
+	 * Generate safe filename from package identifier.
+	 *
+	 * @param string $package_id
+	 * @return string
+	 */
+	protected function generate_filename( string $package_id ): string {
+		return str_replace( [ '/', ':' ], '-', $package_id ) . '.zip';
+	}
+
+	/**
+	 * Download a file from URL to destination.
+	 *
+	 * @param string $url
+	 * @param string $destination
+	 * @throws \RuntimeException When download fails.
+	 */
+	protected function download_file( string $url, string $destination ): void {
+		RequestBuilder::download_file( $url, $destination );
+	}
+
+	/**
+	 * Verify file checksum.
+	 *
+	 * @param string $file_path
+	 * @param string $expected_checksum
+	 * @return bool
+	 */
+	protected function verify_checksum( string $file_path, string $expected_checksum ): bool {
+		$actual_checksum = hash_file( 'sha256', $file_path );
+		return strcasecmp( $actual_checksum, $expected_checksum ) === 0;
+	}
+
+	/**
+	 * Extract ZIP file to directory (for non-cached operations).
+	 *
+	 * @param string $zip_path
+	 * @param string $extract_dir
+	 * @param bool   $force_overwrite
+	 * @throws \RuntimeException When extraction fails.
+	 */
+	protected function extract_package_to_dir( string $zip_path, string $extract_dir, bool $force_overwrite = false ): void {
+		$this->zipper->validate_zip( $zip_path );
+
+		if ( is_dir( $extract_dir ) ) {
+			if ( $force_overwrite ) {
+				$this->recursive_rmdir( $extract_dir );
+			} else {
+				throw new \RuntimeException( 'Extract directory already exists' );
+			}
+		}
+
+		// Allow extraction into the parent directory of where we're extracting
+		$parent_dir = dirname( $extract_dir );
+		if ( is_dir( $parent_dir ) ) {
+			$this->zipper->allow_extract_into( [ $parent_dir ] );
+		}
+
+		$this->zipper->extract_zip( $zip_path, $extract_dir );
+
+		// Make all shell scripts executable
+		$this->set_shell_script_permissions( $extract_dir );
+	}
+
+	/**
+	 * Install dependencies (npm/composer) in the specified directory.
+	 *
+	 * @param string $dir The directory where the package was extracted.
+	 * @throws \RuntimeException If dependency installation fails.
+	 */
+	protected function install_dependencies_in_dir( string $dir ): void {
+		$installed_something = false;
+
+		// Check for package.json and run appropriate npm command
+		if ( file_exists( $dir . '/package.json' ) ) {
+			// Use npm ci if package-lock.json exists, otherwise use npm install
+			$use_ci          = file_exists( $dir . '/package-lock.json' );
+			$npm_command     = 'cd ' . escapeshellarg( $dir ) . ' && npm ' . ( $use_ci ? 'ci' : 'install' );
+			$npm_output      = [];
+			$npm_return_code = 0;
+
+			exec( $npm_command . ' 2>&1', $npm_output, $npm_return_code );
+
+			if ( $npm_return_code !== 0 ) {
+				$command_used = $use_ci ? 'npm ci' : 'npm install';
+				throw new \RuntimeException( $command_used . ' failed: ' . implode( "\n", $npm_output ) );
+			}
+
+			$installed_something = true;
+
+			// Also install Playwright browsers if needed
+			$this->install_playwright_browsers_if_needed( $dir );
+		}
+
+		// Check for composer.json and run composer install
+		if ( file_exists( $dir . '/composer.json' ) ) {
+			$composer             = escapeshellcmd( 'composer' );
+			$composer_command     = 'cd ' . escapeshellarg( $dir ) . ' && ' . $composer . ' install --no-dev --optimize-autoloader';
+			$composer_output      = [];
+			$composer_return_code = 0;
+
+			exec( $composer_command . ' 2>&1', $composer_output, $composer_return_code );
+
+			if ( $composer_return_code !== 0 ) {
+				throw new \RuntimeException( 'composer install failed: ' . implode( "\n", $composer_output ) );
+			}
+
+			$installed_something = true;
+		}
+
+		if ( ! $installed_something ) {
+			// No package.json or composer.json found, nothing to install
+			return;
+		}
 	}
 }

@@ -18,7 +18,10 @@ class TestPackage implements \JsonSerializable {
 	}
 
 	public static function fromString( string $spec ): self {
-		[$slug, $version] = explode( ':', $spec, 2 ) + [ 1 => 'latest' ];
+		if ( strpos( $spec, ':' ) === false ) {
+			throw new \InvalidArgumentException( "Package specification '$spec' is missing a version. Please specify a version (e.g., '$spec:latest' or '$spec:1.0.0')" );
+		}
+		[$slug, $version] = explode( ':', $spec, 2 );
 		return new self( $slug, $version );
 	}
 

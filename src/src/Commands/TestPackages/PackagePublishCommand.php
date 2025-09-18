@@ -284,19 +284,107 @@ class PackagePublishCommand extends QITCommand {
 			$output->writeln( "📦 Creating zip from directory: $path" );
 			$zip_path = sys_get_temp_dir() . '/' . uniqid( 'qit_package_' ) . '.zip';
 
-			// Use same exclude list as custom tests
+			// Comprehensive exclude list for test packages
 			$exclude_patterns = [
+				// All hidden files and directories (starting with dot)
+				'.*',           // All hidden files at root
+				'*/.*',         // Hidden files in subdirectories
+
+				// QIT runtime files (should not be packaged)
+				'qit.json',     // QIT runtime config
+
+				// Version control (redundant with .* but kept for clarity)
 				'.git/*',
 				'.gitignore',
+				'.svn/*',
+
+				// System files (redundant with .* but kept for clarity)
 				'.DS_Store',
 				'Thumbs.db',
+				'*.swp',
+				'*~',
+
+				// Dependencies (should be installed during test run)
 				'node_modules/*',
+				'*/node_modules/*',  // Nested node_modules
 				'vendor/*',
+				'*/vendor/*',        // Nested vendor directories
+
+				// Test results (should be generated during test run)
+				'results/*',
+				'results-*/*',
+				'test-results/*',
+				'allure-results/*',
+				'playwright-report/*',
+				'coverage/*',
+
+				// Build artifacts
+				'dist/*',
+				'build/*',
+				'.cache/*',
+
+				// Log files
 				'*.log',
 				'*.tmp',
+				'logs/*',
+
+				// IDE files (redundant with .* but kept for clarity)
+				'.idea/*',
+				'.vscode/*',
+				'*.sublime-*',
 			];
 
+			// Count what's being excluded for informative message
+			$excluded_types = [];
+			if ( is_dir( $path . '/node_modules' ) ) {
+				$excluded_types[] = 'node_modules';
+			}
+			if ( is_dir( $path . '/vendor' ) ) {
+				$excluded_types[] = 'vendor';
+			}
+			if ( is_dir( $path . '/.git' ) ) {
+				$excluded_types[] = '.git';
+			}
+			if ( file_exists( $path . '/qit.json' ) ) {
+				$excluded_types[] = 'qit.json';
+			}
+
+			// Count hidden files/dirs
+			$entries      = scandir( $path );
+			$hidden_count = 0;
+			foreach ( $entries as $entry ) {
+				if ( $entry !== '.' && $entry !== '..' && strpos( $entry, '.' ) === 0 ) {
+					++$hidden_count;
+				}
+			}
+			if ( $hidden_count > 0 ) {
+				$excluded_types[] = "$hidden_count hidden files/dirs";
+			}
+
+			// Show informative message about exclusions (non-spammy)
+			if ( ! empty( $excluded_types ) ) {
+				$output->writeln( sprintf( '<comment>Excluding from package: %s</comment>', implode( ', ', $excluded_types ) ) );
+			}
+
 			$this->zipper->zip_directory( $path, $zip_path, $exclude_patterns );
+
+			// Show the size of the created zip
+			if ( file_exists( $zip_path ) ) {
+				$size_bytes = filesize( $zip_path );
+				$size_mb    = round( $size_bytes / 1024 / 1024, 2 );
+
+				if ( $size_mb > 10 ) {
+					$output->writeln( sprintf( '<warning>⚠️  Package size: %s MB (consider excluding unnecessary files)</warning>', $size_mb ) );
+				} else {
+					$output->writeln( sprintf( '📦 Package size: %s MB', $size_mb ) );
+				}
+
+				// Warn if package is very large
+				if ( $size_mb > 50 ) {
+					$output->writeln( '<error>❌ Package is very large (>50MB). This may cause upload timeouts.</error>' );
+					$output->writeln( '<comment>Common causes: node_modules, vendor, test results, or build artifacts included</comment>' );
+				}
+			}
 
 			return $zip_path;
 		} elseif ( is_file( $path ) && pathinfo( $path, PATHINFO_EXTENSION ) === 'zip' ) {

@@ -54,6 +54,13 @@ class EnvironmentRunner {
 		}
 
 		$env_json = json_decode( $up_output, true );
+
+		// Check if it's an error JSON from env:up
+		if ( is_array( $env_json ) && isset( $env_json['error'] ) && isset( $env_json['message'] ) ) {
+			// It's a properly formatted error from env:up, throw it with the message
+			throw new \RuntimeException( $env_json['message'] );
+		}
+
 		if ( ! is_array( $env_json ) || empty( $env_json['env_id'] ) ) {
 			throw new \RuntimeException( 'Failed to parse environment JSON. Output: ' . $up_output );
 		}

@@ -47,11 +47,13 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		}
 
 		// Generate an ID for this run.
-		$run_id      = uniqid( 'qit_custom_tests_' );
-		$qit_tmp_dir = __DIR__ . "/tmp/tmp_qit_config-$run_id";
+		$run_id = uniqid( 'qit_custom_tests_' );
+		$GLOBALS['RUN_ID'] = $run_id;
 
-		$GLOBALS['QIT_HOME'] = $qit_tmp_dir;
-		$GLOBALS['RUN_ID']   = $run_id;
+		// QIT_HOME is already set by bootstrap.php
+		if ( empty( $GLOBALS['QIT_HOME'] ) ) {
+			throw new \RuntimeException( 'QIT_HOME must be set by bootstrap.php before QITTestExtension runs' );
+		}
 
 		$fs = new Filesystem();
 
@@ -60,10 +62,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		$cache_file      = sys_get_temp_dir() . "/qit-init-cache-$cache_timestamp.json";
 		$cache_valid     = file_exists( $cache_file );
 
-		// Detect if running in Paratest (TEST_TOKEN is set) or single-process PHPUnit.
-		$is_paratest = ! empty( getenv( 'TEST_TOKEN' ) );
+		// Detect if running in Paratest (TEST_TOKEN is set to a number) or single-process PHPUnit (TEST_TOKEN starts with 'serial-').
+		$is_paratest = ! empty( getenv( 'TEST_TOKEN' ) ) && strpos( getenv( 'TEST_TOKEN' ), 'serial-' ) !== 0;
 
-		if ( ! getenv( 'CI' ) && ! getenv( 'QIT_FORCE_FRESH_SYNC' ) && $cache_valid ) {
+		if ( ! getenv( 'QIT_FORCE_FRESH_SYNC' ) && $cache_valid ) {
 			echo "Warning: Using cached initialization data from $cache_file\n";
 			try {
 				$cached_data = json_decode( file_get_contents( $cache_file ), true, 512, JSON_THROW_ON_ERROR );
@@ -109,28 +111,19 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				if ( file_exists( sys_get_temp_dir() . '/qit-semaphore' ) ) {
 					unlink( sys_get_temp_dir() . '/qit-semaphore' );
 				}
-				// Delete all directories in the current dir that matches the pattern "tmp_qit_config-*"
-				if ( file_exists( __DIR__ . '/tmp/' ) ) {
-					try {
-						$fs->remove( __DIR__ . '/tmp/' );
-					} catch ( \Exception $e ) {
-						/**
-						 * Try to delete twice, waiting a bit before the second retry, as during
-						 * code review an issue popped up on Mac when deleting resource fork files.
-						 * @link https://github.com/woocommerce/qit-cli/pull/148#issuecomment-2096920576
-						 */
-						sleep( 5 );
-						$fs->remove( __DIR__ . '/tmp/' );
+				// Clean up old tmp_qit_config-* directories in sys_get_temp_dir()
+				$old_test_dirs = glob( sys_get_temp_dir() . '/tmp_qit_config-*' );
+				if ( $old_test_dirs ) {
+					foreach ( $old_test_dirs as $dir ) {
+						try {
+							$fs->remove( $dir );
+						} catch ( \Exception $e ) {
+							// Ignore cleanup errors for old directories
+						}
 					}
 				}
 
-				if ( ! mkdir( __DIR__ . '/tmp', 0755, true ) ) {
-					throw new \RuntimeException( 'Failed to create the tmp directory.' );
-				}
-
-				// Use a persistent cache directory for QIT_HOME.
-				$persistent_cache_dir = __DIR__ . "/tmp/qit-cache-$cache_timestamp";
-				$GLOBALS['QIT_HOME']  = $persistent_cache_dir;
+				// Ensure QIT_HOME directory exists
 				$fs->mkdir( $GLOBALS['QIT_HOME'] );
 
 				// Enable dev mode.
@@ -361,9 +354,11 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 
 		$fs = new Filesystem();
 
-		// Check that $GLOBALS['QIT_HOME'] is inside this directory.
-		if ( strpos( $GLOBALS['QIT_HOME'], __DIR__ ) !== 0 ) {
-			throw new \RuntimeException( sprintf( 'The QIT_HOME directory is not inside the test directory. This is a security risk. QIT_HOME: %s, Test Directory: %s', $GLOBALS['QIT_HOME'], __DIR__ ) );
+		// Check that $GLOBALS['QIT_HOME'] is in a safe location (either test dir or system temp dir)
+		$is_in_test_dir = strpos( $GLOBALS['QIT_HOME'], __DIR__ ) === 0;
+		$is_in_temp_dir = strpos( $GLOBALS['QIT_HOME'], sys_get_temp_dir() ) === 0;
+		if ( ! $is_in_test_dir && ! $is_in_temp_dir ) {
+			throw new \RuntimeException( sprintf( 'The QIT_HOME directory is not in a safe location. QIT_HOME: %s', $GLOBALS['QIT_HOME'] ) );
 		}
 
 		if ( file_exists( __DIR__ . '/qit-env.json' ) ) {

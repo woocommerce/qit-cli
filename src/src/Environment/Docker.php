@@ -513,7 +513,7 @@ class Docker {
 		$process->setIdleTimeout( 600 );
 		$process->run();
 
-		$this->cache->set( 'did_pull_' . $image_name, true, DAY_IN_SECONDS );
+		$this->cache->set( 'did_pull_' . $image_name, true, HOUR_IN_SECONDS );
 
 		if ( ! $process->isSuccessful() ) {
 			throw new \RuntimeException( 'Failed to pull image ' . $image_name );
