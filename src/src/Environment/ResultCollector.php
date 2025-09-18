@@ -189,7 +189,11 @@ class ResultCollector {
 			return;                 // optional → skip
 		}
 
-		$safe     = ltrim( str_replace( [ '/', ':' ], '_', $slug ), '._' );
+		$safe = ltrim( str_replace( [ '/', ':' ], '_', $slug ), '._' );
+		// If slug is empty after sanitization (e.g., for "./"), use "local-package"
+		if ( empty( $safe ) ) {
+			$safe = 'local-package';
+		}
 		$dst      = $dir . '/ctrf/' . $safe . '.json';
 		$dir_path = dirname( $dst );
 		if ( ! is_dir( $dir_path ) ) {
@@ -201,9 +205,17 @@ class ResultCollector {
 
 		/* 1 — host path ------------------------------------------------------- */
 		$host_pkg = $env->test_packages_metadata[ $slug ]['path'] ?? '';
+
+		// Path expansion is now done early in UpEnvironmentCommand, so paths should already be absolute
+		// Just construct the full source path
 		$host_src = rtrim( $host_pkg, '/' ) . '/' . ltrim( $rel, './' );
+
 		if ( is_readable( $host_src ) ) {
-			copy( $host_src, $dst );
+			$copy_result = copy( $host_src, $dst );
+
+			if ( ! $copy_result ) {
+				throw new RuntimeException( "Failed to copy CTRF from $host_src to $dst" );
+			}
 
 			// Validate CTRF from test package
 			$validation = $this->ctrf_validator->validate_file( $dst );
