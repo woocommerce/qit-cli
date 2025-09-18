@@ -2,6 +2,8 @@
 
 namespace QIT_CLI\AI;
 
+use QIT_CLI\App;
+use QIT_CLI\Cache;
 use Symfony\Component\Filesystem\Path;
 
 class AgentVersionChecker {
@@ -9,10 +11,7 @@ class AgentVersionChecker {
 	private const VERSION_FILE = '/.qit-agent-version';
 
 	/** @var string */
-	private const LAST_CHECK_FILE = '/.qit-agent-last-check';
-
-	/** @var int */
-	private const CHECK_INTERVAL = 86400; // 24 hours in seconds
+	private const CACHE_KEY_LAST_CHECK = 'qit_ai_agents_last_check';
 
 	/**
 	 * Check if agents need updating (once per day).
@@ -49,7 +48,7 @@ class AgentVersionChecker {
 				// Some agents missing or outdated - prompt for update
 				return [
 					'status'  => 'outdated',
-					'message' => 'QIT AI agents are outdated or incomplete. Run <info>qit ai:install-agents</info> to update them.',
+					'message' => 'QIT AI agents are outdated or incomplete. Run <info>qit ai:install-agents</info> to update them. (This reminder appears once daily)',
 				];
 			}
 
@@ -62,7 +61,7 @@ class AgentVersionChecker {
 				if ( $installed_version !== $current_version ) {
 					return [
 						'status'  => 'outdated',
-						'message' => 'QIT AI agents are outdated. Run <info>qit ai:install-agents</info> to update them.',
+						'message' => 'QIT AI agents are outdated. Run <info>qit ai:install-agents</info> to update them. (This reminder appears once daily)',
 					];
 				}
 			}
@@ -86,7 +85,7 @@ class AgentVersionChecker {
 		if ( ! is_dir( $agents_dir ) || ! file_exists( $version_file ) ) {
 			return [
 				'status'  => 'not_installed',
-				'message' => 'QIT AI agents are not installed in this project. Run <info>qit ai:install-agents</info> to enable Claude Code integration.',
+				'message' => 'QIT AI agents are not installed in this project. Run <info>qit ai:install-agents</info> to enable Claude Code integration. (This reminder appears once daily)',
 			];
 		}
 
@@ -101,26 +100,26 @@ class AgentVersionChecker {
 	 * @return bool
 	 */
 	private function should_check_agents(): bool {
-		$check_file = getcwd() . '/.claude/agents' . self::LAST_CHECK_FILE;
-		if ( ! file_exists( $check_file ) ) {
+		$cache = App::make( Cache::class );
+		$cache_key = self::CACHE_KEY_LAST_CHECK . '_' . md5( getcwd() );
+		$last_check = $cache->get( $cache_key );
+
+		if ( $last_check === null ) {
 			return true;
 		}
 
-		$last_check = intval( file_get_contents( $check_file ) );
-		return ( time() - $last_check ) > self::CHECK_INTERVAL;
+		// Cache stores the timestamp, check if 24 hours have passed
+		return ( time() - intval( $last_check ) ) > DAY_IN_SECONDS;
 	}
 
 	/**
 	 * Update the last check timestamp.
 	 */
 	private function update_last_check_time(): void {
-		$agents_dir = getcwd() . '/.claude/agents';
-		if ( ! is_dir( $agents_dir ) ) {
-			@mkdir( $agents_dir, 0755, true );
-		}
-
-		$check_file = $agents_dir . self::LAST_CHECK_FILE;
-		file_put_contents( $check_file, time() );
+		$cache = App::make( Cache::class );
+		$cache_key = self::CACHE_KEY_LAST_CHECK . '_' . md5( getcwd() );
+		// Store current timestamp with 25 hour expiration (slightly more than check interval)
+		$cache->set( $cache_key, time(), DAY_IN_SECONDS + HOUR_IN_SECONDS );
 	}
 
 	/**
@@ -159,10 +158,9 @@ class AgentVersionChecker {
 	 * Force a re-check on next command run.
 	 */
 	public function reset_check_timer(): void {
-		$check_file = getcwd() . '/.claude/agents' . self::LAST_CHECK_FILE;
-		if ( file_exists( $check_file ) ) {
-			@unlink( $check_file );
-		}
+		$cache = App::make( Cache::class );
+		$cache_key = self::CACHE_KEY_LAST_CHECK . '_' . md5( getcwd() );
+		$cache->delete( $cache_key );
 	}
 
 	/**
