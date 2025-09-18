@@ -227,7 +227,7 @@ class PerformanceTestManager {
 			$this->output->writeln( sprintf( '<error>Failed to run extension tests: %s</error>', $e->getMessage() ) );
 			$fallback_env         = clone $test_config;
 			$fallback_env->env_id = 'failed_extension_' . uniqid();
-			$failed_result = new PerformanceTestResult( $fallback_env );
+			$failed_result        = new PerformanceTestResult( $fallback_env );
 			$failed_result->set_status( 'failed' );
 			return [
 				'test_result' => $failed_result,
@@ -287,7 +287,7 @@ class PerformanceTestManager {
 
 			$result = $this->run_single_iteration( $env_info, $test_type, $is_baseline, $i );
 			if ( ! $result ) {
-				return null; // Failed to create result - this is a real failure
+				return null;
 			}
 
 			if ( $result->status === 'cancelled' ) {

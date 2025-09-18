@@ -297,10 +297,10 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$notification_params = null;
 		if ( ! empty( $context['woo_id'] ) ) {
 			$notification_params = [
-				'woo_id'          => $context['woo_id'],
-				'woo_version'     => $input->getOption( 'woo' ) ?? 'latest',
-				'is_development'  => $input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
-				'notify'          => $input->getOption( 'notify' ),
+				'woo_id'         => $context['woo_id'],
+				'woo_version'    => $input->getOption( 'woo' ) ?? 'latest',
+				'is_development' => $input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
+				'notify'         => $input->getOption( 'notify' ),
 			];
 		}
 
@@ -711,7 +711,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		// Parse options that should be sent to the API.
 		$parsed_options = parent::parse_options( $input, true );
-		
+
 		// Build options for remote API request.
 		$options = array_merge( $parsed_options, [
 			'woo_id' => $context['woo_id'],
