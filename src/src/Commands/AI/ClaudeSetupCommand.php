@@ -5,13 +5,11 @@ namespace QIT_CLI\Commands\AI;
 use QIT_CLI\App;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class ClaudeSetupCommand extends Command {
-	protected static $defaultName = 'ai:claude-setup';
+	protected static $defaultName = 'ai:claude-setup'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	protected function configure() {
 		$this
@@ -20,12 +18,12 @@ class ClaudeSetupCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		$cwd = getcwd();
+		$cwd             = getcwd();
 		$claude_qit_path = $cwd . '/CLAUDE.qit.md';
-		$claude_md_path = $cwd . '/CLAUDE.md';
+		$claude_md_path  = $cwd . '/CLAUDE.md';
 
 		// Generate the current content to check if update is needed
-		$new_content = $this->generate_claude_qit_content();
+		$new_content  = $this->generate_claude_qit_content();
 		$new_checksum = md5( $new_content );
 
 		// Check if file exists and if it's up to date
@@ -104,15 +102,15 @@ class ClaudeSetupCommand extends Command {
 
 		// Get dynamic content
 		$test_package_schema = $this->get_test_package_schema();
-		$qit_config_schema = $this->get_qit_config_schema();
-		$command_list = $this->get_command_list();
+		$qit_config_schema   = $this->get_qit_config_schema();
+		$command_list        = $this->get_command_list();
 
 		// Replace placeholders
 		$replacements = [
 			'{{COMMAND_HELP_OUTPUTS}}' => '<!-- Use qit <command> --help for detailed command information -->',
-			'{{TEST_PACKAGE_SCHEMA}}' => $test_package_schema,
-			'{{QIT_CONFIG_SCHEMA}}' => $qit_config_schema,
-			'{{COMMAND_LIST}}' => $command_list,
+			'{{TEST_PACKAGE_SCHEMA}}'  => $test_package_schema,
+			'{{QIT_CONFIG_SCHEMA}}'    => $qit_config_schema,
+			'{{COMMAND_LIST}}'         => $command_list,
 		];
 
 		return str_replace( array_keys( $replacements ), array_values( $replacements ), $template );
@@ -130,17 +128,17 @@ class ClaudeSetupCommand extends Command {
 		}
 
 		$schema = file_get_contents( $schema_file );
-		$json = json_decode( $schema, true );
+		$json   = json_decode( $schema, true );
 
 		// Simplify for readability
 		if ( $json && isset( $json['properties'] ) ) {
 			$simplified = [
 				'description' => $json['description'] ?? 'Test package configuration',
-				'properties' => array_map( function( $prop ) {
+				'properties'  => array_map( function ( $prop ) use ( $json ) {
 					return [
-						'type' => $prop['type'] ?? 'unknown',
+						'type'        => $prop['type'] ?? 'unknown',
 						'description' => $prop['description'] ?? '',
-						'required' => in_array( $prop, $json['required'] ?? [], true ),
+						'required'    => in_array( $prop, $json['required'] ?? [], true ),
 					];
 				}, $json['properties'] ),
 			];
@@ -159,7 +157,7 @@ class ClaudeSetupCommand extends Command {
 	 */
 	private function get_command_list(): string {
 		$application = App::make( Application::class );
-		$commands = $application->all();
+		$commands    = $application->all();
 
 		// Group commands by namespace
 		$grouped = [];
@@ -179,11 +177,11 @@ class ClaudeSetupCommand extends Command {
 				$group = 'general';
 			}
 
-			if ( ! isset( $grouped[$group] ) ) {
-				$grouped[$group] = [];
+			if ( ! isset( $grouped[ $group ] ) ) {
+				$grouped[ $group ] = [];
 			}
 
-			$grouped[$group][] = sprintf( "  %-30s %s", $name, $description );
+			$grouped[ $group ][] = sprintf( '  %-30s %s', $name, $description );
 		}
 
 		// Sort groups
@@ -193,10 +191,10 @@ class ClaudeSetupCommand extends Command {
 		$output = [];
 		foreach ( $grouped as $group => $group_commands ) {
 			$group_title = ucfirst( str_replace( '-', ' ', $group ) );
-			$output[] = "### $group_title Commands\n";
-			$output[] = "```";
-			$output[] = implode( "\n", $group_commands );
-			$output[] = "```\n";
+			$output[]    = "### $group_title Commands\n";
+			$output[]    = '```';
+			$output[]    = implode( "\n", $group_commands );
+			$output[]    = "```\n";
 		}
 
 		return implode( "\n", $output );
@@ -212,15 +210,15 @@ class ClaudeSetupCommand extends Command {
 		}
 
 		$schema = file_get_contents( $schema_file );
-		$json = json_decode( $schema, true );
+		$json   = json_decode( $schema, true );
 
 		// Simplify for readability
 		if ( $json && isset( $json['properties'] ) ) {
 			$simplified = [
 				'description' => $json['description'] ?? 'QIT configuration for extensions',
-				'properties' => array_map( function( $prop ) {
+				'properties'  => array_map( function ( $prop ) {
 					return [
-						'type' => $prop['type'] ?? 'unknown',
+						'type'        => $prop['type'] ?? 'unknown',
 						'description' => $prop['description'] ?? '',
 					];
 				}, $json['properties'] ),
@@ -234,5 +232,4 @@ class ClaudeSetupCommand extends Command {
 		}
 		return "```json\n$schema\n```";
 	}
-
 }

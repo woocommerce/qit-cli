@@ -7,9 +7,6 @@ use QIT_CLI\Config;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Question\ConfirmationQuestion;
-use Symfony\Component\Console\Question\Question;
-use Symfony\Component\Filesystem\Path;
 
 class InstallAgentsCommand extends QITCommand {
 	/** @var Config */
@@ -116,10 +113,10 @@ HELP
 
 			if ( file_put_contents( $target_file, $content ) !== false ) {
 				$output->writeln( sprintf( '  <info>✓</info> %s: %s', $action, $filename ) );
-				++ $copied_count;
+				++$copied_count;
 			} else {
 				$output->writeln( sprintf( '  <error>✗</error> Failed to write: %s', $filename ) );
-				++ $failed_count;
+				++$failed_count;
 			}
 		}
 
@@ -128,7 +125,6 @@ HELP
 			if ( ! $this->save_version( $agents_dir, $current_version ) ) {
 				$output->writeln( '<warning>Warning: Could not save version information</warning>' );
 			}
-
 		}
 
 		// Final summary
@@ -203,7 +199,7 @@ HELP
 		$output->writeln( '<info>✓ Created/updated CLAUDE.qit.md</info>' );
 
 		// Check if import already exists
-		$content = file_get_contents( $claude_md_path );
+		$content     = file_get_contents( $claude_md_path );
 		$import_line = '@CLAUDE.qit.md';
 
 		if ( strpos( $content, $import_line ) !== false ) {
@@ -523,8 +519,8 @@ MARKDOWN;
 	/**
 	 * Remove obsolete agents that are no longer part of the system.
 	 *
-	 * @param string $agents_dir The agents directory path.
-	 * @param array $current_agents Array of current agent filenames.
+	 * @param string          $agents_dir The agents directory path.
+	 * @param array           $current_agents Array of current agent filenames.
 	 * @param OutputInterface $output The output interface.
 	 * @return int Number of agents removed
 	 */
@@ -548,7 +544,7 @@ MARKDOWN;
 			if ( ! array_key_exists( $filename, $current_agents ) ) {
 				if ( @unlink( $existing_file ) ) {
 					$output->writeln( sprintf( '  <comment>✓</comment> Removed obsolete agent: %s', $filename ) );
-					$removed_count++;
+					++$removed_count;
 				}
 			}
 		}
@@ -564,7 +560,7 @@ MARKDOWN;
 	 * Check if all required agents are present.
 	 *
 	 * @param string $agents_dir The agents directory path.
-	 * @param array $agents Array of required agents.
+	 * @param array  $agents Array of required agents.
 	 * @return bool True if all agents are present
 	 */
 	private function check_all_agents_present( string $agents_dir, array $agents ): bool {
@@ -575,5 +571,4 @@ MARKDOWN;
 		}
 		return true;
 	}
-
 }
