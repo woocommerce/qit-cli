@@ -166,10 +166,11 @@ try {
 
 $is_connected_to_backend = false;
 
-// Check AI agents status (once per day, only if not doing autocompletion or JSON output)
-// Skip check if running ai:install-agents command to avoid circular notification
-$is_install_agents = in_array( 'ai:install-agents', $GLOBALS['argv'] ?? [], true );
-if ( ! $container->getVar( 'doing_autocompletion' ) && ! in_array( '--json', $GLOBALS['argv'] ?? [], true ) && ! $is_install_agents ) {
+// Check AI agents status (once per week, only if not doing autocompletion or JSON output)
+// Skip check if running ai:install-agents or ai:claude-setup commands to avoid circular notification
+$is_ai_setup_command = in_array( 'ai:install-agents', $GLOBALS['argv'] ?? [], true ) ||
+						in_array( 'ai:claude-setup', $GLOBALS['argv'] ?? [], true );
+if ( ! $container->getVar( 'doing_autocompletion' ) && ! in_array( '--json', $GLOBALS['argv'] ?? [], true ) && ! $is_ai_setup_command ) {
 	try {
 		$agent_checker = new \QIT_CLI\AI\AgentVersionChecker();
 		$agent_status  = $agent_checker->check_agent_status();

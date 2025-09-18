@@ -14,7 +14,7 @@ class AgentVersionChecker {
 	private const CACHE_KEY_LAST_CHECK = 'qit_ai_agents_last_check';
 
 	/**
-	 * Check if agents need updating (once per day).
+	 * Check if agents need updating (once per week).
 	 *
 	 * @return array|null Array with status info or null if check not needed
 	 */
@@ -46,9 +46,11 @@ class AgentVersionChecker {
 			// Agents directory exists, check if all required agents are present
 			if ( ! $this->agents_are_installed( $agents_dir ) ) {
 				// Some agents missing or outdated - prompt for update
+				// Check if experimental AI is enabled (ai:install-agents exists)
+				$command = $this->is_experimental_ai_enabled() ? 'ai:install-agents' : 'ai:claude-setup';
 				return [
 					'status'  => 'outdated',
-					'message' => 'QIT AI agents are outdated or incomplete. Run <info>qit ai:install-agents</info> to update them. (This reminder appears once daily)',
+					'message' => sprintf( 'QIT AI agents are outdated or incomplete. Run <info>qit %s</info> to update them. (This reminder appears once weekly)', $command ),
 				];
 			}
 
@@ -59,9 +61,11 @@ class AgentVersionChecker {
 				$current_version = $this->calculate_current_version();
 
 				if ( $installed_version !== $current_version ) {
+					// Check if experimental AI is enabled (ai:install-agents exists)
+					$command = $this->is_experimental_ai_enabled() ? 'ai:install-agents' : 'ai:claude-setup';
 					return [
 						'status'  => 'outdated',
-						'message' => 'QIT AI agents are outdated. Run <info>qit ai:install-agents</info> to update them. (This reminder appears once daily)',
+						'message' => sprintf( 'QIT AI agents are outdated. Run <info>qit %s</info> to update them. (This reminder appears once weekly)', $command ),
 					];
 				}
 			}
@@ -83,9 +87,11 @@ class AgentVersionChecker {
 
 		// Check if agents are installed
 		if ( ! is_dir( $agents_dir ) || ! file_exists( $version_file ) ) {
+			// Check if experimental AI is enabled (ai:install-agents exists)
+			$command = $this->is_experimental_ai_enabled() ? 'ai:install-agents' : 'ai:claude-setup';
 			return [
 				'status'  => 'not_installed',
-				'message' => 'QIT AI agents are not installed in this project. Run <info>qit ai:install-agents</info> to enable Claude Code integration. (This reminder appears once daily)',
+				'message' => sprintf( 'QIT AI agents are not installed in this project. Run <info>qit %s</info> to enable Claude Code integration. (This reminder appears once weekly)', $command ),
 			];
 		}
 
@@ -95,7 +101,7 @@ class AgentVersionChecker {
 	}
 
 	/**
-	 * Check if we should check agent status (once per day).
+	 * Check if we should check agent status (once per week).
 	 *
 	 * @return bool
 	 */
@@ -108,8 +114,8 @@ class AgentVersionChecker {
 			return true;
 		}
 
-		// Cache stores the timestamp, check if 24 hours have passed
-		return ( time() - intval( $last_check ) ) > DAY_IN_SECONDS;
+		// Cache stores the timestamp, check if 7 days have passed
+		return ( time() - intval( $last_check ) ) > WEEK_IN_SECONDS;
 	}
 
 	/**
@@ -118,8 +124,8 @@ class AgentVersionChecker {
 	private function update_last_check_time(): void {
 		$cache = App::make( Cache::class );
 		$cache_key = self::CACHE_KEY_LAST_CHECK . '_' . md5( getcwd() );
-		// Store current timestamp with 25 hour expiration (slightly more than check interval)
-		$cache->set( $cache_key, time(), DAY_IN_SECONDS + HOUR_IN_SECONDS );
+		// Store current timestamp with 8 day expiration (slightly more than check interval)
+		$cache->set( $cache_key, time(), WEEK_IN_SECONDS + DAY_IN_SECONDS );
 	}
 
 	/**
@@ -178,6 +184,17 @@ class AgentVersionChecker {
 		       getenv( 'JENKINS_URL' ) !== false ||
 		       getenv( 'BUILDKITE' ) !== false ||
 		       getenv( 'TRAVIS' ) !== false;
+	}
+
+	/**
+	 * Check if experimental AI agents are enabled.
+	 * This is controlled by the QIT_USE_EXPERIMENTAL_AI_AGENTS environment variable.
+	 *
+	 * @return bool
+	 */
+	private function is_experimental_ai_enabled(): bool {
+		// Check if experimental AI agents are enabled
+		return getenv( 'QIT_USE_EXPERIMENTAL_AI_AGENTS' ) === '1';
 	}
 
 	/**
