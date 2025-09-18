@@ -275,9 +275,9 @@ class PerformanceTestManager {
 	 * @param PerformanceEnvInfo $env_info The environment to test against.
 	 * @param string             $test_type Test type for logging ('baseline' or 'extension').
 	 * @param bool               $is_baseline Whether this is a baseline test.
-	 * @return PerformanceTestResult[]|null Array of test results or null if failed to create results.
+	 * @return PerformanceTestResult[] Array of test results.
 	 */
-	private function run_test_iterations( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline ): ?array {
+	private function run_test_iterations( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline ): array {
 		$results = [];
 
 		// Run tests multiple times for stability.
@@ -286,9 +286,6 @@ class PerformanceTestManager {
 			$this->output->writeln( sprintf( '<comment>Running %s test iteration %d/%d...</comment>', $test_type, $i, $this->test_iterations ) );
 
 			$result = $this->run_single_iteration( $env_info, $test_type, $is_baseline, $i );
-			if ( ! $result ) {
-				return null;
-			}
 
 			if ( $result->status === 'cancelled' ) {
 				return [ $result ];
@@ -310,9 +307,9 @@ class PerformanceTestManager {
 	 * @param string             $test_type Test type for logging.
 	 * @param bool               $is_baseline Whether this is a baseline test.
 	 * @param int                $iteration_number Current iteration number.
-	 * @return PerformanceTestResult|null Test result or null if failed to create result.
+	 * @return PerformanceTestResult Test result.
 	 */
-	private function run_single_iteration( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline, int $iteration_number ): ?PerformanceTestResult {
+	private function run_single_iteration( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline, int $iteration_number ): PerformanceTestResult {
 		// Create nested iteration directory.
 		$iteration_env_info         = clone $env_info;
 		$iteration_env_info->env_id = $env_info->env_id . "/iter{$iteration_number}";
