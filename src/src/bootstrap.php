@@ -181,7 +181,8 @@ if ( ! $container->getVar( 'doing_autocompletion' ) && ! in_array( '--json', $GL
 			// Display notification based on status
 			switch ( $agent_status['status'] ) {
 				case 'not_installed':
-					$output->writeln( '<comment>' . $agent_status['message'] . '</comment>' );
+					// Temporarily disable not_installed message. Rely on documentation.
+					// $output->writeln( '<comment>' . $agent_status['message'] . '</comment>' );
 					break;
 				case 'outdated':
 					$output->writeln( '<fg=yellow>' . $agent_status['message'] . '</>' );
