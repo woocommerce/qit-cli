@@ -92,7 +92,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		DynamicCommandCreator::add_schema_to_command(
 			$this,
 			$schemas['performance'],
-			[], // No exceptions - include all schema properties.
+			[ 'wordpress_version', 'woocommerce_version' ],  // Exclude these - we use --wp and --woo instead.
 			[]  // No whitelist - include all properties.
 		);
 
@@ -106,12 +106,11 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		// Add performance-specific options that might not be in the current schema.
 		// These are needed for local execution and will also work for remote execution.
 		$this
-			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run.', '' )
+			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run.', 'default.js' )
 			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests before the main tests.' )
 			->addOption( 'iterations', null, InputOption::VALUE_OPTIONAL, 'Number of test iterations to run for metric stability (default: 3)', 3 )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' );
 
-		// Add version aliases that local code expects (reuse from UpEnvironmentCommand).
 		$this
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
@@ -387,7 +386,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	 */
 	protected function create_test_configuration( InputInterface $input, array $context ): PerformanceEnvInfo {
 		$test_tag     = $input->getArgument( 'test' ) ?? '';
-		$k6_test_file = $input->getOption( 'k6_test_file' ) ?? '';
+		$k6_test_file = $input->getOption( 'k6_test_file' ) ?: 'default.js';
 		$no_baseline  = $input->getOption( 'no_baseline' );
 
 		$env_info               = new PerformanceEnvInfo();
@@ -716,6 +715,16 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$options = array_merge( $parsed_options, [
 			'woo_id' => $context['woo_id'],
 		] );
+
+		// Map --wp and --woo to wordpress_version and woocommerce_version for API compatibility.
+		// The API schema expects the long form, but we expose the short form to users for consistency
+		// with local execution. A larger refactor would be needed to improve consistency	.
+		if ( $input->hasOption( 'wp' ) && $input->getOption( 'wp' ) ) {
+			$options['wordpress_version'] = $input->getOption( 'wp' );
+		}
+		if ( $input->hasOption( 'woo' ) && $input->getOption( 'woo' ) ) {
+			$options['woocommerce_version'] = $input->getOption( 'woo' );
+		}
 
 		// Add test tag to options for remote execution.
 		$test_argument = $input->getArgument( 'test' );
