@@ -718,7 +718,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		// Map --wp and --woo to wordpress_version and woocommerce_version for API compatibility.
 		// The API schema expects the long form, but we expose the short form to users for consistency
-		// with local execution. A larger refactor would be needed to improve consistency	.
+		// with local execution. A larger refactor would be needed to improve consistency.
 		if ( $input->hasOption( 'wp' ) && $input->getOption( 'wp' ) ) {
 			$options['wordpress_version'] = $input->getOption( 'wp' );
 		}

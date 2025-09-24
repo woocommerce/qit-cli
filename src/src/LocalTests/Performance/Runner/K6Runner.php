@@ -134,7 +134,7 @@ class K6Runner {
 			$test_tag = $env_info->test_tag ?: 'default';
 			throw new \RuntimeException(
 				"No performance tests found for extension '{$env_info->sut_slug}' with test tag '{$test_tag}'. " .
-				"Please check if the test tag is valid or if custom tests have been uploaded for this extension."
+				'Please check if the test tag is valid or if custom tests have been uploaded for this extension.'
 			);
 		}
 
