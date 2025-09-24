@@ -92,7 +92,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		DynamicCommandCreator::add_schema_to_command(
 			$this,
 			$schemas['performance'],
-			[ 'wordpress_version', 'woocommerce_version' ],  // Exclude these - we use --wp and --woo instead.
+			[],
 			[]  // No whitelist - include all properties.
 		);
 
@@ -112,8 +112,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' );
 
 		$this
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'wp' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'woo' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' );
@@ -192,6 +190,15 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$options                    = $this->parse_options( $input );
 			$env_up_options             = $options['env_up'];
 			$env_up_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
+
+			// Map schema version options to environment options for local execution compatibility.
+			// UpEnvironmentCommand expects --wp and --woo, but schema provides wordpress_version and woocommerce_version.
+			if ( $input->hasOption( 'wordpress_version' ) && $input->getOption( 'wordpress_version' ) ) {
+				$env_up_options['--wp'] = $input->getOption( 'wordpress_version' );
+			}
+			if ( $input->hasOption( 'woocommerce_version' ) && $input->getOption( 'woocommerce_version' ) ) {
+				$env_up_options['--woo'] = $input->getOption( 'woocommerce_version' );
+			}
 
 			// Validate input once.
 			$wait              = $input->getOption( 'up_only' );
@@ -297,7 +304,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		if ( ! empty( $context['woo_id'] ) ) {
 			$notification_params = [
 				'woo_id'         => $context['woo_id'],
-				'woo_version'    => $input->getOption( 'woo' ) ?? 'latest',
+				'woo_version'    => $input->getOption( 'woocommerce_version' ) ?? 'latest',
 				'is_development' => $input->getOption( 'source' ) && file_exists( $input->getOption( 'source' ) ),
 				'notify'         => $input->getOption( 'notify' ),
 			];
@@ -523,12 +530,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	}
 
 	private function validate_input( InputInterface $input, OutputInterface $output, bool $wait ): int {
-		$woo       = $input->getOption( 'woo' );
+		$woo       = $input->getOption( 'woocommerce_version' );
 		$plugins   = $input->getOption( 'plugin' );
 		$run_local = $input->getOption( 'local' );
 
 		if ( ! empty( $woo ) && ! empty( $plugins ) && in_array( 'woocommerce', $plugins, true ) ) {
-			$output->writeln( '<error>Cannot use both "--woo" and "--plugin woocommerce" together.</error>' );
+			$output->writeln( '<error>Cannot use both "--woocommerce_version" and "--plugin woocommerce" together.</error>' );
 
 			return Command::INVALID;
 		}
@@ -716,21 +723,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			'woo_id' => $context['woo_id'],
 		] );
 
-		// Map --wp and --woo to wordpress_version and woocommerce_version for API compatibility.
-		// The API schema expects the long form, but we expose the short form to users for consistency
-		// with local execution. A larger refactor would be needed to improve consistency.
-		if ( $input->hasOption( 'wp' ) && $input->getOption( 'wp' ) ) {
-			$options['wordpress_version'] = $input->getOption( 'wp' );
-		}
-		if ( $input->hasOption( 'woo' ) && $input->getOption( 'woo' ) ) {
-			$options['woocommerce_version'] = $input->getOption( 'woo' );
-		}
-
 		// Add test tag to options for remote execution.
-		$test_argument = $input->getArgument( 'test' );
-		if ( ! empty( $test_argument ) ) {
-			$options['test_tag'] = $test_argument;
-		}
+		$options['test_tag'] = $input->getArgument( 'test' ) ?: 'default';
 
 		// Add iterations option for remote execution.
 		$iterations = $input->getOption( 'iterations' );
