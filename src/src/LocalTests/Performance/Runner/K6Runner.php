@@ -131,7 +131,11 @@ class K6Runner {
 	 */
 	private function determine_test_file( PerformanceEnvInfo $env_info ): string {
 		if ( empty( $env_info->tests ) ) {
-			throw new \RuntimeException( 'No test directories provided.' );
+			$test_tag = $env_info->test_tag ?: 'default';
+			throw new \RuntimeException(
+				"No performance tests found for extension '{$env_info->sut_slug}' with test tag '{$test_tag}'. " .
+				'Please check if the test tag is valid or if custom tests have been uploaded for this extension.'
+			);
 		}
 
 		if ( $this->output->isVerbose() ) {
