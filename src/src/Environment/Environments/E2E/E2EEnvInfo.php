@@ -82,4 +82,7 @@ class E2EEnvInfo extends EnvInfo {
 
 	/** @var string|null */
 	public ?string $artifacts_dir = null;
+
+	/** @var array<string,string> Resource constraints for all Docker containers (only applied if set) */
+	public array $resource_constraints = [];
 }

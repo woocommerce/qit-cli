@@ -74,6 +74,9 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'test-package', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to set up environment from (processes requirements and runs setup phases)', [] )
 			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
+			/* ─ Resource Constraints ─ */
+			->addOption( 'cpu', null, InputOption::VALUE_OPTIONAL, 'CPU cores per container (e.g., 2, 4)', null )
+			->addOption( 'memory', 'm', InputOption::VALUE_OPTIONAL, 'Memory limit per container (e.g., 2g, 512m)', null )
 			/* ─ Misc ─ */
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
 			->addOption( 'offline', null, InputOption::VALUE_NONE, 'Override: Force offline mode - will error if any test requires network' )
@@ -591,6 +594,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'tunnel_type'             => $env_config['tunnel_type'] ?? 'no_tunnel',
 			'network_restriction'     => $env_config['network_restriction'],
 			'site_url'                => 'http://localhost:8080',
+			'resource_constraints'    => $env_config['resource_constraints'] ?? [],
 		] );
 
 		/* ─ 5. Add QIT_ENV_ID and QIT_NETWORK_RESTRICTION to environment variables ─ */
@@ -892,6 +896,22 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		$merge_simple_list( 'php_extensions', 'php_extension' );
+
+		/*
+		─ Resource constraints ─
+		*/
+		// Initialize resource_constraints if not present
+		if ( ! isset( $config['resource_constraints'] ) ) {
+			$config['resource_constraints'] = [];
+		}
+
+		// Handle resource constraint CLI options (applies to all containers)
+		if ( $input->hasOption( 'cpu' ) && $input->getOption( 'cpu' ) !== null ) {
+			$config['resource_constraints']['cpu'] = $input->getOption( 'cpu' );
+		}
+		if ( $input->hasOption( 'memory' ) && $input->getOption( 'memory' ) !== null ) {
+			$config['resource_constraints']['memory'] = $input->getOption( 'memory' );
+		}
 
 		/*
 		─ Runtime env vars - process files immediately ─

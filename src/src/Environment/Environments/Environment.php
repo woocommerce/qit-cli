@@ -333,12 +333,13 @@ abstract class Environment {
 		$this->env_info->volumes = $volumes;
 
 		$process->setEnv( array_merge( $process->getEnv(), [
-			'QIT_ENV_ID'         => $this->env_info->env_id,
-			'VOLUMES'            => json_encode( $volumes ),
-			'NORMALIZED_ENV_DIR' => $this->env_info->temporary_env,
-			'QIT_DOCKER_NGINX'   => 'yes', // Default. Might be overridden by the concrete environment.
-			'QIT_DOCKER_REDIS'   => 'no', // Default. Might be overridden by the concrete environment.
-			'ENV_VARS'           => json_encode( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ),
+			'QIT_ENV_ID'              => $this->env_info->env_id,
+			'VOLUMES'                 => json_encode( $volumes ),
+			'NORMALIZED_ENV_DIR'      => $this->env_info->temporary_env,
+			'QIT_DOCKER_NGINX'        => 'yes', // Default. Might be overridden by the concrete environment.
+			'QIT_DOCKER_REDIS'        => 'no', // Default. Might be overridden by the concrete environment.
+			'ENV_VARS'                => json_encode( App::getVar( 'QIT_DOCKER_ENV_VARS' ) ),
+			'RESOURCE_CONSTRAINTS'    => json_encode( $this->env_info->resource_constraints ?? [] ),
 		], $this->get_generate_docker_compose_envs() ) );
 
 		if ( $this->output->isVeryVerbose() ) {
