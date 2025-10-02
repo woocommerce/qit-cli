@@ -3,6 +3,7 @@
 namespace QIT_CLI\LocalTests\Performance\Result;
 
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use function QIT_CLI\normalize_path;
 
 class PerformanceTestResult {
 	/** @var PerformanceEnvInfo */
@@ -90,14 +91,14 @@ class PerformanceTestResult {
 	}
 
 	private function create_results_directory(): string {
-		if ( ! empty( getenv( 'QIT_RESULTS_DIR' ) ) ) {
-			$results_dir = \QIT_CLI\normalize_path( getenv( 'QIT_RESULTS_DIR' ) );
-		} else {
-			$results_dir = \QIT_CLI\normalize_path( sys_get_temp_dir() ) . "qit-results-{$this->env_info->env_id}";
-		}
+		$base_dir = ! empty( getenv( 'QIT_RESULTS_DIR' ) )
+			? getenv( 'QIT_RESULTS_DIR' )
+			: sys_get_temp_dir() . '/qit-results';
+
+		$results_dir = normalize_path( $base_dir, false ) . '/' . $this->env_info->env_id;
 
 		if ( ! file_exists( $results_dir ) ) {
-			if ( ! mkdir( $results_dir, 0755, true ) ) {
+			if ( ! mkdir( $results_dir, 0777, true ) ) {
 				throw new \RuntimeException( 'Could not create results directory: ' . $results_dir );
 			}
 		}
