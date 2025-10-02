@@ -1306,10 +1306,12 @@
                                 "compatibility"
                             ]
                         },
-                        "test_tag": {
-                            "description": "The performance test tag to run for performance testing.",
-                            "type": "string",
-                            "default": ""
+                        "iterations": {
+                            "description": "Number of test iterations to run for metric stability.",
+                            "type": "integer",
+                            "default": 3,
+                            "minimum": 1,
+                            "maximum": 10
                         },
                         "additional_plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",

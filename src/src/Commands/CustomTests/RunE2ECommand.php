@@ -114,13 +114,15 @@ class RunE2ECommand extends QITCommand {
 
 	protected function configureMainOptions(): void {
 		$this->setDescription( 'Run E2E tests' )
-			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or ID (system‑under‑test)' )
+			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension identifier: plugin/theme slug or WooCommerce.com ID' )
 			->addArgument( 'passthrough', InputArgument::IS_ARRAY, 'Arguments after --' )
-			->addOption( 'passthrough_target', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
-			'Test packages that should receive passthrough arguments (multiple allowed)', [] )
 			/* ─────────────── SUT‑related options ─────────────── */
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL,
-			'Use a custom ZIP (or directory/URL) as the SUT build' )
+			'Custom source for the plugin/theme (local ZIP, local directory, or URL to a .zip file)' )
+			->addOption( 'source', null, InputOption::VALUE_OPTIONAL,
+			'[Deprecated] Use --zip instead' )
+			->addOption( 'passthrough_target', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+			'Test packages that should receive passthrough arguments (multiple allowed)', [] )
 
 			/*
 			─────────────── Shared Options (reused from env:up) ───────────────
@@ -1608,6 +1610,14 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
+
+		// Check if a custom source is provided via --zip or --source option
+		$custom_source = $input->getOption( 'zip' ) ?: $input->getOption( 'source' );
+		if ( $custom_source ) {
+			// Append the custom source to the slug using @ separator
+			// This accepts: local ZIP files, local directories, or URLs
+			$woo_extension_slug = $woo_extension_slug . '@' . $custom_source;
+		}
 
 		// Add to env:up options
 		if ( ! isset( $env_up_options[ $key ] ) ) {

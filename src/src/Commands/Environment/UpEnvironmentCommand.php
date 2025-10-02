@@ -4,6 +4,7 @@ declare( strict_types=1 );
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\Commands\QITCommand;
+use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
@@ -32,15 +33,18 @@ class UpEnvironmentCommand extends QITCommand {
 	private \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver;
 	/** @var \QIT_CLI\Environment\EnvironmentVars */
 	private \QIT_CLI\Environment\EnvironmentVars $environment_vars;
+	/** @var EnvironmentMonitor */
+	private EnvironmentMonitor $environment_monitor;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver, \QIT_CLI\Environment\EnvironmentVars $environment_vars ) {
+	public function __construct( E2EEnvironment $e2e_environment, PerformanceEnvironment $performance_environment, TunnelRunner $tunnel_runner, \QIT_CLI\PreCommand\Extensions\VersionResolver $version_resolver, \QIT_CLI\Environment\EnvironmentVars $environment_vars, EnvironmentMonitor $environment_monitor ) {
 		$this->e2e_environment         = $e2e_environment;
 		$this->performance_environment = $performance_environment;
 		$this->tunnel_runner           = $tunnel_runner;
 		$this->version_resolver        = $version_resolver;
 		$this->environment_vars        = $environment_vars;
+		$this->environment_monitor     = $environment_monitor;
 		parent::__construct();
 	}
 
@@ -650,7 +654,15 @@ class UpEnvironmentCommand extends QITCommand {
 			$output->writeln( 'To run manual tests:' );
 			$output->writeln( '  1. Navigate to your test directory' );
 			$output->writeln( '  2. Load environment variables in this terminal:' );
-			$output->writeln( sprintf( '     <info>source "$(qit env:source %s)"</info>', $env_info->env_id ) );
+
+			// Check if this is the only running environment
+			$running_environments = $this->environment_monitor->get();
+			if ( count( $running_environments ) === 1 ) {
+				$output->writeln( '     <info>source "$(qit env:source)"</info>' );
+			} else {
+				$output->writeln( sprintf( '     <info>source "$(qit env:source %s)"</info>', $env_info->env_id ) );
+			}
+
 			$output->writeln( '  3. Run your tests:' );
 			$output->writeln( '     <info>npx playwright test</info>' );
 		}

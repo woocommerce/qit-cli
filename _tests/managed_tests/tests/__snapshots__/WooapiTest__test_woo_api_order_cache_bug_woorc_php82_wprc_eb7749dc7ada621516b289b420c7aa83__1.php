@@ -43,6 +43,8 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
+            "test_tag": "",
+            "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}",
             "ctrf_json_extracted": "{EXTRACTED}",
@@ -1577,6 +1579,8 @@
                             "attachments": [],
                             "stdout": [
                                 "DISABLE_HPOS: undefined\\n",
+                                "Trying to switch on HPOS...\\n",
+                                "HPOS Switched on successfully\\n",
                                 "HPOS configuration (woocommerce_custom_orders_table_enabled): yes - High-performance order storage (recommended)\\n"
                             ],
                             "stderr": [],
@@ -2378,7 +2382,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-api\\/tests\\/api-tests\\/data\\/data-crud.test.js",
-                                            "line": 3961,
+                                            "line": 3986,
                                             "column": 7
                                         }
                                     }
