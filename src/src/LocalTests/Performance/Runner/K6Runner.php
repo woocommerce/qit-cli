@@ -35,10 +35,9 @@ class K6Runner {
 
 	/**
 	 * @param PerformanceEnvInfo    $env_info
-	 * @param array<mixed>          $test_infos
 	 * @param PerformanceTestResult $test_result
 	 */
-	public function run_test( PerformanceEnvInfo $env_info, array $test_infos, PerformanceTestResult $test_result ): int {
+	public function run_test( PerformanceEnvInfo $env_info, PerformanceTestResult $test_result ): int {
 		$this->performance_test_result = $test_result;
 
 		$this->setup_test_environment();
@@ -47,8 +46,7 @@ class K6Runner {
 		$k6_args = $this->docker_config->build_k6_docker_args(
 			$env_info,
 			$test_result->get_results_dir(),
-			"qit_env_k6_{$env_info->env_id}",
-			$test_infos
+			"qit_env_k6_{$env_info->env_id}"
 		);
 
 		$exit_code = $this->execute_k6_tests( $env_info, $k6_args );
@@ -110,7 +108,7 @@ class K6Runner {
 		}
 
 		$process->run( function ( $type, $buffer ) {
-			if ( $this->output->isVerbose() || $type === Process::ERR ) {
+			if ( $this->output->isVerbose() || $type === Process::OUT || $type === Process::ERR ) {
 				$this->output->write( $buffer );
 			}
 		} );
@@ -127,103 +125,34 @@ class K6Runner {
 	}
 
 	/**
-	 * Determine which test file to use based on environment info.
+	 * Determine which test file to use from test packages.
 	 */
 	private function determine_test_file( PerformanceEnvInfo $env_info ): string {
-		if ( empty( $env_info->tests ) ) {
-			$test_tag = $env_info->test_tag ?: 'default';
+		if ( empty( $env_info->test_packages_for_setup ) ) {
 			throw new \RuntimeException(
-				"No performance tests found for extension '{$env_info->sut_slug}' with test tag '{$test_tag}'. " .
-				'Please check if the test tag is valid or if custom tests have been uploaded for this extension.'
+				'No test packages available. Please provide a test package via --test-package option.'
 			);
 		}
 
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( '<info>Debug: Available tests in env_info:</info>' );
-			$this->output->writeln( json_encode( $env_info->tests, JSON_PRETTY_PRINT ) );
-		}
+		$k6_file        = $env_info->k6_test_file ?: 'default.js';
+		$possible_paths = str_contains( $k6_file, '/' ) ? [ $k6_file ] : [ $k6_file, 'scenarios/' . $k6_file ];
 
-		$target_file = ! empty( $env_info->k6_test_file ) ? $env_info->k6_test_file : null;
+		foreach ( $env_info->test_packages_for_setup as $pkg_info ) {
+			foreach ( $possible_paths as $target_file ) {
+				$full_host_path = $pkg_info['path'] . '/' . $target_file;
 
-		foreach ( $env_info->tests as $test_info ) {
-			$test_file = $this->find_test_file_in_directory( $test_info, $target_file );
-			if ( $test_file ) {
-				return $test_file;
-			}
-		}
-
-		// No tests found.
-		$error_context = $target_file ? "specific test file '{$target_file}'" : 'any k6 test files';
-		throw new \RuntimeException(
-			"No {$error_context} found for extension: {$env_info->sut_slug} with test tag: " . ( $env_info->test_tag ?: 'default' )
-		);
-	}
-
-	/**
-	 * Find a test file in the given directory.
-	 *
-	 * @param array<string,string> $test_info Test directory information.
-	 * @param string|null          $target_file Specific file to search for, or null for any k6 file.
-	 */
-	private function find_test_file_in_directory( array $test_info, ?string $target_file ): ?string {
-		$host_path = $test_info['path_in_host'];
-
-		if ( ! is_dir( $host_path ) ) {
-			return null;
-		}
-
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( $target_file ? "<info>Debug: Searching for specific test file: {$target_file}</info>" : '<info>Debug: Searching for any k6 test file</info>' );
-		}
-
-		$directory = new \RecursiveDirectoryIterator( $host_path, \RecursiveDirectoryIterator::SKIP_DOTS );
-		$iterator  = new \RecursiveIteratorIterator( $directory );
-
-		// Apply regex filter for k6 files only if no specific file is requested.
-		if ( ! $target_file ) {
-			$iterator = new \RegexIterator( $iterator, '/\.js$/i' );
-		}
-
-		foreach ( $iterator as $file ) {
-			if ( ! $file->isFile() ) {
-				continue;
-			}
-
-			$relative_path = str_replace( $host_path . '/', '', $file->getPathname() );
-
-			// Check if this file matches our criteria.
-			if ( $this->is_matching_test_file( $relative_path, $target_file ) ) {
-				$container_path = $test_info['path_in_php_container'] . '/' . $relative_path;
-
-				$test_type = $target_file ? 'specific performance' : 'performance';
-				$this->output->writeln( "<info>Using {$test_type} test: {$relative_path}</info>" );
-
-				if ( $this->output->isVerbose() ) {
-					$this->output->writeln( "<info>Debug: Found test file: {$container_path}</info>" );
+				if ( file_exists( $full_host_path ) ) {
+					$container_test_file = $pkg_info['container_path'] . '/' . $target_file;
+					$this->output->writeln( "<info>Using test file: {$container_test_file}</info>" );
+					return $container_test_file;
 				}
-
-				return $container_path;
 			}
 		}
 
-		if ( $target_file && $this->output->isVerbose() ) {
-			$this->output->writeln( "<info>Debug: Specific test file '{$target_file}' not found in {$host_path}</info>" );
-		}
-
-		return null;
-	}
-
-	/**
-	 * Check if a file matches the search criteria.
-	 */
-	private function is_matching_test_file( string $relative_path, ?string $target_file ): bool {
-		if ( ! $target_file ) {
-			// Any k6 file is acceptable (regex filter already applied).
-			return true;
-		}
-
-		// For specific files, check exact match or basename match.
-		return $relative_path === $target_file || basename( $relative_path ) === $target_file;
+		throw new \RuntimeException(
+			"Test file '{$k6_file}' not found in any test package (tried: " . implode( ', ', $possible_paths ) . '). ' .
+			'Please ensure your test package contains the k6 test file at the expected path.'
+		);
 	}
 
 	private function collect_results( PerformanceTestResult $test_result ): void {

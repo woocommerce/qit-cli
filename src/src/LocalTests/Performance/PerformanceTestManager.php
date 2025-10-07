@@ -322,7 +322,7 @@ class PerformanceTestManager {
 		}
 
 		// Run k6 test and handle result.
-		$exit_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
+		$exit_code = $this->k6_runner->run_test( $env_info, $test_result );
 		$test_result->add_metric( 'k6_exit_code', $exit_code );
 
 		if ( $exit_code === 143 ) {

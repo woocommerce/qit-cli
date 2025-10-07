@@ -77,60 +77,6 @@ class PerformanceEnvironment extends Environment {
 			"keepalive_requests 1000;\n";
 	}
 
-	public function up( string $type = 'up' ): void {
-		if ( ! in_array( $type, [ 'up', 'up_and_test' ], true ) ) {
-			throw new \InvalidArgumentException( 'Invalid type: ' . $type );
-		}
-
-		try {
-			App::make( \QIT_CLI\Environment\Docker::class )->find_docker();
-		} catch ( \Exception $e ) {
-			throw new \RuntimeException( 'QIT needs Docker to be able to process this command.' );
-		}
-
-		// Start the benchmark.
-		$start = microtime( true );
-
-		// Download the performance environment.
-		$this->environment_downloader->maybe_download( 'performance' );
-		$this->maybe_create_cache_dir();
-		$this->copy_environment();
-		$this->environment_monitor->environment_added_or_updated( $this->env_info );
-
-		// Extensions will be installed by parent class up() method
-		// Skip manual installation here since install_extensions() is private
-
-		if ( $type === 'up_and_test' && ! empty( $this->env_info->test_packages_metadata ) ) {
-			// Download test packages if needed
-			$packages_to_download = [];
-			foreach ( $this->env_info->test_packages_metadata as $package_id => $metadata ) {
-				if ( isset( $metadata['manifest'] ) && $metadata['manifest'] instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest ) {
-					// Package already downloaded and has manifest
-					continue;
-				}
-				// Add package to download list
-				$packages_to_download[ $package_id ] = $metadata;
-			}
-
-			if ( ! empty( $packages_to_download ) ) {
-				// Download all packages at once
-				$this->test_package_downloader->download( $packages_to_download, $this->cache_dir );
-			}
-		}
-
-		$this->output->writeln( '<info>Starting Docker Environment...</info>' );
-		$this->generate_docker_compose();
-		$this->post_generate_docker_compose();
-		$this->up_docker_compose();
-		$this->post_up();
-
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( 'Server started in ' . round( microtime( true ) - $start, 2 ) . ' seconds' );
-		}
-
-		$this->additional_output();
-	}
-
 	protected function post_up(): void {
 		if ( $this->env_info->tunnel ) {
 			// Host port.
@@ -193,9 +139,10 @@ class PerformanceEnvironment extends Environment {
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
 			'TUNNEL'            => $this->env_info->tunnel ? 'yes' : 'no',
-			'WORDPRESS_VERSION' => $this->env_info->wp,
+			'WORDPRESS_VERSION' => $this->env_info->wp === 'stable' ? 'latest' : $this->env_info->wp,
 			'SITE_URL'          => $this->env_info->site_url,
-			'QIT_DOCKER_REDIS'  => $this->env_info->object_cache ? 'yes' : 'no',
+			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
+			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		] );
 
 		// Generate base data for performance testing.
@@ -243,9 +190,10 @@ class PerformanceEnvironment extends Environment {
 
 	protected function get_generate_docker_compose_envs(): array {
 		return [
-			'PHP_VERSION'      => $this->env_info->php_version,
-			'QIT_DOCKER_REDIS' => $this->env_info->object_cache ? 'yes' : 'no',
-			'DOMAIN'           => $this->env_info->domain,
+			'PHP_VERSION'             => $this->env_info->php,
+			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
+			'DOMAIN'                  => $this->env_info->domain,
+			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		];
 	}
 
@@ -345,7 +293,7 @@ class PerformanceEnvironment extends Environment {
 				sprintf( 'URL: %s', $this->env_info->site_url ),
 				sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
 				'Admin Credentials: admin/password',
-				sprintf( 'PHP Version: %s', $this->env_info->php_version ),
+				sprintf( 'PHP Version: %s', $this->env_info->php ),
 				sprintf( 'WordPress Version: %s', $this->env_info->wp ),
 				sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
 				sprintf( 'Path: %s', $this->env_info->temporary_env ),

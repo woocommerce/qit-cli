@@ -80,6 +80,9 @@ class E2EEnvInfo extends EnvInfo {
 	/** @var bool */
 	public bool $skip_test_phases = false;
 
+	/** @var array<string,string> */
+	public array $additional_vars = [];
+
 	/** @var string|null */
 	public ?string $artifacts_dir = null;
 }

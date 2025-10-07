@@ -20,13 +20,12 @@ class K6DockerConfig {
 	 * @param PerformanceEnvInfo $env_info
 	 * @param string             $results_dir
 	 * @param string             $container_name
-	 * @param array<mixed>       $test_infos
 	 * @return array<string>
 	 */
-	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $test_infos = [] ): array {
+	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name ): array {
 		return array_merge(
 			$this->get_base_docker_args( $env_info, $container_name ),
-			$this->get_volume_mounts( $env_info, $results_dir, $test_infos ),
+			$this->get_volume_mounts( $env_info, $results_dir ),
 			$this->get_environment_variables( $env_info ),
 			$this->get_k6_command()
 		);
@@ -60,11 +59,9 @@ class K6DockerConfig {
 	/**
 	 * @param PerformanceEnvInfo $env_info
 	 * @param string             $results_dir
-	 * @param array<mixed>       $test_infos
 	 * @return array<string>
 	 */
-	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir, array $test_infos = [] ): array {
-		// Base volumes for k6 operation.
+	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir ): array {
 		$volumes = [
 			Config::get_qit_dir() . 'cache/k6' => '/k6-cache',
 			$results_dir                       => '/results',
@@ -76,10 +73,12 @@ class K6DockerConfig {
 			$args[] = "$host_path:$container_path";
 		}
 
-		// Mount test directories.
-		foreach ( $test_infos as $test_info ) {
-			$args[] = '-v';
-			$args[] = "{$test_info['path_in_host']}:{$test_info['path_in_php_container']}";
+		// Mount test packages.
+		if ( ! empty( $env_info->test_packages_for_setup ) ) {
+			foreach ( $env_info->test_packages_for_setup as $pkg_info ) {
+				$args[] = '-v';
+				$args[] = "{$pkg_info['path']}:{$pkg_info['container_path']}";
+			}
 		}
 
 		return $args;
