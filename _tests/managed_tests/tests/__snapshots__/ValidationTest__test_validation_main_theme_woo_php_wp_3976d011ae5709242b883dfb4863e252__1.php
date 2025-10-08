@@ -45,6 +45,8 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
+            "test_tag": "",
+            "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}"
         },

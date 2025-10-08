@@ -64,7 +64,7 @@
                         "JavaScript Console Log": [
                             "Console warning: Console Warning in custom page.",
                             "Console error: Console Error in custom page.",
-                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:209:223\\""
+                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:237:223\\""
                         ]
                     }
                 },
@@ -102,6 +102,8 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
+            "test_tag": "",
+            "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}",
             "ctrf_json_extracted": "{EXTRACTED}",
@@ -234,7 +236,10 @@
                                 "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
-                                "Theme installed successfully.\\n",
+                                "Removing the old version of the theme...\\n",
+                                "Theme updated successfully.\\n",
+                                "Activating \'twentytwentyfour\'...\\n",
+                                "Success: Switched to \'Twenty Twenty-Four\' theme.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
@@ -356,7 +361,7 @@
                             ],
                             "stdout": [
                                 "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a\\n",
-                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a:209:223\\"\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a:237:223\\"\\n",
                                 "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-b\\n"
                             ],
                             "stderr": [],

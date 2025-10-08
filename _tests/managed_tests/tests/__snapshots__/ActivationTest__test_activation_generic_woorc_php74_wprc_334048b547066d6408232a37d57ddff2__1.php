@@ -45,6 +45,8 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
+            "test_tag": "",
+            "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}",
             "ctrf_json_extracted": "{EXTRACTED}",
@@ -177,7 +179,10 @@
                                 "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
-                                "Theme installed successfully.\\n",
+                                "Removing the old version of the theme...\\n",
+                                "Theme updated successfully.\\n",
+                                "Activating \'twentytwentyfour\'...\\n",
+                                "Success: Switched to \'Twenty Twenty-Four\' theme.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
@@ -514,7 +519,7 @@
                         "message": "Warning on all requests",
                         "type": "warning",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
-                        "count": "4"
+                        "count": "2"
                     }
                 ],
                 "debug_log": [
@@ -527,7 +532,7 @@
                         "message": "PHP Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
                     },
                     {
-                        "count": "4",
+                        "count": "2",
                         "message": "PHP Warning: Warning on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
                 ]
