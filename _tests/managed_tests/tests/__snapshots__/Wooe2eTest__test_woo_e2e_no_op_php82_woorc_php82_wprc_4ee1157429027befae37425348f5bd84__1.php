@@ -2714,7 +2714,7 @@
                     "tests": [
                         {
                             "name": "Install WC using WC Beta Tester",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -2837,7 +2837,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-access.spec.js",
                             "retries": 0,
@@ -2878,7 +2880,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
                             "retries": 0,
@@ -2905,7 +2910,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
                             "retries": 0,
@@ -2931,7 +2939,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
                             "retries": 0,
@@ -2957,7 +2968,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
                             "retries": 0,
@@ -2983,7 +2997,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
                             "retries": 0,
@@ -3009,7 +3026,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
                             "retries": 0,
@@ -3035,7 +3055,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
                             "retries": 0,
@@ -3062,7 +3085,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
                             "retries": 0,
@@ -3103,7 +3129,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
                             "retries": 0,
@@ -3140,7 +3169,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
                             "retries": 0,
@@ -3185,7 +3217,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
                             "retries": 0,
@@ -3222,7 +3258,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
                             "retries": 0,
@@ -3259,7 +3299,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
                             "retries": 0,
@@ -4044,7 +4088,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/add-to-cart.spec.js",
                             "retries": 0,
@@ -4071,7 +4119,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/add-to-cart.spec.js",
                             "retries": 0,
@@ -4110,7 +4162,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart.spec.js",
                             "retries": 0,
@@ -4167,7 +4223,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart.spec.js",
                             "retries": 0,
@@ -4223,7 +4283,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4249,7 +4312,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4275,7 +4341,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4301,7 +4370,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4325,7 +4397,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4349,7 +4424,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4375,7 +4453,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4401,7 +4482,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4427,7 +4511,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4451,7 +4538,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
                             "retries": 0,
@@ -4475,7 +4565,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4503,7 +4597,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4530,7 +4628,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4557,7 +4659,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4584,7 +4690,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4611,7 +4721,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4633,12 +4747,16 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4666,12 +4784,16 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4704,7 +4826,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4731,7 +4857,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/checkout.spec.js",
                             "retries": 0,
@@ -4758,7 +4888,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
                             "retries": 0,
@@ -4779,12 +4913,16 @@
                         },
                         {
                             "name": "allows cart block to apply multiple coupons",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
                             "retries": 0,
@@ -4817,7 +4955,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
                             "retries": 0,
@@ -4841,7 +4983,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
                             "retries": 0,
@@ -4867,7 +5013,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
                             "retries": 0,
@@ -4904,7 +5055,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
                             "retries": 0,
@@ -4937,7 +5093,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
                             "retries": 0,
@@ -4970,7 +5131,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
                             "retries": 0,
@@ -5003,7 +5169,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
                             "retries": 0,
@@ -5036,7 +5207,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
                             "retries": 0,
@@ -5071,7 +5247,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5108,7 +5289,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5141,7 +5327,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5174,7 +5365,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5209,7 +5405,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5242,7 +5443,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5275,7 +5481,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5308,7 +5519,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5341,7 +5557,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5365,7 +5586,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5389,7 +5615,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5416,7 +5647,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
                             "retries": 0,
@@ -5455,7 +5688,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
                             "retries": 0,
@@ -5494,7 +5729,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
                             "retries": 0,
@@ -5533,7 +5770,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
                             "retries": 0,
@@ -5576,7 +5815,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
                             "retries": 0,
@@ -5619,7 +5860,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5666,7 +5909,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5713,7 +5958,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5760,7 +6007,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5807,7 +6056,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5854,7 +6105,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5901,7 +6154,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5944,7 +6199,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -5991,7 +6248,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -6038,7 +6297,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -6085,7 +6346,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -6132,7 +6395,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
                             "retries": 0,
@@ -6174,7 +6439,7 @@
                         },
                         {
                             "name": "Merchant can view a list of all customers, filter and download",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -6294,7 +6559,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/color-picker.spec.js",
                             "retries": 0,
@@ -6318,7 +6586,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/color-picker.spec.js",
                             "retries": 0,
@@ -6342,7 +6613,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/color-picker.spec.js",
                             "retries": 0,
@@ -6366,7 +6640,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
@@ -6390,7 +6667,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
@@ -6414,7 +6694,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
@@ -6438,7 +6721,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
@@ -6462,7 +6748,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
                             "retries": 0,
@@ -6486,7 +6775,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/footer.spec.js",
                             "retries": 0,
@@ -6510,7 +6802,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/footer.spec.js",
                             "retries": 0,
@@ -6534,7 +6829,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/footer.spec.js",
                             "retries": 0,
@@ -6558,7 +6856,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/footer.spec.js",
                             "retries": 0,
@@ -6582,7 +6883,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
@@ -6606,37 +6910,15 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Expect \\"toPass\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
                             "attachments": [],
                             "stdout": [
@@ -6655,7 +6937,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
@@ -6679,7 +6964,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
@@ -6703,7 +6991,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
@@ -6727,7 +7018,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
@@ -6751,7 +7045,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
@@ -6775,7 +7072,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
                             "retries": 0,
@@ -6799,7 +7099,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/header.spec.js",
                             "retries": 0,
@@ -6823,7 +7126,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/header.spec.js",
                             "retries": 0,
@@ -6847,7 +7153,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/header.spec.js",
                             "retries": 0,
@@ -6871,7 +7180,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/header.spec.js",
                             "retries": 0,
@@ -6890,12 +7202,16 @@
                         },
                         {
                             "name": "The selected homepage should be focused when is clicked",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e",
+                                "@non-critical"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/homepage.spec.js",
                             "retries": 0,
@@ -6923,12 +7239,16 @@
                         },
                         {
                             "name": "The selected homepage should be visible on the site preview",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e",
+                                "@non-critical"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/homepage.spec.js",
                             "retries": 0,
@@ -6956,12 +7276,16 @@
                         },
                         {
                             "name": "Selected homepage should be applied on the frontend",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e",
+                                "@non-critical"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/homepage.spec.js",
                             "retries": 0,
@@ -6994,7 +7318,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/homepage.spec.js",
                             "retries": 0,
@@ -7018,7 +7344,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/homepage.spec.js",
                             "retries": 0,
@@ -7037,12 +7365,15 @@
                         },
                         {
                             "name": "Logo Picker should be empty initially",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
                             "retries": 0,
@@ -7070,12 +7401,15 @@
                         },
                         {
                             "name": "Selecting an image should update the site preview",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
                             "retries": 0,
@@ -7103,12 +7437,15 @@
                         },
                         {
                             "name": "Changing the image width should update the site preview and the frontend",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
                             "retries": 0,
@@ -7136,12 +7473,15 @@
                         },
                         {
                             "name": "Clicking the Delete button should remove the selected image",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
                             "retries": 0,
@@ -7169,12 +7509,15 @@
                         },
                         {
                             "name": "Clicking the replace image should open the media gallery",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
                             "retries": 0,
@@ -7202,12 +7545,15 @@
                         },
                         {
                             "name": "Logo should be visible after header update",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
                             "retries": 0,
@@ -7235,12 +7581,15 @@
                         },
                         {
                             "name": "The selected image should be visible on the frontend",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
                             "retries": 0,
@@ -7273,7 +7622,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/assembler-hub.spec.js",
                             "retries": 0,
@@ -7297,7 +7649,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/assembler-hub.spec.js",
                             "retries": 0,
@@ -7321,7 +7676,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/assembler-hub.spec.js",
                             "retries": 0,
@@ -7345,7 +7703,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/intro.spec.js",
                             "retries": 0,
@@ -7369,7 +7730,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/intro.spec.js",
                             "retries": 0,
@@ -7393,7 +7757,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/intro.spec.js",
                             "retries": 0,
@@ -7417,7 +7784,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/intro.spec.js",
                             "retries": 0,
@@ -7441,7 +7811,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/intro.spec.js",
                             "retries": 0,
@@ -7465,7 +7838,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/loading-screen.spec.js",
                             "retries": 0,
@@ -7489,7 +7865,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/loading-screen.spec.js",
                             "retries": 0,
@@ -7508,12 +7887,15 @@
                         },
                         {
                             "name": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
                             "retries": 0,
@@ -7541,12 +7923,15 @@
                         },
                         {
                             "name": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
                             "retries": 0,
@@ -7574,12 +7959,15 @@
                         },
                         {
                             "name": "Clicking on \\"View store\\" should go to the store home page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/transitional.spec.js",
                             "retries": 0,
@@ -8135,7 +8523,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
                             "retries": 0,
@@ -8159,7 +8549,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@skip-on-external-env"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
                             "retries": 0,
@@ -8178,7 +8570,7 @@
                         },
                         {
                             "name": "Send email preview",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8216,7 +8608,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
                             "retries": 0,
@@ -8264,7 +8658,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
                             "retries": 0,
@@ -8288,7 +8684,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
                             "retries": 0,
@@ -8355,7 +8753,7 @@
                         },
                         {
                             "name": "Can enable the email editor",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8388,7 +8786,7 @@
                         },
                         {
                             "name": "Can access the email editor",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8421,7 +8819,7 @@
                         },
                         {
                             "name": "Can preview in new tab",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8454,7 +8852,7 @@
                         },
                         {
                             "name": "Can send test email",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8487,7 +8885,7 @@
                         },
                         {
                             "name": "Can edit and save content",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8621,7 +9019,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e",
+                                "@non-critical"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/overview.spec.js",
                             "retries": 0,
@@ -8751,7 +9152,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/my-account-pay-order.spec.js",
                             "retries": 0,
@@ -8922,7 +9327,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
                             "retries": 0,
@@ -8948,7 +9356,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
                             "retries": 0,
@@ -8974,7 +9385,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
                             "retries": 0,
@@ -9000,7 +9414,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
                             "retries": 0,
@@ -9026,7 +9443,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
                             "retries": 0,
@@ -9052,7 +9472,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
                             "retries": 0,
@@ -9174,7 +9597,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@skip-on-external-env"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
                             "retries": 0,
@@ -9218,12 +9643,14 @@
                         },
                         {
                             "name": "Can complete the core profiler installing default extensions",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@skip-on-external-env"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
                             "retries": 0,
@@ -9256,7 +9683,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@skip-on-external-env"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
                             "retries": 0,
@@ -9285,7 +9714,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
@@ -9320,7 +9751,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
@@ -9341,7 +9774,7 @@
                         },
                         {
                             "name": "Can connect to WooCommerce.com",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -9379,7 +9812,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-order.spec.js",
                             "retries": 0,
@@ -9406,7 +9842,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-order.spec.js",
                             "retries": 0,
@@ -9432,7 +9871,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-order.spec.js",
                             "retries": 0,
@@ -9458,7 +9900,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-order.spec.js",
                             "retries": 0,
@@ -9485,7 +9930,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.js",
                             "retries": 0,
@@ -9511,7 +9961,12 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.js",
                             "retries": 0,
@@ -9535,7 +9990,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.js",
                             "retries": 0,
@@ -9574,7 +10033,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-bulk-edit.spec.js",
                             "retries": 0,
@@ -9601,7 +10063,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-coupon.spec.js",
                             "retries": 0,
@@ -9627,7 +10092,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-coupon.spec.js",
                             "retries": 0,
@@ -9653,7 +10121,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9679,7 +10150,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9703,7 +10177,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9727,7 +10204,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9751,7 +10231,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9775,7 +10258,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9812,7 +10298,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9851,7 +10340,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9877,7 +10369,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9903,7 +10398,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9929,7 +10427,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9955,7 +10456,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -9981,7 +10486,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@hpos",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
                             "retries": 0,
@@ -10054,7 +10563,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
                             "retries": 0,
@@ -10075,12 +10587,15 @@
                         },
                         {
                             "name": "can delete an issued refund",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
                             "retries": 0,
@@ -10115,7 +10630,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
                             "retries": 0,
@@ -10142,7 +10661,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10168,7 +10689,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10192,7 +10715,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10216,7 +10741,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10240,7 +10767,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10264,7 +10793,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10288,7 +10819,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10312,7 +10845,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@hpos"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
                             "retries": 0,
@@ -10333,12 +10868,14 @@
                         },
                         {
                             "name": "can create a grouped product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-grouped-product-block-editor.spec.js",
                             "retries": 0,
@@ -10366,12 +10903,15 @@
                         },
                         {
                             "name": "renders each block without error",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
                             "retries": 0,
@@ -10407,12 +10947,14 @@
                         },
                         {
                             "name": "can create a simple product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
                             "retries": 0,
@@ -10448,12 +10990,14 @@
                         },
                         {
                             "name": "can not create a product with duplicated SKU",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
                             "retries": 0,
@@ -10489,12 +11033,14 @@
                         },
                         {
                             "name": "can a shopper add the simple product to the cart",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
                             "retries": 0,
@@ -10530,12 +11076,14 @@
                         },
                         {
                             "name": "can create a variation option and publish the product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
                             "retries": 0,
@@ -10563,12 +11111,14 @@
                         },
                         {
                             "name": "can edit a variation",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
                             "retries": 0,
@@ -10596,12 +11146,14 @@
                         },
                         {
                             "name": "can delete a variation",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
                             "retries": 0,
@@ -10629,12 +11181,15 @@
                         },
                         {
                             "name": "can see variations warning and click the CTA",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
                             "retries": 0,
@@ -10662,12 +11217,15 @@
                         },
                         {
                             "name": "can see single variation warning and click the CTA",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
                             "retries": 0,
@@ -10695,12 +11253,14 @@
                         },
                         {
                             "name": "is hooked up to sidebar \\"Add New\\"",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
                             "retries": 0,
@@ -10728,12 +11288,14 @@
                         },
                         {
                             "name": "can be disabled from the header",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
                             "retries": 0,
@@ -10761,12 +11323,14 @@
                         },
                         {
                             "name": "can be disabled from settings",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
                             "retries": 0,
@@ -10794,12 +11358,14 @@
                         },
                         {
                             "name": "can create a product with linked products",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.js",
                             "retries": 0,
@@ -10827,12 +11393,14 @@
                         },
                         {
                             "name": "can create a simple product with categories, tags and with password required",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/organization-tab-product-block-editor.spec.js",
                             "retries": 0,
@@ -10860,12 +11428,14 @@
                         },
                         {
                             "name": "add local attribute (with terms) to the Product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
@@ -10893,12 +11463,14 @@
                         },
                         {
                             "name": "can add existing attributes",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
@@ -10926,12 +11498,14 @@
                         },
                         {
                             "name": "can update product attributes",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
@@ -10959,12 +11533,14 @@
                         },
                         {
                             "name": "can remove product attributes",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
                             "retries": 0,
@@ -10992,12 +11568,14 @@
                         },
                         {
                             "name": "can update the general information of a product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
                             "retries": 0,
@@ -11025,12 +11603,14 @@
                         },
                         {
                             "name": "can schedule a product publication",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
                             "retries": 0,
@@ -11058,12 +11638,14 @@
                         },
                         {
                             "name": "can duplicate a product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
                             "retries": 0,
@@ -11091,12 +11673,14 @@
                         },
                         {
                             "name": "can delete a product",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
                             "retries": 0,
@@ -11124,12 +11708,14 @@
                         },
                         {
                             "name": "can add images",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
@@ -11157,12 +11743,14 @@
                         },
                         {
                             "name": "can replace an image",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
@@ -11190,12 +11778,14 @@
                         },
                         {
                             "name": "can remove an image",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
@@ -11223,12 +11813,14 @@
                         },
                         {
                             "name": "can set an image as cover",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
                             "retries": 0,
@@ -11256,12 +11848,14 @@
                         },
                         {
                             "name": "can update sku",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
@@ -11289,12 +11883,14 @@
                         },
                         {
                             "name": "can update stock status",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
@@ -11322,12 +11918,14 @@
                         },
                         {
                             "name": "can track stock quantity",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
@@ -11355,12 +11953,14 @@
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
                             "retries": 0,
@@ -11388,7 +11988,7 @@
                         },
                         {
                             "name": "can add custom product attributes",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11426,7 +12026,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variable-product.spec.js",
                             "retries": 0,
@@ -11499,7 +12101,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variations.spec.js",
                             "retries": 0,
@@ -11572,7 +12176,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-variations.spec.js",
                             "retries": 0,
@@ -11685,7 +12291,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-create-simple.spec.js",
                             "retries": 0,
@@ -11756,7 +12364,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-create-simple.spec.js",
                             "retries": 0,
@@ -11827,7 +12437,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-create-simple.spec.js",
                             "retries": 0,
@@ -12109,7 +12721,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
@@ -12160,7 +12774,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
@@ -12195,7 +12811,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
@@ -12390,7 +13008,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-grouped.spec.js",
                             "retries": 0,
@@ -12416,7 +13037,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-grouped.spec.js",
                             "retries": 0,
@@ -12632,12 +13256,15 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e",
+                                "@non-critical"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
                             "retries": 0,
@@ -12665,12 +13292,14 @@
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
                             "retries": 0,
@@ -12698,12 +13327,14 @@
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "skipped",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
                             "retries": 0,
@@ -12736,7 +13367,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
                             "retries": 0,
@@ -12748,10 +13381,6 @@
                                 },
                                 {
                                     "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -12791,7 +13420,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
                             "retries": 0,
@@ -12807,10 +13438,6 @@
                                 },
                                 {
                                     "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -12846,7 +13473,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
                             "retries": 0,
@@ -12858,10 +13487,6 @@
                                 },
                                 {
                                     "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -12901,7 +13526,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
                             "retries": 0,
@@ -12913,10 +13540,6 @@
                                 },
                                 {
                                     "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -13103,7 +13726,7 @@
                         },
                         {
                             "name": "can reply to a product review",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -13293,7 +13916,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
                             "retries": 0,
@@ -13319,7 +13945,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
                             "retries": 0,
@@ -13343,7 +13972,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
                             "retries": 0,
@@ -13367,7 +13999,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
                             "retries": 0,
@@ -13393,7 +14028,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
                             "retries": 0,
@@ -13419,7 +14057,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
                             "retries": 0,
@@ -13445,7 +14086,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
                             "retries": 0,
@@ -13471,7 +14116,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
                             "retries": 0,
@@ -13495,7 +14144,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
                             "retries": 0,
@@ -13519,7 +14172,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
                             "retries": 0,
@@ -13545,7 +14202,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
                             "retries": 0,
@@ -13557,10 +14216,6 @@
                                 },
                                 {
                                     "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -13616,10 +14271,6 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Expect \\"toPass\\"",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Expand all variations.",
                                     "status": "passed"
                                 },
@@ -13670,7 +14321,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
                             "retries": 0,
@@ -13682,10 +14335,6 @@
                                 },
                                 {
                                     "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -13719,7 +14368,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
                             "retries": 0,
@@ -13731,10 +14382,6 @@
                                 },
                                 {
                                     "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -13764,7 +14411,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
                             "retries": 0,
@@ -13776,10 +14425,6 @@
                                 },
                                 {
                                     "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -13849,7 +14494,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
                             "retries": 0,
@@ -13861,10 +14508,6 @@
                                 },
                                 {
                                     "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -13918,7 +14561,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
                             "retries": 0,
@@ -13930,10 +14575,6 @@
                                 },
                                 {
                                     "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"toPass\\"",
                                     "status": "passed"
                                 },
                                 {
@@ -14004,7 +14645,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@non-critical",
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-general.spec.js",
                             "retries": 0,
@@ -14028,7 +14673,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-general.spec.js",
                             "retries": 0,
@@ -14182,7 +14829,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-woo-com.spec.js",
                             "retries": 0,
@@ -14208,7 +14858,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-woo-com.spec.js",
                             "retries": 0,
@@ -14232,7 +14885,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/webhooks.spec.js",
                             "retries": 0,
@@ -14258,7 +14913,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/shipping-classes.spec.js",
                             "retries": 0,
@@ -14284,7 +14941,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/shipping-classes.spec.js",
                             "retries": 0,
@@ -14362,7 +15021,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@not-e2e",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-redirection.spec.js",
                             "retries": 0,
@@ -14388,7 +15051,11 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@not-e2e",
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-redirection.spec.js",
                             "retries": 0,
@@ -14414,7 +15081,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
                             "retries": 0,
@@ -14445,7 +15115,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
                             "retries": 0,
@@ -14478,7 +15151,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
                             "retries": 0,
@@ -14513,7 +15189,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/shop-title-after-deletion.spec.js",
                             "retries": 0,
@@ -14539,7 +15217,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/lost-password.spec.js",
                             "retries": 0,
@@ -14563,7 +15243,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@not-e2e"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/lost-password.spec.js",
                             "retries": 0,
@@ -14786,7 +15468,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@wp-core"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-page.spec.js",
                             "retries": 0,
@@ -14812,7 +15497,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@gutenberg",
+                                "@wp-core"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-post.spec.js",
                             "retries": 0,
@@ -14838,7 +15526,9 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@wp-core"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/post-comments.spec.js",
                             "retries": 0,

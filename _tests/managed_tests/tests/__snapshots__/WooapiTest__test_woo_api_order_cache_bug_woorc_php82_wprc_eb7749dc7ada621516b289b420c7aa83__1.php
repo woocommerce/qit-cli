@@ -1458,7 +1458,7 @@
                     "tests": [
                         {
                             "name": "Install WC using WC Beta Tester",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -2257,7 +2257,7 @@
                         },
                         {
                             "name": "can view country data",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -4290,7 +4290,7 @@
                         },
                         {
                             "name": "rating (asc)",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -4321,7 +4321,7 @@
                         },
                         {
                             "name": "popularity (asc)",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -6046,7 +6046,7 @@
                         },
                         {
                             "name": "can retrieve all email settings",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -6104,7 +6104,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@skip-on-pressable",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
                             "retries": 0,
@@ -6126,7 +6129,10 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [],
+                            "tags": [
+                                "@skip-on-pressable",
+                                "@skip-on-wpcom"
+                            ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-crud.test.js",
                             "retries": 0,
