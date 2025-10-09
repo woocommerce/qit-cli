@@ -42,16 +42,17 @@ class K6Runner {
 
 		$this->setup_test_environment();
 
-		// Build and execute k6 test.
+		$k6_command = $this->get_k6_command_from_manifest( $env_info );
+
 		$k6_args = $this->docker_config->build_k6_docker_args(
 			$env_info,
 			$test_result->get_results_dir(),
-			"qit_env_k6_{$env_info->env_id}"
+			"qit_env_k6_{$env_info->env_id}",
+			$k6_command
 		);
 
-		$exit_code = $this->execute_k6_tests( $env_info, $k6_args );
+		$exit_code = $this->execute_k6_tests( $k6_args );
 
-		// Collect and process results.
 		$this->collect_results( $test_result );
 		$test_result->process_results();
 
@@ -78,19 +79,14 @@ class K6Runner {
 	}
 
 	/**
-	 * @param PerformanceEnvInfo $env_info
-	 * @param array<string>      $k6_args
+	 * @param array<string> $k6_args
 	 */
-	private function execute_k6_tests( PerformanceEnvInfo $env_info, array $k6_args ): int {
-		$test_file = $this->determine_test_file( $env_info );
-
+	private function execute_k6_tests( array $k6_args ): int {
 		$this->output->writeln( '<info>Running k6 performance test for WooCommerce extension</info>' );
 		$this->output->writeln( '<comment>Live dashboard available at: http://localhost:5665</comment>' );
 
-		// Execute k6 test.
-		$test_args = array_merge( $k6_args, [ $test_file ] );
-		$process   = new Process( $test_args );
-		$process->setTimeout( 3600 ); // 1 hour timeout
+		$process = new Process( $k6_args );
+		$process->setTimeout( 3600 );
 
 		if ( $this->output->isVeryVerbose() ) {
 			$this->output->writeln( 'Running: ' . $process->getCommandLine() );
@@ -99,7 +95,6 @@ class K6Runner {
 		// Add signal handlers for graceful termination.
 		if ( function_exists( 'pcntl_signal' ) ) {
 			$signal_handler = static function () use ( $process ): void {
-				// Stop the process gracefully.
 				$process->signal( SIGTERM );
 			};
 
@@ -125,34 +120,90 @@ class K6Runner {
 	}
 
 	/**
-	 * Determine which test file to use from test packages.
+	 * Get k6 command array from test package manifest.
+	 *
+	 * @return array<string> k6 command parts (e.g., ['k6', 'run', '--out', 'json=/qit/results/performance.json', 'scenarios/default.js'])
 	 */
-	private function determine_test_file( PerformanceEnvInfo $env_info ): string {
+	private function get_k6_command_from_manifest( PerformanceEnvInfo $env_info ): array {
+		$package_info  = $this->get_test_package_info( $env_info );
+		$run_command   = $this->read_run_command_from_manifest( $package_info );
+		$command_parts = $this->parse_command_string( $run_command );
+
+		return $this->convert_test_file_to_container_path( $command_parts, $package_info );
+	}
+
+	/**
+	 * Get the test package info from env_info.
+	 *
+	 * @param PerformanceEnvInfo $env_info
+	 * @return array{path: string, container_path: string}
+	 */
+	private function get_test_package_info( PerformanceEnvInfo $env_info ): array {
 		if ( empty( $env_info->test_packages_for_setup ) ) {
 			throw new \RuntimeException(
 				'No test packages available. Please provide a test package via --test-package option.'
 			);
 		}
 
-		$k6_file        = $env_info->k6_test_file ?: 'default.js';
-		$possible_paths = str_contains( $k6_file, '/' ) ? [ $k6_file ] : [ $k6_file, 'scenarios/' . $k6_file ];
+		return reset( $env_info->test_packages_for_setup );
+	}
 
-		foreach ( $env_info->test_packages_for_setup as $pkg_info ) {
-			foreach ( $possible_paths as $target_file ) {
-				$full_host_path = $pkg_info['path'] . '/' . $target_file;
+	/**
+	 * Read the run command from the test package manifest.
+	 *
+	 * @param array{path: string, container_path: string} $pkg_info
+	 * @return string
+	 */
+	private function read_run_command_from_manifest( array $pkg_info ): string {
+		$manifest_path = $pkg_info['path'] . '/qit-test.json';
 
-				if ( file_exists( $full_host_path ) ) {
-					$container_test_file = $pkg_info['container_path'] . '/' . $target_file;
-					$this->output->writeln( "<info>Using test file: {$container_test_file}</info>" );
-					return $container_test_file;
-				}
+		if ( ! file_exists( $manifest_path ) ) {
+			throw new \RuntimeException(
+				"Test package manifest not found at: {$manifest_path}"
+			);
+		}
+
+		$manifest = json_decode( file_get_contents( $manifest_path ), true );
+		if ( ! $manifest || ! isset( $manifest['test']['phases']['run'][0] ) ) {
+			throw new \RuntimeException(
+				'Invalid test package manifest: missing test.phases.run'
+			);
+		}
+
+		return $manifest['test']['phases']['run'][0];
+	}
+
+	/**
+	 * Parse a command string into an array of arguments.
+	 *
+	 * @param string $command_string
+	 * @return array<string>
+	 */
+	private function parse_command_string( string $command_string ): array {
+		preg_match_all( '/(?:"[^"]*"|\'[^\']*\'|[^\s]+)/', $command_string, $matches );
+
+		return array_map( function ( $part ) {
+			return trim( $part, '\'"' );
+		}, $matches[0] );
+	}
+
+	/**
+	 * Convert relative paths in command to absolute container paths.
+	 *
+	 * @param array<string> $command_parts
+	 * @param array{path: string, container_path: string} $package_info
+	 * @return array<string>
+	 */
+	private function convert_test_file_to_container_path( array $command_parts, array $package_info ): array {
+		foreach ( $command_parts as $index => $part ) {
+			// Convert relative paths (not starting with /) to absolute container paths.
+			if ( str_ends_with( $part, '.js' ) && ! str_starts_with( $part, '/' ) ) {
+				$command_parts[ $index ] = $package_info['container_path'] . '/' . $part;
+				$this->output->writeln( "<info>Using test file: {$command_parts[$index]}</info>" );
 			}
 		}
 
-		throw new \RuntimeException(
-			"Test file '{$k6_file}' not found in any test package (tried: " . implode( ', ', $possible_paths ) . '). ' .
-			'Please ensure your test package contains the k6 test file at the expected path.'
-		);
+		return $command_parts;
 	}
 
 	private function collect_results( PerformanceTestResult $test_result ): void {

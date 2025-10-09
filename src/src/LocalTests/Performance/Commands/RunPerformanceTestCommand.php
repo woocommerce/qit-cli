@@ -110,7 +110,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'print-report-url', null, InputOption::VALUE_NEGATABLE, '(Optional) Print the test report URL (contains sensitive data - use cautiously in public logs)', false )
 			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false )
-			->addOption( 'k6_test_file', null, InputOption::VALUE_OPTIONAL, 'The k6 test file to run', 'default.js' )
 			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests' )
 			->addOption( 'iterations', null, InputOption::VALUE_OPTIONAL, 'Number of test iterations to run for metric stability', 3 )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT' )
@@ -393,16 +392,14 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	 * @return PerformanceEnvInfo Test configuration.
 	 */
 	protected function create_test_configuration( InputInterface $input, array $context ): PerformanceEnvInfo {
-		$test_tag     = $input->getArgument( 'test' ) ?? '';
-		$k6_test_file = $input->getOption( 'k6_test_file' ) ?: 'default.js';
-		$no_baseline  = $input->getOption( 'no_baseline' );
+		$test_tag    = $input->getArgument( 'test' ) ?? '';
+		$no_baseline = $input->getOption( 'no_baseline' );
 
 		$env_info               = new PerformanceEnvInfo();
 		$env_info->sut_slug     = $context['woo_slug'];
 		$env_info->sut_id       = $context['woo_id'];
 		$env_info->sut_type     = $context['sut_type'];
 		$env_info->test_tag     = $test_tag;
-		$env_info->k6_test_file = $k6_test_file;
 		$env_info->run_baseline = ! $no_baseline;
 		$env_info->php          = $input->getOption( 'php' );
 
@@ -836,47 +833,73 @@ class RunPerformanceTestCommand extends DynamicCommand {
 				return null;
 			}
 
-			// Extract to temp directory.
-			$temp_dir = sys_get_temp_dir() . '/qit-performance-default';
-
-			// Skip extraction if already exists and is valid.
-			if ( is_dir( $temp_dir ) && file_exists( $temp_dir . '/qit-test.json' ) ) {
-				return $temp_dir;
-			}
-
-			// Decode and extract ZIP.
 			$zip_content = base64_decode( $base64_zip, true );
 			if ( $zip_content === false ) {
 				return null;
 			}
 
-			// Write ZIP to temp file.
-			$temp_zip = tempnam( sys_get_temp_dir(), 'perf_' );
-			if ( file_put_contents( $temp_zip, $zip_content ) === false ) {
+			$temp_dir = sys_get_temp_dir() . '/qit-performance-default';
+			if ( ! $this->extract_zip( $zip_content, $temp_dir ) ) {
 				return null;
 			}
-
-			// Extract ZIP.
-			$zip = new \ZipArchive();
-			if ( $zip->open( $temp_zip ) !== true ) {
-				unlink( $temp_zip );
-				return null;
-			}
-
-			// Create temp directory if needed.
-			if ( ! is_dir( $temp_dir ) && ! mkdir( $temp_dir, 0755, true ) ) {
-				$zip->close();
-				unlink( $temp_zip );
-				return null;
-			}
-
-			$zip->extractTo( $temp_dir );
-			$zip->close();
-			unlink( $temp_zip );
 
 			return $temp_dir;
 		} catch ( \Exception $e ) {
 			return null;
 		}
+	}
+
+	/**
+	 * Extract ZIP content to a target directory.
+	 *
+	 * @param string $zip_content The ZIP file content.
+	 * @param string $target_dir  The directory to extract to.
+	 * @return bool True on success, false on failure.
+	 */
+	private function extract_zip( string $zip_content, string $target_dir ): bool {
+		$temp_zip = tempnam( sys_get_temp_dir(), 'perf_' );
+		if ( file_put_contents( $temp_zip, $zip_content ) === false ) {
+			return false;
+		}
+
+		$zip = new \ZipArchive();
+		if ( $zip->open( $temp_zip ) !== true ) {
+			unlink( $temp_zip );
+			return false;
+		}
+
+		if ( ! $this->prepare_temp_dir( $target_dir ) ) {
+			$zip->close();
+			unlink( $temp_zip );
+			return false;
+		}
+
+		$zip->extractTo( $target_dir );
+		$zip->close();
+		unlink( $temp_zip );
+
+		return true;
+	}
+
+	/**
+	 * Prepare a temporary directory by cleaning existing contents and creating a fresh directory.
+	 *
+	 * @param string $dir Directory path to prepare.
+	 * @return bool True on success, false on failure.
+	 */
+	private function prepare_temp_dir( string $dir ): bool {
+		if ( is_dir( $dir ) ) {
+			$files = new \RecursiveIteratorIterator(
+				new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
+				\RecursiveIteratorIterator::CHILD_FIRST
+			);
+
+			foreach ( $files as $file ) {
+				$file->isDir() ? rmdir( $file->getRealPath() ) : unlink( $file->getRealPath() );
+			}
+			rmdir( $dir );
+		}
+
+		return mkdir( $dir, 0755, true );
 	}
 }

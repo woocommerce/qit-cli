@@ -20,14 +20,15 @@ class K6DockerConfig {
 	 * @param PerformanceEnvInfo $env_info
 	 * @param string             $results_dir
 	 * @param string             $container_name
+	 * @param array<string>      $k6_command K6 command from manifest (e.g., ['k6', 'run', '--out', 'json=...', 'test.js'])
 	 * @return array<string>
 	 */
-	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name ): array {
+	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $k6_command ): array {
 		return array_merge(
 			$this->get_base_docker_args( $env_info, $container_name ),
 			$this->get_volume_mounts( $env_info, $results_dir ),
 			$this->get_environment_variables( $env_info ),
-			$this->get_k6_command()
+			$this->convert_k6_command_to_docker( $k6_command )
 		);
 	}
 
@@ -124,18 +125,21 @@ class K6DockerConfig {
 	}
 
 	/**
-	 * @return array<string>
+	 * Convert k6 command from manifest to Docker-compatible format.
+	 *
+	 * Prepends the Docker image and removes the 'k6' prefix if present.
+	 *
+	 * @param array<string> $k6_command Command from manifest (e.g., ['k6', 'run', 'scenarios/default.js'])
+	 * @return array<string> Docker-compatible command with image prepended
 	 */
-	private function get_k6_command(): array {
-		$args = [
-			'grafana/k6:master-with-browser',
-			'run',
-			'--out',
-			'json=/results/result-extended.json',
-			'--summary-export',
-			'/results/result.json',
-		];
+	private function convert_k6_command_to_docker( array $k6_command ): array {
+		if ( isset( $k6_command[0] ) && $k6_command[0] === 'k6' ) {
+			array_shift( $k6_command );
+		}
 
-		return $args;
+		return array_merge(
+			[ 'grafana/k6:master-with-browser' ],
+			$k6_command
+		);
 	}
 }
