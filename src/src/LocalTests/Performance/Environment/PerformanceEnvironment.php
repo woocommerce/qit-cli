@@ -112,6 +112,7 @@ class PerformanceEnvironment extends Environment {
 		$this->activate_required_plugins();
 		$this->activate_plugins_and_themes();
 		$this->enable_payment_method();
+		$this->generate_base_data();
 	}
 
 	/**
@@ -144,9 +145,6 @@ class PerformanceEnvironment extends Environment {
 			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
 			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		] );
-
-		// Generate base data for performance testing.
-		$this->generate_base_data();
 	}
 
 	/**
@@ -327,7 +325,7 @@ class PerformanceEnvironment extends Environment {
 			'echo "Downloading performance database dump..."',
 			"curl -L -o woocommerce_dump.sql.zip {$db_dump_url}",
 			'echo "Importing database..."',
-			"unzip -p woocommerce_dump.sql.zip | mysql -h qit_env_db_{$this->env_info->env_id} -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE --binary-mode=1",
+			"unzip -p woocommerce_dump.sql.zip | mariadb -h qit_env_db_{$this->env_info->env_id} -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE --skip-ssl --binary-mode=1",
 			'rm -f woocommerce_dump.sql.zip',
 			'echo "Database import completed"',
 		] );
