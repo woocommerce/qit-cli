@@ -53,9 +53,6 @@ class PerformanceEnvInfo extends EnvInfo {
 	/** @var int The Woo ID of the extension under test. */
 	public $sut_id;
 
-	/** @var string The performance test tag to be executed */
-	public $test_tag = '';
-
 	/** @var bool Whether to run baseline tests before main tests */
 	public $run_baseline = true;
 

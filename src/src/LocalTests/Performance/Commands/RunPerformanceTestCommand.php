@@ -105,7 +105,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		$this
 			->addArgument( 'woo_extension', InputArgument::OPTIONAL, 'Extension slug or WooCommerce.com ID' )
-			->addArgument( 'test', InputArgument::OPTIONAL, '(Optional) Test tags or directory. Defaults to "default" tag.' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL, '(Optional) Local ZIP / dir / URL build to test' )
 			->addOption( 'async', null, InputOption::VALUE_NEGATABLE, '(Optional) Enqueue test and return immediately without waiting', false )
 			->addOption( 'wait', null, InputOption::VALUE_NEGATABLE, '(Deprecated) Wait for test completion - this is now the default behavior', false )
@@ -394,14 +393,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	 * @return PerformanceEnvInfo Test configuration.
 	 */
 	protected function create_test_configuration( InputInterface $input, array $context ): PerformanceEnvInfo {
-		$test_tag    = $input->getArgument( 'test' ) ?? '';
 		$no_baseline = $input->getOption( 'no_baseline' );
 
 		$env_info               = new PerformanceEnvInfo();
 		$env_info->sut_slug     = $context['woo_slug'];
 		$env_info->sut_id       = $context['woo_id'];
 		$env_info->sut_type     = $context['sut_type'];
-		$env_info->test_tag     = $test_tag;
 		$env_info->run_baseline = ! $no_baseline;
 		$env_info->php          = $input->getOption( 'php' );
 
@@ -677,9 +674,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$options = array_merge( $parsed_options, [
 			'woo_id' => $context['woo_id'],
 		] );
-
-		// Add test tag to options for remote execution.
-		$options['test_tag'] = $input->getArgument( 'test' ) ?: 'default';
 
 		// Add iterations option for remote execution.
 		$iterations = $input->getOption( 'iterations' );

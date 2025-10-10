@@ -457,7 +457,6 @@ class PerformanceTestManager {
 		$env_info->sut_slug     = $test_config->sut_slug;
 		$env_info->sut_id       = $test_config->sut_id;
 		$env_info->sut_type     = $test_config->sut_type;
-		$env_info->test_tag     = $test_config->test_tag;
 		$env_info->run_baseline = $test_config->run_baseline;
 	}
 
