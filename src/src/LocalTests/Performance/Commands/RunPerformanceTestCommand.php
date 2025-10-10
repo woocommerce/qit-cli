@@ -13,6 +13,7 @@ use QIT_CLI\Commands\DynamicCommand;
 use QIT_CLI\Commands\DynamicCommandCreator;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
+use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\EnvironmentRunner;
@@ -20,6 +21,7 @@ use QIT_CLI\LocalTests\LocalTestRunNotifier;
 use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
+use QIT_CLI\PreCommand\Download\TestPackageDownloader;
 use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
@@ -820,86 +822,35 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	/**
 	 * Get the default test package path.
 	 *
-	 * Extracts the default performance test package from Manager sync data.
+	 * Downloads the default performance test package from Manager.
 	 *
 	 * @return string|null The path to the default test package, or null if unavailable.
 	 */
 	private function get_default_test_package_path(): ?string {
 		try {
 			$default_packages = $this->cache->get_manager_sync_data( 'default_test_packages' );
-			$base64_zip       = $default_packages['performance'] ?? null;
+			$package_data     = $default_packages['performance'] ?? null;
 
-			if ( empty( $base64_zip ) ) {
+			if ( empty( $package_data ) ) {
 				return null;
 			}
 
-			$zip_content = base64_decode( $base64_zip, true );
-			if ( $zip_content === false ) {
-				return null;
+			// Validate it's a package ID (e.g., "woocommerce/performance-tests:latest").
+			if ( ! is_string( $package_data ) || ! preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $package_data ) ) {
+				throw new \RuntimeException( 'Invalid default test package format. Expected package ID (e.g., "woocommerce/performance-tests:latest")' );
 			}
 
-			$temp_dir = sys_get_temp_dir() . '/qit-performance-default';
-			if ( ! $this->extract_zip( $zip_content, $temp_dir ) ) {
-				return null;
-			}
+			// Use TestPackageDownloader to download the package.
+			$test_package_downloader = App::make( TestPackageDownloader::class );
+			$cache_dir               = Config::get_qit_dir() . 'cache';
 
-			return $temp_dir;
+			$test_package_downloader->download_single( $package_data, $cache_dir );
+			$metadata = $test_package_downloader->get_package_metadata( $package_data );
+
+			return $metadata['downloaded_path'] ?? null;
 		} catch ( \Exception $e ) {
 			return null;
 		}
 	}
 
-	/**
-	 * Extract ZIP content to a target directory.
-	 *
-	 * @param string $zip_content The ZIP file content.
-	 * @param string $target_dir  The directory to extract to.
-	 * @return bool True on success, false on failure.
-	 */
-	private function extract_zip( string $zip_content, string $target_dir ): bool {
-		$temp_zip = tempnam( sys_get_temp_dir(), 'perf_' );
-		if ( file_put_contents( $temp_zip, $zip_content ) === false ) {
-			return false;
-		}
-
-		$zip = new \ZipArchive();
-		if ( $zip->open( $temp_zip ) !== true ) {
-			unlink( $temp_zip );
-			return false;
-		}
-
-		if ( ! $this->prepare_temp_dir( $target_dir ) ) {
-			$zip->close();
-			unlink( $temp_zip );
-			return false;
-		}
-
-		$zip->extractTo( $target_dir );
-		$zip->close();
-		unlink( $temp_zip );
-
-		return true;
-	}
-
-	/**
-	 * Prepare a temporary directory by cleaning existing contents and creating a fresh directory.
-	 *
-	 * @param string $dir Directory path to prepare.
-	 * @return bool True on success, false on failure.
-	 */
-	private function prepare_temp_dir( string $dir ): bool {
-		if ( is_dir( $dir ) ) {
-			$files = new \RecursiveIteratorIterator(
-				new \RecursiveDirectoryIterator( $dir, \RecursiveDirectoryIterator::SKIP_DOTS ),
-				\RecursiveIteratorIterator::CHILD_FIRST
-			);
-
-			foreach ( $files as $file ) {
-				$file->isDir() ? rmdir( $file->getRealPath() ) : unlink( $file->getRealPath() );
-			}
-			rmdir( $dir );
-		}
-
-		return mkdir( $dir, 0755, true );
-	}
 }

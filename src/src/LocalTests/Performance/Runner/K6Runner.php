@@ -42,13 +42,15 @@ class K6Runner {
 
 		$this->setup_test_environment();
 
-		$k6_command = $this->get_k6_command_from_manifest( $env_info );
+		$result_filenames = $test_result->get_result_filenames();
+		$k6_command       = $this->get_k6_command_from_manifest( $env_info );
 
 		$k6_args = $this->docker_config->build_k6_docker_args(
 			$env_info,
 			$test_result->get_results_dir(),
 			"qit_env_k6_{$env_info->env_id}",
-			$k6_command
+			$k6_command,
+			$result_filenames['dashboard'] ?? null
 		);
 
 		$exit_code = $this->execute_k6_tests( $k6_args );
@@ -126,10 +128,17 @@ class K6Runner {
 	 */
 	private function get_k6_command_from_manifest( PerformanceEnvInfo $env_info ): array {
 		$package_info  = $this->get_test_package_info( $env_info );
-		$run_command   = $this->read_run_command_from_manifest( $package_info );
-		$command_parts = $this->parse_command_string( $run_command );
+		$manifest      = $this->read_manifest( $package_info );
+		$run_command   = $manifest['test']['phases']['run'][0] ?? null;
 
-		return $this->convert_test_file_to_container_path( $command_parts, $package_info );
+		if ( ! $run_command ) {
+			throw new \RuntimeException( 'Invalid test package manifest: missing test.phases.run' );
+		}
+
+		$command_parts = $this->parse_command_string( $run_command );
+		$command_parts = $this->convert_test_file_to_container_path( $command_parts, $package_info );
+
+		return $this->inject_output_options( $command_parts, $manifest );
 	}
 
 	/**
@@ -149,12 +158,12 @@ class K6Runner {
 	}
 
 	/**
-	 * Read the run command from the test package manifest.
+	 * Read and parse the test package manifest.
 	 *
 	 * @param array{path: string, container_path: string} $pkg_info
-	 * @return string
+	 * @return array<mixed>
 	 */
-	private function read_run_command_from_manifest( array $pkg_info ): string {
+	private function read_manifest( array $pkg_info ): array {
 		$manifest_path = $pkg_info['path'] . '/qit-test.json';
 
 		if ( ! file_exists( $manifest_path ) ) {
@@ -164,13 +173,47 @@ class K6Runner {
 		}
 
 		$manifest = json_decode( file_get_contents( $manifest_path ), true );
-		if ( ! $manifest || ! isset( $manifest['test']['phases']['run'][0] ) ) {
-			throw new \RuntimeException(
-				'Invalid test package manifest: missing test.phases.run'
-			);
+		if ( ! $manifest ) {
+			throw new \RuntimeException( 'Invalid test package manifest: invalid JSON' );
 		}
 
-		return $manifest['test']['phases']['run'][0];
+		return $manifest;
+	}
+
+	/**
+	 * Inject k6 output options based on manifest results section.
+	 *
+	 * Maps manifest result keys to k6 CLI arguments.
+	 *
+	 * @param array<string> $command_parts The k6 command parts.
+	 * @param array<mixed> $manifest The test package manifest.
+	 * @return array<string> Command with injected output options.
+	 */
+	private function inject_output_options( array $command_parts, array $manifest ): array {
+		$results = $manifest['test']['results'] ?? [];
+
+		if ( empty( $results ) ) {
+			return $command_parts;
+		}
+
+		$output_options = [];
+
+		if ( isset( $results['json'] ) ) {
+			$output_options[] = '--out';
+			$output_options[] = 'json=' . $results['json'];
+		}
+
+		if ( isset( $results['summary'] ) ) {
+			$output_options[] = '--summary-export';
+			$output_options[] = $results['summary'];
+		}
+
+		if ( ! empty( $output_options ) ) {
+			$test_file = array_pop( $command_parts );
+			$command_parts = array_merge( $command_parts, $output_options, [ $test_file ] );
+		}
+
+		return $command_parts;
 	}
 
 	/**
@@ -214,5 +257,65 @@ class K6Runner {
 				"<info>k6 results saved to: {$test_result->get_results_dir()}/result.json</info>"
 			);
 		}
+	}
+
+	/**
+	 * Get result filenames from the test package manifest.
+	 *
+	 * @param PerformanceEnvInfo $env_info
+	 * @return array{summary: string, json: string, dashboard: string}
+	 * @throws \RuntimeException If required result paths are not defined.
+	 */
+	public function get_result_filenames_from_manifest( PerformanceEnvInfo $env_info ): array {
+		$pkg_info = $this->get_test_package_info( $env_info );
+		$manifest = $this->read_manifest( $pkg_info );
+		return $this->extract_result_filenames( $manifest );
+	}
+
+	/**
+	 * Extract result filenames from manifest.
+	 *
+	 * @param array<mixed> $manifest
+	 * @return array{summary: string, json: string, dashboard: string}
+	 * @throws \RuntimeException If required result paths are not defined.
+	 */
+	private function extract_result_filenames( array $manifest ): array {
+		// Validate that results section exists.
+		if ( ! isset( $manifest['test']['results'] ) ) {
+			throw new \RuntimeException(
+				'Performance test manifest must define test.results section with "summary" and "json" fields. ' .
+				'Example: "results": {"summary": "/results/result.json", "json": "/results/result-extended.json", "dashboard": "/results/dashboard-report.html"}'
+			);
+		}
+
+		$results = $manifest['test']['results'];
+
+		// Validate that summary is defined (required for performance tests).
+		if ( ! isset( $results['summary'] ) || empty( $results['summary'] ) ) {
+			throw new \RuntimeException(
+				'Performance test manifest must define test.results.summary field. ' .
+				'Example: "results": {"summary": "/results/result.json", "json": "/results/result-extended.json"}'
+			);
+		}
+
+		// Validate that json is defined (required for detailed metrics).
+		if ( ! isset( $results['json'] ) || empty( $results['json'] ) ) {
+			throw new \RuntimeException(
+				'Performance test manifest must define test.results.json field. ' .
+				'Example: "results": {"summary": "/results/result.json", "json": "/results/result-extended.json"}'
+			);
+		}
+
+		$filenames = [
+			'summary' => basename( $results['summary'] ),
+			'json'    => basename( $results['json'] ),
+		];
+
+		// dashboard is optional - only include if specified in manifest.
+		if ( isset( $results['dashboard'] ) && ! empty( $results['dashboard'] ) ) {
+			$filenames['dashboard'] = basename( $results['dashboard'] );
+		}
+
+		return $filenames;
 	}
 }

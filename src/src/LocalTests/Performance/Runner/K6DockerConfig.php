@@ -21,13 +21,14 @@ class K6DockerConfig {
 	 * @param string             $results_dir
 	 * @param string             $container_name
 	 * @param array<string>      $k6_command K6 command from manifest (e.g., ['k6', 'run', '--out', 'json=...', 'test.js'])
+	 * @param string|null        $dashboard_filename Optional dashboard HTML filename from manifest
 	 * @return array<string>
 	 */
-	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $k6_command ): array {
+	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $k6_command, ?string $dashboard_filename = null ): array {
 		return array_merge(
 			$this->get_base_docker_args( $env_info, $container_name ),
 			$this->get_volume_mounts( $env_info, $results_dir ),
-			$this->get_environment_variables( $env_info ),
+			$this->get_environment_variables( $env_info, $dashboard_filename ),
 			$this->convert_k6_command_to_docker( $k6_command )
 		);
 	}
@@ -86,9 +87,11 @@ class K6DockerConfig {
 	}
 
 	/**
+	 * @param PerformanceEnvInfo $env_info
+	 * @param string|null        $dashboard_filename Optional dashboard HTML filename
 	 * @return array<string>
 	 */
-	private function get_environment_variables( PerformanceEnvInfo $env_info ): array {
+	private function get_environment_variables( PerformanceEnvInfo $env_info, ?string $dashboard_filename ): array {
 		// Environment variables for k6 container.
 		$internal_nginx_name = "qitenvnginx{$env_info->env_id}";
 
@@ -103,11 +106,13 @@ class K6DockerConfig {
 			sprintf( 'QIT_INTERNAL_NGINX=%s', $internal_nginx_name ),
 		];
 
-		// Enable k6 web dashboard and export HTML report.
-		$args[] = '-e';
-		$args[] = 'K6_WEB_DASHBOARD=true';
-		$args[] = '-e';
-		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/dashboard-report.html';
+		// Enable k6 web dashboard and export HTML report (if configured in manifest).
+		if ( $dashboard_filename !== null ) {
+			$args[] = '-e';
+			$args[] = 'K6_WEB_DASHBOARD=true';
+			$args[] = '-e';
+			$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/' . $dashboard_filename;
+		}
 
 		// Set HOME for browser support when running with --user.
 		if ( Docker::should_set_user() ) {

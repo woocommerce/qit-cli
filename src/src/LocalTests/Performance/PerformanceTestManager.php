@@ -314,7 +314,10 @@ class PerformanceTestManager {
 		$iteration_env_info         = clone $env_info;
 		$iteration_env_info->env_id = $env_info->env_id . "/iter{$iteration_number}";
 
-		$test_result = new PerformanceTestResult( $iteration_env_info );
+		// Get result filenames from manifest before creating the result.
+		$result_filenames = $this->k6_runner->get_result_filenames_from_manifest( $env_info );
+
+		$test_result = new PerformanceTestResult( $iteration_env_info, $result_filenames );
 		$test_result->set_baseline( $is_baseline );
 
 		if ( $this->output->isVerbose() ) {
