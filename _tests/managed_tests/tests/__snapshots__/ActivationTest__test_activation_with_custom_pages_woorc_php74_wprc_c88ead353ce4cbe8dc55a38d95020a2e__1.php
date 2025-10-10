@@ -64,7 +64,7 @@
                         "JavaScript Console Log": [
                             "Console warning: Console Warning in custom page.",
                             "Console error: Console Error in custom page.",
-                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:237:223\\""
+                            "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/normalized\\/wp-admin\\/admin.php?page=plugin-a:209:223\\""
                         ]
                     }
                 },
@@ -236,10 +236,7 @@
                                 "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
-                                "Removing the old version of the theme...\\n",
-                                "Theme updated successfully.\\n",
-                                "Activating \'twentytwentyfour\'...\\n",
-                                "Success: Switched to \'Twenty Twenty-Four\' theme.\\n",
+                                "Theme installed successfully.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
@@ -281,6 +278,30 @@
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "[TIMING NORMALIZED] Starting plugin activation test\\n",
+                                "[TIMING NORMALIZED] Extracted plugins data:\\n",
+                                "  1. \\"Activation - Plugin A\\"\\n",
+                                "     - Slug: activation-plugin-a\\n",
+                                "     - Entry Point: woocommerce-product-feeds\\/woocommerce-product-feeds.php\\n",
+                                "     - Active: false\\n",
+                                "     - Can Activate: true\\n",
+                                "     - Dependencies: []\\n",
+                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=b7685accdd\\n",
+                                "\\n",
+                                "  2. \\"Query Monitor\\"\\n",
+                                "     - Slug: query-monitor\\n",
+                                "     - Entry Point: query-monitor\\/query-monitor.php\\n",
+                                "     - Active: true\\n",
+                                "     - Can Activate: false\\n",
+                                "     - Dependencies: []\\n",
+                                "\\n",
+                                "  3. \\"WooCommerce\\"\\n",
+                                "     - Slug: woocommerce\\n",
+                                "     - Entry Point: woocommerce\\/woocommerce.php\\n",
+                                "     - Active: false\\n",
+                                "     - Can Activate: true\\n",
+                                "     - Dependencies: []\\n",
+                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=bb48284a85\\n",
+                                "\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
@@ -308,8 +329,8 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m",
-                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:503:89\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:439:9",
-                            "snippet": "  501 |\\n  502 |             \\/\\/ There should be no \\"Fatal Error\\" in the debug log.\\n> 503 |             expect(debugLog.join(\'\\\\n\'), \'There was a fatal error in the debug log\').not.toContain(\'Fatal error\');\\n      |                                                                                         ^\\n  504 |\\n  505 |             visitedPages.push(addedMenuItem.url);\\n  506 |",
+                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(260): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:542:89\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:478:9",
+                            "snippet": "  540 |\\n  541 |             \\/\\/ There should be no \\"Fatal Error\\" in the debug log.\\n> 542 |             expect(debugLog.join(\'\\\\n\'), \'There was a fatal error in the debug log\').not.toContain(\'Fatal error\');\\n      |                                                                                         ^\\n  543 |\\n  544 |             visitedPages.push(addedMenuItem.url);\\n  545 |",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -361,7 +382,7 @@
                             ],
                             "stdout": [
                                 "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a\\n",
-                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a:237:223\\"\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-a:209:223\\"\\n",
                                 "Navigating to http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/admin.php?page=plugin-b\\n"
                             ],
                             "stderr": [],

@@ -179,10 +179,7 @@
                                 "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
-                                "Removing the old version of the theme...\\n",
-                                "Theme updated successfully.\\n",
-                                "Activating \'twentytwentyfour\'...\\n",
-                                "Success: Switched to \'Twenty Twenty-Four\' theme.\\n",
+                                "Theme installed successfully.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
@@ -224,6 +221,30 @@
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "[TIMING NORMALIZED] Starting plugin activation test\\n",
+                                "[TIMING NORMALIZED] Extracted plugins data:\\n",
+                                "  1. \\"Activation - Plugin A\\"\\n",
+                                "     - Slug: activation-plugin-a\\n",
+                                "     - Entry Point: woocommerce-product-feeds\\/woocommerce-product-feeds.php\\n",
+                                "     - Active: false\\n",
+                                "     - Can Activate: true\\n",
+                                "     - Dependencies: []\\n",
+                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=4f7576f3c7\\n",
+                                "\\n",
+                                "  2. \\"Query Monitor\\"\\n",
+                                "     - Slug: query-monitor\\n",
+                                "     - Entry Point: query-monitor\\/query-monitor.php\\n",
+                                "     - Active: true\\n",
+                                "     - Can Activate: false\\n",
+                                "     - Dependencies: []\\n",
+                                "\\n",
+                                "  3. \\"WooCommerce\\"\\n",
+                                "     - Slug: woocommerce\\n",
+                                "     - Entry Point: woocommerce\\/woocommerce.php\\n",
+                                "     - Active: false\\n",
+                                "     - Can Activate: true\\n",
+                                "     - Dependencies: []\\n",
+                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=2c645b6a56\\n",
+                                "\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
@@ -381,7 +402,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js",
-                                            "line": 674,
+                                            "line": 713,
                                             "column": 10
                                         }
                                     }
@@ -396,8 +417,8 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:784:69",
-                            "snippet": "  782 |\\n  783 |     await page.goto(\'\\/cart\');\\n> 784 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  785 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  786 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  787 | });",
+                            "trace": "Error: \\u001b[31mTimed out 20000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js:823:69",
+                            "snippet": "  821 |\\n  822 |     await page.goto(\'\\/cart\');\\n> 823 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  824 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  825 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  826 | });",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -519,7 +540,7 @@
                         "message": "Warning on all requests",
                         "type": "warning",
                         "file_line": "wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:12",
-                        "count": "2"
+                        "count": "4"
                     }
                 ],
                 "debug_log": [
@@ -532,7 +553,7 @@
                         "message": "PHP Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
                     },
                     {
-                        "count": "2",
+                        "count": "4",
                         "message": "PHP Warning: Warning on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
                 ]

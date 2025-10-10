@@ -179,10 +179,7 @@
                                 "Downloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentyfour.1.3.zip...\\n",
                                 "Unpacking the package...\\n",
                                 "Installing the theme...\\n",
-                                "Removing the old version of the theme...\\n",
-                                "Theme updated successfully.\\n",
-                                "Activating \'twentytwentyfour\'...\\n",
-                                "Success: Switched to \'Twenty Twenty-Four\' theme.\\n",
+                                "Theme installed successfully.\\n",
                                 "Success: Installed 1 of 1 themes.\\n",
                                 "[QIT] Finished bash script. Exit code: 0\\n"
                             ],
@@ -224,6 +221,30 @@
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "[TIMING NORMALIZED] Starting plugin activation test\\n",
+                                "[TIMING NORMALIZED] Extracted plugins data:\\n",
+                                "  1. \\"Activation - Plugin A\\"\\n",
+                                "     - Slug: activation-plugin-a\\n",
+                                "     - Entry Point: woocommerce-product-feeds\\/woocommerce-product-feeds.php\\n",
+                                "     - Active: false\\n",
+                                "     - Can Activate: true\\n",
+                                "     - Dependencies: []\\n",
+                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=46885582f0\\n",
+                                "\\n",
+                                "  2. \\"Query Monitor\\"\\n",
+                                "     - Slug: query-monitor\\n",
+                                "     - Entry Point: query-monitor\\/query-monitor.php\\n",
+                                "     - Active: true\\n",
+                                "     - Can Activate: false\\n",
+                                "     - Dependencies: []\\n",
+                                "\\n",
+                                "  3. \\"WooCommerce\\"\\n",
+                                "     - Slug: woocommerce\\n",
+                                "     - Entry Point: woocommerce\\/woocommerce.php\\n",
+                                "     - Active: false\\n",
+                                "     - Can Activate: true\\n",
+                                "     - Dependencies: []\\n",
+                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=76663c6387\\n",
+                                "\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
@@ -381,7 +402,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/qit\\/tests\\/e2e\\/woocommerce\\/activation\\/activation.spec.js",
-                                            "line": 674,
+                                            "line": 713,
                                             "column": 10
                                         }
                                     }
@@ -448,7 +469,12 @@
                             "steps": [],
                             "suite": "[test] Woocommerce (Run) > woocommerce\\/activation\\/activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "SUT \\"Activation - Plugin A\\" has 0 dependencies (requires): []\\n",
+                                "Found 0 active plugins that depend on the SUT (must deactivate first)\\n",
+                                "Step 3: Deactivating SUT \\"Activation - Plugin A\\"\\n",
+                                "\\u2713 Successfully deactivated SUT \\"Activation - Plugin A\\"\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": []
