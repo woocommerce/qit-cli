@@ -239,6 +239,9 @@ class QITE2ETestCase extends TestCase {
 					// Patern ""e2e-api-access-1743613383248 consumer token successfully created\\n""
 					$value = preg_replace( '/e2e-api-access-[0-9]{1,} consumer token successfully created\\\\n/i', 'e2e-api-access-HASHNORMALIZED consumer token successfully created\\n', $value );
 
+					// Normalize WordPress nonces in activation links (e.g., &_wpnonce=46885582f0)
+					$value = preg_replace( '/&_wpnonce=[0-9a-f]{10}/i', '&_wpnonce=NORMALIZED', $value );
+
 					// 3) Decode back to array so we can walk the structure
 					if ( $array_mode ) {
 						$value = json_decode( $value, true );

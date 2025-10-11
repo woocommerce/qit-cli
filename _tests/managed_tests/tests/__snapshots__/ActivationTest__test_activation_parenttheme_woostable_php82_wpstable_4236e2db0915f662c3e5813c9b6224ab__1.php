@@ -231,7 +231,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=fcc958ed9a\\n",
+                                "     - Activation Link: http:\\/\\/qitenvnginxNORMALIZED\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "dependenciesSatisfied: true for Query Monitor\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
