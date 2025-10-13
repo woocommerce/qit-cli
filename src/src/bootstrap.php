@@ -30,6 +30,7 @@ use QIT_CLI\Commands\Group\GroupFetchCommand;
 use QIT_CLI\Commands\Group\GroupRegisterCommand;
 use QIT_CLI\Commands\Group\GroupRunCommand;
 use QIT_CLI\Commands\Group\GroupShowCommand;
+use QIT_CLI\Commands\Group\RunGroupCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
@@ -295,6 +296,7 @@ if ( $is_connected_to_backend ) {
 
 	// Group Commands.
 	$application->add( $container->make( GroupRunCommand::class ) );
+	$application->add( $container->make( RunGroupCommand::class ) );
 	$application->add( $container->make( GroupClearCommand::class ) );
 	$application->add( $container->make( GroupRegisterCommand::class ) );
 	$application->add( $container->make( GroupShowCommand::class ) );
