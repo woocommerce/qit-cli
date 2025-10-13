@@ -168,7 +168,14 @@ abstract class QITCommand extends Command {
 			return [];
 		}
 
-		return $config['test_types'][ $test_type ][ $profile ] ?? [];
+		$profile_config = $config['test_types'][ $test_type ][ $profile ] ?? [];
+
+		// Inherit top-level SUT if profile doesn't define its own
+		if ( ! isset( $profile_config['sut'] ) && isset( $config['sut'] ) ) {
+			$profile_config['sut'] = $config['sut'];
+		}
+
+		return $profile_config;
 	}
 
 	/**
