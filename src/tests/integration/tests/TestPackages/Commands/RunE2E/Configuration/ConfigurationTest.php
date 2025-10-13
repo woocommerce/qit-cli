@@ -309,11 +309,11 @@ class ConfigurationTest extends TestCase {
 
 	/**
 	 * Test #8: Verbose output
-	 * 
+	 *
 	 * Coverage aim: Validates verbose output functionality.
 	 * Tests that the --verbose flag properly increases output detail,
 	 * helping users debug issues with more information.
-	 * 
+	 *
 	 * Key aspects tested:
 	 * - Verbose flag functionality
 	 * - Enhanced output with -v flag
@@ -333,8 +333,65 @@ class ConfigurationTest extends TestCase {
 		$output = $proc->getOutput();
 
 		$this->assertEquals( 0, $proc->getExitCode() );
-		
+
 		// Should complete successfully
+		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
+	}
+
+	/**
+	 * Test #9: SUT inheritance from top-level config
+	 *
+	 * Coverage aim: Validates that profiles automatically inherit the top-level SUT
+	 * configuration when they don't define their own SUT. This is a common workflow
+	 * where users define the plugin/theme being tested once at the top level and
+	 * create multiple test profiles without repeating the SUT definition.
+	 *
+	 * Key aspects tested:
+	 * - Top-level SUT configuration is inherited by profiles
+	 * - Profiles without SUT can run without requiring CLI SUT argument
+	 * - Configuration inheritance works correctly
+	 */
+	public function test_sut_inheritance_from_top_level(): void {
+		$testPackage = $this->fixturesDir . '/regular-test-package-one';
+
+		// Create config with top-level SUT but profile doesn't define SUT
+		$config = [
+			'sut' => [
+				'type' => 'plugin',
+				'slug' => 'woocommerce',
+				'source' => [
+					'type' => 'wporg',
+					'version' => 'stable'
+				]
+			],
+			'test_types' => [
+				'e2e' => [
+					'default' => [
+						'test_packages' => [ $testPackage ]
+						// Note: No 'sut' key here - should inherit from top level
+					]
+				]
+			]
+		];
+
+		$tempDir = sys_get_temp_dir() . '/qit-fixture-test-' . uniqid();
+		mkdir( $tempDir, 0755, true );
+		$this->tempDirs[] = $tempDir;
+
+		$configPath = $tempDir . '/qit.json';
+		file_put_contents( $configPath, json_encode( $config, JSON_PRETTY_PRINT ) );
+
+		// Run WITHOUT specifying SUT as CLI argument - should inherit from config
+		$proc = qit( [
+			'run:e2e',
+			'--config=' . $configPath,
+			'--profile=default',
+		], return_process: true );
+
+		$output = $proc->getOutput();
+
+		// Should succeed - SUT was inherited from top-level config
+		$this->assertEquals( 0, $proc->getExitCode(), 'Should inherit SUT from top-level config' );
 		$this->assertStringContainsString( 'Status:        ✓ PASSED', $output );
 	}
 
