@@ -190,8 +190,6 @@ class RunGroupCommand extends QITCommand {
 				$tests[] = [
 					'type'    => $test_type,
 					'params'  => $params,
-					// Remote tests: respect --async/--wait flag
-					// Local tests: never enqueue (CLI will run them)
 					'enqueue' => ! $is_local && $should_enqueue,
 				];
 			}
