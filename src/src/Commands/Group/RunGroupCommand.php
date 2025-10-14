@@ -33,9 +33,6 @@ use function QIT_CLI\get_manager_url;
 class RunGroupCommand extends QITCommand {
 	protected static $defaultName = 'run:group'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	/** @var array<string> Test types that run locally */
-	private const LOCAL_TEST_TYPES = [ 'e2e', 'activation', 'performance' ];
-
 	/** @var WooExtensionsList */
 	protected WooExtensionsList $woo_extensions_list;
 
@@ -181,7 +178,7 @@ class RunGroupCommand extends QITCommand {
 				// Tests with test_packages are local (custom E2E tests)
 				// Activation and performance tests are also local
 				$has_test_packages = ! empty( $profile_options['test_packages'] );
-				$is_local = $has_test_packages || in_array( $test_type, [ 'activation', 'performance' ], true );
+				$is_local          = $has_test_packages || in_array( $test_type, [ 'activation', 'performance' ], true );
 
 				// Build params for this test
 				$params = array_merge(
@@ -191,8 +188,8 @@ class RunGroupCommand extends QITCommand {
 				);
 
 				$tests[] = [
-					'type'   => $test_type,
-					'params' => $params,
+					'type'    => $test_type,
+					'params'  => $params,
 					// Remote tests: respect --async/--wait flag
 					// Local tests: never enqueue (CLI will run them)
 					'enqueue' => ! $is_local && $should_enqueue,
@@ -271,9 +268,9 @@ class RunGroupCommand extends QITCommand {
 	/**
 	 * Execute local tests (e2e, activation, performance).
 	 *
-	 * @param array<array<string, mixed>> $test_run_data Test run data from Manager.
+	 * @param array<array<string, mixed>>  $test_run_data Test run data from Manager.
 	 * @param array<string, array<string>> $group         Group configuration.
-	 * @param OutputInterface             $output        Output interface.
+	 * @param OutputInterface              $output        Output interface.
 	 * @return array<string, array<string, mixed>> Results of local test executions.
 	 */
 	private function execute_local_tests( array $test_run_data, array $group, OutputInterface $output ): array {
@@ -438,17 +435,17 @@ class RunGroupCommand extends QITCommand {
 			$output->writeln( sprintf( '<comment>Local Tests (%d):</comment>', count( $local_tests ) ) );
 			foreach ( $local_tests as $test ) {
 				$test_type = $test['type'];
-				$result = $local_results[ $test_type ] ?? null;
+				$result    = $local_results[ $test_type ] ?? null;
 
 				if ( $result && isset( $result['success'] ) ) {
 					if ( $result['success'] ) {
 						$status_icon = '<info>✓</info>';
 						$status_text = 'PASSED';
-						$local_passed++;
+						++$local_passed;
 					} else {
 						$status_icon = '<error>✗</error>';
 						$status_text = 'FAILED';
-						$local_failed++;
+						++$local_failed;
 					}
 				} else {
 					$status_icon = '<comment>→</comment>';
@@ -505,7 +502,7 @@ class RunGroupCommand extends QITCommand {
 		return sprintf(
 			'%s-%s',
 			$group_name,
-			date( 'Ymd-His' )
+			gmdate( 'Ymd-His' )
 		);
 	}
 }

@@ -149,14 +149,23 @@ class GroupFetchCommand extends QITCommand {
 	 * @return string Status icon.
 	 */
 	private function get_status_icon( string $status ): string {
-		return match ( $status ) {
-			'success' => '<info>✓</info>',
-			'failed', 'hanged' => '<error>✗</error>',
-			'warning' => '<comment>⚠</comment>',
-			'pending', 'running' => '<comment>→</comment>',
-			'cancelled', 'skipped' => '<comment>⊘</comment>',
-			default => '<comment>?</comment>',
-		};
+		switch ( $status ) {
+			case 'success':
+				return '<info>✓</info>';
+			case 'failed':
+			case 'hanged':
+				return '<error>✗</error>';
+			case 'warning':
+				return '<comment>⚠</comment>';
+			case 'pending':
+			case 'running':
+				return '<comment>→</comment>';
+			case 'cancelled':
+			case 'skipped':
+				return '<comment>⊘</comment>';
+			default:
+				return '<comment>?</comment>';
+		}
 	}
 
 	/**
@@ -166,11 +175,16 @@ class GroupFetchCommand extends QITCommand {
 	 * @return string Formatted status.
 	 */
 	private function format_status( string $status ): string {
-		return match ( $status ) {
-			'success' => '<info>' . strtoupper( $status ) . '</info>',
-			'failed', 'hanged' => '<error>' . strtoupper( $status ) . '</error>',
-			'warning' => '<comment>' . strtoupper( $status ) . '</comment>',
-			default => strtoupper( $status ),
-		};
+		switch ( $status ) {
+			case 'success':
+				return '<info>' . strtoupper( $status ) . '</info>';
+			case 'failed':
+			case 'hanged':
+				return '<error>' . strtoupper( $status ) . '</error>';
+			case 'warning':
+				return '<comment>' . strtoupper( $status ) . '</comment>';
+			default:
+				return strtoupper( $status );
+		}
 	}
 }
