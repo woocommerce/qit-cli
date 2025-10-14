@@ -374,7 +374,8 @@ class RunGroupCommand extends QITCommand {
 		}
 
 		// Execute the command
-		$input = new \Symfony\Component\Console\Input\ArrayInput( $params );
+		$input     = new \Symfony\Component\Console\Input\ArrayInput( $params );
+		$exit_code = Command::FAILURE; // Default to failure in case of exception
 
 		try {
 			$exit_code = $command->run( $input, $output );
