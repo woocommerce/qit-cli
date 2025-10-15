@@ -91,7 +91,7 @@ class PackageDeleteCommand extends QITCommand {
 	private function delete_from_manager( string $package_id, OutputInterface $output ): array {
 		$output->writeln( '🗑️  Deleting from QIT registry...' );
 
-		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/delete-test-package' ) )
+		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v2/cli/delete-test-package' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
 				'package_id' => $package_id,

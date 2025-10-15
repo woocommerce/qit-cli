@@ -152,7 +152,7 @@ class CachedDownloader {
 	 * @return array<string,string|int|null>
 	 */
 	private function fetch_test_package_metadata( string $identifier, array $options ): array { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed
-		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/test-package-download-urls' ) )
+		$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v2/cli/test-package-download-urls' ) )
 			->with_method( 'POST' )
 			->with_post_body( [
 				'package_ids' => [ $identifier ],

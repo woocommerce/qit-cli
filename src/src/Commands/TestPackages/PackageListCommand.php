@@ -137,7 +137,7 @@ class PackageListCommand extends QITCommand {
 			$post_body['owned_only'] = '1';
 		}
 
-		$url = get_manager_url() . '/wp-json/cd/v1/cli/test-packages';
+		$url = get_manager_url() . '/wp-json/cd/v2/cli/test-packages';
 
 		$response = ( new RequestBuilder( $url ) )
 			->with_method( 'POST' )
