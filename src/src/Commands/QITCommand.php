@@ -85,7 +85,7 @@ abstract class QITCommand extends Command {
 	 *
 	 * @return array<string,mixed>
 	 */
-	private function get_resolved_config(): array {
+	protected function get_resolved_config(): array {
 		if ( $this->config === null ) {
 			$config_file   = $this->get_config_file();
 			$cli_overrides = $this->collect_cli_overrides();

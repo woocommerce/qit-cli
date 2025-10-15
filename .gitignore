@@ -49,3 +49,9 @@ src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-main-packag
 src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-secondary-package/results/ctrf.json
 
 src/tests/integration/tests/TestPackages/Scenarios/fixtures/scenario-test-package/results/ctrf.json
+
+
+e2e-tests
+qit-tests
+**/cache
+.claude/agents
