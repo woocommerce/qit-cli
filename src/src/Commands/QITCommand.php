@@ -85,7 +85,7 @@ abstract class QITCommand extends Command {
 	 *
 	 * @return array<string,mixed>
 	 */
-	private function get_resolved_config(): array {
+	protected function get_resolved_config(): array {
 		if ( $this->config === null ) {
 			$config_file   = $this->get_config_file();
 			$cli_overrides = $this->collect_cli_overrides();
@@ -168,7 +168,14 @@ abstract class QITCommand extends Command {
 			return [];
 		}
 
-		return $config['test_types'][ $test_type ][ $profile ] ?? [];
+		$profile_config = $config['test_types'][ $test_type ][ $profile ] ?? [];
+
+		// Inherit top-level SUT if profile doesn't define its own
+		if ( ! isset( $profile_config['sut'] ) && isset( $config['sut'] ) ) {
+			$profile_config['sut'] = $config['sut'];
+		}
+
+		return $profile_config;
 	}
 
 	/**
