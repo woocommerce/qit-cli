@@ -9,6 +9,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\QITEnvInfo;
 use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
@@ -1041,7 +1042,7 @@ class UpEnvironmentCommand extends QITCommand {
 	 *
 	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info The environment info to save.
 	 */
-	private function save_environment_info( E2EEnvInfo|PerformanceEnvInfo $env_info ): void {
+	private function save_environment_info( $env_info ): void {
 		$env_dir   = $this->environment_vars->get_env_directory();
 		$info_file = $env_dir . '/' . $env_info->env_id . '.json';
 
@@ -1062,7 +1063,13 @@ class UpEnvironmentCommand extends QITCommand {
 		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
 	}
 
-	private function renderHumanSummary( OutputInterface $out, E2EEnvInfo|PerformanceEnvInfo $info ): void {
+	/**
+	 * Render a human-readable summary of the environment.
+	 *
+	 * @param OutputInterface $out  The output interface.
+	 * @param QITEnvInfo      $info The environment info.
+	 */
+	private function renderHumanSummary( OutputInterface $out, QITEnvInfo $info ): void {
 		$out->writeln( '' );
 		$out->writeln( sprintf( '<info>✅ Environment ready: %s</info>', $info->env_id ) );
 		$out->writeln( '' );
@@ -1072,64 +1079,53 @@ class UpEnvironmentCommand extends QITCommand {
 		$out->writeln( '  Credentials: admin/password' );
 
 		// Stack information
-		if ( $info instanceof E2EEnvInfo || $info instanceof PerformanceEnvInfo ) {
-			$stack_parts   = [];
-			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
-			$stack_parts[] = sprintf( 'PHP %s', $info->php );
-			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
+		$stack_parts   = [];
+		$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
+		$stack_parts[] = sprintf( 'PHP %s', $info->php );
+		$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
 
-			// Plugins line (only if plugins exist)
-			$plugin_names = [];
-			foreach ( $info->plugins as $plugin ) {
-				if ( $plugin->slug === 'woocommerce' && $info->woo ) {
-					$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
-				} elseif ( $plugin->slug !== 'woocommerce' ) {
-					$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version );
+		// Plugins line (only if plugins exist)
+		$plugin_names = [];
+		foreach ( $info->plugins as $plugin ) {
+			if ( $plugin->slug === 'woocommerce' && $info->woo ) {
+				$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
+			} elseif ( $plugin->slug !== 'woocommerce' ) {
+				$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version );
+			}
+		}
+		if ( ! empty( $plugin_names ) ) {
+			$out->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
+		}
+
+		// Theme line (only if non-default theme exists)
+		$theme_names = [];
+		foreach ( $info->themes as $theme ) {
+			// Skip default themes
+			if ( ! in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
+				$theme_names[] = sprintf( '%s %s', $this->format_plugin_name( $theme->slug ), $theme->version );
+			}
+		}
+		if ( ! empty( $theme_names ) ) {
+			$out->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
+		}
+
+		// Test packages that were set up
+		if ( ! empty( $info->test_packages_for_setup ) ) {
+			$out->writeln( '' );
+			$out->writeln( '  Test packages prepared:' );
+			if ( $info->skip_test_phases ) {
+				// When phases are skipped, just list the packages
+				foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+					$out->writeln( sprintf( '    • %s (phases deferred)', $pkg_id ) );
 				}
-			}
-			if ( ! empty( $plugin_names ) ) {
-				$out->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
-			}
-
-			// Theme line (only if non-default theme exists)
-			$theme_names = [];
-			foreach ( $info->themes as $theme ) {
-				// Skip default themes
-				if ( ! in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
-					$theme_names[] = sprintf( '%s %s', $this->format_plugin_name( $theme->slug ), $theme->version );
+			} else {
+				// When phases ran, show which phases ran for each package
+				$is_first = true;
+				foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+					$phases = $is_first ? 'globalSetup + setup' : 'globalSetup only';
+					$out->writeln( sprintf( '    • %s (%s)', $pkg_id, $phases ) );
+					$is_first = false;
 				}
-			}
-			if ( ! empty( $theme_names ) ) {
-				$out->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
-			}
-
-			// Test packages that were set up
-			if ( ! empty( $info->test_packages_for_setup ) ) {
-				$out->writeln( '' );
-				$out->writeln( '  Test packages prepared:' );
-				if ( $info->skip_test_phases ) {
-					// When phases are skipped, just list the packages
-					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
-						$out->writeln( sprintf( '    • %s (phases deferred)', $pkg_id ) );
-					}
-				} else {
-					// When phases ran, show which phases ran for each package
-					$is_first = true;
-					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
-						$phases = $is_first ? 'globalSetup + setup' : 'globalSetup only';
-						$out->writeln( sprintf( '    • %s (%s)', $pkg_id, $phases ) );
-						$is_first = false;
-					}
-				}
-			}
-		} elseif ( $info instanceof PerformanceEnvInfo ) {
-			$stack_parts   = [];
-			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
-			$stack_parts[] = sprintf( 'PHP %s', $info->php );
-			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
-
-			if ( property_exists( $info, 'woo' ) && $info->woo ) {
-				$out->writeln( sprintf( '  Plugins:     WooCommerce %s', $info->woo ) );
 			}
 		}
 
@@ -1508,7 +1504,7 @@ HELP;
 	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info The environment info.
 	 * @param OutputInterface               $output   The output interface.
 	 */
-	private function createDatabaseBackup( E2EEnvInfo|PerformanceEnvInfo $env_info, OutputInterface $output ): void {
+	private function createDatabaseBackup( $env_info, OutputInterface $output ): void {
 		$output->write( 'Creating database backup for env:reset...' );
 
 		// Create backup directory

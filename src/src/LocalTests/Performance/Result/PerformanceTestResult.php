@@ -110,7 +110,7 @@ class PerformanceTestResult {
 	/**
 	 * Get result filenames.
 	 *
-	 * @return array{summary: string, json: string, dashboard: string}
+	 * @return array{summary: string, json: string, dashboard?: string}
 	 */
 	public function get_result_filenames(): array {
 		return $this->result_filenames;

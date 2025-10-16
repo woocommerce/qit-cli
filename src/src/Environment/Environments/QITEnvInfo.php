@@ -42,4 +42,7 @@ abstract class QITEnvInfo extends EnvInfo {
 
 	/** @var array<string,array{path:string,source:string,container_path:string,package_id?:string,manifest?:array<string,mixed>}> Test packages for setup phase */
 	public array $test_packages_for_setup = [];
+
+	/** @var array<string,mixed> System under test information (slug, type, entrypoint, path, id) */
+	public array $sut = [];
 }

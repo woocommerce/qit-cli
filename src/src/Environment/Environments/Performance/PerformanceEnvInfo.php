@@ -25,7 +25,4 @@ class PerformanceEnvInfo extends QITEnvInfo {
 
 	/** @var bool Whether to run baseline tests before main tests */
 	public $run_baseline = true;
-
-	/** @var array<string,array{manifest:mixed,container_path:string}> */
-	public array $test_packages_metadata = [];
 }

@@ -14,9 +14,6 @@ class E2EEnvInfo extends QITEnvInfo {
 	/** @var int */
 	public int $db_port = 0;
 
-	/** @var array<string,mixed> */
-	public array $sut = [];
-
 	public bool $skip_activating_plugins = false;
 
 	public bool $skip_activating_themes = false;

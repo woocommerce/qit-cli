@@ -9,14 +9,12 @@ use QIT_CLI\Environment\GlobalSetupOrchestrator;
 use QIT_CLI\Environment\PackagePhaseRunner;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * @property E2EEnvInfo $env_info
+ */
 class E2EEnvironment extends QITEnvironment {
 	/** @var string */
 	protected $description = 'E2E Environment';
-
-	/**
-	 * @var E2EEnvInfo
-	 */
-	protected \QIT_CLI\Environment\Environments\EnvInfo $env_info;
 
 	public function get_name(): string {
 		return 'e2e';

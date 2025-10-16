@@ -7,14 +7,12 @@ use QIT_CLI\Cache;
 use QIT_CLI\Environment\Environments\QITEnvironment;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
+/**
+ * @property PerformanceEnvInfo $env_info
+ */
 class PerformanceEnvironment extends QITEnvironment {
 	/** @var string */
 	protected $description = 'Performance Test Environment';
-
-	/**
-	 * @var PerformanceEnvInfo
-	 */
-	protected \QIT_CLI\Environment\Environments\EnvInfo $env_info;
 
 	public function get_name(): string {
 		return 'performance';

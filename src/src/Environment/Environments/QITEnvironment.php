@@ -9,17 +9,15 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 use QIT_CLI\Tunnel\TunnelRunner;
+use QIT_CLI\Environment\Environments\QITEnvInfo;
 
 /**
  * Base class for QIT test environments (E2E, Performance, etc.)
  * Contains common functionality shared across different test environment types.
+ *
+ * @property QITEnvInfo $env_info
  */
 abstract class QITEnvironment extends Environment {
-	/**
-	 * @var QITEnvInfo
-	 */
-	protected EnvInfo $env_info;
-
 	/** @var bool */
 	protected $skip_activating_plugins = false;
 
