@@ -182,25 +182,26 @@ class OutputRedactionTest extends TestCase {
 		$secret = 'secret-value-' . uniqid();
 		$packageDir = $this->createSimplePackageThatEchoesSecret();
 		$config = $this->createConfig( [ $packageDir ] );
-		
+
 		// Run QIT directly and capture actual output
-		$qit_cli_path = '/storage/qit/qit-cli/src/qit-cli.php';
+		$qit_cli_path = $GLOBALS['qit-php'];
 		$cmd = sprintf(
-			'php %s run:e2e woocommerce --config=%s --env=MY_SECRET=%s 2>&1',
-			$qit_cli_path,
-			$config,
-			$secret
+			'QIT_HOME=%s php %s run:e2e woocommerce --config=%s --env=MY_SECRET=%s 2>&1',
+			escapeshellarg( $GLOBALS['QIT_HOME'] ),
+			escapeshellarg( $qit_cli_path ),
+			escapeshellarg( $config ),
+			escapeshellarg( $secret )
 		);
-		
+
 		$output = shell_exec( $cmd );
-		
+
 		// Critical assertions
 		$this->assertStringNotContainsString( $secret, $output,
 			'Raw secret value must not appear in stdout' );
-		
+
 		$this->assertStringContainsString( '[REDACTED:MY_SECRET]', $output,
 			'Redacted marker must appear in stdout' );
-		
+
 		$this->assertStringContainsString( 'Secret is:', $output,
 			'Command output must be captured' );
 	}

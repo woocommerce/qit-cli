@@ -106,7 +106,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT.' );
 
 		$this
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' );
 
