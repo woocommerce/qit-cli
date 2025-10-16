@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance\Environment;
+namespace QIT_CLI\Environment\Environments\Performance;
 
 use QIT_CLI\Environment\Environments\QITEnvInfo;
 

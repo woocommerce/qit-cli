@@ -6,7 +6,7 @@ use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use SplFileObject;
 
 class PrepareDebugLog {

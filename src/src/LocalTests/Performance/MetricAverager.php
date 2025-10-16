@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\LocalTests\Performance;
 
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 
 /**

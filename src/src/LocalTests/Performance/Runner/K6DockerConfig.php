@@ -5,7 +5,7 @@ namespace QIT_CLI\LocalTests\Performance\Runner;
 use QIT_CLI\App;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 
 class K6DockerConfig {
 

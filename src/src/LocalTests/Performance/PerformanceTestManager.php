@@ -4,7 +4,7 @@ namespace QIT_CLI\LocalTests\Performance;
 
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\MetricAverager;
 use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 use QIT_CLI\LocalTests\Performance\Runner\K6Runner;

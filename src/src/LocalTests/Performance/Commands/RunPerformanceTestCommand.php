@@ -18,7 +18,7 @@ use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\LocalTests\EnvironmentRunner;
 use QIT_CLI\LocalTests\LocalTestRunNotifier;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;

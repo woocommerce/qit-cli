@@ -10,7 +10,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\Environment\PackageOrchestrator;
 use QIT_CLI\LocalTests\E2E\Result\TestResult;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\LocalTests\Performance\MetricsExtractor;
 use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
 use QIT_CLI\RequestBuilder;

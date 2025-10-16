@@ -4,7 +4,7 @@ namespace QIT_CLI\Environment;
 
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 
 /**
  * Centralized environment variable mapping for QIT environments.

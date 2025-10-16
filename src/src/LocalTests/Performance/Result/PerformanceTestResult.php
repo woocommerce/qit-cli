@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\LocalTests\Performance\Result;
 
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use function QIT_CLI\normalize_path;
 
 class PerformanceTestResult {
