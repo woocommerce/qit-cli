@@ -267,9 +267,10 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
-		$env_name   = $input->getOption( 'environment' ) ?? 'default';
-		$env_config = $this->get_environment_config( $env_name );
-		$env_config = $this->applyCliOverrides( $env_config, $input );
+		$env_name         = $input->getOption( 'environment' ) ?? 'default';
+		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
+		$env_config       = $this->get_environment_config( $env_name );
+		$env_config       = $this->applyCliOverrides( $env_config, $input, $environment_type );
 
 		/* ─ 1.1. Add SUT as a plugin/theme if defined in qit.json ─ */
 		$sut = $this->get_resolved_sut();
@@ -314,7 +315,6 @@ class UpEnvironmentCommand extends QITCommand {
 		$this->process_test_package_requirements( $env_config, $input, $output );
 
 		/* ─ 2. Resolve extensions using the merged config (includes CLI overrides) ─ */
-		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
 		$resolved_ext     = $this->download_extensions_from_config( $env_config, $environment_type );
 
 		/* ─ 3. Use the fully-resolved extension lists ─ */
@@ -824,7 +824,7 @@ class UpEnvironmentCommand extends QITCommand {
 	 * @param InputInterface      $input
 	 * @return array<string,mixed>
 	 */
-	private function applyCliOverrides( array $config, InputInterface $input ): array {
+	private function applyCliOverrides( array $config, InputInterface $input, string $environment_type ): array {
 		// $input is actually a QITInput instance when called from our commands
 
 		/* ─ Scalars ─ */
@@ -853,7 +853,7 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/* ─ Resolve special versions and add plugins explicitly ─ */
-		$config = $this->resolve_woo( $config, $input );
+		$config = $this->resolve_woo( $config, $input, $environment_type );
 		$config = $this->resolve_wp( $config, $input );
 		if ( $input->hasOption( 'object_cache' ) ) {
 			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
@@ -945,18 +945,25 @@ class UpEnvironmentCommand extends QITCommand {
 	/**
 	 * Resolve --woo option explicitly.
 	 * Adds WooCommerce plugin with the specified version.
+	 * For performance environments, defaults to 'latest' if not specified.
 	 *
 	 * @param array<string,mixed> $config
 	 * @param InputInterface      $input
+	 * @param string              $environment_type
 	 * @return array<string,mixed>
 	 */
-	private function resolve_woo( array $config, InputInterface $input ): array {
+	private function resolve_woo( array $config, InputInterface $input, string $environment_type = 'e2e' ): array {
 		/** @var \QIT_CLI\QITInput $input */
-		if ( ! $input->hasOption( 'woo' ) ) {
+		if ( ! $input->hasOption( 'woo' ) && $environment_type !== 'performance' ) {
 			return $config;
 		}
 
 		$woo_version = $input->getOption( 'woo' );
+
+		// For performance environments, default to 'latest' if not explicitly set
+		if ( empty( $woo_version ) && $environment_type === 'performance' ) {
+			$woo_version = 'latest';
+		}
 
 		if ( empty( $woo_version ) ) {
 			return $config;
