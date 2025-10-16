@@ -20,8 +20,8 @@ class K6DockerConfig {
 	 * @param PerformanceEnvInfo $env_info
 	 * @param string             $results_dir
 	 * @param string             $container_name
-	 * @param array<string>      $k6_command K6 command from manifest (e.g., ['k6', 'run', '--out', 'json=...', 'test.js'])
-	 * @param string|null        $dashboard_filename Optional dashboard HTML filename from manifest
+	 * @param array<string>      $k6_command K6 command from manifest (e.g., ['k6', 'run', '--out', 'json=...', 'test.js']).
+	 * @param string|null        $dashboard_filename Optional dashboard HTML filename from manifest.
 	 * @return array<string>
 	 */
 	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $k6_command, ?string $dashboard_filename = null ): array {
@@ -88,7 +88,7 @@ class K6DockerConfig {
 
 	/**
 	 * @param PerformanceEnvInfo $env_info
-	 * @param string|null        $dashboard_filename Optional dashboard HTML filename
+	 * @param string|null        $dashboard_filename Optional dashboard HTML filename.
 	 * @return array<string>
 	 */
 	private function get_environment_variables( PerformanceEnvInfo $env_info, ?string $dashboard_filename ): array {
@@ -134,7 +134,7 @@ class K6DockerConfig {
 	 *
 	 * Prepends the Docker image and removes the 'k6' prefix if present.
 	 *
-	 * @param array<string> $k6_command Command from manifest (e.g., ['k6', 'run', 'scenarios/default.js'])
+	 * @param array<string> $k6_command Command from manifest (e.g., ['k6', 'run', 'scenarios/default.js']).
 	 * @return array<string> Docker-compatible command with image prepended
 	 */
 	private function convert_k6_command_to_docker( array $k6_command ): array {

@@ -127,9 +127,9 @@ class K6Runner {
 	 * @return array<string> k6 command parts (e.g., ['k6', 'run', '--out', 'json=/qit/results/performance.json', 'scenarios/default.js'])
 	 */
 	private function get_k6_command_from_manifest( PerformanceEnvInfo $env_info ): array {
-		$package_info  = $this->get_test_package_info( $env_info );
-		$manifest      = $this->read_manifest( $package_info );
-		$run_command   = $manifest['test']['phases']['run'][0] ?? null;
+		$package_info = $this->get_test_package_info( $env_info );
+		$manifest     = $this->read_manifest( $package_info );
+		$run_command  = $manifest['test']['phases']['run'][0] ?? null;
 
 		if ( ! $run_command ) {
 			throw new \RuntimeException( 'Invalid test package manifest: missing test.phases.run' );
@@ -186,7 +186,7 @@ class K6Runner {
 	 * Maps manifest result keys to k6 CLI arguments.
 	 *
 	 * @param array<string> $command_parts The k6 command parts.
-	 * @param array<mixed> $manifest The test package manifest.
+	 * @param array<mixed>  $manifest The test package manifest.
 	 * @return array<string> Command with injected output options.
 	 */
 	private function inject_output_options( array $command_parts, array $manifest ): array {
@@ -209,7 +209,7 @@ class K6Runner {
 		}
 
 		if ( ! empty( $output_options ) ) {
-			$test_file = array_pop( $command_parts );
+			$test_file     = array_pop( $command_parts );
 			$command_parts = array_merge( $command_parts, $output_options, [ $test_file ] );
 		}
 
@@ -233,7 +233,7 @@ class K6Runner {
 	/**
 	 * Convert relative paths in command to absolute container paths.
 	 *
-	 * @param array<string> $command_parts
+	 * @param array<string>                               $command_parts
 	 * @param array{path: string, container_path: string} $package_info
 	 * @return array<string>
 	 */

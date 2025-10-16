@@ -61,7 +61,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	protected $upload;
 
 	protected static $defaultName = 'run:performance'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
-	protected string $test_type = 'performance';
+	protected string $test_type   = 'performance';
 
 	public function __construct(
 		Cache $cache,
@@ -186,7 +186,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			}
 			// Performance tests require WooCommerce, so default to 'latest' if not specified
 			if ( $input->hasOption( 'woocommerce_version' ) ) {
-				$woo_version                = $input->getOption( 'woocommerce_version' ) ?: 'latest';
+				$woo_version             = $input->getOption( 'woocommerce_version' ) ?: 'latest';
 				$env_up_options['--woo'] = $woo_version;
 			} else {
 				// Fallback if schema doesn't have woocommerce_version option
@@ -338,9 +338,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$test_packages = $input->getOption( 'test-package' ) ?: [];
 
 		// Use default test package if none provided.
-		if ( empty( $test_packages ) && $default_package = $this->get_default_test_package_path() ) {
-			$test_packages = [ $default_package ];
-			$output->writeln( "<comment>Using default test package: {$default_package}</comment>" );
+		if ( empty( $test_packages ) ) {
+			$default_package = $this->get_default_test_package_path();
+			if ( $default_package ) {
+				$test_packages = [ $default_package ];
+				$output->writeln( "<comment>Using default test package: {$default_package}</comment>" );
+			}
 		}
 
 		if ( ! empty( $test_packages ) ) {
@@ -588,7 +591,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
 
-		$cli_source = $input->getOption( 'source' );
+		$cli_source           = $input->getOption( 'source' );
 		$extension_identifier = $cli_source ?: $woo_extension_slug;
 
 		if ( ! isset( $env_up_options[ $key ] ) ) {
@@ -846,5 +849,4 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			return null;
 		}
 	}
-
 }

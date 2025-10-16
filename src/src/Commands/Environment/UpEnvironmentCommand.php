@@ -315,7 +315,7 @@ class UpEnvironmentCommand extends QITCommand {
 		$this->process_test_package_requirements( $env_config, $input, $output );
 
 		/* ─ 2. Resolve extensions using the merged config (includes CLI overrides) ─ */
-		$resolved_ext     = $this->download_extensions_from_config( $env_config, $environment_type );
+		$resolved_ext = $this->download_extensions_from_config( $env_config, $environment_type );
 
 		/* ─ 3. Use the fully-resolved extension lists ─ */
 		$final_plugins = $resolved_ext->get_plugins();
@@ -574,7 +574,8 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/*
-		─ 4. Materialise EnvInfo DTO ─ */
+		─ 4. Materialise EnvInfo DTO ─
+		*/
 
 		$env_info_class = $this->get_env_info_class( $environment_type );
 
@@ -1505,7 +1506,7 @@ HELP;
 	 * This backup captures the state after all setup phases have completed.
 	 *
 	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info The environment info.
-	 * @param OutputInterface $output   The output interface.
+	 * @param OutputInterface               $output   The output interface.
 	 */
 	private function createDatabaseBackup( E2EEnvInfo|PerformanceEnvInfo $env_info, OutputInterface $output ): void {
 		$output->write( 'Creating database backup for env:reset...' );

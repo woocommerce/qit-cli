@@ -96,15 +96,15 @@ abstract class QITEnvironment extends Environment {
 
 			$this->env_info->domain     = parse_url( $site_url, PHP_URL_HOST );
 			$this->env_info->nginx_port = (string) parse_url( $site_url, PHP_URL_PORT );
-			$this->env_info->site_url = sprintf( $site_url );
+			$this->env_info->site_url   = sprintf( $site_url );
 		} else {
 			if ( getenv( 'QIT_EXPOSE_ENVIRONMENT_TO' ) === 'DOCKER' ) {
 				// Inside docker, the port is always 80 (that's what Nginx is listening to).
 				$this->env_info->nginx_port = '80';
-				$this->env_info->site_url = sprintf( 'http://%s', $this->env_info->domain );
+				$this->env_info->site_url   = sprintf( 'http://%s', $this->env_info->domain );
 			} else {
 				$this->env_info->nginx_port = (string) $this->get_nginx_port();
-				$this->env_info->site_url = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
+				$this->env_info->site_url   = sprintf( 'http://%s:%s', $this->env_info->domain, $this->env_info->nginx_port );
 			}
 		}
 	}

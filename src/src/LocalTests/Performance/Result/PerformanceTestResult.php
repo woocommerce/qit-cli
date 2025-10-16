@@ -64,8 +64,8 @@ class PerformanceTestResult {
 	private $baseline_result = null;
 
 	/**
-	 * @param PerformanceEnvInfo $env_info
-	 * @param array{summary: string, json: string, dashboard: string}|null $result_filenames Optional result filenames from manifest
+	 * @param PerformanceEnvInfo                                           $env_info
+	 * @param array{summary: string, json: string, dashboard: string}|null $result_filenames Optional result filenames from manifest.
 	 */
 	public function __construct( PerformanceEnvInfo $env_info, ?array $result_filenames = null ) {
 		$this->env_info    = $env_info;

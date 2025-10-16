@@ -46,7 +46,7 @@ class MetricAverager {
 	 * Create a new PerformanceTestResult for averaged data.
 	 */
 	private function create_averaged_result( PerformanceTestResult $base_result, ?PerformanceEnvInfo $original_env_info = null ): PerformanceTestResult {
-		$env_info = $original_env_info ?: $base_result->get_env_info();
+		$env_info         = $original_env_info ?: $base_result->get_env_info();
 		$result_filenames = $base_result->get_result_filenames();
 
 		$averaged_result = new PerformanceTestResult( $env_info, $result_filenames );
