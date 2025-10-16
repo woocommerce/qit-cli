@@ -1,9 +1,13 @@
 #!/bin/bash
-# Example isolated setup script.
-# 🛈 The plugin under test is already active.
-# Add commands below; they run inside the Docker container used by QIT.
-# Examples:
-# wp theme install storefront --activate
-# wp option update blogname "My e2e test site"
+# ------------------------------------------------------------------
+# Isolated Setup – executed INSIDE the WP container
+# ------------------------------------------------------------------
+# Runs before the *run* phase of THIS package only.
+# Safe place to create test data that must not leak to other packages.
 
-echo "Setup complete"
+set -euo pipefail
+
+echo "[setup] Creating sample data ..."
+# Example:
+# wp wc product create --name="Test Product" --type=simple --price=9.99
+echo "[setup] Done."

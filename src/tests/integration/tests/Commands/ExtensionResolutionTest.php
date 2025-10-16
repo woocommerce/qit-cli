@@ -216,13 +216,13 @@ class ExtensionResolutionTest extends TestCase {
 							[
 								'slug' => 'complex-plugin',
 								'from' => 'local',
-								'directory' => realpath( $localPlugin )
+								'path' => realpath( $localPlugin )
 							],
-							// URL source
+							// URL source - slug must match the directory inside the ZIP
 							[
-								'slug' => 'akismet-from-url',
+								'slug' => 'akismet',
 								'from' => 'url',
-								'source' => 'https://downloads.wordpress.org/plugin/akismet.5.3.3.zip'
+								'url' => 'https://downloads.wordpress.org/plugin/akismet.5.3.3.zip'
 							],
 						]
 					]
@@ -452,28 +452,29 @@ class ExtensionResolutionTest extends TestCase {
 	 */
 	public function test_invalid_inferred_slugs(): void {
 		$tempDir = sys_get_temp_dir() . '/qit-test-' . uniqid();
-		
+
 		try {
 			mkdir( $tempDir, 0755, true );
-			
-			// Create a plugin with invalid slug name (contains dots)
-			$pluginDir = $tempDir . '/my-plugin-v2.3.4';
+
+			// Create a plugin with invalid slug name (contains dots that won't be stripped)
+			// Version stripping removes patterns like -v2.3.4 or -1.2.3, so use dots in the base name
+			$pluginDir = $tempDir . '/my.plugin.name';
 			mkdir( $pluginDir, 0755, true );
 			file_put_contents( $pluginDir . '/plugin.php', '<?php /* Plugin Name: My Plugin */' );
-			
-			// This should fail because the inferred slug contains dots
+
+			// This should fail because the inferred slug contains dots (not a version pattern)
 			$proc = qit( [
 				'env:up',
 				'--plugin', $pluginDir,
 			], return_process: true, capture_stderr_separately: true );
-			
+
 			$output = $proc->getOutput() . $proc->getErrorOutput();
-			
+
 			// Should fail with invalid slug error
 			$this->assertNotEquals( 0, $proc->getExitCode() );
 			$this->assertStringContainsString( 'is not valid', $output );
 			$this->assertStringContainsString( 'Please use explicit format: slug@path', $output );
-			
+
 		} finally {
 			if ( is_dir( $tempDir ) ) {
 				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );

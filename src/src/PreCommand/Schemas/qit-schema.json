@@ -267,6 +267,16 @@
                     "description": "Plugin slug from WordPress.org (latest stable version)"
                   },
                   {
+                    "type": "string",
+                    "pattern": "^https?://",
+                    "description": "URL to plugin zip file"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^(/|\\./|\\.\\./).*",
+                    "description": "Local file path (absolute or relative)"
+                  },
+                  {
                     "$ref": "#/definitions/pluginConfig"
                   }
                 ]
@@ -281,6 +291,16 @@
                     "type": "string",
                     "pattern": "^[a-zA-Z0-9_-]+$",
                     "description": "Theme slug from WordPress.org (latest stable version)"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^https?://",
+                    "description": "URL to theme zip file"
+                  },
+                  {
+                    "type": "string",
+                    "pattern": "^(/|\\./|\\.\\./).*",
+                    "description": "Local file path (absolute or relative)"
                   },
                   {
                     "$ref": "#/definitions/themeConfig"

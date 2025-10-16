@@ -1,5 +1,8 @@
 <?php
 
+// Load composer autoloader for integration test dependencies
+require_once __DIR__ . '/vendor/autoload.php';
+
 use Symfony\Component\Process\Process;
 
 // Define the root directory for integration tests to avoid relative path issues

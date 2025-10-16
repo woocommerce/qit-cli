@@ -11,7 +11,7 @@ class UpEnvironmentCommandTest extends TestCase {
 
 	protected function tearDown(): void {
 		// Clean up any running environments
-		@qit( [ 'env:down' ] );
+		@qit( [ 'env:down', 'all' ] );
 		parent::tearDown();
 	}
 
@@ -322,7 +322,7 @@ class UpEnvironmentCommandTest extends TestCase {
 			
 		} finally {
 			// Always clean up the environment
-			qit( [ 'env:down' ] );
+			qit( [ 'env:down', 'all' ] );
 		}
 	}
 	
@@ -639,9 +639,10 @@ class UpEnvironmentCommandTest extends TestCase {
 			'--env', 'SCRIPT_DEBUG=true',
 		] );
 		$data = json_decode( $output, true );
-		
-		// Should have all env vars
-		$this->assertCount( 3, $data['envs'] );
+
+		// Should have all user-provided env vars (plus some defaults added by QIT)
+		$this->assertArrayHasKey( 'envs', $data );
+		$this->assertGreaterThanOrEqual( 3, count( $data['envs'] ), 'Should have at least the 3 user-provided env vars' );
 		$this->assertEquals( 'true', $data['envs']['WP_DEBUG'] );
 		$this->assertEquals( 'true', $data['envs']['WP_DEBUG_LOG'] );
 		$this->assertEquals( 'true', $data['envs']['SCRIPT_DEBUG'] );
