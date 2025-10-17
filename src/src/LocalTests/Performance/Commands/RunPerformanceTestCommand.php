@@ -335,14 +335,23 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		}
 
 		// Handle test packages.
-		$test_packages = $input->getOption( 'test-package' ) ?: [];
+		$test_package_ids = $this->get_test_package_ids( $input, $output );
 
-		// Use default test package if none provided.
-		if ( empty( $test_packages ) ) {
-			$default_package = $this->get_default_test_package_path();
-			if ( $default_package ) {
-				$test_packages = [ $default_package ];
-				$output->writeln( "<comment>Using default test package: {$default_package}</comment>" );
+		// Download test packages for local execution.
+		$test_packages = [];
+		foreach ( $test_package_ids as $package_id ) {
+			try {
+				$test_package_downloader = App::make( TestPackageDownloader::class );
+				$cache_dir               = Config::get_qit_dir() . 'cache';
+
+				$test_package_downloader->download_single( $package_id, $cache_dir );
+				$metadata = $test_package_downloader->get_package_metadata( $package_id );
+
+				if ( ! empty( $metadata['downloaded_path'] ) ) {
+					$test_packages[] = $metadata['downloaded_path'];
+				}
+			} catch ( \Exception $e ) {
+				$output->writeln( sprintf( '<error>Failed to download test package "%s": %s</error>', $package_id, $e->getMessage() ) );
 			}
 		}
 
@@ -684,6 +693,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$options['iterations'] = (int) $iterations;
 		}
 
+		// Handle test package option for remote execution.
+		$test_package = $this->get_test_package_ids( $input, $output );
+		if ( ! empty( $test_package ) ) {
+			$options['test_package'] = $test_package;
+		}
+
 		// Handle ZIP upload if testing local file (following CreateRunCommands pattern).
 		$source = $input->getOption( 'source' );
 		if ( ! empty( $source ) && file_exists( $source ) ) {
@@ -817,36 +832,27 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	}
 
 	/**
-	 * Get the default test package path.
+	 * Get test package IDs from input or default.
+	 * Returns package IDs only - does NOT download anything.
 	 *
-	 * Downloads the default performance test package from Manager.
-	 *
-	 * @return string|null The path to the default test package, or null if unavailable.
+	 * @param InputInterface  $input
+	 * @param OutputInterface $output
+	 * @return array<string> Array of test package IDs (e.g., ["woocommerce/performance-tests:latest"]).
 	 */
-	private function get_default_test_package_path(): ?string {
-		try {
+	private function get_test_package_ids( InputInterface $input, OutputInterface $output ): array {
+		$test_packages = $input->getOption( 'test-package' ) ?: [];
+
+		// Use default test package if none provided.
+		if ( empty( $test_packages ) ) {
 			$default_packages = $this->cache->get_manager_sync_data( 'default_test_packages' );
-			$package_data     = $default_packages['performance'] ?? null;
-
-			if ( empty( $package_data ) ) {
-				return null;
+			$default_package  = $default_packages['performance'] ?? null;
+			if ( $default_package ) {
+				$test_packages = [ $default_package ];
+				$output->writeln( "<comment>Using default test package: {$default_package}</comment>" );
 			}
-
-			// Validate it's a package ID (e.g., "woocommerce/performance-tests:latest").
-			if ( ! is_string( $package_data ) || ! preg_match( '/^[a-zA-Z0-9_.-]+\/[a-zA-Z0-9_.-]+:[a-zA-Z0-9_.-]+$/', $package_data ) ) {
-				throw new \RuntimeException( 'Invalid default test package format. Expected package ID (e.g., "woocommerce/performance-tests:latest")' );
-			}
-
-			// Use TestPackageDownloader to download the package.
-			$test_package_downloader = App::make( TestPackageDownloader::class );
-			$cache_dir               = Config::get_qit_dir() . 'cache';
-
-			$test_package_downloader->download_single( $package_data, $cache_dir );
-			$metadata = $test_package_downloader->get_package_metadata( $package_data );
-
-			return $metadata['downloaded_path'] ?? null;
-		} catch ( \Exception $e ) {
-			return null;
 		}
+
+		return $test_packages;
 	}
+
 }
