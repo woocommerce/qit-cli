@@ -3,8 +3,6 @@
 // namespace integration\tests\Commands;
 
 use PHPUnit\Framework\TestCase;
-use function qit;
-use function qit_run_remote_test;
 
 /**
  * Test RunGroupCommand functionality.

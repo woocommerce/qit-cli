@@ -9,12 +9,6 @@ use PHPUnit\Framework\TestCase;
  */
 class UpEnvironmentCommandTest extends TestCase {
 
-	protected function tearDown(): void {
-		// Clean up any running environments
-		@qit( [ 'env:down', 'all' ] );
-		parent::tearDown();
-	}
-
 	/**
 	 * Test basic env:up without any parameters.
 	 */
@@ -322,7 +316,7 @@ class UpEnvironmentCommandTest extends TestCase {
 			
 		} finally {
 			// Always clean up the environment
-			qit( [ 'env:down', 'all' ] );
+			qit( [ 'env:down' ] );
 		}
 	}
 	

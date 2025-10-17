@@ -149,15 +149,19 @@ class ExtensionInputParser {
 			$slug       = self::infer_slug_from_path( $realpath );
 			$added_from = 'Added from CLI parameter (local path)';
 
-			// Add warning about inferred slug - write directly to stderr
-			$warning_msg = sprintf(
-				'Warning: Inferred slug "%s" from path "%s". If this is incorrect, use explicit format: %s@%s',
-				$slug,
-				$path,
-				'<correct-slug>',
-				$path
-			);
-			fwrite( STDERR, $warning_msg . PHP_EOL );
+			// Add warning about inferred slug
+			if ( class_exists( '\\QIT_CLI\\App' ) && method_exists( '\\QIT_CLI\\App', 'make' ) ) {
+				$output = \QIT_CLI\App::make( \QIT_CLI\IO\Output::class );
+				if ( $output instanceof \QIT_CLI\IO\Output ) {
+					$output->writeln( sprintf(
+						'<comment>Warning: Inferred slug "%s" from path "%s". If this is incorrect, use explicit format: %s@%s</comment>',
+						$slug,
+						$path,
+						'<correct-slug>',
+						$path
+					) );
+				}
+			}
 		}
 
 		$extension         = new Extension( $slug, $type );
@@ -189,15 +193,19 @@ class ExtensionInputParser {
 			$slug       = self::infer_slug_from_url( $url );
 			$added_from = 'Added from CLI parameter (URL)';
 
-			// Add warning about inferred slug - write directly to stderr
-			$warning_msg = sprintf(
-				'Warning: Inferred slug "%s" from URL "%s". If this is incorrect, use explicit format: %s@%s',
-				$slug,
-				$url,
-				'<correct-slug>',
-				$url
-			);
-			fwrite( STDERR, $warning_msg . PHP_EOL );
+			// Add warning about inferred slug
+			if ( class_exists( '\\QIT_CLI\\App' ) && method_exists( '\\QIT_CLI\\App', 'make' ) ) {
+				$output = \QIT_CLI\App::make( \QIT_CLI\IO\Output::class );
+				if ( $output instanceof \QIT_CLI\IO\Output ) {
+					$output->writeln( sprintf(
+						'<comment>Warning: Inferred slug "%s" from URL "%s". If this is incorrect, use explicit format: %s@%s</comment>',
+						$slug,
+						$url,
+						'<correct-slug>',
+						$url
+					) );
+				}
+			}
 		}
 
 		$extension                      = new Extension( $slug, $type );

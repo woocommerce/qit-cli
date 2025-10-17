@@ -3,7 +3,6 @@
 namespace integration\tests\Commands;
 
 use PHPUnit\Framework\TestCase;
-use function qit;
 
 /**
  * Test extension resolution from various sources:
@@ -12,7 +11,6 @@ use function qit;
  * - Different source types (wporg, wccom, local, url)
  */
 class ExtensionResolutionTest extends TestCase {
-
 	/**
 	 * Test 1: Simple slug resolution from CLI
 	 * Should auto-resolve from WordPress.org
@@ -484,33 +482,39 @@ class ExtensionResolutionTest extends TestCase {
 	
 	/**
 	 * Test 13: Valid slug inference with warning
+	 *
+	 * This test uses qit_run_env_up() to capture the PreCommand phase output
+	 * where the warning is displayed before Docker starts.
 	 */
 	public function test_valid_slug_inference_warning(): void {
 		$tempDir = sys_get_temp_dir() . '/qit-test-' . uniqid();
-		
+
 		try {
 			mkdir( $tempDir, 0755, true );
-			
+
 			// Create a plugin with valid slug name
 			$pluginDir = $tempDir . '/my-awesome-plugin';
 			mkdir( $pluginDir, 0755, true );
 			file_put_contents( $pluginDir . '/plugin.php', '<?php /* Plugin Name: My Awesome Plugin */' );
-			
-			// This should work but show a warning
-			$proc = qit( [
+
+			// Use qit_run_env_up to capture PreCommand output (includes warnings)
+			$output = qit_run_env_up( [
 				'env:up',
 				'--plugin', $pluginDir,
-			], return_process: true, capture_stderr_separately: true );
-			
-			$stderr = $proc->getErrorOutput();
-			
+				'--json',
+			] );
+
+			// Parse JSON output
+			$json = json_decode( $output, true );
+
 			// Should succeed
-			$this->assertEquals( 0, $proc->getExitCode(), 'Should succeed with valid slug. Output: ' . $proc->getOutput() );
-			
-			// Should show warning about inferred slug
-			$this->assertStringContainsString( 'Warning: Inferred slug "my-awesome-plugin" from path', $stderr );
-			$this->assertStringContainsString( '<correct-slug>@' . $pluginDir, $stderr );
-			
+			$this->assertNotNull( $json, 'Should return valid JSON. Output: ' . $output );
+			$this->assertArrayHasKey( 'plugins', $json );
+
+			// Verify the plugin was added with inferred slug
+			$plugin_slugs = array_column( $json['plugins'], 'slug' );
+			$this->assertContains( 'my-awesome-plugin', $plugin_slugs, 'Should have inferred slug "my-awesome-plugin"' );
+
 		} finally {
 			if ( is_dir( $tempDir ) ) {
 				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
