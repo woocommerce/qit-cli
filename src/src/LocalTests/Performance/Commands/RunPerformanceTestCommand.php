@@ -854,5 +854,4 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		return $test_packages;
 	}
-
 }

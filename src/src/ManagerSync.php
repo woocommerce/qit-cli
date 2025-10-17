@@ -126,7 +126,7 @@ class ManagerSync {
 	 * This method strips the '-v2' suffix from v2 keys so the rest of the CLI can use
 	 * the base names ('e2e', 'performance', etc.) while ensuring this version of the CLI
 	 * uses the v2 environments.
-	 * 
+	 *
 	 * This logic should be removed when we officially sunset CLI version <1.0.0
 	 *
 	 * @param array<mixed> $manager_sync The sync data from the Manager.
