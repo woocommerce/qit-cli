@@ -693,10 +693,10 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$options['iterations'] = (int) $iterations;
 		}
 
-		// Handle test package option for remote execution.
-		$test_package = $this->get_test_package_ids( $input, $output );
-		if ( ! empty( $test_package ) ) {
-			$options['test_package'] = $test_package;
+		// Handle test packages option for remote execution.
+		$test_packages = $this->get_test_package_ids( $input, $output );
+		if ( ! empty( $test_packages ) ) {
+			$options['test_packages'] = $test_packages;
 		}
 
 		// Handle ZIP upload if testing local file (following CreateRunCommands pattern).
