@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests;
+namespace QIT_CLI\Utils;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;

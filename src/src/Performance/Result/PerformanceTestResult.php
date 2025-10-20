@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance\Result;
+namespace QIT_CLI\Performance\Result;
 
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use function QIT_CLI\normalize_path;

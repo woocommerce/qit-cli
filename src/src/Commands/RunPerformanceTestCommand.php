@@ -5,7 +5,7 @@
  */
 declare( ticks=1 );
 
-namespace QIT_CLI\LocalTests\Performance\Commands;
+namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
@@ -16,10 +16,10 @@ use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\LocalTests\EnvironmentRunner;
-use QIT_CLI\LocalTests\LocalTestRunNotifier;
+use QIT_CLI\Environment\EnvironmentRunner;
+use QIT_CLI\Utils\LocalTestRunNotifier;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
-use QIT_CLI\LocalTests\Performance\PerformanceTestManager;
+use QIT_CLI\Performance\PerformanceTestManager;
 use QIT_CLI\OptionReuseTrait;
 use QIT_CLI\PreCommand\Download\TestPackageDownloader;
 use QIT_CLI\QITInput;

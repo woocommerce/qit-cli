@@ -33,7 +33,7 @@ use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\RunActivationTestCommand;
-use QIT_CLI\LocalTests\Performance\Commands\RunPerformanceTestCommand;
+use QIT_CLI\Commands\RunPerformanceTestCommand;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\TestPackages\PackageDeleteCommand;

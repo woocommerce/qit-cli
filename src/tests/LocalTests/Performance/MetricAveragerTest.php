@@ -3,9 +3,9 @@
 namespace QIT_CLI\LocalTests\Performance\Tests;
 
 use PHPUnit\Framework\TestCase;
-use QIT_CLI\LocalTests\Performance\MetricAverager;
+use QIT_CLI\Performance\MetricAverager;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
-use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
+use QIT_CLI\Performance\Result\PerformanceTestResult;
 
 /**
  * Test class for MetricAverager to ensure proper averaging of median metrics

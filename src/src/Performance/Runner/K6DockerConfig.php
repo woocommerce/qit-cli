@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance\Runner;
+namespace QIT_CLI\Performance\Runner;
 
 use QIT_CLI\App;
 use QIT_CLI\Config;

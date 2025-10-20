@@ -1,9 +1,9 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance;
+namespace QIT_CLI\Performance;
 
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
-use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
+use QIT_CLI\Performance\Result\PerformanceTestResult;
 
 /**
  * Optimized utility class for averaging metrics across multiple performance test runs.

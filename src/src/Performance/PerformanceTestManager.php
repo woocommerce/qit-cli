@@ -1,13 +1,13 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance;
+namespace QIT_CLI\Performance;
 
-use QIT_CLI\LocalTests\EnvironmentRunner;
-use QIT_CLI\LocalTests\LocalTestRunNotifier;
+use QIT_CLI\Environment\EnvironmentRunner;
+use QIT_CLI\Utils\LocalTestRunNotifier;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
-use QIT_CLI\LocalTests\Performance\MetricAverager;
-use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
-use QIT_CLI\LocalTests\Performance\Runner\K6Runner;
+use QIT_CLI\Performance\MetricAverager;
+use QIT_CLI\Performance\Result\PerformanceTestResult;
+use QIT_CLI\Performance\Runner\K6Runner;
 use QIT_CLI\Environment\Environments\Environment;
 use Symfony\Component\Console\Output\OutputInterface;
 
