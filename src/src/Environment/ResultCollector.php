@@ -542,8 +542,8 @@ class ResultCollector {
 			return;
 		}
 
-		// Ensure ctrf-cli is available
-		$bin_dir  = $this->node_deps->ensure_packages( [ 'ctrf-cli' ], $io );
+		// Ensure ctrf-cli is available. Locking to 0.0.1 since 0.0.2 was breaking and the package is being actively developed with features not currently needed by us.
+		$bin_dir  = $this->node_deps->ensure_packages( [ 'ctrf-cli@0.0.1' ], $io );
 		$ctrf_bin = $bin_dir . '/ctrf';
 
 		$orchestrator->post_processing_message( 'Merging CTRF reports...' );
