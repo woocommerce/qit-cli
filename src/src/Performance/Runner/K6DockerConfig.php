@@ -1,11 +1,11 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance\Runner;
+namespace QIT_CLI\Performance\Runner;
 
 use QIT_CLI\App;
 use QIT_CLI\Config;
 use QIT_CLI\Environment\Docker;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 
 class K6DockerConfig {
 
@@ -20,15 +20,16 @@ class K6DockerConfig {
 	 * @param PerformanceEnvInfo $env_info
 	 * @param string             $results_dir
 	 * @param string             $container_name
-	 * @param array<mixed>       $test_infos
+	 * @param array<string>      $k6_command K6 command from manifest (e.g., ['k6', 'run', '--out', 'json=...', 'test.js']).
+	 * @param string|null        $dashboard_filename Optional dashboard HTML filename from manifest.
 	 * @return array<string>
 	 */
-	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $test_infos = [] ): array {
+	public function build_k6_docker_args( PerformanceEnvInfo $env_info, string $results_dir, string $container_name, array $k6_command, ?string $dashboard_filename = null ): array {
 		return array_merge(
 			$this->get_base_docker_args( $env_info, $container_name ),
-			$this->get_volume_mounts( $env_info, $results_dir, $test_infos ),
-			$this->get_environment_variables( $env_info ),
-			$this->get_k6_command()
+			$this->get_volume_mounts( $env_info, $results_dir ),
+			$this->get_environment_variables( $env_info, $dashboard_filename ),
+			$this->convert_k6_command_to_docker( $k6_command )
 		);
 	}
 
@@ -60,11 +61,9 @@ class K6DockerConfig {
 	/**
 	 * @param PerformanceEnvInfo $env_info
 	 * @param string             $results_dir
-	 * @param array<mixed>       $test_infos
 	 * @return array<string>
 	 */
-	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir, array $test_infos = [] ): array {
-		// Base volumes for k6 operation.
+	private function get_volume_mounts( PerformanceEnvInfo $env_info, string $results_dir ): array {
 		$volumes = [
 			Config::get_qit_dir() . 'cache/k6' => '/k6-cache',
 			$results_dir                       => '/results',
@@ -76,19 +75,23 @@ class K6DockerConfig {
 			$args[] = "$host_path:$container_path";
 		}
 
-		// Mount test directories.
-		foreach ( $test_infos as $test_info ) {
-			$args[] = '-v';
-			$args[] = "{$test_info['path_in_host']}:{$test_info['path_in_php_container']}";
+		// Mount test packages.
+		if ( ! empty( $env_info->test_packages_for_setup ) ) {
+			foreach ( $env_info->test_packages_for_setup as $pkg_info ) {
+				$args[] = '-v';
+				$args[] = "{$pkg_info['path']}:{$pkg_info['container_path']}";
+			}
 		}
 
 		return $args;
 	}
 
 	/**
+	 * @param PerformanceEnvInfo $env_info
+	 * @param string|null        $dashboard_filename Optional dashboard HTML filename.
 	 * @return array<string>
 	 */
-	private function get_environment_variables( PerformanceEnvInfo $env_info ): array {
+	private function get_environment_variables( PerformanceEnvInfo $env_info, ?string $dashboard_filename ): array {
 		// Environment variables for k6 container.
 		$internal_nginx_name = "qitenvnginx{$env_info->env_id}";
 
@@ -103,11 +106,13 @@ class K6DockerConfig {
 			sprintf( 'QIT_INTERNAL_NGINX=%s', $internal_nginx_name ),
 		];
 
-		// Enable k6 web dashboard and export HTML report.
-		$args[] = '-e';
-		$args[] = 'K6_WEB_DASHBOARD=true';
-		$args[] = '-e';
-		$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/dashboard-report.html';
+		// Enable k6 web dashboard and export HTML report (if configured in manifest).
+		if ( $dashboard_filename !== null ) {
+			$args[] = '-e';
+			$args[] = 'K6_WEB_DASHBOARD=true';
+			$args[] = '-e';
+			$args[] = 'K6_WEB_DASHBOARD_EXPORT=/results/' . $dashboard_filename;
+		}
 
 		// Set HOME for browser support when running with --user.
 		if ( Docker::should_set_user() ) {
@@ -125,18 +130,21 @@ class K6DockerConfig {
 	}
 
 	/**
-	 * @return array<string>
+	 * Convert k6 command from manifest to Docker-compatible format.
+	 *
+	 * Prepends the Docker image and removes the 'k6' prefix if present.
+	 *
+	 * @param array<string> $k6_command Command from manifest (e.g., ['k6', 'run', 'scenarios/default.js']).
+	 * @return array<string> Docker-compatible command with image prepended
 	 */
-	private function get_k6_command(): array {
-		$args = [
-			'grafana/k6:master-with-browser',
-			'run',
-			'--out',
-			'json=/results/result-extended.json',
-			'--summary-export',
-			'/results/result.json',
-		];
+	private function convert_k6_command_to_docker( array $k6_command ): array {
+		if ( isset( $k6_command[0] ) && $k6_command[0] === 'k6' ) {
+			array_shift( $k6_command );
+		}
 
-		return $args;
+		return array_merge(
+			[ 'grafana/k6:master-with-browser' ],
+			$k6_command
+		);
 	}
 }

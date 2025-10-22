@@ -6,7 +6,7 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
-use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
@@ -59,7 +59,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 	 * Public API
 	 */
 	public function register_commands( Application $application ): void {
-		$ignored_test_types = [ 'activation' ];            // activation handled locally
+		$ignored_test_types = [ 'activation', 'performance' ]; // Activation handled locally, performance both remotely and locally.
 		$schemas            = $this->cache->get_manager_sync_data( 'schemas' );
 
 		foreach ( $this->cache->get_manager_sync_data( 'test_types' ) as $test_type ) {

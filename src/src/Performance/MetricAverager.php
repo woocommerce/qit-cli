@@ -1,9 +1,9 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance;
+namespace QIT_CLI\Performance;
 
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
-use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Performance\Result\PerformanceTestResult;
 
 /**
  * Optimized utility class for averaging metrics across multiple performance test runs.
@@ -35,8 +35,8 @@ class MetricAverager {
 			$averaged_result->add_metric( $metric_name, $this->average_metric( $metric_values ) );
 		}
 
-		// Copy files and write results.
-		$this->copy_result_files( end( $test_results ), $averaged_result );
+		// Register files and write results.
+		$this->register_iteration_files( end( $test_results ), $averaged_result );
 		$this->write_averaged_results( $averaged_result );
 
 		return $averaged_result;
@@ -46,9 +46,10 @@ class MetricAverager {
 	 * Create a new PerformanceTestResult for averaged data.
 	 */
 	private function create_averaged_result( PerformanceTestResult $base_result, ?PerformanceEnvInfo $original_env_info = null ): PerformanceTestResult {
-		$env_info = $original_env_info ?: $base_result->get_env_info();
+		$env_info         = $original_env_info ?: $base_result->get_env_info();
+		$result_filenames = $base_result->get_result_filenames();
 
-		$averaged_result = new PerformanceTestResult( $env_info );
+		$averaged_result = new PerformanceTestResult( $env_info, $result_filenames );
 		$averaged_result->set_status( $base_result->status );
 		$averaged_result->set_baseline( $base_result->is_baseline() );
 		return $averaged_result;
@@ -190,21 +191,14 @@ class MetricAverager {
 	}
 
 	/**
-	 * Copy result files from source to target result.
+	 * Register iteration result file paths in the averaged result for reference.
+	 *
+	 * Note: We don't copy any files to the root folder. The averaged result only contains
+	 * the averaged summary JSON. Users can view individual iteration files (summary, extended JSON,
+	 * and dashboard HTML) in their respective iteration folders (iter1/, iter2/, etc.).
 	 */
-	private function copy_result_files( PerformanceTestResult $source, PerformanceTestResult $target ): void {
-		$files_to_copy = [ 'k6-dashboard-report.html', 'result-extended.json' ];
-
-		foreach ( $files_to_copy as $filename ) {
-			$source_file = $source->get_results_dir() . '/' . $filename;
-			if ( file_exists( $source_file ) ) {
-				$target_file = $target->get_results_dir() . '/' . $filename;
-				copy( $source_file, $target_file );
-				$target->add_result_file( $filename, $target_file );
-			}
-		}
-
-		// Register all source result files for reference.
+	private function register_iteration_files( PerformanceTestResult $source, PerformanceTestResult $target ): void {
+		// Register all iteration file paths for reference (but don't copy them).
 		foreach ( $source->get_result_files() as $filename => $file_path ) {
 			$target->add_result_file( $filename, $file_path );
 		}
@@ -214,14 +208,14 @@ class MetricAverager {
 	 * Write averaged results to the result directory.
 	 */
 	private function write_averaged_results( PerformanceTestResult $averaged_result ): void {
-		$results_dir = $averaged_result->get_results_dir();
+		$results_dir      = $averaged_result->get_results_dir();
+		$result_filenames = $averaged_result->get_result_filenames();
 
 		if ( ! file_exists( $results_dir ) && ! mkdir( $results_dir, 0755, true ) ) {
 			throw new \RuntimeException( "Could not create results directory: $results_dir" );
 		}
 
-		// Write averaged result.json.
-		file_put_contents( $results_dir . '/result.json', json_encode( [
+		file_put_contents( $results_dir . '/' . $result_filenames['summary'], json_encode( [
 			'metrics'    => $averaged_result->get_metrics(),
 			'averaged'   => true,
 			'root_group' => [
@@ -231,7 +225,6 @@ class MetricAverager {
 			],
 		], JSON_PRETTY_PRINT ) );
 
-		// Write summary file.
 		file_put_contents( $results_dir . '/averaged-summary.txt',
 			"Performance Test Results - Averaged Metrics\n" .
 			"============================================\n\n" .
