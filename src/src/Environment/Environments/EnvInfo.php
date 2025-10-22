@@ -4,7 +4,7 @@ namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\IO\Output;
 use function QIT_CLI\normalize_path;
@@ -142,7 +142,7 @@ abstract class EnvInfo implements \JsonSerializable {
 	 * @param array<string,mixed> $env_info_array The array to deserialize.
 	 *
 	 * @return EnvInfo The deserialized EnvInfo object.
-	 * @phpstan-return \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo|\QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo
+	 * @phpstan-return \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo|\QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo
 	 */
 	public static function from_array( array $env_info_array ): EnvInfo {
 		$environment_type = $env_info_array['environment'] ?? 'e2e';

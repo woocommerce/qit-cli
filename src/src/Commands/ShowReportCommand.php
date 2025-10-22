@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\Commands\CustomTests;
+namespace QIT_CLI\Commands;
 
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;

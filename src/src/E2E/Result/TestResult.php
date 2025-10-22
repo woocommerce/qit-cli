@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests\E2E\Result;
+namespace QIT_CLI\E2E\Result;
 
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use function QIT_CLI\normalize_path;

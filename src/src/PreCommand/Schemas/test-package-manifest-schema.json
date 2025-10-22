@@ -8,15 +8,26 @@
   "allOf": [
     {
       "if": {
-        "properties": {
-          "test": {
+        "allOf": [
+          {
             "properties": {
-              "phases": {
-                "required": ["run"]
+              "test_type": {
+                "const": "e2e"
+              }
+            }
+          },
+          {
+            "properties": {
+              "test": {
+                "properties": {
+                  "phases": {
+                    "required": ["run"]
+                  }
+                }
               }
             }
           }
-        }
+        ]
       },
       "then": {
         "properties": {
@@ -25,6 +36,42 @@
             "properties": {
               "results": {
                 "required": ["ctrf-json", "blob-dir"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "allOf": [
+          {
+            "properties": {
+              "test_type": {
+                "const": "performance"
+              }
+            }
+          },
+          {
+            "properties": {
+              "test": {
+                "properties": {
+                  "phases": {
+                    "required": ["run"]
+                  }
+                }
+              }
+            }
+          }
+        ]
+      },
+      "then": {
+        "properties": {
+          "test": {
+            "required": ["phases", "results"],
+            "properties": {
+              "results": {
+                "required": ["summary", "json"]
               }
             }
           }
@@ -58,7 +105,7 @@
       "type": "string",
       "description": "Type of test (defaults to 'e2e')",
       "pattern": "^[a-zA-Z0-9_.-]+$",
-      "enum": ["e2e"],
+      "enum": ["e2e", "performance"],
       "default": "e2e"
     },
     "test_dir": {
@@ -99,22 +146,29 @@
           "properties": {
             "ctrf-json": {
               "type": "string",
-              "description": "Relative path for CTRF JSON result artefact"
-            },
-            "json": {
-              "type": "string",
-              "description": "Relative path for original JSON test results artefact"
+              "description": "Relative path for CTRF JSON result artefact (e2e tests)"
             },
             "allure-dir": {
               "type": "string",
-              "description": "Relative path for Allure directory result artefact"
+              "description": "Relative path for Allure directory result artefact (e2e tests)"
             },
             "blob-dir": {
               "type": "string",
-              "description": "Relative path for Playwright blob reporter output directory"
+              "description": "Relative path for Playwright blob reporter output directory (e2e tests)"
+            },
+            "summary": {
+              "type": "string",
+              "description": "Relative path for k6 summary JSON result (performance tests, required for aggregated statistics)"
+            },
+            "json": {
+              "type": "string",
+              "description": "Relative path for k6 extended JSON output (performance tests, required for detailed metrics and Core Web Vitals)"
+            },
+            "dashboard": {
+              "type": "string",
+              "description": "Relative path for k6 web dashboard HTML export (performance tests, optional)"
             }
           },
-          "required": ["ctrf-json", "blob-dir"],
           "additionalProperties": false
         }
       },

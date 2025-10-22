@@ -7,9 +7,9 @@ use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Environment\Environments\EnvInfo;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvironment;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\QITEnvInfo;
 use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
@@ -268,9 +268,10 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
-		$env_name   = $input->getOption( 'environment' ) ?? 'default';
-		$env_config = $this->get_environment_config( $env_name );
-		$env_config = $this->applyCliOverrides( $env_config, $input );
+		$env_name         = $input->getOption( 'environment' ) ?? 'default';
+		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
+		$env_config       = $this->get_environment_config( $env_name );
+		$env_config       = $this->applyCliOverrides( $env_config, $input, $environment_type );
 
 		/* ─ 1.1. Add SUT as a plugin/theme if defined in qit.json ─ */
 		$sut = $this->get_resolved_sut();
@@ -315,7 +316,7 @@ class UpEnvironmentCommand extends QITCommand {
 		$this->process_test_package_requirements( $env_config, $input, $output );
 
 		/* ─ 2. Resolve extensions using the merged config (includes CLI overrides) ─ */
-		$resolved_ext = $this->download_extensions_from_config( $env_config );
+		$resolved_ext = $this->download_extensions_from_config( $env_config, $environment_type );
 
 		/* ─ 3. Use the fully-resolved extension lists ─ */
 		$final_plugins = $resolved_ext->get_plugins();
@@ -574,12 +575,15 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/*
-		─ 4. Materialise E2EEnvInfo DTO ─
+		─ 4. Materialise EnvInfo DTO ─
 		*/
 
-		/** @var E2EEnvInfo $env_info */ $env_info = E2EEnvInfo::from_array( [
+		$env_info_class = $this->get_env_info_class( $environment_type );
+
+		/** @var E2EEnvInfo|PerformanceEnvInfo $env_info */
+		$env_info = $env_info_class::from_array( [
 			'env_id'                  => 'qitenv' . bin2hex( random_bytes( 8 ) ),
-			'environment'             => 'e2e',
+			'environment'             => $environment_type,
 			'php'                     => $env_config['php'] ?? '8.2',
 			'wp'                      => $env_config['wp'] ?? 'stable',
 			'woo'                     => $env_config['woo'] ?? '',
@@ -615,8 +619,7 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/* ─ 8. Bring the environment up ─ */
-		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
-		$environment      = $this->get_environment( $environment_type );
+		$environment = $this->get_environment( $environment_type );
 		$environment->init( $env_info );
 		$environment->up();
 
@@ -696,10 +699,11 @@ class UpEnvironmentCommand extends QITCommand {
 	 * This method processes the merged config that includes CLI overrides.
 	 *
 	 * @param array<string,mixed> $env_config
+	 * @param string              $environment_type
 	 *
 	 * @return \QIT_CLI\PreCommand\Extensions\ResolvedExtensions
 	 */
-	private function download_extensions_from_config( array $env_config ): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions {
+	private function download_extensions_from_config( array $env_config, string $environment_type = 'e2e' ): \QIT_CLI\PreCommand\Extensions\ResolvedExtensions {
 		$extensions = [];
 
 		// Create Extension objects from plugins in the merged config
@@ -800,9 +804,12 @@ class UpEnvironmentCommand extends QITCommand {
 		$extensions = array_values( $unique );
 
 		// Resolve/download them using ExtensionResolver
-		$env_info = \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo::from_array( [
+		$env_info_class = $this->get_env_info_class( $environment_type );
+
+		/** @var E2EEnvInfo|PerformanceEnvInfo $env_info */
+		$env_info = $env_info_class::from_array( [
 			'env_id'      => 'temp_' . bin2hex( random_bytes( 4 ) ),
-			'environment' => 'e2e',
+			'environment' => $environment_type,
 		] );
 		$resolver = \QIT_CLI\App::make( \QIT_CLI\PreCommand\Extensions\ExtensionResolver::class );
 
@@ -819,7 +826,7 @@ class UpEnvironmentCommand extends QITCommand {
 	 * @param InputInterface      $input
 	 * @return array<string,mixed>
 	 */
-	private function applyCliOverrides( array $config, InputInterface $input ): array {
+	private function applyCliOverrides( array $config, InputInterface $input, string $environment_type ): array {
 		// $input is actually a QITInput instance when called from our commands
 
 		/* ─ Scalars ─ */
@@ -848,7 +855,7 @@ class UpEnvironmentCommand extends QITCommand {
 		}
 
 		/* ─ Resolve special versions and add plugins explicitly ─ */
-		$config = $this->resolve_woo( $config, $input );
+		$config = $this->resolve_woo( $config, $input, $environment_type );
 		$config = $this->resolve_wp( $config, $input );
 		if ( $input->hasOption( 'object_cache' ) ) {
 			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
@@ -940,18 +947,25 @@ class UpEnvironmentCommand extends QITCommand {
 	/**
 	 * Resolve --woo option explicitly.
 	 * Adds WooCommerce plugin with the specified version.
+	 * For performance environments, defaults to 'latest' if not specified.
 	 *
 	 * @param array<string,mixed> $config
 	 * @param InputInterface      $input
+	 * @param string              $environment_type
 	 * @return array<string,mixed>
 	 */
-	private function resolve_woo( array $config, InputInterface $input ): array {
+	private function resolve_woo( array $config, InputInterface $input, string $environment_type = 'e2e' ): array {
 		/** @var \QIT_CLI\QITInput $input */
-		if ( ! $input->hasOption( 'woo' ) ) {
+		if ( ! $input->hasOption( 'woo' ) && $environment_type !== 'performance' ) {
 			return $config;
 		}
 
 		$woo_version = $input->getOption( 'woo' );
+
+		// For performance environments, default to 'latest' if not explicitly set
+		if ( empty( $woo_version ) && $environment_type === 'performance' ) {
+			$woo_version = 'latest';
+		}
 
 		if ( empty( $woo_version ) ) {
 			return $config;
@@ -1026,9 +1040,9 @@ class UpEnvironmentCommand extends QITCommand {
 	/**
 	 * Save environment info to a JSON file for later use.
 	 *
-	 * @param E2EEnvInfo $env_info The environment info to save.
+	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info The environment info to save.
 	 */
-	private function save_environment_info( E2EEnvInfo $env_info ): void {
+	private function save_environment_info( $env_info ): void {
 		$env_dir   = $this->environment_vars->get_env_directory();
 		$info_file = $env_dir . '/' . $env_info->env_id . '.json';
 
@@ -1038,7 +1052,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'site_url'      => $env_info->site_url,
 			'php'           => $env_info->php,
 			'wp'            => $env_info->wp,
-			'woo'           => $env_info->woo,
+			'woo'           => $env_info->woo ?? '',
 			'db_port'       => $env_info->db_port ?? 0,
 			'php_container' => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
 			'db_container'  => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
@@ -1049,7 +1063,13 @@ class UpEnvironmentCommand extends QITCommand {
 		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
 	}
 
-	private function renderHumanSummary( OutputInterface $out, EnvInfo $info ): void {
+	/**
+	 * Render a human-readable summary of the environment.
+	 *
+	 * @param OutputInterface $out  The output interface.
+	 * @param QITEnvInfo      $info The environment info.
+	 */
+	private function renderHumanSummary( OutputInterface $out, QITEnvInfo $info ): void {
 		$out->writeln( '' );
 		$out->writeln( sprintf( '<info>✅ Environment ready: %s</info>', $info->env_id ) );
 		$out->writeln( '' );
@@ -1059,64 +1079,53 @@ class UpEnvironmentCommand extends QITCommand {
 		$out->writeln( '  Credentials: admin/password' );
 
 		// Stack information
-		if ( $info instanceof E2EEnvInfo ) {
-			$stack_parts   = [];
-			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
-			$stack_parts[] = sprintf( 'PHP %s', $info->php );
-			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
+		$stack_parts   = [];
+		$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
+		$stack_parts[] = sprintf( 'PHP %s', $info->php );
+		$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
 
-			// Plugins line (only if plugins exist)
-			$plugin_names = [];
-			foreach ( $info->plugins as $plugin ) {
-				if ( $plugin->slug === 'woocommerce' && $info->woo ) {
-					$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
-				} elseif ( $plugin->slug !== 'woocommerce' ) {
-					$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version );
+		// Plugins line (only if plugins exist)
+		$plugin_names = [];
+		foreach ( $info->plugins as $plugin ) {
+			if ( $plugin->slug === 'woocommerce' && $info->woo ) {
+				$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
+			} elseif ( $plugin->slug !== 'woocommerce' ) {
+				$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version );
+			}
+		}
+		if ( ! empty( $plugin_names ) ) {
+			$out->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
+		}
+
+		// Theme line (only if non-default theme exists)
+		$theme_names = [];
+		foreach ( $info->themes as $theme ) {
+			// Skip default themes
+			if ( ! in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
+				$theme_names[] = sprintf( '%s %s', $this->format_plugin_name( $theme->slug ), $theme->version );
+			}
+		}
+		if ( ! empty( $theme_names ) ) {
+			$out->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
+		}
+
+		// Test packages that were set up
+		if ( ! empty( $info->test_packages_for_setup ) ) {
+			$out->writeln( '' );
+			$out->writeln( '  Test packages prepared:' );
+			if ( $info->skip_test_phases ) {
+				// When phases are skipped, just list the packages
+				foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+					$out->writeln( sprintf( '    • %s (phases deferred)', $pkg_id ) );
 				}
-			}
-			if ( ! empty( $plugin_names ) ) {
-				$out->writeln( sprintf( '  Plugins:     %s', implode( ', ', $plugin_names ) ) );
-			}
-
-			// Theme line (only if non-default theme exists)
-			$theme_names = [];
-			foreach ( $info->themes as $theme ) {
-				// Skip default themes
-				if ( ! in_array( $theme->slug, [ 'twentytwentyfour', 'twentytwentythree', 'twentytwentytwo' ], true ) ) {
-					$theme_names[] = sprintf( '%s %s', $this->format_plugin_name( $theme->slug ), $theme->version );
+			} else {
+				// When phases ran, show which phases ran for each package
+				$is_first = true;
+				foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
+					$phases = $is_first ? 'globalSetup + setup' : 'globalSetup only';
+					$out->writeln( sprintf( '    • %s (%s)', $pkg_id, $phases ) );
+					$is_first = false;
 				}
-			}
-			if ( ! empty( $theme_names ) ) {
-				$out->writeln( sprintf( '  Theme:       %s', implode( ', ', $theme_names ) ) );
-			}
-
-			// Test packages that were set up
-			if ( ! empty( $info->test_packages_for_setup ) ) {
-				$out->writeln( '' );
-				$out->writeln( '  Test packages prepared:' );
-				if ( $info->skip_test_phases ) {
-					// When phases are skipped, just list the packages
-					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
-						$out->writeln( sprintf( '    • %s (phases deferred)', $pkg_id ) );
-					}
-				} else {
-					// When phases ran, show which phases ran for each package
-					$is_first = true;
-					foreach ( $info->test_packages_for_setup as $pkg_id => $pkg_info ) {
-						$phases = $is_first ? 'globalSetup + setup' : 'globalSetup only';
-						$out->writeln( sprintf( '    • %s (%s)', $pkg_id, $phases ) );
-						$is_first = false;
-					}
-				}
-			}
-		} elseif ( $info instanceof PerformanceEnvInfo ) {
-			$stack_parts   = [];
-			$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
-			$stack_parts[] = sprintf( 'PHP %s', $info->php_version );
-			$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
-
-			if ( property_exists( $info, 'woo' ) && $info->woo ) {
-				$out->writeln( sprintf( '  Plugins:     WooCommerce %s', $info->woo ) );
 			}
 		}
 
@@ -1293,9 +1302,6 @@ HELP;
 		}
 		return $packages[0];
 	}
-
-	/**
-	 * Run test setup phases from qit-test.json if present.
 
 	/**
 	 * Process test packages to extract requirements.
@@ -1495,10 +1501,10 @@ HELP;
 	 * Create a database backup for env:reset functionality.
 	 * This backup captures the state after all setup phases have completed.
 	 *
-	 * @param E2EEnvInfo      $env_info The environment info.
-	 * @param OutputInterface $output   The output interface.
+	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info The environment info.
+	 * @param OutputInterface               $output   The output interface.
 	 */
-	private function createDatabaseBackup( E2EEnvInfo $env_info, OutputInterface $output ): void {
+	private function createDatabaseBackup( $env_info, OutputInterface $output ): void {
 		$output->write( 'Creating database backup for env:reset...' );
 
 		// Create backup directory
@@ -1522,7 +1528,7 @@ HELP;
 				'test_packages' => array_keys( $env_info->test_packages_for_setup ),
 				'php'           => $env_info->php,
 				'wp'            => $env_info->wp,
-				'woo'           => $env_info->woo,
+				'woo'           => $env_info->woo ?? '',
 			];
 			file_put_contents( $backup_dir . '/metadata.json', json_encode( $metadata, JSON_PRETTY_PRINT ) );
 
@@ -1533,5 +1539,17 @@ HELP;
 			// Don't fail the whole command, just warn that env:reset won't work
 			$output->writeln( '<comment>Note: env:reset will not be available for this environment.</comment>' );
 		}
+	}
+
+	/**
+	 * Get the appropriate EnvInfo class based on environment type.
+	 *
+	 * @param string $environment_type The environment type ('performance' or 'e2e').
+	 * @return class-string<E2EEnvInfo|PerformanceEnvInfo> The EnvInfo class name.
+	 */
+	private function get_env_info_class( string $environment_type ): string {
+		return $environment_type === 'performance'
+			? PerformanceEnvInfo::class
+			: E2EEnvInfo::class;
 	}
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests;
+namespace QIT_CLI\Utils;
 
 use Symfony\Component\Console\Output\OutputInterface;
 

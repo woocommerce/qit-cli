@@ -1,13 +1,13 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance;
+namespace QIT_CLI\Performance;
 
-use QIT_CLI\LocalTests\EnvironmentRunner;
-use QIT_CLI\LocalTests\LocalTestRunNotifier;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
-use QIT_CLI\LocalTests\Performance\MetricAverager;
-use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
-use QIT_CLI\LocalTests\Performance\Runner\K6Runner;
+use QIT_CLI\Environment\EnvironmentRunner;
+use QIT_CLI\Utils\LocalTestRunNotifier;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Performance\MetricAverager;
+use QIT_CLI\Performance\Result\PerformanceTestResult;
+use QIT_CLI\Performance\Runner\K6Runner;
 use QIT_CLI\Environment\Environments\Environment;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -314,7 +314,10 @@ class PerformanceTestManager {
 		$iteration_env_info         = clone $env_info;
 		$iteration_env_info->env_id = $env_info->env_id . "/iter{$iteration_number}";
 
-		$test_result = new PerformanceTestResult( $iteration_env_info );
+		// Get result filenames from manifest before creating the result.
+		$result_filenames = $this->k6_runner->get_result_filenames_from_manifest( $env_info );
+
+		$test_result = new PerformanceTestResult( $iteration_env_info, $result_filenames );
 		$test_result->set_baseline( $is_baseline );
 
 		if ( $this->output->isVerbose() ) {
@@ -322,7 +325,7 @@ class PerformanceTestManager {
 		}
 
 		// Run k6 test and handle result.
-		$exit_code = $this->k6_runner->run_test( $env_info, $env_info->tests, $test_result );
+		$exit_code = $this->k6_runner->run_test( $env_info, $test_result );
 		$test_result->add_metric( 'k6_exit_code', $exit_code );
 
 		if ( $exit_code === 143 ) {
@@ -454,8 +457,6 @@ class PerformanceTestManager {
 		$env_info->sut_slug     = $test_config->sut_slug;
 		$env_info->sut_id       = $test_config->sut_id;
 		$env_info->sut_type     = $test_config->sut_type;
-		$env_info->test_tag     = $test_config->test_tag;
-		$env_info->k6_test_file = $test_config->k6_test_file;
 		$env_info->run_baseline = $test_config->run_baseline;
 	}
 
