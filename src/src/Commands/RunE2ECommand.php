@@ -5,7 +5,7 @@
  */
 declare( ticks=1 );
 
-namespace QIT_CLI\Commands\CustomTests;
+namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;

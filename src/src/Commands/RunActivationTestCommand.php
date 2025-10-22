@@ -3,7 +3,7 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
-use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Output\OutputInterface;
 

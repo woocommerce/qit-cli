@@ -4,7 +4,7 @@ namespace QIT_CLI\Utils;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;

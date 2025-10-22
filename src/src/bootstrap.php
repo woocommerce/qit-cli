@@ -11,7 +11,7 @@ use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
-use QIT_CLI\Commands\CustomTests\ShowReportCommand;
+use QIT_CLI\Commands\ShowReportCommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\AI\ContextCommand as AIContextCommand;
 use QIT_CLI\Commands\AI\InstallAgentsCommand as AIInstallAgentsCommand;

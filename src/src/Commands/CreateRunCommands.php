@@ -6,7 +6,7 @@ namespace QIT_CLI\Commands;
 use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
-use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\TestGroup;
