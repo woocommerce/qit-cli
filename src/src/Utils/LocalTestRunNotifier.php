@@ -1,18 +1,18 @@
 <?php
 
-namespace QIT_CLI\LocalTests;
+namespace QIT_CLI\Utils;
 
 use QIT_CLI\App;
 use QIT_CLI\Cache;
-use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\IO\Output;
 use QIT_CLI\Environment\PackageOrchestrator;
-use QIT_CLI\LocalTests\E2E\Result\TestResult;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
-use QIT_CLI\LocalTests\Performance\MetricsExtractor;
-use QIT_CLI\LocalTests\Performance\Result\PerformanceTestResult;
+use QIT_CLI\E2E\Result\TestResult;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
+use QIT_CLI\Performance\MetricsExtractor;
+use QIT_CLI\Performance\Result\PerformanceTestResult;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;

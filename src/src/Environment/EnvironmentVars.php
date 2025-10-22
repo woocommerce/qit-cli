@@ -3,7 +3,7 @@
 namespace QIT_CLI\Environment;
 
 use QIT_CLI\Config;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\QITEnvInfo;
 
 /**
  * Centralized environment variable mapping for QIT environments.
@@ -30,10 +30,10 @@ class EnvironmentVars {
 	 * - playwright.config.js (for baseURL etc)
 	 * - qit-helpers.js (for WP-CLI commands)
 	 *
-	 * @param E2EEnvInfo $env_info The environment information.
+	 * @param QITEnvInfo $env_info The environment information.
 	 * @return array<string, string> Key-value pairs of environment variables.
 	 */
-	public function get_mapping( E2EEnvInfo $env_info ): array {
+	public function get_mapping( $env_info ): array {
 		$vars = [
 			// Core QIT variables
 			'QIT'               => '1',  // Indicates running in QIT context
@@ -149,10 +149,10 @@ class EnvironmentVars {
 	 *
 	 * This creates a source-able shell script for manual testing.
 	 *
-	 * @param E2EEnvInfo $env_info The environment information.
+	 * @param QITEnvInfo $env_info The environment information.
 	 * @return string The shell script content.
 	 */
-	public function generate_source_file( E2EEnvInfo $env_info ): string {
+	public function generate_source_file( $env_info ): string {
 		$vars = $this->get_mapping( $env_info );
 
 		// Merge in custom environment variables (including secrets)
@@ -213,10 +213,10 @@ class EnvironmentVars {
 	/**
 	 * Save environment file for a given environment.
 	 *
-	 * @param E2EEnvInfo $env_info The environment information.
+	 * @param QITEnvInfo $env_info The environment information.
 	 * @return array<string> Paths to the created files.
 	 */
-	public function save_environment_file( E2EEnvInfo $env_info ): array {
+	public function save_environment_file( $env_info ): array {
 		$dir = $this->get_env_directory();
 
 		// Shell script

@@ -1,6 +1,6 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance;
+namespace QIT_CLI\Performance;
 
 class MetricsExtractor {
 	/**

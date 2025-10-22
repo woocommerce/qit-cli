@@ -1,12 +1,13 @@
 <?php
 
-namespace QIT_CLI\LocalTests;
+namespace QIT_CLI\Utils;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Environments\QITEnvInfo;
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\IO\Output;
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
 use SplFileObject;
 
 class PrepareDebugLog {
@@ -146,12 +147,9 @@ class PrepareDebugLog {
 				 */
 				$php_version = '';
 				$wp_version  = '';
-				if ( $env_info instanceof E2EEnvInfo ) {
+				if ( $env_info instanceof QITEnvInfo ) {
 					$php_version = $env_info->php ?? '';
 					$wp_version  = $env_info->wp ?? '';
-				} elseif ( $env_info instanceof PerformanceEnvInfo ) {
-					$php_version = $env_info->php_version;
-					$wp_version  = $env_info->wp;
 				}
 
 				if ( $php_version && $wp_version && version_compare( $php_version, '8', '>=' ) && version_compare( $wp_version, '6.2', '<' ) ) {

@@ -1,8 +1,8 @@
 <?php
 
-namespace QIT_CLI\LocalTests\Performance\Result;
+namespace QIT_CLI\Performance\Result;
 
-use QIT_CLI\LocalTests\Performance\Environment\PerformanceEnvInfo;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use function QIT_CLI\normalize_path;
 
 class PerformanceTestResult {
@@ -17,6 +17,23 @@ class PerformanceTestResult {
 
 	/** @var array<string, mixed> */
 	private $metrics = [];
+
+	/**
+	 * Result filenames from manifest.
+	 *
+	 * - 'summary' (required): Aggregated statistics JSON - used for both iterations and averaging
+	 * - 'json' (required): Extended k6 JSON output with detailed metrics and Core Web Vitals
+	 * - 'dashboard' (optional): HTML dashboard report - only for iterations if configured
+	 *
+	 * For iteration results: k6 writes all configured files (summary, json, dashboard if present).
+	 * For averaged results: Only 'summary' is written (averaged metrics JSON).
+	 *
+	 * @var array{summary: string, json: string, dashboard?: string}
+	 */
+	private $result_filenames = [
+		'summary' => 'result.json',
+		'json'    => 'result-extended.json',
+	];
 
 	/** @var int
 	 * @phpstan-ignore-next-line
@@ -46,11 +63,19 @@ class PerformanceTestResult {
 	/** @var PerformanceTestResult|null */
 	private $baseline_result = null;
 
-	public function __construct( PerformanceEnvInfo $env_info ) {
+	/**
+	 * @param PerformanceEnvInfo                                           $env_info
+	 * @param array{summary: string, json: string, dashboard: string}|null $result_filenames Optional result filenames from manifest.
+	 */
+	public function __construct( PerformanceEnvInfo $env_info, ?array $result_filenames = null ) {
 		$this->env_info    = $env_info;
 		$this->start_time  = time();
 		$this->test_run_id = uniqid( 'perf_test_' );
 		$this->results_dir = $this->create_results_directory();
+
+		if ( $result_filenames !== null ) {
+			$this->result_filenames = $result_filenames;
+		}
 	}
 
 	public function get_results_dir(): string {
@@ -71,6 +96,24 @@ class PerformanceTestResult {
 	 */
 	public function add_metric( string $name, $value ): void {
 		$this->metrics[ $name ] = $value;
+	}
+
+	/**
+	 * Set result filenames from manifest.
+	 *
+	 * @param array{summary: string, json: string, dashboard: string} $filenames
+	 */
+	public function set_result_filenames( array $filenames ): void {
+		$this->result_filenames = $filenames;
+	}
+
+	/**
+	 * Get result filenames.
+	 *
+	 * @return array{summary: string, json: string, dashboard?: string}
+	 */
+	public function get_result_filenames(): array {
+		return $this->result_filenames;
 	}
 
 	public function process_results(): void {
@@ -107,7 +150,7 @@ class PerformanceTestResult {
 	}
 
 	private function process_k6_results(): void {
-		$k6_results_file = $this->results_dir . '/result-extended.json';
+		$k6_results_file = $this->results_dir . '/' . $this->result_filenames['json'];
 
 		if ( ! file_exists( $k6_results_file ) ) {
 			return;
@@ -259,7 +302,11 @@ class PerformanceTestResult {
 	}
 
 	public function get_report_url(): string {
-		$k6_dashboard_report = $this->results_dir . '/k6-dashboard-report.html';
+		if ( ! isset( $this->result_filenames['dashboard'] ) ) {
+			return '';
+		}
+
+		$k6_dashboard_report = $this->results_dir . '/' . $this->result_filenames['dashboard'];
 		return file_exists( $k6_dashboard_report ) ? $k6_dashboard_report : '';
 	}
 
@@ -345,7 +392,7 @@ class PerformanceTestResult {
 	 * Preserves original k6 data and adds our processed metrics.
 	 */
 	private function write_result_json(): void {
-		$result_file = $this->results_dir . '/result.json';
+		$result_file = $this->results_dir . '/' . $this->result_filenames['summary'];
 
 		// Preserve original k6 data if it exists.
 		if ( file_exists( $result_file ) ) {
