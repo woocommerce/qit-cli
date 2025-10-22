@@ -246,8 +246,6 @@ class TestPackageDownloader {
 					// Download the artifact using the primary package
 					if ( count( $group_packages ) > 1 ) {
 						$this->output->writeln( 'Downloading shared artifact for ' . count( $group_packages ) . ' packages: ' . implode( ', ', array_keys( $group_packages ) ) );
-					} else {
-						$this->output->writeln( "Downloading package: $first_reference" );
 					}
 
 					$downloaded_manifest           = $this->download_package( $first_reference, $first_metadata, $cache_dir );
