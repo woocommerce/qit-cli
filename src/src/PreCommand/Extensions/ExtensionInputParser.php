@@ -244,6 +244,9 @@ class ExtensionInputParser {
 			$basename = substr( $basename, 0, -4 );
 		}
 
+		// Strip version suffix if present (e.g., "plugin-1.2.3" -> "plugin")
+		$basename = self::strip_version_suffix( $basename );
+
 		// Validate the basename as a slug - don't modify it
 		return self::validate_slug( $basename );
 	}
@@ -279,8 +282,35 @@ class ExtensionInputParser {
 			$basename = substr( $basename, 0, -4 );
 		}
 
+		// Strip version suffix if present (e.g., "plugin.1.2.3" -> "plugin")
+		$basename = self::strip_version_suffix( $basename );
+
 		// Validate the basename as a slug - don't modify it
 		return self::validate_slug( $basename );
+	}
+
+	/**
+	 * Strip version suffix from a plugin/theme name.
+	 *
+	 * Handles common WordPress plugin naming patterns:
+	 * - "plugin-name.1.2.3" -> "plugin-name"
+	 * - "plugin-name-1.2.3" -> "plugin-name"  (only if followed by dots)
+	 * - "plugin-name-v1.2.3" -> "plugin-name"
+	 *
+	 * @param string $name The name to strip version from.
+	 * @return string The name without version suffix.
+	 */
+	private static function strip_version_suffix( string $name ): string {
+		// Pattern 1: Remove ".X.Y.Z" suffix (e.g., "plugin.1.2.3" -> "plugin")
+		// This handles the common WordPress.org download pattern
+		$name = preg_replace( '/\.\d+(\.\d+)*$/', '', $name );
+
+		// Pattern 2: Remove "-vX.Y.Z" or "-X.Y.Z" suffix if followed by dots
+		// (e.g., "plugin-v1.2.3" -> "plugin", "plugin-1.2.3" -> "plugin")
+		// But keep "plugin-name-123" (no dots after dash)
+		$name = preg_replace( '/-v?\d+\.\d+(\.\d+)*$/', '', $name );
+
+		return $name;
 	}
 
 	/**

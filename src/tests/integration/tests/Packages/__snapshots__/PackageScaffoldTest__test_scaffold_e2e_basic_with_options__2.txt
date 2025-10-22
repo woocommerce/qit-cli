@@ -1,11 +1,14 @@
 {
-    "$schema": "https://qit.woo.com/json-schema/test-package",
-    "vendor": "woocommerce",
-    "package": "tests",
+    "package": "woocommerce/tests",
     "test_type": "e2e",
+    "requires": {
+        "network": false
+    },
     "test": {
         "phases": {
-            "beforeAllPlugins": [],
+            "globalSetup": [
+                "./bootstrap/global-setup.sh"
+            ],
             "setup": [
                 "./bootstrap/setup.sh"
             ],
@@ -13,11 +16,14 @@
                 "npx playwright test"
             ],
             "teardown": [],
-            "afterAllPlugins": []
+            "globalTeardown": [
+                "./bootstrap/global-teardown.sh"
+            ]
         },
         "results": {
             "ctrf-json": "./results/ctrf.json",
-            "allure-dir": "./results/allure"
+            "allure-dir": "./results/allure",
+            "blob-dir": "./results/blob"
         }
     }
 }

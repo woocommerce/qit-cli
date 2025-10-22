@@ -734,11 +734,11 @@ class UpEnvironmentCommand extends QITCommand {
 								$extension->wccom_id = $plugin_config['wccom_id'] ?? null;
 								break;
 							case 'local':
-								$extension->directory = $plugin_config['directory'] ?? null;
-								$extension->source    = $plugin_config['source'] ?? null;
+								$extension->directory = $plugin_config['path'] ?? null;
+								$extension->source    = $plugin_config['path'] ?? null;
 								break;
 							case 'url':
-								$extension->source  = $plugin_config['source'] ?? null;
+								$extension->source  = $plugin_config['url'] ?? null;
 								$extension->version = $plugin_config['version'] ?? 'stable';
 								break;
 						}
@@ -776,11 +776,11 @@ class UpEnvironmentCommand extends QITCommand {
 								$extension->version = $theme_config['version'] ?? 'stable';
 								break;
 							case 'local':
-								$extension->directory = $theme_config['directory'] ?? null;
-								$extension->source    = $theme_config['source'] ?? null;
+								$extension->directory = $theme_config['path'] ?? null;
+								$extension->source    = $theme_config['path'] ?? null;
 								break;
 							case 'url':
-								$extension->source = $theme_config['source'] ?? null;
+								$extension->source = $theme_config['url'] ?? null;
 								break;
 						}
 					} else {
@@ -978,7 +978,7 @@ class UpEnvironmentCommand extends QITCommand {
 			$woo_plugin = [
 				'slug'                => 'woocommerce',
 				'from'                => 'url',
-				'source'              => $resolved_source,
+				'url'                 => $resolved_source,
 				'version'             => $woo_version,
 				'added_automatically' => 'Added via --woo option',
 			];
@@ -1462,12 +1462,12 @@ HELP;
 			case 'local':
 				$extension['from'] = 'local';
 				// Use resolved_path if available, otherwise use path
-				$extension['source'] = $sut['source']['resolved_path'] ?? $sut['source']['path'];
+				$extension['path'] = $sut['source']['resolved_path'] ?? $sut['source']['path'];
 				break;
 
 			case 'url':
-				$extension['from']   = 'url';
-				$extension['source'] = $sut['source']['url'];
+				$extension['from'] = 'url';
+				$extension['url']  = $sut['source']['url'];
 				break;
 
 			case 'wporg':
@@ -1486,8 +1486,8 @@ HELP;
 			case 'build':
 				// For build sources, we need to run the build command first
 				// This is handled elsewhere, for now just set as local with the output path
-				$extension['from']   = 'local';
-				$extension['source'] = $sut['source']['resolved_output'] ?? $sut['source']['output'];
+				$extension['from'] = 'local';
+				$extension['path'] = $sut['source']['resolved_output'] ?? $sut['source']['output'];
 				break;
 
 			default:

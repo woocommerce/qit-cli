@@ -44,7 +44,7 @@ class PackageScaffoldCommand extends QITCommand {
 				'package',
 				null,
 				InputOption::VALUE_REQUIRED,
-				'Package identifier in format namespace/name (e.g., woocommerce/checkout-tests)'
+				'Package identifier in format namespace/package:version (e.g., woocommerce/checkout-tests:1.0.0)'
 			)
 			->addOption(
 				'framework',
@@ -75,11 +75,11 @@ class PackageScaffoldCommand extends QITCommand {
 			->setDescription( 'Scaffold a Playwright E2E test package' )
 			->setHelp(
 				'You can scaffold test packages only under a namespace (extension slug) that you maintain.' . "\n\n" .
-				'Package identifier format: namespace/name' . "\n" .
-				'Example: woocommerce/checkout-tests' . "\n" .
+				'Package identifier format: namespace/package:version' . "\n" .
+				'Example: woocommerce/checkout-tests:1.0.0' . "\n" .
 				'  - The namespace must be an extension slug you maintain' . "\n" .
-				'  - The name identifies this specific test package' . "\n" .
-				'  - Version is specified when publishing or using the package'
+				'  - The package identifies this specific test package' . "\n" .
+				'  - The version is optional (defaults to 1.0.0 if not specified)'
 			);
 	}
 
@@ -91,9 +91,10 @@ class PackageScaffoldCommand extends QITCommand {
 		$framework  = strtolower( (string) $input->getOption( 'framework' ) );
 		$test_type  = strtolower( (string) $input->getOption( 'test-type' ) );
 
-		// Initialize namespace and package_name for parsing later
+		// Initialize namespace, package_name, and version for parsing later
 		$namespace    = '';
 		$package_name = '';
+		$version      = '1.0.0'; // Default version
 
 		/*
 		---------------------------------------------------------------------
@@ -135,17 +136,18 @@ class PackageScaffoldCommand extends QITCommand {
 
 		/*
 		---------------------------------------------------------------------
-		 * Ask for package identifier (namespace/name)
+		 * Ask for package identifier (namespace/package:version)
 		 * -------------------------------------------------------------------
 		 */
 		if ( $package_id === '' ) {
 			$io->writeln( "\n<comment>Package identifier structure:</comment>" );
-			$io->writeln( '  <info>namespace/name</info>' );
-			$io->writeln( '  Example: <info>woocommerce/checkout-tests</info>' );
+			$io->writeln( '  <info>namespace/package:version</info>' );
+			$io->writeln( '  Example: <info>woocommerce/checkout-tests:1.0.0</info>' );
 			$io->writeln( '  - The namespace must be an extension slug you maintain' );
-			$io->writeln( '  - The name identifies this specific test package' );
+			$io->writeln( '  - The package identifies this specific test package' );
+			$io->writeln( '  - The version is optional (defaults to 1.0.0)' );
 
-			$q = new Question( 'Package identifier (namespace/name) > ' );
+			$q = new Question( 'Package identifier (namespace/package:version) > ' );
 			$q->setValidator( function ( $answer ) {
 				return $this->validate_package_identifier( $answer );
 			} );
@@ -154,16 +156,25 @@ class PackageScaffoldCommand extends QITCommand {
 			$this->validate_package_identifier( $package_id ); // throws on failure
 		}
 
-		// Parse the package identifier
+		// Parse the package identifier (namespace/package:version)
 		if ( ! str_contains( $package_id, '/' ) ) {
-			throw new \RuntimeException( 'Package identifier must be in format "namespace/name"' );
+			throw new \RuntimeException( 'Package identifier must be in format "namespace/package:version"' );
 		}
-		[ $namespace, $package_name ] = explode( '/', $package_id, 2 );
+
+		// Use regex to parse namespace/package:version format
+		// Pattern: namespace/package:version where :version is optional
+		if ( ! preg_match( '/^([^\/]+)\/([^:]+)(:(.+))?$/', $package_id, $matches ) ) {
+			throw new \RuntimeException( 'Invalid package identifier format. Expected: namespace/package:version' );
+		}
+
+		$namespace    = $matches[1];
+		$package_name = $matches[2];
+		$version      = $matches[4] ?? '1.0.0'; // Default to 1.0.0 if not provided
 
 		// Validate namespace ownership
 		$this->validate_namespace( $namespace );
 		$io->writeln( sprintf( '✓ You are a maintainer of "%s"', $namespace ) );
-		$io->writeln( sprintf( '✓ Package identifier: <info>%s</info>', $package_id ) );
+		$io->writeln( sprintf( '✓ Package identifier: <info>%s/%s:%s</info>', $namespace, $package_name, $version ) );
 
 		/*
 		---------------------------------------------------------------------
@@ -251,7 +262,7 @@ BASH;
 		}
 
 		$manifest = array_merge( $manifest, [
-			'package'   => $namespace . '/' . $package_name,
+			'package'   => $namespace . '/' . $package_name, // Combined namespace/package identifier
 			'test_type' => $test_type, // Add test_type field (required by server)
 			'requires'  => [
 				'network' => false, // Explicitly show this field for clarity
@@ -333,7 +344,7 @@ BASH;
 	 */
 
 	/**
-	 * Validate package identifier (namespace/name).
+	 * Validate package identifier (namespace/package:version).
 	 *
 	 * @param string $identifier The package identifier to validate.
 	 *
@@ -342,14 +353,26 @@ BASH;
 	 */
 	private function validate_package_identifier( string $identifier ): string {
 		if ( ! str_contains( $identifier, '/' ) ) {
-			throw new \RuntimeException( 'Package identifier must be in format "namespace/name"' );
+			throw new \RuntimeException( 'Package identifier must be in format "namespace/package:version"' );
 		}
 
-		[ $namespace, $name ] = explode( '/', $identifier, 2 );
+		// Parse namespace/package:version format
+		if ( ! preg_match( '/^([^\/]+)\/([^:]+)(:(.+))?$/', $identifier, $matches ) ) {
+			throw new \RuntimeException( 'Invalid package identifier format. Expected: namespace/package:version' );
+		}
 
-		// Validate both parts
+		$namespace = $matches[1];
+		$package   = $matches[2];
+		$version   = $matches[4] ?? '1.0.0';
+
+		// Validate namespace and package parts (but not version, which can contain dots)
 		$this->validate_slug( $namespace, 'Namespace' );
-		$this->validate_slug( $name, 'Package name' );
+		$this->validate_slug( $package, 'Package name' );
+
+		// Validate version format if provided (must be semver-like: x.y.z)
+		if ( isset( $matches[4] ) && ! preg_match( '/^\d+\.\d+\.\d+/', $version ) ) {
+			throw new \RuntimeException( "Version must be in semver format (e.g., 1.0.0), got: $version" );
+		}
 
 		// Check namespace ownership
 		if ( ! $this->extensions->user_maintains( $namespace ) ) {

@@ -38,8 +38,7 @@ class RunE2ECommandTest extends TestCase {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=test-e2e',
+				'--package=woocommerce/test-e2e',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -52,8 +51,7 @@ class RunE2ECommandTest extends TestCase {
 			
 			// Verify manifest content
 			$manifest = json_decode( file_get_contents( $packageDir . '/qit-test.json' ), true );
-			$this->assertEquals( 'woocommerce', $manifest['namespace'] );
-			$this->assertEquals( 'test-e2e', $manifest['package'] );
+			$this->assertEquals( 'woocommerce/test-e2e', $manifest['package'] );
 			$this->assertEquals( 'e2e', $manifest['test_type'] );
 			
 			// Create qit.json configuration
@@ -84,17 +82,17 @@ class RunE2ECommandTest extends TestCase {
 			// Verify it ran our scaffolded package
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
 			$this->assertStringContainsString( 'Running Test Packages', $output );
-			$this->assertStringContainsString( $packageDir . ' (globalSetup)', $output );
-			$this->assertStringContainsString( $packageDir . ' (run)', $output );
-			
+			$this->assertStringContainsString( '[docker] ./bootstrap/global-setup.sh', $output );
+			$this->assertStringContainsString( '[host] npx playwright test', $output );
+
 			// The test should pass with tunnel enabled
 			$this->assertEquals( 0, $exitCode, 'Test should succeed with tunnel enabled. Output: ' . $output );
-			
-			// Verify the test package was executed properly
-			$this->assertStringContainsString( '[globalSetup] Starting global configuration...', $output );
-			$this->assertStringContainsString( '[setup] Creating sample data ...', $output );
-			$this->assertStringContainsString( 'Running 1 test using 1 worker', $output );
-			$this->assertStringContainsString( '1 passed', $output );
+
+			// Verify the test package was executed with proper phase structure
+			$this->assertStringContainsString( 'GLOBAL SETUP', $output );
+			$this->assertStringContainsString( '[docker] ./bootstrap/setup.sh', $output );
+			// Default scaffolded package now runs 4 tests
+			$this->assertStringContainsString( '4 passed', $output );
 			
 		} finally {
 			if ( is_dir( $tempDir ) ) {
@@ -123,8 +121,7 @@ class RunE2ECommandTest extends TestCase {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=woo-compat-test',
+				'--package=woocommerce/woo-compat-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -178,8 +175,7 @@ class RunE2ECommandTest extends TestCase {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=test-cli',
+				'--package=woocommerce/test-cli',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -197,9 +193,9 @@ class RunE2ECommandTest extends TestCase {
 			// Verify the package was recognized
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
 			$this->assertStringContainsString( 'Running Test Packages', $output );
-			$this->assertStringContainsString( $packageDir . ' (globalSetup)', $output );
-			$this->assertStringContainsString( $packageDir . ' (run)', $output );
-			
+			$this->assertStringContainsString( '[docker] ./bootstrap/global-setup.sh', $output );
+			$this->assertStringContainsString( '[host] npx playwright test', $output );
+
 			// The test should pass
 			$this->assertEquals( 0, $exitCode, 'Test should succeed with CLI option. Output: ' . $output );
 			
@@ -241,8 +237,7 @@ add_action( "wp_body_open", function() {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=plugin-test',
+				'--package=woocommerce/plugin-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -379,8 +374,7 @@ test('site loads with custom plugin', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=ecosystem-tests',
+				'--package=woocommerce/ecosystem-tests',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -428,8 +422,7 @@ test('site loads with custom plugin', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=checkout-test',
+				'--package=woocommerce/checkout-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -483,8 +476,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=slug-test',
+				'--package=woocommerce/slug-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -526,8 +518,9 @@ test('can add product to cart', async ({ page }) => {
 			mkdir( $tempDir, 0755, true );
 			$packageDir = $tempDir . '/test-package';
 			
-			// Test 1: Invalid slug inference (directory with dots)
-			$invalidPluginDir = $tempDir . '/my-awesome-plugin-1.2.3';
+			// Test 1: Invalid slug inference (directory with dots in base name)
+			// Version stripping removes patterns like -v2.3.4 or -1.2.3, so use dots in the base name
+			$invalidPluginDir = $tempDir . '/my.awesome.plugin';
 			mkdir( $invalidPluginDir, 0755, true );
 			file_put_contents( $invalidPluginDir . '/my-plugin.php', '<?php
 /**
@@ -540,8 +533,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=local-test',
+				'--package=woocommerce/local-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -556,7 +548,7 @@ test('can add product to cart', async ({ page }) => {
 				] );
 				$this->fail( 'Expected exception for invalid slug' );
 			} catch ( \RuntimeException $e ) {
-				$this->assertStringContainsString( 'Inferred slug \'my-awesome-plugin-1.2.3\' is not valid', $e->getMessage() );
+				$this->assertStringContainsString( 'Inferred slug \'my.awesome.plugin\' is not valid', $e->getMessage() );
 				$this->assertStringContainsString( 'Please use explicit format: slug@path', $e->getMessage() );
 			}
 			
@@ -624,8 +616,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$testDir,
-				'--namespace=woocommerce',
-				'--package=plugin-tests',
+				'--package=woocommerce/plugin-tests',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -675,8 +666,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=mixed-test',
+				'--package=woocommerce/mixed-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -727,8 +717,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=config-test',
+				'--package=woocommerce/config-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -798,8 +787,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=no-config-test',
+				'--package=woocommerce/no-config-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -820,7 +808,8 @@ test('can add product to cart', async ({ page }) => {
 			$this->assertEquals( 0, $exitCode, 'Test should succeed without config file. Output: ' . $output );
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
 			$this->assertStringContainsString( 'Running Test Packages', $output );
-			$this->assertStringContainsString( '1 passed', $output );
+			// Default scaffolded package now runs 4 tests
+			$this->assertStringContainsString( '4 passed', $output );
 			
 		} finally {
 			if ( is_dir( $tempDir ) ) {
@@ -846,8 +835,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=minimal-config-test',
+				'--package=woocommerce/minimal-config-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -883,7 +871,8 @@ test('can add product to cart', async ({ page }) => {
 			$this->assertStringContainsString( 'Using local package: ' . $packageDir, $output );
 			// The environment config should be respected even without test_types section
 			$this->assertStringContainsString( 'Running Test Packages', $output );
-			$this->assertStringContainsString( '1 passed', $output );
+			// Default scaffolded package now runs 4 tests
+			$this->assertStringContainsString( '4 passed', $output );
 			
 		} finally {
 			if ( is_dir( $tempDir ) ) {
@@ -909,8 +898,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$package1Dir,
-				'--namespace=woocommerce',
-				'--package=test1',
+				'--package=woocommerce/test1',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -919,8 +907,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$package2Dir,
-				'--namespace=woocommerce',
-				'--package=test2',
+				'--package=woocommerce/test2',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );
@@ -968,8 +955,7 @@ test('can add product to cart', async ({ page }) => {
 			qit( [
 				'package:scaffold',
 				$packageDir,
-				'--namespace=woocommerce',
-				'--package=error-test',
+				'--package=woocommerce/error-test',
 				'--test-type=e2e',
 				'--framework=playwright',
 			] );

@@ -12,12 +12,11 @@ class PackageScaffoldTest extends \PHPUnit\Framework\TestCase {
 	public function test_scaffold_e2e_basic_with_options() {
 		$temp_dir = sys_get_temp_dir() . '/qit_scaffold_test_basic-' . uniqid();
 
-		// Run the scaffold command with vendor and package options
+		// Run the scaffold command with package option in format vendor/package:version
 		$output = qit( [
 			'package:scaffold',
 			$temp_dir,
-			'--vendor=woocommerce',
-			'--package=tests',
+			'--package=woocommerce/tests:1.0.0',
 			'--framework=playwright',
 			'--test-type=e2e',
 			'--no-interaction'
@@ -29,8 +28,7 @@ class PackageScaffoldTest extends \PHPUnit\Framework\TestCase {
 		// Check that qit-test.json exists and has correct content
 		$this->assertFileExists( $temp_dir . '/qit-test.json' );
 		$manifest = json_decode( file_get_contents( $temp_dir . '/qit-test.json' ), true );
-		$this->assertEquals( 'woocommerce', $manifest['vendor'] );
-		$this->assertEquals( 'tests', $manifest['package'] );
+		$this->assertEquals( 'woocommerce/tests', $manifest['package'] );
 		$this->assertEquals( 'e2e', $manifest['test_type'] );
 
 		// Validate that the run command is clean (no reporter flags)

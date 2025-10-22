@@ -1,5 +1,8 @@
 <?php
 
+// Load composer autoloader for integration test dependencies
+require_once __DIR__ . '/vendor/autoload.php';
+
 use Symfony\Component\Process\Process;
 
 // Define the root directory for integration tests to avoid relative path issues
@@ -53,7 +56,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 
 	$env = [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
-		'QIT_DISABLE_CLEANUP' => ( getenv( 'TEST_TOKEN' ) && strpos( getenv( 'TEST_TOKEN' ), 'serial-' ) !== 0 ) ? '1' : '0', // Only disable cleanup in parallel mode (ParaTest)
+		'QIT_DISABLE_CLEANUP' => '1', // Disable cleanup during tests to prevent output pollution
 		'QIT_SELF_TESTS'      => '1',
 		'QIT_NO_PULL'         => '1',
 		'CI'                  => '1',
