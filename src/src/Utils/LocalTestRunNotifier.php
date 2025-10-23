@@ -250,7 +250,7 @@ class LocalTestRunNotifier {
 			if ( ! $tests_failed ) {
 				// Tests passed - don't upload Allure to save bandwidth
 				if ( $orchestrator ) {
-					$orchestrator->post_processing_message( 'Allure report available locally (not uploaded - tests passed)', false );
+					$orchestrator->post_processing_message( 'Allure report available locally (not uploaded - tests passed)' );
 				}
 			} else {
 				// Tests failed - upload Allure for debugging
