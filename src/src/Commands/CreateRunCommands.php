@@ -503,7 +503,9 @@ class CreateRunCommands extends DynamicCommandCreator {
 						if ( isset( $last_result['woocommerce_version'] ) ) {
 							$table_data[] = [ 'WooCommerce Version', $last_result['woocommerce_version'] ];
 						}
-						if ( isset( $last_result['php_version'] ) ) {
+						if ( isset( $last_result['min_php_version'] ) && isset( $last_result['max_php_version'] ) ) {
+							$table_data[] = [ 'PHP Version Range', $last_result['min_php_version'] . ' - ' . $last_result['max_php_version'] ];
+						} elseif ( isset( $last_result['php_version'] ) ) {
 							$table_data[] = [ 'PHP Version', $last_result['php_version'] ];
 						}
 
