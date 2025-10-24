@@ -2,6 +2,7 @@
     "url": "https:\/\/qit.woo.com\/wp-json\/cd\/v1\/enqueue-woo-e2e",
     "method": "POST",
     "post_body": {
+        "additional_plugins": "10002,wccom-plugin-5",
         "woo_id": 10001,
         "event": "cli_published_extension_test",
         "client": "qit_cli"
