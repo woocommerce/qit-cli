@@ -408,9 +408,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$no_baseline = $input->getOption( 'no_baseline' );
 
 		$env_info               = new PerformanceEnvInfo();
-		$env_info->sut_slug     = $context['woo_slug'];
-		$env_info->sut_id       = $context['woo_id'];
-		$env_info->sut_type     = $context['sut_type'];
+		$env_info->sut          = [
+			'slug' => $context['woo_slug'],
+			'id'   => $context['woo_id'],
+			'type' => $context['sut_type'],
+		];
+		
 		$env_info->run_baseline = ! $no_baseline;
 		$env_info->php          = $input->getOption( 'php' );
 

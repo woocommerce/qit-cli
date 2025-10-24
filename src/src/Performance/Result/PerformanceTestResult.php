@@ -412,7 +412,7 @@ class PerformanceTestResult {
 		$result_data = [
 			'metrics'    => $this->metrics,
 			'root_group' => [
-				'name'   => $this->env_info->sut_slug ?: 'performance-test',
+				'name'   => $this->env_info->sut['slug'] ?? 'performance-test',
 				'path'   => '::',
 				'id'     => uniqid(),
 				'groups' => [],

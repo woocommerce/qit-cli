@@ -321,7 +321,7 @@ class PerformanceTestManager {
 		$test_result->set_baseline( $is_baseline );
 
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( '<comment>Running %s iteration %d with tests for: %s</comment>', $test_type, $iteration_number, $env_info->sut_slug ) );
+			$this->output->writeln( sprintf( '<comment>Running %s iteration %d with tests for: %s</comment>', $test_type, $iteration_number, $env_info->sut['slug'] ?? 'unknown' ) );
 		}
 
 		// Run k6 test and handle result.
@@ -454,9 +454,7 @@ class PerformanceTestManager {
 	 * @param PerformanceEnvInfo $test_config The test configuration.
 	 */
 	private function copy_test_config( PerformanceEnvInfo $env_info, PerformanceEnvInfo $test_config ): void {
-		$env_info->sut_slug     = $test_config->sut_slug;
-		$env_info->sut_id       = $test_config->sut_id;
-		$env_info->sut_type     = $test_config->sut_type;
+		$env_info->sut          = $test_config->sut;
 		$env_info->run_baseline = $test_config->run_baseline;
 	}
 
