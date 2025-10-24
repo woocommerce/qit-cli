@@ -521,7 +521,7 @@ class RunE2ECommand extends QITCommand {
 					$orchestrator->post_processing_message( '  Add "allure-dir" to qit-test.json for failure debugging', false );
 				} elseif ( $packages_with_allure === $total_packages && $total_packages > 0 ) {
 					// All packages have Allure configured - perfect!
-					$orchestrator->post_processing_message( '✓ Allure configured (uploads on test failure)', false );
+					$orchestrator->post_processing_message( 'Allure configured (uploads on test failure)' );
 				}
 			}
 
