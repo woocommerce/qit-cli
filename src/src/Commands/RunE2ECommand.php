@@ -150,6 +150,10 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'env' )
 			->reuseOption( 'env:up', 'env_file' )
 			->reuseOption( 'env:up', 'json' )
+			// Add long-form aliases for consistency with remote test commands
+			->addOption( 'wordpress_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version (alias for --wp)' )
+			->addOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version (alias for --woo)' )
+			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version (alias for --php)' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
 			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
 
@@ -180,6 +184,22 @@ class RunE2ECommand extends QITCommand {
 		 * 1. Get environment options for delegation to env:up
 		 */
 		$env_up_options = $input->getEnvironmentOptions();
+
+		// Map long-form aliases to short-form options that env:up expects
+		$option_aliases = [
+			'wordpress_version'   => '--wp',
+			'woocommerce_version' => '--woo',
+			'php_version'         => '--php',
+		];
+
+		foreach ( $option_aliases as $long_form => $short_form ) {
+			if ( $input->hasOption( $long_form ) ) {
+				$value = $input->getOption( $long_form );
+				if ( $value !== null && $value !== '' ) {
+					$env_up_options[ $short_form ] = $value;
+				}
+			}
+		}
 
 		// Handle activation test scenario
 		$test_packages = $input->getTestPackages();

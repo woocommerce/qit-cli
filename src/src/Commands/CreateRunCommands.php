@@ -133,7 +133,17 @@ class CreateRunCommands extends DynamicCommandCreator {
 				/****************************************************************
 				 * 2.  Apply CLI overrides (only what user provided)
 				 */
-				foreach ( $this->options_to_send as $opt_name ) {
+
+				// Map user-friendly aliases to API parameter names
+				// These aliases are available for any test type that supports them
+				$option_aliases = [
+					'wp'  => 'wordpress_version',
+					'woo' => 'woocommerce_version',
+					'php' => 'php_version',
+				];
+
+				// Fix: Iterate over array keys, not values (values are empty strings)
+				foreach ( array_keys( $this->options_to_send ) as $opt_name ) {
 
 					if ( ! $input->hasOption( $opt_name ) ) {
 						continue;                               // not typed – keep profile value
@@ -149,6 +159,16 @@ class CreateRunCommands extends DynamicCommandCreator {
 						) ) );
 					} else {
 						$options[ $opt_name ] = $cli_value;
+					}
+				}
+
+				// Apply aliased options to their real API parameter names
+				foreach ( $option_aliases as $alias => $real_name ) {
+					if ( $input->hasOption( $alias ) ) {
+						$alias_value = $input->getOption( $alias );
+						if ( $alias_value !== null && $alias_value !== '' ) {
+							$options[ $real_name ] = $alias_value;
+						}
 					}
 				}
 
@@ -650,6 +670,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 		/**
 		 * CLI definition helpers (schema‑driven)
+		 * Note: add_schema_to_command also adds user-friendly aliases (--wp, --woo, --php)
 		 */
 		self::add_schema_to_command( $command, $schema );
 
