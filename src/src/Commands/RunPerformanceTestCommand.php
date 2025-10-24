@@ -682,6 +682,22 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		// Parse options that should be sent to the API.
 		$parsed_options = parent::parse_options( $input, true );
 
+		// Map user-friendly aliases to API parameter names
+		$option_aliases = [
+			'wp'  => 'wordpress_version',
+			'woo' => 'woocommerce_version',
+			'php' => 'php_version',
+		];
+
+		foreach ( $option_aliases as $alias => $real_name ) {
+			if ( $input->hasOption( $alias ) ) {
+				$alias_value = $input->getOption( $alias );
+				if ( $alias_value !== null && $alias_value !== '' ) {
+					$parsed_options[ $real_name ] = $alias_value;
+				}
+			}
+		}
+
 		// Build options for remote API request.
 		$options = array_merge( $parsed_options, [
 			'woo_id' => $context['woo_id'],
