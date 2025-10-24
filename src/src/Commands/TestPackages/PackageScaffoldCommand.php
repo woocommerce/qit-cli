@@ -455,7 +455,9 @@ export default defineConfig({
   ],
   use: {
     baseURL: process.env.QIT_SITE_URL || 'http://localhost:8080',
-    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+    trace: 'retain-on-failure',
   },
   projects: [
     {
