@@ -5,8 +5,6 @@ namespace QIT_CLI\Utils;
 use QIT_CLI\App;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\QITEnvInfo;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
-use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\IO\Output;
 use SplFileObject;
 
@@ -33,12 +31,10 @@ class PrepareDebugLog {
 			return;
 		}
 
-		// Extract SUT slug based on EnvInfo type
+		// Extract SUT slug from the sut array (available in all QITEnvInfo subclasses)
 		$sut_slug = '';
-		if ( $env_info instanceof E2EEnvInfo ) {
-			$sut_slug = isset( $env_info->sut ) ? ( $env_info->sut['slug'] ?? '' ) : '';
-		} elseif ( $env_info instanceof PerformanceEnvInfo ) {
-			$sut_slug = $env_info->sut_slug;
+		if ( $env_info instanceof QITEnvInfo ) {
+			$sut_slug = $env_info->sut['slug'] ?? '';
 		}
 
 		$output = App::make( Output::class );
