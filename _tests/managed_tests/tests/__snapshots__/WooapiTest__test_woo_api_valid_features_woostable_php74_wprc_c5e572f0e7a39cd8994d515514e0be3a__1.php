@@ -28,8 +28,8 @@
             "client": "qit_cli",
             "event": "cli_development_extension_test",
             "optional_features": {
-                "hpos": false,
-                "new_product_editor": false
+                "hpos": true,
+                "new_product_editor": true
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
@@ -43,7 +43,7 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}",
@@ -7289,7 +7289,12 @@
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "Between 500 and 999, normalized to 750",
+                        "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                    }
+                ]
             }
         }
     ]

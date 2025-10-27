@@ -28,12 +28,12 @@
             "client": "qit_cli",
             "event": "cli_development_extension_test",
             "optional_features": {
-                "hpos": false,
-                "new_product_editor": false
+                "hpos": true,
+                "new_product_editor": true
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "266 total, 261 passed, 0 failed, 5 skipped.",
+            "test_summary": "261 total, 256 passed, 0 failed, 5 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -43,7 +43,7 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}",
@@ -57,9 +57,9 @@
                 "numPendingTestSuites": 4,
                 "numTotalTestSuites": 23,
                 "numFailedTests": 0,
-                "numPassedTests": 261,
+                "numPassedTests": 256,
                 "numPendingTests": 5,
-                "numTotalTests": 266,
+                "numTotalTests": 261,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -79,15 +79,9 @@
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "authenticate admin": [
+                            "authenticate users": [
                                 {
-                                    "title": "authenticate admin",
-                                    "status": "passed"
-                                }
-                            ],
-                            "authenticate customer": [
-                                {
-                                    "title": "authenticate customer",
+                                    "title": "authenticate users",
                                     "status": "passed"
                                 }
                             ]
@@ -98,33 +92,9 @@
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
-                            "configure HPOS": [
+                            "setup site": [
                                 {
-                                    "title": "configure HPOS",
-                                    "status": "passed"
-                                }
-                            ],
-                            "disable coming soon": [
-                                {
-                                    "title": "disable coming soon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "disable onboarding wizard": [
-                                {
-                                    "title": "disable onboarding wizard",
-                                    "status": "passed"
-                                }
-                            ],
-                            "determine if multisite": [
-                                {
-                                    "title": "determine if multisite",
-                                    "status": "passed"
-                                }
-                            ],
-                            "general settings": [
-                                {
-                                    "title": "general settings",
+                                    "title": "setup site",
                                     "status": "passed"
                                 }
                             ]
@@ -1460,7 +1430,7 @@
                         }
                     }
                 ],
-                "summary": "266 total, 261 passed, 0 failed, 5 skipped."
+                "summary": "261 total, 256 passed, 0 failed, 5 skipped."
             }
         },
         {
@@ -1475,8 +1445,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 266,
-                        "passed": 261,
+                        "tests": 261,
+                        "passed": 256,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 5,
@@ -1502,7 +1472,9 @@
                             "suite": "install wc > ..\\/fixtures\\/install-wc.setup.js",
                             "attachments": [],
                             "stdout": [],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": [
                                     {
@@ -1519,7 +1491,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "authenticate admin",
+                            "name": "authenticate users",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -1530,7 +1502,16 @@
                             "filePath": "\\/normalized\\/path\\/auth.setup.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "authenticate admin",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "authenticate customer",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
                             "attachments": [],
                             "stdout": [],
@@ -1541,29 +1522,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "authenticate customer",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/auth.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "configure HPOS",
+                            "name": "setup site",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -1574,7 +1533,28 @@
                             "filePath": "\\/normalized\\/path\\/site.setup.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "configure HPOS",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "disable coming soon",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "disable onboarding wizard",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "determine if multisite",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "general settings",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.js",
                             "attachments": [],
                             "stdout": [
@@ -1583,95 +1563,11 @@
                                 "HPOS Switched on successfully\\n",
                                 "HPOS configuration (woocommerce_custom_orders_table_enabled): yes - High-performance order storage (recommended)\\n"
                             ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "disable coming soon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "disable onboarding wizard",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "determine if multisite",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "general settings",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Failed to update onboarding profile: \\u001b[90mundefined\\u001b[39m\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             },
@@ -7401,7 +7297,12 @@
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "Between 500 and 999, normalized to 750",
+                        "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                    }
+                ]
             }
         }
     ]

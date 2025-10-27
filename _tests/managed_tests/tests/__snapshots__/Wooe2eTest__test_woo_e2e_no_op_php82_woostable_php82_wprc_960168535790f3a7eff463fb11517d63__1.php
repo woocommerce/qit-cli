@@ -7,14 +7,14 @@
             "test_type_display": "Woo E2E",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "7.4",
+            "php_version": "8.2",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "384 total, 321 passed, 0 failed, 63 skipped.",
+            "test_summary": "384 total, 320 passed, 1 failed, 63 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -43,7 +43,7 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}",
@@ -52,12 +52,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 75,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 74,
                 "numPendingTestSuites": 25,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 0,
-                "numPassedTests": 321,
+                "numFailedTests": 1,
+                "numPassedTests": 320,
                 "numPendingTests": 63,
                 "numTotalTests": 384,
                 "testResults": [
@@ -1153,13 +1153,13 @@
                     },
                     {
                         "file": "email\\/editor-tracking-selectors.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Email Editor Tracking Selectors": [
                                 {
                                     "title": "Check selectors for tracking events",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2686,7 +2686,7 @@
                         }
                     }
                 ],
-                "summary": "384 total, 321 passed, 0 failed, 63 skipped."
+                "summary": "384 total, 320 passed, 1 failed, 63 skipped."
             }
         },
         {
@@ -2702,8 +2702,8 @@
                     },
                     "summary": {
                         "tests": 384,
-                        "passed": 321,
-                        "failed": 0,
+                        "passed": 320,
+                        "failed": 1,
                         "pending": 0,
                         "skipped": 63,
                         "other": 0,
@@ -7890,11 +7890,14 @@
                         },
                         {
                             "name": "Check selectors for tracking events",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.fill: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.commands-command-menu__header input\')\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.fill: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.commands-command-menu__header input\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/editor-tracking-selectors.spec.js:110:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 108 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 109 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'.commands-command-menu__header input\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 110 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mfill( \\u001b[32m\'a\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 111 |\\u001b[39m \\t\\t\\u001b[90m\\/\\/ Check command selected selector\\u001b[39m\\n \\u001b[90m 112 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 113 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator(\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/editor-tracking-selectors.spec.js",
@@ -7902,7 +7905,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email\\/editor-tracking-selectors.spec.js > WooCommerce Email Editor Tracking Selectors",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-tracking-sele-4a684-lectors-for-tracking-events-e2e-retry1\\/test-failed-1.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-tracking-sele-4a684-lectors-for-tracking-events-e2e-retry1\\/video.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-tracking-sele-4a684-lectors-for-tracking-events-e2e-retry1\\/error-context.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-editor-tracking-sele-4a684-lectors-for-tracking-events-e2e-retry1\\/trace.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
