@@ -1313,6 +1313,14 @@
                             "minimum": 1,
                             "maximum": 10
                         },
+                        "test_packages": {
+                            "description": "Array of test package IDs to use for the performance test.",
+                            "type": "array",
+                            "default": [],
+                            "items": {
+                                "type": "string"
+                            }
+                        },
                         "additional_plugins": {
                             "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
                             "type": "array",
@@ -1648,9 +1656,9 @@
             ],
             "environments": {
                 "e2e": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
-                    "checksum": "c1a78950ca0eb8a23f8706955681bf02",
-                    "zip_checksum": 19091
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c31995ded19ba72f78d557b2685a9f9f.zip",
+                    "checksum": "c31995ded19ba72f78d557b2685a9f9f",
+                    "zip_checksum": 26195
                 },
                 "performance": {
                     "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/1b9299b1fdaf0ade0b4e5ac59e6fd145.zip",
@@ -1678,7 +1686,10 @@
                 ],
                 "empty-set": []
             },
-            "db_dump_file": "https:\/\/qit.woo.com\/wp-content\/uploads\/qit-env-db-dumps\/woocommerce_dump.sql.zip"
+            "db_dump_file": "https:\/\/qit.woo.com\/wp-content\/uploads\/qit-env-db-dumps\/woocommerce_dump.sql.zip",
+            "default_test_packages": {
+                "performance": "woocommerce\/performance-tests:latest"
+            }
         }
     }
 }
