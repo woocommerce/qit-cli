@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<phpunit
+        bootstrap="./bootstrap.php"
+        backupGlobals="false"
+        colors="true"
+        stopOnWarning="false"
+        displayDetailsOnTestsThatTriggerErrors="false"
+        displayDetailsOnTestsThatTriggerWarnings="false"
+        displayDetailsOnTestsThatTriggerNotices="false"
+>
+    <extensions>
+        <bootstrap class="QITTestExtension"/>
+        <bootstrap class="QIT\IntegrationTests\RealTimeTestReporter">
+            <parameter name="verbose" value="true"/>
+        </bootstrap>
+    </extensions>
+    <testsuites>
+        <testsuite name="QIT_Custom_Tests">
+            <directory suffix="Test.php">tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

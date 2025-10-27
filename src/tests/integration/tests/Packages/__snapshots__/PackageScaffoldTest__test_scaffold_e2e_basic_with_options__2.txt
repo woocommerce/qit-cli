@@ -1,0 +1,29 @@
+{
+    "package": "woocommerce/tests",
+    "test_type": "e2e",
+    "requires": {
+        "network": false
+    },
+    "test": {
+        "phases": {
+            "globalSetup": [
+                "./bootstrap/global-setup.sh"
+            ],
+            "setup": [
+                "./bootstrap/setup.sh"
+            ],
+            "run": [
+                "npx playwright test"
+            ],
+            "teardown": [],
+            "globalTeardown": [
+                "./bootstrap/global-teardown.sh"
+            ]
+        },
+        "results": {
+            "ctrf-json": "./results/ctrf.json",
+            "allure-dir": "./results/allure",
+            "blob-dir": "./results/blob"
+        }
+    }
+}

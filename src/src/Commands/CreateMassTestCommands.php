@@ -6,23 +6,18 @@ use QIT_CLI\App;
 use QIT_CLI\Auth;
 use QIT_CLI\Cache;
 use QIT_CLI\IO\Output;
+use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 class CreateMassTestCommands extends DynamicCommandCreator {
 
-	/** @var Cache $cache */
-	protected $cache;
-
-	/** @var Auth $auth */
-	protected $auth;
-
-	/** @var OutputInterface $output */
-	protected $output;
+	protected Cache $cache;
+	protected Auth $auth;
+	protected OutputInterface $output;
 
 	public function __construct( Cache $cache, Auth $auth ) {
 		$this->cache  = $cache;
@@ -32,7 +27,7 @@ class CreateMassTestCommands extends DynamicCommandCreator {
 
 	public function register_commands( Application $application ): void {
 		$command = new class() extends DynamicCommand {
-			public function execute( InputInterface $input, OutputInterface $output ) {
+			public function doExecute( QITInput $input, OutputInterface $output ): int {
 				try {
 					$options = $this->parse_options( $input );
 

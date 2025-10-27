@@ -1,0 +1,18 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "woocommerce/test-package-two",
+  "test_type": "e2e",
+  "description": "Second test package to demonstrate multiple package orchestration",
+  "test": {
+    "phases": {
+      "run": [
+        "npx playwright test"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "allure-dir": "./results/allure",
+      "blob-dir": "./blob-report"
+    }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "woocommerce/orchestration-package-1",
+  "test_type": "e2e",
+  "description": "Tests orchestration by writing state and checking isolation",
+  "test": {
+    "phases": {
+      "run": [
+        "npx playwright test"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "allure-dir": "./results/allure",
+      "blob-dir": "./blob-report"
+    }
+  }
+}

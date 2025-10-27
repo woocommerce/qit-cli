@@ -30,12 +30,6 @@ abstract class DynamicCommandCreator {
 			foreach ( $schema['properties'] as $property_name => $property_schema ) {
 				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id' ];
 
-				// Keep these on CI to avoid breaking workflows, but remove from Desktop.
-				if ( ! getenv( 'CI' ) ) {
-					$ignore[] = 'additional_woo_plugins';
-					$ignore[] = 'additional_wordpress_plugins';
-				}
-
 				if ( in_array( $property_name, array_merge( $exceptions, $ignore ), true ) ) {
 					continue;
 				}
@@ -128,6 +122,23 @@ abstract class DynamicCommandCreator {
 						implode( ', ', $diff )
 					)
 				);
+			}
+		}
+
+		/* Add user-friendly aliases (only if schema supports the underlying parameter) */
+		$has_wordpress_version   = isset( $schema['properties']['wordpress_version'] );
+		$has_woocommerce_version = isset( $schema['properties']['woocommerce_version'] );
+		$has_php_version         = isset( $schema['properties']['php_version'] );
+
+		if ( $has_wordpress_version || $has_woocommerce_version || $has_php_version ) {
+			if ( $has_wordpress_version ) {
+				$command->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, '(Optional) WordPress version (alias for --wordpress_version)' );
+			}
+			if ( $has_woocommerce_version ) {
+				$command->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce version (alias for --woocommerce_version)' );
+			}
+			if ( $has_php_version ) {
+				$command->addOption( 'php', null, InputOption::VALUE_OPTIONAL, '(Optional) PHP version (alias for --php_version)' );
 			}
 		}
 	}

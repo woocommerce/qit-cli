@@ -18,7 +18,20 @@ trait OptionReuseTrait {
 	protected function reuseOption( string $command_name, string $option_name ): self { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Use camelCase for consistency with the context where this is used.
 		$command = App::make( Application::class )->find( $command_name );
 
-		$option = $command->getDefinition()->getOption( $option_name );
+		try {
+			$option = $command->getDefinition()->getOption( $option_name );
+		} catch ( \InvalidArgumentException $e ) {
+			throw new \InvalidArgumentException(
+				sprintf(
+					'Failed to reuse option "%s" from command "%s" in "%s". The option does not exist.',
+					$option_name,
+					$command_name,
+					__CLASS__
+				),
+				0,
+				$e
+			);
+		}
 
 		// Using reflection to access the 'mode' private property of the option.
 		$reflected_option = new ReflectionProperty( InputOption::class, 'mode' );

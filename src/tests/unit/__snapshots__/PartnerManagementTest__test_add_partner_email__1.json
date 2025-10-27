@@ -1,0 +1,1684 @@
+{
+    "user": {
+        "expire": -1,
+        "value": "foo_user@bar.com"
+    },
+    "qit_token": {
+        "expire": -1,
+        "value": "foo_pass"
+    },
+    "manager_url": {
+        "expire": -1,
+        "value": "https:\/\/qit.woo.com"
+    },
+    "manager_sync_v@QIT_CLI_VERSION@": {
+        "expire": 1234567890,
+        "value": {
+            "latest_cli_version": "0.8.2",
+            "minimum_cli_version": "0.3.2",
+            "enforce_latest": true,
+            "test_types": {
+                "phpstan": "phpstan",
+                "compatibility": "compatibility",
+                "activation": "activation",
+                "security": "security",
+                "phpcompatibility": "phpcompatibility",
+                "malware": "malware",
+                "woo-api": "woo-api",
+                "woo-e2e": "woo-e2e",
+                "e2e": "e2e",
+                "api": "api",
+                "validation": "validation",
+                "plugin-check": "plugin-check",
+                "performance": "performance"
+            },
+            "wccom_url": "https:\/\/woocommerce.com",
+            "schemas": {
+                "phpstan": {
+                    "title": "phpstanTest",
+                    "description": "Enqueue PHPStan tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "phpstan_level": {
+                            "description": "The PHPStan level to use for the test run.",
+                            "type": "integer",
+                            "required": true,
+                            "default": 2,
+                            "enum": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5,
+                                6,
+                                7,
+                                8,
+                                9,
+                                10
+                            ]
+                        }
+                    }
+                },
+                "compatibility": {
+                    "title": "compatibilityTest",
+                    "description": "Enqueue Compatibility tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "php_version": {
+                            "default": "X.X.X",
+                            "description": "The PHP version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "default": [],
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos",
+                                            "new_product_editor"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                },
+                "activation": {
+                    "title": "Activation Test",
+                    "description": "Enqueue Activation tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "php_version": {
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4",
+                                ""
+                            ]
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "default": [],
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos",
+                                            "new_product_editor"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
+                        },
+                        "test_variation": {
+                            "description": "The test variation to run.",
+                            "type": "string",
+                            "enum": [
+                                "basic",
+                                "host-plan",
+                                ""
+                            ],
+                            "default": ""
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                },
+                "security": {
+                    "title": "Security Test",
+                    "description": "Enqueue Security tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                },
+                "phpcompatibility": {
+                    "title": "PHPCompatibility Test",
+                    "description": "Enqueue PHPCompatibility tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "min_php_version": {
+                            "default": "auto",
+                            "description": "The minimum PHP version to test an extension's compatibility against.",
+                            "type": "string",
+                            "enum": [
+                                "auto",
+                                "7.2",
+                                "7.3",
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        },
+                        "max_php_version": {
+                            "default": "X.X.X",
+                            "description": "The maximum PHP version to test an extension's compatibility against.",
+                            "type": "string",
+                            "enum": [
+                                "7.2",
+                                "7.3",
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        }
+                    }
+                },
+                "malware": {
+                    "title": "Malware Test",
+                    "description": "Enqueue Malware tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "whitelist_paths": {
+                            "description": "Paths to whitelist from malware scan.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                },
+                "woo-api": {
+                    "title": "WooAPITest",
+                    "description": "Enqueue Woo API tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "php_version": {
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4",
+                                ""
+                            ]
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "default": [],
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos",
+                                            "new_product_editor"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                },
+                "woo-e2e": {
+                    "title": "WooE2ETest",
+                    "description": "Enqueue Woo E2E tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "php_version": {
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4",
+                                ""
+                            ]
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "default": [],
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                },
+                "e2e": {
+                    "title": "E2ETest",
+                    "description": "Run your custom E2E tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "php_version": {
+                            "default": "X.X.X",
+                            "description": "The PHP version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "default": [],
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos",
+                                            "new_product_editor"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "themes": {
+                            "description": "A comma-separated list of additional themes to install in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "compatibility": {
+                            "description": "Controls the scope of compatibility checks when additional plugins are specified. Accepts two values:\n      1. \"default\": Bootstraps all plugins and runs the tests of your plugin.\n      2. \"full\": Bootstraps all plugins and runs the tests of all plugins that have tests.",
+                            "type": "string",
+                            "required": "true",
+                            "default": "default",
+                            "enum": [
+                                "default",
+                                "full"
+                            ]
+                        }
+                    }
+                },
+                "api": {
+                    "title": "WooAPITest",
+                    "description": "Enqueue Woo API tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "php_version": {
+                            "default": "X.X.X",
+                            "description": "The PHP version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "default": [],
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos",
+                                            "new_product_editor"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                },
+                "validation": {
+                    "title": "validationTest",
+                    "description": "Enqueue Validation tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "php_version": {
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4",
+                                ""
+                            ]
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                },
+                "plugin-check": {
+                    "title": "pluginCheckTest",
+                    "description": "Enqueue Plugin Check tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "php_version": {
+                            "default": "",
+                            "description": "The PHP version to use in the test. Defaults to \"Requires PHP\" header in plugin or 7.4 if not set.",
+                            "type": "string",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4",
+                                ""
+                            ]
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        }
+                    }
+                },
+                "performance": {
+                    "title": "PerformanceTest",
+                    "description": "Enqueue Performance tests.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "woo_id": {
+                            "description": "A WooCommerce Extension ID",
+                            "type": "integer",
+                            "required": true
+                        },
+                        "wordpress_version": {
+                            "default": "X.X.X",
+                            "description": "The WordPress version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "default": "X.X.X",
+                            "description": "The WooCommerce version to use in the test.",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "default": [],
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos",
+                                            "new_product_editor"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "upload_id": {
+                            "description": "A development build upload ID, if we are testing a dev build instead of the latest version available in the marketplace.",
+                            "type": "uuid"
+                        },
+                        "client": {
+                            "default": "other",
+                            "description": "What client originated this request.",
+                            "type": "string",
+                            "enum": {
+                                "qit_cli": "qit_cli",
+                                "cd_client": "cd_client",
+                                "qit_viewer": "qit_viewer",
+                                "ci_runner": "ci_runner",
+                                "mass_test": "mass_test",
+                                "other": "other"
+                            }
+                        },
+                        "event": {
+                            "default": "",
+                            "description": "What event originated this request.",
+                            "type": "string"
+                        },
+                        "is_product_update": {
+                            "description": "Whether this is a product update test run.",
+                            "type": "boolean",
+                            "default": false
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
+                        },
+                        "iterations": {
+                            "description": "Number of test iterations to run for metric stability.",
+                            "type": "integer",
+                            "default": 3,
+                            "minimum": 1,
+                            "maximum": 10
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, Woo.com Product Slugs or Woo.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "description": "[Deprecated] A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        }
+                    }
+                },
+                "mass": {
+                    "title": "massTest",
+                    "description": "Enqueue mass tests in QIT.",
+                    "context": [
+                        "view"
+                    ],
+                    "$schema": "http:\/\/json-schema.org\/draft-04\/schema#",
+                    "type": "object",
+                    "properties": {
+                        "trigger": {
+                            "required": true,
+                            "description": "What event triggered this test run",
+                            "type": "string"
+                        },
+                        "test_type": {
+                            "required": true,
+                            "description": "What test type to execute.",
+                            "type": "string",
+                            "enum": {
+                                "phpstan": "phpstan",
+                                "compatibility": "compatibility",
+                                "activation": "activation",
+                                "security": "security",
+                                "phpcompatibility": "phpcompatibility",
+                                "malware": "malware",
+                                "woo-api": "woo-api",
+                                "woo-e2e": "woo-e2e",
+                                "e2e": "e2e",
+                                "api": "api",
+                                "validation": "validation",
+                                "plugin-check": "plugin-check",
+                                "performance": "performance"
+                            }
+                        },
+                        "notify": {
+                            "required": true,
+                            "description": "Whether to send notifications to developers about the results of this mass test run.",
+                            "type": "boolean"
+                        },
+                        "group": {
+                            "default": "",
+                            "description": "Group or release tag for grouping mass tests.",
+                            "type": "string"
+                        },
+                        "test_stage": {
+                            "default": "",
+                            "description": "Test stage for grouping mass tests.",
+                            "type": "string",
+                            "enums": [
+                                "pre",
+                                "full"
+                            ]
+                        },
+                        "woocommerce_version": {
+                            "description": "The WoooCommerce version to use in the test.",
+                            "default": "stable",
+                            "type": "string",
+                            "enum": [
+                                "9.7.0-beta.1",
+                                "9.5.0",
+                                "9.5.1",
+                                "9.5.2",
+                                "9.6.0",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "wordpress_version": {
+                            "description": "The WordPress version to use in the test.",
+                            "default": "stable",
+                            "type": "string",
+                            "enum": [
+                                "6.4.5",
+                                "6.5.5",
+                                "6.6.2",
+                                "6.7.1",
+                                "stable",
+                                "rc"
+                            ]
+                        },
+                        "php_version": {
+                            "description": "The PHP version to use in the test.",
+                            "type": "string",
+                            "default": "X.X.X",
+                            "enum": [
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        },
+                        "min_php_version": {
+                            "default": "X.X.X",
+                            "description": "The minimum PHP version to use in a PHPCompatibility.",
+                            "type": "string",
+                            "enum": [
+                                "7.2",
+                                "7.3",
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        },
+                        "max_php_version": {
+                            "default": "X.X.X",
+                            "description": "The maximum PHP version to use in a PHPCompatibility.",
+                            "type": "string",
+                            "enum": [
+                                "7.2",
+                                "7.3",
+                                "7.4",
+                                "8.0",
+                                "8.1",
+                                "8.2",
+                                "8.3",
+                                "8.4"
+                            ]
+                        },
+                        "whitelist_paths": {
+                            "description": "Paths to whitelist from malware scan.",
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "optional_features": {
+                            "description": "A comma-separated list of WooCommerce features to enable in the testing environment.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "oneOf": [
+                                    {
+                                        "title": "Optional Feature",
+                                        "type": "string",
+                                        "enum": [
+                                            "hpos",
+                                            "new_product_editor"
+                                        ]
+                                    }
+                                ]
+                            }
+                        },
+                        "additional_plugins": {
+                            "description": "A comma-separated list of additional plugins to activate in the environment. Accepts: WordPress.org plugin slugs, WooCommerce.com Product Slugs or WooCommerce.com Product IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_woo_plugins": {
+                            "default": [],
+                            "description": "A comma-separated list of Additional WooCommerce Extension IDs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "integer",
+                                "minimum": 1
+                            }
+                        },
+                        "additional_wordpress_plugins": {
+                            "default": [],
+                            "description": "A comma-separated list of Additional WordPress plugin slugs.",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "string",
+                                "minimum": 1
+                            }
+                        },
+                        "max_extensions": {
+                            "description": "Maximum number of extensions to test.",
+                            "type": "integer"
+                        },
+                        "include_all": {
+                            "default": false,
+                            "description": "If set, run a test against all extensions.",
+                            "type": "boolean"
+                        },
+                        "only_developed_by_woo": {
+                            "default": false,
+                            "description": "If set to true, will only test extensions developed by Woo.",
+                            "type": "boolean"
+                        },
+                        "only_vendor_ids": {
+                            "default ": [],
+                            "description": "If set, will only test the extensions owned by these vendor IDs. (Comma-separated list of vendor IDs).",
+                            "type": "array",
+                            "uniqueItems": true,
+                            "items": {
+                                "type": "int",
+                                "minimum": 0
+                            }
+                        },
+                        "product_type": {
+                            "default": "plugin",
+                            "description": "The product type to test. (extension, theme)",
+                            "type": "string",
+                            "enum": [
+                                "plugin",
+                                "theme"
+                            ]
+                        },
+                        "extension_set": {
+                            "description": "The predefined set of extensions to include in the mass test.",
+                            "type": "string",
+                            "enum": [
+                                "compatibility"
+                            ]
+                        },
+                        "phpstan_level": {
+                            "default": null,
+                            "description": "The level of PHPStan analysis to perform during the test.",
+                            "type": "integer",
+                            "enum": [
+                                0,
+                                1,
+                                2,
+                                3,
+                                4,
+                                5,
+                                6,
+                                7,
+                                8,
+                                9,
+                                10
+                            ]
+                        }
+                    }
+                }
+            },
+            "extensions": [
+                {
+                    "id": 10001,
+                    "slug": "wccom-plugin-1",
+                    "type": "plugin"
+                },
+                {
+                    "id": 10002,
+                    "slug": "wccom-plugin-2",
+                    "type": "plugin"
+                },
+                {
+                    "id": 1000245,
+                    "slug": "wccom-plugin-4",
+                    "type": "plugin"
+                },
+                {
+                    "id": 1000255,
+                    "slug": "wccom-plugin-5",
+                    "type": "plugin"
+                },
+                {
+                    "id": 123456,
+                    "slug": "woocommerce",
+                    "type": "plugin"
+                },
+                {
+                    "id": 2165910,
+                    "slug": "woocommerce-shipping",
+                    "type": "plugin"
+                },
+                {
+                    "id": 123457,
+                    "slug": "plugin-a",
+                    "type": "plugin"
+                },
+                {
+                    "id": 123458,
+                    "slug": "plugin-b",
+                    "type": "plugin"
+                },
+                {
+                    "id": 1234,
+                    "slug": "qit-beaver",
+                    "type": "plugin"
+                },
+                {
+                    "id": 12345,
+                    "slug": "qit-cat",
+                    "type": "plugin"
+                },
+                {
+                    "id": 12346,
+                    "slug": "qit-dog",
+                    "type": "plugin"
+                },
+                {
+                    "id": 10003,
+                    "slug": "wccom-theme-1",
+                    "type": "theme"
+                },
+                {
+                    "id": 10004,
+                    "slug": "wccom-theme-2",
+                    "type": "theme"
+                }
+            ],
+            "environments": {
+                "e2e": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
+                    "checksum": "c1a78950ca0eb8a23f8706955681bf02",
+                    "zip_checksum": 19091
+                },
+                "performance": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/1b9299b1fdaf0ade0b4e5ac59e6fd145.zip",
+                    "checksum": "1b9299b1fdaf0ade0b4e5ac59e6fd145",
+                    "zip_checksum": 15545
+                }
+            },
+            "versions": {
+                "woocommerce": {
+                    "stable": "X.X.X",
+                    "rc": "X.X.X",
+                    "rc_unsynced": "X.X.X"
+                },
+                "wordpress": {
+                    "stable": "X.X.X",
+                    "rc": "X.X.X"
+                }
+            },
+            "hide_e2e": false,
+            "playwright_version": "X.X.X",
+            "extension_sets": {
+                "test-set": [
+                    "wccom-plugin-4",
+                    "wccom-plugin-5"
+                ],
+                "empty-set": []
+            },
+            "db_dump_file": "https:\/\/qit.woo.com\/wp-content\/uploads\/qit-env-db-dumps\/woocommerce_dump.sql.zip"
+        }
+    }
+}

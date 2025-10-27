@@ -1,0 +1,41 @@
+{
+    "profile": "default",
+    "environment": "default",
+    "php": "8.1",
+    "wp": "6.0",
+    "woo": "8.0.0",
+    "plugins": [],
+    "themes": [],
+    "php_extensions": [],
+    "object_cache": false,
+    "tunnel": "no_tunnel",
+    "envs": [],
+    "env_files": [],
+    "test-packages": [],
+    "skip_activating_plugins": false,
+    "skip_activating_themes": false,
+    "pw_test_tag": "",
+    "update_snapshots": false,
+    "ui": false,
+    "codegen": false,
+    "no_upload_report": false,
+    "notify": false,
+    "group": false,
+    "wait": false,
+    "ignore-fail": false,
+    "config": "/tmp-normalised/qit_test_NORMALIZED",
+    "volumes": [
+        "/repo/integration/helpers/CUSTOM_MU_PLUGIN.php:/var/www/html/wp-content/mu-plugins/CUSTOM_MU_PLUGIN.php"
+    ],
+    "json": true,
+    "env_info": {
+        "created_at": 0,
+        "nginx_port": "PORT",
+        "temporary_env": "/tmp-normalised/temporary-env/",
+        "plugins": null
+    },
+    "configuration": {
+        "resolved_plugins": null
+    },
+    "resolved_extensions": null
+}

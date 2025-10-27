@@ -2,13 +2,12 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\QITInput;
 use QIT_CLI\Woo\ZipValidator;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class WooValidateZipCommand extends Command {
+class WooValidateZipCommand extends QITCommand {
 	protected static $defaultName = 'woo:validate-zip'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
 	private $zip_validator;
@@ -19,14 +18,15 @@ class WooValidateZipCommand extends Command {
 		parent::__construct();
 	}
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Validate a local ZIP file\'s content.' )
 			->setHelp( 'If invalid content or wrong format is found in ZIP file, an error will be shown.' )
 			->addArgument( 'path', InputArgument::REQUIRED, 'The ZIP file path' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		try {
 			$zip_file = $input->getArgument( 'path' );
 
@@ -36,13 +36,13 @@ class WooValidateZipCommand extends Command {
 		} catch ( \UnexpectedValueException $e ) {
 			$output->writeln( sprintf( '<comment>%s</comment>', $e->getMessage() ) );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		} catch ( \Exception $e ) {
 			$output->writeln( sprintf( '<error>An error occurred while validating the provided file. Error: %s</error>', $e->getMessage() ) );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
-		return Command::SUCCESS;
+		return self::SUCCESS;
 	}
 }

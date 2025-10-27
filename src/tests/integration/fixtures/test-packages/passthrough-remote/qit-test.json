@@ -1,0 +1,19 @@
+{
+  "package": "test/passthrough-remote",
+  "test_type": "e2e",
+  "description": "Passthrough Remote Test Package",
+  "requires": {
+    "network": false
+  },
+  "test": {
+    "phases": {
+      "run": [
+        "npx playwright test"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./blob-report"
+    }
+  }
+}

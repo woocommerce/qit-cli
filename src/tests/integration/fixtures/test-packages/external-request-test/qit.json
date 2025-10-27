@@ -1,0 +1,5 @@
+{
+    "name": "woocommerce\/request-blocking-test",
+    "type": "e2e",
+    "test_type": "e2e"
+}

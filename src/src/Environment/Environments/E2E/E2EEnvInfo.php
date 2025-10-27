@@ -2,41 +2,21 @@
 
 namespace QIT_CLI\Environment\Environments\E2E;
 
-use QIT_CLI\Environment\Environments\EnvInfo;
+use QIT_CLI\Environment\Environments\QITEnvInfo;
 
-class E2EEnvInfo extends EnvInfo {
+class E2EEnvInfo extends QITEnvInfo {
 	/** @var string */
-	public $environment = 'e2e';
+	public string $environment = 'e2e';
 
-	/** @var string */
-	public $wp = '';
+	/** @var array<string,string> */
+	public array $passthrough_args = [];
 
-	/** @var bool */
-	public $object_cache = false;
+	/** @var int */
+	public int $db_port = 0;
 
-	/** @var string */
-	public $php_version;
+	public bool $skip_activating_plugins = false;
 
-	/** @var string */
-	public $nginx_port;
-
-	/** @var string The slug of the extension under test. */
-	public $sut_slug;
-
-	/** @var string The type of the SUT, either "plugin" or "theme". */
-	public $sut_type;
-
-	/** @var string The entrypoint of the extension under test. */
-	public $sut_entrypoint;
-
-	/** @var string The path to the SUT on the host. */
-	public $sut_path;
-
-	/** @var int The Woo ID of the extension under test. */
-	public $sut_id;
-
-	/** @var string The domain being used. */
-	public $domain;
+	public bool $skip_activating_themes = false;
 
 	/** @var array<int,array{
 	 *     slug:string,
@@ -45,13 +25,22 @@ class E2EEnvInfo extends EnvInfo {
 	 *     action:string,
 	 *     path_in_php_container:string,
 	 *     path_in_host:string
-	 * }> $tests
+	 * }>
 	 */
-	public $tests = [];
+	public array $tests = [];
 
-	/** @var array<mixed>> */
-	public $playwright_config = [];
+	/** @var array<mixed> */
+	public array $playwright_config = [];
 
-	/** @var string The playwright test tag to be executed*/
-	public $pw_test_tag = '';
+	/** @var string */
+	public string $pw_test_tag = '';
+
+	/** @var bool */
+	public bool $is_development_build = false;
+
+	/** @var string */
+	public string $notify = '';
+
+	/** @var string|null */
+	public ?string $artifacts_dir = null;
 }

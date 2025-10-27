@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <phpunit
-        bootstrap="./tests/bootstrap.php"
+        bootstrap="./tests/unit/bootstrap.php"
         backupGlobals="false"
         colors="true"
         convertErrorsToExceptions="true"
@@ -9,10 +9,10 @@
 >
     <testsuites>
         <testsuite name="QIT_CLI">
-            <directory suffix="Test.php">tests</directory>
+            <directory suffix="Test.php">tests/unit</directory>
         </testsuite>
     </testsuites>
     <extensions>
-        <extension class="DeleteConfigFileListener" file="./tests/DeleteConfigFileListener.php"/>
+        <extension class="DeleteConfigFileListener" file="./tests/unit/DeleteConfigFileListener.php"/>
     </extensions>
 </phpunit>

@@ -74,6 +74,9 @@ class ManagerSync {
 			throw new NetworkErrorException();
 		}
 
+		// Normalize environment keys for this CLI version
+		$manager_sync = $this->normalize_environments_for_version( $manager_sync );
+
 		if ( $this->output->isVerbose() ) {
 			App::make( Output::class )->writeln( '[Info] New sync with Manager done.' );
 		}
@@ -114,5 +117,42 @@ class ManagerSync {
 				throw new UpdateRequiredException();
 			}
 		}
+	}
+
+	/**
+	 * Normalize environment keys for the CLI version >=1.0.0.
+	 *
+	 * The Manager returns both v1 and v2 environment keys (e.g., 'e2e' and 'e2e-v2').
+	 * This method strips the '-v2' suffix from v2 keys so the rest of the CLI can use
+	 * the base names ('e2e', 'performance', etc.) while ensuring this version of the CLI
+	 * uses the v2 environments.
+	 *
+	 * This logic should be removed when we officially sunset CLI version <1.0.0
+	 *
+	 * @param array<mixed> $manager_sync The sync data from the Manager.
+	 * @return array<mixed> The normalized sync data.
+	 */
+	private function normalize_environments_for_version( array $manager_sync ): array {
+		if ( ! isset( $manager_sync['environments'] ) || ! is_array( $manager_sync['environments'] ) ) {
+			return $manager_sync;
+		}
+
+		$version_suffix          = '-v2';
+		$normalized_environments = [];
+
+		foreach ( $manager_sync['environments'] as $key => $data ) {
+			if ( str_ends_with( $key, $version_suffix ) ) {
+				$base_key                             = substr( $key, 0, - strlen( $version_suffix ) );
+				$normalized_environments[ $base_key ] = $data;
+			}
+		}
+
+		// Fallback: if no v2 keys found, use original keys (for development/testing)
+		if ( empty( $normalized_environments ) ) {
+			$normalized_environments = $manager_sync['environments'];
+		}
+
+		$manager_sync['environments'] = $normalized_environments;
+		return $manager_sync;
 	}
 }

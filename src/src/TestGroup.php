@@ -2,7 +2,7 @@
 
 namespace QIT_CLI;
 
-use QIT_CLI\Commands\CustomTests\RunE2ECommand;
+use QIT_CLI\Commands\RunE2ECommand;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -134,7 +134,7 @@ class TestGroup {
 				'client' => 'qit_cli',
 				'hash'   => $hash,
 			],
-			'env_vars'      => $filtered_env_vars,
+			'envs'          => $filtered_env_vars,
 			'input_options' => is_null( $input ) ? [] : $input->getOptions(),
 			'input_args'    => is_null( $input ) ? [] : $input->getArguments(),
 		];
@@ -180,11 +180,11 @@ class TestGroup {
 		$group['enqueue'] = $enqueue;
 
 		/**
-		 * Input and env vars are not needed on the QIT servers.
+		 * Input and env are not needed on the QIT servers.
 		 */
 		// @phan-suppress-next-line PhanTypeMismatchForeach
 		foreach ( $group['tests'] as $test ) {
-			unset( $test['env_vars'] );
+			unset( $test['envs'] );
 			unset( $test['input'] );
 		}
 
@@ -194,7 +194,7 @@ class TestGroup {
 			// @phan-suppress-next-line PhanTypeMismatchForeach
 			foreach ( $group['tests'] as $test ) {
 				// Only run remote tests.
-				if ( ! in_array( $test['type'], self::LOCAL_TEST_TYPES ) ) {
+				if ( ! in_array( $test['type'], self::LOCAL_TEST_TYPES, true ) ) {
 					$test_run_ids[] = $test['test_run']['test_run_id'];
 				}
 			}
@@ -361,7 +361,7 @@ class TestGroup {
 		 * If any test run is not completed, the group is still pending.
 		 */
 		foreach ( $response_data['test_runs'] as $test ) {
-			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled', 'warning', 'skipped' ] ) ) {
+			if ( ! in_array( $test['status'], [ 'hanged', 'failed', 'success', 'cancelled', 'warning', 'skipped' ], true ) ) {
 				$status = self::STATUS_PENDING;
 			}
 
@@ -418,7 +418,7 @@ class TestGroup {
 			throw new \Exception( 'No group found.' );
 		}
 
-		if ( ! in_array( $group['status'], [ self::STATUS_RUNNING, self::STATUS_REGISTERED ] )
+		if ( ! in_array( $group['status'], [ self::STATUS_RUNNING, self::STATUS_REGISTERED ], true )
 		) {
 			throw new \Exception( sprintf( 'Expected test group to be in "%s" or "%s" status, but got "%s".', self::STATUS_RUNNING, self::STATUS_NOT_STARTED, $group['status'] ) );
 		}
@@ -429,7 +429,7 @@ class TestGroup {
 		$local_tests = [];
 
 		foreach ( $group['tests'] as $test ) {
-			if ( in_array( $test['type'], self::LOCAL_TEST_TYPES ) ) {
+			if ( in_array( $test['type'], self::LOCAL_TEST_TYPES, true ) ) {
 				$local_tests[] = $test;
 			}
 		}
@@ -474,10 +474,10 @@ class TestGroup {
 		$resource_stream = fopen( 'php://temp', 'w+' );
 
 		$options   = $test['input_options'];
-		$env_vars  = $test['env_vars'];
+		$env       = $test['envs'];
 		$arguments = $test['input_args'];
 
-		foreach ( $env_vars as $key => $value ) {
+		foreach ( $env as $key => $value ) {
 			putenv( sprintf( '%s=%s', $key, $value ) );
 		}
 
@@ -495,7 +495,7 @@ class TestGroup {
 			throw new \Exception( $run_e2e_output );
 		}
 
-		foreach ( $env_vars as $key => $value ) {
+		foreach ( $env as $key => $value ) {
 			putenv( $key );
 		}
 	}

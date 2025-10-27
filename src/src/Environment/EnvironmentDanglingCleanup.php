@@ -162,6 +162,7 @@ class EnvironmentDanglingCleanup {
 			'tests',
 			'playwright',
 			'k6',
+			'php',
 		];
 
 		/*

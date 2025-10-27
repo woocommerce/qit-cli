@@ -11,40 +11,42 @@ use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
-use QIT_CLI\Commands\CustomTests\ScaffoldE2ECommand;
-use QIT_CLI\Commands\CustomTests\ShowReportCommand;
+use QIT_CLI\Commands\ShowReportCommand;
 use QIT_CLI\Commands\DevModeCommand;
+use QIT_CLI\Commands\AI\ContextCommand as AIContextCommand;
+use QIT_CLI\Commands\AI\InstallAgentsCommand as AIInstallAgentsCommand;
+use QIT_CLI\Commands\AI\ClaudeSetupCommand as AIClaudeSetupCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
+use QIT_CLI\Commands\Environment\EnvSourceCommand;
 use QIT_CLI\Commands\Environment\ExecEnvironmentCommand;
 use QIT_CLI\Commands\Environment\ListEnvironmentCommand;
+use QIT_CLI\Commands\Environment\ResetEnvironmentCommand;
 use QIT_CLI\Commands\Environment\UpEnvironmentCommand;
 use QIT_CLI\Commands\GetCommand;
 use QIT_CLI\Commands\GetMultipleCommand;
-use QIT_CLI\Commands\Group\GroupClearCommand;
 use QIT_CLI\Commands\Group\GroupFetchCommand;
-use QIT_CLI\Commands\Group\GroupRegisterCommand;
-use QIT_CLI\Commands\Group\GroupRunCommand;
-use QIT_CLI\Commands\Group\GroupShowCommand;
+use QIT_CLI\Commands\Group\RunGroupCommand;
 use QIT_CLI\Commands\ListCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\RunActivationTestCommand;
-use QIT_CLI\LocalTests\Performance\Commands\RunPerformanceTestCommand;
+use QIT_CLI\Commands\RunPerformanceTestCommand;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
-use QIT_CLI\Commands\Tags\DeleteTestTagsCommand;
-use QIT_CLI\Commands\Tags\ListTestTagsCommand;
-use QIT_CLI\Commands\Tags\UploadTestTagsCommand;
+use QIT_CLI\Commands\TestPackages\PackageDeleteCommand;
+use QIT_CLI\Commands\TestPackages\PackageDownloadCommand;
+use QIT_CLI\Commands\TestPackages\PackageListCommand;
+use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
+use QIT_CLI\Commands\TestPackages\PackagePublishCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
-use QIT_CLI\Environment\EnvConfigLoader;
 use QIT_CLI\Environment\EnvironmentDanglingCleanup;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
@@ -116,7 +118,7 @@ $container->singleton( Config::class );
 $container->singleton( ManagerBackend::class );
 $container->singleton( Cache::class );
 $container->singleton( TunnelRunner::class );
-$container->singleton( EnvConfigLoader::class );
+$container->bind( 'src_dir', __DIR__ );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
@@ -161,6 +163,40 @@ try {
 
 $is_connected_to_backend = false;
 
+// Check AI agents status (once per week, only if not doing autocompletion or JSON output)
+// Skip check if running ai:install-agents or ai:claude-setup commands to avoid circular notification
+$is_ai_setup_command = in_array( 'ai:install-agents', $GLOBALS['argv'] ?? [], true ) ||
+						in_array( 'ai:claude-setup', $GLOBALS['argv'] ?? [], true );
+if ( ! $container->getVar( 'doing_autocompletion' ) && ! in_array( '--json', $GLOBALS['argv'] ?? [], true ) && ! $is_ai_setup_command ) {
+	try {
+		$agent_checker = new \QIT_CLI\AI\AgentVersionChecker();
+		$agent_status  = $agent_checker->check_agent_status();
+
+		if ( $agent_status !== null && isset( $agent_status['message'] ) ) {
+			$output = App::make( Output::class );
+
+			// Display notification based on status
+			switch ( $agent_status['status'] ) {
+				case 'not_installed':
+					// Temporarily disable not_installed message. Rely on documentation.
+					// $output->writeln( '<comment>' . $agent_status['message'] . '</comment>' );
+					break;
+				case 'outdated':
+					$output->writeln( '<fg=yellow>' . $agent_status['message'] . '</>' );
+					break;
+				case 'unknown':
+					$output->writeln( '<warning>' . $agent_status['message'] . '</warning>' );
+					break;
+			}
+			$output->writeln( '' ); // Add spacing after notification
+		}
+	} catch ( \Exception $e ) {
+		// Silently ignore agent check errors to not disrupt normal flow.
+		// Agent checks are optional and should not affect CLI functionality.
+		unset( $e ); // Satisfy PHPCS empty catch requirement.
+	}
+}
+
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
@@ -176,6 +212,8 @@ try {
 	$application->add( $container->make( ListEnvironmentCommand::class ) );
 	$application->add( $container->make( EnterEnvironmentCommand::class ) );
 	$application->add( $container->make( ExecEnvironmentCommand::class ) );
+	$application->add( $container->make( EnvSourceCommand::class ) );
+	$application->add( $container->make( ResetEnvironmentCommand::class ) );
 } catch ( \Exception $e ) {
 	App::make( Output::class )->writeln( $e->getMessage() );
 }
@@ -234,18 +272,26 @@ if ( $is_connected_to_backend ) {
 	// List the Woo Extensions the user can run tests against.
 	$application->add( $container->make( WooExtensionsCommand::class ) );
 
-	$application->add( $container->make( ListTestTagsCommand::class ) );
-	$application->add( $container->make( UploadTestTagsCommand::class ) );
-	$application->add( $container->make( DeleteTestTagsCommand::class ) );
+
+	// Test Package commands.
+	$application->add( $container->make( PackageDeleteCommand::class ) );
+	$application->add( $container->make( PackageDownloadCommand::class ) );
+	$application->add( $container->make( PackageListCommand::class ) );
+	$application->add( $container->make( PackagePublishCommand::class ) );
+	$application->add( $container->make( PackageScaffoldCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
-	$application->add( $container->make( ScaffoldE2ECommand::class ) );
+	$application->add( $container->make( AIContextCommand::class ) );
+	$application->add( $container->make( AIClaudeSetupCommand::class ) );
+
+	// Experimental AI agents - hidden behind env var due to hallucination issues
+	// Only enable if QIT_USE_EXPERIMENTAL_AI_AGENTS=1 is set
+	if ( getenv( 'QIT_USE_EXPERIMENTAL_AI_AGENTS' ) === '1' ) {
+		$application->add( $container->make( AIInstallAgentsCommand::class ) );
+	}
 
 	// Group Commands.
-	$application->add( $container->make( GroupRunCommand::class ) );
-	$application->add( $container->make( GroupClearCommand::class ) );
-	$application->add( $container->make( GroupRegisterCommand::class ) );
-	$application->add( $container->make( GroupShowCommand::class ) );
+	$application->add( $container->make( RunGroupCommand::class ) );
 	$application->add( $container->make( GroupFetchCommand::class ) );
 
 	if ( Config::is_development_mode() ) {

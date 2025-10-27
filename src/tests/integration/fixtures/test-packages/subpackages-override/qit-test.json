@@ -1,0 +1,56 @@
+{
+  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "package": "woocommerce/stripe-e2e",
+  "test_type": "e2e",
+  "description": "WooCommerce Stripe E2E test suite with subpackages",
+  "test": {
+    "phases": {
+      "globalSetup": [
+        "echo '[GLOBAL_SETUP] Dismissing WooCommerce onboarding'",
+        "echo '[GLOBAL_SETUP] Configuring basic Stripe gateway'"
+      ],
+      "run": [
+        "npx playwright test tests/all.spec.js"
+      ]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./blob-report"
+    }
+  },
+  "subpackages": {
+    "woocommerce/stripe-checkout": {
+      "description": "Payment flow tests",
+      "tags": ["checkout", "payments"],
+      "test": {
+        "phases": {
+          "run": [
+            "npx playwright test tests/checkout.spec.js"
+          ]
+        }
+      }
+    },
+    "woocommerce/stripe-3ds": {
+      "description": "3D Secure authentication tests",
+      "tags": ["3ds", "security"],
+      "test": {
+        "phases": {
+          "run": [
+            "npx playwright test tests/3ds.spec.js"
+          ]
+        }
+      }
+    },
+    "woocommerce/stripe-setup": {
+      "description": "Configure Stripe for other tests",
+      "tags": ["utility", "setup"],
+      "test": {
+        "phases": {
+          "run": [
+            "echo '[SETUP] Running Stripe setup utility'"
+          ]
+        }
+      }
+    }
+  }
+}

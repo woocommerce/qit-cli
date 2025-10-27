@@ -3,23 +3,23 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\Commands\Partner\AddPartner;
+use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use function QIT_CLI\get_manager_url;
 
-class ConnectCommand extends Command {
+class ConnectCommand extends QITCommand {
 	protected static $defaultName = 'connect'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
-	protected function configure() {
+	protected function configure(): void {
+		parent::configure();
 		$this
 			->setDescription( 'Connect to manage your extensions and test runs.' );
 	}
 
-	protected function execute( InputInterface $input, OutputInterface $output ): int {
+	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		$io = new SymfonyStyle( $input, $output );
 		$io->title( 'Quality Insights Toolkit (QIT)' );
 
@@ -30,7 +30,7 @@ class ConnectCommand extends Command {
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
-			return Command::FAILURE;
+			return self::FAILURE;
 		}
 
 		$output->write( "<fg=green>✔</>\n" );

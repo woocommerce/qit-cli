@@ -1,0 +1,12 @@
+{
+  "name": "global-setup-test-package",
+  "version": "1.0.0",
+  "description": "Test package with global setup and teardown",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "playwright-ctrf-json-reporter": "^0"
+  }
+}
