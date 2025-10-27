@@ -85,6 +85,8 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'skip-setup', null, InputOption::VALUE_NONE, 'Skip running setup phases even if qit-test.json is found' )
 			->addOption( 'setup', null, InputOption::VALUE_OPTIONAL, 'Run setup phases from test package in specified directory', false )
 			->addOption( 'skip-test-phases', null, InputOption::VALUE_NONE, 'Skip all test phases (internal use by run:e2e)' )
+			->addOption( 'skip_activating_plugins', null, InputOption::VALUE_NONE, 'Skip activating plugins during environment setup' )
+			->addOption( 'skip_activating_themes', null, InputOption::VALUE_NONE, 'Skip activating themes during environment setup' )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
 			->setHelp( $this->getHelpText() );
 	}
@@ -595,6 +597,8 @@ class UpEnvironmentCommand extends QITCommand {
 			'envs'                    => $env_config['envs'] ?? [],
 			'test_packages_for_setup' => $test_packages_for_setup,
 			'skip_test_phases'        => $input->getOption( 'skip-test-phases' ),  // Pass the flag to E2EEnvironment
+			'skip_activating_plugins' => $input->getOption( 'skip_activating_plugins' ),
+			'skip_activating_themes'  => $input->getOption( 'skip_activating_themes' ),
 			'tunnel'                  => $env_config['tunnel'] ?? false,
 			'tunnel_type'             => $env_config['tunnel_type'] ?? 'no_tunnel',
 			'network_restriction'     => $env_config['network_restriction'],
