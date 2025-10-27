@@ -231,6 +231,13 @@ class QITInput implements InputInterface {
 				if ( $value !== null && $value !== false ) {
 					$options[ "--$opt" ] = $value;
 				}
+			} else {
+				// Also check for programmatically set options (e.g., via setOption())
+				// even if they weren't explicitly provided via CLI
+				$value = $this->getOption( $opt );
+				if ( $value === true || ( is_array( $value ) && ! empty( $value ) ) ) {
+					$options[ "--$opt" ] = $value;
+				}
 			}
 		}
 

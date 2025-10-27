@@ -155,7 +155,7 @@ abstract class QITEnvironment extends Environment {
 	 * Activate plugins and themes.
 	 */
 	protected function activate_plugins_and_themes(): void {
-		if ( ! $this->skip_activating_plugins ) {
+		if ( ! $this->env_info->skip_activating_plugins ) {
 			$this->output->writeln( '<info>Activating plugins...</info>' );
 			$activation_output = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
 			App::make( \QIT_CLI\Environment\PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
@@ -163,11 +163,14 @@ abstract class QITEnvironment extends Environment {
 
 		$theme_activation = new ThemeActivation( $this->env_info, $this->docker, $this->output );
 
-		if ( ! $this->skip_activating_themes ) {
-			$theme_activation->auto_activate_themes();
-		}
+		// Always install parent themes if needed (even when skip_activating_themes is true)
+		// This ensures child themes have their required parent themes available
+		$theme_activation->install_parent_themes_if_needed();
 
-		$theme_activation->maybe_activate_theme_that_is_dependency_of_sut();
+		if ( ! $this->env_info->skip_activating_themes ) {
+			$theme_activation->auto_activate_themes();
+			$theme_activation->maybe_activate_theme_that_is_dependency_of_sut();
+		}
 	}
 
 	/**

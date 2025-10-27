@@ -31,6 +31,57 @@ class ThemeActivation {
 		$this->output   = $output;
 	}
 
+	/**
+	 * Install parent themes if needed (without activating them).
+	 * This is needed even when skip_activating_themes is true, so child themes can function.
+	 */
+	public function install_parent_themes_if_needed(): void {
+		$theme_slugs = array_map( static function ( $ext ) {
+			return $ext->slug;
+		}, $this->env_info->themes );
+
+		foreach ( $theme_slugs as $child_slug ) {
+			$parent_slug = $this->detect_parent_template( $child_slug );
+
+			if ( $parent_slug ) {
+				// Check if parent theme is already installed
+				$check_output = $this->docker->run_inside_docker(
+					$this->env_info,
+					[
+						'bash',
+						'-c',
+						sprintf( 'wp theme is-installed %s && echo "INSTALLED" || echo "NOT_INSTALLED"', escapeshellarg( $parent_slug ) ),
+					]
+				);
+
+				if ( strpos( $check_output, 'NOT_INSTALLED' ) !== false ) {
+					$this->output->writeln(
+						"<comment>Theme '{$child_slug}' requires parent theme '{$parent_slug}'. Installing parent...</comment>"
+					);
+
+					try {
+						$install_output = $this->docker->run_inside_docker(
+							$this->env_info,
+							[
+								'bash',
+								'-c',
+								sprintf( 'wp theme install %s --force', escapeshellarg( $parent_slug ) ),
+							]
+						);
+
+						$this->output->writeln( $install_output );
+						$this->output->writeln( "<info>Parent theme '{$parent_slug}' installed successfully.</info>" );
+					} catch ( \RuntimeException $e ) {
+						$this->output->writeln(
+							'<comment>Could not find the parent theme on WP.org. ' .
+							'Please provide the parent theme as a dependency.</comment>'
+						);
+					}
+				}
+			}
+		}
+	}
+
 	public function maybe_activate_theme_that_is_dependency_of_sut(): void {
 		$theme_slugs = array_map( static function ( $ext ) {
 			return $ext->slug;
