@@ -275,6 +275,13 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		// Parse environment variables for local execution.
 		$this->parse_env_vars( $input->getOption( 'env' ) );
 
+		// Warn about unimplemented --async flag.
+		if ( $input->getOption( 'async' ) && ! $input->getOption( 'json' ) ) {
+			$output->writeln( '<comment>Warning: The --async flag is not implemented for local performance tests yet.</comment>' );
+			$output->writeln( '<comment>Local performance tests always run synchronously.</comment>' );
+			$output->writeln( '' );
+		}
+
 		// Setup local environment configuration.
 		$env_up_options = $this->setup_local_environment( $input, $output, $context );
 

@@ -121,6 +121,10 @@ class RunE2ECommand extends QITCommand {
 			'Custom source for the plugin/theme (local ZIP, local directory, or URL to a .zip file)' )
 			->addOption( 'source', null, InputOption::VALUE_OPTIONAL,
 			'[Deprecated] Use --zip instead' )
+			->addOption( 'async', null, InputOption::VALUE_NEGATABLE,
+			'Enqueue test and return immediately without waiting', false )
+			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE,
+			'(Deprecated) Wait for test completion - this is now the default behavior', false )
 			->addOption( 'passthrough_target', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
 			'Test packages that should receive passthrough arguments (multiple allowed)', [] )
 
@@ -178,6 +182,13 @@ class RunE2ECommand extends QITCommand {
 			$output->writeln( '<comment>To run E2E tests on Windows, please use WSL.</comment>' );
 
 			return self::FAILURE;
+		}
+
+		/* ─ Warn about unimplemented --async flag ─ */
+		if ( $input->getOption( 'async' ) && ! $input->getOption( 'json' ) ) {
+			$output->writeln( '<comment>Warning: The --async flag is not implemented for E2E tests yet.</comment>' );
+			$output->writeln( '<comment>E2E tests always run synchronously (they execute locally).</comment>' );
+			$output->writeln( '' );
 		}
 
 		/*****************************************************************
