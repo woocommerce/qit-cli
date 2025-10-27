@@ -28,7 +28,7 @@
             "client": "qit_cli",
             "event": "cli_development_extension_test",
             "optional_features": {
-                "hpos": false,
+                "hpos": true,
                 "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
@@ -43,7 +43,7 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}",

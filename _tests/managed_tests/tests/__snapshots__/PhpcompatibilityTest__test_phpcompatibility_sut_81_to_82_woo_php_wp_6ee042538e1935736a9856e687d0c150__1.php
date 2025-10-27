@@ -8,8 +8,8 @@
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
-            "max_php_version": "8.4",
-            "min_php_version": "7.4",
+            "max_php_version": "8.2",
+            "min_php_version": "8.1",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
@@ -34,7 +34,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 10 Warnings: 5",
+            "test_summary": "Errors: 9 Warnings: 3",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -45,7 +45,7 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}"
@@ -55,24 +55,15 @@
                 "tool": {
                     "phpcs": {
                         "totals": {
-                            "errors": 10,
-                            "warnings": 5,
+                            "errors": 9,
+                            "warnings": 3,
                             "fixable": 1
                         },
                         "files": {
                             "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                                "errors": 10,
-                                "warnings": 5,
+                                "errors": 9,
+                                "warnings": 3,
                                 "messages": [
-                                    {
-                                        "message": "Readonly properties are not supported in PHP 8.0 or earlier. Property $foo was declared as readonly.",
-                                        "source": "PHPCompatibility.Classes.NewReadonlyProperties.Found",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "ERROR",
-                                        "line": 29,
-                                        "column": 18
-                                    },
                                     {
                                         "message": "Readonly classes are not supported in PHP 8.1 or earlier.",
                                         "source": "PHPCompatibility.Classes.NewReadonlyClasses.Found",
@@ -180,24 +171,6 @@
                                         "type": "ERROR",
                                         "line": 94,
                                         "column": 8
-                                    },
-                                    {
-                                        "message": "Calling get_class() without the $object argument is deprecated since PHP 8.3.",
-                                        "source": "PHPCompatibility.ParameterValues.RemovedGetClassNoArgs.ArgMissing",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "line": 100,
-                                        "column": 16
-                                    },
-                                    {
-                                        "message": "Calling get_parent_class() without the $object_or_class argument is deprecated since PHP 8.3.",
-                                        "source": "PHPCompatibility.ParameterValues.RemovedGetClassNoArgs.ArgMissing",
-                                        "severity": 5,
-                                        "fixable": false,
-                                        "type": "WARNING",
-                                        "line": 104,
-                                        "column": 22
                                     }
                                 ]
                             }

@@ -45,7 +45,7 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}"
@@ -81,6 +81,8 @@
                         "point_of_sale",
                         "fulfillments",
                         "experimental-iapi-mini-cart",
+                        "mcp_integration",
+                        "destroy-empty-sessions",
                         "custom_order_tables",
                         "cost_of_goods_sold"
                     ]

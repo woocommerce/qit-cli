@@ -9,7 +9,7 @@
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
             "max_php_version": "8.4",
-            "min_php_version": "7.4",
+            "min_php_version": "7.2",
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
@@ -45,7 +45,7 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}"

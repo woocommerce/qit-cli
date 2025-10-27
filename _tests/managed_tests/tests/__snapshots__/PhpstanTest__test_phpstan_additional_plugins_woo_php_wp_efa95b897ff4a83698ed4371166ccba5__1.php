@@ -11,7 +11,9 @@
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
-            "additional_wp_plugins": [],
+            "additional_wp_plugins": [
+                "google-listings-and-ads"
+            ],
             "test_log": "",
             "ctrf_json": "",
             "performance_results": "",
@@ -34,7 +36,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0, File Errors: 7",
+            "test_summary": "Errors: 0, File Errors: 2",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -45,7 +47,7 @@
             "extension_set": "",
             "phpstan_level": 2,
             "test_variation": "",
-            "test_tag": "",
+            "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
             "test_result_json_extracted": "{EXTRACTED}"
@@ -54,53 +56,17 @@
             "test_result_json": {
                 "totals": {
                     "errors": 0,
-                    "file_errors": 7
+                    "file_errors": 2
                 },
                 "files": {
                     "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php": {
-                        "errors": 7,
+                        "errors": 2,
                         "messages": [
                             {
-                                "message": "Instantiated class Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container not found.",
-                                "line": 13,
-                                "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "class.notFound"
-                            },
-                            {
-                                "message": "Call to method get() on an unknown class Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container.",
-                                "line": 16,
-                                "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "class.notFound"
-                            },
-                            {
-                                "message": "Class Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Vendor\\\\Psr\\\\Container\\\\ContainerInterface not found.",
-                                "line": 16,
-                                "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "class.notFound"
-                            },
-                            {
-                                "message": "Call to method has() on an unknown class Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container.",
-                                "line": 18,
-                                "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "class.notFound"
-                            },
-                            {
-                                "message": "Call to method has() on an unknown class Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container.",
-                                "line": 19,
-                                "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "class.notFound"
-                            },
-                            {
-                                "message": "Call to method someNonExistentMethod() on an unknown class Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container.",
+                                "message": "Call to an undefined method Automattic\\\\WooCommerce\\\\GoogleListingsAndAds\\\\Container::someNonExistentMethod().",
                                 "line": 22,
                                 "ignorable": true,
-                                "tip": "Learn more at https:\\/\\/phpstan.org\\/user-guide\\/discovering-symbols",
-                                "identifier": "class.notFound"
+                                "identifier": "method.notFound"
                             },
                             {
                                 "message": "Function call_to_undefined_funtion not found.",
