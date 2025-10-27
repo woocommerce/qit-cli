@@ -573,7 +573,12 @@ final class TestPackageManifest {
 		}
 	}
 
-	public function jsonSerialize(): mixed { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Required by JsonSerializable interface.
+	/**
+	 * Serialize to JSON.
+	 *
+	 * @return array<string, mixed>
+	 */
+	public function jsonSerialize() { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.MethodNameInvalid -- Required by JsonSerializable interface.
 		// Return current schema format for external use
 		return [
 			'package'        => $this->package_id,
