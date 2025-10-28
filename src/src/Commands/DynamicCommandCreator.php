@@ -124,22 +124,5 @@ abstract class DynamicCommandCreator {
 				);
 			}
 		}
-
-		/* Add user-friendly aliases (only if schema supports the underlying parameter) */
-		$has_wordpress_version   = isset( $schema['properties']['wordpress_version'] );
-		$has_woocommerce_version = isset( $schema['properties']['woocommerce_version'] );
-		$has_php_version         = isset( $schema['properties']['php_version'] );
-
-		if ( $has_wordpress_version || $has_woocommerce_version || $has_php_version ) {
-			if ( $has_wordpress_version ) {
-				$command->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, '(Optional) WordPress version (alias for --wordpress_version)' );
-			}
-			if ( $has_woocommerce_version ) {
-				$command->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce version (alias for --woocommerce_version)' );
-			}
-			if ( $has_php_version ) {
-				$command->addOption( 'php', null, InputOption::VALUE_OPTIONAL, '(Optional) PHP version (alias for --php_version)' );
-			}
-		}
 	}
 }

@@ -68,7 +68,7 @@ class LocalTestRunNotifier {
 	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
 	 * @param bool                          $is_development
 	 * @param bool                          $notify
-	 * @param string                        $test_type The test type (e2e, activation, performance)
+	 * @param string                        $test_type The test type (e2e, activation, performance).
 	 */
 	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, $env_info, bool $is_development, bool $notify, string $test_type = 'e2e' ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );

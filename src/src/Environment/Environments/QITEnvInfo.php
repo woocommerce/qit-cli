@@ -34,6 +34,12 @@ abstract class QITEnvInfo extends EnvInfo {
 	/** @var bool Whether to skip test package phases */
 	public bool $skip_test_phases = false;
 
+	/** @var bool Whether to skip activating plugins */
+	public bool $skip_activating_plugins = false;
+
+	/** @var bool Whether to skip activating themes */
+	public bool $skip_activating_themes = false;
+
 	/** @var array<string,string> Additional environment variables */
 	public array $additional_vars = [];
 
