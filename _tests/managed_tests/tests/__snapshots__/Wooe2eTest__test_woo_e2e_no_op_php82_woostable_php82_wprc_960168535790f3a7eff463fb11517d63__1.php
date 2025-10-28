@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "384 total, 331 passed, 3 failed, 50 skipped.",
+            "test_summary": "384 total, 331 passed, 1 failed, 52 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,13 +52,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 77,
                 "numPendingTestSuites": 22,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 3,
+                "numFailedTests": 1,
                 "numPassedTests": 331,
-                "numPendingTests": 50,
+                "numPendingTests": 52,
                 "numTotalTests": 384,
                 "testResults": [
                     {
@@ -1758,7 +1758,7 @@
                     },
                     {
                         "file": "product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "General tab": [],
@@ -1779,7 +1779,7 @@
                                 },
                                 {
                                     "title": "can a shopper add the simple product to the cart",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1816,7 +1816,7 @@
                     },
                     {
                         "file": "product\\/block-editor\\/disable-block-product-editor.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Disable block product editor": [
@@ -1830,7 +1830,7 @@
                                 },
                                 {
                                     "title": "can be disabled from settings",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2686,7 +2686,7 @@
                         }
                     }
                 ],
-                "summary": "384 total, 331 passed, 3 failed, 50 skipped."
+                "summary": "384 total, 331 passed, 1 failed, 52 skipped."
             }
         },
         {
@@ -2703,9 +2703,9 @@
                     "summary": {
                         "tests": 384,
                         "passed": 331,
-                        "failed": 3,
+                        "failed": 1,
                         "pending": 0,
-                        "skipped": 50,
+                        "skipped": 52,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -10934,13 +10934,11 @@
                         },
                         {
                             "name": "can a shopper add the simple product to the cart",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@gutenberg"
                             ],
@@ -10950,31 +10948,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-creat-9e00d--simple-product-to-the-cart-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-creat-9e00d--simple-product-to-the-cart-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-creat-9e00d--simple-product-to-the-cart-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                                            "line": 492,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -11227,13 +11216,11 @@
                         },
                         {
                             "name": "can be disabled from settings",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp option set woocommerce_feature_product_block_editor_enabled yes\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@gutenberg"
                             ],
@@ -11243,19 +11230,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.js > Disable block product editor",
-                            "attachments": [
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/product-block-editor-disab-760ee-n-be-disabled-from-settings-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
+                                            "line": 77,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
