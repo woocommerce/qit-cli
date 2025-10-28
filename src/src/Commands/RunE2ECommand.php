@@ -425,8 +425,34 @@ class RunE2ECommand extends QITCommand {
 		if ( isset( $env_info->sut['slug'] ) ) {
 			$woo_extension_id    = $this->woo_extensions_list->get_woo_extension_id_by_slug( $env_info->sut['slug'] );
 			$woocommerce_version = $env_info->woo;
-			$is_development      = $env_info->is_development_build;
 			$notify              = $input->getOption( 'notify' ) ?? false;
+
+			// Determine if this is a development build by checking if SUT is from a marketplace.
+			$is_development = false;
+			$sut_extension  = null;
+
+			// Find the SUT Extension object in plugins.
+			foreach ( $env_info->plugins as $plugin ) {
+				if ( $plugin->slug === $env_info->sut['slug'] ) {
+					$sut_extension = $plugin;
+					break;
+				}
+			}
+
+			// If not found in plugins, check themes.
+			if ( ! $sut_extension ) {
+				foreach ( $env_info->themes as $theme ) {
+					if ( $theme->slug === $env_info->sut['slug'] ) {
+						$sut_extension = $theme;
+						break;
+					}
+				}
+			}
+
+			// Development build = NOT from a recognized marketplace (wporg or wccom).
+			if ( $sut_extension && ! in_array( $sut_extension->from, [ 'wporg', 'wccom' ], true ) ) {
+				$is_development = true;
+			}
 
 			$this->local_test_run_notifier->notify_test_started(
 				$woo_extension_id,
