@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "384 total, 332 passed, 0 failed, 52 skipped.",
+            "test_summary": "384 total, 331 passed, 0 failed, 53 skipped.",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,12 +53,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 78,
-                "numPendingTestSuites": 22,
+                "numPassedTestSuites": 77,
+                "numPendingTestSuites": 23,
                 "numTotalTestSuites": 100,
                 "numFailedTests": 0,
-                "numPassedTests": 332,
-                "numPendingTests": 52,
+                "numPassedTests": 331,
+                "numPendingTests": 53,
                 "numTotalTests": 384,
                 "testResults": [
                     {
@@ -1154,12 +1154,12 @@
                     {
                         "file": "email\\/editor-tracking-selectors.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Tracking Selectors": [
                                 {
                                     "title": "Check selectors for tracking events",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2686,7 +2686,7 @@
                         }
                     }
                 ],
-                "summary": "384 total, 332 passed, 0 failed, 52 skipped."
+                "summary": "384 total, 331 passed, 0 failed, 53 skipped."
             }
         },
         {
@@ -2702,10 +2702,10 @@
                     },
                     "summary": {
                         "tests": 384,
-                        "passed": 332,
+                        "passed": 331,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 52,
+                        "skipped": 53,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -8183,7 +8183,7 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/editor-tracking-selectors.spec.js",
@@ -8195,11 +8195,18 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/editor-tracking-selectors.spec.js",
+                                            "line": 19,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
