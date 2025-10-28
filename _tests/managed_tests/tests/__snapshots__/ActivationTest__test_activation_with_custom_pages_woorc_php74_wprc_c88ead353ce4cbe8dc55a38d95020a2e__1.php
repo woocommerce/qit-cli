@@ -36,7 +36,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "",
+            "test_summary": "Tests: 11 total, 1 passed, 1 failed, 9 skipped",
             "version": "",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -115,7 +115,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:32833\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "  2. \\"Akismet Anti-spam: Spam Protection\\"\\n",
                                 "     - Slug: akismet-anti-spam-spam-protection\\n",
@@ -123,7 +123,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:32833\\/wp-admin\\/plugins.php?action=activate&plugin=akismet%2Fakismet.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=akismet%2Fakismet.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "  3. \\"Hello Dolly\\"\\n",
                                 "     - Slug: hello-dolly\\n",
@@ -131,7 +131,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:32833\\/wp-admin\\/plugins.php?action=activate&plugin=hello.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=hello.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "  4. \\"WooCommerce\\"\\n",
                                 "     - Slug: woocommerce\\n",
@@ -139,7 +139,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:32833\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "dependenciesSatisfied: true for Akismet Anti-spam: Spam Protection\\n",
                                 "dependenciesSatisfied: true for Hello Dolly\\n",
@@ -219,9 +219,9 @@
                                 }
                             ],
                             "stdout": [
-                                "Navigating to http:\\/\\/localhost:32833\\/wp-admin\\/admin.php?page=plugin-a\\n",
-                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:32833\\/wp-admin\\/admin.php?page=plugin-a:425:385\\"\\n",
-                                "Navigating to http:\\/\\/localhost:32833\\/wp-admin\\/admin.php?page=plugin-b\\n"
+                                "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a:425:398\\"\\n",
+                                "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-b\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -521,7 +521,7 @@
                                     "packageType": "test",
                                     "executionOrder": 1,
                                     "firstSeen": 0,
-                                    "duration": 23103,
+                                    "duration": 999,
                                     "isLocal": false,
                                     "hasBlobReport": true,
                                     "hasAllureReport": true

@@ -404,12 +404,38 @@ class QITE2ETestCase extends TestCase {
 										if ( isset( $step['name'] ) ) {
 											$step['name'] = preg_replace( '/id\s*\d+/i', 'id <ID>', $step['name'] );
 										}
+										if ( isset( $step['duration'] ) ) {
+											$step['duration'] = 999;
+										}
 									}
 									unset( $step );
+								}
+								// Normalize localhost ports in stdout/stderr
+								if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
+									foreach ( $test['stdout'] as &$line ) {
+										$line = preg_replace( '/localhost:\d+/', 'localhost:PORT', $line );
+									}
+									unset( $line );
+								}
+								if ( isset( $test['stderr'] ) && is_array( $test['stderr'] ) ) {
+									foreach ( $test['stderr'] as &$line ) {
+										$line = preg_replace( '/localhost:\d+/', 'localhost:PORT', $line );
+									}
+									unset( $line );
 								}
 							}
 							unset( $test );
 						}
+					}
+
+					// Normalize package metadata durations
+					if ( isset( $value['results']['extra']['qitPackageMetadata']['packages'] ) && is_array( $value['results']['extra']['qitPackageMetadata']['packages'] ) ) {
+						foreach ( $value['results']['extra']['qitPackageMetadata']['packages'] as &$package ) {
+							if ( isset( $package['duration'] ) ) {
+								$package['duration'] = 999;
+							}
+						}
+						unset( $package );
 					}
 
 					return $value;
