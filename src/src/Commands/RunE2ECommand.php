@@ -433,7 +433,8 @@ class RunE2ECommand extends QITCommand {
 				$woocommerce_version,
 				$env_info,
 				$is_development,
-				$notify
+				$notify,
+				$this->test_type
 			);
 
 			// Get the test run ID from the notifier

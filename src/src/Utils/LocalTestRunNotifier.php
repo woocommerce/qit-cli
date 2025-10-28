@@ -68,31 +68,19 @@ class LocalTestRunNotifier {
 	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
 	 * @param bool                          $is_development
 	 * @param bool                          $notify
+	 * @param string                        $test_type The test type (e2e, activation, performance)
 	 */
-	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, $env_info, bool $is_development, bool $notify ): void {
+	public function notify_test_started( int $woo_extension_id, string $woocommerce_version, $env_info, bool $is_development, bool $notify, string $test_type = 'e2e' ): void {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
 
-		$test_type = 'e2e';
-
-		// Check if we're running a performance test.
+		// Check if we're running a performance test (legacy check for backward compatibility).
 		if ( getenv( 'QIT_ENVIRONMENT_TYPE' ) === 'performance' ) {
 			$test_type = 'performance';
 		}
 
 		foreach ( $env_info->plugins as $plugin ) {
-			// Are we running an activation test?
-			if ( $plugin->type === 'plugin' && $plugin->slug === 'woocommerce' ) {
-				if ( property_exists( $plugin, 'test_tags' ) && ! empty( $plugin->test_tags ) && is_array( $plugin->test_tags ) ) {
-					foreach ( $plugin->test_tags as $t ) {
-						if ( $t === 'activation' ) {
-							$test_type = 'activation';
-						}
-					}
-				}
-			}
-
 			if ( $plugin->type === 'plugin' && isset( $env_info->sut ) && $plugin->slug !== $env_info->sut['slug'] ) {
 				$additional_plugins[] = $plugin->slug;
 			}
