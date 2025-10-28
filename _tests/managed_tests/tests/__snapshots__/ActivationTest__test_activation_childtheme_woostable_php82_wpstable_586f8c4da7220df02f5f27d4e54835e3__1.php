@@ -3,8 +3,8 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "e2e",
-            "test_type_display": "E2E",
+            "test_type": "activation",
+            "test_type_display": "Activation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "7.4",
@@ -63,10 +63,10 @@
                     },
                     "summary": {
                         "tests": 11,
-                        "passed": 5,
+                        "passed": 7,
                         "failed": 1,
                         "pending": 0,
-                        "skipped": 5,
+                        "skipped": 3,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -111,7 +111,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:32823\\/wp-admin\\/plugins.php?action=activate&plugin=akismet%2Fakismet.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "     - Activation Link: http:\\/\\/localhost:32829\\/wp-admin\\/plugins.php?action=activate&plugin=akismet%2Fakismet.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "  2. \\"Hello Dolly\\"\\n",
                                 "     - Slug: hello-dolly\\n",
@@ -119,7 +119,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:32823\\/wp-admin\\/plugins.php?action=activate&plugin=hello.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "     - Activation Link: http:\\/\\/localhost:32829\\/wp-admin\\/plugins.php?action=activate&plugin=hello.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "  3. \\"WooCommerce\\"\\n",
                                 "     - Slug: woocommerce\\n",
@@ -127,7 +127,7 @@
                                 "     - Active: false\\n",
                                 "     - Can Activate: true\\n",
                                 "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:32823\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "     - Activation Link: http:\\/\\/localhost:32829\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
                                 "\\n",
                                 "dependenciesSatisfied: true for Akismet Anti-spam: Spam Protection\\n",
                                 "dependenciesSatisfied: true for Hello Dolly\\n",
@@ -289,14 +289,11 @@
                         },
                         {
                             "name": "Create a Product",
-                            "status": "failed",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: locator(\'div.notice-success > p\').filter({ hasText: \'Product published.\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'div.notice-success > p\').filter({ hasText: \'Product published.\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m()\\u001b[22m\\n\\nLocator: locator(\'div.notice-success > p\').filter({ hasText: \'Product published.\' })\\nExpected: visible\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'div.notice-success > p\').filter({ hasText: \'Product published.\' })\\u001b[22m\\n\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:707:7",
-                            "snippet": "  705 |     await expect(\\n  706 |         page.locator(\'div.notice-success > p\').filter({ hasText: \'Product published.\' })\\n> 707 |     ).toBeVisible();\\n      |       ^\\n  708 |\\n  709 |     await expect(page.locator(\'#post-status-display\')).toContainText(\'Published\');\\n  710 |     await expect(page.frameLocator(\'#content_ifr\').getByRole(\'paragraph\')).toContainText(\'Test Product\');",
-                            "rawStatus": "failed",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -304,13 +301,7 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "chromium > activation.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/test-results\\/activation-Create-a-Product-chromium\\/error-context.md"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [],
                             "stderr": [],
                             "extra": {
@@ -328,11 +319,11 @@
                         },
                         {
                             "name": "Create a Simple Order",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -344,7 +335,16 @@
                             "stdout": [],
                             "stderr": [],
                             "extra": {
-                                "annotations": [],
+                                "annotations": [
+                                    {
+                                        "type": "slow",
+                                        "location": {
+                                            "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
+                                            "line": 715,
+                                            "column": 10
+                                        }
+                                    }
+                                ],
                                 "packageSlug": "woocommerce\\/activation:latest",
                                 "phase": "run",
                                 "testType": "e2e",
@@ -358,11 +358,14 @@
                         },
                         {
                             "name": "Add Product Cart",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:825:69",
+                            "snippet": "  823 |\\n  824 |     await page.goto(\'\\/cart\');\\n> 825 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  826 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  827 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  828 | });",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/activation.spec.js",
@@ -370,7 +373,13 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "chromium > activation.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/test-results\\/activation-Add-Product-Cart-chromium\\/error-context.md"
+                                }
+                            ],
                             "stdout": [],
                             "stderr": [],
                             "extra": {
@@ -490,7 +499,7 @@
                                     "packageType": "test",
                                     "executionOrder": 1,
                                     "firstSeen": 0,
-                                    "duration": 31770,
+                                    "duration": 36812,
                                     "isLocal": false,
                                     "hasBlobReport": true,
                                     "hasAllureReport": true
@@ -525,8 +534,16 @@
                 "qm_logs": [],
                 "debug_log": [
                     {
+                        "count": "1",
+                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php:10\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(324): {closure}(Object(WP))\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(348): WP_Hook->apply_filters(NULL, Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(565): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-includes\\/class-wp.php(835): do_action_ref_array(\'wp\', Array)\\n#4 \\/var\\/www\\/html\\/wp-includes\\/functions.php(1342): WP->main(\'\')\\n#5 \\/var\\/www\\/html\\/wp-blog-header.php(16): wp()\\n#6 \\/var\\/www\\/html\\/index.php(17): require(\'\\/var\\/www\\/html\\/w...\')\\n#7 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 10\\n"
+                    },
+                    {
                         "count": "Between 10 and 149, normalized to 75",
                         "message": "PHP Notice: Notice on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 17"
+                    },
+                    {
+                        "count": "6",
+                        "message": "PHP Warning: Warning on all requests - Child theme in \\/var\\/www\\/html\\/wp-content\\/themes\\/bistro\\/functions.php on line 13"
                     }
                 ]
             }
