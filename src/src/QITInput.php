@@ -228,7 +228,8 @@ class QITInput implements InputInterface {
 		foreach ( $env_up_options as $opt ) {
 			if ( $this->hasOption( $opt ) ) {
 				$value = $this->getOption( $opt );
-				if ( $value !== null && $value !== false ) {
+				// Only add if value is not null, not false, and not empty string
+				if ( $value !== null && $value !== false && $value !== '' ) {
 					$options[ "--$opt" ] = $value;
 				}
 			} else {
