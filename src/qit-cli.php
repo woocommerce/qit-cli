@@ -30,7 +30,7 @@ try {
 			$is_canonical_form = ( strpos( $arg, $to . '=' ) === 0 || $arg === $to );
 
 			if ( $is_alias_form || $is_canonical_form ) {
-				// Track which parameter group this belongs to (e.g., "php" for both --php and --php_version)
+				// Track which parameter group this belongs to (both --php and --php_version map to "php_version")
 				$param_group = trim( $to, '-' );
 
 				// If we already saw a parameter in this group, it's a conflict
