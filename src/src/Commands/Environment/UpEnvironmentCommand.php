@@ -68,9 +68,9 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'env', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Set env var  --env KEY=VAL', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load vars from file  --env_file ./prod.env', [] )
 			/* ─ Scalars ─ */
-			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3)', '8.2' )
-			->addOption( 'wordpress_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6)', 'stable' )
-			->addOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version', null )
+			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3). Alias: --php', '8.2' )
+			->addOption( 'wordpress_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6). Alias: --wp', 'stable' )
+			->addOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version. Alias: --woo', null )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
 			/* ─ Lists ─ */
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )

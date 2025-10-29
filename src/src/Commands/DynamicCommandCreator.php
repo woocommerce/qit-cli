@@ -48,6 +48,17 @@ abstract class DynamicCommandCreator {
 				$description = $property_schema['description'] ?? '';
 				$default     = $property_schema['default'] ?? null;
 
+				// Add alias info for known aliased parameters.
+				$aliases = [
+					'php_version'         => '--php',
+					'wordpress_version'   => '--wp',
+					'woocommerce_version' => '--woo',
+				];
+
+				if ( isset( $aliases[ $property_name ] ) ) {
+					$description .= sprintf( ' Alias: %s', $aliases[ $property_name ] );
+				}
+
 				$items       = $property_schema['items'] ?? '';
 				$enum        = $property_schema['enum'] ?? '';
 				$option_type = $property_schema['type'] ?? '';

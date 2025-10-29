@@ -654,7 +654,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 
 		/**
 		 * CLI definition helpers (schema‑driven)
-		 * Note: add_schema_to_command also adds user-friendly aliases (--wp, --woo, --php)
+		 * Note: add_schema_to_command appends alias info (--wp, --woo, --php) to option descriptions
 		 */
 		self::add_schema_to_command( $command, $schema );
 
