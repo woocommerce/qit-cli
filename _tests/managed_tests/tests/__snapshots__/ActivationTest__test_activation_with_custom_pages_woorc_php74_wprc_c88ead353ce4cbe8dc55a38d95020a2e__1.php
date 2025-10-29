@@ -87,14 +87,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Expect \\"The plugin \\"Akismet Anti-spam: Spam Protection\\" never appeared active in the UI.\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"The plugin \\"Hello Dolly\\" never appeared active in the UI.\\"",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Expect \\"The plugin \\"WooCommerce\\" never appeared active in the UI.\\"",
                                     "status": "passed"
                                 },
@@ -108,58 +100,17 @@
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "[TIMING NORMALIZED] Starting plugin activation test\\n",
-                                "[TIMING NORMALIZED] Extracted plugins data:\\n",
-                                "  1. \\"Activation - Plugin A\\"\\n",
-                                "     - Slug: activation-plugin-a\\n",
-                                "     - Entry Point: woocommerce-product-feeds\\/woocommerce-product-feeds.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  2. \\"Akismet Anti-spam: Spam Protection\\"\\n",
-                                "     - Slug: akismet-anti-spam-spam-protection\\n",
-                                "     - Entry Point: akismet\\/akismet.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=akismet%2Fakismet.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  3. \\"Hello Dolly\\"\\n",
-                                "     - Slug: hello-dolly\\n",
-                                "     - Entry Point: hello.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=hello.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  4. \\"WooCommerce\\"\\n",
-                                "     - Slug: woocommerce\\n",
-                                "     - Entry Point: woocommerce\\/woocommerce.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "dependenciesSatisfied: true for Akismet Anti-spam: Spam Protection\\n",
-                                "dependenciesSatisfied: true for Hello Dolly\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
-                                " 1. \\"Akismet Anti-spam: Spam Protection\\" (Dependencies: [])\\n",
-                                " 2. \\"Hello Dolly\\" (Dependencies: [])\\n",
-                                " 3. \\"WooCommerce\\" (Dependencies: [])\\n",
-                                " 4. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
-                                "[TIMING NORMALIZED] Found 4 plugins to process\\n",
+                                " 1. \\"WooCommerce\\" (Dependencies: [])\\n",
+                                " 2. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
+                                "[TIMING NORMALIZED] Found 2 plugins to process\\n",
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Akismet Anti-spam: Spam Protection\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"Akismet Anti-spam: Spam Protection\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Hello Dolly\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"Hello Dolly\\" successfully.\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"WooCommerce\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"WooCommerce\\" successfully.\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 4\\n"
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 2\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -181,9 +132,9 @@
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(356): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(264): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m",
-                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(356): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(264): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:538:89\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:474:9",
-                            "snippet": "  536 |\\n  537 |             \\/\\/ There should be no \\"Fatal Error\\" in the debug log.\\n> 538 |             expect(debugLog.join(\'\\\\n\'), \'There was a fatal error in the debug log\').not.toContain(\'Fatal error\');\\n      |                                                                                         ^\\n  539 |\\n  540 |             visitedPages.push(addedMenuItem.url);\\n  541 |",
+                            "message": "Error: EACCES: permission denied, mkdir \'\\/qit\\/tests\\/e2e\\/test-media\'",
+                            "trace": "Error: EACCES: permission denied, mkdir \'\\/qit\\/tests\\/e2e\\/test-media\'\\n    at Object.attachScreenshot (\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/qit-helpers\\/index.js:351:16)\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:481:23\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:437:9",
+                            "snippet": "\\u001b[90m   at \\u001b[39m..\\/qit-helpers\\/index.js:351\\n\\n  349 |\\n  350 |         if (!fs.existsSync(testMediaDir)) {\\n> 351 |             fs.mkdirSync(testMediaDir, {recursive: true});\\n      |                ^\\n  352 |         }\\n  353 |\\n  354 |         const safeName = name.replace(\\/[^a-zA-Z0-9-]\\/g, \'_\');",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -193,25 +144,11 @@
                             "steps": [
                                 {
                                     "name": "Visit Plugin A",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Visit Plugin B",
                                     "status": "failed"
                                 }
                             ],
                             "suite": "chromium > activation.spec.js",
                             "attachments": [
-                                {
-                                    "name": "00_Plugin_A",
-                                    "contentType": "image\\/jpeg",
-                                    "path": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/test-results\\/activation-Visit-wp-admin-pages-added-by-the-plugin-chromium\\/attachments\\/00-Plugin-A-HASHNORMALIZED.jpg"
-                                },
-                                {
-                                    "name": "01_Plugin_B",
-                                    "contentType": "image\\/jpeg",
-                                    "path": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/test-results\\/activation-Visit-wp-admin-pages-added-by-the-plugin-chromium\\/attachments\\/01-Plugin-B-HASHNORMALIZED.jpg"
-                                },
                                 {
                                     "name": "error-context",
                                     "contentType": "text\\/markdown",
@@ -220,8 +157,7 @@
                             ],
                             "stdout": [
                                 "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a\\n",
-                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a:425:367\\"\\n",
-                                "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-b\\n"
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a:205:223\\"\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -555,10 +491,6 @@
             "debug_log": {
                 "qm_logs": [],
                 "debug_log": [
-                    {
-                        "count": "1",
-                        "message": "PHP Fatal error: Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\nStack trace:\\n#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(332): {closure}(\'\')\\n#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php(356): WP_Hook->apply_filters(\'\', Array)\\n#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php(517): WP_Hook->do_action(Array)\\n#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php(264): do_action(\'toplevel_page_p...\')\\n#4 {main}\\n thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\n"
-                    },
                     {
                         "count": "1",
                         "message": "PHP Notice: Notice in custom page. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 11"

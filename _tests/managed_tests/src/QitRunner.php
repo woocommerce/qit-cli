@@ -218,24 +218,17 @@ class QitRunner {
 
 		/*
 		 * Append version constraints, optional features, or other parameters to the QIT CLI.
+		 * Use short forms (--php, --wp, --woo) as canonical parameters.
 		 */
 		if ( ! empty( $t['php'] ) ) {
-			$args[] = "--php_version={$t['php']}";
+			$args[] = "--php={$t['php']}";
 		}
 		if ( ! empty( $t['wp'] ) ) {
-			if ( in_array( $test_type, $tests_based_on_custom_tests, true ) ) {
-				$args[] = "--wp={$t['wp']}";
-			} else {
-				$args[] = "--wordpress_version={$t['wp']}";
-			}
+			$args[] = "--wp={$t['wp']}";
 		}
 
 		if ( ! empty( $t['woo'] ) ) {
-			if ( in_array( $test_type, $tests_based_on_custom_tests, true ) ) {
-				$args[] = "--woo={$t['woo']}";
-			} else {
-				$args[] = "--woocommerce_version={$t['woo']}";
-			}
+			$args[] = "--woo={$t['woo']}";
 		}
 		if ( ! empty( $t['features'] ) ) {
 			foreach ( $t['features'] as $f ) {

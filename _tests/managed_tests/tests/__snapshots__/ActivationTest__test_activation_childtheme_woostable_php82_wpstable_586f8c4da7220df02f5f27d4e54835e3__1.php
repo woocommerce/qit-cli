@@ -87,14 +87,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Expect \\"The plugin \\"Akismet Anti-spam: Spam Protection\\" never appeared active in the UI.\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"The plugin \\"Hello Dolly\\" never appeared active in the UI.\\"",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Expect \\"The plugin \\"WooCommerce\\" never appeared active in the UI.\\"",
                                     "status": "passed"
                                 }
@@ -104,47 +96,14 @@
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "[TIMING NORMALIZED] Starting plugin activation test\\n",
-                                "[TIMING NORMALIZED] Extracted plugins data:\\n",
-                                "  1. \\"Akismet Anti-spam: Spam Protection\\"\\n",
-                                "     - Slug: akismet-anti-spam-spam-protection\\n",
-                                "     - Entry Point: akismet\\/akismet.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=akismet%2Fakismet.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  2. \\"Hello Dolly\\"\\n",
-                                "     - Slug: hello-dolly\\n",
-                                "     - Entry Point: hello.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=hello.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  3. \\"WooCommerce\\"\\n",
-                                "     - Slug: woocommerce\\n",
-                                "     - Entry Point: woocommerce\\/woocommerce.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "dependenciesSatisfied: true for Akismet Anti-spam: Spam Protection\\n",
-                                "dependenciesSatisfied: true for Hello Dolly\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
-                                " 1. \\"Akismet Anti-spam: Spam Protection\\" (Dependencies: [])\\n",
-                                " 2. \\"Hello Dolly\\" (Dependencies: [])\\n",
-                                " 3. \\"WooCommerce\\" (Dependencies: [])\\n",
-                                "[TIMING NORMALIZED] Found 3 plugins to process\\n",
+                                " 1. \\"WooCommerce\\" (Dependencies: [])\\n",
+                                "[TIMING NORMALIZED] Found 1 plugins to process\\n",
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Akismet Anti-spam: Spam Protection\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"Akismet Anti-spam: Spam Protection\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Hello Dolly\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"Hello Dolly\\" successfully.\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"WooCommerce\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"WooCommerce\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 3\\n"
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -340,7 +299,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
-                                            "line": 715,
+                                            "line": 672,
                                             "column": 10
                                         }
                                     }
@@ -363,8 +322,8 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:825:69",
-                            "snippet": "  823 |\\n  824 |     await page.goto(\'\\/cart\');\\n> 825 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  826 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  827 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  828 | });",
+                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:782:69",
+                            "snippet": "  780 |\\n  781 |     await page.goto(\'\\/cart\');\\n> 782 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  783 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  784 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  785 | });",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",

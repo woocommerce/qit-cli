@@ -87,14 +87,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Expect \\"The plugin \\"Akismet Anti-spam: Spam Protection\\" never appeared active in the UI.\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"The plugin \\"Hello Dolly\\" never appeared active in the UI.\\"",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Expect \\"The plugin \\"WooCommerce\\" never appeared active in the UI.\\"",
                                     "status": "passed"
                                 },
@@ -108,58 +100,17 @@
                             "stdout": [
                                 "Coming soon mode disabled in beforeAll.\\n",
                                 "[TIMING NORMALIZED] Starting plugin activation test\\n",
-                                "[TIMING NORMALIZED] Extracted plugins data:\\n",
-                                "  1. \\"Activation - Plugin A\\"\\n",
-                                "     - Slug: activation-plugin-a\\n",
-                                "     - Entry Point: woocommerce-product-feeds\\/woocommerce-product-feeds.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  2. \\"Akismet Anti-spam: Spam Protection\\"\\n",
-                                "     - Slug: akismet-anti-spam-spam-protection\\n",
-                                "     - Entry Point: akismet\\/akismet.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=akismet%2Fakismet.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  3. \\"Hello Dolly\\"\\n",
-                                "     - Slug: hello-dolly\\n",
-                                "     - Entry Point: hello.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=hello.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "  4. \\"WooCommerce\\"\\n",
-                                "     - Slug: woocommerce\\n",
-                                "     - Entry Point: woocommerce\\/woocommerce.php\\n",
-                                "     - Active: false\\n",
-                                "     - Can Activate: true\\n",
-                                "     - Dependencies: []\\n",
-                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce%2Fwoocommerce.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
-                                "\\n",
-                                "dependenciesSatisfied: true for Akismet Anti-spam: Spam Protection\\n",
-                                "dependenciesSatisfied: true for Hello Dolly\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
-                                " 1. \\"Akismet Anti-spam: Spam Protection\\" (Dependencies: [])\\n",
-                                " 2. \\"Hello Dolly\\" (Dependencies: [])\\n",
-                                " 3. \\"WooCommerce\\" (Dependencies: [])\\n",
-                                " 4. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
-                                "[TIMING NORMALIZED] Found 4 plugins to process\\n",
+                                " 1. \\"WooCommerce\\" (Dependencies: [])\\n",
+                                " 2. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
+                                "[TIMING NORMALIZED] Found 2 plugins to process\\n",
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Akismet Anti-spam: Spam Protection\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"Akismet Anti-spam: Spam Protection\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"Hello Dolly\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"Hello Dolly\\" successfully.\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"WooCommerce\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"WooCommerce\\" successfully.\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 4\\n"
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 2\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -352,7 +303,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
-                                            "line": 715,
+                                            "line": 672,
                                             "column": 10
                                         }
                                     }
@@ -413,7 +364,9 @@
                             "steps": [],
                             "suite": "chromium > activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "Request failed: http:\\/\\/localhost:PORT\\/wp-json\\/wc\\/store\\/v1\\/batch?_locale=site - net::ERR_ABORTED\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
@@ -443,12 +396,7 @@
                             "steps": [],
                             "suite": "chromium > activation.spec.js",
                             "attachments": [],
-                            "stdout": [
-                                "SUT \\"Activation - Plugin A\\" has 0 dependencies (requires): []\\n",
-                                "Found 0 active plugins that depend on the SUT (must deactivate first)\\n",
-                                "Step 3: Deactivating SUT \\"Activation - Plugin A\\"\\n",
-                                "\\u2713 Successfully deactivated SUT \\"Activation - Plugin A\\"\\n"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
