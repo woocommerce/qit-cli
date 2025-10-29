@@ -28,10 +28,8 @@ abstract class DynamicCommandCreator {
 
 		if ( ! empty( $schema['properties'] ) && is_array( $schema['properties'] ) ) {
 			foreach ( $schema['properties'] as $property_name => $property_schema ) {
-				// Ignore these parameters from schema registration.
-				// Note: Short forms (php, wp, woo) are canonical, handled via argv normalization in qit-cli.php
-				// Long forms (php_version, wordpress_version, woocommerce_version) are ignored here
-				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id', 'php_version', 'wordpress_version', 'woocommerce_version' ];
+				// Ignore internal parameters that shouldn't be exposed as command options.
+				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id' ];
 
 				if ( in_array( $property_name, array_merge( $exceptions, $ignore ), true ) ) {
 					continue;

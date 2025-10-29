@@ -19,8 +19,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		// Should use defaults
 		$this->assertNotEmpty( $data['env_id'] );
 		$this->assertEquals( 'e2e', $data['environment'] );
-		$this->assertNotEmpty( $data['php'] );
-		$this->assertNotEmpty( $data['wp'] );
+		$this->assertNotEmpty( $data['php_version'] );
+		$this->assertNotEmpty( $data['wordpress_version'] );
 	}
 
 	/**
@@ -30,8 +30,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'php' => '8.2',
-					'wp'  => '6.5',
+					'php_version' => '8.2',
+					'wordpress_version'  => '6.5',
 				],
 			],
 		];
@@ -40,8 +40,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use config values
-		$this->assertEquals( '8.2', $data['php'] );
-		$this->assertEquals( '6.5', $data['wp'] );
+		$this->assertEquals( '8.2', $data['php_version'] );
+		$this->assertEquals( '6.5', $data['wordpress_version'] );
 	}
 
 	/**
@@ -57,8 +57,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use CLI values
-		$this->assertEquals( '8.3', $data['php'] );
-		$this->assertEquals( '6.6', $data['wp'] );
+		$this->assertEquals( '8.3', $data['php_version'] );
+		$this->assertEquals( '6.6', $data['wordpress_version'] );
 	}
 
 	/**
@@ -68,8 +68,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'php' => '7.4',
-					'wp'  => '5.9',
+					'php_version' => '7.4',
+					'wordpress_version'  => '5.9',
 				],
 			],
 		];
@@ -82,8 +82,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// CLI should win for PHP, config for WP
-		$this->assertEquals( '8.1', $data['php'] );
-		$this->assertEquals( '5.9', $data['wp'] );
+		$this->assertEquals( '8.1', $data['php_version'] );
+		$this->assertEquals( '5.9', $data['wordpress_version'] );
 	}
 
 	/**
@@ -100,7 +100,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		// Should have WooCommerce
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs );
-		$this->assertNotEmpty( $data['woo'] );
+		$this->assertNotEmpty( $data['woocommerce_version'] );
 	}
 
 	/**
@@ -115,7 +115,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should have specific WooCommerce version
-		$this->assertEquals( '8.8.0', $data['woo'] );
+		$this->assertEquals( '8.8.0', $data['woocommerce_version'] );
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs );
 	}
@@ -136,7 +136,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
 		$wooCount = array_count_values( $pluginSlugs )['woocommerce'] ?? 0;
 		$this->assertEquals( 1, $wooCount, 'WooCommerce should appear only once' );
-		$this->assertEquals( '9.0.0', $data['woo'] );
+		$this->assertEquals( '9.0.0', $data['woocommerce_version'] );
 	}
 
 	/**
@@ -184,13 +184,13 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'production' => [
-					'php' => '8.2',
-					'wp'  => '6.5',
+					'php_version' => '8.2',
+					'wordpress_version'  => '6.5',
 					'object_cache' => true,
 				],
 				'staging' => [
-					'php' => '8.0',
-					'wp'  => '6.0',
+					'php_version' => '8.0',
+					'wordpress_version'  => '6.0',
 				],
 			],
 		];
@@ -204,8 +204,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		
 		// Should use e2e environment type (hardcoded in EnvInfo)
 		$this->assertEquals( 'e2e', $data['environment'] );
-		$this->assertEquals( '8.2', $data['php'] );
-		$this->assertEquals( '6.5', $data['wp'] );
+		$this->assertEquals( '8.2', $data['php_version'] );
+		$this->assertEquals( '6.5', $data['wordpress_version'] );
 		$this->assertTrue( $data['object_cache'] );
 	}
 
@@ -327,7 +327,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'woo' => '8.0.0', // Config says 8.0.0
+					'woocommerce_version' => '8.0.0', // Config says 8.0.0
 					'plugins' => [
 						[
 							'slug' => 'woocommerce',
@@ -348,7 +348,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use --woo flag version
-		$this->assertEquals( '8.2.0', $data['woo'] );
+		$this->assertEquals( '8.2.0', $data['woocommerce_version'] );
 	}
 	
 	/**
@@ -358,7 +358,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'woo' => '8.0.0', // Config says 8.0.0
+					'woocommerce_version' => '8.0.0', // Config says 8.0.0
 				],
 			],
 		];
@@ -375,7 +375,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use --woo flag version
-		$this->assertEquals( '8.1.0', $data['woo'] );
+		$this->assertEquals( '8.1.0', $data['woocommerce_version'] );
 	}
 	
 	/**
@@ -386,7 +386,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'woo' => '8.5.0', // Config says 8.5.0
+					'woocommerce_version' => '8.5.0', // Config says 8.5.0
 				],
 			],
 		];
@@ -400,7 +400,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use config woo version
-		$this->assertEquals( '8.5.0', $data['woo'] );
+		$this->assertEquals( '8.5.0', $data['woocommerce_version'] );
 		
 		// Both plugins should be present
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
@@ -415,10 +415,10 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'staging' => [
-					'woo' => '8.5.0',
+					'woocommerce_version' => '8.5.0',
 				],
 				'default' => [
-					'woo' => '8.0.0',
+					'woocommerce_version' => '8.0.0',
 				],
 			],
 		];
@@ -432,7 +432,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use staging environment's WooCommerce version
-		$this->assertEquals( '8.5.0', $data['woo'] );
+		$this->assertEquals( '8.5.0', $data['woocommerce_version'] );
 	}
 	
 	/**
@@ -444,7 +444,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'default' => [
-					'woo' => '8.3.0', // Environment level
+					'woocommerce_version' => '8.3.0', // Environment level
 				],
 			],
 		];
@@ -456,7 +456,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use environment-level woo version
-		$this->assertEquals( '8.3.0', $data['woo'] );
+		$this->assertEquals( '8.3.0', $data['woocommerce_version'] );
 	}
 	
 	/**
@@ -471,7 +471,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should have no WooCommerce by default (unless added by dependency)
-		$this->assertEmpty( $data['woo'] );
+		$this->assertEmpty( $data['woocommerce_version'] );
 	}
 	
 	/**
@@ -481,7 +481,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'production' => [
-					'woo' => '8.0.0', // Environment says 8.0.0
+					'woocommerce_version' => '8.0.0', // Environment says 8.0.0
 					'plugins' => [
 						[
 							'slug' => 'woocommerce',
@@ -491,7 +491,7 @@ class UpEnvironmentCommandTest extends TestCase {
 					],
 				],
 				'default' => [
-					'woo' => '7.9.0', // Default environment woo
+					'woocommerce_version' => '7.9.0', // Default environment woo
 				],
 			],
 		];
@@ -504,7 +504,7 @@ class UpEnvironmentCommandTest extends TestCase {
 			'--woo', 'nightly', // This should win
 		], $config );
 		$data = json_decode( $output, true );
-		$this->assertEquals( 'nightly', $data['woo'] );
+		$this->assertEquals( 'nightly', $data['woocommerce_version'] );
 		
 		// Test 2: Without --woo, environment woo is used
 		// Plugin spec in config doesn't override the woo field
@@ -514,7 +514,7 @@ class UpEnvironmentCommandTest extends TestCase {
 			'--environment', 'production',
 		], $config );
 		$data = json_decode( $output, true );
-		$this->assertEquals( '8.0.0', $data['woo'] ); // Environment woo value
+		$this->assertEquals( '8.0.0', $data['woocommerce_version'] ); // Environment woo value
 		
 		// Test 3: Without explicit environment, default environment should be used
 		$output = qit_run_env_up( [
@@ -522,7 +522,7 @@ class UpEnvironmentCommandTest extends TestCase {
 			'--json',
 		], $config );
 		$data = json_decode( $output, true );
-		$this->assertEquals( '7.9.0', $data['woo'] );
+		$this->assertEquals( '7.9.0', $data['woocommerce_version'] );
 	}
 	
 	/**
@@ -655,8 +655,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should have RC version (actual version will vary)
-		$this->assertNotEmpty( $data['wp'] );
-		$this->assertNotEquals( 'stable', $data['wp'] );
+		$this->assertNotEmpty( $data['wordpress_version'] );
+		$this->assertNotEquals( 'stable', $data['wordpress_version'] );
 		
 		// WooCommerce nightly
 		$output = qit_run_env_up( [
@@ -667,7 +667,7 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should have nightly
-		$this->assertEquals( 'nightly', $data['woo'] );
+		$this->assertEquals( 'nightly', $data['woocommerce_version'] );
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs );
 	}
@@ -679,9 +679,9 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'development' => [
-					'php' => '8.2',
+					'php_version' => '8.2',
 					'wp' => '6.4',
-					'woo' => '8.5.0',
+					'woocommerce_version' => '8.5.0',
 					'plugins' => [
 						'jetpack',
 						'woocommerce-gateway-stripe', // Use a free plugin instead
@@ -710,9 +710,9 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Verify full development setup
-		$this->assertEquals( '8.2', $data['php'] );
-		$this->assertEquals( '6.4', $data['wp'] );
-		$this->assertEquals( '8.5.0', $data['woo'] );
+		$this->assertEquals( '8.2', $data['php_version'] );
+		$this->assertEquals( '6.4', $data['wordpress_version'] );
+		$this->assertEquals( '8.5.0', $data['woocommerce_version'] );
 		
 		// Check plugins
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
@@ -763,9 +763,9 @@ class UpEnvironmentCommandTest extends TestCase {
 		$data = json_decode( $output, true );
 		
 		// Should use the specified versions
-		$this->assertEquals( '7.4', $data['php'] );
-		$this->assertEquals( '6.2', $data['wp'] );
-		$this->assertEquals( '8.0.0', $data['woo'] );
+		$this->assertEquals( '7.4', $data['php_version'] );
+		$this->assertEquals( '6.2', $data['wordpress_version'] );
+		$this->assertEquals( '8.0.0', $data['woocommerce_version'] );
 		
 		// Both plugins present
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
@@ -780,8 +780,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		$config = [
 			'environments' => [
 				'testing' => [
-					'php' => '8.0',
-					'wp'  => '6.2',
+					'php_version' => '8.0',
+					'wordpress_version'  => '6.2',
 					'plugins' => [
 						'akismet',
 					],
@@ -807,8 +807,8 @@ class UpEnvironmentCommandTest extends TestCase {
 		
 		// Check everything
 		$this->assertEquals( 'e2e', $data['environment'] );
-		$this->assertEquals( '8.2', $data['php'] ); // CLI override
-		$this->assertEquals( '6.2', $data['wp'] ); // From config
+		$this->assertEquals( '8.2', $data['php_version'] ); // CLI override
+		$this->assertEquals( '6.2', $data['wordpress_version'] ); // From config
 		$this->assertTrue( $data['object_cache'] );
 		
 		// Plugins

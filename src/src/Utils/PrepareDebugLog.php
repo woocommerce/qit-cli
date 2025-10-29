@@ -144,8 +144,8 @@ class PrepareDebugLog {
 				$php_version = '';
 				$wp_version  = '';
 				if ( $env_info instanceof QITEnvInfo ) {
-					$php_version = $env_info->php ?? '';
-					$wp_version  = $env_info->wp ?? '';
+					$php_version = $env_info->php_version ?? '';
+					$wp_version  = $env_info->wordpress_version ?? '';
 				}
 
 				if ( $php_version && $wp_version && version_compare( $php_version, '8', '>=' ) && version_compare( $wp_version, '6.2', '<' ) ) {

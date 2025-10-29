@@ -12,12 +12,13 @@ try {
 	require_once __DIR__ . '/src/helpers.php';
 
 	// Normalize option aliases in argv before Symfony Console processes them.
-	// CLI always uses short form internally (--php, --wp, --woo).
+	// Long forms are canonical (--php_version, --wordpress_version, --woocommerce_version).
+	// Short forms (--php, --wp, --woo) are user-friendly aliases that get normalized to long forms.
 	// IMPORTANT: Fail fast if both forms are provided (no fallbacks per CLAUDE.md).
 	$aliases = [
-		'--php_version'         => '--php',
-		'--wordpress_version'   => '--wp',
-		'--woocommerce_version' => '--woo',
+		'--php' => '--php_version',
+		'--wp'  => '--wordpress_version',
+		'--woo' => '--woocommerce_version',
 	];
 
 	// First pass: detect conflicts before normalizing

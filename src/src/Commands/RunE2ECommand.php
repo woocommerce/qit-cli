@@ -140,9 +140,9 @@ class RunE2ECommand extends QITCommand {
 				[]
 			)
 			->reuseOption( 'env:up', 'environment' )
-			->reuseOption( 'env:up', 'php' )
-			->reuseOption( 'env:up', 'wp' )
-			->reuseOption( 'env:up', 'woo' )
+			->reuseOption( 'env:up', 'php_version' )
+			->reuseOption( 'env:up', 'wordpress_version' )
+			->reuseOption( 'env:up', 'woocommerce_version' )
 			->reuseOption( 'env:up', 'plugin' )
 			->reuseOption( 'env:up', 'theme' )
 			->reuseOption( 'env:up', 'volume' )
@@ -404,7 +404,7 @@ class RunE2ECommand extends QITCommand {
 		$test_run_id = null;
 		if ( isset( $env_info->sut['slug'] ) ) {
 			$woo_extension_id    = $this->woo_extensions_list->get_woo_extension_id_by_slug( $env_info->sut['slug'] );
-			$woocommerce_version = $env_info->woo;
+			$woocommerce_version = $env_info->woocommerce_version;
 			$notify              = $input->getOption( 'notify' ) ?? false;
 
 			// Determine if this is a development build by checking if SUT is from a marketplace.
@@ -713,23 +713,23 @@ class RunE2ECommand extends QITCommand {
 			'timestamp'      => gmdate( 'c' ),
 			'status'         => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
 			'environment'    => [
-				'id'          => $env_info->env_id,
-				'url'         => $env_info->site_url,
-				'wordpress'   => $env_info->wp,
-				'php'         => $env_info->php,
-				'woocommerce' => $env_info->woo ?: null,
-				'sut'         => isset( $env_info->sut ) ? [
+				'id'                  => $env_info->env_id,
+				'url'                 => $env_info->site_url,
+				'wordpress_version'   => $env_info->wordpress_version,
+				'php_version'         => $env_info->php_version,
+				'woocommerce_version' => $env_info->woocommerce_version ?: null,
+				'sut'                 => isset( $env_info->sut ) ? [
 					'slug' => $env_info->sut['slug'] ?? null,
 					'id'   => $env_info->sut['id'] ?? null,
 					'type' => $env_info->sut['type'] ?? 'plugin',
 				] : null,
-				'plugins'     => array_map( function ( Extension $plugin ) {
+				'plugins'             => array_map( function ( Extension $plugin ) {
 					return [
 						'slug'    => $plugin->slug,
 						'version' => $plugin->version,
 					];
 				}, $env_info->plugins ),
-				'themes'      => array_map( function ( Extension $theme ) {
+				'themes'              => array_map( function ( Extension $theme ) {
 					return [
 						'slug'    => $theme->slug,
 						'version' => $theme->version,
@@ -1684,8 +1684,8 @@ class RunE2ECommand extends QITCommand {
 
 		// Stack information
 		$stack_parts   = [];
-		$stack_parts[] = sprintf( 'WordPress %s', $env_info->wp );
-		$stack_parts[] = sprintf( 'PHP %s', $env_info->php );
+		$stack_parts[] = sprintf( 'WordPress %s', $env_info->wordpress_version );
+		$stack_parts[] = sprintf( 'PHP %s', $env_info->php_version );
 		$output->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
 
 		// SUT (System Under Test) if present
@@ -1702,8 +1702,8 @@ class RunE2ECommand extends QITCommand {
 			if ( isset( $env_info->sut ) && $env_info->sut['type'] === 'plugin' && $plugin->slug === $env_info->sut['slug'] ) {
 				continue;
 			}
-			if ( $plugin->slug === 'woocommerce' && $env_info->woo ) {
-				$plugin_names[] = sprintf( 'WooCommerce %s', $env_info->woo );
+			if ( $plugin->slug === 'woocommerce' && $env_info->woocommerce_version ) {
+				$plugin_names[] = sprintf( 'WooCommerce %s', $env_info->woocommerce_version );
 			} elseif ( $plugin->slug !== 'woocommerce' ) {
 				$plugin_names[] = $this->format_extension_name( $plugin->slug ) . ( $plugin->version ? ' ' . $plugin->version : '' );
 			}

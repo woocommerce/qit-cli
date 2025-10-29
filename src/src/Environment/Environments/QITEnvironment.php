@@ -136,7 +136,7 @@ abstract class QITEnvironment extends Environment {
 		$this->output->writeln( '<info>Installing WordPress...</info>' );
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/wordpress-setup.sh 2>&1' ], [
 			'TUNNEL'                  => $this->env_info->tunnel ? 'yes' : 'no',
-			'WORDPRESS_VERSION'       => $this->env_info->wp === 'stable' ? 'latest' : $this->env_info->wp,
+			'WORDPRESS_VERSION'       => $this->env_info->wordpress_version === 'stable' ? 'latest' : $this->env_info->wordpress_version,
 			'SITE_URL'                => $this->env_info->site_url,
 			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
 			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
@@ -186,7 +186,7 @@ abstract class QITEnvironment extends Environment {
 	 */
 	protected function get_generate_docker_compose_envs(): array {
 		return [
-			'PHP_VERSION'             => $this->env_info->php,
+			'PHP_VERSION'             => $this->env_info->php_version,
 			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
 			'DOMAIN'                  => $this->env_info->domain,
 			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',

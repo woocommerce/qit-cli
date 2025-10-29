@@ -166,7 +166,7 @@ class RequestBuilder {
 		// Apply rate limiting before making the request
 		self::apply_rate_limit( $this->url );
 
-		// Add client early so it's included in mocks
+		// Add client early so it's included in mocks.
 		$this->post_body['client'] = 'qit_cli';
 
 		// Integration test mocking - check this first to allow override of unit tests

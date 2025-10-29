@@ -128,7 +128,7 @@ PHP
 		$env    = json_decode( $output, true );
 
 		// Verify WordPress version is correctly resolved
-		$this->assertSame( 'stable', $env['wp'] );
+		$this->assertSame( 'stable', $env['wordpress_version'] );
 
 		// Bring up the environment for actual execution
 		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'stable' ] ), true );
@@ -149,7 +149,7 @@ PHP
 		$env    = json_decode( $output, true );
 
 		// Verify WordPress version is correctly resolved
-		$this->assertSame( 'nightly', $env['wp'] );
+		$this->assertSame( 'nightly', $env['wordpress_version'] );
 
 		// Bring up the environment for actual execution
 		$json = json_decode( qit( [ 'env:up', '--json', '--wp', 'nightly' ] ), true );
@@ -173,7 +173,7 @@ PHP
 		$env    = json_decode( $output, true );
 
 		// Verify WooCommerce version is correctly resolved
-		$this->assertSame( 'stable', $env['woo'] );
+		$this->assertSame( 'stable', $env['woocommerce_version'] );
 		$pluginSlugs = array_column( $env['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs );
 
@@ -226,7 +226,7 @@ PHP
 		$env = json_decode( $output, true );
 
 		// Verify WooCommerce version is correctly resolved
-		$this->assertSame( 'nightly', $env['woo'] );
+		$this->assertSame( 'nightly', $env['woocommerce_version'] );
 		$pluginSlugs = array_column( $env['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs );
 

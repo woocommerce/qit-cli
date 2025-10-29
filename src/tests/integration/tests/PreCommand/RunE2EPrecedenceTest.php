@@ -123,8 +123,8 @@ class RunE2EPrecedenceTest extends TestCase {
 		] );
 
 		$payload = json_decode( $stdout, true, 512, JSON_THROW_ON_ERROR );
-		$this->assertSame( '8.2', $payload['php'] );
-		$this->assertSame( '6.3', $payload['wp'] );
+		$this->assertSame( '8.2', $payload['php_version'] );
+		$this->assertSame( '6.3', $payload['wordpress_version'] );
 
 		$this->assertMatchesEnvUpSnapshot( $payload );
 		unlink( $cfg );
@@ -153,8 +153,8 @@ class RunE2EPrecedenceTest extends TestCase {
 		] );
 
 		$payload = json_decode( $stdout, true, 512, JSON_THROW_ON_ERROR );
-		$this->assertSame( '8.1', $payload['php'] );
-		$this->assertSame( '6.2', $payload['wp'] );
+		$this->assertSame( '8.1', $payload['php_version'] );
+		$this->assertSame( '6.2', $payload['wordpress_version'] );
 
 		$this->assertMatchesEnvUpSnapshot( $payload );
 		unlink( $cfg );
@@ -413,8 +413,8 @@ class RunE2EPrecedenceTest extends TestCase {
 		$data = json_decode( $out, true, 512, JSON_THROW_ON_ERROR );
 
 		/* 2 · scalar defaults declared by UpEnvironmentCommand */
-		$this->assertSame( '8.2', $data['php'], 'Default PHP should be 8.2' );
-		$this->assertSame( 'stable', $data['wp'], 'Default WP should be "stable"' );
+		$this->assertSame( '8.2', $data['php_version'], 'Default PHP should be 8.2' );
+		$this->assertSame( 'stable', $data['wordpress_version'], 'Default WP should be "stable"' );
 
 		/* 3 · flags & tunnel defaults */
 		$this->assertFalse( $data['object_cache'], 'object_cache must default to false' );

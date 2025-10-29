@@ -68,9 +68,9 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'env', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Set env var  --env KEY=VAL', [] )
 			->addOption( 'env_file', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Load vars from file  --env_file ./prod.env', [] )
 			/* ─ Scalars ─ */
-			->addOption( 'php', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3)', '8.2' )
-			->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6)', 'stable' )
-			->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version', null )
+			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version (e.g., 8.2, 8.3)', '8.2' )
+			->addOption( 'wordpress_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6)', 'stable' )
+			->addOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version', null )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
 			/* ─ Lists ─ */
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
@@ -586,9 +586,9 @@ class UpEnvironmentCommand extends QITCommand {
 		$env_info = $env_info_class::from_array( [
 			'env_id'                  => 'qitenv' . bin2hex( random_bytes( 8 ) ),
 			'environment'             => $environment_type,
-			'php'                     => $env_config['php'] ?? '8.2',
-			'wp'                      => $env_config['wp'] ?? 'stable',
-			'woo'                     => $env_config['woo'] ?? '',
+			'php_version'             => $env_config['php_version'] ?? '8.2',
+			'wordpress_version'       => $env_config['wordpress_version'] ?? 'stable',
+			'woocommerce_version'     => $env_config['woocommerce_version'] ?? '',
 			'object_cache'            => $env_config['object_cache'] ?? false,
 			'plugins'                 => $plugin_arrays,
 			'themes'                  => $theme_arrays,
@@ -833,18 +833,22 @@ class UpEnvironmentCommand extends QITCommand {
 	private function applyCliOverrides( array $config, InputInterface $input, string $environment_type ): array {
 		// $input is actually a QITInput instance when called from our commands
 
-		/* ─ Scalars ─ */
-		foreach ( [ 'php', 'wp', 'woo', 'tunnel' ] as $opt ) {
+		/* ─ Scalars - direct 1-1 mapping from option names to config keys ─ */
+		foreach ( [ 'php_version', 'wordpress_version', 'woocommerce_version' ] as $opt ) {
 			if ( $input->hasOption( $opt ) ) {
 				$option_value = $input->getOption( $opt );
 				if ( $option_value !== null ) {
-					if ( $opt === 'tunnel' ) {
-						$config['tunnel_type'] = $option_value;
-						$config['tunnel']      = $option_value !== 'no_tunnel';
-					} else {
-						$config[ $opt ] = $option_value;
-					}
+					$config[ $opt ] = $option_value;
 				}
+			}
+		}
+
+		/* ─ Tunnel is special case (sets two config keys) ─ */
+		if ( $input->hasOption( 'tunnel' ) ) {
+			$tunnel_value = $input->getOption( 'tunnel' );
+			if ( $tunnel_value !== null ) {
+				$config['tunnel_type'] = $tunnel_value;
+				$config['tunnel']      = $tunnel_value !== 'no_tunnel';
 			}
 		}
 
@@ -960,11 +964,11 @@ class UpEnvironmentCommand extends QITCommand {
 	 */
 	private function resolve_woo( array $config, InputInterface $input, string $environment_type = 'e2e' ): array {
 		/** @var \QIT_CLI\QITInput $input */
-		if ( ! $input->hasOption( 'woo' ) && $environment_type !== 'performance' ) {
+		if ( ! $input->hasOption( 'woocommerce_version' ) && $environment_type !== 'performance' ) {
 			return $config;
 		}
 
-		$woo_version = $input->getOption( 'woo' );
+		$woo_version = $input->getOption( 'woocommerce_version' );
 
 		// For performance environments, default to 'latest' if not explicitly set
 		if ( empty( $woo_version ) && $environment_type === 'performance' ) {
@@ -1021,16 +1025,16 @@ class UpEnvironmentCommand extends QITCommand {
 	 */
 	private function resolve_wp( array $config, InputInterface $input ): array {
 		/** @var \QIT_CLI\QITInput $input */
-		if ( ! $input->hasOption( 'wp' ) ) {
+		if ( ! $input->hasOption( 'wordpress_version' ) ) {
 			return $config;
 		}
 
-		$wp_version = $input->getOption( 'wp' );
+		$wp_version = $input->getOption( 'wordpress_version' );
 
 		$resolved_wp = $this->version_resolver->resolve_wp( $wp_version );
 
 		if ( $resolved_wp !== null ) {
-			$config['wp'] = $resolved_wp;
+			$config['wordpress_version'] = $resolved_wp;
 		}
 
 		return $config;
@@ -1052,16 +1056,16 @@ class UpEnvironmentCommand extends QITCommand {
 
 		// Store essential information for later retrieval
 		$data = [
-			'env_id'        => $env_info->env_id,
-			'site_url'      => $env_info->site_url,
-			'php'           => $env_info->php,
-			'wp'            => $env_info->wp,
-			'woo'           => $env_info->woo ?? '',
-			'db_port'       => $env_info->db_port ?? 0,
-			'php_container' => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
-			'db_container'  => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
-			'nginx_port'    => $env_info->nginx_port ?? '',
-			'envs'          => $env_info->envs ?? [], // Include custom environment variables
+			'env_id'              => $env_info->env_id,
+			'site_url'            => $env_info->site_url,
+			'php_version'         => $env_info->php_version,
+			'wordpress_version'   => $env_info->wordpress_version,
+			'woocommerce_version' => $env_info->woocommerce_version ?? '',
+			'db_port'             => $env_info->db_port ?? 0,
+			'php_container'       => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
+			'db_container'        => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
+			'nginx_port'          => $env_info->nginx_port ?? '',
+			'envs'                => $env_info->envs ?? [], // Include custom environment variables
 		];
 
 		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
@@ -1084,15 +1088,15 @@ class UpEnvironmentCommand extends QITCommand {
 
 		// Stack information
 		$stack_parts   = [];
-		$stack_parts[] = sprintf( 'WordPress %s', $info->wp );
-		$stack_parts[] = sprintf( 'PHP %s', $info->php );
+		$stack_parts[] = sprintf( 'WordPress %s', $info->wordpress_version );
+		$stack_parts[] = sprintf( 'PHP %s', $info->php_version );
 		$out->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
 
 		// Plugins line (only if plugins exist)
 		$plugin_names = [];
 		foreach ( $info->plugins as $plugin ) {
-			if ( $plugin->slug === 'woocommerce' && $info->woo ) {
-				$plugin_names[] = sprintf( 'WooCommerce %s', $info->woo );
+			if ( $plugin->slug === 'woocommerce' && $info->woocommerce_version ) {
+				$plugin_names[] = sprintf( 'WooCommerce %s', $info->woocommerce_version );
 			} elseif ( $plugin->slug !== 'woocommerce' ) {
 				$plugin_names[] = sprintf( '%s %s', $this->format_plugin_name( $plugin->slug ), $plugin->version );
 			}
@@ -1527,12 +1531,12 @@ HELP;
 
 			// Save metadata about what was backed up
 			$metadata = [
-				'created'       => time(),
-				'env_id'        => $env_info->env_id,
-				'test_packages' => array_keys( $env_info->test_packages_for_setup ),
-				'php'           => $env_info->php,
-				'wp'            => $env_info->wp,
-				'woo'           => $env_info->woo ?? '',
+				'created'             => time(),
+				'env_id'              => $env_info->env_id,
+				'test_packages'       => array_keys( $env_info->test_packages_for_setup ),
+				'php_version'         => $env_info->php_version,
+				'wordpress_version'   => $env_info->wordpress_version,
+				'woocommerce_version' => $env_info->woocommerce_version ?? '',
 			];
 			file_put_contents( $backup_dir . '/metadata.json', json_encode( $metadata, JSON_PRETTY_PRINT ) );
 

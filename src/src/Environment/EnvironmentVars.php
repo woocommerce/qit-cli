@@ -124,16 +124,16 @@ class EnvironmentVars {
 		}
 
 		// Add WordPress and WooCommerce versions
-		if ( ! empty( $env_info->wp ) ) {
-			$vars['QIT_WP_VERSION'] = $env_info->wp;
+		if ( ! empty( $env_info->wordpress_version ) ) {
+			$vars['QIT_WP_VERSION'] = $env_info->wordpress_version;
 		}
-		if ( ! empty( $env_info->woo ) ) {
-			$vars['QIT_WOO_VERSION'] = $env_info->woo;
+		if ( ! empty( $env_info->woocommerce_version ) ) {
+			$vars['QIT_WOO_VERSION'] = $env_info->woocommerce_version;
 		}
 
 		// Add PHP version
-		if ( ! empty( $env_info->php ) ) {
-			$vars['QIT_PHP_VERSION'] = $env_info->php;
+		if ( ! empty( $env_info->php_version ) ) {
+			$vars['QIT_PHP_VERSION'] = $env_info->php_version;
 		}
 
 		// Add any dynamic environment-specific variables

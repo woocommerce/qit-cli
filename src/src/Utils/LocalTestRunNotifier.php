@@ -90,9 +90,9 @@ class LocalTestRunNotifier {
 
 		$body = [
 			'woo_id'                  => $woo_extension_id,
-			'woo'                     => $woocommerce_version,
-			'wp'                      => $env_info->wp,
-			'php'                     => $env_info->php,
+			'woocommerce_version'     => $woocommerce_version,
+			'wordpress_version'       => $env_info->wordpress_version,
+			'php_version'             => $env_info->php_version,
 			'additional_plugins'      => $additional_plugins,
 			'will_have_allure_report' => 'true', // Always true now, Allure uploads only on failure
 			'test_type'               => $test_type,
