@@ -364,9 +364,7 @@
                             "steps": [],
                             "suite": "chromium > activation.spec.js",
                             "attachments": [],
-                            "stdout": [
-                                "Request failed: http:\\/\\/localhost:PORT\\/wp-json\\/wc\\/store\\/v1\\/batch?_locale=site - net::ERR_ABORTED\\n"
-                            ],
+                            "stdout": [],
                             "stderr": [],
                             "extra": {
                                 "annotations": [],

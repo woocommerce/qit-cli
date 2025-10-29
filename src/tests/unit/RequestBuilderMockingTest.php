@@ -59,7 +59,7 @@ class RequestBuilderMockingTest extends \QIT_CLI_Tests\QITTestCase {
 		
 		// Check the body contains expected data
 		$this->assertEquals( 'POST', $stored_request['body']['method'] );
-		$this->assertEquals( [ 'test' => 'data', 'client' => 'qit_cli' ], $stored_request['body']['post_body'] );
+		$this->assertEquals( [ 'test' => 'data', 'client' => 'qit_cli', 'cli_version' => '@QIT_CLI_VERSION@' ], $stored_request['body']['post_body'] );
 	}
 
 	public function test_missing_mock_throws_exception(): void {
