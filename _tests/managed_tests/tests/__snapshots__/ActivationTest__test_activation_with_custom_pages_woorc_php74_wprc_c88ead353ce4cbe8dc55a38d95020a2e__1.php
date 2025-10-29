@@ -20,7 +20,7 @@
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
-            "is_development": false,
+            "is_development": true,
             "send_notifications": false,
             "woo_extension": {
                 "id": 18619,
@@ -220,7 +220,7 @@
                             ],
                             "stdout": [
                                 "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a\\n",
-                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a:425:398\\"\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a:425:367\\"\\n",
                                 "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-b\\n"
                             ],
                             "stderr": [],

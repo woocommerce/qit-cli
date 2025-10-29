@@ -7,7 +7,7 @@
             "test_type_display": "Activation",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
-            "php_version": "7.4",
+            "php_version": "8.2",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
@@ -20,7 +20,7 @@
             "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
-            "is_development": false,
+            "is_development": true,
             "send_notifications": false,
             "woo_extension": {
                 "id": 18619,
