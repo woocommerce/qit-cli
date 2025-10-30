@@ -1239,8 +1239,8 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
-		// Report what was added
-		if ( ! empty( $added_plugins ) || ! empty( $added_themes ) ) {
+		// Report what was added (skip in JSON mode to avoid breaking JSON output)
+		if ( ( ! empty( $added_plugins ) || ! empty( $added_themes ) ) && ! $input->getOption( 'json' ) ) {
 			$output->writeln( '' );
 			$output->writeln( '<info>Auto-installing test package dependencies:</info>' );
 
