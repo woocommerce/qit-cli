@@ -15434,7 +15434,28 @@
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "2",
+                        "message": "PHP Deprecated: str_contains(): Passing null to parameter #1 ($haystack) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 1171"
+                    },
+                    {
+                        "count": "2",
+                        "message": "PHP Deprecated: str_contains(): Passing null to parameter #1 ($haystack) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 1174"
+                    },
+                    {
+                        "count": "2",
+                        "message": "PHP Deprecated: stripos(): Passing null to parameter #1 ($haystack) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 1161"
+                    },
+                    {
+                        "count": "2",
+                        "message": "PHP Deprecated: stripos(): Passing null to parameter #1 ($haystack) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 1164"
+                    },
+                    {
+                        "count": "2",
+                        "message": "PHP Deprecated: strstr(): Passing null to parameter #1 ($haystack) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 1154"
+                    }
+                ]
             }
         }
     ]
