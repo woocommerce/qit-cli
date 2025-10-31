@@ -54,25 +54,158 @@
         },
         {
             "ctrf_json": {
+                "reportFormat": "CTRF",
+                "specVersion": "0.1.0",
                 "results": {
                     "tool": {
-                        "name": "playwright",
+                        "name": "qit-orchestrator",
                         "extra": {
                             "orchestrationType": "test-packages"
                         }
                     },
                     "summary": {
-                        "tests": 11,
-                        "passed": 11,
+                        "tests": 17,
+                        "passed": 17,
                         "failed": 0,
-                        "pending": 0,
                         "skipped": 0,
+                        "pending": 0,
                         "other": 0,
                         "start": 1111111111,
-                        "stop": 2222222222,
-                        "suites": 0
+                        "stop": 2222222222
                     },
                     "tests": [
+                        {
+                            "name": "wp plugin activate woocommerce",
+                            "id": "woocommerce\\/activation:latest-globalSetup-0",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Plugin \'woocommerce\' activated.\\nSuccess: Activated 1 of 1 plugins.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_onboarding_profile_completed yes",
+                            "id": "woocommerce\\/activation:latest-globalSetup-1",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Notice: Function _load_textdomain_just_in_time was called <strong>incorrectly<\\/strong>. Translation loading for the <code>woocommerce<\\/code> domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the <code>init<\\/code> action or later. Please see <a href=\\"https:\\/\\/developer.wordpress.org\\/advanced-administration\\/debug\\/debug-wordpress\\/\\">Debugging in WordPress<\\/a> for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6131\\nSuccess: Updated \'woocommerce_onboarding_profile_completed\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_redirect_to_setup no",
+                            "id": "woocommerce\\/activation:latest-globalSetup-2",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_redirect_to_setup\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_onboarding_profile \'{\\"completed\\":true,\\"skipped\\":true}\' --format=json",
+                            "id": "woocommerce\\/activation:latest-globalSetup-3",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_onboarding_profile\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_coming_soon no",
+                            "id": "woocommerce\\/activation:latest-globalSetup-4",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_coming_soon\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_store_pages_only no",
+                            "id": "woocommerce\\/activation:latest-globalSetup-5",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_store_pages_only\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
                         {
                             "name": "Activate Plugins",
                             "status": "passed",
@@ -87,10 +220,6 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Expect \\"The plugin \\"WooCommerce\\" never appeared active in the UI.\\"",
-                                    "status": "passed"
-                                },
-                                {
                                     "name": "Expect \\"The plugin \\"Activation - Plugin A\\" never appeared active in the UI.\\"",
                                     "status": "passed"
                                 }
@@ -98,19 +227,32 @@
                             "suite": "chromium > activation.spec.js",
                             "attachments": [],
                             "stdout": [
-                                "Coming soon mode disabled in beforeAll.\\n",
                                 "[TIMING NORMALIZED] Starting plugin activation test\\n",
+                                "[TIMING NORMALIZED] Extracted plugins data:\\n",
+                                "  1. \\"Activation - Plugin A\\"\\n",
+                                "     - Slug: activation-plugin-a\\n",
+                                "     - Entry Point: woocommerce-product-feeds\\/woocommerce-product-feeds.php\\n",
+                                "     - Active: false\\n",
+                                "     - Can Activate: true\\n",
+                                "     - Dependencies: []\\n",
+                                "     - Activation Link: http:\\/\\/localhost:PORT\\/wp-admin\\/plugins.php?action=activate&plugin=woocommerce-product-feeds%2Fwoocommerce-product-feeds.php&plugin_status=all&paged=1&s&_wpnonce=NORMALIZED\\n",
+                                "\\n",
+                                "  2. \\"WooCommerce\\"\\n",
+                                "     - Slug: woocommerce\\n",
+                                "     - Entry Point: woocommerce\\/woocommerce.php\\n",
+                                "     - Active: true\\n",
+                                "     - Can Activate: false\\n",
+                                "     - Dependencies: []\\n",
+                                "\\n",
                                 "dependenciesSatisfied: true for WooCommerce\\n",
                                 "[INFO] Final sorted plugin list:\\n",
                                 " 1. \\"WooCommerce\\" (Dependencies: [])\\n",
                                 " 2. \\"Activation - Plugin A\\" (Dependencies: [])\\n",
                                 "[TIMING NORMALIZED] Found 2 plugins to process\\n",
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
-                                "[TIMING NORMALIZED] Navigating to the activation link for \\"WooCommerce\\".\\n",
-                                "[TIMING NORMALIZED] Activated \\"WooCommerce\\" successfully.\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
-                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 2\\n"
+                                "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -303,7 +445,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
-                                            "line": 672,
+                                            "line": 714,
                                             "column": 10
                                         }
                                     }
@@ -394,7 +536,12 @@
                             "steps": [],
                             "suite": "chromium > activation.spec.js",
                             "attachments": [],
-                            "stdout": [],
+                            "stdout": [
+                                "SUT \\"Activation - Plugin A\\" has 0 dependencies (requires): []\\n",
+                                "Found 0 active plugins that depend on the SUT (must deactivate first)\\n",
+                                "Step 3: Deactivating SUT \\"Activation - Plugin A\\"\\n",
+                                "\\u2713 Successfully deactivated SUT \\"Activation - Plugin A\\"\\n"
+                            ],
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
@@ -445,7 +592,7 @@
                             "version": "1.0.0",
                             "packages": [
                                 {
-                                    "packageId": "woocommerce\\/activation",
+                                    "packageId": "woocommerce\\/activation:latest",
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,
