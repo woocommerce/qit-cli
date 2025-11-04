@@ -156,7 +156,7 @@ final class EnvUpPrecedenceTest extends TestCase {
 		] );
 
 		$data = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
-		$this->assertEquals( '8.3', $data['php'] );  // CLI
+		$this->assertEquals( '8.3', $data['php_version'] );  // CLI
 
 		$this->assertMatchesEnvUpSnapshot( $data );
 	}
@@ -194,9 +194,9 @@ final class EnvUpPrecedenceTest extends TestCase {
 
 		// 3 · targeted assertions
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
-		$this->assertSame( '8.1', $payload['php'] );
-		$this->assertSame( '6.0', $payload['wp'] );
-		$this->assertSame( '8.0', $payload['woo'] );
+		$this->assertSame( '8.1', $payload['php_version'] );
+		$this->assertSame( '6.0', $payload['wordpress_version'] );
+		$this->assertSame( '8.0', $payload['woocommerce_version'] );
 
 		// 4 · full‑payload snapshot (normalised automatically)
 		$this->assertMatchesEnvUpSnapshot( $raw );
@@ -231,8 +231,8 @@ final class EnvUpPrecedenceTest extends TestCase {
 
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
 
-		$this->assertSame( '8.2', $payload['php'], 'CLI must override profile/default.' );
-		$this->assertSame( '6.1', $payload['wp'], 'Profile overrides environment default.' );
+		$this->assertSame( '8.2', $payload['php_version'], 'CLI must override profile/default.' );
+		$this->assertSame( '6.1', $payload['wordpress_version'], 'Profile overrides environment default.' );
 
 		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
@@ -502,8 +502,8 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$normalizedPayload = \QIT\IntegrationTests\Utils\Normalizer::precommand( $payload );
 
 		// ── scalar defaults that UpEnvironmentCommand declares ─────────
-		$this->assertSame( '8.2', $normalizedPayload['php'], 'Default PHP should be 8.2' );
-		$this->assertSame( 'stable', $normalizedPayload['wp'], 'Default WP should be "stable"' );
+		$this->assertSame( '8.2', $normalizedPayload['php_version'], 'Default PHP should be 8.2' );
+		$this->assertSame( 'stable', $normalizedPayload['wordpress_version'], 'Default WP should be "stable"' );
 
 		// ── flags / tunnel ─────────────────────────────────────────────
 		$this->assertFalse( $normalizedPayload['object_cache'], 'object_cache must default to false' );

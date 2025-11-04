@@ -101,8 +101,8 @@ HELP
 						if ( $env instanceof \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo ) {
 							$choices[ $env->env_id ] = sprintf( '%s (PHP %s, WP %s)',
 								$env->env_id,
-								$env->php,
-								$env->wp
+								$env->php_version,
+								$env->wordpress_version
 							);
 						} else {
 							$choices[ $env->env_id ] = $env->env_id;

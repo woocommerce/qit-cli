@@ -59,8 +59,8 @@ class PerformanceEnvironment extends QITEnvironment {
 				sprintf( 'URL: %s', $this->env_info->site_url ),
 				sprintf( 'Admin URL: %s/wp-admin', $this->env_info->site_url ),
 				'Admin Credentials: admin/password',
-				sprintf( 'PHP Version: %s', $this->env_info->php ),
-				sprintf( 'WordPress Version: %s', $this->env_info->wp ),
+				sprintf( 'PHP Version: %s', $this->env_info->php_version ),
+				sprintf( 'WordPress Version: %s', $this->env_info->wordpress_version ),
 				sprintf( 'Redis Object Cache? %s', $this->env_info->object_cache ? 'Yes' : 'No' ),
 				sprintf( 'Path: %s', $this->env_info->temporary_env ),
 			];

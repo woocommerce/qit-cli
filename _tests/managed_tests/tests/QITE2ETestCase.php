@@ -404,12 +404,38 @@ class QITE2ETestCase extends TestCase {
 										if ( isset( $step['name'] ) ) {
 											$step['name'] = preg_replace( '/id\s*\d+/i', 'id <ID>', $step['name'] );
 										}
+										if ( isset( $step['duration'] ) ) {
+											$step['duration'] = 999;
+										}
 									}
 									unset( $step );
+								}
+								// Normalize localhost ports in stdout/stderr
+								if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
+									foreach ( $test['stdout'] as &$line ) {
+										$line = preg_replace( '/localhost:\d+/', 'localhost:PORT', $line );
+									}
+									unset( $line );
+								}
+								if ( isset( $test['stderr'] ) && is_array( $test['stderr'] ) ) {
+									foreach ( $test['stderr'] as &$line ) {
+										$line = preg_replace( '/localhost:\d+/', 'localhost:PORT', $line );
+									}
+									unset( $line );
 								}
 							}
 							unset( $test );
 						}
+					}
+
+					// Normalize package metadata durations
+					if ( isset( $value['results']['extra']['qitPackageMetadata']['packages'] ) && is_array( $value['results']['extra']['qitPackageMetadata']['packages'] ) ) {
+						foreach ( $value['results']['extra']['qitPackageMetadata']['packages'] as &$package ) {
+							if ( isset( $package['duration'] ) ) {
+								$package['duration'] = 999;
+							}
+						}
+						unset( $package );
 					}
 
 					return $value;
@@ -641,6 +667,15 @@ class QITE2ETestCase extends TestCase {
 
 				// Check if the current key is in the processing rules.
 				if ( array_key_exists( $k, $rules ) ) {
+					// Special case: test_result_json is optional for e2e and activation test types
+					if ( $k === 'test_result_json' ) {
+						$test_type = $j['test_type'] ?? '';
+						if ( in_array( $test_type, [ 'e2e', 'activation' ], true ) && empty( $v ) ) {
+							// Skip validation for empty test_result_json in e2e/activation tests
+							continue;
+						}
+					}
+
 					// Validate the existing value.
 					if ( $rules[ $k ]['validate']( $v ) ) {
 						// Normalize for snapshot testing.

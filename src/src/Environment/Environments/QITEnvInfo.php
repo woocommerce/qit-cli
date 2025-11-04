@@ -8,13 +8,13 @@ namespace QIT_CLI\Environment\Environments;
  */
 abstract class QITEnvInfo extends EnvInfo {
 	/** @var string WordPress version */
-	public string $wp = '';
+	public string $wordpress_version = '';
 
 	/** @var string WooCommerce version */
-	public string $woo = '';
+	public string $woocommerce_version = '';
 
 	/** @var string PHP version */
-	public string $php = '';
+	public string $php_version = '';
 
 	/** @var bool Whether to enable Redis object cache */
 	public bool $object_cache = false;
@@ -33,6 +33,12 @@ abstract class QITEnvInfo extends EnvInfo {
 
 	/** @var bool Whether to skip test package phases */
 	public bool $skip_test_phases = false;
+
+	/** @var bool Whether to skip activating plugins */
+	public bool $skip_activating_plugins = false;
+
+	/** @var bool Whether to skip activating themes */
+	public bool $skip_activating_themes = false;
 
 	/** @var array<string,string> Additional environment variables */
 	public array $additional_vars = [];

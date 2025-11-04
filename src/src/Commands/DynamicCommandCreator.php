@@ -28,6 +28,7 @@ abstract class DynamicCommandCreator {
 
 		if ( ! empty( $schema['properties'] ) && is_array( $schema['properties'] ) ) {
 			foreach ( $schema['properties'] as $property_name => $property_schema ) {
+				// Ignore internal parameters that shouldn't be exposed as command options.
 				$ignore = [ 'client', 'event', 'woo_id', 'is_product_update', 'upload_id' ];
 
 				if ( in_array( $property_name, array_merge( $exceptions, $ignore ), true ) ) {
@@ -46,6 +47,17 @@ abstract class DynamicCommandCreator {
 
 				$description = $property_schema['description'] ?? '';
 				$default     = $property_schema['default'] ?? null;
+
+				// Add alias info for known aliased parameters.
+				$aliases = [
+					'php_version'         => '--php',
+					'wordpress_version'   => '--wp',
+					'woocommerce_version' => '--woo',
+				];
+
+				if ( isset( $aliases[ $property_name ] ) ) {
+					$description .= sprintf( ' Alias: %s', $aliases[ $property_name ] );
+				}
 
 				$items       = $property_schema['items'] ?? '';
 				$enum        = $property_schema['enum'] ?? '';
@@ -122,23 +134,6 @@ abstract class DynamicCommandCreator {
 						implode( ', ', $diff )
 					)
 				);
-			}
-		}
-
-		/* Add user-friendly aliases (only if schema supports the underlying parameter) */
-		$has_wordpress_version   = isset( $schema['properties']['wordpress_version'] );
-		$has_woocommerce_version = isset( $schema['properties']['woocommerce_version'] );
-		$has_php_version         = isset( $schema['properties']['php_version'] );
-
-		if ( $has_wordpress_version || $has_woocommerce_version || $has_php_version ) {
-			if ( $has_wordpress_version ) {
-				$command->addOption( 'wp', null, InputOption::VALUE_OPTIONAL, '(Optional) WordPress version (alias for --wordpress_version)' );
-			}
-			if ( $has_woocommerce_version ) {
-				$command->addOption( 'woo', null, InputOption::VALUE_OPTIONAL, '(Optional) WooCommerce version (alias for --woocommerce_version)' );
-			}
-			if ( $has_php_version ) {
-				$command->addOption( 'php', null, InputOption::VALUE_OPTIONAL, '(Optional) PHP version (alias for --php_version)' );
 			}
 		}
 	}

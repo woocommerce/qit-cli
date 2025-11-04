@@ -218,24 +218,21 @@ class QitRunner {
 
 		/*
 		 * Append version constraints, optional features, or other parameters to the QIT CLI.
+		 * Randomly choose between short and long forms (50/50) to test both in production.
 		 */
+		$php_param = ( rand( 0, 1 ) === 0 ) ? 'php' : 'php_version';
+		$wp_param  = ( rand( 0, 1 ) === 0 ) ? 'wp' : 'wordpress_version';
+		$woo_param = ( rand( 0, 1 ) === 0 ) ? 'woo' : 'woocommerce_version';
+
 		if ( ! empty( $t['php'] ) ) {
-			$args[] = "--php_version={$t['php']}";
+			$args[] = "--{$php_param}={$t['php']}";
 		}
 		if ( ! empty( $t['wp'] ) ) {
-			if ( in_array( $test_type, $tests_based_on_custom_tests, true ) ) {
-				$args[] = "--wp={$t['wp']}";
-			} else {
-				$args[] = "--wordpress_version={$t['wp']}";
-			}
+			$args[] = "--{$wp_param}={$t['wp']}";
 		}
 
 		if ( ! empty( $t['woo'] ) ) {
-			if ( in_array( $test_type, $tests_based_on_custom_tests, true ) ) {
-				$args[] = "--woo={$t['woo']}";
-			} else {
-				$args[] = "--woocommerce_version={$t['woo']}";
-			}
+			$args[] = "--{$woo_param}={$t['woo']}";
 		}
 		if ( ! empty( $t['features'] ) ) {
 			foreach ( $t['features'] as $f ) {
@@ -261,18 +258,21 @@ class QitRunner {
 		$qit_process->setEnv( $env );
 
 		$this->add_task_id_to_process( $qit_process, $t );
-		try {
-			$qit_process->mustRun();
-		} catch (ProcessFailedException $e) {
-			// On failure, let's see if there's debug output in that file
+
+		// Use run() instead of mustRun() because tests are EXPECTED to fail when testing buggy plugins
+		// The old --ignore-fail flag used to exit with code 0 regardless of test status
+		$qit_process->run();
+
+		// Show debug output if the process failed
+		if ( $qit_process->getExitCode() !== 0 ) {
+			$this->logger->log( "Process exited with code {$qit_process->getExitCode()}, checking for valid JSON output" );
+
 			if ( file_exists( $non_json_output_file ) ) {
 				$all_output_json = file_get_contents( $non_json_output_file );
 				if ( ! empty( $all_output_json ) ) {
 					echo "\nAll output:\n================\n" . $all_output_json . "\n";
 				}
 			}
-			// Re-throw the exception so it behaves like mustRun() normally would
-			throw $e;
 		}
 
 		$output = trim( $qit_process->getOutput() );

@@ -5,7 +5,8 @@
         "additional_plugins": "10002,1000245",
         "woo_id": 10001,
         "event": "cli_published_extension_test",
-        "client": "qit_cli"
+        "client": "qit_cli",
+        "cli_version": "@QIT_CLI_VERSION@"
     },
     "curl_opts": [],
     "expected_status_codes": [

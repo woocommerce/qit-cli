@@ -19,6 +19,9 @@ class AgentVersionChecker {
 	 * @return array|null Array with status info or null if check not needed
 	 */
 	public function check_agent_status(): ?array {
+		// Agent version checking disabled
+		return null;
+
 		// Skip in CI environments
 		if ( $this->is_ci_environment() ) {
 			return null;

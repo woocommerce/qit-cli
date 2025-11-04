@@ -38,9 +38,9 @@ final class RunActivationPrecedenceTest extends TestCase {
 		$options = json_decode( $raw, true );
 
 		// Verify config values are applied
-		$this->assertEquals( '6.0', $options['wp'] );
-		$this->assertEquals( '8.0.0', $options['woo'] );
-		$this->assertEquals( '8.1', $options['php'] );
+		$this->assertEquals( '6.0', $options['wordpress_version'] );
+		$this->assertEquals( '8.0.0', $options['woocommerce_version'] );
+		$this->assertEquals( '8.1', $options['php_version'] );
 
 		// Snapshot the full options for regression testing
 		$this->assertMatchesRemoteTestSnapshot( $options );
@@ -81,9 +81,9 @@ final class RunActivationPrecedenceTest extends TestCase {
 		$options = json_decode( $raw, true );
 
 		// Verify CLI options override config
-		$this->assertEquals( '6.2', $options['wp'] );
-		$this->assertEquals( '9.0.0', $options['woo'] );
-		$this->assertEquals( '8.2', $options['php'] );
+		$this->assertEquals( '6.2', $options['wordpress_version'] );
+		$this->assertEquals( '9.0.0', $options['woocommerce_version'] );
+		$this->assertEquals( '8.2', $options['php_version'] );
 
 		// Snapshot the full options for regression testing
 		$this->assertMatchesRemoteTestSnapshot( $options );
@@ -123,8 +123,8 @@ final class RunActivationPrecedenceTest extends TestCase {
 		$options = json_decode( $raw, true );
 
 		// Verify staging profile values are used
-		$this->assertEquals( '6.2', $options['wp'] );
-		$this->assertEquals( '8.5.0', $options['woo'] );
+		$this->assertEquals( '6.2', $options['wordpress_version'] );
+		$this->assertEquals( '8.5.0', $options['woocommerce_version'] );
 
 		// Snapshot the full options for regression testing
 		$this->assertMatchesRemoteTestSnapshot( $options );

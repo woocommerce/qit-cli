@@ -114,8 +114,8 @@ class ImprovedHttpMockingTest extends \PHPUnit\Framework\TestCase {
 
 		// Verify CLI precedence in the request payload
 		$enqueue_request = $this->requestByUrl( $enqueue_endpoint );
-		if ( $enqueue_request && isset( $enqueue_request['body']['post_body']['environment']['php'] ) ) {
-			$this->assertEquals( '8.1', $enqueue_request['body']['post_body']['environment']['php'],
+		if ( $enqueue_request && isset( $enqueue_request['body']['post_body']['environment']['php_version'] ) ) {
+			$this->assertEquals( '8.1', $enqueue_request['body']['post_body']['environment']['php_version'],
 				'CLI option should override config file' );
 		}
 

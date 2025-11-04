@@ -432,10 +432,10 @@ HELP
 		$output->writeln( '<comment>ENVIRONMENT CONFIGURATION:</comment>' );
 		$env = $run_data['environment'] ?? [];
 		$output->writeln( sprintf( '• Environment ID: %s', $env['id'] ?? 'unknown' ) );
-		$output->writeln( sprintf( '• WordPress: %s', $env['wordpress'] ?? 'unknown' ) );
-		$output->writeln( sprintf( '• PHP: %s', $env['php'] ?? 'unknown' ) );
-		if ( ! empty( $env['woocommerce'] ) ) {
-			$output->writeln( sprintf( '• WooCommerce: %s', $env['woocommerce'] ) );
+		$output->writeln( sprintf( '• WordPress: %s', $env['wordpress_version'] ?? 'unknown' ) );
+		$output->writeln( sprintf( '• PHP: %s', $env['php_version'] ?? 'unknown' ) );
+		if ( ! empty( $env['woocommerce_version'] ) ) {
+			$output->writeln( sprintf( '• WooCommerce: %s', $env['woocommerce_version'] ) );
 		}
 		$output->writeln( sprintf( '• Site URL: %s', $env['url'] ?? 'unknown' ) );
 

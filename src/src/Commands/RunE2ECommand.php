@@ -140,9 +140,9 @@ class RunE2ECommand extends QITCommand {
 				[]
 			)
 			->reuseOption( 'env:up', 'environment' )
-			->reuseOption( 'env:up', 'php' )
-			->reuseOption( 'env:up', 'wp' )
-			->reuseOption( 'env:up', 'woo' )
+			->reuseOption( 'env:up', 'php_version' )
+			->reuseOption( 'env:up', 'wordpress_version' )
+			->reuseOption( 'env:up', 'woocommerce_version' )
 			->reuseOption( 'env:up', 'plugin' )
 			->reuseOption( 'env:up', 'theme' )
 			->reuseOption( 'env:up', 'volume' )
@@ -154,10 +154,6 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'env' )
 			->reuseOption( 'env:up', 'env_file' )
 			->reuseOption( 'env:up', 'json' )
-			// Add long-form aliases for consistency with remote test commands
-			->addOption( 'wordpress_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version (alias for --wp)' )
-			->addOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version (alias for --woo)' )
-			->addOption( 'php_version', null, InputOption::VALUE_OPTIONAL, 'PHP version (alias for --php)' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
 			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
 
@@ -195,22 +191,6 @@ class RunE2ECommand extends QITCommand {
 		 * 1. Get environment options for delegation to env:up
 		 */
 		$env_up_options = $input->getEnvironmentOptions();
-
-		// Map long-form aliases to short-form options that env:up expects
-		$option_aliases = [
-			'wordpress_version'   => '--wp',
-			'woocommerce_version' => '--woo',
-			'php_version'         => '--php',
-		];
-
-		foreach ( $option_aliases as $long_form => $short_form ) {
-			if ( $input->hasOption( $long_form ) ) {
-				$value = $input->getOption( $long_form );
-				if ( $value !== null && $value !== '' ) {
-					$env_up_options[ $short_form ] = $value;
-				}
-			}
-		}
 
 		// Handle activation test scenario
 		$test_packages = $input->getTestPackages();
@@ -424,16 +404,43 @@ class RunE2ECommand extends QITCommand {
 		$test_run_id = null;
 		if ( isset( $env_info->sut['slug'] ) ) {
 			$woo_extension_id    = $this->woo_extensions_list->get_woo_extension_id_by_slug( $env_info->sut['slug'] );
-			$woocommerce_version = $env_info->woo;
-			$is_development      = $env_info->is_development_build;
+			$woocommerce_version = $env_info->woocommerce_version;
 			$notify              = $input->getOption( 'notify' ) ?? false;
+
+			// Determine if this is a development build by checking if SUT is from a marketplace.
+			$is_development = false;
+			$sut_extension  = null;
+
+			// Find the SUT Extension object in plugins.
+			foreach ( $env_info->plugins as $plugin ) {
+				if ( $plugin->slug === $env_info->sut['slug'] ) {
+					$sut_extension = $plugin;
+					break;
+				}
+			}
+
+			// If not found in plugins, check themes.
+			if ( ! $sut_extension ) {
+				foreach ( $env_info->themes as $theme ) {
+					if ( $theme->slug === $env_info->sut['slug'] ) {
+						$sut_extension = $theme;
+						break;
+					}
+				}
+			}
+
+			// Development build = NOT from a recognized marketplace (wporg or wccom).
+			if ( $sut_extension && ! in_array( $sut_extension->from, [ 'wporg', 'wccom' ], true ) ) {
+				$is_development = true;
+			}
 
 			$this->local_test_run_notifier->notify_test_started(
 				$woo_extension_id,
 				$woocommerce_version,
 				$env_info,
 				$is_development,
-				$notify
+				$notify,
+				$this->test_type
 			);
 
 			// Get the test run ID from the notifier
@@ -706,23 +713,23 @@ class RunE2ECommand extends QITCommand {
 			'timestamp'      => gmdate( 'c' ),
 			'status'         => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
 			'environment'    => [
-				'id'          => $env_info->env_id,
-				'url'         => $env_info->site_url,
-				'wordpress'   => $env_info->wp,
-				'php'         => $env_info->php,
-				'woocommerce' => $env_info->woo ?: null,
-				'sut'         => isset( $env_info->sut ) ? [
+				'id'                  => $env_info->env_id,
+				'url'                 => $env_info->site_url,
+				'wordpress_version'   => $env_info->wordpress_version,
+				'php_version'         => $env_info->php_version,
+				'woocommerce_version' => $env_info->woocommerce_version ?: null,
+				'sut'                 => isset( $env_info->sut ) ? [
 					'slug' => $env_info->sut['slug'] ?? null,
 					'id'   => $env_info->sut['id'] ?? null,
 					'type' => $env_info->sut['type'] ?? 'plugin',
 				] : null,
-				'plugins'     => array_map( function ( Extension $plugin ) {
+				'plugins'             => array_map( function ( Extension $plugin ) {
 					return [
 						'slug'    => $plugin->slug,
 						'version' => $plugin->version,
 					];
 				}, $env_info->plugins ),
-				'themes'      => array_map( function ( Extension $theme ) {
+				'themes'              => array_map( function ( Extension $theme ) {
 					return [
 						'slug'    => $theme->slug,
 						'version' => $theme->version,
@@ -1677,8 +1684,8 @@ class RunE2ECommand extends QITCommand {
 
 		// Stack information
 		$stack_parts   = [];
-		$stack_parts[] = sprintf( 'WordPress %s', $env_info->wp );
-		$stack_parts[] = sprintf( 'PHP %s', $env_info->php );
+		$stack_parts[] = sprintf( 'WordPress %s', $env_info->wordpress_version );
+		$stack_parts[] = sprintf( 'PHP %s', $env_info->php_version );
 		$output->writeln( sprintf( '  Stack:       %s', implode( ', ', $stack_parts ) ) );
 
 		// SUT (System Under Test) if present
@@ -1695,8 +1702,8 @@ class RunE2ECommand extends QITCommand {
 			if ( isset( $env_info->sut ) && $env_info->sut['type'] === 'plugin' && $plugin->slug === $env_info->sut['slug'] ) {
 				continue;
 			}
-			if ( $plugin->slug === 'woocommerce' && $env_info->woo ) {
-				$plugin_names[] = sprintf( 'WooCommerce %s', $env_info->woo );
+			if ( $plugin->slug === 'woocommerce' && $env_info->woocommerce_version ) {
+				$plugin_names[] = sprintf( 'WooCommerce %s', $env_info->woocommerce_version );
 			} elseif ( $plugin->slug !== 'woocommerce' ) {
 				$plugin_names[] = $this->format_extension_name( $plugin->slug ) . ( $plugin->version ? ' ' . $plugin->version : '' );
 			}

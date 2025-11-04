@@ -143,7 +143,7 @@ class MultiPackageManualTest extends BaseScenarioTestCase {
 		
 		// Environment should include requirements from both
 		// PHP from package1
-		$this->assertEquals( '8.2', $data['php'] );
+		$this->assertEquals( '8.2', $data['php_version'] );
 		
 		// Plugin from package2 - verify it's actually installed in the environment
 		// Note: Test package requirements don't appear in JSON output but are installed

@@ -493,7 +493,8 @@ class PerformanceTestManager {
 			$this->notification_params['woo_version'],
 			$env_info,
 			$this->notification_params['is_development'],
-			$this->notification_params['notify']
+			$this->notification_params['notify'],
+			'performance'
 		);
 	}
 }

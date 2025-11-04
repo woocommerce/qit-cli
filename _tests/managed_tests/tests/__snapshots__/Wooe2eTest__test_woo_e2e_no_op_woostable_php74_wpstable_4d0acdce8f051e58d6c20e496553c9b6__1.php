@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "384 total, 331 passed, 0 failed, 53 skipped.",
+            "test_summary": "Tests: 384 total, 331 passed, 0 failed, 53 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],

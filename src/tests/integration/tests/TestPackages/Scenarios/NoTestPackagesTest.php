@@ -110,9 +110,9 @@ class NoTestPackagesTest extends BaseScenarioTestCase {
 		$envId = $envData['env_id'];
 		
 		// Step 2: Verify environment configuration
-		$this->assertEquals( '8.2', $envData['php'] );
-		$this->assertEquals( '6.4', $envData['wp'] );
-		$this->assertNotEmpty( $envData['woo'] );
+		$this->assertEquals( '8.2', $envData['php_version'] );
+		$this->assertEquals( '6.4', $envData['wordpress_version'] );
+		$this->assertNotEmpty( $envData['woocommerce_version'] );
 		
 		// Step 3: Get environment variables for manual testing
 		$sourcePath = trim( qit( [ 'env:source', $envId ] ) );
@@ -252,9 +252,9 @@ class NoTestPackagesTest extends BaseScenarioTestCase {
 		$envId = $envData['env_id'];
 
 		// Step 2: Verify complete environment setup
-		$this->assertEquals( '8.0', $envData['php'] );
-		$this->assertNotEmpty( $envData['wp'] );
-		$this->assertEquals( '8.5.0', $envData['woo'] );
+		$this->assertEquals( '8.0', $envData['php_version'] );
+		$this->assertNotEmpty( $envData['wordpress_version'] );
+		$this->assertEquals( '8.5.0', $envData['woocommerce_version'] );
 		$this->assertContains( 'gd', $envData['php_extensions'] );
 		$this->assertContains( 'imagick', $envData['php_extensions'] );
 		

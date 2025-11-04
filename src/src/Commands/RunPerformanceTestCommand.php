@@ -117,7 +117,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
 			->addOption( 'local', null, InputOption::VALUE_NONE, 'Run tests locally instead of on QIT infrastructure' )
-			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
@@ -422,7 +422,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		];
 
 		$env_info->run_baseline = ! $no_baseline;
-		$env_info->php          = $input->getOption( 'php' );
+		$env_info->php_version  = $input->getOption( 'php_version' );
 
 		return $env_info;
 	}
@@ -691,22 +691,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		// Parse options that should be sent to the API.
 		$parsed_options = parent::parse_options( $input, true );
-
-		// Map user-friendly aliases to API parameter names
-		$option_aliases = [
-			'wp'  => 'wordpress_version',
-			'woo' => 'woocommerce_version',
-			'php' => 'php_version',
-		];
-
-		foreach ( $option_aliases as $alias => $real_name ) {
-			if ( $input->hasOption( $alias ) ) {
-				$alias_value = $input->getOption( $alias );
-				if ( $alias_value !== null && $alias_value !== '' ) {
-					$parsed_options[ $real_name ] = $alias_value;
-				}
-			}
-		}
 
 		// Build options for remote API request.
 		$options = array_merge( $parsed_options, [

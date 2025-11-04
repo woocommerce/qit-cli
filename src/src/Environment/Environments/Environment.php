@@ -128,8 +128,8 @@ abstract class Environment {
 
 		if ( ! empty( $this->env_info->plugins ) || ! empty( $this->env_info->themes ) ) {
 			$message = 'Processing plugins and themes...';
-			if ( $this->env_info instanceof \QIT_CLI\Environment\Environments\QITEnvInfo && ! empty( $this->env_info->woo ) ) {
-				$message .= ' (WooCommerce: ' . $this->env_info->woo . ')';
+			if ( $this->env_info instanceof \QIT_CLI\Environment\Environments\QITEnvInfo && ! empty( $this->env_info->woocommerce_version ) ) {
+				$message .= ' (WooCommerce: ' . $this->env_info->woocommerce_version . ')';
 			}
 			$this->output->writeln( '<info>' . $message . '</info>' );
 		}
