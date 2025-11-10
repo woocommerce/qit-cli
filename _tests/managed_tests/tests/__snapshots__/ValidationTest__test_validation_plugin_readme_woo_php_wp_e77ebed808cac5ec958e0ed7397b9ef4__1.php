@@ -15,7 +15,7 @@
             "test_log": "",
             "ctrf_json": "",
             "performance_results": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -34,7 +34,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 0 Warnings: 0",
+            "test_summary": "Errors: 1 Warnings: 0",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -48,6 +48,7 @@
             "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
+            "created_at": "2025-01-01 00:00:00",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

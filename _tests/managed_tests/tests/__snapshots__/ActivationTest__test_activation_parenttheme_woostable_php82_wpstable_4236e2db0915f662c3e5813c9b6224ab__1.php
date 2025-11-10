@@ -49,6 +49,7 @@
             "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
+            "created_at": "2025-01-01 00:00:00",
             "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
