@@ -113,6 +113,13 @@ class QITE2ETestCase extends TestCase {
 					return ! empty( $value );
 				},
 			],
+			'created_at'                      => [
+				'optional'  => true,
+				'normalize' => '2025-01-01 00:00:00',
+				'validate'  => static function ( $value ) {
+					return preg_match( '/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/', $value );
+				},
+			],
 			'test_result_json'                => [
 				'normalize' => static function ( $value ) use ( $file_path ) {
 					// Encode as JSON if needed.
