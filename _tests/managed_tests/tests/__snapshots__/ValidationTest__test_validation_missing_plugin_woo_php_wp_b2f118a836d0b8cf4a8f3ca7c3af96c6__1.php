@@ -34,7 +34,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 1 Warnings: 6",
+            "test_summary": "Errors: 2 Warnings: 6",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
@@ -48,6 +48,7 @@
             "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
+            "created_at": "2025-11-10 14:34:38",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

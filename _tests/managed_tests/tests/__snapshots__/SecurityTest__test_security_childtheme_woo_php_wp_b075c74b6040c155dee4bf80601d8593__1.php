@@ -48,6 +48,7 @@
             "test_packages": [],
             "iterations": 3,
             "test_group_id": "",
+            "created_at": "2025-11-10 14:34:06",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {
