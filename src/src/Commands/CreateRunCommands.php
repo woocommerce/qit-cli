@@ -303,7 +303,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$options['event']     = 'cli_development_extension_test';
 
 				// Remove the zip option from the array since it's CLI-only and should not be sent to the backend.
-				// The zip path may contain '../' which triggers WAF path traversal detection.
+				// The zip path may contain '../' which triggers the firewall path traversal detection.
 				unset( $options['zip'] );
 			}
 
