@@ -9,6 +9,7 @@ use QIT_CLI\Performance\MetricAverager;
 use QIT_CLI\Performance\Result\PerformanceTestResult;
 use QIT_CLI\Performance\Runner\K6Runner;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PerformanceTestManager {
@@ -30,7 +31,7 @@ class PerformanceTestManager {
 	/** @var EnvironmentRunner */
 	private $environment_runner;
 
-	/** @var \QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment */
+	/** @var PerformanceEnvironment */
 	private $performance_environment;
 
 	/** @var array<string,mixed> */
@@ -39,7 +40,7 @@ class PerformanceTestManager {
 	/** @var array<string,mixed>|null */
 	private $notification_params;
 
-	public function __construct( K6Runner $k6_runner, LocalTestRunNotifier $notifier, EnvironmentRunner $environment_runner, \QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment $performance_environment ) {
+	public function __construct( K6Runner $k6_runner, LocalTestRunNotifier $notifier, EnvironmentRunner $environment_runner, PerformanceEnvironment $performance_environment ) {
 		$this->k6_runner               = $k6_runner;
 		$this->notifier                = $notifier;
 		$this->environment_runner      = $environment_runner;
@@ -104,7 +105,7 @@ class PerformanceTestManager {
 			// Run baseline tests if enabled.
 			if ( $env_info->run_baseline ) {
 				$this->output->writeln( '<comment>Starting baseline tests...</comment>' );
-				$baseline_result = $this->run_baseline_tests_same_env( $extension_env_info );
+				$baseline_result = $this->run_baseline_tests( $extension_env_info );
 
 				if ( $baseline_result === null ) {
 					$this->output->writeln( '<error>Baseline tests failed, continuing with extension tests.</error>' );
@@ -124,7 +125,7 @@ class PerformanceTestManager {
 
 			// Run SUT tests.
 			$this->output->writeln( '<comment>Proceeding to extension tests...</comment>' );
-			$main_result    = $this->run_extension_tests_same_env( $extension_env_info );
+			$main_result    = $this->run_sut_tests( $extension_env_info );
 			$main_exit_code = $main_result['exit_code'];
 
 			// Combine results.
@@ -303,31 +304,26 @@ class PerformanceTestManager {
 
 	/**
 	 * Reset database to clean state by re-importing the base data.
-	 * Delegates to PerformanceEnvironment's generate_base_data() method.
 	 *
 	 * @param PerformanceEnvInfo $env_info The environment to reset.
 	 */
 	private function reset_database_to_clean_state( PerformanceEnvInfo $env_info ): void {
 		$this->output->writeln( '<comment>Resetting database to clean state...</comment>' );
 
-		// Initialize the performance environment instance with the current env_info.
 		$this->performance_environment->init( $env_info );
-
-		// Reuse the existing generate_base_data() method which imports the cached dump.
 		$this->performance_environment->generate_base_data();
 	}
 
 	/**
-	 * Run baseline performance tests in the same environment (SUT deactivated).
+	 * Run baseline performance tests (SUT deactivated).
 	 *
 	 * @param PerformanceEnvInfo $env_info The environment to test.
 	 * @return PerformanceTestResult|null The baseline test result or null if failed.
 	 */
-	private function run_baseline_tests_same_env( PerformanceEnvInfo $env_info ): ?PerformanceTestResult {
+	private function run_baseline_tests( PerformanceEnvInfo $env_info ): ?PerformanceTestResult {
 		$sut_slug = $this->get_sut_slug_from_options();
 
 		if ( $sut_slug ) {
-			// Initialize performance environment and deactivate SUT plugin.
 			$this->performance_environment->init( $env_info );
 			$this->performance_environment->deactivate_sut_plugin( $sut_slug );
 		} else {
@@ -352,16 +348,15 @@ class PerformanceTestManager {
 	}
 
 	/**
-	 * Run extension performance tests in the same environment (SUT activated).
+	 * Run SUT performance tests (SUT activated).
 	 *
 	 * @param PerformanceEnvInfo $env_info The environment to test.
-	 * @return array{test_result: PerformanceTestResult, exit_code: int} The extension test result and exit code.
+	 * @return array{test_result: PerformanceTestResult, exit_code: int} The SUT test result and exit code.
 	 */
-	private function run_extension_tests_same_env( PerformanceEnvInfo $env_info ): array {
+	private function run_sut_tests( PerformanceEnvInfo $env_info ): array {
 		$sut_slug = $this->get_sut_slug_from_options();
 
 		if ( $sut_slug ) {
-			// Initialize performance environment and activate SUT plugin.
 			$this->performance_environment->init( $env_info );
 			$this->performance_environment->activate_sut_plugin( $sut_slug );
 		} else {

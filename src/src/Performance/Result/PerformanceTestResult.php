@@ -235,13 +235,6 @@ class PerformanceTestResult {
 		$this->add_metric( 'summary_http_req_total', $http_req_total );
 		$this->add_metric( 'summary_http_req_failed', $http_req_failed );
 
-		// Debug: Log all metrics found in k6 results.
-		error_log( sprintf(
-			'[PerformanceTestResult] Metrics found in k6 JSON: %s (total: %d)',
-			implode( ', ', array_keys( $metrics_data ) ),
-			count( $metrics_data )
-		) );
-
 		// Process all collected metrics to calculate statistics.
 		foreach ( $metrics_data as $metric_name => $values ) {
 			// Calculate statistics for this metric.
@@ -270,7 +263,6 @@ class PerformanceTestResult {
 
 			// Store the processed metric with clean structure.
 			$this->add_metric( $metric_name, $stats );
-			error_log( sprintf( '[PerformanceTestResult] Processed metric: %s', $metric_name ) );
 		}
 	}
 

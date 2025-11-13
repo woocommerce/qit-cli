@@ -340,19 +340,10 @@ class LocalTestRunNotifier {
 
 		// Extract performance metrics for performance tests.
 		if ( $test_result instanceof PerformanceTestResult ) {
-			error_log( '[LocalTestRunNotifier] Detected PerformanceTestResult, extracting metrics...' );
 			$performance_results = $this->extract_combined_performance_metrics( $test_result );
 
 			if ( ! empty( $performance_results ) ) {
-				$json_encoded = json_encode( $performance_results );
-				error_log( sprintf(
-					'[LocalTestRunNotifier] Encoded performance results (length: %d bytes)',
-					strlen( $json_encoded )
-				) );
-				error_log( '[LocalTestRunNotifier] Performance results JSON: ' . substr( $json_encoded, 0, 500 ) . '...' );
-				$data['cd_performance_results'] = $json_encoded;
-			} else {
-				error_log( '[LocalTestRunNotifier] WARNING: performance_results is empty!' );
+				$data['cd_performance_results'] = json_encode( $performance_results );
 			}
 		}
 
@@ -416,8 +407,6 @@ class LocalTestRunNotifier {
 	 * @return array<string, mixed> The combined performance metrics.
 	 */
 	private function extract_combined_performance_metrics( PerformanceTestResult $test_result ): array {
-		error_log( '[LocalTestRunNotifier] Starting performance metrics extraction' );
-
 		$performance_results = [
 			'has_baseline' => false,
 			'extension'    => [],
@@ -425,12 +414,7 @@ class LocalTestRunNotifier {
 		];
 
 		// Extract main test (extension) metrics from the test result itself.
-		error_log( '[LocalTestRunNotifier] Extracting extension metrics...' );
 		$performance_results['extension'] = $this->metrics_extractor->extract_metrics( $test_result->get_metrics() );
-		error_log( sprintf(
-			'[LocalTestRunNotifier] Extension metrics extracted: %s',
-			implode( ', ', array_keys( $performance_results['extension'] ) )
-		) );
 
 		// Add failed checks for extension.
 		$performance_results['extension']['failed_checks'] = $this->extract_failed_checks_from_result( $test_result );
@@ -438,19 +422,12 @@ class LocalTestRunNotifier {
 		// Check if we have baseline results.
 		$baseline_result = $test_result->get_baseline_result();
 		if ( $baseline_result !== null ) {
-			error_log( '[LocalTestRunNotifier] Extracting baseline metrics...' );
 			$performance_results['has_baseline'] = true;
 			$performance_results['baseline']     = $this->metrics_extractor->extract_metrics( $baseline_result->get_metrics() );
-			error_log( sprintf(
-				'[LocalTestRunNotifier] Baseline metrics extracted: %s',
-				implode( ', ', array_keys( $performance_results['baseline'] ) )
-			) );
 
 			// Add failed checks for baseline.
 			$performance_results['baseline']['failed_checks'] = $this->extract_failed_checks_from_result( $baseline_result );
 		}
-
-		error_log( '[LocalTestRunNotifier] Final performance_results structure: ' . json_encode( array_keys( $performance_results ) ) );
 
 		return $performance_results;
 	}
