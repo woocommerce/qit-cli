@@ -1459,7 +1459,7 @@
                     "tests": [
                         {
                             "name": "Install WC using WC Beta Tester",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -2258,7 +2258,7 @@
                         },
                         {
                             "name": "can view country data",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -4291,7 +4291,7 @@
                         },
                         {
                             "name": "rating (asc)",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -4322,7 +4322,7 @@
                         },
                         {
                             "name": "popularity (asc)",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -6047,7 +6047,7 @@
                         },
                         {
                             "name": "can retrieve all email settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
