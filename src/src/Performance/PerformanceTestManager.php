@@ -9,6 +9,7 @@ use QIT_CLI\Performance\MetricAverager;
 use QIT_CLI\Performance\Result\PerformanceTestResult;
 use QIT_CLI\Performance\Runner\K6Runner;
 use QIT_CLI\Environment\Environments\Environment;
+use QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PerformanceTestManager {
@@ -30,18 +31,22 @@ class PerformanceTestManager {
 	/** @var EnvironmentRunner */
 	private $environment_runner;
 
+	/** @var PerformanceEnvironment */
+	private $performance_environment;
+
 	/** @var array<string,mixed> */
 	private $env_up_options;
 
 	/** @var array<string,mixed>|null */
 	private $notification_params;
 
-	public function __construct( K6Runner $k6_runner, LocalTestRunNotifier $notifier, EnvironmentRunner $environment_runner ) {
-		$this->k6_runner          = $k6_runner;
-		$this->notifier           = $notifier;
-		$this->environment_runner = $environment_runner;
-		$this->metric_averager    = new MetricAverager();
-		$this->test_iterations    = 3; // Default to 3 iterations for stability.
+	public function __construct( K6Runner $k6_runner, LocalTestRunNotifier $notifier, EnvironmentRunner $environment_runner, PerformanceEnvironment $performance_environment ) {
+		$this->k6_runner               = $k6_runner;
+		$this->notifier                = $notifier;
+		$this->environment_runner      = $environment_runner;
+		$this->performance_environment = $performance_environment;
+		$this->metric_averager         = new MetricAverager();
+		$this->test_iterations         = 3; // Default to 3 iterations for stability.
 	}
 
 	public function set_output( OutputInterface $output ): void {
@@ -84,167 +89,77 @@ class PerformanceTestManager {
 		$this->notifier = $notifier;
 	}
 
+	/**
+	 * Run performance tests in a fresh environment.
+	 *
+	 * @param PerformanceEnvInfo $env_info The environment to test against.
+	 * @return int Exit code of the test run.
+	 */
 	public function run_tests( PerformanceEnvInfo $env_info ): int {
 		$baseline_result = null;
 		$main_exit_code  = 0;
 
-		// Run baseline tests in separate environment if enabled.
-		if ( $env_info->run_baseline ) {
-			$this->output->writeln( '<comment>Starting baseline tests...</comment>' );
-			$baseline_result = $this->run_baseline_tests_isolated( $env_info );
-			if ( $baseline_result === null ) {
-				$this->output->writeln( '<error>Baseline tests failed, continuing with extension tests.</error>' );
-			} elseif ( $baseline_result->status === 'cancelled' ) {
-				// If baseline is cancelled, cancel the entire test run.
-				$this->output->writeln( '<error>Baseline tests were cancelled, cancelling entire test run.</error>' );
-				return 143;
-			} else {
-				$this->output->writeln( '<comment>Baseline tests completed successfully.</comment>' );
-			}
-		}
-
-		// Run extension tests in completely separate environment.
-		$this->output->writeln( '<comment>Proceeding to extension tests...</comment>' );
-		$main_result    = $this->run_extension_tests_isolated( $env_info );
-		$main_exit_code = $main_result['exit_code'];
-
-		// Combine baseline and main results if baseline was run.
-		$final_result = $main_result['test_result'];
-		if ( $baseline_result !== null ) {
-			$final_result = $this->combine_results( $main_result['test_result'], $baseline_result );
-		}
-
-		// Upload and process the final combined test results.
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( '<comment>Uploading test results...</comment>' );
-		}
-		$this->notifier->notify_test_finished( $final_result );
-
-		// Display results summary using the averaged result directory.
-		$this->display_results_summary( $final_result );
-
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( '[Verbose] Test artifacts directory: %s', $main_result['test_result']->get_results_dir() ) );
-		}
-
-		return $main_exit_code;
-	}
-
-	/**
-	 * Run baseline performance tests in complete isolation.
-	 *
-	 * Creates a baseline environment (WooCommerce only), runs test iterations,
-	 * then tears down the environment completely.
-	 *
-	 * @param PerformanceEnvInfo $env_info The test configuration.
-	 * @return PerformanceTestResult|null The baseline test result or null if failed.
-	 */
-	private function run_baseline_tests_isolated( PerformanceEnvInfo $env_info ): ?PerformanceTestResult {
-		$this->output->writeln( '<comment>Setting up baseline environment (WooCommerce only)...</comment>' );
-
-		$baseline_env_info = null;
-		try {
-			$baseline_options  = $this->create_baseline_env_options();
-			$baseline_env_info = $this->create_environment( $baseline_options );
-			$this->copy_test_config( $baseline_env_info, $env_info );
-
-			$this->output->writeln( '<comment>Running baseline tests...</comment>' );
-			$results = $this->run_test_iterations( $baseline_env_info, 'baseline', true );
-
-			if ( ! $results ) {
-				return null;
-			}
-
-			foreach ( $results as $result ) {
-				if ( $result->status === 'cancelled' ) {
-					$this->output->writeln( '<comment>Baseline tests were cancelled, returning cancelled result</comment>' );
-					return $result;
-				}
-			}
-
-			return $this->metric_averager->average_test_results( $results, $baseline_env_info );
-
-		} catch ( \Exception $e ) {
-			$this->output->writeln( sprintf( '<error>Failed to run baseline tests: %s</error>', $e->getMessage() ) );
-			return null;
-		} finally {
-			if ( $baseline_env_info ) {
-				try {
-					$this->output->writeln( '<comment>Tearing down baseline environment...</comment>' );
-					Environment::down( $baseline_env_info );
-				} catch ( \Exception $e ) {
-					$this->output->writeln( sprintf( '<comment>Warning: Failed to shut down baseline environment: %s</comment>', $e->getMessage() ) );
-				}
-			}
-		}
-	}
-
-	/**
-	 * Run extension performance tests in complete isolation.
-	 *
-	 * Creates an extension environment (WooCommerce + extension), runs test iterations,
-	 * then tears down the environment completely.
-	 *
-	 * @param PerformanceEnvInfo $test_config The test configuration.
-	 * @return array{test_result: PerformanceTestResult, exit_code: int} The extension test result and exit code.
-	 */
-	private function run_extension_tests_isolated( PerformanceEnvInfo $test_config ): array {
-		$this->output->writeln( '<comment>Setting up extension environment (WooCommerce + extension)...</comment>' );
+		$this->output->writeln( '<comment>Setting up test environment...</comment>' );
 
 		$extension_env_info = null;
 		try {
 			$extension_env_info = $this->create_environment( $this->env_up_options );
-			$this->copy_test_config( $extension_env_info, $test_config );
+			$this->copy_test_config( $extension_env_info, $env_info );
 
-			// Notify test started now that environment is ready.
+			if ( $env_info->run_baseline ) {
+				$this->output->writeln( '<comment>Starting baseline tests...</comment>' );
+				$baseline_result = $this->run_baseline_tests( $extension_env_info );
+
+				if ( $baseline_result === null ) {
+					$this->output->writeln( '<error>Baseline tests failed, continuing with extension tests.</error>' );
+				} elseif ( $baseline_result->status === 'cancelled' ) {
+					$this->output->writeln( '<error>Baseline tests were cancelled, cancelling entire test run.</error>' );
+					return 143;
+				} else {
+					$this->output->writeln( '<comment>Baseline tests completed successfully.</comment>' );
+				}
+
+				$this->reset_database_to_clean_state( $extension_env_info );
+			}
+
 			$this->notify_test_started_if_configured( $extension_env_info );
 
-			$this->output->writeln( '<comment>Running extension tests...</comment>' );
-			$results = $this->run_test_iterations( $extension_env_info, 'extension', false );
+			$this->output->writeln( '<comment>Proceeding to SUT tests...</comment>' );
+			$main_result    = $this->run_sut_tests( $extension_env_info );
+			$main_exit_code = $main_result['exit_code'];
 
-			if ( ! $results ) {
-				$failed_result = new PerformanceTestResult( $extension_env_info );
-				$failed_result->set_status( 'failed' );
-				return [
-					'test_result' => $failed_result,
-					'exit_code'   => 1,
-				];
+			$final_result = $main_result['test_result'];
+			if ( $baseline_result !== null ) {
+				$final_result = $this->combine_results( $main_result['test_result'], $baseline_result );
 			}
 
-			if ( count( $results ) === 1 && $results[0]->status === 'cancelled' ) {
-				return [
-					'test_result' => $results[0],
-					'exit_code'   => 143,
-				];
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( '<comment>Uploading test results...</comment>' );
+			}
+			$this->notifier->notify_test_finished( $final_result );
+
+			$this->display_results_summary( $final_result );
+
+			if ( $this->output->isVerbose() ) {
+				$this->output->writeln( sprintf( '[Verbose] Test artifacts directory: %s', $main_result['test_result']->get_results_dir() ) );
 			}
 
-			return [
-				'test_result' => $this->metric_averager->average_test_results( $results, $extension_env_info ),
-				'exit_code'   => $this->get_final_exit_code( $results ),
-			];
+			return $main_exit_code;
 
 		} catch ( \Exception $e ) {
-			$this->output->writeln( sprintf( '<error>Failed to run extension tests: %s</error>', $e->getMessage() ) );
-			$fallback_env         = clone $test_config;
-			$fallback_env->env_id = 'failed_extension_' . uniqid();
-			$failed_result        = new PerformanceTestResult( $fallback_env );
-			$failed_result->set_status( 'failed' );
-			return [
-				'test_result' => $failed_result,
-				'exit_code'   => 1,
-			];
+			$this->output->writeln( sprintf( '<error>Failed to run tests: %s</error>', $e->getMessage() ) );
+			return 1;
 		} finally {
 			if ( $extension_env_info ) {
 				try {
-					$this->output->writeln( '<comment>Tearing down extension environment...</comment>' );
+					$this->output->writeln( '<comment>Tearing down environment...</comment>' );
 					Environment::down( $extension_env_info );
 				} catch ( \Exception $e ) {
-					$this->output->writeln( sprintf( '<comment>Warning: Failed to shut down extension environment: %s</comment>', $e->getMessage() ) );
+					$this->output->writeln( sprintf( '<comment>Warning: Failed to shut down environment: %s</comment>', $e->getMessage() ) );
 				}
 			}
 		}
 	}
-
 
 	/**
 	 * Combine baseline and main test results.
@@ -254,15 +169,10 @@ class PerformanceTestManager {
 	 * @return PerformanceTestResult The combined result.
 	 */
 	private function combine_results( PerformanceTestResult $main_result, ?PerformanceTestResult $baseline_result ): PerformanceTestResult {
-		// Use the main result as the base.
 		$combined_result = $main_result;
 
-		// If we have baseline results, add them to the combined result.
 		if ( $baseline_result ) {
 			$combined_result->set_baseline_result( $baseline_result );
-
-			// Note: The baseline result is stored for comparison by the compatibility dashboard.
-			// Comparison metrics and scoring are calculated server-side.
 		}
 
 		return $combined_result;
@@ -294,7 +204,6 @@ class PerformanceTestManager {
 			$results[] = $result;
 		}
 
-		// Log completion.
 		$this->output->writeln( sprintf( '<comment>%s tests completed (%d iterations averaged).</comment>', ucfirst( $test_type ), $this->test_iterations ) );
 
 		return $results;
@@ -314,7 +223,6 @@ class PerformanceTestManager {
 		$iteration_env_info         = clone $env_info;
 		$iteration_env_info->env_id = $env_info->env_id . "/iter{$iteration_number}";
 
-		// Get result filenames from manifest before creating the result.
 		$result_filenames = $this->k6_runner->get_result_filenames_from_manifest( $env_info );
 
 		$test_result = new PerformanceTestResult( $iteration_env_info, $result_filenames );
@@ -324,7 +232,6 @@ class PerformanceTestManager {
 			$this->output->writeln( sprintf( '<comment>Running %s iteration %d with tests for: %s</comment>', $test_type, $iteration_number, $env_info->sut['slug'] ?? 'unknown' ) );
 		}
 
-		// Run k6 test and handle result.
 		$exit_code = $this->k6_runner->run_test( $env_info, $test_result );
 		$test_result->add_metric( 'k6_exit_code', $exit_code );
 
@@ -385,37 +292,89 @@ class PerformanceTestManager {
 	}
 
 	/**
-	 * Create baseline environment options by removing the SUT from the original options.
+	 * Reset database to clean state by re-importing the base data.
 	 *
-	 * @return array<string,mixed> Environment options for baseline environment.
+	 * @param PerformanceEnvInfo $env_info The environment to reset.
 	 */
-	private function create_baseline_env_options(): array {
-		$baseline_options = $this->env_up_options;
+	private function reset_database_to_clean_state( PerformanceEnvInfo $env_info ): void {
+		$this->output->writeln( '<comment>Resetting database to clean state...</comment>' );
 
-		// Remove the SUT from plugins/themes to create a WooCommerce-only environment.
-		if ( isset( $baseline_options['--plugin'] ) ) {
-			$baseline_options['--plugin'] = array_filter( $baseline_options['--plugin'], function ( $plugin_entry ) {
-				$plugin_data = json_decode( $plugin_entry, true );
-				// Remove any plugin entries that match the SUT slug.
-				return ! ( is_array( $plugin_data ) && isset( $plugin_data['slug'] ) && $plugin_data['slug'] === $this->get_sut_slug_from_options() );
-			});
+		$this->performance_environment->init( $env_info );
+		$this->performance_environment->generate_base_data();
+	}
 
-			// Re-index the array to avoid gaps.
-			$baseline_options['--plugin'] = array_values( $baseline_options['--plugin'] );
+	/**
+	 * Run baseline performance tests (SUT deactivated).
+	 *
+	 * @param PerformanceEnvInfo $env_info The environment to test.
+	 * @return PerformanceTestResult|null The baseline test result or null if failed.
+	 */
+	private function run_baseline_tests( PerformanceEnvInfo $env_info ): ?PerformanceTestResult {
+		$sut_slug = $this->get_sut_slug_from_options();
+
+		if ( $sut_slug ) {
+			$this->performance_environment->init( $env_info );
+			$this->performance_environment->deactivate_sut_plugin( $sut_slug );
+		} else {
+			$this->output->writeln( '<comment>No SUT plugin found to deactivate for baseline</comment>' );
 		}
 
-		if ( isset( $baseline_options['--theme'] ) ) {
-			$baseline_options['--theme'] = array_filter( $baseline_options['--theme'], function ( $theme_entry ) {
-				$theme_data = json_decode( $theme_entry, true );
-				// Remove any theme entries that match the SUT slug.
-				return ! ( is_array( $theme_data ) && isset( $theme_data['slug'] ) && $theme_data['slug'] === $this->get_sut_slug_from_options() );
-			});
+		$this->output->writeln( '<comment>Running baseline tests...</comment>' );
+		$results = $this->run_test_iterations( $env_info, 'baseline', true );
 
-			// Re-index the array to avoid gaps.
-			$baseline_options['--theme'] = array_values( $baseline_options['--theme'] );
+		if ( ! $results ) {
+			return null;
 		}
 
-		return $baseline_options;
+		foreach ( $results as $result ) {
+			if ( $result->status === 'cancelled' ) {
+				$this->output->writeln( '<comment>Baseline tests were cancelled, returning cancelled result</comment>' );
+				return $result;
+			}
+		}
+
+		return $this->metric_averager->average_test_results( $results, $env_info );
+	}
+
+	/**
+	 * Run SUT performance tests (SUT activated).
+	 *
+	 * @param PerformanceEnvInfo $env_info The environment to test.
+	 * @return array{test_result: PerformanceTestResult, exit_code: int} The SUT test result and exit code.
+	 */
+	private function run_sut_tests( PerformanceEnvInfo $env_info ): array {
+		$sut_slug = $this->get_sut_slug_from_options();
+
+		if ( $sut_slug ) {
+			$this->performance_environment->init( $env_info );
+			$this->performance_environment->activate_sut_plugin( $sut_slug );
+		} else {
+			$this->output->writeln( '<comment>No SUT plugin found to activate</comment>' );
+		}
+
+		$this->output->writeln( '<comment>Running extension tests...</comment>' );
+		$results = $this->run_test_iterations( $env_info, 'extension', false );
+
+		if ( ! $results ) {
+			$failed_result = new PerformanceTestResult( $env_info );
+			$failed_result->set_status( 'failed' );
+			return [
+				'test_result' => $failed_result,
+				'exit_code'   => 1,
+			];
+		}
+
+		if ( count( $results ) === 1 && $results[0]->status === 'cancelled' ) {
+			return [
+				'test_result' => $results[0],
+				'exit_code'   => 143,
+			];
+		}
+
+		return [
+			'test_result' => $this->metric_averager->average_test_results( $results, $env_info ),
+			'exit_code'   => $this->get_final_exit_code( $results ),
+		];
 	}
 
 	/**

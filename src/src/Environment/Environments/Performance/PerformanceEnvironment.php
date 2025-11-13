@@ -77,23 +77,22 @@ class PerformanceEnvironment extends QITEnvironment {
 
 	/**
 	 * Download and import the performance database dump.
+	 * The dump file is cached in /tmp for potential database resets.
 	 */
-	private function generate_base_data(): void {
+	public function generate_base_data(): void {
 		$this->output->writeln( '<info>Generating test products and orders...</info>' );
 
 		// Get database dump download URL.
 		$cache       = App::make( Cache::class );
 		$db_dump_url = $cache->get_manager_sync_data( 'db_dump_file' );
 
-		// Download and import in one command to avoid storing large files.
 		$import_command = implode( ' && ', [
 			'cd /tmp',
 			'echo "Downloading performance database dump..."',
 			"curl -L -o woocommerce_dump.sql.zip {$db_dump_url}",
 			'echo "Importing database..."',
 			"unzip -p woocommerce_dump.sql.zip | mariadb -h qit_env_db_{$this->env_info->env_id} -u \$MYSQL_USER -p\$MYSQL_PASSWORD \$MYSQL_DATABASE --skip-ssl --binary-mode=1",
-			'rm -f woocommerce_dump.sql.zip',
-			'echo "Database import completed"',
+			'echo "Database import completed (dump file cached for potential resets)"',
 		] );
 
 		try {
@@ -110,5 +109,55 @@ class PerformanceEnvironment extends QITEnvironment {
 				$this->output->writeln( '<comment>Error: ' . $e->getMessage() . '</comment>' );
 			}
 		}
+	}
+
+	/**
+	 * Toggle a plugin's activation state.
+	 *
+	 * @param string $sut_slug The plugin slug to toggle.
+	 * @param string $action Either 'activate' or 'deactivate'.
+	 */
+	private function toggle_plugin( string $sut_slug, string $action ): void {
+		if ( empty( $sut_slug ) ) {
+			throw new \InvalidArgumentException( 'Plugin slug cannot be empty.' );
+		}
+
+		if ( ! in_array( $action, [ 'activate', 'deactivate' ], true ) ) {
+			throw new \InvalidArgumentException(
+				sprintf( 'Invalid action: %s. Expected "activate" or "deactivate".', $action )
+			);
+		}
+
+		$action_present = $action === 'activate' ? 'Activating' : 'Deactivating';
+		$this->output->writeln( sprintf( '<info>%s SUT plugin: %s</info>', $action_present, $sut_slug ) );
+
+		$this->docker->run_inside_docker(
+			$this->env_info,
+			[ 'wp', 'plugin', $action, $sut_slug, '--quiet' ]
+		);
+
+		// Flush caches to ensure clean state.
+		$this->docker->run_inside_docker(
+			$this->env_info,
+			[ 'wp', 'cache', 'flush', '--quiet' ]
+		);
+	}
+
+	/**
+	 * Deactivate the SUT plugin to create baseline environment state.
+	 *
+	 * @param string $sut_slug The SUT plugin slug to deactivate.
+	 */
+	public function deactivate_sut_plugin( string $sut_slug ): void {
+		$this->toggle_plugin( $sut_slug, 'deactivate' );
+	}
+
+	/**
+	 * Activate the SUT plugin.
+	 *
+	 * @param string $sut_slug The SUT plugin slug to activate.
+	 */
+	public function activate_sut_plugin( string $sut_slug ): void {
+		$this->toggle_plugin( $sut_slug, 'activate' );
 	}
 }
