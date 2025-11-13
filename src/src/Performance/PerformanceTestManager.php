@@ -89,20 +89,23 @@ class PerformanceTestManager {
 		$this->notifier = $notifier;
 	}
 
+	/**
+	 * Run performance tests in a fresh environment.
+	 *
+	 * @param PerformanceEnvInfo $env_info The environment to test against.
+	 * @return int Exit code of the test run.
+	 */
 	public function run_tests( PerformanceEnvInfo $env_info ): int {
 		$baseline_result = null;
 		$main_exit_code  = 0;
 
-		// Create single environment with SUT installed.
 		$this->output->writeln( '<comment>Setting up test environment...</comment>' );
 
 		$extension_env_info = null;
 		try {
-			// Create environment with all plugins (including SUT).
 			$extension_env_info = $this->create_environment( $this->env_up_options );
 			$this->copy_test_config( $extension_env_info, $env_info );
 
-			// Run baseline tests if enabled.
 			if ( $env_info->run_baseline ) {
 				$this->output->writeln( '<comment>Starting baseline tests...</comment>' );
 				$baseline_result = $this->run_baseline_tests( $extension_env_info );
@@ -116,31 +119,25 @@ class PerformanceTestManager {
 					$this->output->writeln( '<comment>Baseline tests completed successfully.</comment>' );
 				}
 
-				// Reset DB to clean state before SUT tests.
 				$this->reset_database_to_clean_state( $extension_env_info );
 			}
 
-			// Notify test started now that environment is ready.
 			$this->notify_test_started_if_configured( $extension_env_info );
 
-			// Run SUT tests.
-			$this->output->writeln( '<comment>Proceeding to extension tests...</comment>' );
+			$this->output->writeln( '<comment>Proceeding to SUT tests...</comment>' );
 			$main_result    = $this->run_sut_tests( $extension_env_info );
 			$main_exit_code = $main_result['exit_code'];
 
-			// Combine results.
 			$final_result = $main_result['test_result'];
 			if ( $baseline_result !== null ) {
 				$final_result = $this->combine_results( $main_result['test_result'], $baseline_result );
 			}
 
-			// Upload results.
 			if ( $this->output->isVerbose() ) {
 				$this->output->writeln( '<comment>Uploading test results...</comment>' );
 			}
 			$this->notifier->notify_test_finished( $final_result );
 
-			// Display summary.
 			$this->display_results_summary( $final_result );
 
 			if ( $this->output->isVerbose() ) {
@@ -172,15 +169,10 @@ class PerformanceTestManager {
 	 * @return PerformanceTestResult The combined result.
 	 */
 	private function combine_results( PerformanceTestResult $main_result, ?PerformanceTestResult $baseline_result ): PerformanceTestResult {
-		// Use the main result as the base.
 		$combined_result = $main_result;
 
-		// If we have baseline results, add them to the combined result.
 		if ( $baseline_result ) {
 			$combined_result->set_baseline_result( $baseline_result );
-
-			// Note: The baseline result is stored for comparison by the compatibility dashboard.
-			// Comparison metrics and scoring are calculated server-side.
 		}
 
 		return $combined_result;
@@ -212,7 +204,6 @@ class PerformanceTestManager {
 			$results[] = $result;
 		}
 
-		// Log completion.
 		$this->output->writeln( sprintf( '<comment>%s tests completed (%d iterations averaged).</comment>', ucfirst( $test_type ), $this->test_iterations ) );
 
 		return $results;
@@ -232,7 +223,6 @@ class PerformanceTestManager {
 		$iteration_env_info         = clone $env_info;
 		$iteration_env_info->env_id = $env_info->env_id . "/iter{$iteration_number}";
 
-		// Get result filenames from manifest before creating the result.
 		$result_filenames = $this->k6_runner->get_result_filenames_from_manifest( $env_info );
 
 		$test_result = new PerformanceTestResult( $iteration_env_info, $result_filenames );
@@ -242,7 +232,6 @@ class PerformanceTestManager {
 			$this->output->writeln( sprintf( '<comment>Running %s iteration %d with tests for: %s</comment>', $test_type, $iteration_number, $env_info->sut['slug'] ?? 'unknown' ) );
 		}
 
-		// Run k6 test and handle result.
 		$exit_code = $this->k6_runner->run_test( $env_info, $test_result );
 		$test_result->add_metric( 'k6_exit_code', $exit_code );
 
