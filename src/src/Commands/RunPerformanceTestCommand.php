@@ -179,20 +179,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			$env_up_options             = $options['env_up'];
 			$env_up_options['--tunnel'] = TunnelRunner::get_tunnel_value( $input );
 
-			// Map schema version options to environment options for local execution compatibility.
-			// UpEnvironmentCommand expects --wp and --woo, schema provides wordpress_version and woocommerce_version.
-			if ( $input->hasOption( 'wordpress_version' ) && $input->getOption( 'wordpress_version' ) ) {
-				$env_up_options['--wp'] = $input->getOption( 'wordpress_version' );
-			}
-			// Performance tests require WooCommerce, so default to 'latest' if not specified
-			if ( $input->hasOption( 'woocommerce_version' ) ) {
-				$woo_version             = $input->getOption( 'woocommerce_version' ) ?: 'latest';
-				$env_up_options['--woo'] = $woo_version;
-			} else {
-				// Fallback if schema doesn't have woocommerce_version option
-				$env_up_options['--woo'] = 'latest';
-			}
-
 			// Validate input once.
 			$wait              = $input->getOption( 'up_only' );
 			$validation_result = $this->validate_input( $input, $output, $wait );
@@ -691,6 +677,22 @@ class RunPerformanceTestCommand extends DynamicCommand {
 
 		// Parse options that should be sent to the API.
 		$parsed_options = parent::parse_options( $input, true );
+
+		// Map user-friendly aliases to API parameter names
+		$option_aliases = [
+			'wp'  => 'wordpress_version',
+			'woo' => 'woocommerce_version',
+			'php' => 'php_version',
+		];
+
+		foreach ( $option_aliases as $alias => $real_name ) {
+			if ( $input->hasOption( $alias ) ) {
+				$alias_value = $input->getOption( $alias );
+				if ( $alias_value !== null && $alias_value !== '' ) {
+					$parsed_options[ $real_name ] = $alias_value;
+				}
+			}
+		}
 
 		// Build options for remote API request.
 		$options = array_merge( $parsed_options, [

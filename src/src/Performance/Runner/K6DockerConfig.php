@@ -143,7 +143,7 @@ class K6DockerConfig {
 		}
 
 		return array_merge(
-			[ 'grafana/k6:master-with-browser' ],
+			[ 'grafana/k6:1.3.0-with-browser' ],
 			$k6_command
 		);
 	}
