@@ -214,6 +214,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 					} else {
 						$output->writeln( 'Starting test on QIT servers...' );
 					}
+
 					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
 						->with_method( 'POST' )
 						->with_post_body( $options )
@@ -300,6 +301,10 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$upload_id            = $this->upload->upload_build( 'build', $options['woo_id'], $zip_path, $output );
 				$options['upload_id'] = $upload_id;
 				$options['event']     = 'cli_development_extension_test';
+
+				// Remove the zip option from the array since it's CLI-only and should not be sent to the backend.
+				// The zip path may contain '../' which triggers the firewall path traversal detection.
+				unset( $options['zip'] );
 			}
 
 			/**
