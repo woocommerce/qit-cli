@@ -112,7 +112,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false )
 			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests' )
-			->addOption( 'iterations', null, InputOption::VALUE_OPTIONAL, 'Number of test iterations to run for metric stability', 7 )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
