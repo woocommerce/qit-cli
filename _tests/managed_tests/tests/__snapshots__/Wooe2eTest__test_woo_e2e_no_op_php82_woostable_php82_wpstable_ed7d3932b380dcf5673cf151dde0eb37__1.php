@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 384 total, 284 passed, 6 failed, 94 skipped",
+            "test_summary": "Tests: 384 total, 284 passed, 4 failed, 96 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 4,
+                "numFailedTestSuites": 3,
                 "numPassedTestSuites": 66,
                 "numPendingTestSuites": 32,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 6,
+                "numFailedTests": 4,
                 "numPassedTests": 284,
-                "numPendingTests": 94,
+                "numPendingTests": 96,
                 "numTotalTests": 384,
                 "testResults": [
                     {
@@ -924,7 +924,7 @@
                     },
                     {
                         "file": "customize-store\\/assembler\\/homepage.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Assembler -> Homepage": [
@@ -944,11 +944,11 @@
                             "Homepage tracking banner": [
                                 {
                                     "title": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2687,7 +2687,7 @@
                         }
                     }
                 ],
-                "summary": "384 total, 284 passed, 6 failed, 94 skipped."
+                "summary": "384 total, 284 passed, 4 failed, 96 skipped."
             }
         },
         {
@@ -2704,9 +2704,9 @@
                     "summary": {
                         "tests": 384,
                         "passed": 284,
-                        "failed": 6,
+                        "failed": 4,
                         "pending": 0,
-                        "skipped": 94,
+                        "skipped": 96,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -7521,14 +7521,11 @@
                         },
                         {
                             "name": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n\\n    at AssemblerPage.waitForLoadingScreenFinish (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/assembler.page.js:21:5)\\n    at prepareAssembler (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:20:19)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:294:3",
-                            "snippet": "   at customize-store\\/assembler\\/assembler.page.js:21\\n\\n\\u001b[0m \\u001b[90m 19 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m frame\\n \\u001b[90m 20 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Finish customizing\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 21 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mwaitFor( { timeout\\u001b[33m:\\u001b[39m \\u001b[35m25000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 22 |\\u001b[39m \\t}\\n \\u001b[90m 23 |\\u001b[39m\\n \\u001b[90m 24 |\\u001b[39m \\t\\u001b[90m\\/**\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@not-e2e"
                             ],
@@ -7538,47 +7535,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Homepage tracking banner",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--16fd2-hen-tracking-is-not-allowed-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--16fd2-hen-tracking-is-not-allowed-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--16fd2-hen-tracking-is-not-allowed-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--16fd2-hen-tracking-is-not-allowed-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
+                                            "line": 234,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n\\n    at AssemblerPage.waitForLoadingScreenFinish (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/assembler.page.js:21:5)\\n    at prepareAssembler (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:20:19)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js:314:3",
-                            "snippet": "   at customize-store\\/assembler\\/assembler.page.js:21\\n\\n\\u001b[0m \\u001b[90m 19 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m frame\\n \\u001b[90m 20 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Finish customizing\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 21 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mwaitFor( { timeout\\u001b[33m:\\u001b[39m \\u001b[35m25000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 22 |\\u001b[39m \\t}\\n \\u001b[90m 23 |\\u001b[39m\\n \\u001b[90m 24 |\\u001b[39m \\t\\u001b[90m\\/**\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@not-e2e"
                             ],
@@ -7588,34 +7570,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Homepage tracking banner",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--86a9c-and-tracking-is-not-allowed-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--86a9c-and-tracking-is-not-allowed-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--86a9c-and-tracking-is-not-allowed-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-assembler--86a9c-and-tracking-is-not-allowed-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
+                                            "line": 234,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
