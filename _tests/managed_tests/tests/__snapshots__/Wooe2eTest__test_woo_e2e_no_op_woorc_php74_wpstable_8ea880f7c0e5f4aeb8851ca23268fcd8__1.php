@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 335 total, 283 passed, 2 failed, 50 skipped",
+            "test_summary": "Tests: 335 total, 283 passed, 0 failed, 52 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 66,
-                "numPendingTestSuites": 22,
+                "numPendingTestSuites": 23,
                 "numTotalTestSuites": 89,
-                "numFailedTests": 2,
+                "numFailedTests": 0,
                 "numPassedTests": 283,
-                "numPendingTests": 50,
+                "numPendingTests": 52,
                 "numTotalTests": 335,
                 "testResults": [
                     {
@@ -907,13 +907,13 @@
                     },
                     {
                         "file": "email\\/settings-email-listing.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Settings List View": [
                                 {
                                     "title": "Email settings list view renders correctly and allows to edit email status and search",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1384,7 +1384,7 @@
                     },
                     {
                         "file": "order\\/order-refund.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
@@ -1400,7 +1400,7 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2390,7 +2390,7 @@
                         }
                     }
                 ],
-                "summary": "335 total, 283 passed, 2 failed, 50 skipped."
+                "summary": "335 total, 283 passed, 0 failed, 52 skipped."
             }
         },
         {
@@ -2407,9 +2407,9 @@
                     "summary": {
                         "tests": 335,
                         "passed": 283,
-                        "failed": 2,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 50,
+                        "skipped": 52,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -6731,14 +6731,11 @@
                         },
                         {
                             "name": "Email settings list view renders correctly and allows to edit email status and search",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.woocommerce-email-listing-listview\').getByText(\'Completed order\')\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-email-listing-listview\').getByText(\'Completed order\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.woocommerce-email-listing-listview\').getByText(\'Completed order\')\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-email-listing-listview\').getByText(\'Completed order\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email-listing.spec.js:105:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 103 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 104 |\\u001b[39m \\t\\t\\tlistViewLocator\\u001b[33m.\\u001b[39mgetByText( \\u001b[32m\'Completed order\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 105 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 106 |\\u001b[39m\\n \\u001b[90m 107 |\\u001b[39m \\t\\t\\u001b[90m\\/\\/ Check that only one row is visible after search\\u001b[39m\\n \\u001b[90m 108 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m rows \\u001b[33m=\\u001b[39m listViewLocator\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'tr\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email-listing.spec.js",
@@ -6746,34 +6743,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email\\/settings-email-listing.spec.js > WooCommerce Email Settings List View",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-listi-60dde-dit-email-status-and-search-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-listi-60dde-dit-email-status-and-search-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-listi-60dde-dit-email-status-and-search-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/email-settings-email-listi-60dde-dit-email-status-and-search-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email-listing.spec.js",
+                                            "line": 15,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -8910,14 +8895,11 @@
                         },
                         {
                             "name": "can update order after refunding item without automatic stock adjustment",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.system-note\').nth(1)\\nTimeout: 20000ms\\nExpected pattern: \\u001b[32m\\/Stock levels reduced: Product with stock \\\\(#\\\\d+\\\\) 10\\u21928\\/\\u001b[39m\\nReceived string:  \\u001b[31m\\"\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\t\\tStock levels reduced: Product with stock (10\\u21928)\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\t\\t\\tNovember 18, 2025 at 7:30 am\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tDelete note\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\"\\u001b[39m\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.system-note\').nth(1)\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to <li rel=\\"85\\" class=\\"note system-note\\">\\u2026<\\/li>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\tStock levels reduced: Product with stock (10\\u21928)\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\t\\tNovember 18, 2025 at 7:30 am\\t\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tDelete note\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.system-note\').nth(1)\\nTimeout: 20000ms\\nExpected pattern: \\u001b[32m\\/Stock levels reduced: Product with stock \\\\(#\\\\d+\\\\) 10\\u21928\\/\\u001b[39m\\nReceived string:  \\u001b[31m\\"\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\t\\tStock levels reduced: Product with stock (10\\u21928)\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\t\\t\\tNovember 18, 2025 at 7:30 am\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tDelete note\\u00b7\\u00b7\\u00b7\\u00b7\\u00b7\\u001b[39m\\n\\u001b[31m\\t\\t\\t\\"\\u001b[39m\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.system-note\').nth(1)\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to <li rel=\\"85\\" class=\\"note system-note\\">\\u2026<\\/li>\\u001b[22m\\n\\u001b[2m       - unexpected value \\"\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\tStock levels reduced: Product with stock (10\\u21928)\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\t\\tNovember 18, 2025 at 7:30 am\\t\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\t\\t\\t\\t\\t\\tDelete note\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\t\\u001b[22m\\n\\u001b[2m\\t\\t\\t\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js:221:6",
-                            "snippet": "\\u001b[0m \\u001b[90m 219 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 220 |\\u001b[39m \\t\\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'.system-note >> nth=1\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 221 |\\u001b[39m \\t\\t\\t)\\u001b[33m.\\u001b[39mtoContainText(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 222 |\\u001b[39m \\t\\t\\t\\t\\u001b[35m\\/Stock levels reduced: Product with stock \\\\(#\\\\d+\\\\) 10\\u21928\\/\\u001b[39m\\n \\u001b[90m 223 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 224 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -8929,37 +8911,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund and restock an order item",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-0429c--automatic-stock-adjustment-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-0429c--automatic-stock-adjustment-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-0429c--automatic-stock-adjustment-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/order-order-refund-WooComm-0429c--automatic-stock-adjustment-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js",
+                                            "line": 211,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
