@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 384 total, 284 passed, 4 failed, 96 skipped",
+            "test_summary": "Tests: 384 total, 282 passed, 0 failed, 102 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 3,
+                "numFailedTestSuites": 0,
                 "numPassedTestSuites": 66,
-                "numPendingTestSuites": 32,
+                "numPendingTestSuites": 34,
                 "numTotalTestSuites": 100,
-                "numFailedTests": 4,
-                "numPassedTests": 284,
-                "numPendingTests": 96,
+                "numFailedTests": 0,
+                "numPassedTests": 282,
+                "numPendingTests": 102,
                 "numTotalTests": 384,
                 "testResults": [
                     {
@@ -1042,38 +1042,38 @@
                     },
                     {
                         "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Assembler - Loading Page": [
                                 {
                                     "title": "should display loading screen and steps on first run",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should redirect to intro page in case of errors",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "customize-store\\/transitional.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Store owner can view the Transitional page": [
                                 {
                                     "title": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Clicking on \\"View store\\" should go to the store home page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1504,13 +1504,13 @@
                     },
                     {
                         "file": "onboarding\\/setup-checklist.spec.js",
-                        "status": "failed",
+                        "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Can hide the task list": [
                                 {
                                     "title": "Can hide the task list",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "Payments task list item links to Payments settings page": [
@@ -2687,7 +2687,7 @@
                         }
                     }
                 ],
-                "summary": "384 total, 284 passed, 4 failed, 96 skipped."
+                "summary": "384 total, 282 passed, 0 failed, 102 skipped."
             }
         },
         {
@@ -2703,10 +2703,10 @@
                     },
                     "summary": {
                         "tests": 384,
-                        "passed": 284,
-                        "failed": 4,
+                        "passed": 282,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 96,
+                        "skipped": 102,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -8131,14 +8131,11 @@
                         },
                         {
                             "name": "should display loading screen and steps on first run",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n\\n    at AssemblerPage.waitForLoadingScreenFinish (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/assembler.page.js:21:5)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/loading-screen\\/loading-screen.spec.js:93:21",
-                            "snippet": "   at customize-store\\/assembler\\/assembler.page.js:21\\n\\n\\u001b[0m \\u001b[90m 19 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m frame\\n \\u001b[90m 20 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Finish customizing\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 21 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mwaitFor( { timeout\\u001b[33m:\\u001b[39m \\u001b[35m25000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 22 |\\u001b[39m \\t}\\n \\u001b[90m 23 |\\u001b[39m\\n \\u001b[90m 24 |\\u001b[39m \\t\\u001b[90m\\/**\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@gutenberg",
                                 "@not-e2e"
@@ -8149,44 +8146,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-loading-sc-b30cc-reen-and-steps-on-first-run-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-loading-sc-b30cc-reen-and-steps-on-first-run-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-loading-sc-b30cc-reen-and-steps-on-first-run-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-loading-sc-b30cc-reen-and-steps-on-first-run-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/loading-screen\\/loading-screen.spec.js",
+                                            "line": 26,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "should redirect to intro page in case of errors",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@gutenberg",
                                 "@not-e2e"
@@ -8203,17 +8188,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/loading-screen\\/loading-screen.spec.js",
+                                            "line": 26,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@gutenberg",
                                 "@not-e2e"
@@ -8230,20 +8224,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.waitFor: Timeout 25000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.cys-fullscreen-iframe[style=\\"opacity: 1;\\"]\').contentFrame().getByRole(\'button\', { name: \'Finish customizing\' }) to be visible\\u001b[22m\\n\\n    at AssemblerPage.waitForLoadingScreenFinish (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/assembler.page.js:21:5)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js:85:22",
-                            "snippet": "   at customize-store\\/assembler\\/assembler.page.js:21\\n\\n\\u001b[0m \\u001b[90m 19 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m frame\\n \\u001b[90m 20 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Finish customizing\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 21 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mwaitFor( { timeout\\u001b[33m:\\u001b[39m \\u001b[35m25000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 22 |\\u001b[39m \\t}\\n \\u001b[90m 23 |\\u001b[39m\\n \\u001b[90m 24 |\\u001b[39m \\t\\u001b[90m\\/**\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@gutenberg",
                                 "@not-e2e"
@@ -8254,47 +8254,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-f4284-go-to-the-transitional-page-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-f4284-go-to-the-transitional-page-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-f4284-go-to-the-transitional-page-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-f4284-go-to-the-transitional-page-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Clicking on \\"View store\\" should go to the store home page",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'View store\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'View store\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js:123:7",
-                            "snippet": "\\u001b[0m \\u001b[90m 121 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m assembler\\n \\u001b[90m 122 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'link\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'View store\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 123 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 124 |\\u001b[39m\\n \\u001b[90m 125 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page )\\u001b[33m.\\u001b[39mtoHaveURL( \\u001b[32m\'.\\/\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 126 |\\u001b[39m \\t\\t\\t}\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@gutenberg",
                                 "@not-e2e"
@@ -8305,34 +8290,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-8e627-d-go-to-the-store-home-page-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-8e627-d-go-to-the-store-home-page-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-8e627-d-go-to-the-store-home-page-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/customize-store-transition-8e627-d-go-to-the-store-home-page-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/transitional.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -10068,14 +10041,11 @@
                         },
                         {
                             "name": "Can hide the task list",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByText(\'Customize your store\')\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Customize your store\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByText(\'Customize your store\')\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByText(\'Customize your store\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js:72:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js:69:14",
-                            "snippet": "\\u001b[0m \\u001b[90m 70 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 71 |\\u001b[39m \\t\\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByText( \\u001b[32m\'Customize your store\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 72 |\\u001b[39m \\t\\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 73 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mgetByText( \\u001b[32m\'Store management\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoBeHidden()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 74 |\\u001b[39m \\t\\t} )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 75 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@not-e2e"
                             ],
@@ -10083,43 +10053,24 @@
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load the WC Admin page.",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-hide-the-task-list-e2e-retry1\\/test-failed-1.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-hide-the-task-list-e2e-retry1\\/video.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-hide-the-task-list-e2e-retry1\\/error-context.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/test-results\\/onboarding-setup-checklist-Can-hide-the-task-list-e2e-retry1\\/trace.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js",
+                                            "line": 64,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },

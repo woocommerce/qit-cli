@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 335 total, 283 passed, 0 failed, 52 skipped",
+            "test_summary": "Tests: 335 total, 282 passed, 0 failed, 53 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -58,8 +58,8 @@
                 "numPendingTestSuites": 23,
                 "numTotalTestSuites": 89,
                 "numFailedTests": 0,
-                "numPassedTests": 283,
-                "numPendingTests": 52,
+                "numPassedTests": 282,
+                "numPendingTests": 53,
                 "numTotalTests": 335,
                 "testResults": [
                     {
@@ -1213,7 +1213,7 @@
                             "Can hide the task list": [
                                 {
                                     "title": "Can hide the task list",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Payments task list item links to Payments settings page": [
@@ -2390,7 +2390,7 @@
                         }
                     }
                 ],
-                "summary": "335 total, 283 passed, 0 failed, 52 skipped."
+                "summary": "335 total, 282 passed, 0 failed, 53 skipped."
             }
         },
         {
@@ -2406,10 +2406,10 @@
                     },
                     "summary": {
                         "tests": 335,
-                        "passed": 283,
+                        "passed": 282,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 52,
+                        "skipped": 53,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -7979,11 +7979,11 @@
                         },
                         {
                             "name": "Can hide the task list",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@not-e2e"
                             ],
@@ -7991,26 +7991,24 @@
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load the WC Admin page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hide the task list",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js",
+                                            "line": 64,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
