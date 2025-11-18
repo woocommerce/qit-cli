@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 384 total, 331 passed, 0 failed, 53 skipped",
+            "test_summary": "Tests: 335 total, 282 passed, 0 failed, 53 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -54,13 +54,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 77,
+                "numPassedTestSuites": 66,
                 "numPendingTestSuites": 23,
-                "numTotalTestSuites": 100,
+                "numTotalTestSuites": 89,
                 "numFailedTests": 0,
-                "numPassedTests": 331,
+                "numPassedTests": 282,
                 "numPendingTests": 53,
-                "numTotalTests": 384,
+                "numTotalTests": 335,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -782,303 +782,6 @@
                         }
                     },
                     {
-                        "file": "customize-store\\/assembler\\/color-picker.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Color Pickers": [
-                                {
-                                    "title": "Color pickers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color palette Slate should be applied",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Color picker should be focused when a color is picked",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/font-picker.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Font Picker": [
-                                {
-                                    "title": "Font pickers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Picking a font should trigger an update of fonts on the site preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Font pickers should be focused when a font is picked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Selected font palette should be applied on the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking opt-in new fonts should be available",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/footer.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Footers": [
-                                {
-                                    "title": "Available footers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected footer should be focused when is clicked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected footer should be applied on the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Picking a footer should trigger an update on the site preview",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/full-composability.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Full composability": [
-                                {
-                                    "title": "Clicking on \\"Design your homepage\\" should open the Intro sidebar by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on a category should open the sidebar for it",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on a pattern should insert it in the preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on a pattern should always scroll the page to the inserted pattern",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the \\"Move up\\/down\\" buttons should change the pattern order in the preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the \\"Shuffle\\" button on a patterns should replace it for another one",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the \\"Delete\\" button on a pattern should remove it from the preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the \\"Add patterns\\" button on the No Blocks view should add a default pattern",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/header.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> headers": [
-                                {
-                                    "title": "Available headers should be displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected header should be focused when is clicked",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected header should be applied on the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Picking a header should trigger an update on the site preview",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/homepage.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Assembler -> Homepage": [
-                                {
-                                    "title": "The selected homepage should be focused when is clicked",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "The selected homepage should be visible on the site preview",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Selected homepage should be applied on the frontend",
-                                    "status": "pending"
-                                }
-                            ],
-                            "Homepage tracking banner": [
-                                {
-                                    "title": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler -> Logo Picker": [
-                                {
-                                    "title": "Logo Picker should be empty initially",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Selecting an image should update the site preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Changing the image width should update the site preview and the frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the Delete button should remove the selected image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking the replace image should open the media gallery",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Logo should be visible after header update",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "The selected image should be visible on the frontend",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/assembler-hub.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view Assembler Hub for store customization": [
-                                {
-                                    "title": "Can not access the Assembler Hub page when the theme is not customized",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Can access the Assembler Hub page when the theme is already customized",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Visiting change header should show a list of block patterns to choose from",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/intro.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view the Intro page": [
-                                {
-                                    "title": "it shows the \\"offline banner\\" when the network is offline",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "it shows the \\"no AI\\" banner on Core when the task is not completed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "it shows the \\"no AI customize theme\\" banner when the task is completed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4 and redirects to the editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "clicking on \\"Go to the Customizer\\" with a classic theme should go to the customizer",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/loading-screen\\/loading-screen.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Assembler - Loading Page": [
-                                {
-                                    "title": "should display loading screen and steps on first run",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should redirect to intro page in case of errors",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customize-store\\/transitional.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Store owner can view the Transitional page": [
-                                {
-                                    "title": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Clicking on \\"View store\\" should go to the store home page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "editor\\/command-palette.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1205,12 +908,12 @@
                     {
                         "file": "email\\/settings-email-listing.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Settings List View": [
                                 {
                                     "title": "Email settings list view renders correctly and allows to edit email status and search",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1510,7 +1213,7 @@
                             "Can hide the task list": [
                                 {
                                     "title": "Can hide the task list",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Payments task list item links to Payments settings page": [
@@ -1697,7 +1400,7 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2687,7 +2390,7 @@
                         }
                     }
                 ],
-                "summary": "384 total, 331 passed, 0 failed, 53 skipped."
+                "summary": "335 total, 282 passed, 0 failed, 53 skipped."
             }
         },
         {
@@ -2702,8 +2405,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 384,
-                        "passed": 331,
+                        "tests": 335,
+                        "passed": 282,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 53,
@@ -2715,7 +2418,7 @@
                     "tests": [
                         {
                             "name": "Install WC using WC Beta Tester",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -4748,7 +4451,7 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -4785,7 +4488,7 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -6431,7 +6134,7 @@
                         },
                         {
                             "name": "Merchant can view a list of all customers, filter and download",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -6539,1357 +6242,6 @@
                             "stderr": [
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Color pickers should be displayed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/color-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/color-picker.spec.js > Assembler -> Color Pickers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Color palette Slate should be applied",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/color-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/color-picker.spec.js > Assembler -> Color Pickers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Color picker should be focused when a color is picked",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/color-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/color-picker.spec.js > Assembler -> Color Pickers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Font pickers should be displayed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Picking a font should trigger an update of fonts on the site preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Font pickers should be focused when a font is picked",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Selected font palette should be applied on the frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking opt-in new fonts should be available",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/font-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/font-picker.spec.js > Assembler -> Font Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Available footers should be displayed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/footer.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "The selected footer should be focused when is clicked",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/footer.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "The selected footer should be applied on the frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/footer.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Picking a footer should trigger an update on the site preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/footer.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/footer.spec.js > Assembler -> Footers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking on \\"Design your homepage\\" should open the Intro sidebar by default",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking on a category should open the sidebar for it",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking on a pattern should insert it in the preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking on a pattern should always scroll the page to the inserted pattern",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking the \\"Move up\\/down\\" buttons should change the pattern order in the preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking the \\"Shuffle\\" button on a patterns should replace it for another one",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking the \\"Delete\\" button on a pattern should remove it from the preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking the \\"Add patterns\\" button on the No Blocks view should add a default pattern",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/full-composability.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/full-composability.spec.js > Assembler -> Full composability",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Available headers should be displayed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/header.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "The selected header should be focused when is clicked",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/header.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "The selected header should be applied on the frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/header.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Picking a header should trigger an update on the site preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/header.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/header.spec.js > Assembler -> headers",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "The selected homepage should be focused when is clicked",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e",
-                                "@non-critical"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/homepage.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Assembler -> Homepage",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
-                                            "line": 50,
-                                            "column": 10
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "The selected homepage should be visible on the site preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e",
-                                "@non-critical"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/homepage.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Assembler -> Homepage",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
-                                            "line": 50,
-                                            "column": 10
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Selected homepage should be applied on the frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e",
-                                "@non-critical"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/homepage.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Assembler -> Homepage",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customize-store\\/assembler\\/homepage.spec.js",
-                                            "line": 50,
-                                            "column": 10
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Should show the \\"Want more patterns?\\" banner with the Opt-in message when tracking is not allowed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/homepage.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Homepage tracking banner",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Should show the \\"Want more patterns?\\" banner with the offline message when the user is offline and tracking is not allowed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/homepage.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/homepage.spec.js > Homepage tracking banner",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Logo Picker should be empty initially",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Selecting an image should update the site preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Changing the image width should update the site preview and the frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking the Delete button should remove the selected image",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking the replace image should open the media gallery",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Logo should be visible after header update",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "The selected image should be visible on the frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/logo-picker.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler\\/logo-picker\\/logo-picker.spec.js > Assembler -> Logo Picker",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can not access the Assembler Hub page when the theme is not customized",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/assembler-hub.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler-hub.spec.js > Store owner can view Assembler Hub for store customization",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can access the Assembler Hub page when the theme is already customized",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/assembler-hub.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler-hub.spec.js > Store owner can view Assembler Hub for store customization",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Visiting change header should show a list of block patterns to choose from",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/assembler-hub.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/assembler-hub.spec.js > Store owner can view Assembler Hub for store customization",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "it shows the \\"offline banner\\" when the network is offline",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/intro.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "it shows the \\"no AI\\" banner on Core when the task is not completed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/intro.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "it shows the \\"no AI customize theme\\" banner when the task is completed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/intro.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "it shows the \\"non default block theme\\" banner when the theme is a block theme different than TT4 and redirects to the editor",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/intro.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "clicking on \\"Go to the Customizer\\" with a classic theme should go to the customizer",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/intro.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/intro.spec.js > Store owner can view the Intro page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should display loading screen and steps on first run",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/loading-screen.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should redirect to intro page in case of errors",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/loading-screen.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/loading-screen\\/loading-screen.spec.js > Assembler - Loading Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Accessing the transitional page when the CYS flow is not completed should redirect to the Intro page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/transitional.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking on \\"Finish customizing\\" in the assembler should go to the transitional page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/transitional.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Clicking on \\"View store\\" should go to the store home page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/transitional.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customize-store\\/transitional.spec.js > Store owner can view the Transitional page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
                             "extra": {
                                 "annotations": []
                             },
@@ -8180,7 +6532,7 @@
                         },
                         {
                             "name": "Check selectors for tracking events",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8379,11 +6731,11 @@
                         },
                         {
                             "name": "Email settings list view renders correctly and allows to edit email status and search",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email-listing.spec.js",
@@ -8397,7 +6749,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email-listing.spec.js",
+                                            "line": 15,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -8479,7 +6840,7 @@
                         },
                         {
                             "name": "Send email preview",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8662,7 +7023,7 @@
                         },
                         {
                             "name": "Can enable the email editor",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8695,7 +7056,7 @@
                         },
                         {
                             "name": "Can access the email editor",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8728,7 +7089,7 @@
                         },
                         {
                             "name": "Can preview in new tab",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8761,7 +7122,7 @@
                         },
                         {
                             "name": "Can send test email",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -8794,7 +7155,7 @@
                         },
                         {
                             "name": "Can edit and save content",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -9552,7 +7913,7 @@
                         },
                         {
                             "name": "Can complete the core profiler installing default extensions",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -9618,11 +7979,11 @@
                         },
                         {
                             "name": "Can hide the task list",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@not-e2e"
                             ],
@@ -9630,26 +7991,24 @@
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load the WC Admin page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hide the task list",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js",
+                                            "line": 64,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -9683,7 +8042,7 @@
                         },
                         {
                             "name": "Can connect to WooCommerce.com",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10496,7 +8855,7 @@
                         },
                         {
                             "name": "can delete an issued refund",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10534,11 +8893,11 @@
                         },
                         {
                             "name": "can update order after refunding item without automatic stock adjustment",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -10554,12 +8913,18 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js",
+                                            "line": 211,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -10777,7 +9142,7 @@
                         },
                         {
                             "name": "can create a grouped product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10802,7 +9167,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-grouped-product-block-editor.spec.js",
-                                            "line": 54,
+                                            "line": 57,
                                             "column": 8
                                         }
                                     }
@@ -10812,7 +9177,7 @@
                         },
                         {
                             "name": "renders each block without error",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10838,7 +9203,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 44,
+                                            "line": 47,
                                             "column": 16
                                         }
                                     }
@@ -10848,7 +9213,7 @@
                         },
                         {
                             "name": "can create a simple product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10873,7 +9238,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 72,
+                                            "line": 75,
                                             "column": 8
                                         }
                                     }
@@ -10883,7 +9248,7 @@
                         },
                         {
                             "name": "can not create a product with duplicated SKU",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10908,7 +9273,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 440,
+                                            "line": 443,
                                             "column": 8
                                         }
                                     }
@@ -10918,7 +9283,7 @@
                         },
                         {
                             "name": "can a shopper add the simple product to the cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10943,7 +9308,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 492,
+                                            "line": 495,
                                             "column": 8
                                         }
                                     }
@@ -10953,7 +9318,7 @@
                         },
                         {
                             "name": "can create a variation option and publish the product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -10978,7 +9343,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 40,
+                                            "line": 43,
                                             "column": 15
                                         }
                                     }
@@ -10988,7 +9353,7 @@
                         },
                         {
                             "name": "can edit a variation",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11013,7 +9378,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 40,
+                                            "line": 43,
                                             "column": 15
                                         }
                                     }
@@ -11023,7 +9388,7 @@
                         },
                         {
                             "name": "can delete a variation",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11048,7 +9413,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 40,
+                                            "line": 43,
                                             "column": 15
                                         }
                                     }
@@ -11058,7 +9423,7 @@
                         },
                         {
                             "name": "can see variations warning and click the CTA",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11084,7 +9449,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 40,
+                                            "line": 43,
                                             "column": 15
                                         }
                                     }
@@ -11094,7 +9459,7 @@
                         },
                         {
                             "name": "can see single variation warning and click the CTA",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11120,7 +9485,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 40,
+                                            "line": 43,
                                             "column": 15
                                         }
                                     }
@@ -11130,7 +9495,7 @@
                         },
                         {
                             "name": "is hooked up to sidebar \\"Add New\\"",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11155,7 +9520,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 44,
+                                            "line": 47,
                                             "column": 8
                                         }
                                     }
@@ -11165,7 +9530,7 @@
                         },
                         {
                             "name": "can be disabled from the header",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11190,7 +9555,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 52,
+                                            "line": 55,
                                             "column": 8
                                         }
                                     }
@@ -11200,7 +9565,7 @@
                         },
                         {
                             "name": "can be disabled from settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11225,7 +9590,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 77,
+                                            "line": 80,
                                             "column": 8
                                         }
                                     }
@@ -11235,7 +9600,7 @@
                         },
                         {
                             "name": "can create a product with linked products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11260,7 +9625,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
-                                            "line": 86,
+                                            "line": 89,
                                             "column": 8
                                         }
                                     }
@@ -11270,7 +9635,7 @@
                         },
                         {
                             "name": "can create a simple product with categories, tags and with password required",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11295,7 +9660,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/organization-tab-product-block-editor.spec.js",
-                                            "line": 41,
+                                            "line": 44,
                                             "column": 8
                                         }
                                     }
@@ -11305,7 +9670,7 @@
                         },
                         {
                             "name": "add local attribute (with terms) to the Product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11330,7 +9695,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 111,
+                                            "line": 114,
                                             "column": 6
                                         }
                                     }
@@ -11340,7 +9705,7 @@
                         },
                         {
                             "name": "can add existing attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11365,7 +9730,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 282,
+                                            "line": 285,
                                             "column": 6
                                         }
                                     }
@@ -11375,7 +9740,7 @@
                         },
                         {
                             "name": "can update product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11400,7 +9765,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 368,
+                                            "line": 371,
                                             "column": 6
                                         }
                                     }
@@ -11410,7 +9775,7 @@
                         },
                         {
                             "name": "can remove product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11435,7 +9800,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 464,
+                                            "line": 467,
                                             "column": 6
                                         }
                                     }
@@ -11445,7 +9810,7 @@
                         },
                         {
                             "name": "can update the general information of a product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11470,7 +9835,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 38,
+                                            "line": 41,
                                             "column": 6
                                         }
                                     }
@@ -11480,7 +9845,7 @@
                         },
                         {
                             "name": "can schedule a product publication",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11505,7 +9870,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 93,
+                                            "line": 96,
                                             "column": 15
                                         }
                                     }
@@ -11515,7 +9880,7 @@
                         },
                         {
                             "name": "can duplicate a product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11540,7 +9905,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 93,
+                                            "line": 96,
                                             "column": 15
                                         }
                                     }
@@ -11550,7 +9915,7 @@
                         },
                         {
                             "name": "can delete a product",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11575,7 +9940,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 93,
+                                            "line": 96,
                                             "column": 15
                                         }
                                     }
@@ -11585,7 +9950,7 @@
                         },
                         {
                             "name": "can add images",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11610,7 +9975,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 81,
+                                            "line": 84,
                                             "column": 6
                                         }
                                     }
@@ -11620,7 +9985,7 @@
                         },
                         {
                             "name": "can replace an image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11645,7 +10010,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 133,
+                                            "line": 136,
                                             "column": 6
                                         }
                                     }
@@ -11655,7 +10020,7 @@
                         },
                         {
                             "name": "can remove an image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11680,7 +10045,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 190,
+                                            "line": 193,
                                             "column": 6
                                         }
                                     }
@@ -11690,7 +10055,7 @@
                         },
                         {
                             "name": "can set an image as cover",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11715,7 +10080,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 241,
+                                            "line": 244,
                                             "column": 6
                                         }
                                     }
@@ -11725,7 +10090,7 @@
                         },
                         {
                             "name": "can update sku",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11750,7 +10115,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 56,
+                                            "line": 59,
                                             "column": 6
                                         }
                                     }
@@ -11760,7 +10125,7 @@
                         },
                         {
                             "name": "can update stock status",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11785,7 +10150,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 92,
+                                            "line": 95,
                                             "column": 6
                                         }
                                     }
@@ -11795,7 +10160,7 @@
                         },
                         {
                             "name": "can track stock quantity",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11820,7 +10185,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 121,
+                                            "line": 124,
                                             "column": 6
                                         }
                                     }
@@ -11830,7 +10195,7 @@
                         },
                         {
                             "name": "can limit purchases",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -11855,7 +10220,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 199,
+                                            "line": 202,
                                             "column": 6
                                         }
                                     }
@@ -11865,7 +10230,7 @@
                         },
                         {
                             "name": "can add custom product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -13133,7 +11498,7 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -13169,7 +11534,7 @@
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -13204,7 +11569,7 @@
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -13603,7 +11968,7 @@
                         },
                         {
                             "name": "can reply to a product review",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
@@ -15435,7 +13800,12 @@
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "1",
+                        "message": "PHP Notice: Function as_unschedule_all_actions was called incorrectly. as_unschedule_all_actions() was called before the Action Scheduler data store was initialized Please see Debugging in WordPress for more information. (This message was added in version 3.1.6.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6131"
+                    }
+                ]
             }
         }
     ]
