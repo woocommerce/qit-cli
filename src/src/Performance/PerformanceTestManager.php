@@ -46,7 +46,7 @@ class PerformanceTestManager {
 		$this->environment_runner      = $environment_runner;
 		$this->performance_environment = $performance_environment;
 		$this->metric_averager         = new MetricAverager();
-		$this->test_iterations         = 3; // Default to 3 iterations for stability.
+		$this->test_iterations         = 7; // Default to 7 iterations for stability.
 	}
 
 	public function set_output( OutputInterface $output ): void {
@@ -56,7 +56,7 @@ class PerformanceTestManager {
 	/**
 	 * Set the number of iterations for performance tests.
 	 *
-	 * @param int $iterations Number of iterations (minimum 1, default 3).
+	 * @param int $iterations Number of iterations (minimum 1, default 7).
 	 */
 	public function set_test_iterations( int $iterations ): void {
 		$this->test_iterations = max( 1, $iterations );

@@ -112,7 +112,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false )
 			->addOption( 'no_baseline', null, InputOption::VALUE_NONE, 'Skip running baseline performance tests' )
-			->addOption( 'iterations', null, InputOption::VALUE_OPTIONAL, 'Number of test iterations to run for metric stability', 3 )
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'If set, failures will be notified to the author of the SUT' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'plugin' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'theme' )
@@ -425,7 +424,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	 */
 	protected function execute_performance_tests( InputInterface $input, PerformanceEnvInfo $env_info, array $env_up_options, OutputInterface $output, ?array $notification_params = null ): int {
 		// Get iterations from input.
-		$iterations = (int) ( $input->getOption( 'iterations' ) ?? 3 );
+		$iterations = (int) ( $input->getOption( 'iterations' ) ?? 7 );
 
 		// Validate iterations parameter.
 		if ( $iterations < 1 || $iterations > 10 ) {
