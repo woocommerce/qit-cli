@@ -1309,7 +1309,7 @@
                         "iterations": {
                             "description": "Number of test iterations to run for metric stability.",
                             "type": "integer",
-                            "default": 3,
+                            "default": 7,
                             "minimum": 1,
                             "maximum": 10
                         },
