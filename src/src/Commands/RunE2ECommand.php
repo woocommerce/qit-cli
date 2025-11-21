@@ -160,7 +160,8 @@ class RunE2ECommand extends QITCommand {
 			// Execution options
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
-			->addOption( 'print-report-url', null, InputOption::VALUE_NONE, 'Print the test report URL (contains sensitive data - use cautiously in public logs)' );
+			->addOption( 'print-report-url', null, InputOption::VALUE_NONE, 'Print the test report URL (contains sensitive data - use cautiously in public logs)' )
+			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run tests in Playwright UI mode' );
 	}
 
 	/**
@@ -449,6 +450,14 @@ class RunE2ECommand extends QITCommand {
 
 		// Get passthrough args to pass through to test framework
 		$passthrough_args = $input->getArgument( 'passthrough' ) ?? [];
+
+		// If --ui flag is set, prepend Playwright UI mode options
+		$ui_mode_enabled = $input->getOption( 'ui' );
+		if ( $ui_mode_enabled ) {
+			$ui_args          = [ '--ui', '--ui-port=8086', '--ui-host=0.0.0.0' ];
+			$passthrough_args = array_merge( $ui_args, $passthrough_args );
+			App::setVar( 'ui_mode_enabled', true );
+		}
 
 		// Get passthrough targets for explicit control
 		$passthrough_targets = $input->getOption( 'passthrough_target' ) ?? [];
@@ -1340,12 +1349,19 @@ class RunE2ECommand extends QITCommand {
 									}
 								}
 							} else {
-								// No explicit targets - use default behavior (local packages only)
-								// Check if package is local based on metadata
-								// Metadata has 'remote' => false for local packages
-								$is_local = isset( $metadata['remote'] ) && $metadata['remote'] === false;
+								// No explicit targets - check for UI mode or use default behavior (local packages only)
+								$ui_mode_enabled = App::getVar( 'ui_mode_enabled', false );
 
-								$should_pass_args = $is_local;
+								if ( $ui_mode_enabled ) {
+									// UI mode: pass args to all packages so Playwright UI works
+									$should_pass_args = true;
+								} else {
+									// Check if package is local based on metadata
+									// Metadata has 'remote' => false for local packages
+									$is_local = isset( $metadata['remote'] ) && $metadata['remote'] === false;
+
+									$should_pass_args = $is_local;
+								}
 							}
 
 							$package_passthrough_args = $should_pass_args ? $passthrough_args : [];
