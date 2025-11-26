@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 335 total, 282 passed, 0 failed, 53 skipped",
+            "test_summary": "Tests: 335 total, 285 passed, 0 failed, 50 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -44,7 +44,7 @@
             "phpstan_level": null,
             "test_variation": "",
             "test_packages": [],
-            "iterations": 3,
+            "iterations": 7,
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
             "test_result_json_extracted": "{EXTRACTED}",
@@ -54,12 +54,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 66,
-                "numPendingTestSuites": 23,
+                "numPassedTestSuites": 68,
+                "numPendingTestSuites": 21,
                 "numTotalTestSuites": 89,
                 "numFailedTests": 0,
-                "numPassedTests": 282,
-                "numPendingTests": 53,
+                "numPassedTests": 285,
+                "numPendingTests": 50,
                 "numTotalTests": 335,
                 "testResults": [
                     {
@@ -499,7 +499,7 @@
                     {
                         "file": "checkout\\/checkout.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
                                 {
@@ -540,13 +540,13 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout": [
@@ -908,12 +908,12 @@
                     {
                         "file": "email\\/settings-email-listing.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Email Settings List View": [
                                 {
                                     "title": "Email settings list view renders correctly and allows to edit email status and search",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2390,7 +2390,7 @@
                         }
                     }
                 ],
-                "summary": "335 total, 282 passed, 0 failed, 53 skipped."
+                "summary": "335 total, 285 passed, 0 failed, 50 skipped."
             }
         },
         {
@@ -2406,10 +2406,10 @@
                     },
                     "summary": {
                         "tests": 335,
-                        "passed": 282,
+                        "passed": 285,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 53,
+                        "skipped": 50,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4451,11 +4451,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4471,28 +4471,22 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js",
-                                            "line": 381,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4508,18 +4502,12 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.js",
-                                            "line": 381,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -6731,11 +6719,11 @@
                         },
                         {
                             "name": "Email settings list view renders correctly and allows to edit email status and search",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email-listing.spec.js",
@@ -6749,16 +6737,7 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email-listing.spec.js",
-                                            "line": 15,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -10253,7 +10232,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js",
-                                            "line": 150,
+                                            "line": 160,
                                             "column": 6
                                         }
                                     }
@@ -13804,6 +13783,18 @@
                     {
                         "count": "1",
                         "message": "PHP Notice: Function as_unschedule_all_actions was called incorrectly. as_unschedule_all_actions() was called before the Action Scheduler data store was initialized Please see Debugging in WordPress for more information. (This message was added in version 3.1.6.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6131"
+                    },
+                    {
+                        "count": "1",
+                        "message": "PHP Warning: Undefined property: wpdb::$wc_category_lookup in \\/var\\/www\\/html\\/wp-includes\\/class-wpdb.php on line 788"
+                    },
+                    {
+                        "count": "1",
+                        "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'\' at line 1 for query TRUNCATE TABLE made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, {closure}, ActionScheduler_QueueRunner->run, ActionScheduler_QueueRunner->do_batch, ActionScheduler_Abstract_QueueRunner->process_action, ActionScheduler_Action->execute, do_action_ref_array(\'generate_category_lookup_table_wrapper\'), WP_Hook->do_action, WP_Hook->apply_filters, WooCommerce->add_generate_category_lookup_table_wrapper, do_action(\'generate_category_lookup_table\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\CategoryLookup->regenerate"
+                    },
+                    {
+                        "count": "1",
+                        "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'(category_tree_id,category_id) VALUES (17,17),(16,16),(15,15)\' at line 1 for query INSERT IGNORE INTO (category_tree_id,category_id) VALUES (17,17),(16,16),(15,15) made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, {closure}, ActionScheduler_QueueRunner->run, ActionScheduler_QueueRunner->do_batch, ActionScheduler_Abstract_QueueRunner->process_action, ActionScheduler_Action->execute, do_action_ref_array(\'generate_category_lookup_table_wrapper\'), WP_Hook->do_action, WP_Hook->apply_filters, WooCommerce->add_generate_category_lookup_table_wrapper, do_action(\'generate_category_lookup_table\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\CategoryLookup->regenerate"
                     }
                 ]
             }
