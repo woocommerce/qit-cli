@@ -35,6 +35,7 @@
     "sut": [],
     "passthrough_args": [],
     "db_port": 0,
+    "global_setup_only": false,
     "tests": [],
     "playwright_config": [],
     "pw_test_tag": "",
