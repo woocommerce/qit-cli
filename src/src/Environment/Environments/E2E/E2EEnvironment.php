@@ -149,8 +149,8 @@ class E2EEnvironment extends QITEnvironment {
 					// Run setup phase ONLY for the first (main) package
 					// This is for manual testing - run:e2e handles setup per package with DB restore
 					// Run setup for ALL packages when global_setup_only, otherwise only first
-				if ( $is_first_package || $this->env_info->global_setup_only ) {
-						$setup_commands   = $runner->run_phase(
+					if ( $is_first_package || $this->env_info->global_setup_only ) {
+						$setup_commands       = $runner->run_phase(
 							$this->env_info,
 							'setup',
 							$package_id,
@@ -158,8 +158,8 @@ class E2EEnvironment extends QITEnvironment {
 							null,  // No artifacts_dir for setup phases
 							$setup_orchestrator
 						);
-						$total_commands  += $setup_commands;
-						$is_first_package = false;
+							$total_commands  += $setup_commands;
+							$is_first_package = false;
 					}
 
 					$setup_orchestrator->end_package( $package_id, true, $total_commands );

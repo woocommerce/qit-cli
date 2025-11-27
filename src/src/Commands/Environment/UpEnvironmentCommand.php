@@ -276,7 +276,9 @@ class UpEnvironmentCommand extends QITCommand {
 		$env_config       = $this->get_environment_config( $env_name );
 		$env_config       = $this->applyCliOverrides( $env_config, $input, $environment_type );
 
-		/* ─ 1.05. Merge utility packages from environment ─ */
+		/*
+		─ 1.05. Merge utility packages from environment ─
+		*/
 		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
 		$utility_packages = [];
 		if ( isset( $env_config['utilities'] ) && is_array( $env_config['utilities'] ) ) {
@@ -611,7 +613,7 @@ class UpEnvironmentCommand extends QITCommand {
 					"1. Remove the 'run' phase from these packages to make them utilities, OR\n" .
 					"2. Move them to 'test_packages' in your test configuration, OR\n" .
 					"3. Remove them from the 'utilities'/'global_setup' array\n\n" .
-					"Utility packages are for environment setup only and should not execute tests."
+					'Utility packages are for environment setup only and should not execute tests.'
 				);
 			}
 		}

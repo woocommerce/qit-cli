@@ -275,8 +275,8 @@ class RunE2ECommand extends QITCommand {
 
 		// Merge utility packages from the selected environment
 		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
-		$env_name   = $input->getOption( 'environment' ) ?? 'default';
-		$env_config = $this->get_environment_config( $env_name );
+		$env_name         = $input->getOption( 'environment' ) ?? 'default';
+		$env_config       = $this->get_environment_config( $env_name );
 		$utility_packages = [];
 		if ( isset( $env_config['utilities'] ) && is_array( $env_config['utilities'] ) ) {
 			$utility_packages = $env_config['utilities'];
@@ -362,7 +362,7 @@ class RunE2ECommand extends QITCommand {
 			$invalid_utilities = [];
 			foreach ( $utility_packages as $package_ref ) {
 				if ( isset( $test_packages[ $package_ref ] ) ) {
-					$manifest = $test_packages[ $package_ref ]['manifest'] ?? null;
+					$manifest = $test_packages[ $package_ref ]['manifest'];
 					if ( $manifest instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest && $manifest->has_phase( 'run' ) ) {
 						$package_id          = $manifest->get_package_id();
 						$invalid_utilities[] = $package_id;
@@ -374,7 +374,7 @@ class RunE2ECommand extends QITCommand {
 				$package_list = implode( "\n  - ", $invalid_utilities );
 				$output->writeln( "<error>Validation Error: Packages in 'utilities' or 'global_setup' must NOT have a 'run' phase.</error>" );
 				$output->writeln( '' );
-				$output->writeln( "The following packages have a run phase and cannot be used as utilities:" );
+				$output->writeln( 'The following packages have a run phase and cannot be used as utilities:' );
 				foreach ( $invalid_utilities as $pkg ) {
 					$output->writeln( "  - {$pkg}" );
 				}
@@ -390,7 +390,7 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-	// Duplicate detection has been moved to UpEnvironmentCommand to fail earlier
+		// Duplicate detection has been moved to UpEnvironmentCommand to fail earlier
 		// before any expensive operations like environment setup
 
 		// Now validate version consistency for subpackages
