@@ -233,6 +233,7 @@ abstract class EnvInfo implements \JsonSerializable {
 			'plugins', // Already handled above and converted to Extension objects
 			'themes', // Already handled above and converted to Extension objects
 			'domain', // Already handled above for environments that support it
+			'environment_manager', // Runtime-only object, not persisted
 		];
 
 		foreach ( $env_info_array as $key => $value ) {

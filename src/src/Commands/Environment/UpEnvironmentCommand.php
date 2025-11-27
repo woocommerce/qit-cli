@@ -85,6 +85,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'skip-setup', null, InputOption::VALUE_NONE, 'Skip running setup phases even if qit-test.json is found' )
 			->addOption( 'setup', null, InputOption::VALUE_OPTIONAL, 'Run setup phases from test package in specified directory', false )
 			->addOption( 'skip-test-phases', null, InputOption::VALUE_NONE, 'Skip all test phases (internal use by run:e2e)' )
+			->addOption( 'global-setup', null, InputOption::VALUE_NONE, 'Run globalSetup and setup phases without executing tests. Environment stays running for development.' )
 			->addOption( 'skip_activating_plugins', null, InputOption::VALUE_NONE, 'Skip activating plugins during environment setup' )
 			->addOption( 'skip_activating_themes', null, InputOption::VALUE_NONE, 'Skip activating themes during environment setup' )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
@@ -274,6 +275,28 @@ class UpEnvironmentCommand extends QITCommand {
 		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
 		$env_config       = $this->get_environment_config( $env_name );
 		$env_config       = $this->applyCliOverrides( $env_config, $input, $environment_type );
+
+		/* ─ 1.05. Merge utility packages from environment ─ */
+		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
+		$utility_packages = [];
+		if ( isset( $env_config['utilities'] ) && is_array( $env_config['utilities'] ) ) {
+			$utility_packages = $env_config['utilities'];
+		}
+		if ( isset( $env_config['global_setup'] ) && is_array( $env_config['global_setup'] ) ) {
+			$utility_packages = array_merge( $utility_packages, $env_config['global_setup'] );
+		}
+
+		foreach ( $utility_packages as $package_ref ) {
+			// Add to beginning so utilities run first
+			if ( ! in_array( $package_ref, $all_test_packages, true ) ) {
+				array_unshift( $all_test_packages, $package_ref );
+			}
+		}
+
+		// Process requirements from utility packages (plugins, themes, secrets, etc.)
+		if ( ! empty( $utility_packages ) ) {
+			$this->processTestPackageRequirements( $utility_packages, $output );
+		}
 
 		/* ─ 1.1. Add SUT as a plugin/theme if defined in qit.json ─ */
 		$sut = $this->get_resolved_sut();
@@ -565,6 +588,34 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
+		/* ─ 3.75. Validate utility packages don't have run phase ─ */
+		if ( ! empty( $utility_packages ) ) {
+			$invalid_utilities = [];
+			foreach ( $utility_packages as $package_ref ) {
+				// Find this package in test_packages_for_setup
+				if ( isset( $test_packages_for_setup[ $package_ref ] ) ) {
+					$manifest_data = $test_packages_for_setup[ $package_ref ]['manifest'] ?? null;
+					if ( $manifest_data && isset( $manifest_data['test']['phases']['run'] ) && ! empty( $manifest_data['test']['phases']['run'] ) ) {
+						$package_id          = $manifest_data['package'] ?? $package_ref;
+						$invalid_utilities[] = $package_id;
+					}
+				}
+			}
+
+			if ( ! empty( $invalid_utilities ) ) {
+				$package_list = implode( "\n  - ", $invalid_utilities );
+				throw new \RuntimeException(
+					"Validation Error: Packages in 'utilities' or 'global_setup' must NOT have a 'run' phase.\n\n" .
+					"The following packages have a run phase and cannot be used as utilities:\n  - {$package_list}\n\n" .
+					"To fix this:\n" .
+					"1. Remove the 'run' phase from these packages to make them utilities, OR\n" .
+					"2. Move them to 'test_packages' in your test configuration, OR\n" .
+					"3. Remove them from the 'utilities'/'global_setup' array\n\n" .
+					"Utility packages are for environment setup only and should not execute tests."
+				);
+			}
+		}
+
 		/* ─ 3.8. Add test package volumes for local and registry packages ─ */
 		foreach ( $test_packages_for_setup as $package_ref => $info ) {
 			// Map test packages to their container paths
@@ -597,6 +648,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'envs'                    => $env_config['envs'] ?? [],
 			'test_packages_for_setup' => $test_packages_for_setup,
 			'skip_test_phases'        => $input->getOption( 'skip-test-phases' ),  // Pass the flag to E2EEnvironment
+			'global_setup_only'       => $input->getOption( 'global-setup' ),  // Run only globalSetup and setup phases
 			'skip_activating_plugins' => $input->getOption( 'skip_activating_plugins' ),
 			'skip_activating_themes'  => $input->getOption( 'skip_activating_themes' ),
 			'tunnel'                  => $env_config['tunnel'] ?? false,
@@ -608,6 +660,25 @@ class UpEnvironmentCommand extends QITCommand {
 		/* ─ 5. Add QIT_ENV_ID and QIT_NETWORK_RESTRICTION to environment variables ─ */
 		$env_info->envs['QIT_ENV_ID']              = $env_info->env_id;
 		$env_info->envs['QIT_NETWORK_RESTRICTION'] = $env_info->network_restriction ? 'true' : 'false';
+
+		/* ─ 5.5. Set up EnvironmentManager with secrets for Docker container ─ */
+		$required_secrets = \QIT_CLI\App::getVar( 'test_package_required_secrets', [] );
+		if ( ! empty( $required_secrets ) ) {
+			$env_manager = new \QIT_CLI\Environment\EnvironmentManager();
+			// Initialize with empty CLI vars (they're already in $env_info->envs) and required secrets
+			$env_manager->initialize( [], [], array_keys( $required_secrets ) );
+
+			// Store environment manager in env_info for E2EEnvironment to use with orchestrator
+			$env_info->environment_manager = $env_manager;
+
+			// Set environment manager on Docker so secrets are passed to container
+			$docker = \QIT_CLI\App::make( \QIT_CLI\Environment\Docker::class );
+			$docker->set_environment_manager( $env_manager );
+
+			if ( $output->isVerbose() ) {
+				$output->writeln( '<info>✓ Secrets will be passed to container environment</info>' );
+			}
+		}
 
 		/* ─ 6. Honour --tunnel (validated against TunnelRunner) ─ */
 		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
@@ -1280,7 +1351,11 @@ Examples
 
   <info>qit env:up --setup=./tests/e2e</info>
       Run setup phases from test package in specified directory
-      
+
+  <info>qit env:up --global-setup --config=utilities.json</info>
+      Run globalSetup and setup from all packages without executing tests
+      Perfect for utility packages that configure environments for development
+
   <info>qit env:up --skip-setup</info>
       Skip automatic setup even if qit-test.json exists in current directory
 HELP;
@@ -1324,6 +1399,7 @@ HELP;
 
 		$required_plugins = \QIT_CLI\App::getVar( 'test_package_required_plugins', [] );
 		$required_themes  = \QIT_CLI\App::getVar( 'test_package_required_themes', [] );
+		$required_secrets = \QIT_CLI\App::getVar( 'test_package_required_secrets', [] );
 		$requires_network = \QIT_CLI\App::getVar( 'test_package_requires_network', false );
 		$requires_tunnel  = \QIT_CLI\App::getVar( 'test_package_requires_tunnel', false );
 
@@ -1362,6 +1438,17 @@ HELP;
 							$required_themes[ $theme ] = [];
 						}
 						$required_themes[ $theme ][] = $package_ref;
+					}
+
+					// Extract secret requirements
+					$requires = $manifest->get_requires();
+					if ( ! empty( $requires['secrets'] ) ) {
+						foreach ( $requires['secrets'] as $secret ) {
+							if ( ! isset( $required_secrets[ $secret ] ) ) {
+								$required_secrets[ $secret ] = [];
+							}
+							$required_secrets[ $secret ][] = $package_ref;
+						}
 					}
 
 					// Check network requirement
@@ -1409,6 +1496,17 @@ HELP;
 								$required_themes[ $theme ][] = $package_ref;
 							}
 
+							// Extract secret requirements
+							$requires = $manifest->get_requires();
+							if ( ! empty( $requires['secrets'] ) ) {
+								foreach ( $requires['secrets'] as $secret ) {
+									if ( ! isset( $required_secrets[ $secret ] ) ) {
+										$required_secrets[ $secret ] = [];
+									}
+									$required_secrets[ $secret ][] = $package_ref;
+								}
+							}
+
 							// Check network requirement
 							if ( $manifest->requires_network() ) {
 								$requires_network = true;
@@ -1445,11 +1543,38 @@ HELP;
 		if ( ! empty( $required_themes ) ) {
 			\QIT_CLI\App::setVar( 'test_package_required_themes', $required_themes );
 		}
+		if ( ! empty( $required_secrets ) ) {
+			\QIT_CLI\App::setVar( 'test_package_required_secrets', $required_secrets );
+		}
 		if ( $requires_network ) {
 			\QIT_CLI\App::setVar( 'test_package_requires_network', true );
 		}
 		if ( $requires_tunnel ) {
 			\QIT_CLI\App::setVar( 'test_package_requires_tunnel', true );
+		}
+
+		// Validate required secrets
+		if ( ! empty( $required_secrets ) ) {
+			$missing_secrets = [];
+			foreach ( array_keys( $required_secrets ) as $secret ) {
+				$value = getenv( $secret );
+				if ( $value === false || $value === '' ) {
+					$missing_secrets[ $secret ] = $required_secrets[ $secret ];
+				}
+			}
+
+			if ( ! empty( $missing_secrets ) ) {
+				$error_msg = "Missing required secrets:\n\n";
+				foreach ( $missing_secrets as $secret => $packages ) {
+					$package_list = implode( ', ', array_unique( $packages ) );
+					$error_msg   .= "  • {$secret} (required by: {$package_list})\n";
+				}
+				$first_secret = array_key_first( $missing_secrets );
+				$error_msg   .= "\nSet these environment variables before running this command.\n";
+				$error_msg   .= "Example: export {$first_secret}='your-secret-value'";
+
+				throw new \RuntimeException( $error_msg );
+			}
 		}
 	}
 

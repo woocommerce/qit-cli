@@ -273,6 +273,22 @@ class RunE2ECommand extends QITCommand {
 		// env:up will handle downloading (or cache hits) and requirement extraction
 		$original_test_packages = $input->getTestPackages(); // Get the original refs from input
 
+		// Merge utility packages from the selected environment
+		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
+		$env_name   = $input->getOption( 'environment' ) ?? 'default';
+		$env_config = $this->get_environment_config( $env_name );
+		$utility_packages = [];
+		if ( isset( $env_config['utilities'] ) && is_array( $env_config['utilities'] ) ) {
+			$utility_packages = $env_config['utilities'];
+		}
+		if ( isset( $env_config['global_setup'] ) && is_array( $env_config['global_setup'] ) ) {
+			$utility_packages = array_merge( $utility_packages, $env_config['global_setup'] );
+		}
+		if ( ! empty( $utility_packages ) ) {
+			// Prepend utility packages so they run first
+			$original_test_packages = array_merge( $utility_packages, $original_test_packages );
+		}
+
 		// Add original test package references to env:up options
 		if ( ! empty( $original_test_packages ) ) {
 			if ( ! isset( $env_up_options['--test-package'] ) ) {
@@ -341,7 +357,40 @@ class RunE2ECommand extends QITCommand {
 			}
 		}
 
-		// Duplicate detection has been moved to UpEnvironmentCommand to fail earlier
+		// Validate that packages from utilities/global_setup don't have run phase
+		if ( ! empty( $utility_packages ) && ! empty( $test_packages ) ) {
+			$invalid_utilities = [];
+			foreach ( $utility_packages as $package_ref ) {
+				if ( isset( $test_packages[ $package_ref ] ) ) {
+					$manifest = $test_packages[ $package_ref ]['manifest'] ?? null;
+					if ( $manifest instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest && $manifest->has_phase( 'run' ) ) {
+						$package_id          = $manifest->get_package_id();
+						$invalid_utilities[] = $package_id;
+					}
+				}
+			}
+
+			if ( ! empty( $invalid_utilities ) ) {
+				$package_list = implode( "\n  - ", $invalid_utilities );
+				$output->writeln( "<error>Validation Error: Packages in 'utilities' or 'global_setup' must NOT have a 'run' phase.</error>" );
+				$output->writeln( '' );
+				$output->writeln( "The following packages have a run phase and cannot be used as utilities:" );
+				foreach ( $invalid_utilities as $pkg ) {
+					$output->writeln( "  - {$pkg}" );
+				}
+				$output->writeln( '' );
+				$output->writeln( '<comment>To fix this:</comment>' );
+				$output->writeln( '1. Remove the \'run\' phase from these packages to make them utilities, OR' );
+				$output->writeln( '2. Move them to \'test_packages\' in your test configuration, OR' );
+				$output->writeln( '3. Remove them from the \'utilities\'/\'global_setup\' array' );
+				$output->writeln( '' );
+				$output->writeln( 'Utility packages are for environment setup only and should not execute tests.' );
+
+				return Command::FAILURE;
+			}
+		}
+
+	// Duplicate detection has been moved to UpEnvironmentCommand to fail earlier
 		// before any expensive operations like environment setup
 
 		// Now validate version consistency for subpackages
@@ -1144,11 +1193,19 @@ class RunE2ECommand extends QITCommand {
 			App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
 
 			// Get global setup package IDs to skip them (they only run globalSetup)
-			$global_setup_package_ids = array_keys( $env_info->global_setup_packages ?? [] );
+			// Utility packages are those WITHOUT a run phase
+			$utility_package_ids = [];
+			foreach ( $test_packages as $pkg_id => $meta ) {
+				$manifest = $meta['manifest'] ?? null;
+				if ( $manifest && $manifest instanceof \QIT_CLI\PreCommand\Objects\TestPackageManifest && $manifest->is_utility_package() ) {
+					$utility_package_ids[] = $pkg_id;
+				}
+			}
+			$global_setup_package_ids = $utility_package_ids; // For backwards compatibility
 
 			$io->section( 'Running Test Packages' );
 
-			// Count non-global-setup packages
+			// Count only test packages (exclude utility packages)
 			$test_package_count = count( array_diff( array_keys( $test_packages ), $global_setup_package_ids ) );
 			$orchestrator->start( $env_info->env_id, $test_package_count );
 
@@ -1235,8 +1292,8 @@ class RunE2ECommand extends QITCommand {
 				);
 			}
 
-			// Export baseline database snapshot only if we have multiple test packages
-			$has_multiple_packages = count( $test_packages ) > 1;
+			// Export baseline database snapshot only if we have multiple test packages (excluding utilities)
+			$has_multiple_packages = $test_package_count > 1;
 			if ( $has_multiple_packages ) {
 				$orchestrator->global_setup_message( 'Exporting baseline database snapshot...' );
 				$docker = App::make( Docker::class );
@@ -1248,9 +1305,9 @@ class RunE2ECommand extends QITCommand {
 			$is_first_package      = true;
 			$package_display_names = []; // Track display names for error messages
 			foreach ( $test_packages as $pkg_id => $meta ) {
-				// Skip packages that are in global_setup_packages (they only run globalSetup)
+				// Skip utility packages (they only contribute to globalSetup, no run phase)
 				if ( in_array( $pkg_id, $global_setup_package_ids, true ) ) {
-					$io->writeln( "<comment>Skipping {$pkg_id} (global setup package - globalSetup already executed)</comment>" );
+					$io->writeln( "<comment>Skipping {$pkg_id} (utility package - globalSetup already executed)</comment>" );
 					continue;
 				}
 

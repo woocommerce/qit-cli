@@ -315,6 +315,13 @@
                 "type": "string"
               }
             },
+            "utilities": {
+              "type": "array",
+              "description": "Utility packages (packages without run phase) for environment configuration and setup",
+              "items": {
+                "type": "string"
+              }
+            },
             "volumes": {
               "type": "array",
               "description": "Docker volume mappings",
