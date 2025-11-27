@@ -120,9 +120,10 @@ class E2EEnvironment extends QITEnvironment {
 			$ctrf_validator     = $this->ctrf_validator;
 			$setup_orchestrator = App::make( GlobalSetupOrchestrator::class );
 
-			// Set environment manager on orchestrator if available (for secret handling)
-			if ( isset( $this->env_info->environment_manager ) && $this->env_info->environment_manager !== null ) {
-				$setup_orchestrator->set_environment_manager( $this->env_info->environment_manager );
+			// Get environment manager from App container if available (for secret handling)
+			$env_manager = App::getVar( 'environment_manager', null );
+			if ( $env_manager !== null ) {
+				$setup_orchestrator->set_environment_manager( $env_manager );
 			}
 
 			$is_first_package = true;

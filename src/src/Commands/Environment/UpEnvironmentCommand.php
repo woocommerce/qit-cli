@@ -668,8 +668,8 @@ class UpEnvironmentCommand extends QITCommand {
 			// Initialize with empty CLI vars (they're already in $env_info->envs) and required secrets
 			$env_manager->initialize( [], [], array_keys( $required_secrets ) );
 
-			// Store environment manager in env_info for E2EEnvironment to use with orchestrator
-			$env_info->environment_manager = $env_manager;
+			// Store in App container for E2EEnvironment to retrieve
+			\QIT_CLI\App::setVar( 'environment_manager', $env_manager );
 
 			// Set environment manager on Docker so secrets are passed to container
 			$docker = \QIT_CLI\App::make( \QIT_CLI\Environment\Docker::class );
