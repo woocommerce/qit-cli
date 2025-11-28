@@ -125,7 +125,15 @@ class PackagePublishCommand extends QITCommand {
 				$version_display = sprintf( '%s <comment>(default, no version specified)</comment>', $version );
 			}
 			$io->writeln( sprintf( '   Version: <info>%s</info>', $version_display ) );
-			$io->writeln( sprintf( '   Test type: <info>%s</info>', $test_type ) );
+
+			// Show package type
+			$package_type = $manifest->get_package_type();
+			$io->writeln( sprintf( '   Package type: <info>%s</info>', $package_type ) );
+
+			// Only show test_type for test packages
+			if ( $package_type === 'test' ) {
+				$io->writeln( sprintf( '   Test type: <info>%s</info>', $test_type ) );
+			}
 
 			/*
 			---------------------------------------------------------------------
