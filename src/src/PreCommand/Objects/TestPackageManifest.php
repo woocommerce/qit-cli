@@ -375,23 +375,23 @@ final class TestPackageManifest {
 	}
 
 	public function is_utility_package(): bool {
-		return $this->package_type === 'utility' || empty( $this->phases['run'] );
+		return $this->package_type === PackageType::UTILITY || empty( $this->phases['run'] );
 	}
 
 	/**
 	 * Derive package type from manifest phases (fallback for backwards compatibility).
 	 *
-	 * @return string Package type: 'test' or 'utility'.
+	 * @return string Package type: PackageType::TEST or PackageType::UTILITY.
 	 */
 	private function derive_package_type(): string {
 		// A package is a utility if it has NO run phase, otherwise it's a test package.
-		return empty( $this->phases['run'] ) ? 'utility' : 'test';
+		return empty( $this->phases['run'] ) ? PackageType::UTILITY : PackageType::TEST;
 	}
 
 	/**
 	 * Get the package type.
 	 *
-	 * @return string Package type: 'test' or 'utility'.
+	 * @return string Package type: PackageType::TEST or PackageType::UTILITY.
 	 */
 	public function get_package_type(): string {
 		return $this->package_type;

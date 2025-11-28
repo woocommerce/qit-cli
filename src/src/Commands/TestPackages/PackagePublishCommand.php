@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands\TestPackages;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
+use QIT_CLI\PreCommand\Objects\PackageType;
 use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
@@ -131,7 +132,7 @@ class PackagePublishCommand extends QITCommand {
 			$io->writeln( sprintf( '   Package type: <info>%s</info>', $package_type ) );
 
 			// Only show test_type for test packages
-			if ( $package_type === 'test' ) {
+			if ( $package_type === PackageType::TEST ) {
 				$io->writeln( sprintf( '   Test type: <info>%s</info>', $test_type ) );
 			}
 
