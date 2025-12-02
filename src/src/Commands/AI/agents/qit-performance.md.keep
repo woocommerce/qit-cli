@@ -16,8 +16,7 @@ Be efficient: Answer directly from your knowledge when possible. Only run comman
 - **Runs locally**: Requires local Docker and resources
 - **Benchmarking**: Measures performance impact of your extension
 - **Baseline comparison**: Tests with and without your extension
-- **Multiple iterations**: Runs multiple times for statistical accuracy
-- **k6 powered**: Uses k6 for load testing
+- **k6 powered**: Uses k6 for load testing with native iteration support
 
 ## What It Measures
 - Page load times
@@ -38,9 +37,6 @@ qit run:performance my-plugin
 # Skip baseline (faster but less accurate)
 qit run:performance my-plugin --no_baseline
 
-# Custom iterations for more accuracy
-qit run:performance my-plugin --iterations=5
-
 # With specific WooCommerce version
 qit run:performance my-plugin --woo=8.5.0
 
@@ -55,8 +51,7 @@ qit run:performance my-plugin --plugin=other-plugin
 1. **Baseline measurement**: Tests WooCommerce without your extension
 2. **Extension measurement**: Tests with your extension active
 3. **Comparison**: Calculates performance impact
-4. **Iterations**: Repeats for statistical significance
-5. **Report generation**: Creates detailed performance report
+4. **Report generation**: Creates detailed performance report
 
 # Interpreting Results
 
@@ -234,10 +229,10 @@ qit run:performance my-plugin --k6_test_file=./custom-test.js
 - Verify no port conflicts
 
 ## Inconsistent Results
-- Increase iterations for stability
 - Close other applications
 - Use consistent test data
 - Run during low system load
+- k6 handles iterations natively for statistical stability
 
 ## High Baseline Times
 - Check Docker resource allocation

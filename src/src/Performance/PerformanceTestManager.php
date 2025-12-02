@@ -5,7 +5,6 @@ namespace QIT_CLI\Performance;
 use QIT_CLI\Environment\EnvironmentRunner;
 use QIT_CLI\Utils\LocalTestRunNotifier;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
-use QIT_CLI\Performance\MetricAverager;
 use QIT_CLI\Performance\Result\PerformanceTestResult;
 use QIT_CLI\Performance\Runner\K6Runner;
 use QIT_CLI\Environment\Environments\Environment;
@@ -21,12 +20,6 @@ class PerformanceTestManager {
 
 	/** @var LocalTestRunNotifier */
 	private $notifier;
-
-	/** @var MetricAverager */
-	private $metric_averager;
-
-	/** @var int */
-	private $test_iterations;
 
 	/** @var EnvironmentRunner */
 	private $environment_runner;
@@ -45,21 +38,10 @@ class PerformanceTestManager {
 		$this->notifier                = $notifier;
 		$this->environment_runner      = $environment_runner;
 		$this->performance_environment = $performance_environment;
-		$this->metric_averager         = new MetricAverager();
-		$this->test_iterations         = 7; // Default to 7 iterations for stability.
 	}
 
 	public function set_output( OutputInterface $output ): void {
 		$this->output = $output;
-	}
-
-	/**
-	 * Set the number of iterations for performance tests.
-	 *
-	 * @param int $iterations Number of iterations (minimum 1, default 7).
-	 */
-	public function set_test_iterations( int $iterations ): void {
-		$this->test_iterations = max( 1, $iterations );
 	}
 
 	/**
@@ -178,58 +160,22 @@ class PerformanceTestManager {
 		return $combined_result;
 	}
 
-
 	/**
-	 * Run test iterations for a given environment.
+	 * Run a performance test.
 	 *
 	 * @param PerformanceEnvInfo $env_info The environment to test against.
 	 * @param string             $test_type Test type for logging ('baseline' or 'extension').
 	 * @param bool               $is_baseline Whether this is a baseline test.
-	 * @return PerformanceTestResult[] Array of test results.
-	 */
-	private function run_test_iterations( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline ): array {
-		$results = [];
-
-		// Run tests multiple times for stability.
-		// We reuse the same Docker environment but create nested result directories.
-		for ( $i = 1; $i <= $this->test_iterations; $i++ ) {
-			$this->output->writeln( sprintf( '<comment>Running %s test iteration %d/%d...</comment>', $test_type, $i, $this->test_iterations ) );
-
-			$result = $this->run_single_iteration( $env_info, $test_type, $is_baseline, $i );
-
-			if ( $result->status === 'cancelled' ) {
-				return [ $result ];
-			}
-
-			$results[] = $result;
-		}
-
-		$this->output->writeln( sprintf( '<comment>%s tests completed (%d iterations averaged).</comment>', ucfirst( $test_type ), $this->test_iterations ) );
-
-		return $results;
-	}
-
-	/**
-	 * Run a single test iteration.
-	 *
-	 * @param PerformanceEnvInfo $env_info The environment to test against.
-	 * @param string             $test_type Test type for logging.
-	 * @param bool               $is_baseline Whether this is a baseline test.
-	 * @param int                $iteration_number Current iteration number.
 	 * @return PerformanceTestResult Test result.
 	 */
-	private function run_single_iteration( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline, int $iteration_number ): PerformanceTestResult {
-		// Create nested iteration directory.
-		$iteration_env_info         = clone $env_info;
-		$iteration_env_info->env_id = $env_info->env_id . "/iter{$iteration_number}";
-
+	private function run_test( PerformanceEnvInfo $env_info, string $test_type, bool $is_baseline ): PerformanceTestResult {
 		$result_filenames = $this->k6_runner->get_result_filenames_from_manifest( $env_info );
 
-		$test_result = new PerformanceTestResult( $iteration_env_info, $result_filenames );
+		$test_result = new PerformanceTestResult( $env_info, $result_filenames );
 		$test_result->set_baseline( $is_baseline );
 
 		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( sprintf( '<comment>Running %s iteration %d with tests for: %s</comment>', $test_type, $iteration_number, $env_info->sut['slug'] ?? 'unknown' ) );
+			$this->output->writeln( sprintf( '<comment>Running %s tests for: %s</comment>', $test_type, $env_info->sut['slug'] ?? 'unknown' ) );
 		}
 
 		$exit_code = $this->k6_runner->run_test( $env_info, $test_result );
@@ -237,7 +183,7 @@ class PerformanceTestManager {
 
 		if ( $exit_code === 143 ) {
 			$test_result->set_status( 'cancelled' );
-			$this->output->writeln( sprintf( '<error>%s iteration %d was cancelled</error>', ucfirst( $test_type ), $iteration_number ) );
+			$this->output->writeln( sprintf( '<error>%s tests were cancelled</error>', ucfirst( $test_type ) ) );
 			return $test_result;
 		}
 
@@ -246,26 +192,10 @@ class PerformanceTestManager {
 
 		if ( $this->output->isVerbose() ) {
 			$metrics_count = count( $test_result->get_metrics() );
-			$this->output->writeln( sprintf( '<comment>%s iteration %d completed: %d metrics collected</comment>', ucfirst( $test_type ), $iteration_number, $metrics_count ) );
+			$this->output->writeln( sprintf( '<comment>%s tests completed: %d metrics collected</comment>', ucfirst( $test_type ), $metrics_count ) );
 		}
 
 		return $test_result;
-	}
-
-	/**
-	 * Get the final exit code from multiple test results.
-	 * Returns first non-zero exit code found, or 0 if all succeeded.
-	 *
-	 * @param PerformanceTestResult[] $results Array of test results.
-	 */
-	private function get_final_exit_code( array $results ): int {
-		foreach ( $results as $result ) {
-			$exit_code = $result->get_metrics()['k6_exit_code'] ?? 0;
-			if ( $exit_code ) {
-				return $exit_code;
-			}
-		}
-		return 0;
 	}
 
 	/**
@@ -320,20 +250,8 @@ class PerformanceTestManager {
 		}
 
 		$this->output->writeln( '<comment>Running baseline tests...</comment>' );
-		$results = $this->run_test_iterations( $env_info, 'baseline', true );
 
-		if ( ! $results ) {
-			return null;
-		}
-
-		foreach ( $results as $result ) {
-			if ( $result->status === 'cancelled' ) {
-				$this->output->writeln( '<comment>Baseline tests were cancelled, returning cancelled result</comment>' );
-				return $result;
-			}
-		}
-
-		return $this->metric_averager->average_test_results( $results, $env_info );
+		return $this->run_test( $env_info, 'baseline', true );
 	}
 
 	/**
@@ -353,27 +271,13 @@ class PerformanceTestManager {
 		}
 
 		$this->output->writeln( '<comment>Running extension tests...</comment>' );
-		$results = $this->run_test_iterations( $env_info, 'extension', false );
+		$result = $this->run_test( $env_info, 'extension', false );
 
-		if ( ! $results ) {
-			$failed_result = new PerformanceTestResult( $env_info );
-			$failed_result->set_status( 'failed' );
-			return [
-				'test_result' => $failed_result,
-				'exit_code'   => 1,
-			];
-		}
-
-		if ( count( $results ) === 1 && $results[0]->status === 'cancelled' ) {
-			return [
-				'test_result' => $results[0],
-				'exit_code'   => 143,
-			];
-		}
+		$exit_code = $result->status === 'cancelled' ? 143 : ( $result->get_metrics()['k6_exit_code'] ?? 0 );
 
 		return [
-			'test_result' => $this->metric_averager->average_test_results( $results, $env_info ),
-			'exit_code'   => $this->get_final_exit_code( $results ),
+			'test_result' => $result,
+			'exit_code'   => $exit_code,
 		];
 	}
 

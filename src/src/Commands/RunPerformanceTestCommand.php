@@ -423,18 +423,8 @@ class RunPerformanceTestCommand extends DynamicCommand {
 	 * @return int Command exit code.
 	 */
 	protected function execute_performance_tests( InputInterface $input, PerformanceEnvInfo $env_info, array $env_up_options, OutputInterface $output, ?array $notification_params = null ): int {
-		// Get iterations from input.
-		$iterations = (int) ( $input->getOption( 'iterations' ) ?? 7 );
-
-		// Validate iterations parameter.
-		if ( $iterations < 1 || $iterations > 10 ) {
-			$output->writeln( '<error>Iterations must be between 1 and 10.</error>' );
-			return Command::FAILURE;
-		}
-
 		// Run tests with complete environment lifecycle management.
 		$this->performance_test_manager->set_output( $output );
-		$this->performance_test_manager->set_test_iterations( $iterations );
 		$this->performance_test_manager->set_env_up_options( $env_up_options );
 
 		if ( $notification_params !== null ) {
@@ -697,12 +687,6 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		$options = array_merge( $parsed_options, [
 			'woo_id' => $context['woo_id'],
 		] );
-
-		// Add iterations option for remote execution.
-		$iterations = $input->getOption( 'iterations' );
-		if ( ! empty( $iterations ) ) {
-			$options['iterations'] = (int) $iterations;
-		}
 
 		// Handle test packages option for remote execution.
 		$test_packages = $this->get_test_package_ids( $input, $output );
