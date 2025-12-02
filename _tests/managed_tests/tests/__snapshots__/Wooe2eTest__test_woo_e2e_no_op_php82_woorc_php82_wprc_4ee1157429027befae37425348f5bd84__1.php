@@ -13783,18 +13783,6 @@
                     {
                         "count": "1",
                         "message": "PHP Notice: Function as_unschedule_all_actions was called incorrectly. as_unschedule_all_actions() was called before the Action Scheduler data store was initialized Please see Debugging in WordPress for more information. (This message was added in version 3.1.6.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6131"
-                    },
-                    {
-                        "count": "1",
-                        "message": "PHP Warning: Undefined property: wpdb::$wc_category_lookup in \\/var\\/www\\/html\\/wp-includes\\/class-wpdb.php on line 788"
-                    },
-                    {
-                        "count": "1",
-                        "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'\' at line 1 for query TRUNCATE TABLE made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, {closure}, ActionScheduler_QueueRunner->run, ActionScheduler_QueueRunner->do_batch, ActionScheduler_Abstract_QueueRunner->process_action, ActionScheduler_Action->execute, do_action_ref_array(\'generate_category_lookup_table_wrapper\'), WP_Hook->do_action, WP_Hook->apply_filters, WooCommerce->add_generate_category_lookup_table_wrapper, do_action(\'generate_category_lookup_table\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\CategoryLookup->regenerate"
-                    },
-                    {
-                        "count": "1",
-                        "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'(category_tree_id,category_id) VALUES (17,17),(16,16),(15,15)\' at line 1 for query INSERT IGNORE INTO (category_tree_id,category_id) VALUES (17,17),(16,16),(15,15) made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook->do_action, WP_Hook->apply_filters, {closure}, ActionScheduler_QueueRunner->run, ActionScheduler_QueueRunner->do_batch, ActionScheduler_Abstract_QueueRunner->process_action, ActionScheduler_Action->execute, do_action_ref_array(\'generate_category_lookup_table_wrapper\'), WP_Hook->do_action, WP_Hook->apply_filters, WooCommerce->add_generate_category_lookup_table_wrapper, do_action(\'generate_category_lookup_table\'), WP_Hook->do_action, WP_Hook->apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\CategoryLookup->regenerate"
                     }
                 ]
             }
