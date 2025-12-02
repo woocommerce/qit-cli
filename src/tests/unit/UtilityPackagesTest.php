@@ -402,4 +402,169 @@ class UtilityPackagesTest extends TestCase {
 		$retrieved = App::getVar( 'test_package_requires_tunnel', false );
 		$this->assertFalse( $retrieved );
 	}
+
+	/**
+	 * Test that utility packages are correctly identified by package_type derivation
+	 */
+	public function test_utility_package_type_is_derived_from_missing_run_phase(): void {
+		$manifest_data = [
+			'package' => 'test/utility-no-explicit-type',
+			'test'    => [
+				'phases' => [
+					'globalSetup' => [ 'echo "setup"' ],
+				],
+			],
+		];
+
+		$manifest = new TestPackageManifest( $manifest_data );
+
+		// Should derive as utility package (no run phase)
+		$this->assertEquals( 'utility', $manifest->get_package_type() );
+		$this->assertTrue( $manifest->is_utility_package() );
+	}
+
+	/**
+	 * Test that test packages are correctly identified by package_type derivation
+	 */
+	public function test_test_package_type_is_derived_from_run_phase(): void {
+		$manifest_data = [
+			'package'   => 'test/test-package-no-explicit-type',
+			'test_type' => 'e2e',
+			'test'      => [
+				'phases'  => [
+					'run' => [ 'npx playwright test' ],
+				],
+				'results' => [
+					'ctrf-json' => './results/report.json',
+				],
+			],
+		];
+
+		$manifest = new TestPackageManifest( $manifest_data );
+
+		// Should derive as test package (has run phase)
+		$this->assertEquals( 'test', $manifest->get_package_type() );
+		$this->assertFalse( $manifest->is_utility_package() );
+	}
+
+	/**
+	 * Test that explicit package_type field takes precedence over derivation
+	 */
+	public function test_explicit_package_type_takes_precedence(): void {
+		// Explicit utility type (even though it has phases that could be test-like)
+		$utility_manifest = [
+			'package'      => 'test/explicit-utility',
+			'package_type' => 'utility',
+			'test'         => [
+				'phases' => [
+					'globalSetup' => [ 'echo "setup"' ],
+				],
+			],
+		];
+
+		$manifest = new TestPackageManifest( $utility_manifest );
+		$this->assertEquals( 'utility', $manifest->get_package_type() );
+
+		// Explicit test type
+		$test_manifest = [
+			'package'      => 'test/explicit-test',
+			'package_type' => 'test',
+			'test_type'    => 'e2e',
+			'test'         => [
+				'phases'  => [
+					'run' => [ 'npx playwright test' ],
+				],
+				'results' => [
+					'ctrf-json' => './results/report.json',
+				],
+			],
+		];
+
+		$manifest = new TestPackageManifest( $test_manifest );
+		$this->assertEquals( 'test', $manifest->get_package_type() );
+	}
+
+	/**
+	 * Test that utility packages don't require test_type field
+	 */
+	public function test_utility_package_does_not_require_test_type(): void {
+		$manifest_data = [
+			'package' => 'test/utility-no-test-type',
+			// Note: no test_type field
+			'test'    => [
+				'phases' => [
+					'globalSetup' => [ 'wp option set foo bar' ],
+				],
+			],
+		];
+
+		$manifest = new TestPackageManifest( $manifest_data );
+
+		// Should not throw exception
+		$this->assertEquals( 'utility', $manifest->get_package_type() );
+
+		// test_type defaults to 'e2e' but that's OK for internal consistency
+		// The important part is the package is identified as utility
+		$this->assertTrue( $manifest->is_utility_package() );
+	}
+
+	/**
+	 * Test that test packages require test_type field
+	 */
+	public function test_test_package_has_test_type(): void {
+		$manifest_data = [
+			'package'   => 'test/test-with-type',
+			'test_type' => 'e2e',
+			'test'      => [
+				'phases'  => [
+					'run' => [ 'npx playwright test' ],
+				],
+				'results' => [
+					'ctrf-json' => './results/report.json',
+				],
+			],
+		];
+
+		$manifest = new TestPackageManifest( $manifest_data );
+
+		$this->assertEquals( 'test', $manifest->get_package_type() );
+		$this->assertEquals( 'e2e', $manifest->get_test_type() );
+		$this->assertFalse( $manifest->is_utility_package() );
+	}
+
+	/**
+	 * Test backward compatibility: packages without package_type field
+	 * are correctly identified by their phases
+	 */
+	public function test_backward_compatibility_package_type_derivation(): void {
+		// Old-style utility (no package_type, no run phase)
+		$old_utility = [
+			'package' => 'test/old-utility',
+			'test'    => [
+				'phases' => [
+					'globalSetup' => [ 'echo "setup"' ],
+				],
+			],
+		];
+
+		$utility_manifest = new TestPackageManifest( $old_utility );
+		$this->assertEquals( 'utility', $utility_manifest->get_package_type() );
+
+		// Old-style test package (no package_type, has run phase)
+		$old_test = [
+			'package'   => 'test/old-test',
+			'test_type' => 'e2e',
+			'test'      => [
+				'phases'  => [
+					'run' => [ 'npx playwright test' ],
+				],
+				'results' => [
+					'ctrf-json' => './results/report.json',
+				],
+			],
+		];
+
+		$test_manifest = new TestPackageManifest( $old_test );
+		$this->assertEquals( 'test', $test_manifest->get_package_type() );
+	}
 }
