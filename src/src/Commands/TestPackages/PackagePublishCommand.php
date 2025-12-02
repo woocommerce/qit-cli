@@ -196,7 +196,7 @@ class PackagePublishCommand extends QITCommand {
 
 			// Upload package (the server will handle subpackages from the manifest)
 			// Note: force=true allows owners to replace their own packages
-			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, true, $checksum, $output );
+			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, $package_type, true, $checksum, $output );
 
 			/*
 			---------------------------------------------------------------------
@@ -446,13 +446,17 @@ class PackagePublishCommand extends QITCommand {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function upload_to_manager( string $package_identifier, string $zip_path, string $test_type, bool $force, string $checksum, OutputInterface $output ): array {
+	private function upload_to_manager( string $package_identifier, string $zip_path, string $test_type, string $package_type, bool $force, string $checksum, OutputInterface $output ): array {
 		$output->writeln( '🚀 Uploading to QIT registry...' );
 
 		$post_data = [
 			'package_id' => $package_identifier,
-			'test_type'  => $test_type,
 		];
+
+		// Only include test_type for test packages (not utilities)
+		if ( $package_type === PackageType::TEST ) {
+			$post_data['test_type'] = $test_type;
+		}
 
 		if ( $force ) {
 			$post_data['force'] = true;
