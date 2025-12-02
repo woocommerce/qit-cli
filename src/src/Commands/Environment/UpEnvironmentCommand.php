@@ -76,6 +76,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
 			->addOption( 'test-package', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to set up environment from (processes requirements and runs setup phases)', [] )
+			->addOption( 'utility', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Utility packages for environment setup (local paths or registry references)', [] )
 			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
@@ -277,15 +278,21 @@ class UpEnvironmentCommand extends QITCommand {
 		$env_config       = $this->applyCliOverrides( $env_config, $input, $environment_type );
 
 		/*
-		─ 1.05. Merge utility packages from environment ─
+		─ 1.05. Merge utility packages from environment and CLI ─
 		*/
-		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
+		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields from config
 		$utility_packages = [];
 		if ( isset( $env_config['utilities'] ) && is_array( $env_config['utilities'] ) ) {
 			$utility_packages = $env_config['utilities'];
 		}
 		if ( isset( $env_config['global_setup'] ) && is_array( $env_config['global_setup'] ) ) {
 			$utility_packages = array_merge( $utility_packages, $env_config['global_setup'] );
+		}
+
+		// Merge CLI utilities (--utility flag)
+		$cli_utilities = $input->getOption( 'utility' ) ?? [];
+		if ( ! empty( $cli_utilities ) ) {
+			$utility_packages = array_merge( $utility_packages, $cli_utilities );
 		}
 
 		foreach ( $utility_packages as $package_ref ) {
