@@ -18,6 +18,9 @@ class E2EEnvInfo extends QITEnvInfo {
 
 	public bool $skip_activating_themes = false;
 
+	/** @var bool Whether to run only globalSetup and setup phases without test execution */
+	public bool $global_setup_only = false;
+
 	/** @var array<int,array{
 	 *     slug:string,
 	 *     test_tag:string,

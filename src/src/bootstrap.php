@@ -39,8 +39,9 @@ use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\TestPackages\PackageDeleteCommand;
 use QIT_CLI\Commands\TestPackages\PackageDownloadCommand;
 use QIT_CLI\Commands\TestPackages\PackageListCommand;
-use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
 use QIT_CLI\Commands\TestPackages\PackagePublishCommand;
+use QIT_CLI\Commands\TestPackages\PackageScaffoldCommand;
+use QIT_CLI\Commands\TestPackages\PackageShowCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetDefaultCommand;
 use QIT_CLI\Commands\Tunnel\TunnelSetupCommand;
 use QIT_CLI\Commands\WooExtensionsCommand;
@@ -279,6 +280,7 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( PackageListCommand::class ) );
 	$application->add( $container->make( PackagePublishCommand::class ) );
 	$application->add( $container->make( PackageScaffoldCommand::class ) );
+	$application->add( $container->make( PackageShowCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
 	$application->add( $container->make( AIContextCommand::class ) );

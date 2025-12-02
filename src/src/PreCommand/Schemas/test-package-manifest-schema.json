@@ -3,7 +3,7 @@
   "title": "QIT Test Package Schema",
   "description": "Schema for QIT test package manifest files",
   "type": "object",
-  "required": ["package", "test", "test_type"],
+  "required": ["package", "test"],
   "additionalProperties": false,
   "allOf": [
     {
@@ -101,12 +101,17 @@
       },
       "uniqueItems": true
     },
+    "package_type": {
+      "type": "string",
+      "description": "Package type determines validation rules. 'test' packages execute tests and produce results. 'utility' packages provide environment configuration without test execution. Defaults to 'test' if omitted, or derived from presence of 'run' phase for backwards compatibility.",
+      "enum": ["test", "utility"],
+      "default": "test"
+    },
     "test_type": {
       "type": "string",
-      "description": "Type of test (defaults to 'e2e')",
+      "description": "Type of test (e.g., 'e2e', 'performance'). Required for test packages, must be omitted for utility packages.",
       "pattern": "^[a-zA-Z0-9_.-]+$",
-      "enum": ["e2e", "performance"],
-      "default": "e2e"
+      "enum": ["e2e", "performance"]
     },
     "test_dir": {
       "type": "string",

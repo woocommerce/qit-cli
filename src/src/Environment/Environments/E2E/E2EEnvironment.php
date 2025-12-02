@@ -77,10 +77,18 @@ class E2EEnvironment extends QITEnvironment {
 	}
 
 	protected function before_plugin_activation(): void {
+		// Utility packages need to run AFTER plugin activation
+		// (they may depend on plugin post types, taxonomies, etc.)
+		// See after_plugin_activation() instead
+	}
+
+	protected function after_plugin_activation(): void {
 		/*
 		--------------------------------------------------------------
 		 * Execute test package setup phases (unless skipped)
 		 * ------------------------------------------------------------
+		 * Note: Running AFTER plugin activation so WooCommerce/other plugins
+		 * are fully initialized (post types, taxonomies, etc.)
 		 */
 		if ( ! empty( $this->env_info->test_packages_for_setup ) && ! $this->env_info->skip_test_phases ) {
 			// Set up test_packages_metadata for PackagePhaseRunner to find container paths
@@ -100,12 +108,23 @@ class E2EEnvironment extends QITEnvironment {
 			);
 
 			$this->output->writeln( '' );
-			$this->output->writeln( 'Running Test Package Setup' );
-			$this->output->writeln( str_repeat( '-', 26 ) );
+			if ( $this->env_info->global_setup_only ) {
+				$this->output->writeln( 'Running Package Setup (--global-setup mode)' );
+				$this->output->writeln( str_repeat( '-', 44 ) );
+			} else {
+				$this->output->writeln( 'Running Test Package Setup' );
+				$this->output->writeln( str_repeat( '-', 26 ) );
+			}
 
 			// Create a custom orchestrator for setup packages
 			$ctrf_validator     = $this->ctrf_validator;
 			$setup_orchestrator = App::make( GlobalSetupOrchestrator::class );
+
+			// Get environment manager from App container if available (for secret handling)
+			$env_manager = App::getVar( 'environment_manager', null );
+			if ( $env_manager !== null ) {
+				$setup_orchestrator->set_environment_manager( $env_manager );
+			}
 
 			$is_first_package = true;
 			foreach ( $this->env_info->test_packages_for_setup as $pkg_path => $info ) {
@@ -129,8 +148,9 @@ class E2EEnvironment extends QITEnvironment {
 
 					// Run setup phase ONLY for the first (main) package
 					// This is for manual testing - run:e2e handles setup per package with DB restore
-					if ( $is_first_package ) {
-						$setup_commands   = $runner->run_phase(
+					// Run setup for ALL packages when global_setup_only, otherwise only first
+					if ( $is_first_package || $this->env_info->global_setup_only ) {
+						$setup_commands       = $runner->run_phase(
 							$this->env_info,
 							'setup',
 							$package_id,
@@ -138,8 +158,8 @@ class E2EEnvironment extends QITEnvironment {
 							null,  // No artifacts_dir for setup phases
 							$setup_orchestrator
 						);
-						$total_commands  += $setup_commands;
-						$is_first_package = false;
+							$total_commands  += $setup_commands;
+							$is_first_package = false;
 					}
 
 					$setup_orchestrator->end_package( $package_id, true, $total_commands );

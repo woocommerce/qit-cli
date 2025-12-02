@@ -277,10 +277,17 @@ class QitJsonParser {
 	 */
 	private function load_global_setup_packages( array $environments ): void {
 		foreach ( $environments as $env_name => $env ) {
-			if ( isset( $env['global_setup'] ) ) {
-				foreach ( $env['global_setup'] as $package_ref ) {
-					$this->get_test_package( $package_ref );
-				}
+			// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
+			$packages_to_load = [];
+			if ( isset( $env['utilities'] ) && is_array( $env['utilities'] ) ) {
+				$packages_to_load = array_merge( $packages_to_load, $env['utilities'] );
+			}
+			if ( isset( $env['global_setup'] ) && is_array( $env['global_setup'] ) ) {
+				$packages_to_load = array_merge( $packages_to_load, $env['global_setup'] );
+			}
+
+			foreach ( $packages_to_load as $package_ref ) {
+				$this->get_test_package( $package_ref );
 			}
 		}
 	}
