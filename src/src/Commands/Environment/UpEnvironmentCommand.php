@@ -1431,50 +1431,17 @@ HELP;
 						$output->writeln( "[DEBUG] env:up - Got manifest for $package_ref (likely from cache)" );
 					}
 
-					// Extract plugin requirements
-					$plugins = $manifest->get_required_plugins();
-					foreach ( $plugins as $plugin ) {
-						if ( ! isset( $required_plugins[ $plugin ] ) ) {
-							$required_plugins[ $plugin ] = [];
-						}
-						$required_plugins[ $plugin ][] = $package_ref;
-					}
-
-					// Extract theme requirements
-					$themes = $manifest->get_required_themes();
-					foreach ( $themes as $theme ) {
-						if ( ! isset( $required_themes[ $theme ] ) ) {
-							$required_themes[ $theme ] = [];
-						}
-						$required_themes[ $theme ][] = $package_ref;
-					}
-
-					// Extract secret requirements
-					$requires = $manifest->get_requires();
-					if ( ! empty( $requires['secrets'] ) ) {
-						foreach ( $requires['secrets'] as $secret ) {
-							if ( ! isset( $required_secrets[ $secret ] ) ) {
-								$required_secrets[ $secret ] = [];
-							}
-							$required_secrets[ $secret ][] = $package_ref;
-						}
-					}
-
-					// Check network requirement
-					if ( $manifest->requires_network() ) {
-						$requires_network = true;
-						if ( $output->isVerbose() ) {
-							$output->writeln( "<info>Test package {$package_ref} requires network access</info>" );
-						}
-					}
-
-					// Check tunnel requirement
-					if ( $manifest->requires_tunnel() ) {
-						$requires_tunnel = true;
-						if ( $output->isVerbose() ) {
-							$output->writeln( "<info>Test package {$package_ref} requires tunnel access</info>" );
-						}
-					}
+					// Extract requirements from manifest
+					$this->extractManifestRequirements(
+						$manifest,
+						$package_ref,
+						$required_plugins,
+						$required_themes,
+						$required_secrets,
+						$requires_network,
+						$requires_tunnel,
+						$output
+					);
 				}
 			} catch ( \Exception $e ) {
 				// For local packages, try to read the manifest directly
@@ -1487,50 +1454,17 @@ HELP;
 							// Use TestPackageManifest to parse it properly
 							$manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $manifest_data );
 
-							// Extract plugin requirements
-							$plugins = $manifest->get_required_plugins();
-							foreach ( $plugins as $plugin ) {
-								if ( ! isset( $required_plugins[ $plugin ] ) ) {
-									$required_plugins[ $plugin ] = [];
-								}
-								$required_plugins[ $plugin ][] = $package_ref;
-							}
-
-							// Extract theme requirements
-							$themes = $manifest->get_required_themes();
-							foreach ( $themes as $theme ) {
-								if ( ! isset( $required_themes[ $theme ] ) ) {
-									$required_themes[ $theme ] = [];
-								}
-								$required_themes[ $theme ][] = $package_ref;
-							}
-
-							// Extract secret requirements
-							$requires = $manifest->get_requires();
-							if ( ! empty( $requires['secrets'] ) ) {
-								foreach ( $requires['secrets'] as $secret ) {
-									if ( ! isset( $required_secrets[ $secret ] ) ) {
-										$required_secrets[ $secret ] = [];
-									}
-									$required_secrets[ $secret ][] = $package_ref;
-								}
-							}
-
-							// Check network requirement
-							if ( $manifest->requires_network() ) {
-								$requires_network = true;
-								if ( $output->isVerbose() ) {
-									$output->writeln( "<info>Test package {$package_ref} requires network access</info>" );
-								}
-							}
-
-							// Check tunnel requirement
-							if ( $manifest->requires_tunnel() ) {
-								$requires_tunnel = true;
-								if ( $output->isVerbose() ) {
-									$output->writeln( "<info>Test package {$package_ref} requires tunnel access</info>" );
-								}
-							}
+							// Extract requirements from manifest
+							$this->extractManifestRequirements(
+								$manifest,
+								$package_ref,
+								$required_plugins,
+								$required_themes,
+								$required_secrets,
+								$requires_network,
+								$requires_tunnel,
+								$output
+							);
 						}
 					} catch ( \Exception $inner_e ) {
 						if ( $output->isVerbose() ) {
@@ -1583,6 +1517,74 @@ HELP;
 				$error_msg   .= "Example: export {$first_secret}='your-secret-value'";
 
 				throw new \RuntimeException( $error_msg );
+			}
+		}
+	}
+
+	/**
+	 * Extract requirements from a test package manifest.
+	 *
+	 * @param \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest The manifest to extract from.
+	 * @param string $package_ref The package reference for tracking which package requires what.
+	 * @param array<string,array<string>> &$required_plugins By-reference array to append plugin requirements to.
+	 * @param array<string,array<string>> &$required_themes By-reference array to append theme requirements to.
+	 * @param array<string,array<string>> &$required_secrets By-reference array to append secret requirements to.
+	 * @param bool &$requires_network By-reference flag to set if package requires network.
+	 * @param bool &$requires_tunnel By-reference flag to set if package requires tunnel.
+	 * @param OutputInterface $output The output interface for verbose messages.
+	 */
+	private function extractManifestRequirements(
+		\QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest,
+		string $package_ref,
+		array &$required_plugins,
+		array &$required_themes,
+		array &$required_secrets,
+		bool &$requires_network,
+		bool &$requires_tunnel,
+		OutputInterface $output
+	): void {
+		// Extract plugin requirements
+		$plugins = $manifest->get_required_plugins();
+		foreach ( $plugins as $plugin ) {
+			if ( ! isset( $required_plugins[ $plugin ] ) ) {
+				$required_plugins[ $plugin ] = [];
+			}
+			$required_plugins[ $plugin ][] = $package_ref;
+		}
+
+		// Extract theme requirements
+		$themes = $manifest->get_required_themes();
+		foreach ( $themes as $theme ) {
+			if ( ! isset( $required_themes[ $theme ] ) ) {
+				$required_themes[ $theme ] = [];
+			}
+			$required_themes[ $theme ][] = $package_ref;
+		}
+
+		// Extract secret requirements
+		$requires = $manifest->get_requires();
+		if ( ! empty( $requires['secrets'] ) ) {
+			foreach ( $requires['secrets'] as $secret ) {
+				if ( ! isset( $required_secrets[ $secret ] ) ) {
+					$required_secrets[ $secret ] = [];
+				}
+				$required_secrets[ $secret ][] = $package_ref;
+			}
+		}
+
+		// Check network requirement
+		if ( $manifest->requires_network() ) {
+			$requires_network = true;
+			if ( $output->isVerbose() ) {
+				$output->writeln( "<info>Test package {$package_ref} requires network access</info>" );
+			}
+		}
+
+		// Check tunnel requirement
+		if ( $manifest->requires_tunnel() ) {
+			$requires_tunnel = true;
+			if ( $output->isVerbose() ) {
+				$output->writeln( "<info>Test package {$package_ref} requires tunnel access</info>" );
 			}
 		}
 	}
