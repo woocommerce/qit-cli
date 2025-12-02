@@ -61,6 +61,13 @@ class PackageScaffoldCommand extends QITCommand {
 				'e2e'
 			)
 			->addOption(
+				'package-type',
+				null,
+				InputOption::VALUE_REQUIRED,
+				'Package type: "test" (runs tests) or "utility" (setup only)',
+				'test'
+			)
+			->addOption(
 				'only-manifest',
 				null,
 				InputOption::VALUE_NONE,
@@ -72,9 +79,12 @@ class PackageScaffoldCommand extends QITCommand {
 				InputOption::VALUE_NONE,
 				'Include $schema field for IDE validation support'
 			)
-			->setDescription( 'Scaffold a Playwright E2E test package' )
+			->setDescription( 'Scaffold a test package (E2E tests) or utility package (setup/configuration)' )
 			->setHelp(
-				'You can scaffold test packages only under a namespace (extension slug) that you maintain.' . "\n\n" .
+				'Scaffold test packages or utility packages under a namespace (extension slug) that you maintain.' . "\n\n" .
+				'Package Types:' . "\n" .
+				'  - test: Full test package with Playwright E2E tests (includes run phase)' . "\n" .
+				'  - utility: Configuration/setup package without tests (no run phase)' . "\n\n" .
 				'Package identifier format: namespace/package:version' . "\n" .
 				'Example: woocommerce/checkout-tests:1.0.0' . "\n" .
 				'  - The namespace must be an extension slug you maintain' . "\n" .
@@ -84,12 +94,13 @@ class PackageScaffoldCommand extends QITCommand {
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		$io         = new SymfonyStyle( $input, $output );
-		$fs         = new Filesystem();
-		$target_dir = normalize_path( $input->getArgument( 'target_dir' ) );
-		$package_id = (string) $input->getOption( 'package' );
-		$framework  = strtolower( (string) $input->getOption( 'framework' ) );
-		$test_type  = strtolower( (string) $input->getOption( 'test-type' ) );
+		$io           = new SymfonyStyle( $input, $output );
+		$fs           = new Filesystem();
+		$target_dir   = normalize_path( $input->getArgument( 'target_dir' ) );
+		$package_id   = (string) $input->getOption( 'package' );
+		$framework    = strtolower( (string) $input->getOption( 'framework' ) );
+		$test_type    = strtolower( (string) $input->getOption( 'test-type' ) );
+		$package_type = strtolower( (string) $input->getOption( 'package-type' ) );
 
 		// Initialize namespace, package_name, and version for parsing later
 		$namespace    = '';
@@ -128,6 +139,11 @@ class PackageScaffoldCommand extends QITCommand {
 		}
 		if ( $test_type !== 'e2e' ) {
 			$io->error( 'Only "e2e" is supported for now.' );
+
+			return Command::FAILURE;
+		}
+		if ( ! in_array( $package_type, [ 'test', 'utility' ], true ) ) {
+			$io->error( 'Package type must be either "test" or "utility".' );
 
 			return Command::FAILURE;
 		}
@@ -261,13 +277,24 @@ BASH;
 			$manifest['$schema'] = 'https://qit.woo.com/json-schema/test-package';
 		}
 
+		// Build base manifest structure
 		$manifest = array_merge( $manifest, [
-			'package'   => $namespace . '/' . $package_name, // Combined namespace/package identifier
-			'test_type' => $test_type, // Add test_type field (required by server)
-			'requires'  => [
+			'package'      => $namespace . '/' . $package_name, // Combined namespace/package identifier
+			'package_type' => $package_type, // Explicitly set package type
+			'requires'     => [
 				'network' => false, // Explicitly show this field for clarity
 			],
-			'test'      => [
+		] );
+
+		// Add test_type for test packages (not needed for utility packages)
+		if ( $package_type === 'test' ) {
+			$manifest['test_type'] = $test_type;
+		}
+
+		// Build phases based on package type
+		if ( $package_type === 'test' ) {
+			// Test package: includes run phase and results
+			$manifest['test'] = [
 				'phases'  => [
 					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
 					'setup'          => [ './bootstrap/setup.sh' ],
@@ -280,8 +307,18 @@ BASH;
 					'allure-dir' => './results/allure',
 					'blob-dir'   => './results/blob',
 				],
-			],
-		] );
+			];
+		} else {
+			// Utility package: only setup/teardown phases, no run or results
+			$manifest['test'] = [
+				'phases' => [
+					'globalSetup'    => [ './bootstrap/global-setup.sh' ],
+					'setup'          => [ './bootstrap/setup.sh' ],
+					'teardown'       => [],
+					'globalTeardown' => [ './bootstrap/global-teardown.sh' ],
+				],
+			];
+		}
 		file_put_contents(
 			"$target_dir/qit-test.json",
 			json_encode( $manifest, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . PHP_EOL
@@ -304,9 +341,18 @@ BASH;
 			return Command::SUCCESS;
 		}
 
+		// Skip npm scaffolding for utility packages (they don't need Playwright)
+		if ( $package_type === 'utility' ) {
+			$io->success( 'Utility package scaffolded successfully!' );
+			$io->writeln( sprintf( "\n<comment>🗒  Edit bootstrap/*.sh to configure setup/teardown.</comment>" ) );
+			$io->writeln( sprintf( "\nNext → qit package:publish %s", $target_dir ) );
+
+			return Command::SUCCESS;
+		}
+
 		/*
 		---------------------------------------------------------------------
-		 * Extra Playwright scaffolding
+		 * Extra Playwright scaffolding (test packages only)
 		 * -------------------------------------------------------------------
 		 */
 		try {
