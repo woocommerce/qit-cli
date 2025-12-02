@@ -92,15 +92,12 @@ class PerformanceTestManager {
 				$this->output->writeln( '<comment>Starting baseline tests...</comment>' );
 				$baseline_result = $this->run_baseline_tests( $extension_env_info );
 
-				if ( $baseline_result === null ) {
-					$this->output->writeln( '<error>Baseline tests failed, continuing with extension tests.</error>' );
-				} elseif ( $baseline_result->status === 'cancelled' ) {
+				if ( $baseline_result->status === 'cancelled' ) {
 					$this->output->writeln( '<error>Baseline tests were cancelled, cancelling entire test run.</error>' );
 					return 143;
-				} else {
-					$this->output->writeln( '<comment>Baseline tests completed successfully.</comment>' );
 				}
 
+				$this->output->writeln( '<comment>Baseline tests completed successfully.</comment>' );
 				$this->reset_database_to_clean_state( $extension_env_info );
 			}
 
@@ -237,9 +234,9 @@ class PerformanceTestManager {
 	 * Run baseline performance tests (SUT deactivated).
 	 *
 	 * @param PerformanceEnvInfo $env_info The environment to test.
-	 * @return PerformanceTestResult|null The baseline test result or null if failed.
+	 * @return PerformanceTestResult The baseline test result.
 	 */
-	private function run_baseline_tests( PerformanceEnvInfo $env_info ): ?PerformanceTestResult {
+	private function run_baseline_tests( PerformanceEnvInfo $env_info ): PerformanceTestResult {
 		$sut_slug = $this->get_sut_slug_from_options();
 
 		if ( $sut_slug ) {
