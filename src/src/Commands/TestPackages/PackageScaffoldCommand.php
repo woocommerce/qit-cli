@@ -286,13 +286,10 @@ BASH;
 			],
 		] );
 
-		// Add test_type for test packages (not needed for utility packages)
 		if ( $package_type === 'test' ) {
+			// Add test_type for test packages (not needed for utility packages)
 			$manifest['test_type'] = $test_type;
-		}
 
-		// Build phases based on package type
-		if ( $package_type === 'test' ) {
 			// Test package: includes run phase and results
 			$manifest['test'] = [
 				'phases'  => [
