@@ -13,7 +13,6 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "ctrf_json": "",
             "performance_results": "",
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
@@ -34,8 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Test failed before it was executed.",
-            "debug_log": "",
+            "test_summary": "Tests: 0 total, 0 passed, 0 failed, 0 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,7 +47,9 @@
             "iterations": 7,
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
-            "test_result_json_extracted": "{EXTRACTED}"
+            "test_result_json_extracted": "{EXTRACTED}",
+            "ctrf_json_extracted": "{EXTRACTED}",
+            "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": {
@@ -62,7 +62,42 @@
                 "numPendingTests": 0,
                 "numTotalTests": 0,
                 "testResults": [],
-                "summary": "Test failed before it was executed."
+                "summary": "0 total, 0 passed, 0 failed."
+            }
+        },
+        {
+            "ctrf_json": {
+                "reportFormat": "CTRF",
+                "specVersion": "0.0.0",
+                "reportId": "normalized-report-id",
+                "timestamp": "2025-01-01T00:00:00.000Z",
+                "generatedBy": "playwright-ctrf-json-reporter",
+                "results": {
+                    "tool": {
+                        "name": "playwright"
+                    },
+                    "summary": {
+                        "tests": 0,
+                        "passed": 0,
+                        "failed": 0,
+                        "pending": 0,
+                        "skipped": 0,
+                        "other": 0,
+                        "start": 1111111111,
+                        "stop": 2222222222
+                    },
+                    "tests": []
+                }
+            }
+        },
+        {
+            "debug_log": {
+                "generic": [
+                    {
+                        "count": "1",
+                        "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
+                    }
+                ]
             }
         }
     ]
