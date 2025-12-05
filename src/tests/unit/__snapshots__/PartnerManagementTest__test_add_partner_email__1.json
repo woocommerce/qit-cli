@@ -1306,13 +1306,6 @@
                                 "compatibility"
                             ]
                         },
-                        "iterations": {
-                            "description": "Number of test iterations to run for metric stability.",
-                            "type": "integer",
-                            "default": 7,
-                            "minimum": 1,
-                            "maximum": 10
-                        },
                         "test_packages": {
                             "description": "Array of test package IDs to use for the performance test.",
                             "type": "array",
@@ -1655,15 +1648,15 @@
                 }
             ],
             "environments": {
+                "performance": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/5755c5b6deea6fca548c64886469144a.zip",
+                    "checksum": "5755c5b6deea6fca548c64886469144a",
+                    "zip_checksum": 15544
+                },
                 "e2e": {
                     "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/b93ca4b9c2f7a25fce484a86137b9151.zip",
                     "checksum": "b93ca4b9c2f7a25fce484a86137b9151",
                     "zip_checksum": 26308
-                },
-                "performance": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/1b9299b1fdaf0ade0b4e5ac59e6fd145.zip",
-                    "checksum": "1b9299b1fdaf0ade0b4e5ac59e6fd145",
-                    "zip_checksum": 15545
                 }
             },
             "versions": {
