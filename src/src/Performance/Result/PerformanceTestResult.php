@@ -21,12 +21,9 @@ class PerformanceTestResult {
 	/**
 	 * Result filenames from manifest.
 	 *
-	 * - 'summary' (required): Aggregated statistics JSON - used for both iterations and averaging
+	 * - 'summary' (required): Aggregated statistics JSON
 	 * - 'json' (required): Extended k6 JSON output with detailed metrics and Core Web Vitals
-	 * - 'dashboard' (optional): HTML dashboard report - only for iterations if configured
-	 *
-	 * For iteration results: k6 writes all configured files (summary, json, dashboard if present).
-	 * For averaged results: Only 'summary' is written (averaged metrics JSON).
+	 * - 'dashboard' (optional): HTML dashboard report if configured
 	 *
 	 * @var array{summary: string, json: string, dashboard?: string}
 	 */
