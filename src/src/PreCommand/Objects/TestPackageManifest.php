@@ -20,6 +20,7 @@ final class TestPackageManifest {
 	private string $package_name;
 	/** @var array<string> */
 	private array $tags;
+	private string $package_type;
 	private string $test_type;
 	private string $test_dir;
 	private string $description;
@@ -96,9 +97,10 @@ final class TestPackageManifest {
 		$this->phases['teardown']       = $this->phases['teardown'] ?? [];
 
 		// Optional fields with defaults
-		$this->tags        = $data['tags'] ?? [];
-		$this->test_type   = $data['test_type'] ?? 'e2e';
-		$this->test_dir    = $data['test_dir'] ?? './';
+		$this->tags         = $data['tags'] ?? [];
+		$this->package_type = $data['package_type'] ?? $this->derive_package_type();
+		$this->test_type    = $data['test_type'] ?? 'e2e';
+		$this->test_dir     = $data['test_dir'] ?? './';
 		$this->description = $data['description'] ?? '';
 		$this->requires    = $data['requires'] ?? [];
 
@@ -168,6 +170,7 @@ final class TestPackageManifest {
 		$this->namespace      = $data['namespace'];
 		$this->package_name   = $data['package_name'];
 		$this->tags           = $data['tags'];
+		$this->package_type   = $data['package_type'] ?? $this->derive_package_type();
 		$this->test_type      = $data['test_type'];
 		$this->test_dir       = $data['test_dir'];
 		$this->description    = $data['description'];
@@ -372,7 +375,26 @@ final class TestPackageManifest {
 	}
 
 	public function is_utility_package(): bool {
-		return empty( $this->phases['run'] );
+		return $this->package_type === PackageType::UTILITY || empty( $this->phases['run'] );
+	}
+
+	/**
+	 * Derive package type from manifest phases (fallback for backwards compatibility).
+	 *
+	 * @return string Package type: PackageType::TEST or PackageType::UTILITY.
+	 */
+	private function derive_package_type(): string {
+		// A package is a utility if it has NO run phase, otherwise it's a test package.
+		return empty( $this->phases['run'] ) ? PackageType::UTILITY : PackageType::TEST;
+	}
+
+	/**
+	 * Get the package type.
+	 *
+	 * @return string Package type: PackageType::TEST or PackageType::UTILITY.
+	 */
+	public function get_package_type(): string {
+		return $this->package_type;
 	}
 
 	public function has_subpackages(): bool {
@@ -583,6 +605,7 @@ final class TestPackageManifest {
 		return [
 			'package'        => $this->package_id,
 			'tags'           => $this->tags,
+			'package_type'   => $this->package_type,
 			'test_type'      => $this->test_type,
 			'test_dir'       => $this->test_dir,
 			'description'    => $this->description,

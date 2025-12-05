@@ -45,6 +45,12 @@ class PackageListCommand extends QITCommand {
 				'Filter by namespace'
 			)
 			->addOption(
+				'type',
+				null,
+				InputOption::VALUE_REQUIRED,
+				'Filter by package type (utility, test, all)'
+			)
+			->addOption(
 				'owned-only',
 				'o',
 				InputOption::VALUE_NONE,
@@ -83,6 +89,7 @@ class PackageListCommand extends QITCommand {
 
 		$test_type     = $input->getOption( 'test-type' );
 		$namespace     = $input->getOption( 'namespace' );
+		$type          = $input->getOption( 'type' );
 		$owned_only    = $input->getOption( 'owned-only' );
 		$limit         = (int) $input->getOption( 'limit' );
 		$page          = (int) $input->getOption( 'page' );
@@ -95,7 +102,7 @@ class PackageListCommand extends QITCommand {
 		}
 
 		try {
-			$packages = $this->fetch_packages_from_manager( $test_type, $namespace, $owned_only, $limit, $page, $output );
+			$packages = $this->fetch_packages_from_manager( $test_type, $namespace, $type, $owned_only, $limit, $page, $output );
 			$this->output_packages( $packages, $format, $output, $io, $input );
 
 			return 0;
@@ -119,7 +126,7 @@ class PackageListCommand extends QITCommand {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function fetch_packages_from_manager( ?string $test_type, ?string $namespace_param, bool $owned_only, int $limit, int $page, OutputInterface $output ): array {
+	private function fetch_packages_from_manager( ?string $test_type, ?string $namespace_param, ?string $type, bool $owned_only, int $limit, int $page, OutputInterface $output ): array {
 		$output->writeln( '📦 Fetching available packages...' );
 
 		$post_body = [
@@ -132,6 +139,9 @@ class PackageListCommand extends QITCommand {
 		}
 		if ( $namespace_param ) {
 			$post_body['namespace'] = $namespace_param;
+		}
+		if ( $type ) {
+			$post_body['type'] = $type;
 		}
 		if ( $owned_only ) {
 			$post_body['owned_only'] = '1';
@@ -253,6 +263,11 @@ class PackageListCommand extends QITCommand {
 				}
 			}
 
+			// Add utility indicator based on package_type
+			if ( isset( $package['package_type'] ) && $package['package_type'] === 'utility' ) {
+				$visibility .= ' 🔧 Utility';
+			}
+
 			$table->addRow( [
 				$package_id,
 				$package['namespace'] ?? 'N/A',
@@ -268,6 +283,7 @@ class PackageListCommand extends QITCommand {
 		$io->newLine();
 		$io->text( '💡 Use <info>qit package:download <package-id></info> to download a package' );
 		$io->text( '💡 Use <info>qit package:delete <package-id></info> to delete packages you own' );
+		$io->text( '💡 Use <info>--type utility</info> to show only utility packages' );
 
 		// Show pagination navigation hints
 		if ( $total_pages > 1 && ! $input->getOption( 'no-pagination' ) ) {

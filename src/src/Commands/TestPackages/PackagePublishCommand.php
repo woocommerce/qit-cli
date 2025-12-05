@@ -4,6 +4,7 @@ namespace QIT_CLI\Commands\TestPackages;
 
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
+use QIT_CLI\PreCommand\Objects\PackageType;
 use QIT_CLI\QITInput;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\WooExtensionsList;
@@ -125,7 +126,15 @@ class PackagePublishCommand extends QITCommand {
 				$version_display = sprintf( '%s <comment>(default, no version specified)</comment>', $version );
 			}
 			$io->writeln( sprintf( '   Version: <info>%s</info>', $version_display ) );
-			$io->writeln( sprintf( '   Test type: <info>%s</info>', $test_type ) );
+
+			// Show package type
+			$package_type = $manifest->get_package_type();
+			$io->writeln( sprintf( '   Package type: <info>%s</info>', $package_type ) );
+
+			// Only show test_type for test packages
+			if ( $package_type === PackageType::TEST ) {
+				$io->writeln( sprintf( '   Test type: <info>%s</info>', $test_type ) );
+			}
 
 			/*
 			---------------------------------------------------------------------
@@ -187,7 +196,7 @@ class PackagePublishCommand extends QITCommand {
 
 			// Upload package (the server will handle subpackages from the manifest)
 			// Note: force=true allows owners to replace their own packages
-			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, true, $checksum, $output );
+			$upload_result = $this->upload_to_manager( $package_identifier, $zip_path, $test_type, $package_type, true, $checksum, $output );
 
 			/*
 			---------------------------------------------------------------------
@@ -437,13 +446,17 @@ class PackagePublishCommand extends QITCommand {
 	 *
 	 * @return array<string, mixed>
 	 */
-	private function upload_to_manager( string $package_identifier, string $zip_path, string $test_type, bool $force, string $checksum, OutputInterface $output ): array {
+	private function upload_to_manager( string $package_identifier, string $zip_path, string $test_type, string $package_type, bool $force, string $checksum, OutputInterface $output ): array {
 		$output->writeln( '🚀 Uploading to QIT registry...' );
 
 		$post_data = [
 			'package_id' => $package_identifier,
-			'test_type'  => $test_type,
 		];
+
+		// Only include test_type for test packages (not utilities)
+		if ( $package_type === PackageType::TEST ) {
+			$post_data['test_type'] = $test_type;
+		}
 
 		if ( $force ) {
 			$post_data['force'] = true;
