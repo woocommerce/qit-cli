@@ -239,6 +239,7 @@ final class TestPackageManifest {
 			'package_id'       => $this->package_id,
 			'namespace'        => $this->namespace,
 			'package_name'     => $this->package_name,
+			'package_type'     => $this->package_type,
 			'tags'             => $this->tags,
 			'test_type'        => $this->test_type,
 			'test_dir'         => $this->test_dir,
