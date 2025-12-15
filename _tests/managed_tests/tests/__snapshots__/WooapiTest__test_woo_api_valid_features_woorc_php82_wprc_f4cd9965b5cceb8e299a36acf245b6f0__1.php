@@ -7299,10 +7299,6 @@
             "debug_log": {
                 "generic": [
                     {
-                        "count": "1",
-                        "message": "PHP Notice: Function as_unschedule_all_actions was called incorrectly. as_unschedule_all_actions() was called before the Action Scheduler data store was initialized Please see Debugging in WordPress for more information. (This message was added in version 3.1.6.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line 6131"
-                    },
-                    {
                         "count": "Between 500 and 999, normalized to 750",
                         "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
