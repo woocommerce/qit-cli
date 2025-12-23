@@ -579,13 +579,20 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			return $env_up_options;
 		}
 
+		// When WooCommerce itself is the SUT and --woocommerce_version is set,
+		// skip adding it here. resolve_woo() in UpEnvironmentCommand will add
+		// WooCommerce with the correct version from --woocommerce_version.
+		$cli_source = $input->getOption( 'source' );
+		if ( ! $cli_source && $woo_extension_slug === 'woocommerce' && $input->getOption( 'woocommerce_version' ) ) {
+			return $env_up_options;
+		}
+
 		if ( ! $sut_type ) {
 			$sut_type = 'plugin';
 		}
 
 		$key = ( $sut_type === 'theme' ) ? '--theme' : '--plugin';
 
-		$cli_source           = $input->getOption( 'source' );
 		$extension_identifier = $cli_source ?: $woo_extension_slug;
 
 		if ( ! isset( $env_up_options[ $key ] ) ) {

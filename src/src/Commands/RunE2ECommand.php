@@ -319,13 +319,13 @@ class RunE2ECommand extends QITCommand {
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' );
 		}
 
-		// Add SUT info to env_info if provided
+		// Add SUT info to env_info if provided (preserve existing version from env:up)
 		if ( $sut_slug ) {
-			$env_info->sut = [
+			$env_info->sut = array_merge( $env_info->sut, [
 				'slug' => $sut_slug,
 				'id'   => $sut_id,
 				'type' => $sut_type,
-			];
+			] );
 		}
 
 		// Reconstruct test_packages from env_info for validation and display

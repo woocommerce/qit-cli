@@ -314,7 +314,8 @@ class PerformanceTestManager {
 	 * @param PerformanceEnvInfo $test_config The test configuration.
 	 */
 	private function copy_test_config( PerformanceEnvInfo $env_info, PerformanceEnvInfo $test_config ): void {
-		$env_info->sut          = $test_config->sut;
+		$env_info->sut['id']    = $test_config->sut['id'] ?? null;
+		$env_info->sut['type']  = $test_config->sut['type'] ?? 'plugin';
 		$env_info->run_baseline = $test_config->run_baseline;
 	}
 
