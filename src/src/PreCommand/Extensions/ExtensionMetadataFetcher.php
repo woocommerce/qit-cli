@@ -297,9 +297,8 @@ class ExtensionMetadataFetcher {
 				$extension->source = $extension->directory;
 			}
 			$extension->version = $this->extract_local_version( $extension ) ?: 'local';
+			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionMetadataFetcher: Local metadata for '{$extension->slug}': type={$extension->from}\n", FILE_APPEND );
 		}
-
-		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionMetadataFetcher: Local metadata for '{$extension->slug}': type={$extension->from}\n", FILE_APPEND );
 	}
 
 	/**
