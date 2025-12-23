@@ -86,7 +86,8 @@ class LocalTestRunNotifier {
 			}
 		}
 
-		$event = getenv( 'CI' ) ? 'ci_run' : 'local_run';
+		$event       = getenv( 'CI' ) ? 'ci_run' : 'local_run';
+		$sut_version = $env_info->sut['version'] ?? '';
 
 		$body = [
 			'woo_id'                  => $woo_extension_id,
@@ -99,6 +100,7 @@ class LocalTestRunNotifier {
 			'event'                   => $event,
 			'is_development_build'    => $is_development ? 'true' : 'false',
 			'send_notification'       => $notify ? 'true' : 'false',
+			'sut_version'             => $sut_version,
 		];
 
 		/**

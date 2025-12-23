@@ -293,16 +293,79 @@ class ExtensionMetadataFetcher {
 	 */
 	protected function process_local_metadata( array $extensions ): void {
 		foreach ( $extensions as $extension ) {
-			// Local extensions don't have remote versions
-			$extension->version = 'local';
-
-			// Source is already set for local files
-			if ( $extension->from === 'local' && empty( $extension->source ) && ! empty( $extension->directory ) ) {
+			if ( empty( $extension->source ) && ! empty( $extension->directory ) ) {
 				$extension->source = $extension->directory;
 			}
-
-			file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionMetadataFetcher: Local metadata for '{$extension->slug}': type={$extension->from}\n", FILE_APPEND );
+			$extension->version = $this->extract_local_version( $extension ) ?: 'local';
 		}
+
+		file_put_contents( '/tmp/qit/qit_debug.log', "ExtensionMetadataFetcher: Local metadata for '{$extension->slug}': type={$extension->from}\n", FILE_APPEND );
+	}
+
+	/**
+	 * Extract version from a local plugin or theme's header.
+	 *
+	 * @param Extension $extension The extension to extract version from.
+	 *
+	 * @return string|null The version string, or null if not found.
+	 */
+	protected function extract_local_version( Extension $extension ): ?string {
+		$source = $extension->source ?? $extension->directory ?? $extension->downloaded_source;
+
+		if ( empty( $source ) || ! is_dir( $source ) ) {
+			return null;
+		}
+
+		if ( $extension->type === 'theme' ) {
+			// Themes have version in style.css
+			$header_file = "$source/style.css";
+		} else {
+			// Plugins - try standard naming first
+			$header_file = "$source/{$extension->slug}.php";
+			if ( ! file_exists( $header_file ) ) {
+				// Scan for PHP files with Plugin Name header
+				$header_file = $this->find_plugin_header_file( $source );
+			}
+		}
+
+		if ( empty( $header_file ) || ! file_exists( $header_file ) ) {
+			return null;
+		}
+
+		// Read first 8KB of file to find header
+		$contents = file_get_contents( $header_file, false, null, 0, 8192 );
+
+		if ( preg_match( '/^\s*\*?\s*Version:\s*(.+)$/mi', $contents, $matches ) ) {
+			return trim( $matches[1] );
+		}
+
+		return null;
+	}
+
+	/**
+	 * Find the main plugin file with Plugin Name header.
+	 *
+	 * @param string $directory The plugin directory.
+	 *
+	 * @return string|null The path to the header file, or null if not found.
+	 */
+	protected function find_plugin_header_file( string $directory ): ?string {
+		$iterator = new \DirectoryIterator( $directory );
+
+		foreach ( $iterator as $file ) {
+			if ( ! $file->isFile() || $file->getExtension() !== 'php' ) {
+				continue;
+			}
+
+			// Read first 8KB of file to find header
+			$contents = file_get_contents( $file->getPathname(), false, null, 0, 8192 );
+
+			if ( preg_match( '/^\s*\*\s*Plugin Name:/m', $contents ) ) {
+				return $file->getPathname();
+			}
+		}
+
+		return null;
 	}
 
 	/**

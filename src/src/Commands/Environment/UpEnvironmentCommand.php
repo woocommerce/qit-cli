@@ -3,6 +3,7 @@ declare( strict_types=1 );
 
 namespace QIT_CLI\Commands\Environment;
 
+use QIT_CLI\App;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
@@ -356,17 +357,30 @@ class UpEnvironmentCommand extends QITCommand {
 		$final_plugins = $resolved_ext->get_plugins();
 		$final_themes  = $resolved_ext->get_themes();
 
-		// Convert Extension objects to arrays for serialization
+		// Convert Extension objects to arrays and extract resolved versions
 		$plugin_arrays = [];
+		$sut_slug      = $sut['slug'] ?? App::getVar( 'QIT_SUT_SLUG' );
+
 		foreach ( $final_plugins as $plugin ) {
-			// Use jsonSerialize to get the array representation
 			$plugin_arrays[] = $plugin->jsonSerialize();
+
+			if ( $plugin->slug === 'woocommerce' && ! empty( $plugin->version ) ) {
+				$env_config['woocommerce_version'] = $plugin->version;
+			}
+			if ( $sut_slug && $plugin->slug === $sut_slug && ! empty( $plugin->version ) ) {
+				$env_config['sut']            = $env_config['sut'] ?? [];
+				$env_config['sut']['version'] = $plugin->version;
+			}
 		}
 
 		$theme_arrays = [];
 		foreach ( $final_themes as $theme ) {
-			// Use jsonSerialize to get the array representation
 			$theme_arrays[] = $theme->jsonSerialize();
+
+			if ( $sut_slug && $theme->slug === $sut_slug && ! empty( $theme->version ) ) {
+				$env_config['sut']            = $env_config['sut'] ?? [];
+				$env_config['sut']['version'] = $theme->version;
+			}
 		}
 
 		/* ─ 3.5. Parse volumes to get proper associative array structure ─ */
@@ -649,6 +663,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'php_version'             => $env_config['php_version'] ?? '8.2',
 			'wordpress_version'       => $env_config['wordpress_version'] ?? 'stable',
 			'woocommerce_version'     => $env_config['woocommerce_version'] ?? '',
+			'sut'                     => $env_config['sut'] ?? [],
 			'object_cache'            => $env_config['object_cache'] ?? false,
 			'plugins'                 => $plugin_arrays,
 			'themes'                  => $theme_arrays,
@@ -1035,7 +1050,7 @@ class UpEnvironmentCommand extends QITCommand {
 	/**
 	 * Resolve --woo option explicitly.
 	 * Adds WooCommerce plugin with the specified version.
-	 * For performance environments, defaults to 'latest' if not specified.
+	 * Defaults to 'stable' if not specified for e2e, activation, and performance environments.
 	 *
 	 * @param array<string,mixed> $config
 	 * @param InputInterface      $input
@@ -1044,15 +1059,11 @@ class UpEnvironmentCommand extends QITCommand {
 	 */
 	private function resolve_woo( array $config, InputInterface $input, string $environment_type = 'e2e' ): array {
 		/** @var \QIT_CLI\QITInput $input */
-		if ( ! $input->hasOption( 'woocommerce_version' ) && $environment_type !== 'performance' ) {
-			return $config;
-		}
+		$woo_version = $input->hasOption( 'woocommerce_version' ) ? $input->getOption( 'woocommerce_version' ) : null;
 
-		$woo_version = $input->getOption( 'woocommerce_version' );
-
-		// For performance environments, default to 'latest' if not explicitly set
-		if ( empty( $woo_version ) && $environment_type === 'performance' ) {
-			$woo_version = 'latest';
+		// Default to 'stable' for test environments that typically need WooCommerce
+		if ( empty( $woo_version ) && in_array( $environment_type, [ 'e2e', 'activation', 'performance' ], true ) ) {
+			$woo_version = 'stable';
 		}
 
 		if ( empty( $woo_version ) ) {
@@ -1119,8 +1130,6 @@ class UpEnvironmentCommand extends QITCommand {
 
 		return $config;
 	}
-
-
 
 	/**
 	 * Nicely formatted human output.
