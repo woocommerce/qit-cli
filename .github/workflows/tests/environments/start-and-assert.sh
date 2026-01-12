@@ -14,8 +14,8 @@ if [ "$(curl -o /dev/null -s -w '%{http_code}\n' $SITE_URL)" -ne 200 ]; then
     echo "Home page is not up."
     exit 1
 fi
-if [ "$(curl -s $SITE_URL/wp-json | jq -r '.name')" != "WooCommerce Core E2E Test Suite" ]; then
-    echo "Name property does not match."
+if [ "$(curl -s $SITE_URL/wp-json | jq -r '.name')" != "Test Site" ]; then
+    echo "Name property does not match. Expected 'Test Site', got: $(curl -s $SITE_URL/wp-json | jq -r '.name')"
     exit 1
 fi
 echo "Site is up and running."
