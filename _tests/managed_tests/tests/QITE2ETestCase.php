@@ -144,6 +144,16 @@ class QITE2ETestCase extends TestCase {
 						$value = json_decode( $value, true );
 					}
 
+					// Normalize WooCommerce feature flags (change with every WC release).
+					if ( isset( $value['features'] ) && is_array( $value['features'] ) ) {
+						foreach ( [ 'compatible', 'incompatible', 'uncertain' ] as $key ) {
+							if ( isset( $value['features'][ $key ] ) && is_array( $value['features'][ $key ] ) ) {
+								$has_items = count( $value['features'][ $key ] ) > 0;
+								$value['features'][ $key ] = $has_items ? [ 'NORMALIZED_HAS_FEATURE_FLAGS' ] : [];
+							}
+						}
+					}
+
 					if ( stripos( $file_path, 'delete_products' ) !== false ) {
 						// We don't really care how it fails, we just want to make sure it fails.
 						return [];
