@@ -80,9 +80,10 @@
                         "block_email_editor",
                         "point_of_sale",
                         "fulfillments",
-                        "experimental-iapi-mini-cart",
                         "mcp_integration",
                         "destroy-empty-sessions",
+                        "agentic_checkout",
+                        "push_notifications",
                         "custom_order_tables",
                         "cost_of_goods_sold"
                     ]
