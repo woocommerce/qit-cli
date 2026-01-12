@@ -13,9 +13,8 @@
 [![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
 [![QIT Self-Tests - Validation](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-validation.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-validation.yml)
 
-#### Custom Tests
+#### Test Packages
 
-[![QIT Self-Tests - Custom Tests](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-custom-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-custom-test.yml)
 [![QIT Orchestration Tests](https://github.com/woocommerce/qit-cli/actions/workflows/qit-orchestration-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-orchestration-test.yml)
 
 #### Test Environment
@@ -42,11 +41,9 @@ Run tests out-of-the box with zero configuration.
 - [Malware Test](https://qit.woo.com/docs/managed-tests/malware) - Scan your code with the Malware check.
 - _Performance Tests (Work-in-progress)_
 
-#### **Custom E2E Tests** _(Early Access)_
+#### **Test Packages**
 
 Write your own E2E tests using frameworks such as [Playwright](https://playwright.dev/), or leverage pre-built tests to effortlessly increase your test coverage.
-
-[Read more about Custom E2E Tests](https://qit.woo.com/docs/custom-tests/introduction).
 
 #### Local Test Environment _(Early Access)_
 

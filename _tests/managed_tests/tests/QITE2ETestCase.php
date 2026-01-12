@@ -144,6 +144,16 @@ class QITE2ETestCase extends TestCase {
 						$value = json_decode( $value, true );
 					}
 
+					// Normalize WooCommerce feature flags (change with every WC release).
+					if ( isset( $value['features'] ) && is_array( $value['features'] ) ) {
+						foreach ( [ 'compatible', 'incompatible', 'uncertain' ] as $key ) {
+							if ( isset( $value['features'][ $key ] ) && is_array( $value['features'][ $key ] ) ) {
+								$has_items = count( $value['features'][ $key ] ) > 0;
+								$value['features'][ $key ] = $has_items ? [ 'NORMALIZED_HAS_FEATURE_FLAGS' ] : [];
+							}
+						}
+					}
+
 					if ( stripos( $file_path, 'delete_products' ) !== false ) {
 						// We don't really care how it fails, we just want to make sure it fails.
 						return [];
@@ -248,6 +258,19 @@ class QITE2ETestCase extends TestCase {
 
 					// Normalize WordPress nonces in activation links (e.g., &_wpnonce=46885582f0)
 					$value = preg_replace( '/&_wpnonce=[0-9a-f]{10}/i', '&_wpnonce=NORMALIZED', $value );
+
+					// Normalize WordPress core line numbers (change with WP updates).
+					// JSON escapes slashes as \/, so we need a pattern for that.
+					$value = preg_replace(
+						'#(wp-(?:includes|admin)\\\\/[^\s]+\.php) on line \d+#',
+						'$1 on line {LINE}',
+						$value
+					);
+					$value = preg_replace(
+						'#(wp-(?:includes|admin)\\\\/[^(]+\.php)\(\d+\)#',
+						'$1({LINE})',
+						$value
+					);
 
 					// 3) Decode back to array so we can walk the structure
 					if ( $array_mode ) {
@@ -533,6 +556,18 @@ class QITE2ETestCase extends TestCase {
 						foreach ( $value as $k => $debug_log ) {
 							// Normalize timestamps such as [01-Mar-2023 10:55:12 UTC] to [TIMESTAMP]
 							$debug_log['message'] = preg_replace( '/\[\d{2}-\w{3}-\d{4} \d{2}:\d{2}:\d{2} UTC\]/', '[TIMESTAMP]', $debug_log['message'] );
+
+							// Normalize WordPress core line numbers (change with WP updates).
+							$debug_log['message'] = preg_replace(
+								'#(wp-(?:includes|admin)/[^\s]+\.php) on line \d+#',
+								'$1 on line {LINE}',
+								$debug_log['message']
+							);
+							$debug_log['message'] = preg_replace(
+								'#(wp-(?:includes|admin)/[^(]+\.php)\(\d+\)#',
+								'$1({LINE})',
+								$debug_log['message']
+							);
 
 							// Normalize tests running on staging-compatibility to compatibility.
 							$debug_log['message'] = str_replace( 'staging-compatibility', 'compatibility', $debug_log['message'] );

@@ -65,26 +65,7 @@
                     "compatible": [],
                     "incompatible": [],
                     "uncertain": [
-                        "analytics",
-                        "product_block_editor",
-                        "cart_checkout_blocks",
-                        "rate_limit_checkout",
-                        "marketplace",
-                        "order_attribution",
-                        "site_visibility_badge",
-                        "hpos_fts_indexes",
-                        "hpos_datastore_caching",
-                        "remote_logging",
-                        "email_improvements",
-                        "blueprint",
-                        "block_email_editor",
-                        "point_of_sale",
-                        "fulfillments",
-                        "experimental-iapi-mini-cart",
-                        "mcp_integration",
-                        "destroy-empty-sessions",
-                        "custom_order_tables",
-                        "cost_of_goods_sold"
+                        "NORMALIZED_HAS_FEATURE_FLAGS"
                     ]
                 },
                 "has_outdated_templates": false,
