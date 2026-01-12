@@ -13,10 +13,6 @@
 [![QIT Self-Tests - Malware](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-malware.yml)
 [![QIT Self-Tests - Validation](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-validation.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-self-test-validation.yml)
 
-#### Test Packages
-
-[![QIT Orchestration Tests](https://github.com/woocommerce/qit-cli/actions/workflows/qit-orchestration-test.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-orchestration-test.yml)
-
 #### Test Environment
 
 [![QIT Environment Test - Linux](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml/badge.svg)](https://github.com/woocommerce/qit-cli/actions/workflows/qit-environment-test-linux.yml)
