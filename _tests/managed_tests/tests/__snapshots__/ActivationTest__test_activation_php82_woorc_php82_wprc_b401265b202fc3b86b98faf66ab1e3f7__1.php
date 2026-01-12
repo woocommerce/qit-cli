@@ -445,7 +445,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
-                                            "line": 714,
+                                            "line": 713,
                                             "column": 10
                                         }
                                     }
