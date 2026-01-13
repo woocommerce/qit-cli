@@ -139,6 +139,14 @@ class QITE2ETestCase extends TestCase {
 					// Normalize the repo.
 					$value = str_replace( 'compatibility-dashboard', 'qit-runner', $value );
 
+					// Normalize attachment paths (contain random hashes like /tmp/qit-cache/packages/a2e9cee1612f8a15d851484d861bc9bc/...).
+					// Pattern matches: "path": "\/tmp\/qit-cache\/packages\/HASH\/...\/filename.ext"
+					$value = preg_replace(
+						'/"path":\s*"[^"]*\/([^"\/]+\.(png|webm|zip|md))"/',
+						'"path": "normalized.$2"',
+						$value
+					);
+
 					// Decode if needed.
 					if ( $array ) {
 						$value = json_decode( $value, true );
@@ -269,6 +277,14 @@ class QITE2ETestCase extends TestCase {
 					$value = preg_replace(
 						'#(wp-(?:includes|admin)\\\\/[^(]+\.php)\(\d+\)#',
 						'$1({LINE})',
+						$value
+					);
+
+					// Normalize attachment paths (contain random hashes like /tmp/qit-cache/packages/HASH/...).
+					// JSON escapes forward slashes as \/, so pattern accounts for that.
+					$value = preg_replace(
+						'#"path":\s*"[^"]*\\\\/([^"\\\\/]+\.(png|webm|zip|md))"#',
+						'"path": "normalized.$2"',
 						$value
 					);
 

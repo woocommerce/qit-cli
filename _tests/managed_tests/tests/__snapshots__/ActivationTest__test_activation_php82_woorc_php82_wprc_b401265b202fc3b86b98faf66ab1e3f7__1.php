@@ -445,7 +445,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
-                                            "line": 713,
+                                            "line": 716,
                                             "column": 10
                                         }
                                     }
@@ -641,6 +641,18 @@
                     {
                         "count": "Between 10 and 149, normalized to 75",
                         "message": "PHP Deprecated: Function utf8_encode() is deprecated in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 37"
+                    },
+                    {
+                        "count": "Between 10 and 149, normalized to 75",
+                        "message": "PHP Deprecated: preg_match(): Passing null to parameter #2 ($subject) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/class-wp-block-parser.php on line {LINE}"
+                    },
+                    {
+                        "count": "Between 10 and 149, normalized to 75",
+                        "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/class-wp-block-parser.php on line {LINE}"
+                    },
+                    {
+                        "count": "1",
+                        "message": "PHP Warning: Trying to access array offset on value of type null in \\/var\\/www\\/html\\/wp-includes\\/taxonomy.php on line {LINE}"
                     }
                 ]
             }
