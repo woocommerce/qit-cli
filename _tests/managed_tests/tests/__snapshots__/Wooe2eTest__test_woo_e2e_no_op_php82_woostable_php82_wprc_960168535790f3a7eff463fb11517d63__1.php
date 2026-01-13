@@ -8433,6 +8433,14 @@
                                             "line": 20,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
+                                            "line": 80,
+                                            "column": 8
+                                        }
                                     }
                                 ]
                             },
@@ -8468,6 +8476,14 @@
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
                                             "line": 20,
                                             "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
+                                            "line": 124,
+                                            "column": 8
                                         }
                                     }
                                 ]
