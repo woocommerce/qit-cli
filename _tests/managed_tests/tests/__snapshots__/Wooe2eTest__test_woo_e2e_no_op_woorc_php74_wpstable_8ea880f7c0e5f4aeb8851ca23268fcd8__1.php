@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 336 total, 279 passed, 7 failed, 50 skipped",
+            "test_summary": "Tests: 336 total, 277 passed, 2 failed, 57 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,13 +52,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 2,
+                "numFailedTestSuites": 1,
                 "numPassedTestSuites": 66,
-                "numPendingTestSuites": 21,
+                "numPendingTestSuites": 22,
                 "numTotalTestSuites": 89,
-                "numFailedTests": 7,
-                "numPassedTests": 279,
-                "numPendingTests": 50,
+                "numFailedTests": 2,
+                "numPassedTests": 277,
+                "numPendingTests": 57,
                 "numTotalTests": 336,
                 "testResults": [
                     {
@@ -115,49 +115,49 @@
                     },
                     {
                         "file": "analytics\\/analytics-data.spec.js",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "confirms correct summary numbers on overview page": [
                                 {
                                     "title": "confirms correct summary numbers on overview page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "downloads revenue report as CSV": [
                                 {
                                     "title": "downloads revenue report as CSV",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "use date filter on overview page": [
                                 {
                                     "title": "use date filter on overview page",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "set custom date range on revenue report": [
                                 {
                                     "title": "set custom date range on revenue report",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "use advanced filters on orders report": [
                                 {
                                     "title": "use advanced filters on orders report",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "use filter by single product on products report": [
                                 {
                                     "title": "use filter by single product on products report",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "analytics settings": [
                                 {
                                     "title": "analytics settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2395,7 +2395,7 @@
                         }
                     }
                 ],
-                "summary": "336 total, 279 passed, 7 failed, 50 skipped."
+                "summary": "336 total, 277 passed, 2 failed, 57 skipped."
             }
         },
         {
@@ -2411,10 +2411,10 @@
                     },
                     "summary": {
                         "tests": 336,
-                        "passed": 279,
-                        "failed": 7,
+                        "passed": 277,
+                        "failed": 2,
                         "pending": 0,
-                        "skipped": 50,
+                        "skipped": 57,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2584,14 +2584,11 @@
                         },
                         {
                             "name": "confirms correct summary numbers on overview page",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:283:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 281 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Total sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 282 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 283 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 284 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 285 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 286 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Net sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2602,48 +2599,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "line": 269,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "downloads revenue report as CSV",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2658,242 +2639,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "line": 307,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "use date filter on overview page",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:356:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 354 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Total sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 355 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 356 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 357 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 358 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 359 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Net sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "set custom date range on revenue report",
-                            "status": "failed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:426:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 424 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Gross sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 425 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 426 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 427 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 428 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 429 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Returns $0.00 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "use advanced filters on orders report",
-                            "status": "failed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:527:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 525 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Orders 10 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 526 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 527 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 528 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 529 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 530 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Net sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "use filter by single product on products report",
-                            "status": "failed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:621:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 619 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Orders 10 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 620 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 621 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 622 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 623 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 624 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Items sold 110 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "analytics settings",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2908,13 +2675,162 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "line": 340,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "set custom date range on revenue report",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "line": 410,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "use advanced filters on orders report",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "line": 512,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "use filter by single product on products report",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "line": 606,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "analytics settings",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "line": 705,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
