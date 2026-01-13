@@ -382,7 +382,14 @@ class QITE2ETestCase extends TestCase {
 									if ( stripos( $line, 'Something may be wrong with WordPress.org' ) !== false ) {
 										unset( $test['stderr'][ $k ] );
 									}
+									// Filter Node.js warning about NO_COLOR being ignored due to FORCE_COLOR.
+									// This happens because Playwright internally sets FORCE_COLOR=1 in worker processes.
+									if ( stripos( $line, "The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set" ) !== false ) {
+										unset( $test['stderr'][ $k ] );
+									}
 								}
+								// Re-index array after potential removals.
+								$test['stderr'] = array_values( $test['stderr'] );
 							}
 						}
 						unset( $test );
