@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 336 total, 282 passed, 0 failed, 54 skipped",
+            "test_summary": "Tests: 336 total, 280 passed, 0 failed, 56 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,12 +53,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 68,
-                "numPendingTestSuites": 21,
+                "numPassedTestSuites": 67,
+                "numPendingTestSuites": 22,
                 "numTotalTestSuites": 89,
                 "numFailedTests": 0,
-                "numPassedTests": 282,
-                "numPendingTests": 54,
+                "numPassedTests": 280,
+                "numPendingTests": 56,
                 "numTotalTests": 336,
                 "testResults": [
                     {
@@ -1297,16 +1297,16 @@
                     {
                         "file": "order\\/order-coupon.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can remove a coupon",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2395,7 +2395,7 @@
                         }
                     }
                 ],
-                "summary": "336 total, 282 passed, 0 failed, 54 skipped."
+                "summary": "336 total, 280 passed, 0 failed, 56 skipped."
             }
         },
         {
@@ -2411,10 +2411,10 @@
                     },
                     "summary": {
                         "tests": 336,
-                        "passed": 282,
+                        "passed": 280,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 54,
+                        "skipped": 56,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -8404,11 +8404,11 @@
                         },
                         {
                             "name": "can apply a coupon",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -8423,21 +8423,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can remove a coupon",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -8452,11 +8459,18 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },

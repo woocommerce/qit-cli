@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 336 total, 277 passed, 2 failed, 57 skipped",
+            "test_summary": "Tests: 336 total, 276 passed, 3 failed, 57 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,12 +52,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 1,
-                "numPassedTestSuites": 66,
+                "numFailedTestSuites": 2,
+                "numPassedTestSuites": 65,
                 "numPendingTestSuites": 22,
                 "numTotalTestSuites": 89,
-                "numFailedTests": 2,
-                "numPassedTests": 277,
+                "numFailedTests": 3,
+                "numPassedTests": 276,
                 "numPendingTests": 57,
                 "numTotalTests": 336,
                 "testResults": [
@@ -245,13 +245,13 @@
                     },
                     {
                         "file": "basic\\/page-loads.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "can load WooCommerce > Home page": [
                                 {
                                     "title": "can load WooCommerce > Home page",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can load WooCommerce > Orders page": [
@@ -2395,7 +2395,7 @@
                         }
                     }
                 ],
-                "summary": "336 total, 277 passed, 2 failed, 57 skipped."
+                "summary": "336 total, 276 passed, 3 failed, 57 skipped."
             }
         },
         {
@@ -2411,8 +2411,8 @@
                     },
                     "summary": {
                         "tests": 336,
-                        "passed": 277,
-                        "failed": 2,
+                        "passed": 276,
+                        "failed": 3,
                         "pending": 0,
                         "skipped": 57,
                         "other": 0,
@@ -3235,11 +3235,14 @@
                         },
                         {
                             "name": "can load WooCommerce > Home page",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.woocommerce-inbox-card__header > .components-truncate\').first()\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-inbox-card__header > .components-truncate\').first()\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.woocommerce-inbox-card__header > .components-truncate\').first()\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.woocommerce-inbox-card__header > .components-truncate\').first()\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js:298:6",
+                            "snippet": "\\u001b[0m \\u001b[90m 296 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 297 |\\u001b[39m \\t\\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator( currentPage\\u001b[33m.\\u001b[39msubpages[ i ]\\u001b[33m.\\u001b[39melement )\\u001b[33m.\\u001b[39mfirst()\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 298 |\\u001b[39m \\t\\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 299 |\\u001b[39m\\n \\u001b[90m 300 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 301 |\\u001b[39m \\t\\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator( currentPage\\u001b[33m.\\u001b[39msubpages[ i ]\\u001b[33m.\\u001b[39melement )\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3247,11 +3250,33 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
@@ -3277,7 +3302,9 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             },
