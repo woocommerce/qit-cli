@@ -7,11 +7,11 @@ use QIT_CLI\Environment\Environments\QITEnvInfo;
 
 /**
  * Infrastructure provider interface for environment provisioning.
- * Implementations handle Docker (local) or WP Cloud (remote) infrastructure.
+ * Implementations handle local (Docker) or cloud (remote) infrastructure.
  */
 interface InfraProvider {
 	/**
-	 * Provision infrastructure (Docker containers or WP Cloud instance).
+	 * Provision infrastructure (Docker containers or cloud instance).
 	 * After this call, the environment should be ready for WordPress setup.
 	 *
 	 * @param QITEnvInfo $env Environment configuration.
@@ -39,7 +39,7 @@ interface InfraProvider {
 	 *
 	 * @param QITEnvInfo $env Environment configuration.
 	 *
-	 * @return string Site URL (e.g., https://abc123.wpcloud.example.com).
+	 * @return string Site URL (e.g., https://abc123.example.com).
 	 */
 	public function get_site_url( QITEnvInfo $env ): string;
 
@@ -51,7 +51,7 @@ interface InfraProvider {
 	public function reset( QITEnvInfo $env ): void;
 
 	/**
-	 * Destroy the infrastructure (Docker down or release WP Cloud instance).
+	 * Destroy the infrastructure (Docker down or release cloud instance).
 	 *
 	 * @param QITEnvInfo $env Environment configuration.
 	 */
