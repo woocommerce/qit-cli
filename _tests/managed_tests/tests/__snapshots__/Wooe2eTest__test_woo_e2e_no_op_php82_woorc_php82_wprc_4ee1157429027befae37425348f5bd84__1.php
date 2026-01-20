@@ -8647,6 +8647,14 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
                                             "line": 80,
                                             "column": 8
                                         }
@@ -8679,6 +8687,14 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    },
                                     {
                                         "type": "skip",
                                         "location": {
@@ -10457,10 +10473,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 95,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10497,6 +10514,15 @@
                                             "line": 124,
                                             "column": 6
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             },
@@ -10527,10 +10553,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 202,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
