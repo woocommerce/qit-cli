@@ -7,6 +7,21 @@ namespace QIT_CLI\Environment\Environments;
  * Contains common properties shared across different test environment types.
  */
 abstract class QITEnvInfo extends EnvInfo {
+	/**
+	 * Infrastructure provider type.
+	 *
+	 * @var string 'local' (Docker) or 'cloud'
+	 */
+	public string $provider_type = 'local';
+
+	/**
+	 * Cloud environment ID for cloud provider.
+	 * Used to identify the environment in Manager API calls.
+	 *
+	 * @var string|null
+	 */
+	public ?string $cloud_environment_id = null;
+
 	/** @var string WordPress version */
 	public string $wordpress_version = '';
 
