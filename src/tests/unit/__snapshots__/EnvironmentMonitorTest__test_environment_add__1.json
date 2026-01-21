@@ -19,6 +19,8 @@
         "tunnel_type": "no_tunnel",
         "site_url": "",
         "domain": "localhost",
+        "provider_type": "local",
+        "cloud_environment_id": null,
         "wordpress_version": "",
         "woocommerce_version": "",
         "php_version": "",
