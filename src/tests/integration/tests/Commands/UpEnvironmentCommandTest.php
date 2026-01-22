@@ -827,7 +827,7 @@ class UpEnvironmentCommandTest extends TestCase {
 	}
 
 	/*******************************************************************
-	 * Provider Flag Tests (QIT-871)
+	 * Provider Flag Tests
 	 ******************************************************************/
 
 	/**
