@@ -791,7 +791,7 @@ class UpEnvironmentCommandTest extends TestCase {
 				],
 			],
 		];
-		
+
 		$output = qit_run_env_up( [
 			'env:up',
 			'--json',
@@ -804,25 +804,123 @@ class UpEnvironmentCommandTest extends TestCase {
 			'--object_cache',
 		], $config );
 		$data = json_decode( $output, true );
-		
+
 		// Check everything
 		$this->assertEquals( 'e2e', $data['environment'] );
 		$this->assertEquals( '8.2', $data['php_version'] ); // CLI override
 		$this->assertEquals( '6.2', $data['wordpress_version'] ); // From config
 		$this->assertTrue( $data['object_cache'] );
-		
+
 		// Plugins
 		$pluginSlugs = array_column( $data['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $pluginSlugs ); // From --woo
 		$this->assertContains( 'akismet', $pluginSlugs ); // From config
 		$this->assertContains( 'jetpack', $pluginSlugs ); // From CLI
-		
+
 		// Themes
 		$themeSlugs = array_column( $data['themes'], 'slug' );
 		$this->assertContains( 'twentytwentythree', $themeSlugs ); // From config
 		$this->assertContains( 'storefront', $themeSlugs ); // From CLI
-		
+
 		// PHP extensions
 		$this->assertContains( 'gd', $data['php_extensions'] );
+	}
+
+	/*******************************************************************
+	 * Provider Flag Tests (QIT-871)
+	 ******************************************************************/
+
+	/**
+	 * Test env:up without --provider uses 'local' by default (backward compatible).
+	 */
+	public function test_env_up_provider_defaults_to_local(): void {
+		$output = qit_run_env_up( [ 'env:up', '--json' ] );
+		$data = json_decode( $output, true );
+
+		// Should default to 'local' provider
+		$this->assertArrayHasKey( 'provider_type', $data );
+		$this->assertEquals( 'local', $data['provider_type'] );
+	}
+
+	/**
+	 * Test env:up with explicit --provider=local.
+	 */
+	public function test_env_up_provider_explicit_local(): void {
+		$output = qit_run_env_up( [
+			'env:up',
+			'--json',
+			'--provider', 'local',
+		] );
+		$data = json_decode( $output, true );
+
+		// Should use 'local' provider
+		$this->assertArrayHasKey( 'provider_type', $data );
+		$this->assertEquals( 'local', $data['provider_type'] );
+	}
+
+	/**
+	 * Test env:up with --provider=cloud is rejected (not yet implemented).
+	 */
+	public function test_env_up_provider_cloud_not_implemented(): void {
+		// Cloud provider is not yet implemented, should be rejected
+		$output = qit_run_env_up(
+			[
+				'env:up',
+				'--json',
+				'--provider', 'cloud',
+			],
+			[],
+			1 // Expect failure
+		);
+
+		// The output should contain an error message about invalid provider
+		$this->assertStringContainsString( 'Invalid provider', $output );
+	}
+
+	/**
+	 * Test env:up with invalid --provider throws exception.
+	 */
+	public function test_env_up_provider_invalid_throws_exception(): void {
+		// Invalid provider should throw an exception with exit code 1
+		$output = qit_run_env_up(
+			[
+				'env:up',
+				'--json',
+				'--provider', 'invalid_provider',
+			],
+			[],
+			1 // Expect failure
+		);
+
+		// The output should contain an error message about invalid provider
+		$this->assertStringContainsString( 'Invalid provider', $output );
+	}
+
+	/**
+	 * Test env:up provider with config uses local provider.
+	 */
+	public function test_env_up_provider_with_config(): void {
+		$config = [
+			'environments' => [
+				'default' => [
+					'php_version' => '8.2',
+					'wordpress_version' => '6.5',
+				],
+			],
+		];
+
+		// With config, --provider=local should work and config values applied
+		$output = qit_run_env_up( [
+			'env:up',
+			'--json',
+			'--provider', 'local',
+		], $config );
+		$data = json_decode( $output, true );
+
+		// Should use 'local' provider
+		$this->assertEquals( 'local', $data['provider_type'] );
+		// Config values should still be applied
+		$this->assertEquals( '8.2', $data['php_version'] );
+		$this->assertEquals( '6.5', $data['wordpress_version'] );
 	}
 }

@@ -11,6 +11,7 @@ use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\Environment\Environments\QITEnvInfo;
+use QIT_CLI\Environment\Infra\InfraProviderFactory;
 use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
@@ -91,6 +92,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'skip_activating_plugins', null, InputOption::VALUE_NONE, 'Skip activating plugins during environment setup' )
 			->addOption( 'skip_activating_themes', null, InputOption::VALUE_NONE, 'Skip activating themes during environment setup' )
 			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine‑readable JSON output' )
+			->addOption( 'provider', null, InputOption::VALUE_OPTIONAL, 'Infrastructure provider (currently only "local" is available)', InfraProviderFactory::PROVIDER_LOCAL )
 			->setHelp( $this->getHelpText() );
 	}
 
@@ -104,6 +106,21 @@ class UpEnvironmentCommand extends QITCommand {
 		if ( is_windows() ) {
 			$output->writeln( '<comment>QIT environments require WSL on Windows.</comment>' );
 
+			return Command::FAILURE;
+		}
+
+		/* ─ Validate provider type ─ */
+		$provider_type = $input->getOption( 'provider' );
+		if ( ! in_array( $provider_type, InfraProviderFactory::ALLOWED_TYPES, true ) ) {
+			$error_message = sprintf( 'Invalid provider "%s". Must be one of: %s.', $provider_type, implode( ', ', InfraProviderFactory::ALLOWED_TYPES ) );
+			if ( $input->getOption( 'json' ) ) {
+				$output->writeln( json_encode( [
+					'error'   => true,
+					'message' => $error_message,
+				] ) );
+			} else {
+				$output->writeln( '<error>' . $error_message . '</error>' );
+			}
 			return Command::FAILURE;
 		}
 
@@ -660,6 +677,7 @@ class UpEnvironmentCommand extends QITCommand {
 		$env_info = $env_info_class::from_array( [
 			'env_id'                  => 'qitenv' . bin2hex( random_bytes( 8 ) ),
 			'environment'             => $environment_type,
+			'provider_type'           => $provider_type,
 			'php_version'             => $env_config['php_version'] ?? '8.2',
 			'wordpress_version'       => $env_config['wordpress_version'] ?? 'stable',
 			'woocommerce_version'     => $env_config['woocommerce_version'] ?? '',
@@ -1534,13 +1552,13 @@ HELP;
 	 * Extract requirements from a test package manifest.
 	 *
 	 * @param \QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest The manifest to extract from.
-	 * @param string $package_ref The package reference for tracking which package requires what.
-	 * @param array<string,array<string>> &$required_plugins By-reference array to append plugin requirements to.
-	 * @param array<string,array<string>> &$required_themes By-reference array to append theme requirements to.
-	 * @param array<string,array<string>> &$required_secrets By-reference array to append secret requirements to.
-	 * @param bool &$requires_network By-reference flag to set if package requires network.
-	 * @param bool &$requires_tunnel By-reference flag to set if package requires tunnel.
-	 * @param OutputInterface $output The output interface for verbose messages.
+	 * @param string                                          $package_ref The package reference for tracking which package requires what.
+	 * @param array<string,array<string>>                     &$required_plugins By-reference array to append plugin requirements to.
+	 * @param array<string,array<string>>                     &$required_themes By-reference array to append theme requirements to.
+	 * @param array<string,array<string>>                     &$required_secrets By-reference array to append secret requirements to.
+	 * @param bool                                            &$requires_network By-reference flag to set if package requires network.
+	 * @param bool                                            &$requires_tunnel By-reference flag to set if package requires tunnel.
+	 * @param OutputInterface                                 $output The output interface for verbose messages.
 	 */
 	private function extractManifestRequirements(
 		\QIT_CLI\PreCommand\Objects\TestPackageManifest $manifest,
