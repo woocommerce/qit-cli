@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 336 total, 253 passed, 0 failed, 83 skipped",
+            "test_summary": "Tests: 342 total, 259 passed, 0 failed, 83 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 65,
+                "numPassedTestSuites": 66,
                 "numPendingTestSuites": 24,
-                "numTotalTestSuites": 89,
+                "numTotalTestSuites": 90,
                 "numFailedTests": 0,
-                "numPassedTests": 253,
+                "numPassedTests": 259,
                 "numPendingTests": 83,
-                "numTotalTests": 336,
+                "numTotalTests": 342,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -192,6 +192,41 @@
                                 },
                                 {
                                     "title": "should allow a user to move a section up",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Analytics Overview - Manual Import Trigger": [
+                                {
+                                    "title": "should show manual update trigger in scheduled mode",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should hide manual update trigger in immediate mode",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "analytics\\/analytics-settings.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Analytics Settings - Scheduled Import": [
+                                {
+                                    "title": "should show Immediate mode by default when option is not set",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should switch from scheduled to immediate mode with confirmation modal - cancel flow",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should switch from scheduled to immediate mode with confirmation modal - confirm flow",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should switch from immediate to scheduled mode without confirmation modal",
                                     "status": "passed"
                                 }
                             ]
@@ -2395,7 +2430,7 @@
                         }
                     }
                 ],
-                "summary": "336 total, 253 passed, 0 failed, 83 skipped."
+                "summary": "342 total, 259 passed, 0 failed, 83 skipped."
             }
         },
         {
@@ -2410,8 +2445,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 336,
-                        "passed": 253,
+                        "tests": 342,
+                        "passed": 259,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 83,
@@ -3079,6 +3114,198 @@
                                 }
                             ],
                             "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should show manual update trigger in scheduled mode",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Overview",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics Overview - Manual Import Trigger",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should hide manual update trigger in immediate mode",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Overview",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics Overview - Manual Import Trigger",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should show Immediate mode by default when option is not set",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should switch from scheduled to immediate mode with confirmation modal - cancel flow",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should switch from scheduled to immediate mode with confirmation modal - confirm flow",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should switch from immediate to scheduled mode without confirmation modal",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -14136,16 +14363,7 @@
         },
         {
             "debug_log": {
-                "generic": [
-                    {
-                        "count": "2",
-                        "message": "PHP Deprecated: preg_match(): Passing null to parameter #2 ($subject) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/class-wp-block-parser.php on line {LINE}"
-                    },
-                    {
-                        "count": "2",
-                        "message": "PHP Deprecated: strlen(): Passing null to parameter #1 ($string) of type string is deprecated in \\/var\\/www\\/html\\/wp-includes\\/class-wp-block-parser.php on line {LINE}"
-                    }
-                ]
+                "generic": []
             }
         }
     ]
