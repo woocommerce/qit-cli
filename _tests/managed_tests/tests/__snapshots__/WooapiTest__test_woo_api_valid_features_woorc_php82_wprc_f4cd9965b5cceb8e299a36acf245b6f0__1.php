@@ -7299,10 +7299,6 @@
             "debug_log": {
                 "generic": [
                     {
-                        "count": "1",
-                        "message": "PHP Deprecated: Function FeaturesUtil::feature_is_enabled(\'marketplace\') is deprecated since version 10.5.0 with no alternative available. in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line {LINE}"
-                    },
-                    {
                         "count": "Between 500 and 999, normalized to 750",
                         "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
