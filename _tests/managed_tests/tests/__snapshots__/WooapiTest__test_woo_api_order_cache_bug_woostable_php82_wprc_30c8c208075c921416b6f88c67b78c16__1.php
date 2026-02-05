@@ -7300,7 +7300,7 @@
                 "generic": [
                     {
                         "count": "Between 500 and 999, normalized to 750",
-                        "message": "PHP Notice: $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
+                        "message": "PHP Notice:  $order is Automattic\\\\WooCommerce\\\\Admin\\\\Overrides\\\\Order as expected. in wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 41"
                     }
                 ]
             }
