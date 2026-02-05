@@ -7300,7 +7300,7 @@
                 "generic": [
                     {
                         "count": "Between 500 and 999, normalized to 750",
-                        "message": "PHP Notice: New Product Editor is enabled as expected. in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
+                        "message": "PHP Notice:  New Product Editor is enabled as expected. in wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
                 ]
             }
