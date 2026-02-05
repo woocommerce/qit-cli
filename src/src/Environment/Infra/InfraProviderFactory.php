@@ -8,16 +8,27 @@ namespace QIT_CLI\Environment\Infra;
  * Factory for creating infrastructure providers.
  */
 class InfraProviderFactory {
+	/** Provider type: Local Docker environment */
+	public const PROVIDER_LOCAL = 'local';
+
+	/**
+	 * All valid provider types for user input validation.
+	 *
+	 * @var array<string>
+	 */
+	public const ALLOWED_TYPES = [
+		self::PROVIDER_LOCAL,
+	];
+
 	/** @var array<string, class-string<InfraProvider>> */
 	protected array $providers = [
-		'local' => LocalProvider::class,
-		// 'cloud' => CloudProvider::class, // Added in Phase 5 (QIT-882)
+		self::PROVIDER_LOCAL => LocalProvider::class,
 	];
 
 	/**
 	 * Create an infrastructure provider by type.
 	 *
-	 * @param string $type Provider type ('local' or 'cloud').
+	 * @param string $type Provider type (e.g., 'local').
 	 *
 	 * @return InfraProvider
 	 *

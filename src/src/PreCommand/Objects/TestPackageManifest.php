@@ -101,8 +101,8 @@ final class TestPackageManifest {
 		$this->package_type = $data['package_type'] ?? $this->derive_package_type();
 		$this->test_type    = $data['test_type'] ?? 'e2e';
 		$this->test_dir     = $data['test_dir'] ?? './';
-		$this->description = $data['description'] ?? '';
-		$this->requires    = $data['requires'] ?? [];
+		$this->description  = $data['description'] ?? '';
+		$this->requires     = $data['requires'] ?? [];
 
 		// Validate secrets format if present (security check)
 		if ( isset( $this->requires['secrets'] ) && is_array( $this->requires['secrets'] ) ) {

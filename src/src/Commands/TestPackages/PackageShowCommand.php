@@ -168,11 +168,11 @@ class PackageShowCommand extends QITCommand {
 				foreach ( [ 'globalSetup', 'setup', 'run', 'teardown', 'globalTeardown' ] as $phase_name ) {
 					$commands = $phases[ $phase_name ] ?? [];
 					if ( ! empty( $commands ) && is_array( $commands ) ) {
-						$command_str         = implode( "\n        ", $commands );
-						$phase_info[]        = sprintf( '  <info>✓ %s:</info>', $phase_name );
-						$phase_info[]        = '        ' . $command_str;
+						$command_str  = implode( "\n        ", $commands );
+						$phase_info[] = sprintf( '  <info>✓ %s:</info>', $phase_name );
+						$phase_info[] = '        ' . $command_str;
 					} else {
-						$status = ( $phase_name === 'run' && $is_utility ) ?
+						$status       = ( $phase_name === 'run' && $is_utility ) ?
 							'<comment>✗ ' . $phase_name . ': (none - this is a utility package)</comment>' :
 							'  <fg=gray>✗ ' . $phase_name . ': (none)</>';
 						$phase_info[] = $status;
