@@ -662,10 +662,6 @@
                         "message": "PHP Notice: Notice on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 16"
                     },
                     {
-                        "count": "1",
-                        "message": "PHP Notice: Trying to access array offset on value of type null in \\/var\\/www\\/html\\/wp-includes\\/taxonomy.php on line {LINE}"
-                    },
-                    {
                         "count": "6",
                         "message": "PHP Warning: Warning on all requests in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 12"
                     }
