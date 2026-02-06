@@ -34,7 +34,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Errors: 1 Warnings: 2",
+            "test_summary": "Errors: 3 Warnings: 2",
             "debug_log": "",
             "version": "Undefined",
             "update_complete": true,
