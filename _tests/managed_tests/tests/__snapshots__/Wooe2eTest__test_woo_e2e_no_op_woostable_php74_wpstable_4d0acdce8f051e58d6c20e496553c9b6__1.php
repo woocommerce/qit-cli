@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 336 total, 256 passed, 0 failed, 80 skipped",
+            "test_summary": "Tests: 342 total, 290 passed, 5 failed, 47 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,14 +52,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 66,
-                "numPendingTestSuites": 23,
-                "numTotalTestSuites": 89,
-                "numFailedTests": 0,
-                "numPassedTests": 256,
-                "numPendingTests": 80,
-                "numTotalTests": 336,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 69,
+                "numPendingTestSuites": 20,
+                "numTotalTestSuites": 90,
+                "numFailedTests": 5,
+                "numPassedTests": 290,
+                "numPendingTests": 47,
+                "numTotalTests": 342,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -115,49 +115,49 @@
                     },
                     {
                         "file": "analytics\\/analytics-data.spec.js",
-                        "status": "passed",
-                        "has_pending": true,
+                        "status": "failed",
+                        "has_pending": false,
                         "tests": {
                             "confirms correct summary numbers on overview page": [
                                 {
                                     "title": "confirms correct summary numbers on overview page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "downloads revenue report as CSV": [
                                 {
                                     "title": "downloads revenue report as CSV",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "use date filter on overview page": [
                                 {
                                     "title": "use date filter on overview page",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "set custom date range on revenue report": [
                                 {
                                     "title": "set custom date range on revenue report",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "use advanced filters on orders report": [
                                 {
                                     "title": "use advanced filters on orders report",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "use filter by single product on products report": [
                                 {
                                     "title": "use filter by single product on products report",
-                                    "status": "pending"
+                                    "status": "failed"
                                 }
                             ],
                             "analytics settings": [
                                 {
                                     "title": "analytics settings",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -192,6 +192,41 @@
                                 },
                                 {
                                     "title": "should allow a user to move a section up",
+                                    "status": "passed"
+                                }
+                            ],
+                            "Analytics Overview - Manual Import Trigger": [
+                                {
+                                    "title": "should show manual update trigger in scheduled mode",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should hide manual update trigger in immediate mode",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "analytics\\/analytics-settings.spec.js",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Analytics Settings - Scheduled Import": [
+                                {
+                                    "title": "should show Immediate mode by default when option is not set",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should switch from scheduled to immediate mode with confirmation modal - cancel flow",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should switch from scheduled to immediate mode with confirmation modal - confirm flow",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "should switch from immediate to scheduled mode without confirmation modal",
                                     "status": "passed"
                                 }
                             ]
@@ -246,150 +281,150 @@
                     {
                         "file": "basic\\/page-loads.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can load WooCommerce > Home page": [
                                 {
                                     "title": "can load WooCommerce > Home page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Orders page": [
                                 {
                                     "title": "can load WooCommerce > Orders page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Customers page": [
                                 {
                                     "title": "can load WooCommerce > Customers page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Reports page": [
                                 {
                                     "title": "can load WooCommerce > Reports page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Settings page": [
                                 {
                                     "title": "can load WooCommerce > Settings page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Status page": [
                                 {
                                     "title": "can load WooCommerce > Status page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > All Products page": [
                                 {
                                     "title": "can load Products > All Products page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Add new product page": [
                                 {
                                     "title": "can load Products > Add new product page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Categories page": [
                                 {
                                     "title": "can load Products > Categories page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Tags page": [
                                 {
                                     "title": "can load Products > Tags page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Attributes page": [
                                 {
                                     "title": "can load Products > Attributes page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Overview page": [
                                 {
                                     "title": "can load Analytics > Overview page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Products page": [
                                 {
                                     "title": "can load Analytics > Products page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Revenue page": [
                                 {
                                     "title": "can load Analytics > Revenue page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Orders page": [
                                 {
                                     "title": "can load Analytics > Orders page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Variations page": [
                                 {
                                     "title": "can load Analytics > Variations page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Categories page": [
                                 {
                                     "title": "can load Analytics > Categories page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Coupons page": [
                                 {
                                     "title": "can load Analytics > Coupons page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Taxes page": [
                                 {
                                     "title": "can load Analytics > Taxes page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Downloads page": [
                                 {
                                     "title": "can load Analytics > Downloads page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Stock page": [
                                 {
                                     "title": "can load Analytics > Stock page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Settings page": [
                                 {
                                     "title": "can load Analytics > Settings page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Marketing > Overview page": [
                                 {
                                     "title": "can load Marketing > Overview page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Marketing > Coupons page": [
                                 {
                                     "title": "can load Marketing > Coupons page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1297,16 +1332,16 @@
                     {
                         "file": "order\\/order-coupon.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can remove a coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2395,7 +2430,7 @@
                         }
                     }
                 ],
-                "summary": "336 total, 256 passed, 0 failed, 80 skipped."
+                "summary": "342 total, 290 passed, 5 failed, 47 skipped."
             }
         },
         {
@@ -2410,11 +2445,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 336,
-                        "passed": 256,
-                        "failed": 0,
+                        "tests": 342,
+                        "passed": 290,
+                        "failed": 5,
                         "pending": 0,
-                        "skipped": 80,
+                        "skipped": 47,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2584,11 +2619,14 @@
                         },
                         {
                             "name": "confirms correct summary numbers on overview page",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:283:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 281 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Total sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 282 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 283 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 284 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 285 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 286 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Net sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2599,32 +2637,48 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
-                                            "line": 269,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "downloads revenue report as CSV",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2639,28 +2693,25 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
-                                            "line": 307,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "use date filter on overview page",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Total sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:356:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 354 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Total sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 355 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 356 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 357 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 358 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 359 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Net sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2671,32 +2722,51 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
-                                            "line": 340,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "set custom date range on revenue report",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Gross sales $1,229.30 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:426:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 424 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Gross sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 425 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 426 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 427 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 428 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 429 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Returns $0.00 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2707,32 +2777,51 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
-                                            "line": 410,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "use advanced filters on orders report",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:527:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 525 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Orders 10 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 526 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 527 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 528 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 529 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 530 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Net sales $1,229.30 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2743,32 +2832,51 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
-                                            "line": 512,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "use filter by single product on products report",
-                            "status": "skipped",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'menuitem\', { name: \'Orders 10 No change from Previous year:\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js:621:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 619 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Orders 10 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 620 |\\u001b[39m \\t\\t\\t} )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 621 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 622 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 623 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 624 |\\u001b[39m \\t\\t\\t\\tname\\u001b[33m:\\u001b[39m \\u001b[32m\'Items sold 110 No change from Previous year:\'\\u001b[39m\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2779,32 +2887,48 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > analytics\\/analytics-data.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
-                                            "line": 606,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "analytics settings",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2819,18 +2943,13 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
-                                            "line": 705,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -3090,6 +3209,198 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "should show manual update trigger in scheduled mode",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Overview",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics Overview - Manual Import Trigger",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should hide manual update trigger in immediate mode",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Overview",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics Overview - Manual Import Trigger",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should show Immediate mode by default when option is not set",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should switch from scheduled to immediate mode with confirmation modal - cancel flow",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should switch from scheduled to immediate mode with confirmation modal - confirm flow",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should switch from immediate to scheduled mode without confirmation modal",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Go to Analytics > Settings",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "Load the home page",
                             "status": "passed",
                             "duration": 999,
@@ -3235,11 +3546,11 @@
                         },
                         {
                             "name": "can load WooCommerce > Home page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3251,28 +3562,21 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Orders page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3286,26 +3590,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Customers page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3319,26 +3614,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Reports page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3352,26 +3638,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Settings page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3385,26 +3662,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load WooCommerce > Status page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3418,26 +3686,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Products > All Products page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3451,26 +3710,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Add new product page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3484,26 +3734,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Categories page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3517,26 +3758,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Tags page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3550,26 +3782,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Products > Attributes page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3583,26 +3806,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Overview page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3616,26 +3830,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Products page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3649,26 +3854,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Revenue page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3682,26 +3878,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Orders page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3715,26 +3902,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Variations page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3748,26 +3926,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Categories page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3781,26 +3950,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Coupons page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3814,26 +3974,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Taxes page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3847,26 +3998,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Downloads page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3880,26 +4022,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Stock page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3913,26 +4046,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Analytics > Settings page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3946,26 +4070,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Marketing > Overview page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -3979,26 +4094,17 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can load Marketing > Coupons page",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
@@ -4010,18 +4116,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -8616,11 +8715,11 @@
                         },
                         {
                             "name": "can apply a coupon",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -8635,36 +8734,21 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 80,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can remove a coupon",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -8679,26 +8763,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 124,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
