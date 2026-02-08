@@ -484,21 +484,6 @@ abstract class Environment {
 			}
 		}
 
-		// Remove volume.
-		$process = new Process( [
-			App::make( Docker::class )->find_docker(),
-			'volume',
-			'remove',
-			sprintf( 'qit_env_volume_%s', $env_info->env_id ),
-			'--force',
-		] );
-
-		$process->run( function ( $type, $buffer ) use ( $output ) {
-			if ( $output->isVerbose() ) {
-				$output->write( $buffer );
-			}
-		} );
-
 		if ( $env_info->tunnel ) {
 			TunnelRunner::stop_tunnel( $env_info->env_id );
 		}
@@ -533,11 +518,16 @@ abstract class Environment {
 		}
 		$containers = array_unique( $containers );
 
+		// Exclude init containers - they are expected to exit after completing.
+		$containers = array_filter( $containers, static function ( string $name ): bool {
+			return strpos( $name, 'qit_env_init_' ) === false;
+		} );
+
 		if ( empty( $containers ) ) {
 			throw new \RuntimeException( 'Failed to start the environment. No containers found.' );
 		}
 
-		$this->env_info->docker_images  = $containers;
+		$this->env_info->docker_images  = array_values( $containers );
 		$this->env_info->docker_network = $docker_network;
 	}
 

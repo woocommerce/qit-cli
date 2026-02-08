@@ -43,12 +43,6 @@ class EnvironmentDanglingCleanup {
 	/** @var array<string> */
 	protected $dangling_containers = [];
 
-	/** @var array<string> */
-	protected $dangling_networks = [];
-
-	/** @var array<string> */
-	protected $dangling_volumes = [];
-
 	public function __construct(
 		EnvironmentMonitor $environment_monitor,
 		Filesystem $filesystem,
@@ -87,13 +81,11 @@ class EnvironmentDanglingCleanup {
 		$this->remove_dangling_environments();
 		$this->detect_dangling_containers_exited();
 		$this->detect_dangling_containers_running();
-		$this->detect_dangling_networks();
-		$this->detect_dangling_volumes();
 		$this->detect_dangling_directories();
 		$this->stop_dangling_local_tunnels();
 
 		// Check if there are actions to perform.
-		if ( empty( $this->dangling_directories ) && empty( $this->dangling_containers ) && empty( $this->dangling_networks ) && empty( $this->dangling_volumes ) ) {
+		if ( empty( $this->dangling_directories ) && empty( $this->dangling_containers ) ) {
 			return;
 		}
 
@@ -121,28 +113,6 @@ class EnvironmentDanglingCleanup {
 				$remove_process->mustRun();
 			} catch ( \Exception $e ) {
 				$this->debug_output( "Failed to remove container: {$container_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
-			}
-		}
-
-		foreach ( $this->dangling_networks as $network_name ) {
-			$this->debug_output( "Removing dangling Docker network: {$network_name}" );
-
-			$remove_process = new Process( [ 'docker', 'network', 'rm', $network_name ] );
-			try {
-				$remove_process->mustRun();
-			} catch ( \Exception $e ) {
-				$this->debug_output( "Failed to remove network: {$network_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
-			}
-		}
-
-		foreach ( $this->dangling_volumes as $volume_name ) {
-			$this->debug_output( "Removing dangling Docker volume: {$volume_name}" );
-
-			$remove_process = new Process( [ 'docker', 'volume', 'rm', $volume_name ] );
-			try {
-				$remove_process->mustRun();
-			} catch ( \Exception $e ) {
-				$this->debug_output( "Failed to remove volume: {$volume_name} - " . $remove_process->getOutput() . $remove_process->getErrorOutput() );
 			}
 		}
 
@@ -348,70 +318,6 @@ class EnvironmentDanglingCleanup {
 
 			if ( ! in_array( normalize_path( $file_info->getPathname() ), $running_environment_paths, true ) ) {
 				$this->dangling_directories[] = $file_info->getPathname();
-			}
-		}
-	}
-
-	protected function detect_dangling_networks(): void {
-		$running_environments = $this->environment_monitor->get();
-
-		// List the networks.
-		$list_process = new Process( [ 'docker', 'network', 'ls', '--format=json', '--filter=name=_qit_network_' ] );
-		$list_process->run();
-		$networks_output = $list_process->getOutput();
-
-		$lines = explode( "\n", $networks_output );
-
-		foreach ( $lines as $line ) {
-			$c = json_decode( $line, true );
-			if ( $c === null ) {
-				continue;
-			}
-			if ( empty( $c['Name'] ) ) {
-				continue;
-			}
-			$network_name = $c['Name'];
-
-			foreach ( $running_environments as $env_info ) {
-				if ( strpos( $network_name, $env_info->env_id ) !== false ) {
-					continue 2;
-				}
-			}
-
-			if ( strpos( $network_name, '_qit_network_' ) !== false ) {
-				$this->dangling_networks[] = $network_name;
-			}
-		}
-	}
-
-	protected function detect_dangling_volumes(): void {
-		$running_environments = $this->environment_monitor->get();
-
-		// List the networks.
-		$list_process = new Process( [ 'docker', 'volume', 'ls', '--format=json', '--filter=name=qit_env_volume_' ] );
-		$list_process->run();
-		$volumes_output = $list_process->getOutput();
-
-		$lines = explode( "\n", $volumes_output );
-
-		foreach ( $lines as $line ) {
-			$c = json_decode( $line, true );
-			if ( $c === null ) {
-				continue;
-			}
-			if ( empty( $c['Name'] ) ) {
-				continue;
-			}
-			$volume_name = $c['Name'];
-
-			foreach ( $running_environments as $env_info ) {
-				if ( strpos( $volume_name, $env_info->env_id ) !== false ) {
-					continue 2;
-				}
-			}
-
-			if ( strpos( $volume_name, 'qit_env_volume_' ) !== false ) {
-				$this->dangling_volumes[] = $volume_name;
 			}
 		}
 	}
