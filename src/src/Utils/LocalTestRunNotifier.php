@@ -330,6 +330,27 @@ class LocalTestRunNotifier {
 			$status = 'success';
 		}
 
+		// Compress ctrf_json using same format as test_result_json_original.
+		$ctrf_encoded = '';
+		if ( ! empty( $result_json ) ) {
+			$json_string = json_encode( $result_json );
+			if ( $json_string === false ) {
+				// json_encode failed - log warning but continue (CTRF will be empty).
+				$this->output->writeln( sprintf(
+					'<comment>Warning: Failed to encode CTRF JSON: %s</comment>',
+					json_last_error_msg()
+				) );
+			} else {
+				$compressed = gzcompress( $json_string );
+				if ( $compressed !== false ) {
+					$ctrf_encoded = base64_encode( $compressed );
+				} else {
+					// gzcompress failed, send uncompressed as fallback.
+					$ctrf_encoded = $json_string;
+				}
+			}
+		}
+
 		$data = [
 			'test_run_id'               => $test_run_id,
 			'test_result_json'          => '',
@@ -337,7 +358,7 @@ class LocalTestRunNotifier {
 			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
 			'debug_log'                 => json_encode( $debug_log ),
 			'status'                    => $status,
-			'ctrf_json'                 => $result_json,
+			'ctrf_json'                 => $ctrf_encoded,
 		];
 
 		// Extract performance metrics for performance tests.
