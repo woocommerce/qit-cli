@@ -353,8 +353,8 @@ class LocalTestRunNotifier {
 
 		$debug_log_json = json_encode( $debug_log );
 		if ( $debug_log_json === false ) {
-			// Invalid UTF-8 or other encoding issue - fall back to raw string.
-			$debug_log_json = is_string( $debug_log ) ? $debug_log : '';
+			// Invalid UTF-8 or other encoding issue.
+			$debug_log_json = '';
 		}
 
 		$debug_log_compressed = '';
