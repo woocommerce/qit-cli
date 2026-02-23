@@ -351,12 +351,26 @@ class LocalTestRunNotifier {
 			}
 		}
 
+		$debug_log_json = json_encode( $debug_log );
+		if ( $debug_log_json === false ) {
+			// Invalid UTF-8 or other encoding issue - fall back to raw string.
+			$debug_log_json = is_string( $debug_log ) ? $debug_log : '';
+		}
+
+		$debug_log_compressed = '';
+		if ( ! empty( $debug_log_json ) ) {
+			$compressed = gzcompress( $debug_log_json );
+			$debug_log_compressed = ( $compressed !== false )
+				? base64_encode( $compressed )
+				: $debug_log_json; // Fallback to uncompressed.
+		}
+
 		$data = [
 			'test_run_id'               => $test_run_id,
 			'test_result_json'          => '',
 			'test_result_json_original' => $test_result_json_original,
 			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
-			'debug_log'                 => json_encode( $debug_log ),
+			'debug_log'                 => $debug_log_compressed,
 			'status'                    => $status,
 			'ctrf_json'                 => $ctrf_encoded,
 		];
