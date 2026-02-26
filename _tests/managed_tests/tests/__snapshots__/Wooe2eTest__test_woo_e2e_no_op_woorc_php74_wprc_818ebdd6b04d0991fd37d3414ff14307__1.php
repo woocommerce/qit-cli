@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "failed",
+            "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 346 total, 266 passed, 28 failed, 52 skipped",
+            "test_summary": "Tests: 346 total, 263 passed, 0 failed, 83 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,13 +52,13 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 10,
-                "numPassedTestSuites": 67,
-                "numPendingTestSuites": 15,
+                "numFailedTestSuites": 0,
+                "numPassedTestSuites": 65,
+                "numPendingTestSuites": 27,
                 "numTotalTestSuites": 92,
-                "numFailedTests": 28,
-                "numPassedTests": 266,
-                "numPendingTests": 52,
+                "numFailedTests": 0,
+                "numPassedTests": 263,
+                "numPendingTests": 83,
                 "numTotalTests": 346,
                 "testResults": [
                     {
@@ -538,21 +538,21 @@
                     },
                     {
                         "file": "checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Shortcode Checkout Custom Place Order Button": [
                                 {
                                     "title": "clicking custom button triggers validation when form is invalid",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "switching between gateways shows\\/hides custom button",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "clicking custom button submits order when form is valid",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -844,49 +844,49 @@
                     },
                     {
                         "file": "editor\\/command-palette.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "can use the \\"Add new product\\" command": [
                                 {
                                     "title": "can use the \\"Add new product\\" command",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can use the \\"Add new order\\" command": [
                                 {
                                     "title": "can use the \\"Add new order\\" command",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can use the \\"Products\\" command": [
                                 {
                                     "title": "can use the \\"Products\\" command",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can use the \\"Orders\\" command": [
                                 {
                                     "title": "can use the \\"Orders\\" command",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can use the product search command": [
                                 {
                                     "title": "can use the product search command",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can use a settings command": [
                                 {
                                     "title": "can use a settings command",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can use an analytics command": [
                                 {
                                     "title": "can use an analytics command",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -918,13 +918,13 @@
                     },
                     {
                         "file": "email\\/editor-tracking-selectors.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Tracking Selectors": [
                                 {
                                     "title": "Check selectors for tracking events",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1030,8 +1030,8 @@
                     },
                     {
                         "file": "email-editor\\/email-editor-loads.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Core": [
                                 {
@@ -1040,53 +1040,53 @@
                                 },
                                 {
                                     "title": "Can access the email editor",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can preview in new tab",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can send test email",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can edit and save content",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "email-editor\\/email-editor-reset-template.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Reset Template": [
                                 {
                                     "title": "Can reset a customized email template to default",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
                     },
                     {
                         "file": "email-editor\\/email-editor-settings-sidebar.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Settings Sidebar Integration": [
                                 {
                                     "title": "Can update email status",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can update email subject and preview text",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can update email recipients",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1259,16 +1259,16 @@
                     {
                         "file": "onboarding\\/onboarding-wizard.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Store owner can complete the core profiler": [
                                 {
                                     "title": "Can complete the core profiler skipping extension install",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can complete the core profiler installing default extensions",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Store owner can skip the core profiler": [
@@ -1458,8 +1458,8 @@
                     },
                     {
                         "file": "order\\/order-refund.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
@@ -1468,7 +1468,7 @@
                                 },
                                 {
                                     "title": "can delete an issued refund",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1856,8 +1856,8 @@
                     },
                     {
                         "file": "product\\/product-edit.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "can edit a product and save the changes": [
                                 {
@@ -1868,25 +1868,25 @@
                             "can bulk edit products": [
                                 {
                                     "title": "can bulk edit products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can restore regular price when bulk editing products": [
                                 {
                                     "title": "can restore regular price when bulk editing products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "can decrease the sale price if the product was not previously in sale when bulk editing products": [
                                 {
                                     "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ],
                             "increasing the sale price from 0 does not change the sale price when bulk editing products": [
                                 {
                                     "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1935,13 +1935,13 @@
                     },
                     {
                         "file": "product\\/product-images.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Products > Product Images": [
                                 {
                                     "title": "can set product image",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update the product image",
@@ -1949,7 +1949,7 @@
                                 },
                                 {
                                     "title": "can delete the product image",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create a product gallery",
@@ -1964,8 +1964,8 @@
                     },
                     {
                         "file": "product\\/product-import-csv.spec.ts",
-                        "status": "failed",
-                        "has_pending": false,
+                        "status": "passed",
+                        "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
@@ -1974,11 +1974,11 @@
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
-                                    "status": "failed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can override the existing products via CSV import",
-                                    "status": "failed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2011,7 +2011,7 @@
                     {
                         "file": "product\\/product-reviews.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Product Reviews": [],
                             "Product Reviews > Merchant manages reviews": [
@@ -2041,7 +2041,7 @@
                                 },
                                 {
                                     "title": "can reply to a product review",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2464,7 +2464,7 @@
                         }
                     }
                 ],
-                "summary": "346 total, 266 passed, 28 failed, 52 skipped."
+                "summary": "346 total, 263 passed, 0 failed, 83 skipped."
             }
         },
         {
@@ -2480,10 +2480,10 @@
                     },
                     "summary": {
                         "tests": 346,
-                        "passed": 266,
-                        "failed": 28,
+                        "passed": 263,
+                        "failed": 0,
                         "pending": 0,
-                        "skipped": 52,
+                        "skipped": 83,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4692,13 +4692,11 @@
                         },
                         {
                             "name": "clicking custom button triggers validation when form is invalid",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments"
                             ],
@@ -4708,44 +4706,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                                            "line": 75,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "switching between gateways shows\\/hides custom button",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments"
                             ],
@@ -4755,44 +4741,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                                            "line": 75,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "clicking custom button submits order when form is valid",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@hpos"
@@ -4803,32 +4777,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                                            "line": 75,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -4855,6 +4819,7 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
@@ -6820,14 +6785,11 @@
                         },
                         {
                             "name": "can use the \\"Add new product\\" command",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new product\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new product\', exact: true })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new product\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new product\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:42:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:76:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 40 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 42 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 43 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 44 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 45 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
@@ -6835,47 +6797,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 75,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can use the \\"Add new order\\" command",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new order\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new order\', exact: true })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new order\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new order\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:42:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:88:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 40 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 42 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 43 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 44 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 45 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
@@ -6883,47 +6830,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 87,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can use the \\"Products\\" command",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Products\', exact: true })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Products\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:42:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:100:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 40 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 42 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 43 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 44 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 45 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
@@ -6931,47 +6863,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 99,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can use the \\"Orders\\" command",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Orders\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Orders\', exact: true })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Orders\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Orders\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:42:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:112:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 40 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 42 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 43 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 44 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 45 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
@@ -6979,47 +6896,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 111,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can use the product search command",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Product 1772098974987\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product 1772098974987\', exact: true })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Product 1772098974987\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product 1772098974987\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:42:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:124:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 40 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 42 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 43 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 44 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 45 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
@@ -7027,49 +6929,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 123,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can use a settings command",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:42:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:136:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 40 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 42 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 43 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 44 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 45 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
@@ -7077,47 +6962,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 135,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can use an analytics command",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:42:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts:146:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 40 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 42 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 43 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 44 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 45 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
@@ -7125,34 +6995,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 145,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -7271,14 +7129,11 @@
                         },
                         {
                             "name": "Check selectors for tracking events",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'#woocommerce-email-editor\').locator(\'.editor-document-tools__document-overview-toggle\')\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'#woocommerce-email-editor\').locator(\'.editor-document-tools__document-overview-toggle\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'#woocommerce-email-editor\').locator(\'.editor-document-tools__document-overview-toggle\')\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'#woocommerce-email-editor\').locator(\'.editor-document-tools__document-overview-toggle\')\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/editor-tracking-selectors.spec.ts:60:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 58 |\\u001b[39m \\t\\t\\t\\t\\u001b[32m\'.editor-document-tools__document-overview-toggle\'\\u001b[39m\\n \\u001b[90m 59 |\\u001b[39m \\t\\t\\t)\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 60 |\\u001b[39m \\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t  \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 61 |\\u001b[39m \\t\\t\\u001b[90m\\/\\/ Check inserter sidebar toggle button selector\\u001b[39m\\n \\u001b[90m 62 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 63 |\\u001b[39m \\t\\t\\teditorLocator\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'.editor-document-tools__inserter-toggle\'\\u001b[39m )\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/editor-tracking-selectors.spec.ts",
@@ -7286,36 +7141,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email\\/editor-tracking-selectors.spec.ts > WooCommerce Email Editor Tracking Selectors",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/editor-tracking-selectors.spec.ts",
+                                            "line": 30,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -7785,14 +7626,11 @@
                         },
                         {
                             "name": "Can access the email editor",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n\\n    at accessTheEmailEditor (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/email.js:104:4)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts:37:3",
-                            "snippet": "   at ..\\/utils\\/email.js:104\\n\\n\\u001b[0m \\u001b[90m 102 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m theRow\\n \\u001b[90m 103 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Actions\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 104 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 105 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Edit\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 106 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#woocommerce-email-editor\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 107 |\\u001b[39m }\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
@@ -7800,47 +7638,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 35,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can preview in new tab",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n\\n    at accessTheEmailEditor (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/email.js:104:4)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts:51:3",
-                            "snippet": "   at ..\\/utils\\/email.js:104\\n\\n\\u001b[0m \\u001b[90m 102 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m theRow\\n \\u001b[90m 103 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Actions\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 104 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 105 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Edit\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 106 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#woocommerce-email-editor\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 107 |\\u001b[39m }\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
@@ -7848,47 +7671,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 50,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can send test email",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n\\n    at accessTheEmailEditor (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/email.js:104:4)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts:72:3",
-                            "snippet": "   at ..\\/utils\\/email.js:104\\n\\n\\u001b[0m \\u001b[90m 102 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m theRow\\n \\u001b[90m 103 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Actions\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 104 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 105 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Edit\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 106 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#woocommerce-email-editor\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 107 |\\u001b[39m }\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
@@ -7896,47 +7704,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 71,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can edit and save content",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'row\', { name: \\/New order\\/ }).getByRole(\'button\', { name: \'Actions\', exact: true })\\u001b[22m\\n\\n    at accessTheEmailEditor (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/utils\\/email.js:104:4)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts:94:3",
-                            "snippet": "   at ..\\/utils\\/email.js:104\\n\\n\\u001b[0m \\u001b[90m 102 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m theRow\\n \\u001b[90m 103 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Actions\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 104 |\\u001b[39m \\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 105 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'menuitem\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Edit\'\\u001b[39m\\u001b[33m,\\u001b[39m exact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m } )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 106 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#woocommerce-email-editor\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 107 |\\u001b[39m }\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
@@ -7944,47 +7737,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 93,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can reset a customized email template to default",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.evaluate: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.woocommerce-email-editor__settings-panel\')\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.evaluate: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'.woocommerce-email-editor__settings-panel\')\\u001b[22m\\n\\n    at switchToTemplateEditingMode (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-reset-template.spec.ts:27:46)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-reset-template.spec.ts:80:9",
-                            "snippet": "\\u001b[0m \\u001b[90m 25 |\\u001b[39m \\t\\t\\u001b[32m\'.woocommerce-email-editor__settings-panel\'\\u001b[39m\\n \\u001b[90m 26 |\\u001b[39m \\t)\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 27 |\\u001b[39m \\t\\u001b[36mconst\\u001b[39m isPanelExpanded \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m settingsPanel\\u001b[33m.\\u001b[39mevaluate( ( elem ) \\u001b[33m=>\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                                            \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 28 |\\u001b[39m \\t\\telem\\u001b[33m.\\u001b[39mclassList\\u001b[33m.\\u001b[39mcontains( \\u001b[32m\'is-opened\'\\u001b[39m )\\n \\u001b[90m 29 |\\u001b[39m \\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 30 |\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-reset-template.spec.ts",
@@ -7992,47 +7770,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-reset-template.spec.ts > WooCommerce Email Editor Reset Template",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-reset-template.spec.ts",
+                                            "line": 56,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can update email status",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts:39:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 37 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Email\'\\u001b[39m )\\n \\u001b[90m 38 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Settings\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 39 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 40 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m ensureEmailEditorSettingsPanelIsOpened( page )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 41 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 42 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'.editor-post-status__toggle\'\\u001b[39m )\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
@@ -8040,47 +7803,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can update email subject and preview text",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts:73:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 71 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Email\'\\u001b[39m )\\n \\u001b[90m 72 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Settings\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 73 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 74 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m ensureEmailEditorSettingsPanelIsOpened( page )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 75 |\\u001b[39m\\n \\u001b[90m 76 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m randomNum \\u001b[33m=\\u001b[39m \\u001b[36mnew\\u001b[39m \\u001b[33mDate\\u001b[39m()\\u001b[33m.\\u001b[39mgetTime()\\u001b[33m.\\u001b[39mtoString()\\u001b[33m;\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
@@ -8088,47 +7836,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can update email recipients",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts:150:5",
-                            "snippet": "\\u001b[0m \\u001b[90m 148 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Email\'\\u001b[39m )\\n \\u001b[90m 149 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Settings\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 150 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 151 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m ensureEmailEditorSettingsPanelIsOpened( page )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 152 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 153 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'[for=\\"woocommerce-email-editor-recipients\\"]\'\\u001b[39m )\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
@@ -8136,34 +7869,22 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
+                                            "line": 20,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -8771,11 +8492,11 @@
                         },
                         {
                             "name": "Can complete the core profiler skipping extension install",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@skip-on-external-env"
                             ],
@@ -8783,32 +8504,7 @@
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Intro page and opt in to data sharing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "User profile information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Business Information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Extensions -- do not install any",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that core profiler was completed and no extensions installed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that information from core profiler saved",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
                             "attachments": [],
                             "stdout": [
@@ -8816,17 +8512,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
+                                            "line": 44,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can complete the core profiler installing default extensions",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@skip-on-external-env"
                             ],
@@ -8834,40 +8539,7 @@
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Intro page and opt in to data sharing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "User profile information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Business Information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Extensions -- install some suggested extensions",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that core profiler was completed and a couple of default extensions installed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that information from core profiler saved",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Clean up installed extensions",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that the store is in coming soon mode after completing the core profiler",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
                             "attachments": [],
                             "stdout": [
@@ -8875,7 +8547,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
+                                            "line": 205,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -9796,14 +9477,11 @@
                         },
                         {
                             "name": "can delete an issued refund",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.ts:137:56",
-                            "snippet": "\\u001b[0m \\u001b[90m 135 |\\u001b[39m\\n \\u001b[90m 136 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Verify the refund no longer shows in the list\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 137 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'td.refunded-total\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                                    \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 138 |\\u001b[39m \\t\\t\\t\\t\\u001b[35m0\\u001b[39m\\n \\u001b[90m 139 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 140 |\\u001b[39m \\t\\t} )\\u001b[33m;\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@hpos"
@@ -9814,28 +9492,7 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -9843,7 +9500,16 @@
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.ts",
+                                            "line": 121,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -12014,69 +11680,44 @@
                         },
                         {
                             "name": "can bulk edit products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:147:5\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:142:2",
-                            "snippet": "\\u001b[0m \\u001b[90m 145 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 146 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 147 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 148 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 149 |\\u001b[39m\\n \\u001b[90m 150 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "select and bulk edit the products",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 135,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can restore regular price when bulk editing products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:238:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:233:3",
-                            "snippet": "\\u001b[0m \\u001b[90m 236 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 237 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 238 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 239 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 240 |\\u001b[39m\\n \\u001b[90m 241 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-titles-list li\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services"
                             ],
@@ -12084,56 +11725,34 @@
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "select and bulk edit the products",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 225,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:334:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:327:3",
-                            "snippet": "\\u001b[0m \\u001b[90m 332 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 333 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 334 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 335 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 336 |\\u001b[39m\\n \\u001b[90m 337 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services"
                             ],
@@ -12141,56 +11760,34 @@
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Update products with the \\"Sale > Decrease existing sale price\\" option",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 319,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:402:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts:395:3",
-                            "snippet": "\\u001b[0m \\u001b[90m 400 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 401 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 402 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 403 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 404 |\\u001b[39m\\n \\u001b[90m 405 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services"
                             ],
@@ -12198,43 +11795,24 @@
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Update products with the \\"Sale > Increase existing sale price\\" option",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 371,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -12458,60 +12036,34 @@
                         },
                         {
                             "name": "can set product image",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Set product image\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Set product image\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts:103:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts:100:14",
-                            "snippet": "\\u001b[0m \\u001b[90m 101 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 102 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'link\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Set product image\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 103 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 104 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m addImageFromLibrary( page\\u001b[33m,\\u001b[39m \\u001b[32m\'image-01\'\\u001b[39m\\u001b[33m,\\u001b[39m \\u001b[32m\'Set product image\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 105 |\\u001b[39m\\n \\u001b[90m 106 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Wait for the product image thumbnail to be updated.\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Set product image",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts",
+                                            "line": 93,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -12556,60 +12108,34 @@
                         },
                         {
                             "name": "can delete the product image",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Remove product image\' })\\u001b[22m\\n",
-                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Remove product image\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts:183:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts:180:14",
-                            "snippet": "\\u001b[0m \\u001b[90m 181 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 182 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'link\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Remove product image\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 183 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 184 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 185 |\\u001b[39m \\t\\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'link\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Set product image\'\\u001b[39m } )\\n \\u001b[90m 186 |\\u001b[39m \\t\\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Remove product image",
-                                    "status": "failed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts",
+                                            "line": 170,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -12720,14 +12246,11 @@
                         },
                         {
                             "name": "can upload the CSV file and import products",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'a.row-title\') to be visible\\u001b[22m\\n",
-                            "trace": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'a.row-title\') to be visible\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts:215:15",
-                            "snippet": "\\u001b[0m \\u001b[90m 213 |\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Wait for search results to load completely\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 215 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mwaitForSelector( \\u001b[32m\'a.row-title\'\\u001b[39m\\u001b[33m,\\u001b[39m { timeout\\u001b[33m:\\u001b[39m \\u001b[35m30000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t           \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 216 |\\u001b[39m\\n \\u001b[90m 217 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Compare imported products to what\'s expected\\u001b[39m\\n \\u001b[90m 218 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@could-be-lower-level-test"
                             ],
@@ -12737,49 +12260,32 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
+                                            "line": 183,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can override the existing products via CSV import",
-                            "status": "failed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts:265:50",
-                            "snippet": "\\u001b[0m \\u001b[90m 263 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#search-submit\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 264 |\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 265 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 266 |\\u001b[39m \\t\\t\\t\\tproductNamesOverride\\u001b[33m.\\u001b[39mlength\\n \\u001b[90m 267 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 268 |\\u001b[39m \\t\\t\\t\\u001b[36mconst\\u001b[39m productTitles \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m page\\u001b[0m",
-                            "rawStatus": "failed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@could-be-lower-level-test"
                             ],
@@ -12789,28 +12295,7 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
-                            "attachments": [
-                                {
-                                    "name": "screenshot",
-                                    "contentType": "image\\/png",
-                                    "path": "normalized.png"
-                                },
-                                {
-                                    "name": "video",
-                                    "contentType": "video\\/webm",
-                                    "path": "normalized.webm"
-                                },
-                                {
-                                    "name": "error-context",
-                                    "contentType": "text\\/markdown",
-                                    "path": "normalized.md"
-                                },
-                                {
-                                    "name": "trace",
-                                    "contentType": "application\\/zip",
-                                    "path": "normalized.zip"
-                                }
-                            ],
+                            "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -12818,7 +12303,16 @@
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
+                                            "line": 231,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -13188,11 +12682,11 @@
                         },
                         {
                             "name": "can reply to a product review",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
@@ -13204,11 +12698,18 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.ts",
+                                            "line": 262,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -15013,12 +14514,7 @@
         },
         {
             "debug_log": {
-                "generic": [
-                    {
-                        "count": "1",
-                        "message": "PHP Notice:  Undefined index: erase_plugin_data in wp-content\\/plugins\\/pinterest-for-woocommerce\\/uninstall.php on line 21"
-                    }
-                ]
+                "generic": []
             }
         }
     ]
