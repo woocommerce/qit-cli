@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 342 total, 259 passed, 0 failed, 83 skipped",
+            "test_summary": "Tests: 342 total, 243 passed, 16 failed, 83 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,12 +52,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 66,
+                "numFailedTestSuites": 4,
+                "numPassedTestSuites": 62,
                 "numPendingTestSuites": 24,
                 "numTotalTestSuites": 90,
-                "numFailedTests": 0,
-                "numPassedTests": 259,
+                "numFailedTests": 16,
+                "numPassedTests": 243,
                 "numPendingTests": 83,
                 "numTotalTests": 342,
                 "testResults": [
@@ -823,49 +823,49 @@
                     },
                     {
                         "file": "editor\\/command-palette.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "can use the \\"Add new product\\" command": [
                                 {
                                     "title": "can use the \\"Add new product\\" command",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can use the \\"Add new order\\" command": [
                                 {
                                     "title": "can use the \\"Add new order\\" command",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can use the \\"Products\\" command": [
                                 {
                                     "title": "can use the \\"Products\\" command",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can use the \\"Orders\\" command": [
                                 {
                                     "title": "can use the \\"Orders\\" command",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can use the product search command": [
                                 {
                                     "title": "can use the product search command",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can use a settings command": [
                                 {
                                     "title": "can use a settings command",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can use an analytics command": [
                                 {
                                     "title": "can use an analytics command",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1038,21 +1038,21 @@
                     },
                     {
                         "file": "email-editor\\/email-editor-settings-sidebar.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Email Editor Settings Sidebar Integration": [
                                 {
                                     "title": "Can update email status",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Can update email subject and preview text",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "Can update email recipients",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1822,7 +1822,7 @@
                     },
                     {
                         "file": "product\\/product-edit.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "can edit a product and save the changes": [
@@ -1834,25 +1834,25 @@
                             "can bulk edit products": [
                                 {
                                     "title": "can bulk edit products",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can restore regular price when bulk editing products": [
                                 {
                                     "title": "can restore regular price when bulk editing products",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "can decrease the sale price if the product was not previously in sale when bulk editing products": [
                                 {
                                     "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "increasing the sale price from 0 does not change the sale price when bulk editing products": [
                                 {
                                     "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1901,13 +1901,13 @@
                     },
                     {
                         "file": "product\\/product-images.spec.js",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Products > Product Images": [
                                 {
                                     "title": "can set product image",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can update the product image",
@@ -1915,7 +1915,7 @@
                                 },
                                 {
                                     "title": "can delete the product image",
-                                    "status": "passed"
+                                    "status": "failed"
                                 },
                                 {
                                     "title": "can create a product gallery",
@@ -2430,7 +2430,7 @@
                         }
                     }
                 ],
-                "summary": "342 total, 259 passed, 0 failed, 83 skipped."
+                "summary": "342 total, 243 passed, 16 failed, 83 skipped."
             }
         },
         {
@@ -2446,8 +2446,8 @@
                     },
                     "summary": {
                         "tests": 342,
-                        "passed": 259,
-                        "failed": 0,
+                        "passed": 243,
+                        "failed": 16,
                         "pending": 0,
                         "skipped": 83,
                         "other": 0,
@@ -6780,11 +6780,14 @@
                         },
                         {
                             "name": "can use the \\"Add new product\\" command",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new product\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new product\', exact: true })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new product\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new product\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:35:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:69:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 33 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 35 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 36 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 37 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 38 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
@@ -6792,7 +6795,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -6804,11 +6828,14 @@
                         },
                         {
                             "name": "can use the \\"Add new order\\" command",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new order\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new order\', exact: true })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Add new order\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Add new order\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:35:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:81:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 33 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 35 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 36 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 37 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 38 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
@@ -6816,7 +6843,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -6828,11 +6876,14 @@
                         },
                         {
                             "name": "can use the \\"Products\\" command",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Products\', exact: true })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Products\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:35:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:93:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 33 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 35 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 36 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 37 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 38 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
@@ -6840,7 +6891,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -6852,11 +6924,14 @@
                         },
                         {
                             "name": "can use the \\"Orders\\" command",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Orders\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Orders\', exact: true })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Orders\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Orders\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:35:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:105:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 33 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 35 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 36 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 37 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 38 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
@@ -6864,7 +6939,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -6876,11 +6972,14 @@
                         },
                         {
                             "name": "can use the product search command",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Product 1772062311950\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product 1772062311950\', exact: true })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'Product 1772062311950\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'Product 1772062311950\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:35:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:117:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 33 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 35 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 36 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 37 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 38 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
@@ -6888,7 +6987,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -6902,11 +7022,14 @@
                         },
                         {
                             "name": "can use a settings command",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Settings: Products\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:35:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:129:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 33 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 35 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 36 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 37 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 38 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
@@ -6914,7 +7037,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -6926,11 +7070,14 @@
                         },
                         {
                             "name": "can use an analytics command",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for getByRole(\'option\', { name: \'WooCommerce Analytics: Products\', exact: true })\\u001b[22m\\n\\n    at clickOnCommandPaletteOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:35:25)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.js:139:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 33 |\\u001b[39m \\t\\texact\\u001b[33m:\\u001b[39m \\u001b[36mtrue\\u001b[39m\\u001b[33m,\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t} )\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 35 |\\u001b[39m \\t\\u001b[36mawait\\u001b[39m expect( option )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 36 |\\u001b[39m \\toption\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 37 |\\u001b[39m }\\u001b[33m;\\u001b[39m\\n \\u001b[90m 38 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
@@ -6938,7 +7085,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -7710,11 +7878,14 @@
                         },
                         {
                             "name": "Can update email status",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js:32:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 30 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Email\'\\u001b[39m )\\n \\u001b[90m 31 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Settings\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 32 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 33 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m ensureEmailEditorSettingsPanelIsOpened( page )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 34 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 35 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'.editor-post-status__toggle\'\\u001b[39m )\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
@@ -7722,7 +7893,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.js > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -7734,11 +7926,14 @@
                         },
                         {
                             "name": "Can update email subject and preview text",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js:64:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 62 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Email\'\\u001b[39m )\\n \\u001b[90m 63 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Settings\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 64 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 65 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m ensureEmailEditorSettingsPanelIsOpened( page )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 66 |\\u001b[39m\\n \\u001b[90m 67 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m randomNum \\u001b[33m=\\u001b[39m \\u001b[36mnew\\u001b[39m \\u001b[33mDate\\u001b[39m()\\u001b[33m.\\u001b[39mgetTime()\\u001b[33m.\\u001b[39mtoString()\\u001b[33m;\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
@@ -7746,7 +7941,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.js > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -7758,11 +7974,14 @@
                         },
                         {
                             "name": "Can update email recipients",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByLabel(\'Email\').getByRole(\'button\', { name: \'Settings\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js:141:5",
+                            "snippet": "\\u001b[0m \\u001b[90m 139 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByLabel( \\u001b[32m\'Email\'\\u001b[39m )\\n \\u001b[90m 140 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Settings\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 141 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 142 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m ensureEmailEditorSettingsPanelIsOpened( page )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 143 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 144 |\\u001b[39m \\t\\t\\tpage\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'[for=\\"woocommerce-email-editor-recipients\\"]\'\\u001b[39m )\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
@@ -7770,7 +7989,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.js > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -11470,11 +11710,14 @@
                         },
                         {
                             "name": "can bulk edit products",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:145:5\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:140:2",
+                            "snippet": "\\u001b[0m \\u001b[90m 143 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 144 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 145 |\\u001b[39m \\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 146 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 147 |\\u001b[39m\\n \\u001b[90m 148 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect(\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
@@ -11483,31 +11726,32 @@
                             "steps": [
                                 {
                                     "name": "select and bulk edit the products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the regular price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sale price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the stock quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "save the updates",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -11521,11 +11765,14 @@
                         },
                         {
                             "name": "can restore regular price when bulk editing products",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:236:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:231:3",
+                            "snippet": "\\u001b[0m \\u001b[90m 234 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 235 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 236 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 237 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 238 |\\u001b[39m\\n \\u001b[90m 239 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-titles-list li\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@services"
                             ],
@@ -11536,31 +11783,32 @@
                             "steps": [
                                 {
                                     "name": "select and bulk edit the products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sale price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "save the updates",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Update products leaving the \\"Sale > Change to\\" empty",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify products have their regular price again",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -11574,11 +11822,14 @@
                         },
                         {
                             "name": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:332:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:325:3",
+                            "snippet": "\\u001b[0m \\u001b[90m 330 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 331 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 332 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 333 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 334 |\\u001b[39m\\n \\u001b[90m 335 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@services"
                             ],
@@ -11589,15 +11840,32 @@
                             "steps": [
                                 {
                                     "name": "Update products with the \\"Sale > Decrease existing sale price\\" option",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify products have a sale price",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -11611,11 +11879,14 @@
                         },
                         {
                             "name": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.selectOption: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'#bulk-action-selector-top\')\\u001b[22m\\n\\u001b[2m    - locator resolved to <select name=\\"action\\" id=\\"bulk-action-selector-top\\">\\u2026<\\/select>\\u001b[22m\\n\\u001b[2m  - attempting select option action\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m    - waiting 20ms\\u001b[22m\\n\\u001b[2m    2 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m      - did not find some options\\u001b[22m\\n\\u001b[2m    - retrying select option action\\u001b[22m\\n\\u001b[2m      - waiting 100ms\\u001b[22m\\n\\u001b[2m    39 \\u00d7 waiting for element to be visible and enabled\\u001b[22m\\n\\u001b[2m       - did not find some options\\u001b[22m\\n\\u001b[2m     - retrying select option action\\u001b[22m\\n\\u001b[2m       - waiting 500ms\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:400:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js:393:3",
+                            "snippet": "\\u001b[0m \\u001b[90m 398 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 399 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#bulk-action-selector-top\'\\u001b[39m )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 400 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mselectOption( \\u001b[32m\'Edit\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 401 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#doaction\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 402 |\\u001b[39m\\n \\u001b[90m 403 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@services"
                             ],
@@ -11626,15 +11897,32 @@
                             "steps": [
                                 {
                                     "name": "Update products with the \\"Sale > Increase existing sale price\\" option",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify products have a sale price",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "e2e > product\\/product-edit.spec.js",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -11866,11 +12154,14 @@
                         },
                         {
                             "name": "can set product image",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Set product image\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Set product image\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js:98:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js:95:14",
+                            "snippet": "\\u001b[0m \\u001b[90m  96 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m  97 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'link\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Set product image\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m  98 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m  99 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m addImageFromLibrary( page\\u001b[33m,\\u001b[39m \\u001b[32m\'image-01\'\\u001b[39m\\u001b[33m,\\u001b[39m \\u001b[32m\'Set product image\'\\u001b[39m )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 100 |\\u001b[39m\\n \\u001b[90m 101 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Wait for the product image thumbnail to be updated.\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images.spec.js",
@@ -11883,15 +12174,32 @@
                                 },
                                 {
                                     "name": "Set product image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify product image was set",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -11944,11 +12252,14 @@
                         },
                         {
                             "name": "can delete the product image",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Remove product image\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'link\', { name: \'Remove product image\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js:178:6\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js:175:14",
+                            "snippet": "\\u001b[0m \\u001b[90m 176 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 177 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'link\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Remove product image\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 178 |\\u001b[39m \\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 179 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect(\\n \\u001b[90m 180 |\\u001b[39m \\t\\t\\t\\tpage\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'link\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Set product image\'\\u001b[39m } )\\n \\u001b[90m 181 |\\u001b[39m \\t\\t\\t)\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images.spec.js",
@@ -11961,15 +12272,32 @@
                                 },
                                 {
                                     "name": "Remove product image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify product image was removed",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
