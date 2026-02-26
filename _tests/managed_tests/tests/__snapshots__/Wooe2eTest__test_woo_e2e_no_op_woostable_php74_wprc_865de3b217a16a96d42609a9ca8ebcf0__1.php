@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 342 total, 259 passed, 0 failed, 83 skipped",
+            "test_summary": "Tests: 335 total, 227 passed, 0 failed, 108 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 66,
-                "numPendingTestSuites": 24,
-                "numTotalTestSuites": 90,
+                "numPassedTestSuites": 59,
+                "numPendingTestSuites": 30,
+                "numTotalTestSuites": 89,
                 "numFailedTests": 0,
-                "numPassedTests": 259,
-                "numPendingTests": 83,
-                "numTotalTests": 342,
+                "numPassedTests": 227,
+                "numPendingTests": 108,
+                "numTotalTests": 335,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -445,16 +445,16 @@
                     {
                         "file": "cart\\/add-to-cart.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Add to Cart behavior": [
                                 {
                                     "title": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to navigate and remove item from mini cart using keyboard",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -462,24 +462,24 @@
                     {
                         "file": "cart\\/cart.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can undo product removal in classic cart": [
                                 {
                                     "title": "can undo product removal in classic cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can add and remove products, increase quantity and proceed to checkout - blocks cart": [
                                 {
                                     "title": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can add and remove products, increase quantity and proceed to checkout - classic cart": [
                                 {
                                     "title": "can add and remove products, increase quantity and proceed to checkout - classic cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -487,51 +487,51 @@
                     {
                         "file": "checkout\\/checkout-link.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout Link Endpoint": [],
                             "Checkout Link Endpoint > Guest user": [
                                 {
                                     "title": "Guest user redirected to checkout with correct cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid coupon is applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid products are provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid product is provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid link is provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Checkout Link Endpoint > Logged-in user": [
                                 {
                                     "title": "Logged-in user redirected to checkout with correct cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid coupon is applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid products are provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid product is provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid link is provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -822,55 +822,6 @@
                         }
                     },
                     {
-                        "file": "editor\\/command-palette.spec.js",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can use the \\"Add new product\\" command": [
-                                {
-                                    "title": "can use the \\"Add new product\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the \\"Add new order\\" command": [
-                                {
-                                    "title": "can use the \\"Add new order\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the \\"Products\\" command": [
-                                {
-                                    "title": "can use the \\"Products\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the \\"Orders\\" command": [
-                                {
-                                    "title": "can use the \\"Orders\\" command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use the product search command": [
-                                {
-                                    "title": "can use the product search command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use a settings command": [
-                                {
-                                    "title": "can use a settings command",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can use an analytics command": [
-                                {
-                                    "title": "can use an analytics command",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "email\\/account-emails.spec.js",
                         "status": "passed",
                         "has_pending": false,
@@ -1039,20 +990,20 @@
                     {
                         "file": "email-editor\\/email-editor-settings-sidebar.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Settings Sidebar Integration": [
                                 {
                                     "title": "Can update email status",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can update email subject and preview text",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can update email recipients",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1230,7 +1181,7 @@
                             "Store owner can complete the core profiler": [
                                 {
                                     "title": "Can complete the core profiler skipping extension install",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Can complete the core profiler installing default extensions",
@@ -1823,7 +1774,7 @@
                     {
                         "file": "product\\/product-edit.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can edit a product and save the changes": [
                                 {
@@ -1834,25 +1785,25 @@
                             "can bulk edit products": [
                                 {
                                     "title": "can bulk edit products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can restore regular price when bulk editing products": [
                                 {
                                     "title": "can restore regular price when bulk editing products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can decrease the sale price if the product was not previously in sale when bulk editing products": [
                                 {
                                     "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "increasing the sale price from 0 does not change the sale price when bulk editing products": [
                                 {
                                     "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1902,12 +1853,12 @@
                     {
                         "file": "product\\/product-images.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Products > Product Images": [
                                 {
                                     "title": "can set product image",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can update the product image",
@@ -1915,7 +1866,7 @@
                                 },
                                 {
                                     "title": "can delete the product image",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can create a product gallery",
@@ -2430,7 +2381,7 @@
                         }
                     }
                 ],
-                "summary": "342 total, 259 passed, 0 failed, 83 skipped."
+                "summary": "335 total, 227 passed, 0 failed, 108 skipped."
             }
         },
         {
@@ -2445,11 +2396,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 342,
-                        "passed": 259,
+                        "tests": 335,
+                        "passed": 227,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 83,
+                        "skipped": 108,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4278,11 +4229,11 @@
                         },
                         {
                             "name": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4298,22 +4249,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.js",
+                                            "line": 18,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "should be able to navigate and remove item from mini cart using keyboard",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4323,40 +4280,34 @@
                             "filePath": "\\/normalized\\/path\\/add-to-cart.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Add product to cart and open mini cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify and interact with remove button",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify cart is empty",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/add-to-cart.spec.js > Add to Cart behavior",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.js",
+                                            "line": 18,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can undo product removal in classic cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4366,50 +4317,34 @@
                             "filePath": "\\/normalized\\/path\\/cart.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add product to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove product and verify undo link appears",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "click undo to restore product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove product again after undo",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify undo link disappears after navigation",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/cart.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js",
+                                            "line": 127,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4419,57 +4354,34 @@
                             "filePath": "\\/normalized\\/path\\/cart.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "empty cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "one product in cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can increase quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can add another product to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can proceed to checkout and return",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the first product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the last product",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/cart.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js",
+                                            "line": 203,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can add and remove products, increase quantity and proceed to checkout - classic cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4479,57 +4391,34 @@
                             "filePath": "\\/normalized\\/path\\/cart.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "empty cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "one product in cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can increase quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can add another product to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can proceed to checkout and return",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the first product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the last product",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/cart.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js",
+                                            "line": 203,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user redirected to checkout with correct cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4544,21 +4433,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid coupon is applied",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4573,21 +4469,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid products are provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4602,21 +4505,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid product is provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4633,17 +4543,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid link is provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4660,17 +4579,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user redirected to checkout with correct cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4685,21 +4613,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid coupon is applied",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4714,21 +4649,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid products are provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4743,21 +4685,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid product is provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4774,17 +4723,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid link is provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4801,7 +4759,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -5265,6 +5232,7 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
@@ -6779,176 +6747,6 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can use the \\"Add new product\\" command",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the \\"Add new order\\" command",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the \\"Products\\" command",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the \\"Orders\\" command",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the product search command",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use a settings command",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use an analytics command",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
                             "name": "New customer should receive an email with login details",
                             "status": "passed",
                             "duration": 999,
@@ -7604,6 +7402,14 @@
                                             "line": 11,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 37,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             },
@@ -7636,6 +7442,14 @@
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
                                             "line": 11,
                                             "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 52,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -7670,6 +7484,14 @@
                                             "line": 11,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 73,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             },
@@ -7703,6 +7525,14 @@
                                             "line": 11,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
+                                            "line": 95,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             },
@@ -7710,11 +7540,11 @@
                         },
                         {
                             "name": "Can update email status",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
@@ -7728,17 +7558,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js",
+                                            "line": 13,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can update email subject and preview text",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
@@ -7752,17 +7591,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js",
+                                            "line": 13,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Can update email recipients",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
@@ -7776,7 +7624,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js",
+                                            "line": 13,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -8384,11 +8241,11 @@
                         },
                         {
                             "name": "Can complete the core profiler skipping extension install",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@skip-on-external-env"
                             ],
@@ -8396,32 +8253,7 @@
                             "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Intro page and opt in to data sharing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "User profile information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Business Information",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Extensions -- do not install any",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that core profiler was completed and no extensions installed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Confirm that information from core profiler saved",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can complete the core profiler",
                             "attachments": [],
                             "stdout": [
@@ -8429,7 +8261,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.js",
+                                            "line": 43,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -11470,62 +11311,44 @@
                         },
                         {
                             "name": "can bulk edit products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "select and bulk edit the products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the regular price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sale price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the stock quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "save the updates",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
+                                            "line": 133,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can restore regular price when bulk editing products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services"
                             ],
@@ -11533,52 +11356,34 @@
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "select and bulk edit the products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the sale price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "save the updates",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Update products leaving the \\"Sale > Change to\\" empty",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify products have their regular price again",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
+                                            "line": 223,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services"
                             ],
@@ -11586,36 +11391,34 @@
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Update products with the \\"Sale > Decrease existing sale price\\" option",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify products have a sale price",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
+                                            "line": 317,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services"
                             ],
@@ -11623,26 +11426,24 @@
                             "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Update products with the \\"Sale > Increase existing sale price\\" option",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify products have a sale price",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-edit.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
+                                            "line": 369,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -11866,40 +11667,34 @@
                         },
                         {
                             "name": "can set product image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Set product image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js",
+                                            "line": 88,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -11944,40 +11739,34 @@
                         },
                         {
                             "name": "can delete the product image",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-images.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Remove product image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify product image was removed",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js",
+                                            "line": 165,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -12125,6 +11914,14 @@
                                             "line": 103,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
+                                            "line": 183,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             },
@@ -12159,6 +11956,14 @@
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
                                             "line": 103,
                                             "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
+                                            "line": 231,
+                                            "column": 7
                                         }
                                     }
                                 ]
