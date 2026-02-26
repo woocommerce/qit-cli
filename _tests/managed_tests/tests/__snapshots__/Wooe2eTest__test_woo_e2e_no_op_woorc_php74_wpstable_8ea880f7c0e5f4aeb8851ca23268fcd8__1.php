@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 333 total, 301 passed, 0 failed, 32 skipped",
+            "test_summary": "Tests: 346 total, 288 passed, 6 failed, 52 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,14 +52,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 80,
-                "numPendingTestSuites": 11,
-                "numTotalTestSuites": 91,
-                "numFailedTests": 0,
-                "numPassedTests": 301,
-                "numPendingTests": 32,
-                "numTotalTests": 333,
+                "numFailedTestSuites": 3,
+                "numPassedTestSuites": 74,
+                "numPendingTestSuites": 15,
+                "numTotalTestSuites": 92,
+                "numFailedTests": 6,
+                "numPassedTests": 288,
+                "numPendingTests": 52,
+                "numTotalTests": 346,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -116,18 +116,48 @@
                     {
                         "file": "analytics\\/analytics-data.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
+                            "confirms correct summary numbers on overview page": [
+                                {
+                                    "title": "confirms correct summary numbers on overview page",
+                                    "status": "pending"
+                                }
+                            ],
                             "downloads revenue report as CSV": [
                                 {
                                     "title": "downloads revenue report as CSV",
-                                    "status": "passed"
+                                    "status": "pending"
+                                }
+                            ],
+                            "use date filter on overview page": [
+                                {
+                                    "title": "use date filter on overview page",
+                                    "status": "pending"
+                                }
+                            ],
+                            "set custom date range on revenue report": [
+                                {
+                                    "title": "set custom date range on revenue report",
+                                    "status": "pending"
+                                }
+                            ],
+                            "use advanced filters on orders report": [
+                                {
+                                    "title": "use advanced filters on orders report",
+                                    "status": "pending"
+                                }
+                            ],
+                            "use filter by single product on products report": [
+                                {
+                                    "title": "use filter by single product on products report",
+                                    "status": "pending"
                                 }
                             ],
                             "analytics settings": [
                                 {
                                     "title": "analytics settings",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -415,16 +445,16 @@
                     {
                         "file": "cart\\/add-to-cart.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Add to Cart behavior": [
                                 {
                                     "title": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "should be able to navigate and remove item from mini cart using keyboard",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -432,12 +462,12 @@
                     {
                         "file": "cart\\/cart.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can undo product removal in classic cart": [
                                 {
                                     "title": "can undo product removal in classic cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can add and remove products, increase quantity and proceed to checkout - blocks cart": [
@@ -457,51 +487,72 @@
                     {
                         "file": "checkout\\/checkout-link.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Checkout Link Endpoint": [],
                             "Checkout Link Endpoint > Guest user": [
                                 {
                                     "title": "Guest user redirected to checkout with correct cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid coupon is applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid products are provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid product is provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Guest user sees error when invalid link is provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "Checkout Link Endpoint > Logged-in user": [
                                 {
                                     "title": "Logged-in user redirected to checkout with correct cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid coupon is applied",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid products are provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid product is provided",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Logged-in user sees error when invalid link is provided",
-                                    "status": "passed"
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "Shortcode Checkout Custom Place Order Button": [
+                                {
+                                    "title": "clicking custom button triggers validation when form is invalid",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "switching between gateways shows\\/hides custom button",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "clicking custom button submits order when form is valid",
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1214,6 +1265,10 @@
                                 {
                                     "title": "Can complete the core profiler skipping extension install",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "Can complete the core profiler installing default extensions",
+                                    "status": "passed"
                                 }
                             ],
                             "Store owner can skip the core profiler": [
@@ -1403,13 +1458,17 @@
                     },
                     {
                         "file": "order\\/order-refund.spec.ts",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "can delete an issued refund",
+                                    "status": "failed"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1905,13 +1964,21 @@
                     },
                     {
                         "file": "product\\/product-import-csv.spec.ts",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "can upload the CSV file and import products",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "can override the existing products via CSV import",
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -1970,6 +2037,10 @@
                                 },
                                 {
                                     "title": "can mark a product review as spam",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "can reply to a product review",
                                     "status": "passed"
                                 },
                                 {
@@ -2393,7 +2464,7 @@
                         }
                     }
                 ],
-                "summary": "333 total, 301 passed, 0 failed, 32 skipped."
+                "summary": "346 total, 288 passed, 6 failed, 52 skipped."
             }
         },
         {
@@ -2408,11 +2479,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 333,
-                        "passed": 301,
-                        "failed": 0,
+                        "tests": 346,
+                        "passed": 288,
+                        "failed": 6,
                         "pending": 0,
-                        "skipped": 32,
+                        "skipped": 52,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2581,12 +2652,12 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "downloads revenue report as CSV",
-                            "status": "passed",
+                            "name": "confirms correct summary numbers on overview page",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2601,22 +2672,208 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
+                                            "line": 269,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "downloads revenue report as CSV",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
+                                            "line": 307,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "use date filter on overview page",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
+                                            "line": 340,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "set custom date range on revenue report",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
+                                            "line": 410,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "use advanced filters on orders report",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
+                                            "line": 512,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "use filter by single product on products report",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
+                                            "line": 606,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "analytics settings",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -2631,12 +2888,18 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
+                                            "line": 705,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -3837,11 +4100,11 @@
                         },
                         {
                             "name": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -3857,22 +4120,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.ts",
+                                            "line": 18,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "should be able to navigate and remove item from mini cart using keyboard",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -3882,40 +4151,34 @@
                             "filePath": "\\/normalized\\/path\\/add-to-cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Add product to cart and open mini cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify and interact with remove button",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify cart is empty",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/add-to-cart.spec.ts > Add to Cart behavior",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.ts",
+                                            "line": 18,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can undo product removal in classic cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -3925,40 +4188,24 @@
                             "filePath": "\\/normalized\\/path\\/cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add product to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove product and verify undo link appears",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "click undo to restore product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove product again after undo",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify undo link disappears after navigation",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/cart.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
+                                            "line": 128,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -4014,6 +4261,7 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
@@ -4084,11 +4332,11 @@
                         },
                         {
                             "name": "Guest user redirected to checkout with correct cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4103,21 +4351,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid coupon is applied",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4132,21 +4387,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid products are provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4161,21 +4423,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid product is provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4192,17 +4461,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Guest user sees error when invalid link is provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4219,17 +4497,26 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user redirected to checkout with correct cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4244,21 +4531,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid coupon is applied",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4273,21 +4567,28 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "Logged-in user sees error when invalid products are provided",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services"
@@ -4302,7 +4603,133 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Logged-in user sees error when invalid product is provided",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Logged-in user sees error when invalid link is provided",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
+                                            "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "clicking custom button triggers validation when form is invalid",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
+                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@payments"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
@@ -4311,54 +4738,95 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "Logged-in user sees error when invalid product is provided",
-                            "status": "passed",
+                            "name": "switching between gateways shows\\/hides custom button",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
+                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
+                            "rawStatus": "failed",
                             "tags": [
-                                "@payments",
-                                "@services"
+                                "@payments"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
+                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
-                            "attachments": [],
+                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
-                            "name": "Logged-in user sees error when invalid link is provided",
-                            "status": "passed",
+                            "name": "clicking custom button submits order when form is valid",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
+                            "trace": "Error: Command failed: pnpm exec wp-env run tests-cli -- wp plugin activate custom-place-order-button-test\\n\\/bin\\/sh: 1: pnpm: not found\\n",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@payments",
-                                "@services"
+                                "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
+                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
-                            "attachments": [],
+                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": []
                             },
@@ -4387,7 +4855,6 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
@@ -7970,6 +8437,65 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "Can complete the core profiler installing default extensions",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@skip-on-external-env"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Intro page and opt in to data sharing",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "User profile information",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Business Information",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Extensions -- install some suggested extensions",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Confirm that core profiler was completed and a couple of default extensions installed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Confirm that information from core profiler saved",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Clean up installed extensions",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Confirm that the store is in coming soon mode after completing the core profiler",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "Can skip the guided setup",
                             "status": "passed",
                             "duration": 999,
@@ -8877,7 +9403,59 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can delete an issued refund",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'td.refunded-total\')\\nExpected: \\u001b[32m0\\u001b[39m\\nReceived: \\u001b[31m2\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'td.refunded-total\')\\u001b[22m\\n\\u001b[2m    24 \\u00d7 locator resolved to 2 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"2\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.ts:137:56",
+                            "snippet": "\\u001b[0m \\u001b[90m 135 |\\u001b[39m\\n \\u001b[90m 136 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Verify the refund no longer shows in the list\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 137 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'td.refunded-total\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                                    \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 138 |\\u001b[39m \\t\\t\\t\\t\\u001b[35m0\\u001b[39m\\n \\u001b[90m 139 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 140 |\\u001b[39m \\t\\t} )\\u001b[33m;\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@payments",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
@@ -11662,6 +12240,108 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can upload the CSV file and import products",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'a.row-title\') to be visible\\u001b[22m\\n",
+                            "trace": "TimeoutError: page.waitForSelector: Timeout 30000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for locator(\'a.row-title\') to be visible\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts:215:15",
+                            "snippet": "\\u001b[0m \\u001b[90m 213 |\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Wait for search results to load completely\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 215 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mwaitForSelector( \\u001b[32m\'a.row-title\'\\u001b[39m\\u001b[33m,\\u001b[39m { timeout\\u001b[33m:\\u001b[39m \\u001b[35m30000\\u001b[39m } )\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t           \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 216 |\\u001b[39m\\n \\u001b[90m 217 |\\u001b[39m \\t\\t\\t\\u001b[90m\\/\\/ Compare imported products to what\'s expected\\u001b[39m\\n \\u001b[90m 218 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can override the existing products via CSV import",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoHaveCount\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m failed\\n\\nLocator:  locator(\'a.row-title\')\\nExpected: \\u001b[32m18\\u001b[39m\\nReceived: \\u001b[31m0\\u001b[39m\\nTimeout:  20000ms\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toHaveCount\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'a.row-title\')\\u001b[22m\\n\\u001b[2m    23 \\u00d7 locator resolved to 0 elements\\u001b[22m\\n\\u001b[2m       - unexpected value \\"0\\"\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts:265:50",
+                            "snippet": "\\u001b[0m \\u001b[90m 263 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'#search-submit\'\\u001b[39m )\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 264 |\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 265 |\\u001b[39m \\t\\t\\t\\u001b[36mawait\\u001b[39m expect( page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'a.row-title\'\\u001b[39m ) )\\u001b[33m.\\u001b[39mtoHaveCount(\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t                                              \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 266 |\\u001b[39m \\t\\t\\t\\tproductNamesOverride\\u001b[33m.\\u001b[39mlength\\n \\u001b[90m 267 |\\u001b[39m \\t\\t\\t)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 268 |\\u001b[39m \\t\\t\\t\\u001b[36mconst\\u001b[39m productTitles \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m page\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
                             "stderr": [
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
@@ -12010,6 +12690,32 @@
                         },
                         {
                             "name": "can mark a product review as spam",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can reply to a product review",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -13835,7 +14541,12 @@
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "1",
+                        "message": "PHP Notice:  Undefined index: erase_plugin_data in wp-content\\/plugins\\/pinterest-for-woocommerce\\/uninstall.php on line 21"
+                    }
+                ]
             }
         }
     ]
