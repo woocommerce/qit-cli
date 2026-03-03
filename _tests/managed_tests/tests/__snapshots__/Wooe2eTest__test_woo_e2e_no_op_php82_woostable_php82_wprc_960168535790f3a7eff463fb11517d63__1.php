@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 335 total, 227 passed, 0 failed, 108 skipped",
+            "test_summary": "Tests: 335 total, 254 passed, 0 failed, 81 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,12 +53,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 59,
-                "numPendingTestSuites": 30,
+                "numPassedTestSuites": 60,
+                "numPendingTestSuites": 29,
                 "numTotalTestSuites": 89,
                 "numFailedTests": 0,
-                "numPassedTests": 227,
-                "numPendingTests": 108,
+                "numPassedTests": 254,
+                "numPendingTests": 81,
                 "numTotalTests": 335,
                 "testResults": [
                     {
@@ -281,150 +281,150 @@
                     {
                         "file": "basic\\/page-loads.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can load WooCommerce > Home page": [
                                 {
                                     "title": "can load WooCommerce > Home page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Orders page": [
                                 {
                                     "title": "can load WooCommerce > Orders page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Customers page": [
                                 {
                                     "title": "can load WooCommerce > Customers page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Reports page": [
                                 {
                                     "title": "can load WooCommerce > Reports page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Settings page": [
                                 {
                                     "title": "can load WooCommerce > Settings page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load WooCommerce > Status page": [
                                 {
                                     "title": "can load WooCommerce > Status page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > All Products page": [
                                 {
                                     "title": "can load Products > All Products page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Add new product page": [
                                 {
                                     "title": "can load Products > Add new product page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Categories page": [
                                 {
                                     "title": "can load Products > Categories page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Tags page": [
                                 {
                                     "title": "can load Products > Tags page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Products > Attributes page": [
                                 {
                                     "title": "can load Products > Attributes page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Overview page": [
                                 {
                                     "title": "can load Analytics > Overview page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Products page": [
                                 {
                                     "title": "can load Analytics > Products page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Revenue page": [
                                 {
                                     "title": "can load Analytics > Revenue page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Orders page": [
                                 {
                                     "title": "can load Analytics > Orders page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Variations page": [
                                 {
                                     "title": "can load Analytics > Variations page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Categories page": [
                                 {
                                     "title": "can load Analytics > Categories page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Coupons page": [
                                 {
                                     "title": "can load Analytics > Coupons page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Taxes page": [
                                 {
                                     "title": "can load Analytics > Taxes page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Downloads page": [
                                 {
                                     "title": "can load Analytics > Downloads page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Stock page": [
                                 {
                                     "title": "can load Analytics > Stock page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Analytics > Settings page": [
                                 {
                                     "title": "can load Analytics > Settings page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Marketing > Overview page": [
                                 {
                                     "title": "can load Marketing > Overview page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "can load Marketing > Coupons page": [
                                 {
                                     "title": "can load Marketing > Coupons page",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -432,12 +432,12 @@
                     {
                         "file": "brands\\/create-product-brand.spec.js",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Merchant can add brands": [
                                 {
                                     "title": "Merchant can add brands",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1204,7 +1204,7 @@
                             "Can hide the task list": [
                                 {
                                     "title": "Can hide the task list",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ],
                             "Payments task list item links to Payments settings page": [
@@ -1283,16 +1283,16 @@
                     {
                         "file": "order\\/order-coupon.spec.js",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Apply Coupon": [
                                 {
                                     "title": "can apply a coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can remove a coupon",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -1391,7 +1391,7 @@
                             "WooCommerce Orders > Refund and restock an order item": [
                                 {
                                     "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
@@ -2381,7 +2381,7 @@
                         }
                     }
                 ],
-                "summary": "335 total, 227 passed, 0 failed, 108 skipped."
+                "summary": "335 total, 254 passed, 0 failed, 81 skipped."
             }
         },
         {
@@ -2397,10 +2397,10 @@
                     },
                     "summary": {
                         "tests": 335,
-                        "passed": 227,
+                        "passed": 254,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 108,
+                        "skipped": 81,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -3413,803 +3413,591 @@
                         },
                         {
                             "name": "can load WooCommerce > Home page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Orders page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Customers page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Reports page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Settings page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Status page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > All Products page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Add new product page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Categories page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Tags page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Attributes page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Overview page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Products page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Revenue page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Orders page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Variations page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Categories page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Coupons page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Taxes page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Downloads page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Stock page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Settings page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Marketing > Overview page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Marketing > Coupons page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/basic\\/page-loads.spec.js",
-                                            "line": 272,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Merchant can add brands",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load WooCommerce > Orders page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load WooCommerce > Customers page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load WooCommerce > Reports page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load WooCommerce > Settings page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load WooCommerce > Status page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Products > All Products page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Products > Add new product page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Products > Categories page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Products > Tags page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Products > Attributes page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Overview page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Products page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Revenue page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Orders page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Variations page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Categories page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Coupons page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Taxes page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Downloads page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Stock page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Analytics > Settings page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Marketing > Overview page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can load Marketing > Coupons page",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Merchant can add brands",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-product-brand.spec.js",
@@ -4223,7 +4011,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/brands\\/create-product-brand.spec.js",
+                                            "line": 6,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -8342,11 +8139,11 @@
                         },
                         {
                             "name": "Can hide the task list",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@not-e2e"
                             ],
@@ -8354,24 +8151,26 @@
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
+                            "steps": [
+                                {
+                                    "name": "Load the WC Admin page.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Hide the task list",
+                                    "status": "passed"
+                                }
+                            ],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.js",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js",
-                                            "line": 64,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -8689,11 +8488,11 @@
                         },
                         {
                             "name": "can apply a coupon",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -8708,36 +8507,21 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 80,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can remove a coupon",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -8752,26 +8536,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-coupon.spec.js",
-                                            "line": 124,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -9286,11 +9055,11 @@
                         },
                         {
                             "name": "can update order after refunding item without automatic stock adjustment",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -9306,18 +9075,12 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js",
-                                            "line": 211,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -9664,10 +9427,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 443,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9699,10 +9463,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 495,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9946,10 +9711,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 55,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9981,10 +9747,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 80,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10086,10 +9853,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 114,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10121,10 +9889,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 285,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10156,10 +9925,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 371,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10191,10 +9961,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-attributes-block-editor.spec.js",
-                                            "line": 467,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10226,10 +9997,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 41,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10266,6 +10038,15 @@
                                             "line": 96,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             },
@@ -10300,6 +10081,15 @@
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
                                             "line": 96,
                                             "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10336,6 +10126,15 @@
                                             "line": 96,
                                             "column": 15
                                         }
+                                    },
+                                    {
+                                        "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
+                                        }
                                     }
                                 ]
                             },
@@ -10366,10 +10165,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 84,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10401,10 +10201,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 136,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10436,10 +10237,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 193,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10471,10 +10273,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-images-block-editor.spec.js",
-                                            "line": 244,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10506,10 +10309,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 59,
-                                            "column": 6
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -10575,14 +10379,6 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-inventory-block-editor.spec.js",
-                                            "line": 124,
-                                            "column": 6
-                                        }
-                                    },
                                     {
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
