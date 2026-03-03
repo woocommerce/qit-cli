@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 346 total, 263 passed, 0 failed, 83 skipped",
+            "test_summary": "Tests: 346 total, 259 passed, 0 failed, 87 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,12 +53,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 65,
-                "numPendingTestSuites": 27,
+                "numPassedTestSuites": 63,
+                "numPendingTestSuites": 29,
                 "numTotalTestSuites": 92,
                 "numFailedTests": 0,
-                "numPassedTests": 263,
-                "numPendingTests": 83,
+                "numPassedTests": 259,
+                "numPendingTests": 87,
                 "numTotalTests": 346,
                 "testResults": [
                     {
@@ -432,12 +432,12 @@
                     {
                         "file": "brands\\/create-product-brand.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Merchant can add brands": [
                                 {
                                     "title": "Merchant can add brands",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -473,13 +473,13 @@
                             "can add and remove products, increase quantity and proceed to checkout - blocks cart": [
                                 {
                                     "title": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "can add and remove products, increase quantity and proceed to checkout - classic cart": [
                                 {
                                     "title": "can add and remove products, increase quantity and proceed to checkout - classic cart",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1282,7 +1282,7 @@
                     {
                         "file": "onboarding\\/setup-checklist.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Can hide the task list": [
                                 {
@@ -1299,7 +1299,7 @@
                             "Can connect to WooCommerce.com": [
                                 {
                                     "title": "Can connect to WooCommerce.com",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2464,7 +2464,7 @@
                         }
                     }
                 ],
-                "summary": "346 total, 263 passed, 0 failed, 83 skipped."
+                "summary": "346 total, 259 passed, 0 failed, 87 skipped."
             }
         },
         {
@@ -2480,10 +2480,10 @@
                     },
                     "summary": {
                         "tests": 346,
-                        "passed": 263,
+                        "passed": 259,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 83,
+                        "skipped": 87,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4076,11 +4076,11 @@
                         },
                         {
                             "name": "Merchant can add brands",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-product-brand.spec.ts",
@@ -4094,7 +4094,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/brands\\/create-product-brand.spec.ts",
+                                            "line": 21,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -4211,11 +4220,11 @@
                         },
                         {
                             "name": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4225,58 +4234,34 @@
                             "filePath": "\\/normalized\\/path\\/cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "empty cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "one product in cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can increase quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can add another product to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can proceed to checkout and return",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the first product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the last product",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/cart.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
+                                            "line": 204,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can add and remove products, increase quantity and proceed to checkout - classic cart",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4286,47 +4271,24 @@
                             "filePath": "\\/normalized\\/path\\/cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "empty cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "one product in cart is displayed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can increase quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can add another product to cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can proceed to checkout and return",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the first product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "can remove the last product",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > cart\\/cart.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
+                                            "line": 204,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -5256,6 +5218,7 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
@@ -7649,7 +7612,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 35,
+                                            "line": 38,
                                             "column": 7
                                         }
                                     }
@@ -7682,7 +7645,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 50,
+                                            "line": 58,
                                             "column": 7
                                         }
                                     }
@@ -7715,7 +7678,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 71,
+                                            "line": 79,
                                             "column": 7
                                         }
                                     }
@@ -7748,7 +7711,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 93,
+                                            "line": 101,
                                             "column": 7
                                         }
                                     }
@@ -8658,40 +8621,34 @@
                         },
                         {
                             "name": "Can connect to WooCommerce.com",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/setup-checklist.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to WC Home and make sure the total sales is visible",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the extensions tab and connect store",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check that we are sent to wp.com",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > onboarding\\/setup-checklist.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.ts",
+                                            "line": 117,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -11738,7 +11695,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
-                                            "line": 225,
+                                            "line": 231,
                                             "column": 6
                                         }
                                     }
@@ -11773,7 +11730,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
-                                            "line": 319,
+                                            "line": 337,
                                             "column": 6
                                         }
                                     }
@@ -11808,7 +11765,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
-                                            "line": 371,
+                                            "line": 395,
                                             "column": 6
                                         }
                                     }
@@ -12131,7 +12088,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts",
-                                            "line": 170,
+                                            "line": 173,
                                             "column": 7
                                         }
                                     }
