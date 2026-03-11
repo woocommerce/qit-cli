@@ -369,7 +369,6 @@ class LocalTestRunNotifier {
 			'test_run_id'               => $test_run_id,
 			'test_result_json'          => '',
 			'test_result_json_original' => $test_result_json_original,
-			'bootstrap_log'             => json_encode( $test_result->bootstrap ),
 			'debug_log'                 => $debug_log_compressed,
 			'status'                    => $status,
 			'ctrf_json'                 => $ctrf_encoded,
