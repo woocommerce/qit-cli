@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 335 total, 254 passed, 0 failed, 81 skipped",
+            "test_summary": "Tests: 346 total, 259 passed, 0 failed, 87 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 60,
+                "numPassedTestSuites": 63,
                 "numPendingTestSuites": 29,
-                "numTotalTestSuites": 89,
+                "numTotalTestSuites": 92,
                 "numFailedTests": 0,
-                "numPassedTests": 254,
-                "numPendingTests": 81,
-                "numTotalTests": 335,
+                "numPassedTests": 259,
+                "numPendingTests": 87,
+                "numTotalTests": 346,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -101,7 +101,7 @@
                         }
                     },
                     {
-                        "file": "analytics\\/analytics-access.spec.js",
+                        "file": "analytics\\/analytics-access.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -114,7 +114,7 @@
                         }
                     },
                     {
-                        "file": "analytics\\/analytics-data.spec.js",
+                        "file": "analytics\\/analytics-data.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -163,7 +163,7 @@
                         }
                     },
                     {
-                        "file": "analytics\\/analytics-overview.spec.js",
+                        "file": "analytics\\/analytics-overview.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -208,7 +208,7 @@
                         }
                     },
                     {
-                        "file": "analytics\\/analytics-settings.spec.js",
+                        "file": "analytics\\/analytics-settings.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -233,7 +233,7 @@
                         }
                     },
                     {
-                        "file": "basic\\/basic.spec.js",
+                        "file": "basic\\/basic.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -258,7 +258,7 @@
                         }
                     },
                     {
-                        "file": "basic\\/dashboard-access.spec.js",
+                        "file": "basic\\/dashboard-access.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -279,7 +279,7 @@
                         }
                     },
                     {
-                        "file": "basic\\/page-loads.spec.js",
+                        "file": "basic\\/page-loads.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -430,7 +430,7 @@
                         }
                     },
                     {
-                        "file": "brands\\/create-product-brand.spec.js",
+                        "file": "brands\\/create-product-brand.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -443,7 +443,7 @@
                         }
                     },
                     {
-                        "file": "cart\\/add-to-cart.spec.js",
+                        "file": "cart\\/add-to-cart.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -460,7 +460,7 @@
                         }
                     },
                     {
-                        "file": "cart\\/cart.spec.js",
+                        "file": "cart\\/cart.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -485,7 +485,7 @@
                         }
                     },
                     {
-                        "file": "checkout\\/checkout-link.spec.js",
+                        "file": "checkout\\/checkout-link.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -537,7 +537,28 @@
                         }
                     },
                     {
-                        "file": "checkout\\/checkout.spec.js",
+                        "file": "checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Shortcode Checkout Custom Place Order Button": [
+                                {
+                                    "title": "clicking custom button triggers validation when form is invalid",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "switching between gateways shows\\/hides custom button",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "clicking custom button submits order when form is valid",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "checkout\\/checkout.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -604,7 +625,7 @@
                         }
                     },
                     {
-                        "file": "coupons\\/cart-block-coupons.spec.js",
+                        "file": "coupons\\/cart-block-coupons.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -629,7 +650,7 @@
                         }
                     },
                     {
-                        "file": "coupons\\/cart-checkout-coupons.spec.js",
+                        "file": "coupons\\/cart-checkout-coupons.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -662,7 +683,7 @@
                         }
                     },
                     {
-                        "file": "coupons\\/cart-checkout-restricted-coupons.spec.js",
+                        "file": "coupons\\/cart-checkout-restricted-coupons.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -715,7 +736,7 @@
                         }
                     },
                     {
-                        "file": "coupons\\/create-coupon.spec.js",
+                        "file": "coupons\\/create-coupon.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -744,7 +765,7 @@
                         }
                     },
                     {
-                        "file": "coupons\\/create-restricted-coupons.spec.js",
+                        "file": "coupons\\/create-restricted-coupons.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -801,14 +822,14 @@
                         }
                     },
                     {
-                        "file": "customer\\/customer-list.spec.js",
+                        "file": "customer\\/customer-list.spec.ts",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Merchant > Customer List": [
                                 {
                                     "title": "Merchant can view a list of all customers, filter and download",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Merchant can view a single customer",
@@ -822,7 +843,56 @@
                         }
                     },
                     {
-                        "file": "email\\/account-emails.spec.js",
+                        "file": "editor\\/command-palette.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "can use the \\"Add new product\\" command": [
+                                {
+                                    "title": "can use the \\"Add new product\\" command",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can use the \\"Add new order\\" command": [
+                                {
+                                    "title": "can use the \\"Add new order\\" command",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can use the \\"Products\\" command": [
+                                {
+                                    "title": "can use the \\"Products\\" command",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can use the \\"Orders\\" command": [
+                                {
+                                    "title": "can use the \\"Orders\\" command",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can use the product search command": [
+                                {
+                                    "title": "can use the product search command",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can use a settings command": [
+                                {
+                                    "title": "can use a settings command",
+                                    "status": "pending"
+                                }
+                            ],
+                            "can use an analytics command": [
+                                {
+                                    "title": "can use an analytics command",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email\\/account-emails.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -847,7 +917,7 @@
                         }
                     },
                     {
-                        "file": "email\\/editor-tracking-selectors.spec.js",
+                        "file": "email\\/editor-tracking-selectors.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -860,7 +930,7 @@
                         }
                     },
                     {
-                        "file": "email\\/order-emails.spec.js",
+                        "file": "email\\/order-emails.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -897,7 +967,7 @@
                         }
                     },
                     {
-                        "file": "email\\/settings-email-listing.spec.js",
+                        "file": "email\\/settings-email-listing.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -910,9 +980,9 @@
                         }
                     },
                     {
-                        "file": "email\\/settings-email.spec.js",
+                        "file": "email\\/settings-email.spec.ts",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Email Settings": [
                                 {
@@ -929,7 +999,7 @@
                                 },
                                 {
                                     "title": "Send email preview",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "See specific email preview",
@@ -959,14 +1029,14 @@
                         }
                     },
                     {
-                        "file": "email-editor\\/email-editor-loads.spec.js",
+                        "file": "email-editor\\/email-editor-loads.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "WooCommerce Email Editor Core": [
                                 {
                                     "title": "Can enable the email editor",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "Can access the email editor",
@@ -988,7 +1058,20 @@
                         }
                     },
                     {
-                        "file": "email-editor\\/email-editor-settings-sidebar.spec.js",
+                        "file": "email-editor\\/email-editor-reset-template.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "WooCommerce Email Editor Reset Template": [
+                                {
+                                    "title": "Can reset a customized email template to default",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/email-editor-settings-sidebar.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1009,7 +1092,7 @@
                         }
                     },
                     {
-                        "file": "marketing\\/overview.spec.js",
+                        "file": "marketing\\/overview.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1026,7 +1109,7 @@
                         }
                     },
                     {
-                        "file": "my-account\\/my-account-addresses.spec.js",
+                        "file": "my-account\\/my-account-addresses.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1043,7 +1126,7 @@
                         }
                     },
                     {
-                        "file": "my-account\\/my-account-create-account.spec.js",
+                        "file": "my-account\\/my-account-create-account.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1056,7 +1139,7 @@
                         }
                     },
                     {
-                        "file": "my-account\\/my-account-downloads.spec.js",
+                        "file": "my-account\\/my-account-downloads.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1069,7 +1152,7 @@
                         }
                     },
                     {
-                        "file": "my-account\\/my-account-pay-order.spec.js",
+                        "file": "my-account\\/my-account-pay-order.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1082,7 +1165,7 @@
                         }
                     },
                     {
-                        "file": "my-account\\/my-account.spec.js",
+                        "file": "my-account\\/my-account.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1095,7 +1178,7 @@
                         }
                     },
                     {
-                        "file": "onboarding\\/add-product-task.spec.js",
+                        "file": "onboarding\\/add-product-task.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1120,7 +1203,7 @@
                         }
                     },
                     {
-                        "file": "onboarding\\/launch-your-store.spec.js",
+                        "file": "onboarding\\/launch-your-store.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1174,7 +1257,7 @@
                         }
                     },
                     {
-                        "file": "onboarding\\/onboarding-wizard.spec.js",
+                        "file": "onboarding\\/onboarding-wizard.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1197,7 +1280,7 @@
                         }
                     },
                     {
-                        "file": "onboarding\\/setup-checklist.spec.js",
+                        "file": "onboarding\\/setup-checklist.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1222,7 +1305,7 @@
                         }
                     },
                     {
-                        "file": "order\\/create-order.spec.js",
+                        "file": "order\\/create-order.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1247,7 +1330,7 @@
                         }
                     },
                     {
-                        "file": "order\\/customer-payment-page.spec.js",
+                        "file": "order\\/customer-payment-page.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1268,7 +1351,7 @@
                         }
                     },
                     {
-                        "file": "order\\/order-bulk-edit.spec.js",
+                        "file": "order\\/order-bulk-edit.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1281,7 +1364,7 @@
                         }
                     },
                     {
-                        "file": "order\\/order-coupon.spec.js",
+                        "file": "order\\/order-coupon.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1298,7 +1381,7 @@
                         }
                     },
                     {
-                        "file": "order\\/order-edit.spec.js",
+                        "file": "order\\/order-edit.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1361,7 +1444,7 @@
                         }
                     },
                     {
-                        "file": "order\\/order-grace-period.spec.js",
+                        "file": "order\\/order-grace-period.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1374,7 +1457,7 @@
                         }
                     },
                     {
-                        "file": "order\\/order-refund.spec.js",
+                        "file": "order\\/order-refund.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1397,7 +1480,7 @@
                         }
                     },
                     {
-                        "file": "order\\/order-status-filter.spec.js",
+                        "file": "order\\/order-status-filter.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1438,7 +1521,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/create-grouped-product-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/create-grouped-product-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1452,7 +1535,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/create-simple-product-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/create-simple-product-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1480,7 +1563,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/create-variable-product-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1510,7 +1593,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/disable-block-product-editor.spec.js",
+                        "file": "product\\/block-editor\\/disable-block-product-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1531,7 +1614,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/linked-product-tab-product-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1545,7 +1628,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/organization-tab-product-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/organization-tab-product-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1559,7 +1642,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/product-attributes-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1590,7 +1673,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/product-edit-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/product-edit-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1617,7 +1700,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/product-images-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/product-images-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1648,7 +1731,7 @@
                         }
                     },
                     {
-                        "file": "product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                        "file": "product\\/block-editor\\/product-inventory-block-editor.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1679,20 +1762,20 @@
                         }
                     },
                     {
-                        "file": "product\\/create-product-attributes.spec.js",
+                        "file": "product\\/create-product-attributes.spec.ts",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "can add custom product attributes": [
                                 {
                                     "title": "can add custom product attributes",
-                                    "status": "pending"
+                                    "status": "passed"
                                 }
                             ]
                         }
                     },
                     {
-                        "file": "product\\/create-variable-product.spec.js",
+                        "file": "product\\/create-variable-product.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1705,7 +1788,7 @@
                         }
                     },
                     {
-                        "file": "product\\/create-variations.spec.js",
+                        "file": "product\\/create-variations.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1722,7 +1805,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-create-simple.spec.js",
+                        "file": "product\\/product-create-simple.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1747,7 +1830,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-delete.spec.js",
+                        "file": "product\\/product-delete.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1772,7 +1855,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-edit.spec.js",
+                        "file": "product\\/product-edit.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1809,7 +1892,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-export.spec.js",
+                        "file": "product\\/product-export.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1834,7 +1917,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-grouped.spec.js",
+                        "file": "product\\/product-grouped.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1851,7 +1934,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-images.spec.js",
+                        "file": "product\\/product-images.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1880,14 +1963,14 @@
                         }
                     },
                     {
-                        "file": "product\\/product-import-csv.spec.js",
+                        "file": "product\\/product-import-csv.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "pending"
+                                    "status": "passed"
                                 },
                                 {
                                     "title": "can upload the CSV file and import products",
@@ -1901,7 +1984,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-linked-products.spec.js",
+                        "file": "product\\/product-linked-products.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1926,7 +2009,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-reviews.spec.js",
+                        "file": "product\\/product-reviews.spec.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -1974,7 +2057,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-search.spec.js",
+                        "file": "product\\/product-search.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -1995,7 +2078,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-settings.spec.js",
+                        "file": "product\\/product-settings.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2008,7 +2091,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-tags-attributes.spec.js",
+                        "file": "product\\/product-tags-attributes.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2033,7 +2116,7 @@
                         }
                     },
                     {
-                        "file": "product\\/product-variable.spec.js",
+                        "file": "product\\/product-variable.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2068,7 +2151,7 @@
                         }
                     },
                     {
-                        "file": "product\\/update-variations.spec.js",
+                        "file": "product\\/update-variations.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2101,7 +2184,7 @@
                         }
                     },
                     {
-                        "file": "settings\\/consumer-token.spec.js",
+                        "file": "settings\\/consumer-token.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2114,7 +2197,7 @@
                         }
                     },
                     {
-                        "file": "settings\\/settings-general.spec.js",
+                        "file": "settings\\/settings-general.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2131,7 +2214,7 @@
                         }
                     },
                     {
-                        "file": "settings\\/settings-tax.spec.js",
+                        "file": "settings\\/settings-tax.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2162,7 +2245,7 @@
                         }
                     },
                     {
-                        "file": "settings\\/settings-woo-com.spec.js",
+                        "file": "settings\\/settings-woo-com.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2179,7 +2262,7 @@
                         }
                     },
                     {
-                        "file": "settings\\/webhooks.spec.js",
+                        "file": "settings\\/webhooks.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2192,7 +2275,7 @@
                         }
                     },
                     {
-                        "file": "shipping\\/shipping-classes.spec.js",
+                        "file": "shipping\\/shipping-classes.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2211,7 +2294,7 @@
                         }
                     },
                     {
-                        "file": "shipping\\/shipping-zones.spec.js",
+                        "file": "shipping\\/shipping-zones.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2230,7 +2313,7 @@
                         }
                     },
                     {
-                        "file": "shop\\/cart-redirection.spec.js",
+                        "file": "shop\\/cart-redirection.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2247,7 +2330,7 @@
                         }
                     },
                     {
-                        "file": "shop\\/shop-search-browse-sort.spec.js",
+                        "file": "shop\\/shop-search-browse-sort.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2268,7 +2351,7 @@
                         }
                     },
                     {
-                        "file": "shop\\/shop-title-after-deletion.spec.js",
+                        "file": "shop\\/shop-title-after-deletion.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2281,7 +2364,7 @@
                         }
                     },
                     {
-                        "file": "user\\/lost-password.spec.js",
+                        "file": "user\\/lost-password.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2298,7 +2381,7 @@
                         }
                     },
                     {
-                        "file": "user\\/users-create.spec.js",
+                        "file": "user\\/users-create.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2311,7 +2394,7 @@
                         }
                     },
                     {
-                        "file": "user\\/users-manage.spec.js",
+                        "file": "user\\/users-manage.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2342,7 +2425,7 @@
                         }
                     },
                     {
-                        "file": "wp-core\\/create-page.spec.js",
+                        "file": "wp-core\\/create-page.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2355,7 +2438,7 @@
                         }
                     },
                     {
-                        "file": "wp-core\\/create-post.spec.js",
+                        "file": "wp-core\\/create-post.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2368,7 +2451,7 @@
                         }
                     },
                     {
-                        "file": "wp-core\\/post-comments.spec.js",
+                        "file": "wp-core\\/post-comments.spec.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -2381,7 +2464,7 @@
                         }
                     }
                 ],
-                "summary": "335 total, 254 passed, 0 failed, 81 skipped."
+                "summary": "346 total, 259 passed, 0 failed, 87 skipped."
             }
         },
         {
@@ -2396,11 +2479,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 335,
-                        "passed": 254,
+                        "tests": 346,
+                        "passed": 259,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 81,
+                        "skipped": 87,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2536,7 +2619,7 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-access.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-access.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -2557,7 +2640,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-access.spec.js > WooCommerce Home",
+                            "suite": "e2e > analytics\\/analytics-access.spec.ts > WooCommerce Home",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2580,11 +2663,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2595,7 +2678,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 269,
                                             "column": 6
                                         }
@@ -2616,11 +2699,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2631,7 +2714,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 307,
                                             "column": 6
                                         }
@@ -2652,11 +2735,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2667,7 +2750,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 340,
                                             "column": 6
                                         }
@@ -2688,11 +2771,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2703,7 +2786,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 410,
                                             "column": 6
                                         }
@@ -2724,11 +2807,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2739,7 +2822,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 512,
                                             "column": 6
                                         }
@@ -2760,11 +2843,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2775,7 +2858,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 606,
                                             "column": 6
                                         }
@@ -2796,11 +2879,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.js",
+                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2811,7 +2894,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 705,
                                             "column": 6
                                         }
@@ -2832,7 +2915,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -2853,7 +2936,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2876,7 +2959,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -2893,7 +2976,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2916,7 +2999,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -2941,7 +3024,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2965,7 +3048,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -2982,7 +3065,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages > moving sections",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3006,7 +3089,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3023,7 +3106,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages > moving sections",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3047,7 +3130,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3064,7 +3147,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics pages > moving sections",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages > moving sections",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3087,7 +3170,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3096,7 +3179,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics Overview - Manual Import Trigger",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics Overview - Manual Import Trigger",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3119,7 +3202,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3128,7 +3211,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.js > Analytics Overview - Manual Import Trigger",
+                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics Overview - Manual Import Trigger",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3151,7 +3234,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3160,7 +3243,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3183,7 +3266,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3192,7 +3275,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3215,7 +3298,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3224,7 +3307,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3247,7 +3330,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.js",
+                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -3256,7 +3339,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.js > Analytics Settings - Scheduled Import",
+                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3276,11 +3359,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/basic.spec.js",
+                            "filePath": "\\/normalized\\/path\\/basic.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/basic.spec.js",
+                            "suite": "e2e > basic\\/basic.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3300,11 +3383,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/basic.spec.js",
+                            "filePath": "\\/normalized\\/path\\/basic.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/basic.spec.js",
+                            "suite": "e2e > basic\\/basic.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3324,11 +3407,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/basic.spec.js",
+                            "filePath": "\\/normalized\\/path\\/basic.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/basic.spec.js",
+                            "suite": "e2e > basic\\/basic.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3348,11 +3431,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.js",
+                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
+                            "suite": "e2e > basic\\/dashboard-access.spec.ts > Customer-role users are blocked from accessing the WP Dashboard.",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3372,11 +3455,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.js",
+                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
+                            "suite": "e2e > basic\\/dashboard-access.spec.ts > Customer-role users are blocked from accessing the WP Dashboard.",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3396,11 +3479,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.js",
+                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/dashboard-access.spec.js > Customer-role users are blocked from accessing the WP Dashboard.",
+                            "suite": "e2e > basic\\/dashboard-access.spec.ts > Customer-role users are blocked from accessing the WP Dashboard.",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3420,11 +3503,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3446,11 +3529,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3470,11 +3553,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3494,11 +3577,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3518,11 +3601,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3542,11 +3625,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3566,11 +3649,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3590,11 +3673,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3614,11 +3697,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3638,11 +3721,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3662,11 +3745,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3686,11 +3769,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3710,11 +3793,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3734,11 +3817,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3758,11 +3841,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3782,11 +3865,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3806,11 +3889,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3830,11 +3913,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3854,11 +3937,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3878,11 +3961,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3902,11 +3985,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3926,11 +4009,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3950,11 +4033,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -3974,11 +4057,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.js",
+                            "suite": "e2e > basic\\/page-loads.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4000,11 +4083,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-product-brand.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-product-brand.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > brands\\/create-product-brand.spec.js",
+                            "suite": "e2e > brands\\/create-product-brand.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4015,8 +4098,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/brands\\/create-product-brand.spec.js",
-                                            "line": 6,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/brands\\/create-product-brand.spec.ts",
+                                            "line": 21,
                                             "column": 6
                                         }
                                     }
@@ -4037,11 +4120,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.js",
+                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > cart\\/add-to-cart.spec.js > Add to Cart behavior",
+                            "suite": "e2e > cart\\/add-to-cart.spec.ts > Add to Cart behavior",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4052,7 +4135,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.ts",
                                             "line": 18,
                                             "column": 15
                                         }
@@ -4074,11 +4157,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.js",
+                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > cart\\/add-to-cart.spec.js > Add to Cart behavior",
+                            "suite": "e2e > cart\\/add-to-cart.spec.ts > Add to Cart behavior",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4089,7 +4172,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.ts",
                                             "line": 18,
                                             "column": 15
                                         }
@@ -4111,11 +4194,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > cart\\/cart.spec.js",
+                            "suite": "e2e > cart\\/cart.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4126,8 +4209,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js",
-                                            "line": 127,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
+                                            "line": 128,
                                             "column": 6
                                         }
                                     }
@@ -4148,11 +4231,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > cart\\/cart.spec.js",
+                            "suite": "e2e > cart\\/cart.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4163,8 +4246,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js",
-                                            "line": 203,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
+                                            "line": 204,
                                             "column": 7
                                         }
                                     }
@@ -4185,11 +4268,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > cart\\/cart.spec.js",
+                            "suite": "e2e > cart\\/cart.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4200,8 +4283,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.js",
-                                            "line": 203,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
+                                            "line": 204,
                                             "column": 7
                                         }
                                     }
@@ -4221,11 +4304,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Guest user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4236,7 +4319,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4257,11 +4340,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Guest user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4272,7 +4355,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4293,11 +4376,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Guest user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4308,7 +4391,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4329,11 +4412,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Guest user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4344,7 +4427,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4365,11 +4448,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Guest user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4380,7 +4463,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4401,11 +4484,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Logged-in user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4416,7 +4499,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4437,11 +4520,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Logged-in user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4452,7 +4535,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4473,11 +4556,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Logged-in user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4488,7 +4571,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4509,11 +4592,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Logged-in user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4524,7 +4607,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
                                             "column": 15
                                         }
@@ -4545,11 +4628,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.js > Checkout Link Endpoint > Logged-in user",
+                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4560,8 +4643,114 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "clicking custom button triggers validation when form is invalid",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                                            "line": 75,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "switching between gateways shows\\/hides custom button",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                                            "line": 75,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "clicking custom button submits order when form is valid",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
+                                            "line": 75,
                                             "column": 15
                                         }
                                     }
@@ -4582,11 +4771,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4614,11 +4803,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4645,11 +4834,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4676,11 +4865,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4707,11 +4896,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4738,11 +4927,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4769,11 +4958,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4800,11 +4989,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4831,11 +5020,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4862,11 +5051,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout.spec.js",
+                            "filePath": "\\/normalized\\/path\\/checkout.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > checkout\\/checkout.spec.js",
+                            "suite": "e2e > checkout\\/checkout.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4893,11 +5082,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
+                            "suite": "e2e > coupons\\/cart-block-coupons.spec.ts > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4923,11 +5112,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
+                            "suite": "e2e > coupons\\/cart-block-coupons.spec.ts > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4951,11 +5140,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
+                            "suite": "e2e > coupons\\/cart-block-coupons.spec.ts > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -4979,11 +5168,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > coupons\\/cart-block-coupons.spec.js > Cart Block Applying Coupons",
+                            "suite": "e2e > coupons\\/cart-block-coupons.spec.ts > Cart Block Applying Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5010,7 +5199,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5023,7 +5212,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5053,7 +5242,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5066,7 +5255,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5091,7 +5280,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5104,7 +5293,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5129,7 +5318,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5142,7 +5331,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5167,7 +5356,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5180,7 +5369,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5205,7 +5394,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5218,7 +5407,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.js > Cart & Checkout applying coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5245,7 +5434,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5258,7 +5447,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5287,7 +5476,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5300,7 +5489,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5325,7 +5514,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5338,7 +5527,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5363,7 +5552,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5376,7 +5565,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5403,7 +5592,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5416,7 +5605,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5441,7 +5630,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5454,7 +5643,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5479,7 +5668,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5492,7 +5681,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5517,7 +5706,7 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5530,7 +5719,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5555,11 +5744,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5584,11 +5773,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5613,11 +5802,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.js > Cart & Checkout Restricted Coupons",
+                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5642,7 +5831,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5659,7 +5848,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
+                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5683,7 +5872,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5700,7 +5889,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
+                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5724,7 +5913,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5741,7 +5930,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
+                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5765,7 +5954,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5786,7 +5975,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
+                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5810,7 +5999,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5831,7 +6020,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.js > Coupon management",
+                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5855,7 +6044,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5880,7 +6069,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5904,7 +6093,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5929,7 +6118,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -5953,7 +6142,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -5978,7 +6167,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6002,7 +6191,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6027,7 +6216,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6051,7 +6240,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6076,7 +6265,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6100,7 +6289,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6125,7 +6314,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6149,7 +6338,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6170,7 +6359,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6194,7 +6383,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6219,7 +6408,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6243,7 +6432,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6268,7 +6457,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6292,7 +6481,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6317,7 +6506,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6341,7 +6530,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6366,7 +6555,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6390,7 +6579,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6415,7 +6604,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.js > Restricted coupon management",
+                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6430,34 +6619,48 @@
                         },
                         {
                             "name": "Merchant can view a list of all customers, filter and download",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-list.spec.js",
+                            "filePath": "\\/normalized\\/path\\/customer-list.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customer\\/customer-list.spec.js > Merchant > Customer List",
+                            "steps": [
+                                {
+                                    "name": "Go to the customers reports page",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that the customers are displayed in the list",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Check that the customer list can be filtered by first name",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Hide and display columns",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Download the customer list",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > customer\\/customer-list.spec.ts > Merchant > Customer List",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customer\\/customer-list.spec.js",
-                                            "line": 98,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -6470,7 +6673,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-list.spec.js",
+                            "filePath": "\\/normalized\\/path\\/customer-list.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6483,7 +6686,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > customer\\/customer-list.spec.js > Merchant > Customer List",
+                            "suite": "e2e > customer\\/customer-list.spec.ts > Merchant > Customer List",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6505,7 +6708,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-list.spec.js",
+                            "filePath": "\\/normalized\\/path\\/customer-list.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6530,7 +6733,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > customer\\/customer-list.spec.js > Merchant > Customer List",
+                            "suite": "e2e > customer\\/customer-list.spec.ts > Merchant > Customer List",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6544,6 +6747,237 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "can use the \\"Add new product\\" command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 75,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can use the \\"Add new order\\" command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 87,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can use the \\"Products\\" command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 99,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can use the \\"Orders\\" command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 111,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can use the product search command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 123,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can use a settings command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 135,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can use an analytics command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 145,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "New customer should receive an email with login details",
                             "status": "passed",
                             "duration": 999,
@@ -6552,7 +6986,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/account-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/account-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6565,7 +6999,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > email\\/account-emails.spec.js",
+                            "suite": "e2e > email\\/account-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6587,7 +7021,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/account-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/account-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6604,7 +7038,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > email\\/account-emails.spec.js",
+                            "suite": "e2e > email\\/account-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6626,7 +7060,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/account-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/account-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6643,7 +7077,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > email\\/account-emails.spec.js",
+                            "suite": "e2e > email\\/account-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6665,11 +7099,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/editor-tracking-selectors.spec.js",
+                            "filePath": "\\/normalized\\/path\\/editor-tracking-selectors.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/editor-tracking-selectors.spec.js > WooCommerce Email Editor Tracking Selectors",
+                            "suite": "e2e > email\\/editor-tracking-selectors.spec.ts > WooCommerce Email Editor Tracking Selectors",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6680,8 +7114,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/editor-tracking-selectors.spec.js",
-                                            "line": 19,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/editor-tracking-selectors.spec.ts",
+                                            "line": 30,
                                             "column": 15
                                         }
                                     }
@@ -6698,7 +7132,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6711,7 +7145,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > email\\/order-emails.spec.js",
+                            "suite": "e2e > email\\/order-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6733,7 +7167,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6746,7 +7180,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > email\\/order-emails.spec.js",
+                            "suite": "e2e > email\\/order-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6768,7 +7202,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6781,7 +7215,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > email\\/order-emails.spec.js",
+                            "suite": "e2e > email\\/order-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6803,7 +7237,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -6816,7 +7250,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > email\\/order-emails.spec.js",
+                            "suite": "e2e > email\\/order-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6838,11 +7272,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/order-emails.spec.js",
+                            "suite": "e2e > email\\/order-emails.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6864,11 +7298,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email-listing.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email-listing.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email-listing.spec.js > WooCommerce Email Settings List View",
+                            "suite": "e2e > email\\/settings-email-listing.spec.ts > WooCommerce Email Settings List View",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6888,11 +7322,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6914,11 +7348,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6940,11 +7374,11 @@
                                 "@skip-on-external-env"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -6957,34 +7391,25 @@
                         },
                         {
                             "name": "Send email preview",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email.spec.js",
-                                            "line": 175,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -6999,11 +7424,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7023,11 +7448,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7049,11 +7474,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7075,11 +7500,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7099,11 +7524,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7123,11 +7548,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.js > WooCommerce Email Settings",
+                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7140,34 +7565,25 @@
                         },
                         {
                             "name": "Can enable the email editor",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.js > WooCommerce Email Editor Core",
+                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 11,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -7180,11 +7596,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.js > WooCommerce Email Editor Core",
+                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7195,16 +7611,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 11,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 37,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 38,
                                             "column": 7
                                         }
                                     }
@@ -7221,11 +7629,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.js > WooCommerce Email Editor Core",
+                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7236,16 +7644,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 11,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 52,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 58,
                                             "column": 7
                                         }
                                     }
@@ -7262,11 +7662,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.js > WooCommerce Email Editor Core",
+                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7277,16 +7677,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 11,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 73,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 79,
                                             "column": 7
                                         }
                                     }
@@ -7303,11 +7695,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.js > WooCommerce Email Editor Core",
+                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7318,17 +7710,42 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 11,
-                                            "column": 15
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
+                                            "line": 101,
+                                            "column": 7
                                         }
-                                    },
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Can reset a customized email template to default",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/email-editor-reset-template.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/email-editor-reset-template.spec.ts > WooCommerce Email Editor Reset Template",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.js",
-                                            "line": 95,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-reset-template.spec.ts",
+                                            "line": 56,
+                                            "column": 15
                                         }
                                     }
                                 ]
@@ -7344,11 +7761,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.js > WooCommerce Email Editor Settings Sidebar Integration",
+                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7359,8 +7776,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js",
-                                            "line": 13,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
+                                            "line": 20,
                                             "column": 15
                                         }
                                     }
@@ -7377,11 +7794,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.js > WooCommerce Email Editor Settings Sidebar Integration",
+                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7392,8 +7809,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js",
-                                            "line": 13,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
+                                            "line": 20,
                                             "column": 15
                                         }
                                     }
@@ -7410,11 +7827,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.js",
+                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.js > WooCommerce Email Editor Settings Sidebar Integration",
+                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7425,8 +7842,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.js",
-                                            "line": 13,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
+                                            "line": 20,
                                             "column": 15
                                         }
                                     }
@@ -7443,11 +7860,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > marketing\\/overview.spec.js > Marketing page",
+                            "suite": "e2e > marketing\\/overview.spec.ts > Marketing page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7470,11 +7887,11 @@
                                 "@non-critical"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/overview.spec.js",
+                            "filePath": "\\/normalized\\/path\\/overview.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > marketing\\/overview.spec.js > Marketing page",
+                            "suite": "e2e > marketing\\/overview.spec.ts > Marketing page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7494,11 +7911,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.js",
+                            "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > my-account\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
+                            "suite": "e2e > my-account\\/my-account-addresses.spec.ts > Customer can manage addresses in My Account > Addresses page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7520,11 +7937,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.js",
+                            "filePath": "\\/normalized\\/path\\/my-account-addresses.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > my-account\\/my-account-addresses.spec.js > Customer can manage addresses in My Account > Addresses page",
+                            "suite": "e2e > my-account\\/my-account-addresses.spec.ts > Customer can manage addresses in My Account > Addresses page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7546,11 +7963,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-create-account.spec.js",
+                            "filePath": "\\/normalized\\/path\\/my-account-create-account.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > my-account\\/my-account-create-account.spec.js > Shopper My Account Create Account",
+                            "suite": "e2e > my-account\\/my-account-create-account.spec.ts > Shopper My Account Create Account",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7573,11 +7990,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-downloads.spec.js",
+                            "filePath": "\\/normalized\\/path\\/my-account-downloads.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > my-account\\/my-account-downloads.spec.js > Customer can manage downloadable file in My Account > Downloads page",
+                            "suite": "e2e > my-account\\/my-account-downloads.spec.ts > Customer can manage downloadable file in My Account > Downloads page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7604,11 +8021,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account-pay-order.spec.js",
+                            "filePath": "\\/normalized\\/path\\/my-account-pay-order.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > my-account\\/my-account-pay-order.spec.js > Customer can pay for their order through My Account",
+                            "suite": "e2e > my-account\\/my-account-pay-order.spec.ts > Customer can pay for their order through My Account",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7631,7 +8048,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account.spec.js",
+                            "filePath": "\\/normalized\\/path\\/my-account.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -7652,7 +8069,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > my-account\\/my-account.spec.js > My account page",
+                            "suite": "e2e > my-account\\/my-account.spec.ts > My account page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7672,11 +8089,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.js",
+                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
+                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7698,11 +8115,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.js",
+                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
+                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7722,11 +8139,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.js",
+                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
+                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7748,11 +8165,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.js",
+                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.js > Add Product Task",
+                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7778,11 +8195,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7807,11 +8224,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7836,11 +8253,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7865,11 +8282,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7894,11 +8311,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7923,11 +8340,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store - logged in",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7949,11 +8366,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7973,11 +8390,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -7997,11 +8414,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Classic Theme (Storefront)",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Classic Theme (Storefront)",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8021,11 +8438,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.js",
+                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.js > Launch Your Store front end - logged out > Classic Theme (Storefront)",
+                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Classic Theme (Storefront)",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8047,11 +8464,11 @@
                                 "@skip-on-external-env"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
+                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can complete the core profiler",
+                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8062,8 +8479,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.js",
-                                            "line": 43,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
+                                            "line": 44,
                                             "column": 8
                                         }
                                     }
@@ -8082,11 +8499,11 @@
                                 "@skip-on-external-env"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
+                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can complete the core profiler",
+                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8097,8 +8514,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.js",
-                                            "line": 204,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
+                                            "line": 205,
                                             "column": 8
                                         }
                                     }
@@ -8117,7 +8534,7 @@
                                 "@skip-on-external-env"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.js",
+                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -8126,7 +8543,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.js > Store owner can skip the core profiler",
+                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can skip the core profiler",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8148,7 +8565,7 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
+                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -8161,7 +8578,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > onboarding\\/setup-checklist.spec.js",
+                            "suite": "e2e > onboarding\\/setup-checklist.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8185,11 +8602,11 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
+                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/setup-checklist.spec.js",
+                            "suite": "e2e > onboarding\\/setup-checklist.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8211,11 +8628,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.js",
+                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > onboarding\\/setup-checklist.spec.js",
+                            "suite": "e2e > onboarding\\/setup-checklist.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8226,7 +8643,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.ts",
                                             "line": 117,
                                             "column": 6
                                         }
@@ -8247,11 +8664,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-order.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-order.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
+                            "suite": "e2e > order\\/create-order.spec.ts > WooCommerce Orders > Add new order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8277,11 +8694,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-order.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-order.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
+                            "suite": "e2e > order\\/create-order.spec.ts > WooCommerce Orders > Add new order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8306,11 +8723,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-order.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-order.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
+                            "suite": "e2e > order\\/create-order.spec.ts > WooCommerce Orders > Add new order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8335,11 +8752,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-order.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-order.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/create-order.spec.js > WooCommerce Orders > Add new order",
+                            "suite": "e2e > order\\/create-order.spec.ts > WooCommerce Orders > Add new order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8367,11 +8784,11 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.js",
+                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/customer-payment-page.spec.js > WooCommerce Merchant Flow: Orders > Customer Payment Page",
+                            "suite": "e2e > order\\/customer-payment-page.spec.ts > WooCommerce Merchant Flow: Orders > Customer Payment Page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8398,11 +8815,11 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.js",
+                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/customer-payment-page.spec.js > WooCommerce Merchant Flow: Orders > Customer Payment Page",
+                            "suite": "e2e > order\\/customer-payment-page.spec.ts > WooCommerce Merchant Flow: Orders > Customer Payment Page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8426,7 +8843,7 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.js",
+                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -8443,7 +8860,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > order\\/customer-payment-page.spec.js > WooCommerce Merchant Flow: Orders > Customer Payment Page",
+                            "suite": "e2e > order\\/customer-payment-page.spec.ts > WooCommerce Merchant Flow: Orders > Customer Payment Page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8468,11 +8885,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-bulk-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-bulk-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-bulk-edit.spec.js > Bulk edit orders",
+                            "suite": "e2e > order\\/order-bulk-edit.spec.ts > Bulk edit orders",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8498,11 +8915,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-coupon.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-coupon.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-coupon.spec.js > WooCommerce Orders > Apply Coupon",
+                            "suite": "e2e > order\\/order-coupon.spec.ts > WooCommerce Orders > Apply Coupon",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8527,11 +8944,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-coupon.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-coupon.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-coupon.spec.js > WooCommerce Orders > Apply Coupon",
+                            "suite": "e2e > order\\/order-coupon.spec.ts > WooCommerce Orders > Apply Coupon",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8556,11 +8973,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8585,11 +9002,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8612,11 +9029,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8639,11 +9056,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8666,11 +9083,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8693,7 +9110,7 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -8710,7 +9127,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8733,7 +9150,7 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -8750,7 +9167,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8775,11 +9192,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order > Downloadable product permissions",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8804,11 +9221,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order > Downloadable product permissions",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8833,11 +9250,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order > Downloadable product permissions",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8862,11 +9279,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order > Downloadable product permissions",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8892,11 +9309,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order > Downloadable product permissions",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8922,11 +9339,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-edit.spec.js > Edit order > Downloadable product permissions",
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order > Downloadable product permissions",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8948,7 +9365,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-grace-period.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-grace-period.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -8973,7 +9390,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > order\\/order-grace-period.spec.js",
+                            "suite": "e2e > order\\/order-grace-period.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -8998,11 +9415,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund an order",
+                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9027,11 +9444,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund an order",
+                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9044,7 +9461,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.ts",
                                             "line": 121,
                                             "column": 8
                                         }
@@ -9066,11 +9483,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-refund.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-refund.spec.js > WooCommerce Orders > Refund and restock an order item",
+                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund and restock an order item",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9095,11 +9512,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9123,11 +9540,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9149,11 +9566,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9175,11 +9592,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9201,11 +9618,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9227,11 +9644,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9253,11 +9670,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9279,11 +9696,11 @@
                                 "@hpos"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.js",
+                            "filePath": "\\/normalized\\/path\\/order-status-filter.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > order\\/order-status-filter.spec.js > WooCommerce Orders > Filter Order by Status",
+                            "suite": "e2e > order\\/order-status-filter.spec.ts > WooCommerce Orders > Filter Order by Status",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9307,11 +9724,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-grouped-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-grouped-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-grouped-product-block-editor.spec.js > General tab > Grouped product",
+                            "suite": "e2e > product\\/block-editor\\/create-grouped-product-block-editor.spec.ts > General tab > Grouped product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9321,10 +9738,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-grouped-product-block-editor.spec.js",
-                                            "line": 57,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9343,11 +9761,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Simple product form",
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Simple product form",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9357,10 +9775,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 47,
-                                            "column": 16
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9378,11 +9797,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Create product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9392,10 +9811,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.js",
-                                            "line": 75,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9413,11 +9833,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Create product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9429,7 +9849,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9449,11 +9869,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.js > General tab > Create product",
+                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Create product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9465,7 +9885,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9485,11 +9905,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
+                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9499,10 +9919,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9520,11 +9941,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
+                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9534,10 +9955,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9555,11 +9977,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
+                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9569,10 +9991,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9591,11 +10014,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
+                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9605,10 +10028,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9627,11 +10051,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.js > Variations tab > Create variable products",
+                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9641,10 +10065,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.js",
-                                            "line": 43,
-                                            "column": 15
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9662,11 +10087,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.js > Disable block product editor",
+                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.ts > Disable block product editor",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9676,10 +10101,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.js",
-                                            "line": 47,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9697,11 +10123,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.js > Disable block product editor",
+                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.ts > Disable block product editor",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9713,7 +10139,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9733,11 +10159,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.js > Disable block product editor",
+                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.ts > Disable block product editor",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9749,7 +10175,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9769,11 +10195,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js > General tab > Linked product",
+                            "suite": "e2e > product\\/block-editor\\/linked-product-tab-product-block-editor.spec.ts > General tab > Linked product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9783,10 +10209,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.js",
-                                            "line": 89,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9804,11 +10231,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/organization-tab-product-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/organization-tab-product-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/organization-tab-product-block-editor.spec.js > General tab > Create product - Organization tab",
+                            "suite": "e2e > product\\/block-editor\\/organization-tab-product-block-editor.spec.ts > General tab > Create product - Organization tab",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9818,10 +10245,11 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/organization-tab-product-block-editor.spec.js",
-                                            "line": 44,
-                                            "column": 8
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
+                                            "line": 8,
+                                            "column": 7
                                         }
                                     }
                                 ]
@@ -9839,11 +10267,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9855,7 +10283,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9875,11 +10303,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9891,7 +10319,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9911,11 +10339,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9927,7 +10355,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9947,11 +10375,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9963,7 +10391,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -9983,11 +10411,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -9999,7 +10427,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10019,11 +10447,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js > Publish dropdown options",
+                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts > Publish dropdown options",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10033,17 +10461,9 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 96,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10063,11 +10483,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js > Publish dropdown options",
+                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts > Publish dropdown options",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10077,17 +10497,9 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 96,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10107,11 +10519,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.js > Publish dropdown options",
+                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts > Publish dropdown options",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10121,17 +10533,9 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.js",
-                                            "line": 96,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10151,11 +10555,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10167,7 +10571,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10187,11 +10591,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10203,7 +10607,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10223,11 +10627,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10239,7 +10643,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10259,11 +10663,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10275,7 +10679,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10295,11 +10699,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10311,7 +10715,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10331,11 +10735,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10347,7 +10751,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10367,11 +10771,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10383,7 +10787,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10403,11 +10807,11 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.js",
+                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10419,7 +10823,7 @@
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
                                             "line": 8,
                                             "column": 7
                                         }
@@ -10430,34 +10834,160 @@
                         },
                         {
                             "name": "can add custom product attributes",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/create-product-attributes.spec.js",
+                            "steps": [
+                                {
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Go to the \\"Attributes\\" tab.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Add the attribute \\"Colour\\" with values \\"Red | Green\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Type \\"Colour\\" in the \\"Attribute name\\" input field.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Type the attribute values \\"Red | Green\\".",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Save attributes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Wait for the loading overlay to disappear.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Add the attribute \\"Size\\" with values \\"Small | Medium\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Click \'Add new\'.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Type \\"Size\\" in the \\"Attribute name\\" input field.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Type the attribute values \\"Small | Medium\\".",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Save attributes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Wait for the loading overlay to disappear.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Add the attribute \\"Logo\\" with values \\"Woo | WordPress\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Click \'Add new\'.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Type \\"Logo\\" in the \\"Attribute name\\" input field.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Type the attribute values \\"Woo | WordPress\\".",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Save attributes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Wait for the loading overlay to disappear.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Update product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Go to the \\"Attributes\\" tab.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Colour\\" to appear on the list of saved attributes, and expand it.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect its details to be saved correctly",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Size\\" to appear on the list of saved attributes, and expand it.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect its details to be saved correctly",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Logo\\" to appear on the list of saved attributes, and expand it.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect its details to be saved correctly",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > product\\/create-product-attributes.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.js",
-                                            "line": 160,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -10472,7 +11002,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variable-product.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -10525,7 +11055,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/create-variable-product.spec.js > Add variable product",
+                            "suite": "e2e > product\\/create-variable-product.spec.ts > Add variable product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10547,7 +11077,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -10600,7 +11130,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/create-variations.spec.js > Add variations",
+                            "suite": "e2e > product\\/create-variations.spec.ts > Add variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10622,7 +11152,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -10715,7 +11245,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/create-variations.spec.js > Add variations",
+                            "suite": "e2e > product\\/create-variations.spec.ts > Add variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10737,7 +11267,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-create-simple.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-create-simple.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -10786,7 +11316,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-create-simple.spec.js",
+                            "suite": "e2e > product\\/product-create-simple.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10810,7 +11340,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-create-simple.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-create-simple.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -10859,7 +11389,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-create-simple.spec.js",
+                            "suite": "e2e > product\\/product-create-simple.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10883,7 +11413,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-create-simple.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-create-simple.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -10928,7 +11458,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-create-simple.spec.js",
+                            "suite": "e2e > product\\/product-create-simple.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10950,7 +11480,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-delete.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-delete.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -10967,7 +11497,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-delete.spec.js",
+                            "suite": "e2e > product\\/product-delete.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -10989,7 +11519,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-delete.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-delete.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11006,7 +11536,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-delete.spec.js",
+                            "suite": "e2e > product\\/product-delete.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11028,7 +11558,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-delete.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-delete.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11045,7 +11575,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-delete.spec.js",
+                            "suite": "e2e > product\\/product-delete.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11067,7 +11597,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11092,7 +11622,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-edit.spec.js",
+                            "suite": "e2e > product\\/product-edit.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11114,11 +11644,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.js",
+                            "suite": "e2e > product\\/product-edit.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11129,8 +11659,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
-                                            "line": 133,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 135,
                                             "column": 6
                                         }
                                     }
@@ -11149,11 +11679,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.js",
+                            "suite": "e2e > product\\/product-edit.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11164,8 +11694,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
-                                            "line": 223,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 231,
                                             "column": 6
                                         }
                                     }
@@ -11184,11 +11714,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.js",
+                            "suite": "e2e > product\\/product-edit.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11199,8 +11729,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
-                                            "line": 317,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 337,
                                             "column": 6
                                         }
                                     }
@@ -11219,11 +11749,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.js",
+                            "suite": "e2e > product\\/product-edit.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11234,8 +11764,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.js",
-                                            "line": 369,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
+                                            "line": 395,
                                             "column": 6
                                         }
                                     }
@@ -11252,7 +11782,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11269,7 +11799,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-export.spec.js > Product > Export Selected Products",
+                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11291,7 +11821,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11308,7 +11838,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-export.spec.js > Product > Export Selected Products",
+                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11330,7 +11860,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11351,7 +11881,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-export.spec.js > Product > Export Selected Products",
+                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11373,7 +11903,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11390,7 +11920,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-export.spec.js > Product > Export Selected Products",
+                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11415,11 +11945,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-grouped.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-grouped.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-grouped.spec.js > Grouped Product Page",
+                            "suite": "e2e > product\\/product-grouped.spec.ts > Grouped Product Page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11444,11 +11974,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-grouped.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-grouped.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-grouped.spec.js > Grouped Product Page",
+                            "suite": "e2e > product\\/product-grouped.spec.ts > Grouped Product Page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11470,11 +12000,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
+                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11485,8 +12015,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js",
-                                            "line": 88,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts",
+                                            "line": 93,
                                             "column": 7
                                         }
                                     }
@@ -11503,7 +12033,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11520,7 +12050,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
+                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11542,11 +12072,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
+                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11557,8 +12087,8 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.js",
-                                            "line": 165,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts",
+                                            "line": 173,
                                             "column": 7
                                         }
                                     }
@@ -11575,7 +12105,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11592,7 +12122,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
+                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11614,7 +12144,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11631,7 +12161,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-images.spec.js > Products > Product Images",
+                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11646,37 +12176,28 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@not-e2e",
                                 "@non-critical"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
+                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
-                                            "line": 103,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -11691,11 +12212,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
+                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11706,15 +12227,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
-                                            "line": 103,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
                                             "line": 183,
                                             "column": 7
                                         }
@@ -11734,30 +12247,24 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.js > Import Products from a CSV file",
+                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
                             "extra": {
                                 "annotations": [
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
-                                            "line": 103,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
                                             "line": 231,
                                             "column": 7
                                         }
@@ -11777,7 +12284,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11806,7 +12313,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
+                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11830,7 +12337,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11859,7 +12366,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
+                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11883,7 +12390,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11912,7 +12419,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
+                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11936,7 +12443,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -11961,7 +12468,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-linked-products.spec.js > Products > Related products",
+                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -11983,11 +12490,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12009,11 +12516,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12035,11 +12542,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12061,11 +12568,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12087,11 +12594,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12113,11 +12620,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12139,11 +12646,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12154,7 +12661,7 @@
                                     {
                                         "type": "skip",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.js",
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.ts",
                                             "line": 262,
                                             "column": 8
                                         }
@@ -12172,11 +12679,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Merchant manages reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12198,11 +12705,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.js > Product Reviews > Shopper adds reviews",
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Shopper adds reviews",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12224,11 +12731,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-search.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-search.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-search.spec.js > Products > Search and View a product",
+                            "suite": "e2e > product\\/product-search.spec.ts > Products > Search and View a product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12250,11 +12757,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-search.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-search.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-search.spec.js > Products > Search and View a product",
+                            "suite": "e2e > product\\/product-search.spec.ts > Products > Search and View a product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12274,11 +12781,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-search.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-search.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-search.spec.js > Products > Search and View a product",
+                            "suite": "e2e > product\\/product-search.spec.ts > Products > Search and View a product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12300,11 +12807,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-settings.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-settings.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-settings.spec.js > WooCommerce Products > Downloadable Product Settings",
+                            "suite": "e2e > product\\/product-settings.spec.ts > WooCommerce Products > Downloadable Product Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12327,11 +12834,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
+                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12356,11 +12863,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
+                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12383,11 +12890,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
+                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12410,11 +12917,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.js > Browse product tags and attributes from the product page",
+                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12439,11 +12946,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.js > Variable Product Page",
+                            "suite": "e2e > product\\/product-variable.spec.ts > Variable Product Page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12468,11 +12975,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.js > Variable Product Page",
+                            "suite": "e2e > product\\/product-variable.spec.ts > Variable Product Page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12498,11 +13005,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
+                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12528,11 +13035,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
+                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12556,11 +13063,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
+                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12584,11 +13091,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.js",
+                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.js > Shopper > Update variable product",
+                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12612,7 +13119,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -12709,7 +13216,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/update-variations.spec.js > Update variations",
+                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12731,7 +13238,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -12756,7 +13263,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/update-variations.spec.js > Update variations",
+                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12778,7 +13285,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -12799,7 +13306,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/update-variations.spec.js > Update variations",
+                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12821,7 +13328,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -12882,7 +13389,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/update-variations.spec.js > Update variations",
+                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12904,7 +13411,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -12949,7 +13456,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/update-variations.spec.js > Update variations",
+                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -12971,7 +13478,7 @@
                                 "@gutenberg"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.js",
+                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -12992,7 +13499,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/update-variations.spec.js > Update variations",
+                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13012,7 +13519,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/consumer-token.spec.js",
+                            "filePath": "\\/normalized\\/path\\/consumer-token.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13033,7 +13540,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > settings\\/consumer-token.spec.js",
+                            "suite": "e2e > settings\\/consumer-token.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13057,11 +13564,11 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-general.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-general.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-general.spec.js > WooCommerce General Settings",
+                            "suite": "e2e > settings\\/settings-general.spec.ts > WooCommerce General Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13083,11 +13590,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-general.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-general.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-general.spec.js > WooCommerce General Settings",
+                            "suite": "e2e > settings\\/settings-general.spec.ts > WooCommerce General Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13109,11 +13616,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings > enable",
+                            "suite": "e2e > settings\\/settings-tax.spec.ts > WooCommerce Tax Settings > enable",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13133,11 +13640,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
+                            "suite": "e2e > settings\\/settings-tax.spec.ts > WooCommerce Tax Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13159,11 +13666,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
+                            "suite": "e2e > settings\\/settings-tax.spec.ts > WooCommerce Tax Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13185,11 +13692,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
+                            "suite": "e2e > settings\\/settings-tax.spec.ts > WooCommerce Tax Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13211,11 +13718,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-tax.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-tax.spec.js > WooCommerce Tax Settings",
+                            "suite": "e2e > settings\\/settings-tax.spec.ts > WooCommerce Tax Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13240,11 +13747,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-woo-com.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-woo-com.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-woo-com.spec.js > WooCommerce woo.com Settings",
+                            "suite": "e2e > settings\\/settings-woo-com.spec.ts > WooCommerce woo.com Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13269,11 +13776,11 @@
                                 "@skip-on-wpcom"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-woo-com.spec.js",
+                            "filePath": "\\/normalized\\/path\\/settings-woo-com.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/settings-woo-com.spec.js > WooCommerce woo.com Settings",
+                            "suite": "e2e > settings\\/settings-woo-com.spec.ts > WooCommerce woo.com Settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13295,11 +13802,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/webhooks.spec.js",
+                            "filePath": "\\/normalized\\/path\\/webhooks.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > settings\\/webhooks.spec.js > Manage webhooks",
+                            "suite": "e2e > settings\\/webhooks.spec.ts > Manage webhooks",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13323,11 +13830,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shipping-classes.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shipping-classes.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > shipping\\/shipping-classes.spec.js",
+                            "suite": "e2e > shipping\\/shipping-classes.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13351,11 +13858,11 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shipping-classes.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shipping-classes.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > shipping\\/shipping-classes.spec.js",
+                            "suite": "e2e > shipping\\/shipping-classes.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13377,11 +13884,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shipping-zones.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shipping-zones.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > shipping\\/shipping-zones.spec.js",
+                            "suite": "e2e > shipping\\/shipping-zones.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13403,11 +13910,11 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shipping-zones.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shipping-zones.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > shipping\\/shipping-zones.spec.js",
+                            "suite": "e2e > shipping\\/shipping-zones.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13433,11 +13940,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-redirection.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-redirection.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > shop\\/cart-redirection.spec.js > Cart > Redirect to cart from shop",
+                            "suite": "e2e > shop\\/cart-redirection.spec.ts > Cart > Redirect to cart from shop",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13463,11 +13970,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-redirection.spec.js",
+                            "filePath": "\\/normalized\\/path\\/cart-redirection.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > shop\\/cart-redirection.spec.js > Cart > Redirect to cart from shop",
+                            "suite": "e2e > shop\\/cart-redirection.spec.ts > Cart > Redirect to cart from shop",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13492,7 +13999,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13501,7 +14008,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > shop\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
+                            "suite": "e2e > shop\\/shop-search-browse-sort.spec.ts > Search, browse by categories and sort items in the shop",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13526,7 +14033,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13539,7 +14046,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > shop\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
+                            "suite": "e2e > shop\\/shop-search-browse-sort.spec.ts > Search, browse by categories and sort items in the shop",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13562,7 +14069,7 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shop-search-browse-sort.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13575,7 +14082,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > shop\\/shop-search-browse-sort.spec.js > Search, browse by categories and sort items in the shop",
+                            "suite": "e2e > shop\\/shop-search-browse-sort.spec.ts > Search, browse by categories and sort items in the shop",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13599,11 +14106,11 @@
                                 "@could-be-lower-level-test"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/shop-title-after-deletion.spec.js",
+                            "filePath": "\\/normalized\\/path\\/shop-title-after-deletion.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > shop\\/shop-title-after-deletion.spec.js",
+                            "suite": "e2e > shop\\/shop-title-after-deletion.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13627,11 +14134,11 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/lost-password.spec.js",
+                            "filePath": "\\/normalized\\/path\\/lost-password.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > user\\/lost-password.spec.js > Can go to lost password page and submit the form",
+                            "suite": "e2e > user\\/lost-password.spec.ts > Can go to lost password page and submit the form",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13653,11 +14160,11 @@
                                 "@not-e2e"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/lost-password.spec.js",
+                            "filePath": "\\/normalized\\/path\\/lost-password.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > user\\/lost-password.spec.js > Can go to lost password page and submit the form",
+                            "suite": "e2e > user\\/lost-password.spec.ts > Can go to lost password page and submit the form",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13677,7 +14184,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-create.spec.js",
+                            "filePath": "\\/normalized\\/path\\/users-create.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13698,7 +14205,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > user\\/users-create.spec.js",
+                            "suite": "e2e > user\\/users-create.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13720,7 +14227,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.js",
+                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13745,7 +14252,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > user\\/users-manage.spec.js",
+                            "suite": "e2e > user\\/users-manage.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13767,7 +14274,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.js",
+                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13776,7 +14283,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > user\\/users-manage.spec.js",
+                            "suite": "e2e > user\\/users-manage.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13798,7 +14305,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.js",
+                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13815,7 +14322,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > user\\/users-manage.spec.js",
+                            "suite": "e2e > user\\/users-manage.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13837,7 +14344,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.js",
+                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13854,7 +14361,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > user\\/users-manage.spec.js",
+                            "suite": "e2e > user\\/users-manage.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13879,11 +14386,11 @@
                                 "@wp-core"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-page.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-page.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > wp-core\\/create-page.spec.js > Can create a new page",
+                            "suite": "e2e > wp-core\\/create-page.spec.ts > Can create a new page",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13908,11 +14415,11 @@
                                 "@wp-core"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-post.spec.js",
+                            "filePath": "\\/normalized\\/path\\/create-post.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "e2e > wp-core\\/create-post.spec.js > Can create a new post",
+                            "suite": "e2e > wp-core\\/create-post.spec.ts > Can create a new post",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -13936,7 +14443,7 @@
                                 "@wp-core"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/post-comments.spec.js",
+                            "filePath": "\\/normalized\\/path\\/post-comments.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -13945,7 +14452,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > wp-core\\/post-comments.spec.js",
+                            "suite": "e2e > wp-core\\/post-comments.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
