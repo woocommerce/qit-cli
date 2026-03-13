@@ -203,7 +203,7 @@ class LocalTestRunNotifier {
 			$ctrf_json = json_decode( file_get_contents( $ctrf_file ), true );
 
 			if ( ! empty( $ctrf_json ) ) {
-				$ctrf_json = $ctrf_json;
+				$ctrf_json = $this->sanitize_path_traversal( $ctrf_json );
 			}
 		} else {
 			$ctrf_json = [];
@@ -387,5 +387,35 @@ class LocalTestRunNotifier {
 		return array_filter( $checks, function ( $check ) {
 			return ( $check['fails'] ?? 0 ) > 0;
 		} );
+	}
+
+	/**
+	 * Recursively sanitize path traversal sequences (../) from string values.
+	 *
+	 * Playwright error snippets and traces can contain relative paths like
+	 * ../../../qitHelpers/qitHelpers.js which trigger firewall path traversal
+	 * detection when sent in the request body.
+	 *
+	 * @param mixed $data The data to sanitize.
+	 *
+	 * @return mixed The sanitized data.
+	 */
+	private function sanitize_path_traversal( $data ) {
+		if ( is_string( $data ) ) {
+			// Collapse sequences of "../" to remove path traversal patterns.
+			while ( strpos( $data, '../' ) !== false ) {
+				$data = str_replace( '../', '', $data );
+			}
+
+			return $data;
+		}
+
+		if ( is_array( $data ) ) {
+			foreach ( $data as $key => $value ) {
+				$data[ $key ] = $this->sanitize_path_traversal( $value );
+			}
+		}
+
+		return $data;
 	}
 }
