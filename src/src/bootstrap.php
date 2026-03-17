@@ -205,6 +205,8 @@ $application->add( $container->make( ConnectCommand::class ) );
 $application->add( $container->make( WooValidateZipCommand::class ) );
 $application->add( $container->make( TunnelSetupCommand::class ) );
 $application->add( $container->make( TunnelSetDefaultCommand::class ) );
+$application->add( $container->make( \QIT_CLI\BreakingChanges\Commands\DiffCommand::class ) );
+$application->add( $container->make( \QIT_CLI\BreakingChanges\Commands\ScanCommand::class ) );
 
 // Environment commands.
 try {
@@ -291,6 +293,9 @@ if ( $is_connected_to_backend ) {
 	if ( getenv( 'QIT_USE_EXPERIMENTAL_AI_AGENTS' ) === '1' ) {
 		$application->add( $container->make( AIInstallAgentsCommand::class ) );
 	}
+
+	// Breaking Changes (requires backend for index upload).
+	$application->add( $container->make( \QIT_CLI\BreakingChanges\Commands\IndexCommand::class ) );
 
 	// Group Commands.
 	$application->add( $container->make( RunGroupCommand::class ) );
