@@ -359,7 +359,7 @@ class LocalTestRunNotifier {
 
 		$debug_log_compressed = '';
 		if ( ! empty( $debug_log_json ) ) {
-			$compressed = gzcompress( $debug_log_json );
+			$compressed           = gzcompress( $debug_log_json );
 			$debug_log_compressed = ( $compressed !== false )
 				? base64_encode( $compressed )
 				: $debug_log_json; // Fallback to uncompressed.
