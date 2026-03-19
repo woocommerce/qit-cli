@@ -379,6 +379,10 @@ class ConfigResolver {
 				$extension->from      = 'local';
 				$extension->directory = $source['resolved_path'] ?? $source['path'];
 				$extension->source    = $extension->directory;
+				if ( isset( $source['build'] ) ) {
+					$extension->build_command = $source['build'];
+					$extension->build_cwd     = $extension->directory;
+				}
 				break;
 
 			case 'build':
@@ -435,6 +439,10 @@ class ConfigResolver {
 					$extension->from      = 'local';
 					$extension->directory = $config['path'];
 					$extension->source    = $config['path'];
+					if ( isset( $config['build'] ) ) {
+						$extension->build_command = $config['build'];
+						$extension->build_cwd     = $config['path'];
+					}
 					break;
 
 				case 'url':
@@ -470,6 +478,10 @@ class ConfigResolver {
 					$extension->from      = 'local';
 					$extension->directory = $source['path'];
 					$extension->source    = $source['path'];
+					if ( isset( $source['build'] ) ) {
+						$extension->build_command = $source['build'];
+						$extension->build_cwd     = $source['path'];
+					}
 					break;
 
 				case 'url':
