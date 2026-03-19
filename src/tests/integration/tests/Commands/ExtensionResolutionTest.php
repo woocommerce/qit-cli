@@ -521,4 +521,273 @@ class ExtensionResolutionTest extends TestCase {
 			}
 		}
 	}
+
+	/**
+	 * Test 14: Build command runs for SUT with local source
+	 *
+	 * Verifies that when a qit.json SUT has a build command,
+	 * it executes in the correct directory before the environment starts.
+	 */
+	public function test_build_command_runs_for_sut(): void {
+		$tempDir   = sys_get_temp_dir() . '/qit-build-test-' . uniqid();
+		$pluginDir = $tempDir . '/my-build-plugin';
+
+		try {
+			mkdir( $pluginDir, 0755, true );
+			file_put_contents( $pluginDir . '/my-build-plugin.php', '<?php /* Plugin Name: Build Plugin */' );
+
+			$marker = $pluginDir . '/build-ran.marker';
+
+			// qit.json with SUT that has a build command
+			$config = [
+				'sut' => [
+					'type'   => 'plugin',
+					'slug'   => 'my-build-plugin',
+					'source' => [
+						'type'  => 'local',
+						'path'  => $pluginDir,
+						'build' => 'touch build-ran.marker',
+					],
+				],
+			];
+
+			$configPath = $tempDir . '/qit.json';
+			file_put_contents( $configPath, json_encode( $config, JSON_PRETTY_PRINT ) );
+
+			$output = qit_run_env_up( [
+				'env:up',
+				'--config', $configPath,
+				'--json',
+			] );
+
+			// Build command should have created the marker file in the plugin directory
+			$this->assertFileExists( $marker, 'Build command should have run in the plugin directory. Output: ' . $output );
+
+			// Plugin should be resolved
+			$json = json_decode( $output, true );
+			$this->assertNotNull( $json, 'Should return valid JSON. Output: ' . $output );
+
+			$plugin_slugs = array_column( $json['plugins'] ?? [], 'slug' );
+			$this->assertContains( 'my-build-plugin', $plugin_slugs, 'SUT plugin should be in resolved plugins' );
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
+
+	/**
+	 * Test 15: Build command runs for environment plugin with local source
+	 *
+	 * Verifies that when an environment plugin has a build command,
+	 * it executes before the plugin is used.
+	 */
+	public function test_build_command_runs_for_environment_plugin(): void {
+		$tempDir   = sys_get_temp_dir() . '/qit-build-test-' . uniqid();
+		$pluginDir = $tempDir . '/env-build-plugin';
+
+		try {
+			mkdir( $pluginDir, 0755, true );
+			file_put_contents( $pluginDir . '/env-build-plugin.php', '<?php /* Plugin Name: Env Build Plugin */' );
+
+			$marker = $pluginDir . '/env-build.marker';
+
+			$config = [
+				'environments' => [
+					'default' => [
+						'plugins' => [
+							[
+								'slug'  => 'env-build-plugin',
+								'from'  => 'local',
+								'path'  => $pluginDir,
+								'build' => 'touch env-build.marker',
+							],
+						],
+					],
+				],
+			];
+
+			$configPath = $tempDir . '/qit.json';
+			file_put_contents( $configPath, json_encode( $config, JSON_PRETTY_PRINT ) );
+
+			$output = qit_run_env_up( [
+				'env:up',
+				'--config', $configPath,
+				'--json',
+			] );
+
+			$this->assertFileExists( $marker, 'Build command should have run in the plugin directory. Output: ' . $output );
+
+			$json = json_decode( $output, true );
+			$this->assertNotNull( $json, 'Should return valid JSON. Output: ' . $output );
+
+			$plugin_slugs = array_column( $json['plugins'] ?? [], 'slug' );
+			$this->assertContains( 'env-build-plugin', $plugin_slugs );
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
+
+	/**
+	 * Test 16: Build command CWD is the plugin directory, not the qit.json directory
+	 *
+	 * This is the critical CWD test: the build command should run in the plugin
+	 * directory (where package.json etc. live), not in the qit.json directory.
+	 */
+	public function test_build_command_cwd_is_plugin_directory(): void {
+		$tempDir   = sys_get_temp_dir() . '/qit-build-cwd-' . uniqid();
+		$pluginDir = $tempDir . '/subdir/cwd-test-plugin';
+
+		try {
+			mkdir( $pluginDir, 0755, true );
+			file_put_contents( $pluginDir . '/cwd-test-plugin.php', '<?php /* Plugin Name: CWD Test */' );
+
+			// The build command writes $PWD to a file. If CWD is wrong,
+			// the marker won't be at the expected location.
+			$config = [
+				'sut' => [
+					'type'   => 'plugin',
+					'slug'   => 'cwd-test-plugin',
+					'source' => [
+						'type'  => 'local',
+						'path'  => $pluginDir,
+						'build' => 'pwd > cwd-proof.txt',
+					],
+				],
+			];
+
+			// Put qit.json in $tempDir (DIFFERENT from plugin dir)
+			$configPath = $tempDir . '/qit.json';
+			file_put_contents( $configPath, json_encode( $config, JSON_PRETTY_PRINT ) );
+
+			qit_run_env_up( [
+				'env:up',
+				'--config', $configPath,
+				'--json',
+			] );
+
+			// cwd-proof.txt should be in the PLUGIN directory, not qit.json directory
+			$cwdProofFile = $pluginDir . '/cwd-proof.txt';
+			$this->assertFileExists( $cwdProofFile, 'Build should write to plugin dir, not qit.json dir' );
+
+			$recorded_cwd = trim( file_get_contents( $cwdProofFile ) );
+			$this->assertEquals(
+				realpath( $pluginDir ),
+				$recorded_cwd,
+				'Build CWD should be the plugin directory'
+			);
+
+			// Should NOT exist in qit.json directory
+			$this->assertFileDoesNotExist( $tempDir . '/cwd-proof.txt', 'Build should NOT run in qit.json directory' );
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
+
+	/**
+	 * Test 17: Build command failure halts env:up
+	 *
+	 * A failing build command should stop execution with a clear error.
+	 * No fallbacks, no silent failures.
+	 */
+	public function test_build_failure_halts_execution(): void {
+		$tempDir   = sys_get_temp_dir() . '/qit-build-fail-' . uniqid();
+		$pluginDir = $tempDir . '/fail-plugin';
+
+		try {
+			mkdir( $pluginDir, 0755, true );
+			file_put_contents( $pluginDir . '/fail-plugin.php', '<?php /* Plugin Name: Fail Plugin */' );
+
+			$config = [
+				'sut' => [
+					'type'   => 'plugin',
+					'slug'   => 'fail-plugin',
+					'source' => [
+						'type'  => 'local',
+						'path'  => $pluginDir,
+						'build' => 'echo "build broken" >&2 && exit 42',
+					],
+				],
+			];
+
+			$configPath = $tempDir . '/qit.json';
+			file_put_contents( $configPath, json_encode( $config, JSON_PRETTY_PRINT ) );
+
+			$proc = qit_run_env_up(
+				[
+					'env:up',
+					'--config', $configPath,
+					'--json',
+				],
+				[],
+				1, // expected failure
+				[],
+				true // return process
+			);
+
+			$combined = $proc->getOutput() . $proc->getErrorOutput();
+
+			$this->assertNotEquals( 0, $proc->getExitCode(), 'Should fail when build command fails' );
+			$this->assertStringContainsString( 'Build command failed', $combined, 'Should report build failure' );
+			$this->assertStringContainsString( 'fail-plugin', $combined, 'Should name the failing extension' );
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
+
+	/**
+	 * Test 18: No build property means no build runs (regression guard)
+	 *
+	 * Local plugins without a build property should work exactly as before.
+	 */
+	public function test_local_plugin_without_build_unchanged(): void {
+		$tempDir   = sys_get_temp_dir() . '/qit-nobuild-' . uniqid();
+		$pluginDir = $tempDir . '/plain-plugin';
+
+		try {
+			mkdir( $pluginDir, 0755, true );
+			file_put_contents( $pluginDir . '/plain-plugin.php', '<?php /* Plugin Name: Plain Plugin */' );
+
+			$config = [
+				'sut' => [
+					'type'   => 'plugin',
+					'slug'   => 'plain-plugin',
+					'source' => [
+						'type' => 'local',
+						'path' => $pluginDir,
+						// No build property
+					],
+				],
+			];
+
+			$configPath = $tempDir . '/qit.json';
+			file_put_contents( $configPath, json_encode( $config, JSON_PRETTY_PRINT ) );
+
+			$output = qit_run_env_up( [
+				'env:up',
+				'--config', $configPath,
+				'--json',
+			] );
+
+			$json = json_decode( $output, true );
+			$this->assertNotNull( $json, 'Should succeed without build. Output: ' . $output );
+
+			$plugin_slugs = array_column( $json['plugins'] ?? [], 'slug' );
+			$this->assertContains( 'plain-plugin', $plugin_slugs );
+
+			// Verify no build artifacts were created
+			$files = glob( $pluginDir . '/*.marker' );
+			$this->assertEmpty( $files, 'No build artifacts should exist' );
+		} finally {
+			if ( is_dir( $tempDir ) ) {
+				exec( 'rm -rf ' . escapeshellarg( $tempDir ) );
+			}
+		}
+	}
 }

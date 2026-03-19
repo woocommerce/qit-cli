@@ -853,6 +853,10 @@ class UpEnvironmentCommand extends QITCommand {
 							case 'local':
 								$extension->directory = $plugin_config['path'] ?? null;
 								$extension->source    = $plugin_config['path'] ?? null;
+								if ( isset( $plugin_config['build'] ) ) {
+									$extension->build_command = $plugin_config['build'];
+									$extension->build_cwd     = $plugin_config['path'] ?? null;
+								}
 								break;
 							case 'url':
 								$extension->source  = $plugin_config['url'] ?? null;
@@ -895,6 +899,10 @@ class UpEnvironmentCommand extends QITCommand {
 							case 'local':
 								$extension->directory = $theme_config['path'] ?? null;
 								$extension->source    = $theme_config['path'] ?? null;
+								if ( isset( $theme_config['build'] ) ) {
+									$extension->build_command = $theme_config['build'];
+									$extension->build_cwd     = $theme_config['path'] ?? null;
+								}
 								break;
 							case 'url':
 								$extension->source = $theme_config['url'] ?? null;
@@ -1634,6 +1642,9 @@ HELP;
 				$extension['from'] = 'local';
 				// Use resolved_path if available, otherwise use path
 				$extension['path'] = $sut['source']['resolved_path'] ?? $sut['source']['path'];
+				if ( isset( $sut['source']['build'] ) ) {
+					$extension['build'] = $sut['source']['build'];
+				}
 				break;
 
 			case 'url':
