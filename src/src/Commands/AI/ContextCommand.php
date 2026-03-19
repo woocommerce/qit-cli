@@ -204,9 +204,9 @@ HELP
 		$output->writeln( '  [Single Process] → [All Tests] → [Single Report]' );
 		$output->writeln( '' );
 		$output->writeln( 'QIT orchestration:' );
-		$output->writeln( '  [Package 1 Playwright] ↘' );
-		$output->writeln( '  [Package 2 Playwright] → [Shared WordPress] → [Merged Reports]' );
-		$output->writeln( '  [Package N Playwright] ↗' );
+		$output->writeln( '  [Package 1 Playwright] → [Shared WordPress] → DB Reset' );
+		$output->writeln( '  [Package 2 Playwright] → [Shared WordPress] → DB Reset' );
+		$output->writeln( '  [Package N Playwright] → [Shared WordPress] → [Merged Reports]' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>KEY ARCHITECTURAL DECISIONS:</comment>' );
@@ -337,8 +337,12 @@ HELP
 		$output->writeln( '│ Global Setup    │ All packages     │ In DB snapshot  │' );
 		$output->writeln( '│ Package Setup   │ Single package   │ Until DB reset  │' );
 		$output->writeln( '│ Database        │ Reset per pkg    │ None            │' );
+		$output->writeln( '│ Browser State   │ Reset per pkg    │ None            │' );
 		$output->writeln( '│ Filesystem      │ All packages     │ Entire run      │' );
 		$output->writeln( '└─────────────────┴──────────────────┴─────────────────┘' );
+		$output->writeln( '' );
+		$output->writeln( 'Browser state (cookies, localStorage, cached auth) is cleared' );
+		$output->writeln( 'between packages alongside the database restore.' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>NEXT STEPS:</comment>' );
