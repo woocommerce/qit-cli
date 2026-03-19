@@ -1346,16 +1346,35 @@ class RunE2ECommand extends QITCommand {
 					$env_info->test_packages_metadata[ $pkg_id ]['manifest'] = $manifest;
 				}
 
-				// Import database snapshot before each non-first package (show BEFORE package header)
+				// Restore full isolation (database + browser state) before each non-first package
 				if ( ! $is_first_package ) {
-					$orchestrator->database_restore_start();
+					$orchestrator->isolation_restore_start();
+					$docker = App::make( Docker::class );
+
+					// 1. Clear browser state: cached cookies, auth tokens, Playwright state
+					$orchestrator->isolation_restore_message( 'Clearing browser state...' );
 					try {
-						App::make( Docker::class )->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql', '--defaults' ] );
-						$orchestrator->database_restore_end( true );
+						$docker->run_inside_docker( $env_info, [ 'rm', '-f', '/tmp/qit_env_helper.json' ] );
+						$docker->run_inside_docker( $env_info, [ 'sh', '-c', 'rm -rf /qit/tests/e2e/state/*' ] );
+						$orchestrator->isolation_restore_message( '✓ Browser state cleared' );
 					} catch ( \Exception $e ) {
-						$orchestrator->database_restore_end( false );
+						$orchestrator->isolation_restore_message( '✗ Browser state cleanup failed: ' . $e->getMessage() );
+						$orchestrator->isolation_restore_end();
+						throw new \RuntimeException( 'Infrastructure failure: Failed to clear browser state before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
+					}
+
+					// 2. Restore database snapshot
+					$orchestrator->isolation_restore_message( 'Restoring database snapshot...' );
+					try {
+						$docker->run_inside_docker( $env_info, [ 'wp', 'db', 'import', '/qit/snapshot.sql', '--defaults' ] );
+						$orchestrator->isolation_restore_message( '✓ Database snapshot restored' );
+					} catch ( \Exception $e ) {
+						$orchestrator->isolation_restore_message( '✗ Database restore failed' );
+						$orchestrator->isolation_restore_end();
 						throw new \RuntimeException( 'Infrastructure failure: Failed to restore database snapshot before package ' . $pkg_id . ': ' . $e->getMessage(), 3 );
 					}
+
+					$orchestrator->isolation_restore_end();
 				}
 
 				// Determine package type from metadata
