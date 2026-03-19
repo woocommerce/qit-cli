@@ -725,13 +725,13 @@ HELP
 		$output->writeln( '' );
 
 		// Cross-references to other contexts
-		$output->writeln( '<comment>CRITICAL CONTEXT FOR DEBUGGING:</comment>' );
-		$output->writeln( '• <error>HIGHLY RECOMMENDED (if not already run):</error> <info>qit ai:context understanding-test-packages</info>' );
-		$output->writeln( '  → Explains why DB resets but filesystem persists' );
-		$output->writeln( '  → Clarifies global setup vs package setup failures' );
-		$output->writeln( '  → Essential for understanding test isolation' );
+		$output->writeln( '<comment>NEXT STEPS:</comment>' );
+		$output->writeln( '• <error>STOP — Don\'t re-run run:e2e to iterate on this failure.</error>' );
+		$output->writeln( '  Run <info>qit ai:context debugging-workflow</info> to learn how to fix and' );
+		$output->writeln( '  re-run tests against a warm environment without rebuilding.' );
 		$output->writeln( '' );
-		$output->writeln( '• For all other contexts: Run <info>qit ai:context --help</info>' );
+		$output->writeln( '• For test isolation and lifecycle context:' );
+		$output->writeln( '  Run <info>qit ai:context understanding-test-packages</info>' );
 		$output->writeln( '' );
 
 		return Command::SUCCESS;
