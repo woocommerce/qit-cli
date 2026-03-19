@@ -477,7 +477,8 @@ class PackageOrchestrator {
 			}
 			// Add debug info for failures
 			if ( isset( $results['status'] ) && $results['status'] === 'failed' ) {
-				$out->writeln( '• Agentic AI:    <comment>qit ai:context failed-e2e</comment> (investigation context for failures)' );
+				$out->writeln( '• Investigate:   <comment>qit ai:context failed-e2e</comment>' );
+				$out->writeln( '• Debug faster:  <comment>qit ai:context debugging-workflow</comment>' );
 			}
 		}
 		$out->writeln( str_repeat( '═', $line_width ) );
