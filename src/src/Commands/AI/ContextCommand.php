@@ -53,6 +53,9 @@ AVAILABLE CONTEXT TYPES:
   <info>test-execution-scenarios</info>    How test packages are executed in different contexts
                            Manual testing vs automated runs, phase execution rules
 
+  <info>debugging-workflow</info>         Iterate on test failures without rebuilding the environment
+                           Use env primitives instead of re-running run:e2e
+
 USAGE EXAMPLES:
 
   # Get context for debugging a failed test run
@@ -110,6 +113,8 @@ HELP
 				return $this->showTestScriptExecutionContext( $output );
 			case 'test-execution-scenarios':
 				return $this->showTestExecutionScenariosContext( $output );
+			case 'debugging-workflow':
+				return $this->showDebuggingWorkflowContext( $output );
 			case 'writing-test-packages':
 				$output->writeln( '<comment>Writing test packages context coming soon!</comment>' );
 				$output->writeln( '' );
@@ -157,6 +162,11 @@ HELP
 		$output->writeln( '<comment>test-execution-scenarios</comment>' );
 		$output->writeln( '  How test packages are executed in different contexts' );
 		$output->writeln( '  Usage: <info>qit ai:context test-execution-scenarios</info>' );
+		$output->writeln( '' );
+
+		$output->writeln( '<comment>debugging-workflow</comment>' );
+		$output->writeln( '  Iterate on test failures without rebuilding the environment' );
+		$output->writeln( '  Usage: <info>qit ai:context debugging-workflow</info>' );
 		$output->writeln( '' );
 
 		$output->writeln( '<comment>writing-test-packages</comment> <fg=gray>(coming soon)</>' );
@@ -1012,6 +1022,124 @@ HELP
 		$output->writeln( '  Run <info>qit ai:context qit-basics</info>' );
 		$output->writeln( '' );
 		$output->writeln( '═══════════════════════════════════════════════════════════════════' );
+		$output->writeln( '' );
+
+		return Command::SUCCESS;
+	}
+
+	/**
+	 * Show debugging workflow context — iterating on failures without rebuilding.
+	 */
+	private function showDebuggingWorkflowContext( OutputInterface $output ): int {
+		$output->writeln( '' );
+		$output->writeln( '<info>═══════════════════════════════════════════════════════════════════</info>' );
+		$output->writeln( '<info>DEBUGGING WORKFLOW - AGENTIC AI CONTEXT</info>' );
+		$output->writeln( '<info>═══════════════════════════════════════════════════════════════════</info>' );
+		$output->writeln( '' );
+
+		$output->writeln( '<error>THE #1 MISTAKE: Re-running run:e2e to iterate on failures.</error>' );
+		$output->writeln( '' );
+		$output->writeln( 'run:e2e tears down and rebuilds the environment every time.' );
+		$output->writeln( 'That means every fix attempt costs a full rebuild cycle.' );
+		$output->writeln( '' );
+		$output->writeln( 'Instead: set up the environment ONCE, then iterate with Playwright directly.' );
+		$output->writeln( '' );
+
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'WORKFLOW: SINGLE TEST PACKAGE' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 1. Set up the environment once</comment>' );
+		$output->writeln( '  qit env:up --plugin=my-plugin --test-package=./tests/qit' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 2. Source env vars (REQUIRED before every command)</comment>' );
+		$output->writeln( '  source $(qit env:source)' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 3. Run all tests</comment>' );
+		$output->writeln( '  source $(qit env:source) && cd ./tests/qit && npx playwright test' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 4. Test 3 fails — fix the test, re-run ONLY that test</comment>' );
+		$output->writeln( '  source $(qit env:source) && npx playwright test --grep "test name"' );
+		$output->writeln( '  <comment># or by file:line</comment>' );
+		$output->writeln( '  source $(qit env:source) && npx playwright test tests/checkout.spec.js:42' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 5. Need a clean DB? Reset without rebuilding</comment>' );
+		$output->writeln( '  qit env:reset' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 6. Done? Tear down</comment>' );
+		$output->writeln( '  qit env:down' );
+		$output->writeln( '' );
+
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'WORKFLOW: MULTIPLE TEST PACKAGES (cross-compat)' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 1. Set up environment with all packages at once</comment>' );
+		$output->writeln( '  qit env:up \\' );
+		$output->writeln( '    --plugin=plugin-a --plugin=plugin-b \\' );
+		$output->writeln( '    --test-package=plugin-a/tests/qit \\' );
+		$output->writeln( '    --test-package=plugin-b/tests/qit' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 2. Run plugin-a tests</comment>' );
+		$output->writeln( '  source $(qit env:source) && cd plugin-a/tests/qit && npx playwright test' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 3. Fix failures, re-run single tests</comment>' );
+		$output->writeln( '  source $(qit env:source) && npx playwright test --grep "failing test"' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 4. Reset DB, run plugin-b tests</comment>' );
+		$output->writeln( '  qit env:reset' );
+		$output->writeln( '  source $(qit env:source) && cd plugin-b/tests/qit && npx playwright test' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 5. Fix, re-run, repeat</comment>' );
+		$output->writeln( '  source $(qit env:source) && npx playwright test --last-failed' );
+		$output->writeln( '' );
+		$output->writeln( '  <comment># 6. Tear down when done</comment>' );
+		$output->writeln( '  qit env:down' );
+		$output->writeln( '' );
+
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'USEFUL PLAYWRIGHT FLAGS' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '  --grep "test name"        Run tests matching a pattern' );
+		$output->writeln( '  --last-failed              Re-run only tests that failed last time' );
+		$output->writeln( '  --headed                   See the browser (useful for humans)' );
+		$output->writeln( '  --ui                       Interactive UI mode (watch + re-run)' );
+		$output->writeln( '  --debug                    Step-through debugging' );
+		$output->writeln( '  --repeat-each 3            Run each test N times (flake detection)' );
+		$output->writeln( '  tests/file.spec.js:42      Run test at specific file:line' );
+		$output->writeln( '' );
+
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'WHY THIS IS FASTER' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '  run:e2e per attempt:  env setup + install + globalSetup + run + teardown' );
+		$output->writeln( '  env:up + playwright:  env setup once, then just "npx playwright test"' );
+		$output->writeln( '' );
+		$output->writeln( '  5 debug iterations with run:e2e:  ~25 minutes of waiting' );
+		$output->writeln( '  5 debug iterations with env:up:   ~5 minutes (one setup + 5 fast runs)' );
+		$output->writeln( '' );
+
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( 'IMPORTANT NOTES' );
+		$output->writeln( '──────────────────────────────────────────────────────────────────' );
+		$output->writeln( '' );
+		$output->writeln( '  • Always <info>source $(qit env:source)</info> before EVERY playwright command.' );
+		$output->writeln( '    Env vars do not persist between shell invocations.' );
+		$output->writeln( '' );
+		$output->writeln( '  • Use <info>qit env:reset</info> to restore DB to post-setup state.' );
+		$output->writeln( '    This is much faster than tearing down and rebuilding.' );
+		$output->writeln( '' );
+		$output->writeln( '  • Use <info>qit env:list</info> to see running environments.' );
+		$output->writeln( '' );
+		$output->writeln( '  • If you have Playwright MCP, you can navigate to $QIT_SITE_URL' );
+		$output->writeln( '    and inspect the live site while the environment is up.' );
+		$output->writeln( '' );
+
+		$output->writeln( '<comment>RELATED CONTEXTS:</comment>' );
+		$output->writeln( '• Investigation artifacts from a failed run: <info>qit ai:context failed-e2e</info>' );
+		$output->writeln( '• How test phases work: <info>qit ai:context understanding-test-packages</info>' );
 		$output->writeln( '' );
 
 		return Command::SUCCESS;
