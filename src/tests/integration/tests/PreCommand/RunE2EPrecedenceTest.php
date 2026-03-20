@@ -5,6 +5,9 @@ namespace integration\tests\Simplified;
 use PHPUnit\Framework\TestCase;
 use QIT\IntegrationTests\Traits\SnapshotHelpers;
 
+use PHPUnit\Framework\Attributes\Group;
+
+#[Group("docker")]
 class RunE2EPrecedenceTest extends TestCase {
 	use SnapshotHelpers;
 
