@@ -67,6 +67,11 @@ App::bind( Output::class, NullOutput::class );
 // Mocks the response of a sync request with local data.
 App::setVar( sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
 
+// Mock V2 sync endpoints.
+App::setVar( sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v2/cli/sync/bootstrap' ), file_get_contents( __DIR__ . '/data/sync-v2-bootstrap.json' ) );
+App::setVar( sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v2/cli/sync/environments' ), file_get_contents( __DIR__ . '/data/sync-v2-environments.json' ) );
+App::setVar( sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v2/cli/sync/extensions' ), file_get_contents( __DIR__ . '/data/sync-v2-extensions.json' ) );
+
 /** @var Application $qit_application */
 $GLOBALS['qit_application'] = require_once __DIR__ . '/../../src/bootstrap.php';
 $GLOBALS['qit_application']->setAutoExit( false );

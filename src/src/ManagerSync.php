@@ -55,9 +55,9 @@ class ManagerSync {
 	/**
 	 * Main sync entry point. Called on every CLI startup.
 	 *
-	 * - Environments: always refreshed (cheap local call, no cache).
+	 * - Environments: always refreshed (no cache).
 	 * - Bootstrap: cached 1 hour (schemas, test_types, versions).
-	 * - Extensions: NOT fetched here — lazy-loaded on demand via sync_extensions().
+	 * - Extensions: cached 1 hour (partner's extension list).
 	 */
 	public function maybe_sync( bool $force_resync = false ): void {
 		if ( $force_resync ) {
@@ -68,6 +68,7 @@ class ManagerSync {
 
 		$this->sync_environments();
 		$this->maybe_sync_bootstrap( $force_resync );
+		$this->maybe_sync_extensions( $force_resync );
 	}
 
 	/**
@@ -124,10 +125,24 @@ class ManagerSync {
 	}
 
 	/**
-	 * Fetch extensions from Manager. Called on-demand (lazy), not at startup.
-	 * Requires partner authentication.
+	 * Fetch extensions from Manager if not cached.
+	 *
+	 * Requires authentication (partner or manager secret).
+	 * Before backend:add or partner:add there is no auth — skip silently.
 	 */
-	public function sync_extensions(): void {
+	private function maybe_sync_extensions( bool $force_resync = false ): void {
+		if ( $this->auth->get_partner_auth() === null && $this->auth->get_manager_secret() === null ) {
+			return;
+		}
+
+		if ( ! $force_resync ) {
+			$cached = $this->cache->get( $this->extensions_cache_key );
+
+			if ( ! is_null( $cached ) ) {
+				return;
+			}
+		}
+
 		if ( $this->output->isVerbose() ) {
 			$this->output->write( '[Info] Syncing extensions with Manager... ' );
 		}
@@ -201,15 +216,6 @@ class ManagerSync {
 			default:
 				throw new \UnexpectedValueException( "Unknown sync bucket: '$bucket'" );
 		}
-	}
-
-	/**
-	 * Check if extensions need to be lazy-loaded.
-	 *
-	 * @return bool True if extensions data is not yet cached.
-	 */
-	public function needs_extension_sync(): bool {
-		return is_null( $this->cache->get( $this->extensions_cache_key ) );
 	}
 
 	public function enforce_latest_version(): void {

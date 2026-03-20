@@ -237,13 +237,26 @@
               "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
               "description": "PHP version for this environment"
             },
+            "php_version": {
+              "type": "string",
+              "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$",
+              "description": "Alias for 'php'"
+            },
             "wp": {
               "type": "string",
               "description": "WordPress version (e.g., 'stable', '6.5', 'latest')"
             },
+            "wordpress_version": {
+              "type": "string",
+              "description": "Alias for 'wp'"
+            },
             "woo": {
               "type": "string",
               "description": "WooCommerce version (e.g., 'stable', '8.7.0')"
+            },
+            "woocommerce_version": {
+              "type": "string",
+              "description": "Alias for 'woo'"
             },
             "object_cache": {
               "type": "boolean",

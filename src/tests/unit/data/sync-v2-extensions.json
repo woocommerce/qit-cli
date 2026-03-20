@@ -1,0 +1,69 @@
+{
+  "extensions": [
+    {
+      "id": 10001,
+      "slug": "wccom-plugin-1",
+      "type": "plugin"
+    },
+    {
+      "id": 10002,
+      "slug": "wccom-plugin-2",
+      "type": "plugin"
+    },
+    {
+      "id": 1000245,
+      "slug": "wccom-plugin-4",
+      "type": "plugin"
+    },
+    {
+      "id": 1000255,
+      "slug": "wccom-plugin-5",
+      "type": "plugin"
+    },
+    {
+      "id": 123456,
+      "slug": "woocommerce",
+      "type": "plugin"
+    },
+    {
+      "id": 2165910,
+      "slug": "woocommerce-shipping",
+      "type": "plugin"
+    },
+    {
+      "id": 123457,
+      "slug": "plugin-a",
+      "type": "plugin"
+    },
+    {
+      "id": 123458,
+      "slug": "plugin-b",
+      "type": "plugin"
+    },
+    {
+      "id": 1234,
+      "slug": "qit-beaver",
+      "type": "plugin"
+    },
+    {
+      "id": 12345,
+      "slug": "qit-cat",
+      "type": "plugin"
+    },
+    {
+      "id": 12346,
+      "slug": "qit-dog",
+      "type": "plugin"
+    },
+    {
+      "id": 10003,
+      "slug": "wccom-theme-1",
+      "type": "theme"
+    },
+    {
+      "id": 10004,
+      "slug": "wccom-theme-2",
+      "type": "theme"
+    }
+  ]
+}

@@ -139,16 +139,19 @@ class Cache {
 	 * @throws \UnexpectedValueException When requested a key that does not exist in the sync data.
 	 */
 	public function get_manager_sync_data( string $key ) {
-		$manager_data = $this->get( App::make( ManagerSync::class )->sync_cache_key );
+		$manager_sync = App::make( ManagerSync::class );
+		$cache_key    = $manager_sync->get_cache_key_for( $key );
 
-		if ( ! is_array( $manager_data ) ) {
-			throw new \UnexpectedValueException( 'The manager sync data is not an array.' );
+		$bucket_data = $this->get( $cache_key );
+
+		if ( ! is_array( $bucket_data ) ) {
+			throw new \UnexpectedValueException( "The manager sync data bucket for '$key' is not available." );
 		}
 
-		if ( ! array_key_exists( $key, $manager_data ) ) {
+		if ( ! array_key_exists( $key, $bucket_data ) ) {
 			throw new \UnexpectedValueException( "The manager sync data does not have the key '$key'." );
 		}
 
-		return $manager_data[ $key ];
+		return $bucket_data[ $key ];
 	}
 }
