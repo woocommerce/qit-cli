@@ -208,13 +208,14 @@ final class EnvUpPrecedenceTest extends TestCase {
 	public function test_profile_precedence_chain(): void {
 		$configPath = tempnam( sys_get_temp_dir(), 'qit_test_' );
 		file_put_contents( $configPath, json_encode( [
-			// test‑type profile
+			// test‑type profile — profiles don't merge scalars into env:up.
+			// Profiles are a run:e2e concept; env:up only reads environments.
 			'test_types'   => [
 				'e2e' => [
 					'default' => [ 'php' => '8.0', 'wp' => '6.1' ],
 				],
 			],
-			// environment default
+			// environment default — this is what env:up actually reads.
 			'environments' => [
 				'default' => [ 'php' => '7.4', 'wp' => '5.9' ],
 			],
@@ -224,15 +225,15 @@ final class EnvUpPrecedenceTest extends TestCase {
 			'env:up',
 			'--json',
 			'--php',
-			'8.2',     // final winner
+			'8.2',     // CLI overrides environment
 			'--config',
 			$configPath,
 		] );
 
 		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
 
-		$this->assertSame( '8.2', $payload['php_version'], 'CLI must override profile/default.' );
-		$this->assertSame( '6.1', $payload['wordpress_version'], 'Profile overrides environment default.' );
+		$this->assertSame( '8.2', $payload['php_version'], 'CLI must override environment default.' );
+		$this->assertSame( '5.9', $payload['wordpress_version'], 'Environment value used when CLI does not override.' );
 
 		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
