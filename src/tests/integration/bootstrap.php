@@ -43,7 +43,7 @@ if ( ! is_dir( '/tmp/qit' ) ) {
 	mkdir( '/tmp/qit', 0755, true );
 }
 
-function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false, bool $capture_stderr_separately = false ): string|Process {
+function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false, bool $capture_stderr_separately = false ): string|Process|array {
 	// Handle capture_stderr_separately option if it's in the config array
 	if ( is_array( $qit_env_json ) && isset( $qit_env_json['capture_stderr_separately'] ) ) {
 		$capture_stderr_separately = $qit_env_json['capture_stderr_separately'];

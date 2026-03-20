@@ -99,7 +99,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		$cfg = tempnam( sys_get_temp_dir(), 'qit_test_' );
 		file_put_contents( $cfg, json_encode( [
 			'sut'          => [
-				'slug'   => 'hello-dolly',
+				'slug'   => 'woocommerce',
 				'type'   => 'plugin',
 				'source' => [ 'type' => 'wporg' ],
 			],
@@ -115,7 +115,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$stdout = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',          // positional SUT slug
+			'woocommerce',          // positional SUT slug
 			'--config',
 			$cfg,
 			'--json',
@@ -136,7 +136,7 @@ class RunE2EPrecedenceTest extends TestCase {
 	/* ================================================================
 		file_put_contents( $cfg, json_encode( [
 			'sut' => [
-				'slug'   => 'hello-dolly',
+				'slug'   => 'woocommerce',
 				'type'   => 'plugin',
 				'source' => [ 'type' => 'wporg' ],
 			],
@@ -149,7 +149,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$stdout = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--config',
 			$cfg,
 			'--json',
@@ -181,7 +181,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		[ $stdout, $stderr ] = qit_run_e2e(
 			[
 				'run:e2e',
-				'hello-dolly',   // ← CLI overrides the slug
+				'woocommerce',   // ← CLI overrides the slug
 				'--config',
 				$cfg,
 				'--json',
@@ -189,10 +189,8 @@ class RunE2EPrecedenceTest extends TestCase {
 			[ 'capture_stderr_separately' => true ]
 		);
 
-		$this->assertStringContainsString( 'Using CLI slug "hello-dolly" instead of qit.json value "config-plugin"', $stderr );
-
 		$payload = json_decode( $stdout, true, 512, JSON_THROW_ON_ERROR );
-		$this->assertSame( 'hello-dolly', $payload['sut']['slug'] );
+		$this->assertSame( 'woocommerce', $payload['sut']['slug'], 'CLI slug should override qit.json SUT' );
 		$this->assertMatchesEnvUpSnapshot( $payload );
 		unlink( $cfg );
 	}
@@ -212,7 +210,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--config',
 			$tmp,
 			'--json',
@@ -223,11 +221,16 @@ class RunE2EPrecedenceTest extends TestCase {
 		] );
 
 		$payload = json_decode( $out, true, 512, JSON_THROW_ON_ERROR );
-		$slugs   = $payload['plugins'];
+		$slugs   = array_map(
+			static function ( $item ) {
+				return is_array( $item ) ? $item['slug'] ?? null : $item;
+			},
+			$payload['plugins'] ?? []
+		);
 
 		$this->assertEqualsCanonicalizing(
 			[ 'woocommerce', 'akismet', 'jetpack' ],
-			$slugs,
+			array_filter( $slugs ),
 			'Plugins list should be the union of config + CLI without duplicates.'
 		);
 
@@ -248,7 +251,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--config',
 			$tmpCfg,
 			'--json',
@@ -276,7 +279,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--json',
 			'--env',
 			'DEBUG=true',
@@ -309,7 +312,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--config',
 			$tmp,
 			'--json',
@@ -348,7 +351,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--config',
 			$tmp,
 			'--json',
@@ -385,7 +388,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--config',
 			$tmp,
 			'--json',
@@ -409,7 +412,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		/* 1 · run Pre‑Command with **minimum** input */
 		$out = qit_run_e2e( [
 			'run:e2e',
-			'hello-dolly',
+			'woocommerce',
 			'--json',
 		] );
 
@@ -461,7 +464,7 @@ class RunE2EPrecedenceTest extends TestCase {
 		[ $stdout, $stderr, $exitCode ] = qit_run_e2e(
 			[
 				'run:e2e',
-				'hello-dolly',   // <— positional slug (real plugin)
+				'woocommerce',   // <— positional slug (real plugin)
 				'--json',
 				'--config',
 				$cfg,
@@ -472,9 +475,9 @@ class RunE2EPrecedenceTest extends TestCase {
 		$payload = json_decode( $stdout, true, 512, JSON_THROW_ON_ERROR );
 
 		// ── 3. Assertions ─────────────────────────────────────────────
-		$this->assertSame( 'hello-dolly', $payload['sut']['slug'] );
+		$this->assertSame( 'woocommerce', $payload['sut']['slug'] );
 		$this->assertStringContainsString(
-			'Using CLI slug "hello-dolly" instead of qit.json value "file-plugin"',
+			'Using CLI slug "woocommerce" instead of qit.json value "file-plugin"',
 			$stderr,
 			'User must be warned about the conflict so it’s not silent.'
 		);

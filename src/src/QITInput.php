@@ -207,6 +207,7 @@ class QITInput implements InputInterface {
 
 		// List of options that env:up understands
 		$env_up_options = [
+			'config',
 			'environment',
 			'php_version',
 			'wordpress_version',

@@ -1,17 +1,7 @@
 {
-    "profile": "default",
-    "php_version": "",
-    "optional_features": [],
-    "additional_plugins": [],
-    "additional_woo_plugins": [],
-    "additional_wordpress_plugins": [],
-    "wait": false,
-    "ignore-fail": false,
-    "group": false,
     "wordpress_version": "6.2",
     "woocommerce_version": "9.0.0",
-    "json": true,
-    "woo_id": 18734003134382,
+    "woo_id": 18734001206047,
     "event": "cli_published_extension_test",
     "env_info": {
         "created_at": 0,

@@ -7,6 +7,9 @@ use PHPUnit\Framework\TestCase;
 /**
  * Test UpEnvironmentCommand behavior with QITInput integration.
  */
+use PHPUnit\Framework\Attributes\Group;
+
+#[Group("env-up")]
 class UpEnvironmentCommandTest extends TestCase {
 
 	/**

@@ -140,6 +140,15 @@ final class Normalizer {
 			$data['created_at'] = 0;
 		}
 
+		// Root‑level nginx_port and site_url contain dynamic ports.
+		if ( isset( $data['nginx_port'] ) && $data['nginx_port'] !== '' ) {
+			$port                = $data['nginx_port'];
+			$data['nginx_port']  = 'PORT';
+			if ( isset( $data['site_url'] ) ) {
+				$data['site_url'] = str_replace( ':' . $port, ':PORT', $data['site_url'] );
+			}
+		}
+
 		// 3. cache dir & downloaded paths
 		if ( isset( $data['configuration']['cache_dir'] ) ) {
 			$data['configuration']['cache_dir'] = self::CACHE_DIR_PLACEHOLDER;

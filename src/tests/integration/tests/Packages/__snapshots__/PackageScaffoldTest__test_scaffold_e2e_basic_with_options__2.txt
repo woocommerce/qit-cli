@@ -1,9 +1,10 @@
 {
     "package": "woocommerce/tests",
-    "test_type": "e2e",
+    "package_type": "test",
     "requires": {
         "network": false
     },
+    "test_type": "e2e",
     "test": {
         "phases": {
             "globalSetup": [

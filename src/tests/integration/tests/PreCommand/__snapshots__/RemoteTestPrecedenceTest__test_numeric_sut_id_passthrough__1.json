@@ -1,10 +1,5 @@
 {
-    "profile": "default",
-    "wait": false,
-    "ignore-fail": false,
-    "group": false,
-    "json": true,
-    "woo_id": "12345",
+    "woo_id": 12345,
     "event": "cli_published_extension_test",
     "env_info": {
         "created_at": 0,

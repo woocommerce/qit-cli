@@ -286,30 +286,26 @@ class QITTestStart implements ExecutionStartedSubscriber {
 	}
 
 	/**
-	 * Copy config files from source to destination. Large directories
-	 * (cache, node-deps, temporary-envs) are symlinked instead of copied
-	 * so all workers share the same data without duplicating ~2.7GB.
+	 * Copy only config files (.env-*, .qit-config.json) from source to dest.
+	 * Skips cache/, node-deps/, temporary-envs/ — workers download what they
+	 * need fresh. Sharing cache via symlink causes write races with parallel workers.
 	 */
 	private static function mirror_config_only( string $source, string $dest ): void {
 		$fs = new Filesystem();
 		$fs->mkdir( $dest );
 
-		$symlink_dirs = [ 'cache', 'node-deps', 'temporary-envs' ];
+		$skip_dirs = [ 'cache', 'node-deps', 'temporary-envs', 'environments' ];
 
 		foreach ( new \DirectoryIterator( $source ) as $item ) {
 			if ( $item->isDot() ) {
 				continue;
 			}
 
-			$target = $dest . '/' . $item->getBasename();
-
-			if ( $item->isDir() && in_array( $item->getBasename(), $symlink_dirs, true ) ) {
-				// Symlink large directories — shared across all workers.
-				if ( ! file_exists( $target ) ) {
-					symlink( $item->getPathname(), $target );
-				}
+			if ( $item->isDir() && in_array( $item->getBasename(), $skip_dirs, true ) ) {
 				continue;
 			}
+
+			$target = $dest . '/' . $item->getBasename();
 
 			if ( $item->isDir() ) {
 				$fs->mirror( $item->getPathname(), $target );

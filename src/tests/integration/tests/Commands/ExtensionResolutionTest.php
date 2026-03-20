@@ -10,6 +10,9 @@ use PHPUnit\Framework\TestCase;
  * - Config files (simple strings and complex objects)
  * - Different source types (wporg, wccom, local, url)
  */
+use PHPUnit\Framework\Attributes\Group;
+
+#[Group("env-up")]
 class ExtensionResolutionTest extends TestCase {
 	/**
 	 * Test 1: Simple slug resolution from CLI
