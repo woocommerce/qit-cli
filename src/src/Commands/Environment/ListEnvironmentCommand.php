@@ -37,6 +37,8 @@ class ListEnvironmentCommand extends QITCommand {
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		\QIT_CLI\App::make( \QIT_CLI\Environment\EnvironmentDanglingCleanup::class )->cleanup_dangling();
+
 		$io      = new SymfonyStyle( $input, $output );
 		$running = $this->environment_monitor->get();
 		$env_id  = $input->getArgument( 'env_id' );

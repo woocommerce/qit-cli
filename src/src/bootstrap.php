@@ -311,6 +311,4 @@ if ( $container->make( Output::class )->isVerbose() ) {
 	$container->make( Output::class )->writeln( sprintf( '<info>QIT Manager Backend: %s</info>', Config::get_current_manager_backend() ) );
 }
 
-App::make( EnvironmentDanglingCleanup::class )->cleanup_dangling();
-
 return $application;

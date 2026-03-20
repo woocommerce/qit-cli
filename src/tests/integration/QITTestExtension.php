@@ -106,7 +106,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 				// Clean up stale per-worker directories from PREVIOUS runs (older than 60s).
 				// Triple-guarded: age + realpath prefix + basename regex.
-				$cleanup_cutoff = time() - 60;
+				$cleanup_cutoff = time() - 600;
 				$cleanup_tmp    = realpath( sys_get_temp_dir() );
 				foreach ( glob( sys_get_temp_dir() . '/qit-test-*' ) as $cleanup_dir ) {
 					if ( is_dir( $cleanup_dir )
@@ -253,7 +253,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				}
 			} else {
 				// Wait for the first process to finish initialization (with timeout).
-				$lock_timeout = 30; // seconds
+				$lock_timeout = 120; // seconds — init does 4+ network calls that can take 60s+ total
 				$lock_start   = time();
 				while ( ! flock( $lock_file, LOCK_SH | LOCK_NB ) ) {
 					if ( time() - $lock_start > $lock_timeout ) {
@@ -372,7 +372,7 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 			// it persists so the hourly cache always points to a valid directory.
 			// No need to wait for other workers — they mirror from the stable init source,
 			// not from this worker's QIT_HOME.
-			if ( strpos( $GLOBALS['QIT_HOME'], 'qit-test-' ) !== false ) {
+			if ( strpos( $GLOBALS['QIT_HOME'], 'qit-test-' ) !== false && is_dir( $GLOBALS['QIT_HOME'] ) ) {
 				$fs->remove( $GLOBALS['QIT_HOME'] );
 			}
 		}

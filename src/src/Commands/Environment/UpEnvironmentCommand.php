@@ -104,6 +104,8 @@ class UpEnvironmentCommand extends QITCommand {
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		/** @var \QIT_CLI\QITInput $input */
 
+		App::make( \QIT_CLI\Environment\EnvironmentDanglingCleanup::class )->cleanup_dangling();
+
 		/* ─ Safety guard ─ */
 		if ( is_windows() ) {
 			$output->writeln( '<comment>QIT environments require WSL on Windows.</comment>' );

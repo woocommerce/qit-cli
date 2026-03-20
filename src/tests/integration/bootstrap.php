@@ -18,10 +18,16 @@ define( 'QIT_TEST_PROCESS_ID', $process_id );
 $GLOBALS['qit-php']  = __DIR__ . '/../../../src/qit-cli.php';
 $GLOBALS['QIT_HOME'] = sys_get_temp_dir() . '/qit-test-' . uniqid();
 
-// Clean up stale qit-test-* directories from PREVIOUS runs (older than 60 seconds).
-// Parallel-safe: sibling paratest workers' dirs were just created (mtime ~ now).
+// Clean up stale lock file from crashed previous runs.
+$lock_file = sys_get_temp_dir() . '/test-initialization-lock-file';
+if ( file_exists( $lock_file ) && filemtime( $lock_file ) < time() - 600 ) {
+	unlink( $lock_file );
+}
+
+// Clean up stale qit-test-* directories from PREVIOUS runs (older than 10 minutes).
+// Must be long enough that running tests don't get cleaned up mid-flight.
 // Triple-guarded: age check + realpath prefix check + basename regex.
-$cleanup_cutoff = time() - 60;
+$cleanup_cutoff = time() - 600;
 $cleanup_tmp    = realpath( sys_get_temp_dir() );
 foreach ( glob( sys_get_temp_dir() . '/qit-test-*' ) as $cleanup_dir ) {
 	if ( is_dir( $cleanup_dir )
