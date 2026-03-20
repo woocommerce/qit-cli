@@ -288,7 +288,11 @@ class UpEnvironmentCommandTest extends TestCase {
 
 	/**
 	 * Test env:up with real environment verification using exec commands.
+	 * Requires a real Docker environment — excluded from default test runs.
+	 *
+	 * Run with: ./vendor/bin/phpunit --group docker
 	 */
+	#[\PHPUnit\Framework\Attributes\Group( 'docker' )]
 	public function test_env_up_real_environment_verification(): void {
 		// Spin up environment with specific PHP and WP versions
 		$env_output = qit( [ 'env:up', '--json', '--php', '8.3', '--plugin', 'woocommerce' ] );
