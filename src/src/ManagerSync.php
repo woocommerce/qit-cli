@@ -61,6 +61,8 @@ class ManagerSync {
 	 */
 	public function maybe_sync( bool $force_resync = false ): void {
 		if ( $force_resync ) {
+			$this->cache->delete( $this->bootstrap_cache_key );
+			$this->cache->delete( $this->environments_cache_key );
 			$this->cache->delete( $this->extensions_cache_key );
 		}
 
@@ -69,10 +71,18 @@ class ManagerSync {
 	}
 
 	/**
-	 * Fetch bootstrap + environment data from Manager. Always fresh.
-	 * Single call to POST /cd/v2/cli/sync.
+	 * Fetch bootstrap + environment data from Manager.
+	 * Cached for 60 seconds — fresh enough to pick up Manager deploys,
+	 * fast enough that subprocesses within the same invocation skip the network call.
 	 */
 	private function sync(): void {
+		$cached_bootstrap = $this->cache->get( $this->bootstrap_cache_key );
+		$cached_envs      = $this->cache->get( $this->environments_cache_key );
+
+		if ( ! is_null( $cached_bootstrap ) && ! is_null( $cached_envs ) ) {
+			return;
+		}
+
 		if ( $this->output->isVerbose() ) {
 			$this->output->write( '[Info] Syncing with Manager... ' );
 		}
@@ -99,12 +109,16 @@ class ManagerSync {
 			unset( $data['environments'] );
 		}
 
+		// Cache for 60 seconds — fresh enough for Manager deploys,
+		// avoids redundant network calls from subprocesses.
+		$ttl = 60;
+
 		// Bootstrap bucket: schemas, test_types, versions, etc.
-		$this->cache->set( $this->bootstrap_cache_key, $data, 0 );
+		$this->cache->set( $this->bootstrap_cache_key, $data, $ttl );
 
 		// Environments bucket: environment checksums.
 		if ( ! empty( $env_data ) ) {
-			$this->cache->set( $this->environments_cache_key, $env_data, 0 );
+			$this->cache->set( $this->environments_cache_key, $env_data, $ttl );
 		}
 	}
 
