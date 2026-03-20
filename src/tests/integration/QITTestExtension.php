@@ -20,6 +20,14 @@ class QITTestExtension implements Extension {
 }
 
 class QITTestStart implements ExecutionStartedSubscriber {
+
+	/**
+	 * Stable path for the initialized QIT_HOME source.
+	 * This survives across runs so the hourly cache always points to a valid directory.
+	 * Workers mirror FROM here into their own ephemeral qit-test-* directories.
+	 */
+	const INIT_SOURCE_DIR = '/tmp/qit-init-source';
+
 	public function notify( ExecutionStarted $event ): void {
 		if ( file_exists( __DIR__ . '/qit-env.json' ) ) {
 			unlink( __DIR__ . '/qit-env.json' );
@@ -47,10 +55,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		}
 
 		// Generate an ID for this run.
-		$run_id = uniqid( 'qit_custom_tests_' );
+		$run_id             = uniqid( 'qit_custom_tests_' );
 		$GLOBALS['RUN_ID'] = $run_id;
 
-		// QIT_HOME is already set by bootstrap.php
+		// QIT_HOME is already set by bootstrap.php (ephemeral, per-worker).
 		if ( empty( $GLOBALS['QIT_HOME'] ) ) {
 			throw new \RuntimeException( 'QIT_HOME must be set by bootstrap.php before QITTestExtension runs' );
 		}
@@ -62,27 +70,17 @@ class QITTestStart implements ExecutionStartedSubscriber {
 		$cache_file      = sys_get_temp_dir() . "/qit-init-cache-$cache_timestamp.json";
 		$cache_valid     = file_exists( $cache_file );
 
-		// Detect if running in Paratest (TEST_TOKEN is set to a number) or single-process PHPUnit (TEST_TOKEN starts with 'serial-').
+		// Detect if running in Paratest or single-process PHPUnit.
 		$is_paratest = ! empty( getenv( 'TEST_TOKEN' ) ) && strpos( getenv( 'TEST_TOKEN' ), 'serial-' ) !== 0;
 
-		if ( ! getenv( 'QIT_FORCE_FRESH_SYNC' ) && $cache_valid ) {
-			echo "Warning: Using cached initialization data from $cache_file\n";
-			try {
-				$cached_data = json_decode( file_get_contents( $cache_file ), true, 512, JSON_THROW_ON_ERROR );
-				file_put_contents( '/tmp/qit_debug.log', "Cache file contents: " . print_r( $cached_data, true ) . "\n", FILE_APPEND );
-				if ( ! $cached_data || ! isset( $cached_data['source_qit_home'] ) || ! file_exists( $cached_data['source_qit_home'] ) ) {
-					throw new \RuntimeException( "Invalid or missing cache data in $cache_file. Cache contents: " . print_r( $cached_data, true ) );
-				}
-				$source_qit_home = $cached_data['source_qit_home'];
-				$fs->mkdir( $GLOBALS['QIT_HOME'] );
-				$fs->mirror( $source_qit_home, $GLOBALS['QIT_HOME'] );
-				$GLOBALS['IS_SOURCE'] = false;
-			} catch ( \JsonException $e ) {
-				file_put_contents( '/tmp/qit_debug.log', "Cache JSON decode failed: {$e->getMessage()}\n", FILE_APPEND );
-				throw new \RuntimeException( "Failed to parse cache file $cache_file: {$e->getMessage()}" );
-			}
+		if ( ! getenv( 'QIT_FORCE_FRESH_SYNC' ) && $cache_valid && is_dir( self::INIT_SOURCE_DIR ) ) {
+			// Fast path: stable source directory exists and cache is fresh.
+			echo "Using cached initialization from " . self::INIT_SOURCE_DIR . "\n";
+			$fs->mkdir( $GLOBALS['QIT_HOME'] );
+			$fs->mirror( self::INIT_SOURCE_DIR, $GLOBALS['QIT_HOME'] );
+			$GLOBALS['IS_SOURCE'] = false;
 		} else {
-			// We utilize the filesystem as shared state to coordinate parallel processes.
+			// Slow path: need to initialize. Use filesystem lock to coordinate parallel workers.
 			if ( ! touch( sys_get_temp_dir() . '/test-initialization-lock-file' ) ) {
 				throw new \RuntimeException( 'Failed to create lock file at ' . sys_get_temp_dir() . '/test-initialization-lock-file' );
 			}
@@ -93,50 +91,50 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				throw new \RuntimeException( 'Failed to open lock file at ' . sys_get_temp_dir() . '/test-initialization-lock-file' );
 			}
 
-			// Attempt to get an exclusive lock - first process wins.
+			// Attempt to get an exclusive lock — first process wins.
 			if ( flock( $lock_file, LOCK_EX | LOCK_NB ) ) {
 				echo sprintf( "Process %s has exclusive lock\n", getenv( 'TEST_TOKEN' ) ?: 'single' );
-				// Since we are the single process that has an exclusive lock, we run the initialization.
 
-				// Cleanup initial state.
-				// DEBUG: Log what we're deleting
+				// Clean up stale tracking files from previous runs.
 				$files_to_delete = array_merge(
 					glob( sys_get_temp_dir() . '/qit-running-*' ) ?: [],
 					glob( sys_get_temp_dir() . '/qit-test-tag-lock-*' ) ?: []
 				);
 				foreach ( $files_to_delete as $file ) {
-					error_log( "[QIT DEBUG] Deleting: " . basename( $file ) );
-					unlink( $file );
+					@unlink( $file );
 				}
-				if ( file_exists( sys_get_temp_dir() . '/qit-semaphore' ) ) {
-					unlink( sys_get_temp_dir() . '/qit-semaphore' );
-				}
-				// Clean up old tmp_qit_config-* directories in sys_get_temp_dir()
-				$old_test_dirs = glob( sys_get_temp_dir() . '/tmp_qit_config-*' );
-				if ( $old_test_dirs ) {
-					foreach ( $old_test_dirs as $dir ) {
-						try {
-							$fs->remove( $dir );
-						} catch ( \Exception $e ) {
-							// Ignore cleanup errors for old directories
-						}
+
+				// Clean up stale per-worker directories from PREVIOUS runs (older than 60s).
+				// Triple-guarded: age + realpath prefix + basename regex.
+				$cleanup_cutoff = time() - 60;
+				$cleanup_tmp    = realpath( sys_get_temp_dir() );
+				foreach ( glob( sys_get_temp_dir() . '/qit-test-*' ) as $cleanup_dir ) {
+					if ( is_dir( $cleanup_dir )
+						&& filemtime( $cleanup_dir ) < $cleanup_cutoff
+						&& strpos( realpath( $cleanup_dir ), $cleanup_tmp ) === 0
+						&& preg_match( '/^qit-test-[a-f0-9]+$/', basename( $cleanup_dir ) )
+					) {
+						exec( 'rm -rf ' . escapeshellarg( $cleanup_dir ) );
 					}
 				}
 
-				// Ensure QIT_HOME directory exists
-				$fs->mkdir( $GLOBALS['QIT_HOME'] );
+				// Initialize into the STABLE source directory (not the ephemeral worker dir).
+				// This path is what the cache points to — it must survive across runs.
+				if ( is_dir( self::INIT_SOURCE_DIR ) ) {
+					$fs->remove( self::INIT_SOURCE_DIR );
+				}
+				$fs->mkdir( self::INIT_SOURCE_DIR );
 
 				// Enable dev mode.
 				try {
 					$dev = new Process( [ 'php', $GLOBALS['qit-php'], 'dev' ] );
-					$dev->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+					$dev->setEnv( [ 'QIT_HOME' => self::INIT_SOURCE_DIR, 'MANAGER_URL' => $_ENV['QIT_CUSTOM_TESTS_URL'] ] );
 					$dev->setTimeout( 30 );
 					$dev->setIdleTimeout( 30 );
 					$dev->mustRun( function ( $type, $buffer ) {
 						echo $buffer;
 					} );
 				} catch ( \Exception $e ) {
-					file_put_contents( '/tmp/qit_debug.log', "qit dev failed: {$e->getMessage()}\n", FILE_APPEND );
 					throw new \RuntimeException( "Failed to run qit dev: {$e->getMessage()}" );
 				}
 
@@ -153,12 +151,11 @@ class QITTestStart implements ExecutionStartedSubscriber {
 						'--environment',
 						$_ENV['QIT_CUSTOM_TESTS_ENV'],
 					] );
-					$add_environment->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+					$add_environment->setEnv( [ 'QIT_HOME' => self::INIT_SOURCE_DIR, 'MANAGER_URL' => $_ENV['QIT_CUSTOM_TESTS_URL'] ] );
 					$add_environment->mustRun( function ( $type, $buffer ) {
 						echo $buffer;
 					} );
 				} catch ( \Exception $e ) {
-					file_put_contents( '/tmp/qit_debug.log', "backend:add failed: {$e->getMessage()}\n", FILE_APPEND );
 					throw new \RuntimeException( "Failed to run backend:add: {$e->getMessage()}" );
 				}
 
@@ -174,35 +171,32 @@ class QITTestStart implements ExecutionStartedSubscriber {
 							'--qit_token',
 							$_ENV['QIT_CUSTOM_TESTS_USER_QIT_TOKEN'],
 						] );
-						$add_partner->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+						$add_partner->setEnv( [ 'QIT_HOME' => self::INIT_SOURCE_DIR, 'MANAGER_URL' => $_ENV['QIT_CUSTOM_TESTS_URL'] ] );
 						$add_partner->mustRun( function ( $type, $buffer ) {
 							echo $buffer;
 						} );
 					} catch ( \Exception $e ) {
-						file_put_contents( '/tmp/qit_debug.log', "partner:add failed: {$e->getMessage()}\n", FILE_APPEND );
 						throw new \RuntimeException( "Failed to run partner:add: {$e->getMessage()}" );
 					}
 				} else {
 					echo "Skipping partner add for staging environment\n";
 				}
 
-				// Validate connection. Run "qit extensions" and assert "woocommerce_id" is present.
+				// Validate connection.
 				$max_attempts = 2;
 				$sync_data    = null;
-				for ( $attempt = 1; $attempt <= $max_attempts; $attempt ++ ) {
+				for ( $attempt = 1; $attempt <= $max_attempts; $attempt++ ) {
 					try {
 						$extensions = new Process( [ 'php', $GLOBALS['qit-php'], 'extensions' ] );
-						$extensions->setEnv( [ 'QIT_HOME' => $GLOBALS['QIT_HOME'] ] );
+						$extensions->setEnv( [ 'QIT_HOME' => self::INIT_SOURCE_DIR, 'MANAGER_URL' => $_ENV['QIT_CUSTOM_TESTS_URL'] ] );
 						$extensions->mustRun();
 						$sync_data = $extensions->getOutput();
-						file_put_contents( '/tmp/qit_debug.log', "qit extensions output (attempt $attempt): $sync_data\n", FILE_APPEND );
 						break;
 					} catch ( \Exception $e ) {
-						file_put_contents( '/tmp/qit_debug.log', "qit extensions failed (attempt $attempt): {$e->getMessage()}\n", FILE_APPEND );
 						if ( $attempt === $max_attempts ) {
 							throw new \RuntimeException( "Failed to run qit extensions after $max_attempts attempts: {$e->getMessage()}" );
 						}
-						sleep( 5 ); // Wait before retrying
+						sleep( 5 );
 					}
 				}
 
@@ -215,39 +209,36 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				$woocommerce_id = $woocommerce_ids_per_environment[ $_ENV['QIT_CUSTOM_TESTS_ENV'] ];
 
 				if ( strpos( $sync_data, (string) $woocommerce_id ) === false ) {
-					file_put_contents( '/tmp/qit_debug.log', "Sync validation failed. Expected ID: $woocommerce_id, Sync data: $sync_data\n", FILE_APPEND );
 					if ( ! fwrite( $lock_file, 'failed' ) ) {
 						throw new \RuntimeException( 'Failed to write to lock file.' );
 					}
 					throw new \RuntimeException( "Sync validation failed. Expected WooCommerce ID $woocommerce_id not found in sync data. Sync data: $sync_data\n" );
 				}
 
-				if ( ! fwrite( $lock_file, $GLOBALS['QIT_HOME'] ) ) {
+				// Write the stable source path to the lock file so other workers can find it.
+				if ( ! fwrite( $lock_file, self::INIT_SOURCE_DIR ) ) {
 					throw new \RuntimeException( 'Failed to write to lock file.' );
 				}
 
+				// Copy test cache into the initialized source.
 				if ( ! file_exists( __DIR__ . '/cache' ) ) {
 					mkdir( __DIR__ . '/cache' );
 				}
-
 				if ( ! file_exists( __DIR__ . '/tmp' ) ) {
 					mkdir( __DIR__ . '/tmp' );
 				}
+				$fs->mirror( __DIR__ . '/cache', self::INIT_SOURCE_DIR . '/cache' );
 
-				$fs->mirror( __DIR__ . '/cache', $GLOBALS['QIT_HOME'] . '/cache' );
-
-				// Cache the initialized QIT_HOME directory path.
-				$cache_data = [ 'source_qit_home' => $GLOBALS['QIT_HOME'] ];
-				try {
-					$json_output = json_encode( $cache_data, JSON_THROW_ON_ERROR );
-					if ( file_put_contents( $cache_file, $json_output ) === false ) {
-						throw new \RuntimeException( "Failed to write cache file $cache_file" );
-					}
-					file_put_contents( '/tmp/qit_debug.log', "Cache file written: $cache_file, Contents: $json_output\n", FILE_APPEND );
-				} catch ( \JsonException $e ) {
-					file_put_contents( '/tmp/qit_debug.log', "Cache JSON encode failed: {$e->getMessage()}\n", FILE_APPEND );
-					throw new \RuntimeException( "Failed to encode cache data for $cache_file: {$e->getMessage()}" );
+				// Write hourly cache pointing to the stable source directory.
+				$cache_data  = [ 'source_qit_home' => self::INIT_SOURCE_DIR ];
+				$json_output = json_encode( $cache_data, JSON_THROW_ON_ERROR );
+				if ( file_put_contents( $cache_file, $json_output ) === false ) {
+					throw new \RuntimeException( "Failed to write cache file $cache_file" );
 				}
+
+				// Now mirror from stable source to this worker's ephemeral QIT_HOME.
+				$fs->mkdir( $GLOBALS['QIT_HOME'] );
+				$fs->mirror( self::INIT_SOURCE_DIR, $GLOBALS['QIT_HOME'] );
 
 				$GLOBALS['IS_SOURCE'] = true;
 
@@ -256,21 +247,21 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				flock( $lock_file, LOCK_UN );
 				fclose( $lock_file );
 
-				// Wait after unlocking so that other processes can copy this source directory (only for Paratest).
+				// Brief pause so other workers can acquire the shared lock and read the path.
 				if ( $is_paratest ) {
-					sleep( 10 );
+					sleep( 2 );
 				}
 			} else {
 				if ( ! touch( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" ) ) {
 					throw new \RuntimeException( 'Failed to create running file at ' . sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" );
 				}
 
-				// If no exclusive lock is available, block until the first process is done with initialization
+				// Block until the first process is done with initialization.
 				flock( $lock_file, LOCK_SH );
 
 				echo sprintf( "Process %s proceeding after the lock is released\n", getenv( 'TEST_TOKEN' ) );
 
-				// Read the contents of the lock file to get the QIT_HOME directory.
+				// Read the stable source path from the lock file.
 				$source_qit_home = fread( $lock_file, 1024 );
 				fclose( $lock_file );
 
@@ -284,34 +275,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 				$GLOBALS['QIT_SOURCE_DIR'] = $source_qit_home;
 
-				// Mirror the directory to the test-specific QIT_HOME.
+				// Mirror the stable source to this worker's ephemeral QIT_HOME.
 				$fs->mkdir( $GLOBALS['QIT_HOME'] );
 				$fs->mirror( $source_qit_home, $GLOBALS['QIT_HOME'] );
 			}
-		}
-
-		// Make sure each parallel process is spaced out a little bit (only for Paratest).
-		if ( $is_paratest ) {
-			$semaphore = sys_get_temp_dir() . '/qit-semaphore.log';
-			$fp        = fopen( $semaphore, 'c+' );
-			if ( ! $fp ) {
-				throw new \RuntimeException( "Failed to open semaphore file. $semaphore" );
-			}
-			$start = microtime( true );
-			if ( flock( $fp, LOCK_EX ) ) {
-				if ( empty( fread( $fp, 1 ) ) ) {
-					// First process.
-					file_put_contents( $semaphore, sprintf( "[%s - Microtime: %s] First process\n", getenv( 'TEST_TOKEN' ), microtime() ) );
-				} else {
-					// Lock acquired, now wait 5 seconds between each request.
-					$sleep = 5000000;
-					file_put_contents( $semaphore, sprintf( "[%s - Microtime: %s], Sleeping for $sleep microseconds\n", getenv( 'TEST_TOKEN' ), microtime() ), FILE_APPEND );
-					usleep( $sleep );
-					file_put_contents( $semaphore, sprintf( "[%s - Microtime: %s] Finished sleeping (Waited %s total)\n", getenv( 'TEST_TOKEN' ), microtime(), microtime( true ) - $start ), FILE_APPEND );
-				}
-				flock( $fp, LOCK_UN );
-			}
-			fclose( $fp );
 		}
 	}
 }
@@ -366,13 +333,15 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 		}
 
 		if ( $fs->exists( $GLOBALS['QIT_HOME'] ) ) {
-			// Copy files from $GLOBALS['QIT_HOME'] . '/cache' to __DIR__. '/cache'
-			if ( file_exists( $GLOBALS['QIT_HOME'] . '/cache' ) ) {
+			// Only the source process mirrors cache back to avoid parallel write races.
+			if ( ! empty( $GLOBALS['IS_SOURCE'] ) && file_exists( $GLOBALS['QIT_HOME'] . '/cache' ) ) {
 				$fs->mirror( $GLOBALS['QIT_HOME'] . '/cache', __DIR__ . '/cache' );
 			}
 
-			// Only clean up non-persistent QIT_HOME directories (tmp_qit_config-*).
-			if ( strpos( $GLOBALS['QIT_HOME'], 'tmp_qit_config-' ) !== false ) {
+			// Only clean up ephemeral per-worker QIT_HOME directories (qit-test-*).
+			// The stable init source (/tmp/qit-init-source) is NOT cleaned up here —
+			// it persists so the hourly cache always points to a valid directory.
+			if ( strpos( $GLOBALS['QIT_HOME'], 'qit-test-' ) !== false ) {
 				if ( isset( $GLOBALS['IS_SOURCE'] ) && $GLOBALS['IS_SOURCE'] ) {
 					$timeout = 300;
 					// Wait for all other tests to finish.

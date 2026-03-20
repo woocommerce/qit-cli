@@ -18,6 +18,21 @@ define( 'QIT_TEST_PROCESS_ID', $process_id );
 $GLOBALS['qit-php']  = __DIR__ . '/../../../src/qit-cli.php';
 $GLOBALS['QIT_HOME'] = sys_get_temp_dir() . '/qit-test-' . uniqid();
 
+// Clean up stale qit-test-* directories from PREVIOUS runs (older than 60 seconds).
+// Parallel-safe: sibling paratest workers' dirs were just created (mtime ~ now).
+// Triple-guarded: age check + realpath prefix check + basename regex.
+$cleanup_cutoff = time() - 60;
+$cleanup_tmp    = realpath( sys_get_temp_dir() );
+foreach ( glob( sys_get_temp_dir() . '/qit-test-*' ) as $cleanup_dir ) {
+	if ( is_dir( $cleanup_dir )
+		&& filemtime( $cleanup_dir ) < $cleanup_cutoff
+		&& strpos( realpath( $cleanup_dir ), $cleanup_tmp ) === 0
+		&& preg_match( '/^qit-test-[a-f0-9]+$/', basename( $cleanup_dir ) )
+	) {
+		exec( 'rm -rf ' . escapeshellarg( $cleanup_dir ) );
+	}
+}
+
 if ( ! is_dir( '/tmp/qit' ) ) {
 	mkdir( '/tmp/qit', 0755, true );
 }
@@ -56,6 +71,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 
 	$env = [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
+		'MANAGER_URL'         => $_ENV['QIT_CUSTOM_TESTS_URL'] ?? '', // Never hit production from tests
 		'QIT_DISABLE_CLEANUP' => '1', // Disable cleanup during tests to prevent output pollution
 		'QIT_SELF_TESTS'      => '1',
 		'QIT_NO_PULL'         => '1',
