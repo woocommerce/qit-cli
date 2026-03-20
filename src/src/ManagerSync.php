@@ -18,22 +18,21 @@ class ManagerSync {
 	/** @var OutputInterface $output */
 	protected $output;
 
-	/** @var string Cache key for bootstrap data (schemas, test_types, versions, metadata). */
+	/** @var string Cache key for bootstrap+environment data (always fresh). */
 	public $bootstrap_cache_key;
 
-	/** @var string Cache key for environment checksums (always fresh, no expiration). */
+	/** @var string Cache key for environment checksums (same response, separate bucket for get_cache_key_for). */
 	public $environments_cache_key;
 
-	/** @var string Cache key for extension list (lazy-loaded on demand). */
+	/** @var string Cache key for extension list (cached 1h, requires auth). */
 	public $extensions_cache_key;
 
 	/**
 	 * Default bucket for sync data.
 	 *
-	 * Bootstrap data (schemas, test_types, versions, metadata) all arrive
-	 * in a single sync response and share the same cache lifetime.
-	 * Only environments and extensions are routed to dedicated buckets
-	 * because they have their own sync endpoints and cache policies.
+	 * Bootstrap data (schemas, test_types, versions, environments) all arrive
+	 * in a single sync response. Only extensions are routed to a dedicated
+	 * bucket because they have their own endpoint and cache policy.
 	 */
 	const DEFAULT_BUCKET = 'bootstrap';
 
@@ -55,57 +54,31 @@ class ManagerSync {
 	/**
 	 * Main sync entry point. Called on every CLI startup.
 	 *
-	 * - Environments: always refreshed (no cache).
-	 * - Bootstrap: cached 1 hour (schemas, test_types, versions).
-	 * - Extensions: cached 1 hour (partner's extension list).
+	 * - Bootstrap + Environments: always fresh, one call, no cache.
+	 * - Extensions: cached 1 hour, requires auth.
+	 *
+	 * @param bool $force_resync Only affects extensions cache (bootstrap is always fresh).
 	 */
 	public function maybe_sync( bool $force_resync = false ): void {
 		if ( $force_resync ) {
-			$this->cache->delete( $this->bootstrap_cache_key );
-			$this->cache->delete( $this->environments_cache_key );
 			$this->cache->delete( $this->extensions_cache_key );
 		}
 
-		$this->sync_environments();
-		$this->maybe_sync_bootstrap( $force_resync );
+		$this->sync();
 		$this->maybe_sync_extensions( $force_resync );
 	}
 
 	/**
-	 * Fetch environment checksums from Manager. Always fresh, no caching.
+	 * Fetch bootstrap + environment data from Manager. Always fresh.
+	 * Single call to POST /cd/v2/cli/sync.
 	 */
-	private function sync_environments(): void {
-		$response = $this->request_v2( 'cli/sync/environments' );
-
-		$data = json_decode( $response, true );
-
-		if ( ! is_array( $data ) || ! isset( $data['environments'] ) ) {
-			throw new NetworkErrorException();
-		}
-
-		$data = $this->normalize_environments_for_version( $data );
-
-		$this->cache->set( $this->environments_cache_key, $data, 60 );
-	}
-
-	/**
-	 * Fetch bootstrap data (schemas, test_types, versions, metadata) if not cached.
-	 */
-	private function maybe_sync_bootstrap( bool $force_resync = false ): void {
-		if ( ! $force_resync ) {
-			$cached = $this->cache->get( $this->bootstrap_cache_key );
-
-			if ( ! is_null( $cached ) ) {
-				return;
-			}
-		}
-
+	private function sync(): void {
 		if ( $this->output->isVerbose() ) {
-			$this->output->write( '[Info] Syncing bootstrap data with Manager... ' );
+			$this->output->write( '[Info] Syncing with Manager... ' );
 		}
 
 		$start    = microtime( true );
-		$response = $this->request_v2( 'cli/sync/bootstrap' );
+		$response = $this->request_v2( 'cli/sync' );
 
 		if ( $this->output->isVerbose() ) {
 			$this->output->writeln( sprintf( 'Done in %s seconds.', number_format( microtime( true ) - $start, 2 ) ) );
@@ -114,14 +87,25 @@ class ManagerSync {
 		$data = json_decode( $response, true );
 
 		if ( ! is_array( $data ) || empty( $data ) ) {
-			$this->output->writeln( sprintf( '<error>Failed to sync bootstrap data with Manager (%s). Not a valid JSON.</error>', get_manager_url() ) );
-
+			$this->output->writeln( sprintf( '<error>Failed to sync with Manager (%s). Not a valid JSON.</error>', get_manager_url() ) );
 			throw new NetworkErrorException();
 		}
 
-		$expiration = App::getVar( 'offline_mode' ) ? 0 : 3600;
+		// Split the response into two buckets so get_manager_sync_data() can find each key.
+		// Environments go to their own bucket; everything else is bootstrap.
+		$env_data = [];
+		if ( isset( $data['environments'] ) ) {
+			$env_data = $this->normalize_environments_for_version( [ 'environments' => $data['environments'] ] );
+			unset( $data['environments'] );
+		}
 
-		$this->cache->set( $this->bootstrap_cache_key, $data, $expiration );
+		// Bootstrap bucket: schemas, test_types, versions, etc.
+		$this->cache->set( $this->bootstrap_cache_key, $data, 0 );
+
+		// Environments bucket: environment checksums.
+		if ( ! empty( $env_data ) ) {
+			$this->cache->set( $this->environments_cache_key, $env_data, 0 );
+		}
 	}
 
 	/**
@@ -158,7 +142,6 @@ class ManagerSync {
 
 		if ( ! is_array( $data ) ) {
 			$this->output->writeln( sprintf( '<error>Failed to sync extensions with Manager (%s). Not a valid JSON.</error>', get_manager_url() ) );
-
 			throw new NetworkErrorException();
 		}
 
@@ -170,7 +153,7 @@ class ManagerSync {
 	/**
 	 * Make a POST request to a V2 sync endpoint.
 	 *
-	 * @param string $route The route path (e.g., 'cli/sync/environments').
+	 * @param string $route The route path (e.g., 'cli/sync').
 	 *
 	 * @return string The response body.
 	 * @throws NetworkErrorException If the Manager is unreachable.
@@ -182,7 +165,6 @@ class ManagerSync {
 				->with_method( 'POST' )
 				->request();
 		} catch ( DoingAutocompleteException $e ) {
-			// Return empty JSON so caller handles gracefully.
 			return '{}';
 		} catch ( NetworkErrorException $e ) {
 			if ( Config::is_development_mode() ) {
@@ -201,7 +183,6 @@ class ManagerSync {
 	 * @param string $key The data key (e.g., 'schemas', 'environments', 'extensions').
 	 *
 	 * @return string The cache key for the bucket containing this data key.
-	 * @throws \UnexpectedValueException If the key is not mapped to any bucket.
 	 */
 	public function get_cache_key_for( string $key ): string {
 		$bucket = self::$key_to_bucket[ $key ] ?? self::DEFAULT_BUCKET;
@@ -221,11 +202,9 @@ class ManagerSync {
 	public function enforce_latest_version(): void {
 		$current_version = App::getVar( 'CLI_VERSION' );
 
-		// This is base64_encoded so that the version replacement during build doesn't replace the placeholder.
 		$is_dev_build_from_src  = base64_encode( $current_version ) === 'QFFJVF9DTElfVkVSU0lPTkA=';
 		$is_dev_build_from_phar = $current_version === 'qit_dev_build';
 
-		// Do not check version on development build.
 		if ( $is_dev_build_from_src || $is_dev_build_from_phar ) {
 			return;
 		}
@@ -251,16 +230,12 @@ class ManagerSync {
 	}
 
 	/**
-	 * Normalize environment keys for the CLI version >=1.0.0.
+	 * Normalize environment keys for the current CLI version.
 	 *
-	 * The Manager returns both v1 and v2 environment keys (e.g., 'e2e' and 'e2e-v2').
-	 * This method strips the '-v2' suffix from v2 keys so the rest of the CLI can use
-	 * the base names ('e2e', 'performance', etc.) while ensuring this version of the CLI
-	 * uses the v2 environments.
+	 * The Manager returns environment keys with version suffixes (e.g., 'e2e-v3').
+	 * This strips the suffix so the CLI uses base names ('e2e', 'performance').
 	 *
-	 * This logic should be removed when we officially sunset CLI version <1.0.0
-	 *
-	 * @param array<mixed> $data The sync data.
+	 * @param array<mixed> $data The sync data containing 'environments' key.
 	 * @return array<mixed> The normalized sync data.
 	 */
 	private function normalize_environments_for_version( array $data ): array {
@@ -278,7 +253,7 @@ class ManagerSync {
 			}
 		}
 
-		// Fallback: if no v2 keys found, use original keys (for development/testing)
+		// Fallback: if no v3 keys found, use original keys (for development/testing)
 		if ( empty( $normalized_environments ) ) {
 			$normalized_environments = $data['environments'];
 		}

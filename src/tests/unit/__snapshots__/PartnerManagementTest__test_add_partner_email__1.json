@@ -1,33 +1,4 @@
 {
-    "user": {
-        "expire": -1,
-        "value": "foo_user@bar.com"
-    },
-    "qit_token": {
-        "expire": -1,
-        "value": "foo_pass"
-    },
-    "manager_url": {
-        "expire": -1,
-        "value": "https:\/\/qit.woo.com"
-    },
-    "manager_sync_environments": {
-        "expire": 1234567890,
-        "value": {
-            "environments": {
-                "performance": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/5755c5b6deea6fca548c64886469144a.zip",
-                    "checksum": "5755c5b6deea6fca548c64886469144a",
-                    "zip_checksum": 15544
-                },
-                "e2e": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/b93ca4b9c2f7a25fce484a86137b9151.zip",
-                    "checksum": "b93ca4b9c2f7a25fce484a86137b9151",
-                    "zip_checksum": 26308
-                }
-            }
-        }
-    },
     "manager_sync_bootstrap_v@QIT_CLI_VERSION@": {
         "expire": 1234567890,
         "value": {
@@ -1635,6 +1606,45 @@
                 "performance": "woocommerce\/performance-tests:latest"
             }
         }
+    },
+    "manager_sync_environments": {
+        "expire": 1234567890,
+        "value": {
+            "environments": {
+                "e2e": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
+                    "checksum": "c1a78950ca0eb8a23f8706955681bf02",
+                    "zip_checksum": 19091
+                },
+                "performance": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/5755c5b6deea6fca548c64886469144a.zip",
+                    "checksum": "5755c5b6deea6fca548c64886469144a",
+                    "zip_checksum": 15544
+                },
+                "performance-v2": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/5755c5b6deea6fca548c64886469144a.zip",
+                    "checksum": "5755c5b6deea6fca548c64886469144a",
+                    "zip_checksum": 15544
+                },
+                "e2e-v2": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/b93ca4b9c2f7a25fce484a86137b9151.zip",
+                    "checksum": "b93ca4b9c2f7a25fce484a86137b9151",
+                    "zip_checksum": 26308
+                }
+            }
+        }
+    },
+    "user": {
+        "expire": -1,
+        "value": "foo_user@bar.com"
+    },
+    "qit_token": {
+        "expire": -1,
+        "value": "foo_pass"
+    },
+    "manager_url": {
+        "expire": -1,
+        "value": "https:\/\/qit.woo.com"
     },
     "manager_sync_extensions_v@QIT_CLI_VERSION@": {
         "expire": 1234567890,

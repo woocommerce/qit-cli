@@ -111,8 +111,7 @@ class PartnerManagementTest extends QITTestCase {
 		// Switch to "local_user" partner and succeed.
 
 		App::setVar( sprintf( 'mock_%s', 'http://cd_manager.loc:8081/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
-		App::setVar( sprintf( 'mock_%s', 'http://cd_manager.loc:8081/wp-json/cd/v2/cli/sync/bootstrap' ), file_get_contents( __DIR__ . '/data/sync-v2-bootstrap.json' ) );
-		App::setVar( sprintf( 'mock_%s', 'http://cd_manager.loc:8081/wp-json/cd/v2/cli/sync/environments' ), file_get_contents( __DIR__ . '/data/sync-v2-environments.json' ) );
+		App::setVar( sprintf( 'mock_%s', 'http://cd_manager.loc:8081/wp-json/cd/v2/cli/sync' ), file_get_contents( __DIR__ . '/data/sync-v2.json' ) );
 		App::setVar( sprintf( 'mock_%s', 'http://cd_manager.loc:8081/wp-json/cd/v2/cli/sync/extensions' ), file_get_contents( __DIR__ . '/data/sync-v2-extensions.json' ) );
 
 		$this->application_tester->run( [
@@ -127,8 +126,7 @@ class PartnerManagementTest extends QITTestCase {
 		$this->add_partner( 'local_user', 'local_pass' );
 
 		App::setVar( sprintf( 'mock_%s', 'https://stagingcompatibilitydashboard.wpstaging.com/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
-		App::setVar( sprintf( 'mock_%s', 'https://stagingcompatibilitydashboard.wpstaging.com/wp-json/cd/v2/cli/sync/bootstrap' ), file_get_contents( __DIR__ . '/data/sync-v2-bootstrap.json' ) );
-		App::setVar( sprintf( 'mock_%s', 'https://stagingcompatibilitydashboard.wpstaging.com/wp-json/cd/v2/cli/sync/environments' ), file_get_contents( __DIR__ . '/data/sync-v2-environments.json' ) );
+		App::setVar( sprintf( 'mock_%s', 'https://stagingcompatibilitydashboard.wpstaging.com/wp-json/cd/v2/cli/sync' ), file_get_contents( __DIR__ . '/data/sync-v2.json' ) );
 		App::setVar( sprintf( 'mock_%s', 'https://stagingcompatibilitydashboard.wpstaging.com/wp-json/cd/v2/cli/sync/extensions' ), file_get_contents( __DIR__ . '/data/sync-v2-extensions.json' ) );
 
 		$this->application_tester->run( [
