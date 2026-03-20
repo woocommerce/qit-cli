@@ -11,45 +11,14 @@
     },
     "docker_images": [],
     "php_extensions": [],
-    "plugins": [
-        {
-            "slug": "woocommerce",
-            "type": "plugin",
-            "from": "wporg",
-            "version": "10.6.1",
-            "source": "https://downloads.wordpress.org/plugin/woocommerce.10.6.1.zip",
-            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/woocommerce-00bfc5c8376e2d5e417ce0ab4c9f1354-10.6.1-78.zip",
-            "entrypoint": "woocommerce/woocommerce.php",
-            "priority": 50,
-            "added_automatically": "Added from CLI parameter (slug)"
-        },
-        {
-            "slug": "akismet",
-            "type": "plugin",
-            "from": "wporg",
-            "version": "5.6",
-            "source": "https://downloads.wordpress.org/plugin/akismet.5.6.zip",
-            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/akismet-cde911cca443815245e21a7f09cd6901-5.6-78.zip",
-            "entrypoint": "akismet/akismet.php",
-            "priority": 50,
-            "added_automatically": "Added from CLI parameter (slug)"
-        },
-        {
-            "slug": "jetpack",
-            "type": "plugin",
-            "from": "wporg",
-            "version": "15.6",
-            "source": "https://downloads.wordpress.org/plugin/jetpack.15.6.zip",
-            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/jetpack-eabe8518c027c99a325742d54e10f89d-15.6-78.zip",
-            "entrypoint": "jetpack/jetpack.php",
-            "priority": 50,
-            "added_automatically": "Added from CLI parameter (slug)"
-        }
-    ],
+    "plugins": [],
     "themes": [],
     "envs": {
         "QIT_DISABLE_UPDATE_CHECKS": "true",
         "QIT_NETWORK_LOGGING": "false",
+        "API_KEY": "from_file",
+        "MODE": "test",
+        "DEBUG": "true",
         "QIT_ENV_ID": "ENV_ID",
         "QIT_NETWORK_RESTRICTION": "true"
     },
@@ -62,7 +31,7 @@
     "provider_type": "local",
     "cloud_environment_id": null,
     "wordpress_version": "stable",
-    "woocommerce_version": "10.6.1",
+    "woocommerce_version": "",
     "php_version": "8.2",
     "object_cache": false,
     "network_restriction": true,
