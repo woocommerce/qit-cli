@@ -77,7 +77,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			// Fast path: stable source directory exists and cache is fresh.
 			echo "Using cached initialization from " . self::INIT_SOURCE_DIR . "\n";
 			$fs->mkdir( $GLOBALS['QIT_HOME'] );
-			$fs->mirror( self::INIT_SOURCE_DIR, $GLOBALS['QIT_HOME'] );
+			self::mirror_config_only( self::INIT_SOURCE_DIR, $GLOBALS['QIT_HOME'] );
 			$GLOBALS['IS_SOURCE'] = false;
 		} else {
 			// Slow path: need to initialize. Use filesystem lock to coordinate parallel workers.
@@ -238,7 +238,7 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 				// Now mirror from stable source to this worker's ephemeral QIT_HOME.
 				$fs->mkdir( $GLOBALS['QIT_HOME'] );
-				$fs->mirror( self::INIT_SOURCE_DIR, $GLOBALS['QIT_HOME'] );
+				self::mirror_config_only( self::INIT_SOURCE_DIR, $GLOBALS['QIT_HOME'] );
 
 				$GLOBALS['IS_SOURCE'] = true;
 
@@ -280,7 +280,41 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 				// Mirror the stable source to this worker's ephemeral QIT_HOME.
 				$fs->mkdir( $GLOBALS['QIT_HOME'] );
-				$fs->mirror( $source_qit_home, $GLOBALS['QIT_HOME'] );
+				self::mirror_config_only( $source_qit_home, $GLOBALS['QIT_HOME'] );
+			}
+		}
+	}
+
+	/**
+	 * Copy config files from source to destination. Large directories
+	 * (cache, node-deps, temporary-envs) are symlinked instead of copied
+	 * so all workers share the same data without duplicating ~2.7GB.
+	 */
+	private static function mirror_config_only( string $source, string $dest ): void {
+		$fs = new Filesystem();
+		$fs->mkdir( $dest );
+
+		$symlink_dirs = [ 'cache', 'node-deps', 'temporary-envs' ];
+
+		foreach ( new \DirectoryIterator( $source ) as $item ) {
+			if ( $item->isDot() ) {
+				continue;
+			}
+
+			$target = $dest . '/' . $item->getBasename();
+
+			if ( $item->isDir() && in_array( $item->getBasename(), $symlink_dirs, true ) ) {
+				// Symlink large directories — shared across all workers.
+				if ( ! file_exists( $target ) ) {
+					symlink( $item->getPathname(), $target );
+				}
+				continue;
+			}
+
+			if ( $item->isDir() ) {
+				$fs->mirror( $item->getPathname(), $target );
+			} else {
+				$fs->copy( $item->getPathname(), $target, true );
 			}
 		}
 	}
