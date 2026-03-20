@@ -737,17 +737,17 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
-		/* ─ 6. Honour --tunnel (validated against TunnelRunner) ─ */
-		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
-			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
-			$env_info->tunnel = true;
-		}
-
-		/* ─ 7. SELF‑TEST shortcut ─ */
+		/* ─ 6. SELF‑TEST shortcut ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 
 			return Command::SUCCESS;
+		}
+
+		/* ─ 7. Honour --tunnel (validated against TunnelRunner) ─ */
+		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
+			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
+			$env_info->tunnel = true;
 		}
 
 		/* ─ 8. Bring the environment up ─ */
