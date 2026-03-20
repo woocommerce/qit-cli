@@ -252,12 +252,15 @@ class QITTestStart implements ExecutionStartedSubscriber {
 					sleep( 2 );
 				}
 			} else {
-				if ( ! touch( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" ) ) {
-					throw new \RuntimeException( 'Failed to create running file at ' . sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" );
+				// Wait for the first process to finish initialization (with timeout).
+				$lock_timeout = 30; // seconds
+				$lock_start   = time();
+				while ( ! flock( $lock_file, LOCK_SH | LOCK_NB ) ) {
+					if ( time() - $lock_start > $lock_timeout ) {
+						throw new \RuntimeException( "Timed out after {$lock_timeout}s waiting for initialization lock. A previous run may have died without releasing the lock. Delete " . sys_get_temp_dir() . '/test-initialization-lock-file and retry.' );
+					}
+					usleep( 250000 ); // 250ms
 				}
-
-				// Block until the first process is done with initialization.
-				flock( $lock_file, LOCK_SH );
 
 				echo sprintf( "Process %s proceeding after the lock is released\n", getenv( 'TEST_TOKEN' ) );
 
@@ -287,14 +290,6 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 	public function notify( ExecutionFinished $event ): void {
 		if ( getenv( 'CI' ) ) {
 			echo "Skipping cleanup because this is a CI environment.\n";
-		}
-
-		if ( ! isset( $GLOBALS['RUN_ID'] ) ) {
-			throw new \RuntimeException( 'The "RUN_ID" GLOBAL must be set.' );
-		}
-
-		if ( file_exists( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" ) ) {
-			unlink( sys_get_temp_dir() . "/qit-running-{$GLOBALS['RUN_ID']}" );
 		}
 
 		self::delete_temp_environment();
@@ -341,19 +336,9 @@ class QITTestFinish implements ExecutionFinishedSubscriber {
 			// Only clean up ephemeral per-worker QIT_HOME directories (qit-test-*).
 			// The stable init source (/tmp/qit-init-source) is NOT cleaned up here —
 			// it persists so the hourly cache always points to a valid directory.
+			// No need to wait for other workers — they mirror from the stable init source,
+			// not from this worker's QIT_HOME.
 			if ( strpos( $GLOBALS['QIT_HOME'], 'qit-test-' ) !== false ) {
-				if ( isset( $GLOBALS['IS_SOURCE'] ) && $GLOBALS['IS_SOURCE'] ) {
-					$timeout = 300;
-					// Wait for all other tests to finish.
-					while ( count( glob( sys_get_temp_dir() . '/qit-running-*' ) ) > 1 ) {
-						echo sprintf( "Main process is waiting for %d other tests to finish.\n", count( glob( sys_get_temp_dir() . '/qit-running-*' ) ) - 1 );
-						sleep( 5 );
-						$timeout -= 5;
-						if ( $timeout <= 0 ) {
-							throw new \RuntimeException( 'Timeout waiting for other tests to finish.' );
-						}
-					}
-				}
 				$fs->remove( $GLOBALS['QIT_HOME'] );
 			}
 		}
