@@ -268,7 +268,7 @@ class ManagerSync {
 			return $data;
 		}
 
-		$version_suffix          = '-v2';
+		$version_suffix          = '-v3';
 		$normalized_environments = [];
 
 		foreach ( $data['environments'] as $key => $env_data ) {
