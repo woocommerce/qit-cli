@@ -13,9 +13,6 @@ use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\ShowReportCommand;
 use QIT_CLI\Commands\DevModeCommand;
-use QIT_CLI\Commands\AI\ContextCommand as AIContextCommand;
-use QIT_CLI\Commands\AI\InstallAgentsCommand as AIInstallAgentsCommand;
-use QIT_CLI\Commands\AI\ClaudeSetupCommand as AIClaudeSetupCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
@@ -163,39 +160,6 @@ try {
 
 $is_connected_to_backend = false;
 
-// Check AI agents status (once per week, only if not doing autocompletion or JSON output)
-// Skip check if running ai:install-agents or ai:claude-setup commands to avoid circular notification
-$is_ai_setup_command = in_array( 'ai:install-agents', $GLOBALS['argv'] ?? [], true ) ||
-						in_array( 'ai:claude-setup', $GLOBALS['argv'] ?? [], true );
-if ( ! $container->getVar( 'doing_autocompletion' ) && ! in_array( '--json', $GLOBALS['argv'] ?? [], true ) && ! $is_ai_setup_command ) {
-	try {
-		$agent_checker = new \QIT_CLI\AI\AgentVersionChecker();
-		$agent_status  = $agent_checker->check_agent_status();
-
-		if ( $agent_status !== null && isset( $agent_status['message'] ) ) {
-			$output = App::make( Output::class );
-
-			// Display notification based on status
-			switch ( $agent_status['status'] ) {
-				case 'not_installed':
-					// Temporarily disable not_installed message. Rely on documentation.
-					// $output->writeln( '<comment>' . $agent_status['message'] . '</comment>' );
-					break;
-				case 'outdated':
-					$output->writeln( '<fg=yellow>' . $agent_status['message'] . '</>' );
-					break;
-				case 'unknown':
-					$output->writeln( '<warning>' . $agent_status['message'] . '</warning>' );
-					break;
-			}
-			$output->writeln( '' ); // Add spacing after notification
-		}
-	} catch ( \Exception $e ) {
-		// Silently ignore agent check errors to not disrupt normal flow.
-		// Agent checks are optional and should not affect CLI functionality.
-		unset( $e ); // Satisfy PHPCS empty catch requirement.
-	}
-}
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
@@ -282,15 +246,6 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( PackageShowCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
-	$application->add( $container->make( AIContextCommand::class ) );
-	$application->add( $container->make( AIClaudeSetupCommand::class ) );
-
-	// Experimental AI agents - hidden behind env var due to hallucination issues
-	// Only enable if QIT_USE_EXPERIMENTAL_AI_AGENTS=1 is set
-	if ( getenv( 'QIT_USE_EXPERIMENTAL_AI_AGENTS' ) === '1' ) {
-		$application->add( $container->make( AIInstallAgentsCommand::class ) );
-	}
-
 	// Group Commands.
 	$application->add( $container->make( RunGroupCommand::class ) );
 	$application->add( $container->make( GroupFetchCommand::class ) );

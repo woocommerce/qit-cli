@@ -44,8 +44,15 @@ class ConnectCommand extends QITCommand {
 		}
 
 		$command = $this->getApplication()->find( AddPartner::getDefaultName() );
+		$result  = $command->run( new ArrayInput( [] ), $output );
 
-		return $command->run( new ArrayInput( [] ), $output );
+		if ( $result === self::SUCCESS ) {
+			$output->writeln( '' );
+			$output->writeln( '<comment>Tip: Use QIT with Claude Code — in Claude Code, run:</comment>' );
+			$output->writeln( '<comment>  /plugin marketplace add woocommerce/qit-cli</comment>' );
+		}
+
+		return $result;
 	}
 
 	/**

@@ -1,0 +1,21 @@
+{
+  "name": "woocommerce-qit",
+  "owner": {
+    "name": "WooCommerce",
+    "email": "qit@woocommerce.com"
+  },
+  "metadata": {
+    "description": "QIT (Quality Insights Toolkit) - Automated testing for WooCommerce plugins and themes"
+  },
+  "plugins": [
+    {
+      "name": "qit",
+      "source": "./plugins/qit",
+      "description": "QIT testing skills for Claude Code - test packages, managed tests, environments, debugging",
+      "version": "1.0.0",
+      "homepage": "https://qit.woo.com/docs",
+      "keywords": ["woocommerce", "testing", "e2e", "playwright", "wordpress"],
+      "category": "testing"
+    }
+  ]
+}
