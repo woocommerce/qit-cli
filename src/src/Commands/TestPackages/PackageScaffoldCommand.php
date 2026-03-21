@@ -274,7 +274,7 @@ BASH;
 
 		// Optionally include $schema for IDE validation
 		if ( $input->getOption( 'with-schema' ) ) {
-			$manifest['$schema'] = 'https://qit.woo.com/json-schema/test-package';
+			$manifest['$schema'] = 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/test-package-manifest-schema.json';
 		}
 
 		// Build base manifest structure

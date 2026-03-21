@@ -70,7 +70,7 @@
     });
 /tmp-normalized/qit_scaffolded_e2e-NORMALIZED_ID/qit-test.json: |-
     {
-        "$schema": "https://qit.woo.com/json-schema/test-package",
+        "$schema": "https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/test-package-manifest-schema.json",
         "vendor": "test-vendor",
         "package": "test-package",
         "test_type": "e2e",

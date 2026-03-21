@@ -9,7 +9,7 @@ use InvalidArgumentException;
  * Anti-corruption layer between JSON manifest formats and domain model.
  * Adapts any version of the manifest JSON into a consistent internal representation.
  *
- * @see https://qit.woo.com/json-schema/test-package
+ * @see https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/test-package-manifest-schema.json
  */
 final class TestPackageManifest {
 	/**

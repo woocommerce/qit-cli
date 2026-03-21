@@ -54,7 +54,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			// Create qit.json configuration
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -203,7 +203,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			// Create qit.json configuration
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -342,7 +342,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			// Create qit.json configuration with both local and "downloaded" (published) packages
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -445,7 +445,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			// Create qit.json configuration
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -561,7 +561,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			// Create qit.json configuration
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -716,7 +716,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			// Step 4: Create qit.json configuration referencing the downloaded package
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -903,7 +903,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 			 * Step 3: Run both packages together
 			 */
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -1103,7 +1103,7 @@ class TestPackageWorkflowTest extends \PHPUnit\Framework\TestCase {
 
 			// Create qit.json configuration with all packages
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',
@@ -1326,7 +1326,7 @@ test("trigger PHP warnings by visiting site", async ({ page }) => {
 
 			// Create qit.json configuration
 			$qit_json = [
-				'$schema'      => 'https://qit.woo.com/json-schema/qit',
+				'$schema'      => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 				'sut'          => [
 					'type'   => 'plugin',
 					'slug'   => 'woocommerce',

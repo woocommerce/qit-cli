@@ -7,7 +7,7 @@
   "properties": {
     "$schema": {
       "type": "string",
-      "const": "https://qit.woo.com/json-schema/qit",
+      "const": "https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json",
       "description": "Schema reference for IDE support"
     },
     "extends": {
