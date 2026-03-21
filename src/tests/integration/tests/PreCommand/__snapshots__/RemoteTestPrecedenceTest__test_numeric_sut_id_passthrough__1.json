@@ -7,6 +7,8 @@
         "temporary_env": "/tmp-normalised/temporary-env/",
         "plugins": null
     },
+    "plugins": null,
+    "themes": null,
     "configuration": {
         "resolved_plugins": null
     },

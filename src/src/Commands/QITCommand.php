@@ -170,6 +170,9 @@ abstract class QITCommand extends Command {
 
 		$profile_config = $config['test_types'][ $test_type ][ $profile ] ?? [];
 
+		// Normalize short-form keys (wp, woo, php) to canonical long-form
+		$profile_config = \QIT_CLI\PreCommand\Configuration\EnvironmentConfigResolver::normalize_aliases( $profile_config );
+
 		// Inherit top-level SUT if profile doesn't define its own
 		if ( ! isset( $profile_config['sut'] ) && isset( $config['sut'] ) ) {
 			$profile_config['sut'] = $config['sut'];

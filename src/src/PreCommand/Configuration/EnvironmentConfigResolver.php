@@ -41,11 +41,28 @@ class EnvironmentConfigResolver {
 	const PRIORITY_TEST_PKG = 4;
 
 	/** @var array<string, string> Short-form to long-form key aliases. */
-	private static array $key_aliases = [
+	public static array $key_aliases = [
 		'php' => 'php_version',
 		'wp'  => 'wordpress_version',
 		'woo' => 'woocommerce_version',
 	];
+
+	/**
+	 * Normalize short-form keys to long-form in a config array.
+	 *
+	 * @param array<string, mixed> $config
+	 * @return array<string, mixed>
+	 */
+	public static function normalize_aliases( array $config ): array {
+		foreach ( self::$key_aliases as $short => $long ) {
+			if ( isset( $config[ $short ] ) && ! isset( $config[ $long ] ) ) {
+				$config[ $long ] = $config[ $short ];
+				unset( $config[ $short ] );
+			}
+		}
+
+		return $config;
+	}
 
 	/** @var array<string, string> Default values for scalar params. */
 	private static array $defaults = [
@@ -61,13 +78,7 @@ class EnvironmentConfigResolver {
 	 * @return self
 	 */
 	public function load_from_config( array $config ): self {
-		// Normalize short-form keys
-		foreach ( self::$key_aliases as $short => $long ) {
-			if ( isset( $config[ $short ] ) && ! isset( $config[ $long ] ) ) {
-				$config[ $long ] = $config[ $short ];
-				unset( $config[ $short ] );
-			}
-		}
+		$config = self::normalize_aliases( $config );
 
 		// Scalar version params from config
 		foreach ( [ 'php_version', 'wordpress_version' ] as $key ) {
