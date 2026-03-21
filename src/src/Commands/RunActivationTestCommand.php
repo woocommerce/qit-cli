@@ -3,8 +3,10 @@
 namespace QIT_CLI\Commands;
 
 use QIT_CLI\App;
+use QIT_CLI\Cache;
 use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\QITInput;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
@@ -27,6 +29,21 @@ class RunActivationTestCommand extends RunE2ECommand {
 	protected function configure(): void {
 		parent::configure();
 		$this->setDescription( 'Run activation tests' );
+
+		$cache           = App::make( Cache::class );
+		$extension_sets  = $cache->get_manager_sync_data( 'extension_sets' );
+		$available_sets  = is_array( $extension_sets ) ? implode( ', ', array_keys( $extension_sets ) ) : '';
+		$set_description = '(Optional) The predefined set of extensions to include in the test.';
+		if ( ! empty( $available_sets ) ) {
+			$set_description .= sprintf( ' <comment>[possible values: %s]</comment>', $available_sets );
+		}
+
+		$this->addOption(
+			'extension_set',
+			null,
+			InputOption::VALUE_OPTIONAL,
+			$set_description
+		);
 	}
 
 	/******************************************************************
@@ -59,6 +76,28 @@ class RunActivationTestCommand extends RunE2ECommand {
 		$profile_name = $input->get_profile_name();
 		// This will throw an exception if the profile doesn't exist
 		$this->get_current_test_profile( $this->test_type, $profile_name );
+
+		/****************************************************************
+		 * Resolve --extension_set into --plugin options
+		 */
+		$extension_set_name = $input->getOption( 'extension_set' );
+		if ( ! empty( $extension_set_name ) ) {
+			$cache          = App::make( Cache::class );
+			$extension_sets = $cache->get_manager_sync_data( 'extension_sets' );
+
+			if ( ! is_array( $extension_sets ) || ! isset( $extension_sets[ $extension_set_name ] ) ) {
+				$available = is_array( $extension_sets ) ? implode( ', ', array_keys( $extension_sets ) ) : 'none';
+				$output->writeln( sprintf( '<error>Unknown extension set "%s". Available sets: %s</error>', $extension_set_name, $available ) );
+				return self::INVALID;
+			}
+
+			/** @var array<string> $set_plugins */
+			$set_plugins     = $extension_sets[ $extension_set_name ];
+			$current_plugins = $input->getOption( 'plugin' ) ?: [];
+			$current_plugins = is_array( $current_plugins ) ? $current_plugins : [];
+			$merged_plugins  = array_unique( array_merge( $current_plugins, $set_plugins ) );
+			$input->setOption( 'plugin', array_values( $merged_plugins ) );
+		}
 
 		/****************************************************************
 		 * Inject activation‑specific defaults BEFORE delegating to parent
