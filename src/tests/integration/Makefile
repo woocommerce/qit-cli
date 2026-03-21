@@ -17,6 +17,12 @@ test-remote:
 	@echo "── remote test config resolution tests ──"
 	QIT_SELF_TEST=remote_test $(PARATEST) -p $(PROCS) --functional --stop-on-defect --group remote-test
 
+# ── Group tests (run against staging Manager) ─────────────────────────────
+
+test-group:
+	@echo "── group command tests ──"
+	$(PHPUNIT) tests/Commands/RunGroupCommandTest.php
+
 # ── Docker tests (need running Docker + Manager) ─────────────────────────
 
 test-docker:
@@ -35,4 +41,4 @@ update-snapshots:
 test-full:
 	$(PARATEST) -p $(PROCS)
 
-.PHONY: test test-env-up test-remote test-docker update-snapshots test-full
+.PHONY: test test-env-up test-remote test-group test-docker update-snapshots test-full
