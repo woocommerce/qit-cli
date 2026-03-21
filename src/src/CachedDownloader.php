@@ -110,7 +110,8 @@ class CachedDownloader {
 	 */
 	private function fetch_remote_metadata( string $type, string $identifier, array $options ): array {
 		// Check short-lived metadata cache first (30 seconds)
-		$metadata_cache_key = "remote_metadata_{$type}_{$identifier}";
+		$version_suffix     = ! empty( $options['version'] ) ? '_' . $options['version'] : '';
+		$metadata_cache_key = "remote_metadata_{$type}_{$identifier}{$version_suffix}";
 		$cached_metadata    = $this->cache->get( $metadata_cache_key );
 
 		if ( is_array( $cached_metadata ) ) {
@@ -123,7 +124,7 @@ class CachedDownloader {
 				$metadata = $this->fetch_test_package_metadata( $identifier, $options );
 				break;
 			case 'wporg_plugin':
-				$metadata = $this->fetch_wporg_plugin_metadata( $identifier );
+				$metadata = $this->fetch_wporg_plugin_metadata( $identifier, $options );
 				break;
 			case 'wporg_theme':
 				$metadata = $this->fetch_wporg_theme_metadata( $identifier );
@@ -178,11 +179,19 @@ class CachedDownloader {
 	/**
 	 * Fetch WordPress.org plugin metadata.
 	 *
-	 * @param string $slug
+	 * @param string                    $slug
+	 * @param array<string,string|null> $options Optional. Supports 'version' key for specific version downloads.
 	 * @return array<string,string|null>
 	 */
-	private function fetch_wporg_plugin_metadata( string $slug ): array {
+	private function fetch_wporg_plugin_metadata( string $slug, array $options = [] ): array {
+		$requested_version = $options['version'] ?? null;
+		$needs_versions    = $requested_version !== null
+			&& ! in_array( strtolower( $requested_version ), [ 'stable', 'latest' ], true );
+
 		$url = "https://api.wordpress.org/plugins/info/1.2/?action=plugin_information&request[slug]={$slug}";
+		if ( $needs_versions ) {
+			$url .= '&request[fields][versions]=1';
+		}
 
 		$response = ( new RequestBuilder( $url ) )
 			->with_method( 'GET' )
@@ -194,11 +203,21 @@ class CachedDownloader {
 			throw new \RuntimeException( "Failed to fetch metadata for WPORG plugin: $slug" );
 		}
 
+		$download_url = $data['download_link'];
+		$version      = $data['version'] ?? 'unknown';
+
+		// If a specific version was requested, look it up in the versions list.
+		if ( $needs_versions && ! empty( $data['versions'][ $requested_version ] ) ) {
+			$download_url = $data['versions'][ $requested_version ];
+			$version      = $requested_version;
+		} elseif ( $needs_versions ) {
+			throw new \RuntimeException( "Version {$requested_version} not found for WPORG plugin: {$slug}" );
+		}
+
 		return [
-			'url'          => $data['download_link'],
-			'version'      => $data['version'] ?? 'unknown',
+			'url'          => $download_url,
+			'version'      => $version,
 			'last_updated' => $data['last_updated'] ?? null,
-			// WPORG doesn't provide checksums in API
 		];
 	}
 
