@@ -44,7 +44,9 @@ Use the fetched documentation to answer the user's question or perform the reque
 After completing the steps above, you may also consult these bundled references:
 
 - [references/shell-rules.md](references/shell-rules.md) — Critical rules for running QIT commands in AI shell context (source env for every command, host vs Docker execution)
-- [references/schemas.md](references/schemas.md) — JSON schemas for `qit-test.json` and `qit.json` configuration files
+- JSON Schemas — fetch when creating or validating configuration files:
+  - `qit.json` schema: `https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json`
+  - `qit-test.json` schema: `https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/test-package-manifest-schema.json`
 
 ## Command reference
 
