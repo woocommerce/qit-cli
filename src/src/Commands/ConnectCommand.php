@@ -48,8 +48,10 @@ class ConnectCommand extends QITCommand {
 
 		if ( $result === self::SUCCESS ) {
 			$output->writeln( '' );
-			$output->writeln( '<comment>Tip: Use QIT with Claude Code — in Claude Code, run:</comment>' );
-			$output->writeln( '<comment>  /plugin marketplace add woocommerce/qit-cli</comment>' );
+			$output->writeln( '<fg=cyan>The recommended way to use QIT is through Claude Code.</>' );
+			$output->writeln( '<fg=cyan>Install the QIT plugin in Claude Code:</>' );
+			$output->writeln( '<fg=white>  /plugin marketplace add woocommerce/qit-cli</>' );
+			$output->writeln( '<fg=white>  /plugin install qit@woocommerce-qit</>' );
 		}
 
 		return $result;

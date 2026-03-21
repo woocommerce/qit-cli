@@ -160,6 +160,31 @@ try {
 
 $is_connected_to_backend = false;
 
+// Show Claude Code plugin recommendation (once per day, skip autocomplete/JSON/CI/tests).
+if ( ! $container->getVar( 'doing_autocompletion' )
+	&& ! in_array( '--json', $GLOBALS['argv'] ?? [], true )
+	&& empty( getenv( 'CI' ) )
+	&& empty( getenv( 'QIT_SELF_TEST' ) )
+	&& empty( getenv( 'QIT_SELF_TESTS' ) )
+	&& empty( getenv( 'QIT_DISABLE_CLAUDE_TIP' ) )
+) {
+	try {
+		$tip_file    = Config::get_qit_dir() . '.claude-tip-shown';
+		$should_show = ! file_exists( $tip_file ) || ( time() - (int) file_get_contents( $tip_file ) ) > 86400;
+
+		if ( $should_show ) {
+			file_put_contents( $tip_file, (string) time() );
+			$output = App::make( Output::class );
+			$output->writeln( '<fg=cyan>The recommended way to use QIT is through Claude Code.</>' );
+			$output->writeln( '<fg=cyan>Install the QIT plugin in Claude Code:</>' );
+			$output->writeln( '<fg=white>  /plugin marketplace add woocommerce/qit-cli</>' );
+			$output->writeln( '<fg=white>  /plugin install qit@woocommerce-qit</>' );
+			$output->writeln( '' );
+		}
+	} catch ( \Exception $e ) {
+		unset( $e );
+	}
+}
 
 // Global commands.
 $application->add( $container->make( DevModeCommand::class ) );
