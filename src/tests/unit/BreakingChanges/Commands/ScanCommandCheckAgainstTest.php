@@ -13,7 +13,6 @@ use QIT_CLI\BreakingChanges\Renderers\ScanRenderer;
 use QIT_CLI\BreakingChanges\Scanner\ReferenceScanner;
 use QIT_CLI\BreakingChanges\WooDevelopedFetcher;
 use QIT_CLI\CachedDownloader;
-use QIT_CLI\Zipper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -27,9 +26,8 @@ class ScanCommandCheckAgainstTest extends TestCase {
 
 	private function make_command_tester( ?WooDevelopedFetcher $fetcher = null ): CommandTester {
 		$downloader = $this->createMock( CachedDownloader::class );
-		$zipper     = $this->createMock( Zipper::class );
 		$parser     = new FileParser();
-		$resolver   = new PluginSourceResolver( $downloader, $zipper );
+		$resolver   = new PluginSourceResolver( $downloader );
 
 		$command = new ScanCommand(
 			$resolver,

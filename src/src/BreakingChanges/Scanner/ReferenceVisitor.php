@@ -35,12 +35,12 @@ class ReferenceVisitor extends NodeVisitorAbstract {
 
 	/** @var array<string, true> Hook registration functions */
 	private static array $hook_functions = [
-		'add_action'      => true,
-		'add_filter'      => true,
-		'remove_action'   => true,
-		'remove_filter'   => true,
-		'has_action'      => true,
-		'has_filter'      => true,
+		'add_action'    => true,
+		'add_filter'    => true,
+		'remove_action' => true,
+		'remove_filter' => true,
+		'has_action'    => true,
+		'has_filter'    => true,
 	];
 
 	public function __construct(
@@ -97,7 +97,8 @@ class ReferenceVisitor extends NodeVisitorAbstract {
 			$this->check_constant_access( $node );
 		} elseif ( $node instanceof Node\Stmt\Class_ ) {
 			$this->check_class_extends( $node );
-		} elseif ( $node instanceof Node\Stmt\Class_ || $node instanceof Node\Stmt\Enum_ ) {
+			$this->check_implements( $node );
+		} elseif ( $node instanceof Node\Stmt\Enum_ ) {
 			$this->check_implements( $node );
 		}
 

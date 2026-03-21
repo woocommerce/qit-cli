@@ -3,15 +3,11 @@
 namespace QIT_CLI\BreakingChanges;
 
 use QIT_CLI\CachedDownloader;
-use QIT_CLI\Zipper;
 
 class PluginSourceResolver {
 	private CachedDownloader $downloader;
-	private Zipper $zipper;
-
-	public function __construct( CachedDownloader $downloader, Zipper $zipper ) {
+	public function __construct( CachedDownloader $downloader ) {
 		$this->downloader = $downloader;
-		$this->zipper     = $zipper;
 	}
 
 	/**
@@ -68,8 +64,8 @@ class PluginSourceResolver {
 			$options['version'] = $version;
 		}
 
-		$result    = $this->downloader->download( 'wporg_plugin', $slug, $cache_dir, $options );
-		$zip_path  = $result['path'];
+		$result   = $this->downloader->download( 'wporg_plugin', $slug, $cache_dir, $options );
+		$zip_path = $result['path'];
 
 		return $this->extract_zip( $zip_path );
 	}

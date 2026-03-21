@@ -5,7 +5,6 @@ namespace QIT_CLI\BreakingChanges\Scanner;
 use PhpParser\NodeTraverser;
 use PhpParser\NodeVisitor\NameResolver;
 use QIT_CLI\BreakingChanges\Extraction\FileParser;
-use QIT_CLI\BreakingChanges\Models\FoundReference;
 use QIT_CLI\BreakingChanges\Models\HookDiffResult;
 use QIT_CLI\BreakingChanges\Models\ScanResult;
 use QIT_CLI\BreakingChanges\Models\SymbolDiffResult;

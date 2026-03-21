@@ -85,7 +85,7 @@ class HookVisitor extends NodeVisitorAbstract {
 			) );
 		} else {
 			// Dynamic hook name — can't determine statically.
-			$this->symbols->dynamic_hook_count++;
+			++$this->symbols->dynamic_hook_count;
 		}
 
 		return null;

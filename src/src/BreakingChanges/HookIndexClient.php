@@ -2,15 +2,11 @@
 
 namespace QIT_CLI\BreakingChanges;
 
-use QIT_CLI\Cache;
 use QIT_CLI\RequestBuilder;
 use function QIT_CLI\get_manager_url;
 
 class HookIndexClient {
-	private Cache $cache;
-
-	public function __construct( Cache $cache ) {
-		$this->cache = $cache;
+	public function __construct() {
 	}
 
 	/**

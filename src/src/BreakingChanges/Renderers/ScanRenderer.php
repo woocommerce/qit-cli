@@ -99,7 +99,7 @@ class ScanRenderer {
 		$data = [
 			'plugins' => array_map( [ $this, 'result_to_array' ], $results ),
 			'summary' => [
-				'total_plugins'   => count( $results ),
+				'total_plugins'    => count( $results ),
 				'affected_plugins' => count( array_filter( $results, function ( ScanResult $r ) {
 					return $r->has_breaking_references();
 				} ) ),
@@ -143,10 +143,10 @@ class ScanRenderer {
 	 */
 	private function result_to_array( ScanResult $result ): array {
 		return [
-			'plugin_slug'              => $result->plugin_slug,
+			'plugin_slug'             => $result->plugin_slug,
 			'has_breaking_references' => $result->has_breaking_references(),
-			'reference_count'          => count( $result->references ),
-			'references'               => array_map( function ( FoundReference $ref ) {
+			'reference_count'         => count( $result->references ),
+			'references'              => array_map( function ( FoundReference $ref ) {
 				return [
 					'name'    => $ref->name,
 					'type'    => $ref->type,
@@ -155,7 +155,7 @@ class ScanRenderer {
 					'context' => $ref->context,
 				];
 			}, $result->references ),
-			'warnings' => $result->warnings,
+			'warnings'                => $result->warnings,
 		];
 	}
 

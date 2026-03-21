@@ -216,8 +216,10 @@ class SymbolVisitor extends NodeVisitorAbstract {
 	 * @param Stmt\Class_|Stmt\Interface_|Stmt\Trait_|Stmt\Enum_|Stmt\Function_ $node
 	 */
 	private function get_fqn( Node $node ): string {
-		// NameResolver sets the 'namespacedName' attribute.
+		// NameResolver sets the 'namespacedName' attribute (PHP-Parser property).
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( $node->namespacedName !== null ) {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			return $node->namespacedName->toString();
 		}
 
@@ -229,7 +231,9 @@ class SymbolVisitor extends NodeVisitorAbstract {
 	}
 
 	private function get_fqn_from_const( Const_ $node ): string {
+		// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 		if ( $node->namespacedName !== null ) {
+			// phpcs:ignore WordPress.NamingConventions.ValidVariableName.UsedPropertyNotSnakeCase
 			return $node->namespacedName->toString();
 		}
 

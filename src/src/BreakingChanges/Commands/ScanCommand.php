@@ -5,7 +5,9 @@ namespace QIT_CLI\BreakingChanges\Commands;
 use QIT_CLI\BreakingChanges\Diff\HookDiffer;
 use QIT_CLI\BreakingChanges\Diff\SymbolDiffer;
 use QIT_CLI\BreakingChanges\Extraction\DirectoryExtractor;
+use QIT_CLI\BreakingChanges\Models\HookDiffResult;
 use QIT_CLI\BreakingChanges\Models\ScanResult;
+use QIT_CLI\BreakingChanges\Models\SymbolDiffResult;
 use QIT_CLI\BreakingChanges\PluginSourceResolver;
 use QIT_CLI\BreakingChanges\Renderers\ScanRenderer;
 use QIT_CLI\BreakingChanges\Scanner\ReferenceScanner;
@@ -131,8 +133,8 @@ class ScanCommand extends Command {
 	 */
 	private function scan_multiple(
 		string $check_against,
-		$symbol_diff,
-		$hook_diff,
+		SymbolDiffResult $symbol_diff,
+		HookDiffResult $hook_diff,
 		string $dependency,
 		OutputInterface $output,
 		string $format

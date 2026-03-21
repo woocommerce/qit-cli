@@ -11,7 +11,6 @@ use QIT_CLI\BreakingChanges\Extraction\FileParser;
 use QIT_CLI\BreakingChanges\PluginSourceResolver;
 use QIT_CLI\BreakingChanges\Renderers\DiffRenderer;
 use QIT_CLI\CachedDownloader;
-use QIT_CLI\Zipper;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Tester\CommandTester;
 
@@ -25,8 +24,7 @@ class DiffCommandTest extends TestCase {
 
 	private function make_command_tester(): CommandTester {
 		$downloader = $this->createMock( CachedDownloader::class );
-		$zipper     = $this->createMock( Zipper::class );
-		$resolver   = new PluginSourceResolver( $downloader, $zipper );
+		$resolver   = new PluginSourceResolver( $downloader );
 		$extractor  = new DirectoryExtractor( new FileParser() );
 
 		$command = new DiffCommand(

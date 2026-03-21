@@ -4,7 +4,6 @@ namespace QIT_CLI\BreakingChanges\Commands;
 
 use QIT_CLI\BreakingChanges\Extraction\DirectoryExtractor;
 use QIT_CLI\BreakingChanges\Models\ExtractedSymbols;
-use QIT_CLI\BreakingChanges\Models\HookInfo;
 use QIT_CLI\BreakingChanges\PluginSourceResolver;
 use QIT_CLI\RequestBuilder;
 use Symfony\Component\Console\Command\Command;
@@ -117,8 +116,10 @@ class IndexCommand extends Command {
 	}
 
 	/**
-	 * @param array<array<string, mixed>> $definitions
-	 * @param array<array<string, mixed>> $references
+	 * @param string                      $slug        Plugin slug.
+	 * @param string                      $version     Plugin version.
+	 * @param array<array<string, mixed>> $definitions Hook definitions.
+	 * @param array<array<string, mixed>> $references  Hook references.
 	 */
 	private function upload_to_index( string $slug, string $version, array $definitions, array $references ): void {
 		$url = get_manager_url() . '/wp-json/cd/v1/hook-index';

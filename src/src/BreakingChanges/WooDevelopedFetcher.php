@@ -9,8 +9,8 @@ use function QIT_CLI\get_manager_url;
 class WooDevelopedFetcher {
 	private Cache $cache;
 
-	private const CACHE_KEY     = 'woo_developed_extensions';
-	private const CACHE_TTL     = DAY_IN_SECONDS;
+	private const CACHE_KEY = 'woo_developed_extensions';
+	private const CACHE_TTL = DAY_IN_SECONDS;
 
 	public function __construct( Cache $cache ) {
 		$this->cache = $cache;

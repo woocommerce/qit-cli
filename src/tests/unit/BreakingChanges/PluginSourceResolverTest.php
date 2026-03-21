@@ -5,7 +5,6 @@ namespace QIT_CLI_Tests\BreakingChanges;
 use PHPUnit\Framework\TestCase;
 use QIT_CLI\BreakingChanges\PluginSourceResolver;
 use QIT_CLI\CachedDownloader;
-use QIT_CLI\Zipper;
 
 class PluginSourceResolverTest extends TestCase {
 	private PluginSourceResolver $resolver;
@@ -14,8 +13,7 @@ class PluginSourceResolverTest extends TestCase {
 		parent::setUp();
 
 		$downloader     = $this->createMock( CachedDownloader::class );
-		$zipper         = $this->createMock( Zipper::class );
-		$this->resolver = new PluginSourceResolver( $downloader, $zipper );
+		$this->resolver = new PluginSourceResolver( $downloader );
 	}
 
 	public function test_resolves_local_directory(): void {
@@ -74,8 +72,7 @@ class PluginSourceResolverTest extends TestCase {
 				'cached'   => false,
 			] );
 
-		$zipper   = $this->createMock( Zipper::class );
-		$resolver = new PluginSourceResolver( $downloader, $zipper );
+		$resolver = new PluginSourceResolver( $downloader );
 
 		try {
 			$result = $resolver->resolve( 'my-plugin', '1.0.0' );

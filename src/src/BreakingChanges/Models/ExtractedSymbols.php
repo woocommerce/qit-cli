@@ -52,12 +52,12 @@ class ExtractedSymbols {
 	 * Merge another ExtractedSymbols into this one.
 	 */
 	public function merge( ExtractedSymbols $other ): void {
-		$this->classes   = array_merge( $this->classes, $other->classes );
-		$this->methods   = array_merge( $this->methods, $other->methods );
-		$this->functions = array_merge( $this->functions, $other->functions );
-		$this->constants = array_merge( $this->constants, $other->constants );
-		$this->hooks     = array_merge( $this->hooks, $other->hooks );
-		$this->warnings  = array_merge( $this->warnings, $other->warnings );
+		$this->classes             = array_merge( $this->classes, $other->classes );
+		$this->methods             = array_merge( $this->methods, $other->methods );
+		$this->functions           = array_merge( $this->functions, $other->functions );
+		$this->constants           = array_merge( $this->constants, $other->constants );
+		$this->hooks               = array_merge( $this->hooks, $other->hooks );
+		$this->warnings            = array_merge( $this->warnings, $other->warnings );
 		$this->dynamic_hook_count += $other->dynamic_hook_count;
 	}
 }

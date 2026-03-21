@@ -50,10 +50,10 @@ class DiffCommand extends Command {
 	}
 
 	protected function execute( InputInterface $input, OutputInterface $output ): int {
-		$slug       = $input->getArgument( 'slug' );
+		$slug        = $input->getArgument( 'slug' );
 		$old_version = $input->getOption( 'old' );
 		$new_version = $input->getOption( 'new' );
-		$format     = $input->getOption( 'format' );
+		$format      = $input->getOption( 'format' );
 
 		if ( empty( $old_version ) ) {
 			$output->writeln( '<error>The --old option is required.</error>' );
