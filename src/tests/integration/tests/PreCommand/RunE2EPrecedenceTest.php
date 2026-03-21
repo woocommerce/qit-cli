@@ -302,6 +302,7 @@ class RunE2EPrecedenceTest extends TestCase {
 	}
 
 	// defaults when no CLI or config: covered by EnvUpPrecedenceTest::test_defaults_when_no_cli_or_config_values
+	// profile inline values + CLI overrides: covered by unit tests in QITInputTest
 
 	/* ================================================================
 	 * 11. Conflict: CLI slug beats root-level qit.json - warning shown

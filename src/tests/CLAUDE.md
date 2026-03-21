@@ -145,6 +145,68 @@ To regenerate a snapshot: delete the `__snapshots__/*.json` file and run the tes
 
 Applied automatically via `cweagans/composer-patches` on `composer install`.
 
+## Left-Side vs Right-Side Testing
+
+This is a critical concept for understanding QIT integration tests.
+
+The config resolution pipeline has a clear boundary — the **env_info** output. Everything before
+that boundary is the "left side" (config resolution), everything after is the "right side" (Docker
+environment setup and test execution).
+
+```
+                         BOUNDARY
+                            │
+  LEFT SIDE                 │              RIGHT SIDE
+  (config resolution)       │              (execution)
+                            │
+  qit.json ─┐              │
+  CLI flags ─┤              │
+  profile   ─┼─→ merge ──→ env_info ──→ Docker ──→ tests
+  environment┤              │
+  defaults  ─┘              │
+                            │
+```
+
+**Left side** produces the resolved configuration:
+- Alias expansion (`wp` → `wordpress_version`)
+- Profile loading and merging
+- Environment reference resolution
+- CLI override application
+- Precedence: CLI > profile inline > referenced environment > defaults
+
+**Right side** consumes the resolved configuration:
+- Docker container creation
+- Plugin/theme installation
+- PHP extension installation
+- Test execution
+
+### Testing implications
+
+**Left-side tests** are fast (no Docker). They verify that the config pipeline produces the right
+options/env_info for a given combination of inputs. These use:
+- Unit tests (`QITInputTest`, `EnvironmentConfigResolverTest`)
+- `qit_run_env_up()` (bails before Docker at step 6)
+- `qit_run_remote_test()` (bails before API call)
+
+**Right-side tests** are slow (Docker). They verify that env:up correctly builds a Docker
+environment from the resolved config. These use:
+- `qit_run_e2e()` (starts Docker, bails before test execution)
+- `qit()` (full end-to-end)
+
+**When writing new tests**, always ask: am I testing the left side or the right side?
+- If left side → unit test or docker-less integration test. Fast, run often.
+- If right side → Docker test. Slow, run individually, tag with `#[Group("docker")]`.
+- Don't use Docker tests to verify config resolution — that's testing the left side with
+  right-side overhead.
+
+### Self-test boundaries by mode
+
+| Self-test mode | Bails at | Tests | Speed |
+|---|---|---|---|
+| `env_up` | After config resolution, before Docker | Left side of env:up | ~1-2s |
+| `run_e2e` | After env:up completes (Docker runs) | Right side + left side of run:e2e | ~40-120s |
+| `remote_test` | After options resolution, before API | Left side of remote tests | ~1-2s |
+
 ## Audit Methodology
 
 When verifying a test directory:

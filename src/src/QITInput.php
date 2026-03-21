@@ -117,7 +117,9 @@ class QITInput implements InputInterface {
 					}
 				}
 
-				$this->current_test_profile = $this->resolved_config['test_types'][ $this->test_type ][ $profile_name ] ?? [];
+				$this->current_test_profile = \QIT_CLI\PreCommand\Configuration\EnvironmentConfigResolver::normalize_aliases(
+					$this->resolved_config['test_types'][ $this->test_type ][ $profile_name ] ?? []
+				);
 			}
 		}
 
@@ -232,7 +234,24 @@ class QITInput implements InputInterface {
 			'json',
 		];
 
-		// Pass through explicitly provided CLI options
+		// Profile values that map to env:up options (profile key => env:up option name).
+		// These are injected as defaults — CLI flags override them.
+		$profile_to_env_up = [
+			'php_version'         => 'php_version',
+			'wordpress_version'   => 'wordpress_version',
+			'woocommerce_version' => 'woocommerce_version',
+			'object_cache'        => 'object_cache',
+		];
+
+		// 1. Collect profile defaults first (lowest priority for env params)
+		$profile = $this->get_test_profile();
+		foreach ( $profile_to_env_up as $profile_key => $env_up_key ) {
+			if ( isset( $profile[ $profile_key ] ) && $profile[ $profile_key ] !== '' ) {
+				$options[ "--$env_up_key" ] = $profile[ $profile_key ];
+			}
+		}
+
+		// 2. CLI options override profile defaults
 		foreach ( $env_up_options as $opt ) {
 			if ( $this->hasOption( $opt ) ) {
 				$value = $this->getOption( $opt );
