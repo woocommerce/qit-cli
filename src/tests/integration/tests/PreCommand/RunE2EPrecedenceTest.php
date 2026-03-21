@@ -173,7 +173,7 @@ class RunE2EPrecedenceTest extends TestCase {
 			'sut' => [
 				'slug'   => 'config-plugin',
 				'type'   => 'plugin',
-				'source' => [ 'type' => 'local', 'path' => '/home/lucas/automattic/qit/qit-cli/src/tests/integration/data/plugins/config-plugin' ],
+				'source' => [ 'type' => 'local', 'path' => '' . __DIR__ . '/../../data/plugins/config-plugin' ],
 			],
 		] ) );
 
@@ -365,7 +365,7 @@ class RunE2EPrecedenceTest extends TestCase {
 
 		$this->assertEqualsCanonicalizing(
 			[
-				'/home/lucas/automattic/qit/qit-cli/src/tests/integration/helpers/custom-test-mu-plugin.php:/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php',
+				'' . __DIR__ . '/../../helpers/custom-test-mu-plugin.php:/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php',
 				'/host/cache:/var/www/cache',
 				'/host/logs:/var/www/logs',
 			],

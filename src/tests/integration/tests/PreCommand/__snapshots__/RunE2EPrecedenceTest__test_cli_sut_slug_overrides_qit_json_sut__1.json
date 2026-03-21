@@ -12,6 +12,7 @@
         "/qit/cache": "/tmp-normalised/qit-cache-NORMALISED/cache",
         "/qit/wp-cli.yml": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/wp-cli.yml",
         "/var/www/html": "qit_env_NORMALISED_ENV_ID",
+        "/var/www/html/wp-content/plugins/config-plugin:ro,cached": "/repo/integration/data/plugins/config-plugin",
         "/var/www/html/wp-content/plugins/woocommerce": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/woocommerce"
     },
     "docker_images": [
@@ -22,6 +23,18 @@
     "docker_network": "e2e-ENV_ID_qit_network_ENV_ID",
     "php_extensions": [],
     "plugins": [
+        {
+            "slug": "config-plugin",
+            "type": "plugin",
+            "from": "local",
+            "version": "undefined",
+            "source": "/repo/integration/tests/PreCommand/../../data/plugins/config-plugin",
+            "directory": "/repo/integration/tests/PreCommand/../../data/plugins/config-plugin",
+            "downloaded_source": "/repo/integration/tests/PreCommand/../../data/plugins/config-plugin",
+            "entrypoint": "config-plugin/config-plugin.php",
+            "priority": 50,
+            "added_automatically": "Added from CLI or environment configuration"
+        },
         {
             "slug": "woocommerce",
             "type": "plugin",
@@ -64,7 +77,7 @@
     "test_packages": [],
     "test_packages_for_setup": [],
     "sut": {
-        "version": "10.6.1",
+        "version": "undefined",
         "slug": "woocommerce",
         "id": 18734001206047,
         "type": "plugin"

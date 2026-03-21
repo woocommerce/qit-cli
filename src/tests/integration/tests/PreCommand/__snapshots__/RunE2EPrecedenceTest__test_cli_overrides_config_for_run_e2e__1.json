@@ -12,8 +12,8 @@
         "/qit/cache": "/tmp-normalised/qit-cache-NORMALISED/cache",
         "/qit/wp-cli.yml": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/wp-cli.yml",
         "/var/www/html": "qit_env_NORMALISED_ENV_ID",
-        "/var/www/html/wp-content/plugins/jetpack": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/jetpack",
-        "/var/www/html/wp-content/plugins/woocommerce": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/woocommerce"
+        "/var/www/html/wp-content/plugins/woocommerce": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/woocommerce",
+        "/var/www/html/wp-content/plugins/jetpack": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/jetpack"
     },
     "docker_images": [
         "qit_env_NORMALISED_ENV_ID",
@@ -24,24 +24,24 @@
     "php_extensions": [],
     "plugins": [
         {
-            "slug": "jetpack",
+            "slug": "woocommerce",
             "type": "plugin",
             "from": "wporg",
-            "version": "15.6",
-            "source": "https://downloads.wordpress.org/plugin/jetpack.15.6.zip",
-            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/jetpack-eabe8518c027c99a325742d54e10f89d-15.6-78.zip",
-            "entrypoint": "jetpack/jetpack.php",
+            "version": "NORMALIZED_VERSION",
+            "source": "https://normalized-remote-source/woocommerce.10.6.1.zip",
+            "downloaded_source": "/normalized/downloaded-path/file.zip",
+            "entrypoint": "woocommerce/woocommerce.php",
             "priority": 50,
             "added_automatically": "Added from CLI parameter (slug)"
         },
         {
-            "slug": "woocommerce",
+            "slug": "jetpack",
             "type": "plugin",
             "from": "wporg",
-            "version": "10.6.1",
-            "source": "https://downloads.wordpress.org/plugin/woocommerce.10.6.1.zip",
-            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/woocommerce-00bfc5c8376e2d5e417ce0ab4c9f1354-10.6.1-78.zip",
-            "entrypoint": "woocommerce/woocommerce.php",
+            "version": "NORMALIZED_VERSION",
+            "source": "https://normalized-remote-source/jetpack.15.6.zip",
+            "downloaded_source": "/normalized/downloaded-path/file.zip",
+            "entrypoint": "jetpack/jetpack.php",
             "priority": 50,
             "added_automatically": "Added from CLI parameter (slug)"
         }
@@ -61,7 +61,7 @@
     "domain": "localhost",
     "provider_type": "local",
     "cloud_environment_id": null,
-    "wordpress_version": "stable",
+    "wordpress_version": "5.9",
     "woocommerce_version": "10.6.1",
     "php_version": "8.1",
     "object_cache": false,

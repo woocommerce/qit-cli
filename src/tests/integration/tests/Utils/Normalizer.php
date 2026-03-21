@@ -162,6 +162,8 @@ final class Normalizer {
 		// 4. plugins everywhere
 		foreach (
 			[
+				&$data['plugins'],
+				&$data['themes'],
 				&$data['env_info']['plugins'],
 				&$data['configuration']['resolved_plugins'],
 				&$data['resolved_extensions'],
