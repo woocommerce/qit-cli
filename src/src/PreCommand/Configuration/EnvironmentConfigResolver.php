@@ -60,7 +60,7 @@ class EnvironmentConfigResolver {
 	 * @param array<string, mixed> $config The environment block from qit.json.
 	 * @return self
 	 */
-	public function loadFromConfig( array $config ): self {
+	public function load_from_config( array $config ): self {
 		// Normalize short-form keys
 		foreach ( self::$key_aliases as $short => $long ) {
 			if ( isset( $config[ $short ] ) && ! isset( $config[ $long ] ) ) {
@@ -72,31 +72,31 @@ class EnvironmentConfigResolver {
 		// Scalar version params from config
 		foreach ( [ 'php_version', 'wordpress_version' ] as $key ) {
 			if ( isset( $config[ $key ] ) && $config[ $key ] !== '' ) {
-				$this->addScalar( $key, (string) $config[ $key ], self::PRIORITY_CONFIG );
+				$this->add_scalar( $key, (string) $config[ $key ], self::PRIORITY_CONFIG );
 			}
 		}
 
 		// WooCommerce version from config scalar = version pin
 		if ( isset( $config['woocommerce_version'] ) && $config['woocommerce_version'] !== '' ) {
-			$this->addVersionPin( 'woocommerce', (string) $config['woocommerce_version'], self::PRIORITY_CONFIG );
+			$this->add_version_pin( 'woocommerce', (string) $config['woocommerce_version'], self::PRIORITY_CONFIG );
 		}
 
 		// Boolean/scalar config
 		if ( isset( $config['object_cache'] ) ) {
-			$this->addScalar( 'object_cache', $config['object_cache'] ? '1' : '0', self::PRIORITY_CONFIG );
+			$this->add_scalar( 'object_cache', $config['object_cache'] ? '1' : '0', self::PRIORITY_CONFIG );
 		}
 
 		// Plugins from config
 		if ( isset( $config['plugins'] ) && is_array( $config['plugins'] ) ) {
 			foreach ( $config['plugins'] as $plugin ) {
-				$this->addPluginRequest( $plugin, 'config' );
+				$this->add_plugin_request( $plugin, 'config' );
 			}
 		}
 
 		// Themes from config
 		if ( isset( $config['themes'] ) && is_array( $config['themes'] ) ) {
 			foreach ( $config['themes'] as $theme ) {
-				$this->addThemeRequest( $theme, 'config' );
+				$this->add_theme_request( $theme, 'config' );
 			}
 		}
 
@@ -122,36 +122,36 @@ class EnvironmentConfigResolver {
 	 *                                          Only include options that were EXPLICITLY provided (not Symfony defaults).
 	 * @return self
 	 */
-	public function loadFromCli( array $cli_options ): self {
+	public function load_from_cli( array $cli_options ): self {
 		// Scalar version params
 		if ( isset( $cli_options['php_version'] ) && $cli_options['php_version'] !== null ) {
-			$this->addScalar( 'php_version', (string) $cli_options['php_version'], self::PRIORITY_CLI );
+			$this->add_scalar( 'php_version', (string) $cli_options['php_version'], self::PRIORITY_CLI );
 		}
 		if ( isset( $cli_options['wordpress_version'] ) && $cli_options['wordpress_version'] !== null ) {
-			$this->addScalar( 'wordpress_version', (string) $cli_options['wordpress_version'], self::PRIORITY_CLI );
+			$this->add_scalar( 'wordpress_version', (string) $cli_options['wordpress_version'], self::PRIORITY_CLI );
 		}
 
 		// WooCommerce version from CLI = version pin (highest priority)
 		if ( isset( $cli_options['woocommerce_version'] ) && $cli_options['woocommerce_version'] !== null ) {
-			$this->addVersionPin( 'woocommerce', (string) $cli_options['woocommerce_version'], self::PRIORITY_CLI );
+			$this->add_version_pin( 'woocommerce', (string) $cli_options['woocommerce_version'], self::PRIORITY_CLI );
 		}
 
 		// Boolean/scalar
 		if ( isset( $cli_options['object_cache'] ) ) {
-			$this->addScalar( 'object_cache', $cli_options['object_cache'] ? '1' : '0', self::PRIORITY_CLI );
+			$this->add_scalar( 'object_cache', $cli_options['object_cache'] ? '1' : '0', self::PRIORITY_CLI );
 		}
 
 		// Plugins from CLI --plugin
 		if ( isset( $cli_options['plugins'] ) && is_array( $cli_options['plugins'] ) ) {
 			foreach ( $cli_options['plugins'] as $plugin ) {
-				$this->addPluginRequest( $plugin, 'cli' );
+				$this->add_plugin_request( $plugin, 'cli' );
 			}
 		}
 
 		// Themes from CLI --theme
 		if ( isset( $cli_options['themes'] ) && is_array( $cli_options['themes'] ) ) {
 			foreach ( $cli_options['themes'] as $theme ) {
-				$this->addThemeRequest( $theme, 'cli' );
+				$this->add_theme_request( $theme, 'cli' );
 			}
 		}
 
@@ -176,12 +176,12 @@ class EnvironmentConfigResolver {
 	 * @param array<string|array<string,mixed>> $required_themes  Theme requirements from test packages.
 	 * @return self
 	 */
-	public function loadFromTestPackages( array $required_plugins, array $required_themes ): self {
+	public function load_from_test_packages( array $required_plugins, array $required_themes ): self {
 		foreach ( $required_plugins as $plugin ) {
-			$this->addPluginRequest( $plugin, 'test_package' );
+			$this->add_plugin_request( $plugin, 'test_package' );
 		}
 		foreach ( $required_themes as $theme ) {
-			$this->addThemeRequest( $theme, 'test_package' );
+			$this->add_theme_request( $theme, 'test_package' );
 		}
 
 		return $this;
@@ -194,15 +194,15 @@ class EnvironmentConfigResolver {
 	 * @param string                    $sut_type      'plugin' or 'theme'.
 	 * @return self
 	 */
-	public function loadFromSut( ?array $sut_extension, string $sut_type = 'plugin' ): self {
+	public function load_from_sut( ?array $sut_extension, string $sut_type = 'plugin' ): self {
 		if ( $sut_extension === null ) {
 			return $this;
 		}
 
 		if ( $sut_type === 'plugin' ) {
-			$this->addPluginRequest( $sut_extension, 'sut' );
+			$this->add_plugin_request( $sut_extension, 'sut' );
 		} else {
-			$this->addThemeRequest( $sut_extension, 'theme' );
+			$this->add_theme_request( $sut_extension, 'theme' );
 		}
 
 		return $this;
@@ -218,17 +218,17 @@ class EnvironmentConfigResolver {
 
 		// 1. Resolve scalars: highest priority wins, then default
 		foreach ( [ 'php_version', 'wordpress_version' ] as $key ) {
-			$config[ $key ] = $this->resolveScalar( $key );
+			$config[ $key ] = $this->resolve_scalar( $key );
 		}
 
 		// 2. Resolve object_cache
-		$config['object_cache'] = $this->resolveScalar( 'object_cache' ) === '1';
+		$config['object_cache'] = $this->resolve_scalar( 'object_cache' ) === '1';
 
 		// 3. Resolve plugins with version pinning
-		$config['plugins'] = $this->resolveExtensions( $this->plugin_requests, $this->version_pins );
+		$config['plugins'] = $this->resolve_extensions( $this->plugin_requests, $this->version_pins );
 
 		// 4. Resolve themes (no version pinning for themes currently)
-		$config['themes'] = $this->resolveExtensions( $this->theme_requests, [] );
+		$config['themes'] = $this->resolve_extensions( $this->theme_requests, [] );
 
 		// 5. Extract woocommerce_version from resolved plugins
 		$config['woocommerce_version'] = '';
@@ -251,7 +251,7 @@ class EnvironmentConfigResolver {
 	/**
 	 * Add a scalar value with priority. Lower priority number wins.
 	 */
-	private function addScalar( string $key, string $value, int $priority ): void {
+	private function add_scalar( string $key, string $value, int $priority ): void {
 		if ( ! isset( $this->scalars[ $key ] ) || $priority < $this->scalars[ $key ]['priority'] ) {
 			$this->scalars[ $key ] = [
 				'value'    => $value,
@@ -263,7 +263,7 @@ class EnvironmentConfigResolver {
 	/**
 	 * Resolve a scalar value: prioritized input, then default.
 	 */
-	private function resolveScalar( string $key ): string {
+	private function resolve_scalar( string $key ): string {
 		if ( isset( $this->scalars[ $key ] ) ) {
 			return $this->scalars[ $key ]['value'];
 		}
@@ -274,7 +274,7 @@ class EnvironmentConfigResolver {
 	/**
 	 * Add a version pin for a plugin slug. Lower priority number wins.
 	 */
-	private function addVersionPin( string $slug, string $version, int $priority ): void {
+	private function add_version_pin( string $slug, string $version, int $priority ): void {
 		if ( ! isset( $this->version_pins[ $slug ] ) || $priority < $this->version_pins[ $slug ]['priority'] ) {
 			$this->version_pins[ $slug ] = [
 				'version'  => $version,
@@ -289,7 +289,7 @@ class EnvironmentConfigResolver {
 	 * @param string|array<string, mixed> $plugin Plugin slug or config array.
 	 * @param string                      $source Source identifier ('config', 'cli', 'test_package', 'sut').
 	 */
-	private function addPluginRequest( $plugin, string $source ): void {
+	private function add_plugin_request( $plugin, string $source ): void {
 		$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
 		if ( $slug === null ) {
 			return;
@@ -310,9 +310,8 @@ class EnvironmentConfigResolver {
 			// Keep the richer entry (more keys = more info)
 			if ( count( $entry ) > count( $existing ) ) {
 				$this->plugin_requests[ $slug ] = $entry;
-			}
-			// If same richness, CLI overwrites config (but not SUT)
-			elseif ( $source === 'cli' && ( $existing['_source'] ?? '' ) !== 'sut' ) {
+			} elseif ( $source === 'cli' && ( $existing['_source'] ?? '' ) !== 'sut' ) {
+				// If same richness, CLI overwrites config (but not SUT)
 				$this->plugin_requests[ $slug ] = $entry;
 			}
 			return;
@@ -327,7 +326,7 @@ class EnvironmentConfigResolver {
 	 * @param string|array<string, mixed> $theme Theme slug or config array.
 	 * @param string                      $source Source identifier.
 	 */
-	private function addThemeRequest( $theme, string $source ): void {
+	private function add_theme_request( $theme, string $source ): void {
 		$slug = is_string( $theme ) ? $theme : ( $theme['slug'] ?? null );
 		if ( $slug === null ) {
 			return;
@@ -361,7 +360,7 @@ class EnvironmentConfigResolver {
 	 * @param array<string, array{version: string, priority: int}> $pins Version pins by slug.
 	 * @return array<int, string|array<string, mixed>> Resolved extension list.
 	 */
-	private function resolveExtensions( array $requests, array $pins ): array {
+	private function resolve_extensions( array $requests, array $pins ): array {
 		// If a pin exists for a slug that's not in the request list, add it
 		foreach ( $pins as $slug => $pin ) {
 			if ( ! isset( $requests[ $slug ] ) ) {

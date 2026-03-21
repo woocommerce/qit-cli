@@ -1,6 +1,7 @@
 {
   "require": {
-    "php": "^8.4"
+    "php": "^8.4",
+    "cweagans/composer-patches": "^1"
   },
   "autoload": {
     "psr-4": {
@@ -17,5 +18,17 @@
     "symfony/filesystem": "^7",
     "vlucas/phpdotenv": "^5",
     "brianium/paratest": "^7"
+  },
+  "extra": {
+    "patches": {
+      "brianium/paratest": {
+        "Fix --stop-on-failure to kill workers, add 5-min per-test timeout": "patches/paratest-stop-on-failure-timeout.patch"
+      }
+    }
+  },
+  "config": {
+    "allow-plugins": {
+      "cweagans/composer-patches": true
+    }
   }
 }

@@ -4,21 +4,70 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "31b002adce99bc5eb9f6d6f0a68f60fa",
-    "packages": [],
-    "packages-dev": [
+    "content-hash": "7a9447c2f36eb3572259c1f5017b1639",
+    "packages": [
         {
-            "name": "brianium/paratest",
-            "version": "v7.11.2",
+            "name": "cweagans/composer-patches",
+            "version": "1.7.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/paratestphp/paratest.git",
-                "reference": "521aa381c212816d0dc2f04f1532a5831969cb5e"
+                "url": "https://github.com/cweagans/composer-patches.git",
+                "reference": "e190d4466fe2b103a55467dfa83fc2fecfcaf2db"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/521aa381c212816d0dc2f04f1532a5831969cb5e",
-                "reference": "521aa381c212816d0dc2f04f1532a5831969cb5e",
+                "url": "https://api.github.com/repos/cweagans/composer-patches/zipball/e190d4466fe2b103a55467dfa83fc2fecfcaf2db",
+                "reference": "e190d4466fe2b103a55467dfa83fc2fecfcaf2db",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "composer/composer": "~1.0 || ~2.0",
+                "phpunit/phpunit": "~4.6"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "cweagans\\Composer\\Patches"
+            },
+            "autoload": {
+                "psr-4": {
+                    "cweagans\\Composer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Cameron Eagans",
+                    "email": "me@cweagans.net"
+                }
+            ],
+            "description": "Provides a way to patch Composer packages.",
+            "support": {
+                "issues": "https://github.com/cweagans/composer-patches/issues",
+                "source": "https://github.com/cweagans/composer-patches/tree/1.7.3"
+            },
+            "time": "2022-12-20T22:53:13+00:00"
+        }
+    ],
+    "packages-dev": [
+        {
+            "name": "brianium/paratest",
+            "version": "v7.12.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/paratestphp/paratest.git",
+                "reference": "6a34ddb12a3bd5bd07d831ce95f111087f3bcbd8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/paratestphp/paratest/zipball/6a34ddb12a3bd5bd07d831ce95f111087f3bcbd8",
+                "reference": "6a34ddb12a3bd5bd07d831ce95f111087f3bcbd8",
                 "shasum": ""
             },
             "require": {
@@ -28,11 +77,11 @@
                 "ext-simplexml": "*",
                 "fidry/cpu-core-counter": "^1.3.0",
                 "jean85/pretty-package-versions": "^2.1.1",
-                "php": "~8.3.0 || ~8.4.0",
+                "php": "~8.3.0 || ~8.4.0 || ~8.5.0",
                 "phpunit/php-code-coverage": "^12.3.2",
                 "phpunit/php-file-iterator": "^6",
                 "phpunit/php-timer": "^8",
-                "phpunit/phpunit": "^12.3.5",
+                "phpunit/phpunit": "^12.3.6",
                 "sebastian/environment": "^8.0.3",
                 "symfony/console": "^6.4.20 || ^7.3.2",
                 "symfony/process": "^6.4.20 || ^7.3.0"
@@ -87,7 +136,7 @@
             ],
             "support": {
                 "issues": "https://github.com/paratestphp/paratest/issues",
-                "source": "https://github.com/paratestphp/paratest/tree/v7.11.2"
+                "source": "https://github.com/paratestphp/paratest/tree/v7.12.0"
             },
             "funding": [
                 {
@@ -99,7 +148,7 @@
                     "type": "paypal"
                 }
             ],
-            "time": "2025-08-19T09:24:27+00:00"
+            "time": "2025-08-29T05:28:31+00:00"
         },
         {
             "name": "fidry/cpu-core-counter",

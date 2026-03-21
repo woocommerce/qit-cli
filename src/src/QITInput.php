@@ -36,19 +36,26 @@ class QITInput implements InputInterface {
 	}
 
 	/**
+	 * @return array<string,scalar|array<string,scalar|array<string,scalar>>>
+	 */
+	public function get_resolved_config(): array {
+		return $this->resolved_config;
+	}
+
+	/**
 	 * Get environment name with proper precedence:
 	 * 1. CLI --environment flag
 	 * 2. Test profile's environment setting
 	 * 3. Default 'default'
 	 */
-	public function getEnvironment(): string {
+	public function get_environment(): string {
 		// CLI flag takes precedence
 		if ( $this->hasOption( 'environment' ) ) {
 			return $this->getOption( 'environment' );
 		}
 
 		// Check test profile for environment setting
-		$profile = $this->getTestProfile();
+		$profile = $this->get_test_profile();
 		if ( isset( $profile['environment'] ) ) {
 			return $profile['environment'];
 		}
@@ -59,7 +66,7 @@ class QITInput implements InputInterface {
 	/**
 	 * Get the current test profile name.
 	 */
-	public function getProfileName(): string {
+	public function get_profile_name(): string {
 		if ( $this->hasOption( 'profile' ) ) {
 			return $this->getOption( 'profile' );
 		}
@@ -83,14 +90,14 @@ class QITInput implements InputInterface {
 	 *
 	 * @return array<string,string|array<string>>
 	 */
-	public function getTestProfile(): array {
+	public function get_test_profile(): array {
 		if ( $this->current_test_profile === null ) {
 			// If test type doesn't exist in config, return empty array
 			// This allows commands to work without configuration when packages are provided explicitly
 			if ( ! isset( $this->resolved_config['test_types'][ $this->test_type ] ) ) {
 				$this->current_test_profile = [];
 			} else {
-				$profile_name = $this->getProfileName();
+				$profile_name = $this->get_profile_name();
 
 				// Check if the profile exists for this test type
 				if ( ! isset( $this->resolved_config['test_types'][ $this->test_type ][ $profile_name ] ) ) {
@@ -123,9 +130,9 @@ class QITInput implements InputInterface {
 	 *
 	 * @return array<string,string|bool|array<string>>
 	 */
-	public function getEnvironmentConfig(): array {
+	public function get_environment_config(): array {
 		if ( $this->current_environment_config === null ) {
-			$env_name = $this->getEnvironment();
+			$env_name = $this->get_environment();
 			$config   = $this->resolved_config['environments'][ $env_name ] ?? [];
 
 			// Apply CLI overrides - but we don't do this here anymore!
@@ -142,8 +149,8 @@ class QITInput implements InputInterface {
 	 *
 	 * @return array<string>
 	 */
-	public function getTestPackages(): array {
-		$profile  = $this->getTestProfile();
+	public function get_test_packages(): array {
+		$profile  = $this->get_test_profile();
 		$packages = $profile['test_packages'] ?? [];
 
 		// Add CLI test packages if provided (or programmatically set)
@@ -161,7 +168,7 @@ class QITInput implements InputInterface {
 	 *
 	 * @return array<string,string>|null
 	 */
-	public function getSut(): ?array {
+	public function get_sut(): ?array {
 		// CLI argument takes precedence
 		$sut_arg = $this->getArgument( 'sut' );
 		if ( $sut_arg ) {
@@ -169,7 +176,7 @@ class QITInput implements InputInterface {
 		}
 
 		// Check test profile
-		$profile = $this->getTestProfile();
+		$profile = $this->get_test_profile();
 		if ( isset( $profile['sut'] ) && is_array( $profile['sut'] ) ) {
 			// Ensure it's a flat array of strings
 			$sut = [];
@@ -202,7 +209,7 @@ class QITInput implements InputInterface {
 	 *
 	 * @return array<string,string|bool|array<string>>
 	 */
-	public function getEnvironmentOptions(): array {
+	public function get_environment_options(): array {
 		$options = [];
 
 		// List of options that env:up understands
@@ -244,7 +251,7 @@ class QITInput implements InputInterface {
 
 		// Include resolved environment name if not already set
 		if ( ! isset( $options['--environment'] ) ) {
-			$options['--environment'] = $this->getEnvironment();
+			$options['--environment'] = $this->get_environment();
 		}
 
 		return $options;
@@ -301,7 +308,7 @@ class QITInput implements InputInterface {
 	/**
 	 * Get the underlying Symfony input for legacy compatibility.
 	 */
-	public function getSymfonyInput(): InputInterface {
+	public function get_symfony_input(): InputInterface {
 		return $this->symfony_input;
 	}
 

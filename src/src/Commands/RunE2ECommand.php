@@ -191,10 +191,10 @@ class RunE2ECommand extends QITCommand {
 		/*****************************************************************
 		 * 1. Get environment options for delegation to env:up
 		 */
-		$env_up_options = $input->getEnvironmentOptions();
+		$env_up_options = $input->get_environment_options();
 
 		// Handle activation test scenario
-		$test_packages = $input->getTestPackages();
+		$test_packages = $input->get_test_packages();
 		if ( $input->getArgument( 'sut' ) === 'woocommerce' &&
 			array_filter( $test_packages, fn( $pkg ) => str_starts_with( $pkg, 'woocommerce/activation:' ) ) ) {
 			$output->writeln( '<info>Running activation test scenario.</info>' );
@@ -216,10 +216,24 @@ class RunE2ECommand extends QITCommand {
 		$parsed_env_vars = $env_parser->parse( $cli_env_vars, $env_files );
 
 		// Add SUT to env:up options if provided
-		$sut_info = $input->getSut();
+		$sut_info = $input->get_sut();
 		$sut_slug = $sut_info['slug'] ?? null;
 		$sut_id   = null;
 		$sut_type = null;
+
+		// Warn if CLI slug overrides qit.json SUT
+		$cli_sut_arg     = $input->getArgument( 'sut' );
+		$config_sut_slug = $input->get_resolved_config()['sut']['slug'] ?? null;
+		if ( $cli_sut_arg && $config_sut_slug && $cli_sut_arg !== $config_sut_slug ) {
+			$stderr = $output instanceof \Symfony\Component\Console\Output\ConsoleOutput
+				? $output->getErrorOutput()
+				: $output;
+			$stderr->writeln( sprintf(
+				'<comment>Using CLI slug "%s" instead of qit.json value "%s".</comment>',
+				$cli_sut_arg,
+				$config_sut_slug
+			) );
+		}
 
 		if ( $sut_slug ) {
 			// Resolve SUT ID and type
@@ -240,7 +254,12 @@ class RunE2ECommand extends QITCommand {
 			// Add SUT to env:up options using the complex format from old code
 			$env_up_options = $this->add_sut_to_env_up_options( $input, $env_up_options, $sut_slug, $sut_type );
 		}
-		// else: No SUT provided - run without SUT
+
+		if ( ! $sut_slug ) {
+			$output->writeln( '<error>No System Under Test specified. Provide a slug as the first argument or set "sut" in qit.json.</error>' );
+
+			return Command::FAILURE;
+		}
 
 		// Set environment exposure
 		putenv( 'QIT_HIDE_SITE_INFO=1' );
@@ -249,10 +268,8 @@ class RunE2ECommand extends QITCommand {
 		putenv( 'QIT_UP_AND_TEST=1' );
 
 		// Set global variables
-		if ( $sut_slug ) {
-			App::setVar( 'QIT_SUT', $sut_id );
-			App::setVar( 'QIT_SUT_SLUG', $sut_slug );
-		}
+		App::setVar( 'QIT_SUT', $sut_id );
+		App::setVar( 'QIT_SUT_SLUG', $sut_slug );
 
 		// Skip downloading test packages here - env:up will handle it
 		// We'll reconstruct test_packages from env_info after env:up runs
@@ -271,7 +288,7 @@ class RunE2ECommand extends QITCommand {
 
 		// Pass original test package references to env:up for requirement processing
 		// env:up will handle downloading (or cache hits) and requirement extraction
-		$original_test_packages = $input->getTestPackages(); // Get the original refs from input
+		$original_test_packages = $input->get_test_packages(); // Get the original refs from input
 
 		// Merge utility packages from the selected environment
 		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
@@ -319,14 +336,12 @@ class RunE2ECommand extends QITCommand {
 			putenv( 'QIT_EXPOSE_ENVIRONMENT_TO' );
 		}
 
-		// Add SUT info to env_info if provided (preserve existing version from env:up)
-		if ( $sut_slug ) {
-			$env_info->sut = array_merge( $env_info->sut, [
-				'slug' => $sut_slug,
-				'id'   => $sut_id,
-				'type' => $sut_type,
-			] );
-		}
+		// Add SUT info to env_info (preserve existing version from env:up)
+		$env_info->sut = array_merge( $env_info->sut, [
+			'slug' => $sut_slug,
+			'id'   => $sut_id,
+			'type' => $sut_type,
+		] );
 
 		// Reconstruct test_packages from env_info for validation and display
 		$test_packages = [];

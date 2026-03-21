@@ -20,7 +20,7 @@ abstract class DynamicCommand extends QITCommand {
 	public function get_test_profile(): string {
 		// Use QITInput's smart profile resolution if available
 		if ( $this->input instanceof \QIT_CLI\QITInput ) {
-			return $this->input->getProfileName();
+			return $this->input->get_profile_name();
 		}
 		return $this->input->getOption( 'profile' ) ?? 'default';
 	}

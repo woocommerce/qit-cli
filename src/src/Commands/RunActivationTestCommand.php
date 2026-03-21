@@ -43,7 +43,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 		}
 
 		// Validate profile exists if explicitly provided
-		$profile_name = $input->getProfileName();
+		$profile_name = $input->get_profile_name();
 		// This will throw an exception if the profile doesn't exist
 		$this->get_current_test_profile( $this->test_type, $profile_name );
 

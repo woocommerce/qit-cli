@@ -149,6 +149,14 @@ final class Normalizer {
 			}
 		}
 
+		// Normalize Cloudflare tunnel URLs (random subdomains like abc-def-ghi.trycloudflare.com).
+		if ( isset( $data['site_url'] ) && str_contains( $data['site_url'], '.trycloudflare.com' ) ) {
+			$data['site_url'] = preg_replace( '#https?://[^/]+\.trycloudflare\.com#', 'https://NORMALIZED.trycloudflare.com', $data['site_url'] );
+		}
+		if ( isset( $data['domain'] ) && str_contains( $data['domain'], '.trycloudflare.com' ) ) {
+			$data['domain'] = preg_replace( '#[^.]+\.trycloudflare\.com#', 'NORMALIZED.trycloudflare.com', $data['domain'] );
+		}
+
 		// 3. cache dir & downloaded paths
 		if ( isset( $data['configuration']['cache_dir'] ) ) {
 			$data['configuration']['cache_dir'] = self::CACHE_DIR_PLACEHOLDER;

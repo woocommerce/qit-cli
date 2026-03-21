@@ -38,9 +38,6 @@
     "envs": {
         "QIT_DISABLE_UPDATE_CHECKS": "true",
         "QIT_NETWORK_LOGGING": "false",
-        "TOKEN": "from_file",
-        "MODE": "prod",
-        "DEBUG": "true",
         "QIT_ENV_ID": "ENV_ID",
         "QIT_NETWORK_RESTRICTION": "true"
     },

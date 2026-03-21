@@ -24,7 +24,7 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_cli_woo_pin_wins_over_bare_plugin(): void {
 		$result = $this->make()
-			->loadFromCli( [
+			->load_from_cli( [
 				'woocommerce_version' => '8.8.0',
 				'plugins'             => [ 'woocommerce' ],
 			] )
@@ -36,17 +36,17 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_cli_woo_pin_wins_over_config_plugin_version(): void {
 		$result = $this->make()
-			->loadFromConfig( [ 'plugins' => [
+			->load_from_config( [ 'plugins' => [
 				[ 'slug' => 'woocommerce', 'from' => 'wporg', 'version' => '8.0.0' ],
 			] ] )
-			->loadFromCli( [ 'woocommerce_version' => '8.8.0' ] )
+			->load_from_cli( [ 'woocommerce_version' => '8.8.0' ] )
 			->resolve();
 		$this->assertEquals( '8.8.0', $result['woocommerce_version'] );
 	}
 
 	public function test_config_woo_pin_wins_over_config_plugin_version(): void {
 		$result = $this->make()
-			->loadFromConfig( [
+			->load_from_config( [
 				'woo'     => '8.5.0',
 				'plugins' => [
 					[ 'slug' => 'woocommerce', 'from' => 'wporg', 'version' => '8.0.0' ],
@@ -58,8 +58,8 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_cli_woo_pin_wins_over_config_woo(): void {
 		$result = $this->make()
-			->loadFromConfig( [ 'woo' => '8.5.0' ] )
-			->loadFromCli( [ 'woocommerce_version' => '8.8.0' ] )
+			->load_from_config( [ 'woo' => '8.5.0' ] )
+			->load_from_cli( [ 'woocommerce_version' => '8.8.0' ] )
 			->resolve();
 		$this->assertEquals( '8.8.0', $result['woocommerce_version'] );
 	}
@@ -74,7 +74,7 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_bare_plugin_woocommerce_has_no_fabricated_version(): void {
 		$result = $this->make()
-			->loadFromCli( [ 'plugins' => [ 'woocommerce' ] ] )
+			->load_from_cli( [ 'plugins' => [ 'woocommerce' ] ] )
 			->resolve();
 		$slugs = array_column( $result['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $slugs );
@@ -83,7 +83,7 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_config_plugin_version_respected_without_pin(): void {
 		$result = $this->make()
-			->loadFromConfig( [ 'plugins' => [
+			->load_from_config( [ 'plugins' => [
 				[ 'slug' => 'woocommerce', 'from' => 'wporg', 'version' => '8.0.0' ],
 			] ] )
 			->resolve();
@@ -94,7 +94,7 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_woo_pin_alone_adds_woocommerce_to_plugins(): void {
 		$result = $this->make()
-			->loadFromCli( [ 'woocommerce_version' => '8.8.0' ] )
+			->load_from_cli( [ 'woocommerce_version' => '8.8.0' ] )
 			->resolve();
 		$slugs = array_column( $result['plugins'], 'slug' );
 		$this->assertContains( 'woocommerce', $slugs );
@@ -105,8 +105,8 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_test_package_deps_dont_override_pin(): void {
 		$result = $this->make()
-			->loadFromCli( [ 'woocommerce_version' => '8.8.0' ] )
-			->loadFromTestPackages( [ 'woocommerce' ], [] )
+			->load_from_cli( [ 'woocommerce_version' => '8.8.0' ] )
+			->load_from_test_packages( [ 'woocommerce' ], [] )
 			->resolve();
 		$this->assertEquals( '8.8.0', $result['woocommerce_version'] );
 	}
@@ -121,8 +121,8 @@ class EnvironmentConfigResolverTest extends TestCase {
 			'added_automatically' => 'SUT',
 		];
 		$result = $this->make()
-			->loadFromConfig( [ 'plugins' => [ 'my-plugin' ] ] )
-			->loadFromSut( $sut, 'plugin' )
+			->load_from_config( [ 'plugins' => [ 'my-plugin' ] ] )
+			->load_from_sut( $sut, 'plugin' )
 			->resolve();
 		$slugs = array_column( $result['plugins'], 'slug' );
 		$this->assertEquals( 1, count( array_keys( $slugs, 'my-plugin' ) ) );
@@ -132,13 +132,13 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_load_order_does_not_affect_scalar_precedence(): void {
 		$cli_first = $this->make()
-			->loadFromCli( [ 'php_version' => '8.3' ] )
-			->loadFromConfig( [ 'php' => '7.4' ] )
+			->load_from_cli( [ 'php_version' => '8.3' ] )
+			->load_from_config( [ 'php' => '7.4' ] )
 			->resolve();
 
 		$config_first = $this->make()
-			->loadFromConfig( [ 'php' => '7.4' ] )
-			->loadFromCli( [ 'php_version' => '8.3' ] )
+			->load_from_config( [ 'php' => '7.4' ] )
+			->load_from_cli( [ 'php_version' => '8.3' ] )
 			->resolve();
 
 		$this->assertEquals( '8.3', $cli_first['php_version'] );
@@ -147,17 +147,17 @@ class EnvironmentConfigResolverTest extends TestCase {
 
 	public function test_load_order_does_not_affect_woo_pin(): void {
 		$pin_first = $this->make()
-			->loadFromCli( [ 'woocommerce_version' => '8.8.0' ] )
-			->loadFromConfig( [ 'plugins' => [
+			->load_from_cli( [ 'woocommerce_version' => '8.8.0' ] )
+			->load_from_config( [ 'plugins' => [
 				[ 'slug' => 'woocommerce', 'from' => 'wporg', 'version' => '7.0.0' ],
 			] ] )
 			->resolve();
 
 		$plugin_first = $this->make()
-			->loadFromConfig( [ 'plugins' => [
+			->load_from_config( [ 'plugins' => [
 				[ 'slug' => 'woocommerce', 'from' => 'wporg', 'version' => '7.0.0' ],
 			] ] )
-			->loadFromCli( [ 'woocommerce_version' => '8.8.0' ] )
+			->load_from_cli( [ 'woocommerce_version' => '8.8.0' ] )
 			->resolve();
 
 		$this->assertEquals( '8.8.0', $pin_first['woocommerce_version'] );
@@ -167,8 +167,8 @@ class EnvironmentConfigResolverTest extends TestCase {
 	// ── Short/long form normalization ──
 
 	public function test_config_short_and_long_form_are_equivalent(): void {
-		$short = $this->make()->loadFromConfig( [ 'woo' => '8.5.0' ] )->resolve();
-		$long  = $this->make()->loadFromConfig( [ 'woocommerce_version' => '8.5.0' ] )->resolve();
+		$short = $this->make()->load_from_config( [ 'woo' => '8.5.0' ] )->resolve();
+		$long  = $this->make()->load_from_config( [ 'woocommerce_version' => '8.5.0' ] )->resolve();
 		$this->assertEquals( $short['woocommerce_version'], $long['woocommerce_version'] );
 	}
 }

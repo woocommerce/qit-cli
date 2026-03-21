@@ -123,7 +123,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 				/****************************************************************
 				 * 1.  Base configuration comes from qit.json profile
 				 */
-				$profile_name = $input->getProfileName();
+				$profile_name = $input->get_profile_name();
 
 				$options = $this->get_current_test_profile( $this->test_type, $profile_name );
 				if ( ! \is_array( $options ) ) {

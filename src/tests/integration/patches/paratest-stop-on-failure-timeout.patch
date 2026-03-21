@@ -1,0 +1,122 @@
+diff --git a/src/WrapperRunner/WrapperRunner.php b/src/WrapperRunner/WrapperRunner.php
+index 917874f..c39eff6 100644
+--- a/src/WrapperRunner/WrapperRunner.php
++++ b/src/WrapperRunner/WrapperRunner.php
+@@ -139,6 +139,20 @@ final class WrapperRunner implements RunnerInterface
+                     throw $worker->getWorkerCrashedException();
+                 }
+ 
++                // Kill workers that exceed the per-test timeout.
++                if ($worker->hasTimedOut()) {
++                    $this->output->writeln(sprintf(
++                        '<error>Test timed out after %d seconds: %s (worker %d)</error>',
++                        300,
++                        $worker->getCurrentlyExecuting() ?? 'unknown',
++                        $token,
++                    ));
++                    $worker->kill();
++                    unset($this->workers[$token]);
++                    $this->exitcode = max($this->exitcode, 1);
++                    continue;
++                }
++
+                 if (! $worker->isFree()) {
+                     continue;
+                 }
+@@ -155,6 +169,14 @@ final class WrapperRunner implements RunnerInterface
+                     && $this->options->configuration->stopOnFailure()
+                 ) {
+                     $this->pending = [];
++                    // Kill all running workers immediately.
++                    foreach ($this->workers as $t => $w) {
++                        if ($t !== $token) {
++                            $w->stop();
++                            unset($this->workers[$t]);
++                        }
++                    }
++                    break 2;
+                 } elseif (($pending = array_shift($this->pending)) !== null) {
+                     $worker->assign($pending);
+                     $this->batches[$token]++;
+@@ -196,6 +218,15 @@ final class WrapperRunner implements RunnerInterface
+ 
+                 $this->flushWorker($worker);
+                 unset($this->workers[$index]);
++
++                // Kill all remaining workers immediately on failure.
++                if ($this->exitcode > 0 && $this->options->configuration->stopOnFailure()) {
++                    foreach ($this->workers as $t => $w) {
++                        $w->kill();
++                        unset($this->workers[$t]);
++                    }
++                    break 2;
++                }
+             }
+ 
+             usleep(self::CYCLE_SLEEP);
+diff --git a/src/WrapperRunner/WrapperWorker.php b/src/WrapperRunner/WrapperWorker.php
+index ce1b039..15d7e3a 100644
+--- a/src/WrapperRunner/WrapperWorker.php
++++ b/src/WrapperRunner/WrapperWorker.php
+@@ -31,6 +31,9 @@ final class WrapperWorker
+ {
+     public const COMMAND_EXIT = "EXIT\n";
+ 
++    /** Per-test timeout in seconds. Tests running longer than this are killed. */
++    private const TEST_TIMEOUT_SECONDS = 300;
++
+     public readonly SplFileInfo $statusFile;
+     public readonly SplFileInfo $progressFile;
+     public readonly SplFileInfo $unexpectedOutputFile;
+@@ -46,6 +49,7 @@ final class WrapperWorker
+     private int $inExecution = 0;
+     private InputStream $input;
+     private int $exitCode = -1;
++    private ?float $assignedAt = null;
+ 
+     /** @param non-empty-string[] $parameters */
+     public function __construct(
+@@ -198,12 +202,14 @@ final class WrapperWorker
+ 
+         $this->input->write($test . "\n");
+         $this->currentlyExecuting = $test;
++        $this->assignedAt = microtime(true);
+         ++$this->inExecution;
+     }
+ 
+     public function reset(): void
+     {
+         $this->currentlyExecuting = null;
++        $this->assignedAt = null;
+     }
+ 
+     public function stop(): void
+@@ -211,6 +217,28 @@ final class WrapperWorker
+         $this->input->write(self::COMMAND_EXIT);
+     }
+ 
++    /** Force-kill the underlying process immediately. */
++    public function kill(): void
++    {
++        $this->process->stop(0);
++    }
++
++    /** Check if the current test has exceeded the per-test timeout. */
++    public function hasTimedOut(): bool
++    {
++        if ($this->assignedAt === null) {
++            return false;
++        }
++
++        return (microtime(true) - $this->assignedAt) > self::TEST_TIMEOUT_SECONDS;
++    }
++
++    /** Get the name of the currently executing test (for error reporting). */
++    public function getCurrentlyExecuting(): ?string
++    {
++        return $this->currentlyExecuting;
++    }
++
+     public function isFree(): bool
+     {
+         $statusFilepath = $this->statusFile->getPathname();

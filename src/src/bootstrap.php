@@ -48,7 +48,6 @@ use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
-use QIT_CLI\Environment\EnvironmentDanglingCleanup;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
 use QIT_CLI\IO\Input;
