@@ -12,6 +12,8 @@ use QIT_CLI\Environment\Environments\Performance\PerformanceEnvironment;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\Environment\Environments\QITEnvInfo;
 use QIT_CLI\Environment\Infra\InfraProviderFactory;
+use QIT_CLI\PreCommand\Configuration\CliConfigParser;
+use QIT_CLI\PreCommand\Configuration\ConfigMerger;
 use QIT_CLI\QITInput;
 use QIT_CLI\Tunnel\TunnelRunner;
 use Symfony\Component\Console\Command\Command;
@@ -101,6 +103,8 @@ class UpEnvironmentCommand extends QITCommand {
 	 ******************************************************************/
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		/** @var \QIT_CLI\QITInput $input */
+
+		App::make( \QIT_CLI\Environment\EnvironmentDanglingCleanup::class )->cleanup_dangling();
 
 		/* ─ Safety guard ─ */
 		if ( is_windows() ) {
@@ -292,8 +296,21 @@ class UpEnvironmentCommand extends QITCommand {
 		/* ─ 1. Build the *final* env config (config‑file ⊕ CLI) ─ */
 		$env_name         = $input->getOption( 'environment' ) ?? 'default';
 		$environment_type = $input->getOption( 'environment_type' ) ?? 'e2e';
-		$env_config       = $this->get_environment_config( $env_name );
-		$env_config       = $this->applyCliOverrides( $env_config, $input, $environment_type );
+
+		// Parse → Merge → Resolve: the three-step pipeline.
+		$env_config  = $this->get_environment_config( $env_name );
+		$cli_overlay = CliConfigParser::parse( $input );
+		$env_config  = ConfigMerger::merge( $env_config, $cli_overlay );
+
+		// Post-merge resolution steps.
+		$env_config = $this->resolveWooCommerceVersion( $env_config );
+		$env_config = $this->resolveWordPressVersion( $env_config );
+		$env_config = $this->resolveEnvVars( $env_config, $input );
+
+		// Default network mode to 'auto' if not explicitly set.
+		if ( ! isset( $env_config['network_mode'] ) ) {
+			$env_config['network_mode'] = 'auto';
+		}
 
 		/*
 		─ 1.05. Merge utility packages from environment and CLI ─
@@ -722,17 +739,17 @@ class UpEnvironmentCommand extends QITCommand {
 			}
 		}
 
-		/* ─ 6. Honour --tunnel (validated against TunnelRunner) ─ */
-		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
-			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
-			$env_info->tunnel = true;
-		}
-
-		/* ─ 7. SELF‑TEST shortcut ─ */
+		/* ─ 6. SELF‑TEST shortcut ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'env_up' ) {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 
 			return Command::SUCCESS;
+		}
+
+		/* ─ 7. Honour --tunnel (validated against TunnelRunner) ─ */
+		if ( $env_info->tunnel_type !== 'no_tunnel' ) {
+			$this->tunnel_runner->check_tunnel_support( $env_info->tunnel_type );
+			$env_info->tunnel = true;
 		}
 
 		/* ─ 8. Bring the environment up ─ */
@@ -853,6 +870,10 @@ class UpEnvironmentCommand extends QITCommand {
 							case 'local':
 								$extension->directory = $plugin_config['path'] ?? null;
 								$extension->source    = $plugin_config['path'] ?? null;
+								if ( isset( $plugin_config['build'] ) ) {
+									$extension->build_command = $plugin_config['build'];
+									$extension->build_cwd     = $plugin_config['path'] ?? null;
+								}
 								break;
 							case 'url':
 								$extension->source  = $plugin_config['url'] ?? null;
@@ -895,6 +916,10 @@ class UpEnvironmentCommand extends QITCommand {
 							case 'local':
 								$extension->directory = $theme_config['path'] ?? null;
 								$extension->source    = $theme_config['path'] ?? null;
+								if ( isset( $theme_config['build'] ) ) {
+									$extension->build_command = $theme_config['build'];
+									$extension->build_cwd     = $theme_config['path'] ?? null;
+								}
 								break;
 							case 'url':
 								$extension->source = $theme_config['url'] ?? null;
@@ -937,152 +962,20 @@ class UpEnvironmentCommand extends QITCommand {
 	}
 
 	/**
-	 * Merge *explicit* CLI options into the resolved environment config.
+	 * Convert woocommerce_version scalar to a plugin entry.
 	 *
-	 * @param array<string,mixed> $config
-	 * @param InputInterface      $input
+	 * If the merged config contains a woocommerce_version key (from CLI --woo
+	 * or from qit.json), resolve it and add a proper plugin entry. The scalar
+	 * key is consumed so the rest of the system sees WooCommerce as just
+	 * another plugin.
+	 *
+	 * @param array<string,mixed> $config Merged environment config.
+	 *
 	 * @return array<string,mixed>
 	 */
-	private function applyCliOverrides( array $config, InputInterface $input, string $environment_type ): array {
-		// $input is actually a QITInput instance when called from our commands
-
-		/* ─ Scalars - direct 1-1 mapping from option names to config keys ─ */
-		foreach ( [ 'php_version', 'wordpress_version', 'woocommerce_version' ] as $opt ) {
-			if ( $input->hasOption( $opt ) ) {
-				$option_value = $input->getOption( $opt );
-				if ( $option_value !== null ) {
-					$config[ $opt ] = $option_value;
-				}
-			}
-		}
-
-		/* ─ Tunnel is special case (sets two config keys) ─ */
-		if ( $input->hasOption( 'tunnel' ) ) {
-			$tunnel_value = $input->getOption( 'tunnel' );
-			if ( $tunnel_value !== null ) {
-				$config['tunnel_type'] = $tunnel_value;
-				$config['tunnel']      = $tunnel_value !== 'no_tunnel';
-			}
-		}
-
-		/* ─ Handle network mode options ─ */
-		if ( $input->hasOption( 'offline' ) && $input->getOption( 'offline' ) ) {
-			$config['network_mode'] = 'offline';
-		} elseif ( $input->hasOption( 'online' ) && $input->getOption( 'online' ) ) {
-			$config['network_mode'] = 'online';
-		} else {
-			// Default to auto mode (will be determined based on test packages in RunE2ECommand)
-			$config['network_mode'] = 'auto';
-		}
-
-		/* ─ Resolve special versions and add plugins explicitly ─ */
-		$config = $this->resolve_woo( $config, $input, $environment_type );
-		$config = $this->resolve_wp( $config, $input );
-		if ( $input->hasOption( 'object_cache' ) ) {
-			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
-		}
-
-		/* ─ Array‑merge helpers with slug-keyed deduplication ─ */
-		$merge_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
-			if ( ! $input->hasOption( $opt_name ) ) {
-				return;
-			}
-			$cfg = $config[ $key ] ?? [];
-			$cli = (array) $input->getOption( $opt_name );
-
-			// Use slug-keyed merge to handle mixed string/array entries properly
-			$index = [];
-			foreach ( array_merge( $cfg, $cli ) as $entry ) {
-				$slug = is_string( $entry ) ? $entry : ( $entry['slug'] ?? null );
-				if ( ! $slug ) {
-					continue;
-				}
-
-				/**
-				 * Precedence: later entries override earlier ones.
-				 * We iterate            →   first config, then CLI.
-				 * Therefore:            →   anything from the CLI wins ‑
-				 *                          regardless of whether it is a string
-				 *                          or a rich object.
-				 */
-				$index[ $slug ] = $entry;
-			}
-			$config[ $key ] = array_values( $index );
-		};
-
-		$merge_list( 'plugins', 'plugin' );
-		$merge_list( 'themes', 'theme' );
-
-		/* ─ Simple array merge for non-extension lists ─ */
-		$merge_simple_list = function ( string $key, string $opt_name ) use ( &$config, $input ): void {
-			if ( ! $input->hasOption( $opt_name ) ) {
-				return;
-			}
-			$cli            = (array) $input->getOption( $opt_name );
-			$cfg            = $config[ $key ] ?? [];
-			$config[ $key ] = array_values( array_unique( array_merge( $cfg, $cli ) ) );
-		};
-
-		// Volumes should stay as simple arrays until parsed later
-		if ( $input->hasOption( 'volume' ) ) {
-			$cli_volumes = (array) $input->getOption( 'volume' );
-			$cfg_volumes = $config['volumes'] ?? [];
-			// Just merge the arrays without re-indexing
-			$config['volumes'] = array_merge( $cfg_volumes, $cli_volumes );
-		}
-
-		$merge_simple_list( 'php_extensions', 'php_extension' );
-
-		/*
-		─ Runtime env vars - process files immediately ─
-		*/
-		// Set default environment variables for QIT environments
-		// Note: QIT_ENV_ID is added later when env_info is created
-		$default_env_vars = [
-			'QIT_DISABLE_UPDATE_CHECKS' => 'true',  // Disable WordPress update checks by default
-			'QIT_NETWORK_LOGGING'       => 'false', // Network logging disabled by default
-		];
-
-		$existing_env_vars = $config['envs'] ?? [];
-		$env_files         = array_merge(
-			$config['env_files'] ?? [],
-			$input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : []
-		);
-
-		// Get CLI env vars as array of key=value strings (EnvParser expects this format)
-		$cli_env_vars = $input->hasOption( 'env' ) ? (array) $input->getOption( 'env' ) : [];
-
-		// Parse and merge everything using EnvParser
-		$parsed_vars = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvParser::class )->parse( $cli_env_vars, $env_files );
-
-		// Merge with existing env vars (defaults < existing < parsed)
-		// This ensures user can override defaults via config file or CLI
-		$config['envs'] = array_merge( $default_env_vars, $existing_env_vars, $parsed_vars );
-
-		// Remove env_files - no longer needed
-		unset( $config['env_files'] );
-
-		return $config;
-	}
-
-	/**
-	 * Resolve --woo option explicitly.
-	 * Adds WooCommerce plugin with the specified version.
-	 * Defaults to 'stable' if not specified for e2e, activation, and performance environments.
-	 *
-	 * @param array<string,mixed> $config
-	 * @param InputInterface      $input
-	 * @param string              $environment_type
-	 * @return array<string,mixed>
-	 */
-	private function resolve_woo( array $config, InputInterface $input, string $environment_type = 'e2e' ): array {
-		/** @var \QIT_CLI\QITInput $input */
-		$woo_version = $input->hasOption( 'woocommerce_version' ) ? $input->getOption( 'woocommerce_version' ) : null;
-
-		// Default to 'stable' for test environments that typically need WooCommerce
-		if ( empty( $woo_version ) && in_array( $environment_type, [ 'e2e', 'activation', 'performance' ], true ) ) {
-			$woo_version = 'stable';
-		}
+	private function resolveWooCommerceVersion( array $config ): array {
+		$woo_version = $config['woocommerce_version'] ?? null;
+		unset( $config['woocommerce_version'] );
 
 		if ( empty( $woo_version ) ) {
 			return $config;
@@ -1091,7 +984,7 @@ class UpEnvironmentCommand extends QITCommand {
 		$resolved_source = $this->version_resolver->resolve_woo( $woo_version );
 
 		if ( $resolved_source !== null ) {
-			// Special version (rc, nightly) - resolve to URL
+			// Special version (rc, nightly) → URL source.
 			$woo_plugin = [
 				'slug'                => 'woocommerce',
 				'from'                => 'url',
@@ -1100,51 +993,79 @@ class UpEnvironmentCommand extends QITCommand {
 				'added_automatically' => 'Added via --woo option',
 			];
 		} else {
-			// Regular version - add as wporg plugin
+			// Regular version → wporg source.
 			$woo_plugin = [
 				'slug'                => 'woocommerce',
 				'from'                => 'wporg',
-				'version'             => $woo_version === 'stable' ? 'stable' : $woo_version,
+				'version'             => $woo_version,
 				'added_automatically' => 'Added via --woo option',
 			];
 		}
 
-		// Add WooCommerce to plugins list, avoiding duplicates
 		$config['plugins'] = $config['plugins'] ?? [];
 
-		// Remove any existing WooCommerce plugin to avoid conflicts
-		$config['plugins'] = array_filter( $config['plugins'], function ( $plugin ) {
+		// Remove any existing WooCommerce entries to avoid conflicts.
+		$config['plugins'] = array_values( array_filter( $config['plugins'], function ( $plugin ) {
 			$slug = is_string( $plugin ) ? $plugin : ( $plugin['slug'] ?? null );
-			return $slug !== 'woocommerce';
-		});
 
-		// Add the resolved WooCommerce plugin
+			return $slug !== 'woocommerce';
+		} ) );
+
+		// Add the resolved WooCommerce plugin.
 		$config['plugins'][] = $woo_plugin;
 
 		return $config;
 	}
 
 	/**
-	 * Resolve --wp option explicitly.
-	 * Resolves WordPress special versions (like rc).
+	 * Resolve special WordPress versions (e.g. "rc" → actual URL).
 	 *
-	 * @param array<string,mixed> $config
-	 * @param InputInterface      $input
+	 * @param array<string,mixed> $config Merged environment config.
+	 *
 	 * @return array<string,mixed>
 	 */
-	private function resolve_wp( array $config, InputInterface $input ): array {
-		/** @var \QIT_CLI\QITInput $input */
-		if ( ! $input->hasOption( 'wordpress_version' ) ) {
+	private function resolveWordPressVersion( array $config ): array {
+		if ( empty( $config['wordpress_version'] ) ) {
 			return $config;
 		}
 
-		$wp_version = $input->getOption( 'wordpress_version' );
-
-		$resolved_wp = $this->version_resolver->resolve_wp( $wp_version );
+		$resolved_wp = $this->version_resolver->resolve_wp( $config['wordpress_version'] );
 
 		if ( $resolved_wp !== null ) {
 			$config['wordpress_version'] = $resolved_wp;
 		}
+
+		return $config;
+	}
+
+	/**
+	 * Process env vars and env files into a flat envs map.
+	 *
+	 * Merges: hardcoded defaults < config envs < parsed env-files + CLI --env.
+	 *
+	 * @param array<string,mixed> $config Merged environment config.
+	 * @param InputInterface      $input  The input for CLI --env / --env_file.
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function resolveEnvVars( array $config, InputInterface $input ): array {
+		$default_env_vars = [
+			'QIT_DISABLE_UPDATE_CHECKS' => 'true',
+			'QIT_NETWORK_LOGGING'       => 'false',
+		];
+
+		$existing_env_vars = $config['envs'] ?? [];
+		$env_files         = array_merge(
+			$config['env_files'] ?? [],
+			$input->hasOption( 'env_file' ) ? (array) $input->getOption( 'env_file' ) : []
+		);
+
+		$cli_env_vars = $input->hasOption( 'env' ) ? (array) $input->getOption( 'env' ) : [];
+
+		$parsed_vars = \QIT_CLI\App::make( \QIT_CLI\Environment\EnvParser::class )->parse( $cli_env_vars, $env_files );
+
+		$config['envs'] = array_merge( $default_env_vars, $existing_env_vars, $parsed_vars );
+		unset( $config['env_files'] );
 
 		return $config;
 	}
@@ -1634,6 +1555,9 @@ HELP;
 				$extension['from'] = 'local';
 				// Use resolved_path if available, otherwise use path
 				$extension['path'] = $sut['source']['resolved_path'] ?? $sut['source']['path'];
+				if ( isset( $sut['source']['build'] ) ) {
+					$extension['build'] = $sut['source']['build'];
+				}
 				break;
 
 			case 'url':

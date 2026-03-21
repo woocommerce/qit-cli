@@ -1,53 +1,107 @@
 {
-    "extra": {
-        "envs": [],
-        "env_files": []
-    },
+    "extra": [],
     "environment": "e2e",
     "dependencies_mode": "activate",
-    "temporary_env": "/repo/integration/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/",
+    "temporary_env": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/",
     "created_at": 0,
-    "status": "pending",
+    "status": "started",
     "env_id": "ENV_ID",
-    "volumes": [
-        "/repo/integration/helpers/CUSTOM_MU_PLUGIN.php:/var/www/html/wp-content/mu-plugins/CUSTOM_MU_PLUGIN.php"
+    "volumes": {
+        "/qit/bin": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/bin",
+        "/qit/mu-plugins": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/mu-plugins",
+        "/qit/cache": "/tmp-normalised/qit-cache-NORMALISED/cache",
+        "/qit/wp-cli.yml": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/wp-cli.yml",
+        "/var/www/html": "qit_env_NORMALISED_ENV_ID",
+        "/var/www/html/wp-content/plugins/woocommerce": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/woocommerce",
+        "/var/www/html/wp-content/plugins/akismet": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/akismet",
+        "/var/www/html/wp-content/plugins/jetpack": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/jetpack"
+    },
+    "docker_images": [
+        "qit_env_NORMALISED_ENV_ID",
+        "qit_env_NORMALISED_ENV_ID",
+        "qit_env_NORMALISED_ENV_ID"
     ],
-    "docker_images": [],
+    "docker_network": "e2e-ENV_ID_qit_network_ENV_ID",
     "php_extensions": [],
     "plugins": [
-        "woocommerce",
-        "akismet",
-        "jetpack"
+        {
+            "slug": "woocommerce",
+            "type": "plugin",
+            "from": "wporg",
+            "version": "10.6.1",
+            "source": "https://downloads.wordpress.org/plugin/woocommerce.10.6.1.zip",
+            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/woocommerce-00bfc5c8376e2d5e417ce0ab4c9f1354-10.6.1-78.zip",
+            "entrypoint": "woocommerce/woocommerce.php",
+            "priority": 50,
+            "added_automatically": "Added from CLI parameter (slug)"
+        },
+        {
+            "slug": "akismet",
+            "type": "plugin",
+            "from": "wporg",
+            "version": "5.6",
+            "source": "https://downloads.wordpress.org/plugin/akismet.5.6.zip",
+            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/akismet-cde911cca443815245e21a7f09cd6901-5.6-78.zip",
+            "entrypoint": "akismet/akismet.php",
+            "priority": 50,
+            "added_automatically": "Added from CLI parameter (slug)"
+        },
+        {
+            "slug": "jetpack",
+            "type": "plugin",
+            "from": "wporg",
+            "version": "15.6",
+            "source": "https://downloads.wordpress.org/plugin/jetpack.15.6.zip",
+            "downloaded_source": "/tmp-normalised/qit-cache-NORMALISED/cache/plugin/jetpack-eabe8518c027c99a325742d54e10f89d-15.6-78.zip",
+            "entrypoint": "jetpack/jetpack.php",
+            "priority": 50,
+            "added_automatically": "Added from CLI parameter (slug)"
+        }
     ],
     "themes": [],
-    "env": [],
-    "bootstrap_packages": [],
+    "envs": {
+        "QIT_DISABLE_UPDATE_CHECKS": "true",
+        "QIT_NETWORK_LOGGING": "false",
+        "QIT_ENV_ID": "ENV_ID",
+        "QIT_NETWORK_RESTRICTION": "true"
+    },
+    "global_setup_packages": [],
     "test_packages_metadata": [],
     "tunnel": false,
     "tunnel_type": "no_tunnel",
-    "site_url": "http://localhost:8080",
-    "passthrough_args": [],
-    "wp": "stable",
-    "object_cache": false,
-    "php": "8.2",
-    "nginx_port": "",
-    "sut": {
-        "slug": "hello-dolly",
-        "type": "plugin",
-        "source": {
-            "type": "wporg"
-        }
-    },
+    "site_url": "http://localhost:PORT",
     "domain": "localhost",
+    "provider_type": "local",
+    "cloud_environment_id": null,
+    "wordpress_version": "stable",
+    "woocommerce_version": "10.6.1",
+    "php_version": "8.2",
+    "object_cache": false,
+    "network_restriction": true,
+    "nginx_port": "PORT",
+    "php_container": "qit_env_NORMALISED_ENV_ID",
+    "db_container": "qit_env_NORMALISED_ENV_ID",
+    "skip_test_phases": false,
     "skip_activating_plugins": false,
     "skip_activating_themes": false,
+    "additional_vars": [],
+    "test_packages": [],
+    "test_packages_for_setup": [],
+    "sut": {
+        "version": "10.6.1",
+        "slug": "woocommerce",
+        "id": 18734001206047,
+        "type": "plugin"
+    },
+    "passthrough_args": [],
+    "db_port": 0,
+    "global_setup_only": false,
     "tests": [],
     "playwright_config": [],
     "pw_test_tag": "",
-    "woo": "",
     "is_development_build": false,
     "notify": "",
-    "test_packages": [],
+    "artifacts_dir": null,
     "env_info": {
         "created_at": 0,
         "nginx_port": "PORT",

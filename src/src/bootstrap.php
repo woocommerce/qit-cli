@@ -48,7 +48,6 @@ use QIT_CLI\Commands\WooExtensionsCommand;
 use QIT_CLI\Commands\WooValidateZipCommand;
 use QIT_CLI\Config;
 use QIT_CLI\Diagnosis;
-use QIT_CLI\Environment\EnvironmentDanglingCleanup;
 use QIT_CLI\Exceptions\NetworkErrorException;
 use QIT_CLI\Exceptions\UpdateRequiredException;
 use QIT_CLI\IO\Input;
@@ -310,7 +309,5 @@ if ( $is_connected_to_backend ) {
 if ( $container->make( Output::class )->isVerbose() ) {
 	$container->make( Output::class )->writeln( sprintf( '<info>QIT Manager Backend: %s</info>', Config::get_current_manager_backend() ) );
 }
-
-App::make( EnvironmentDanglingCleanup::class )->cleanup_dangling();
 
 return $application;

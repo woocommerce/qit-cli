@@ -13,6 +13,9 @@ use PHPUnit\Framework\TestCase;
  * 3. Handles --only filtering
  * 4. Provides clear error messages
  */
+use PHPUnit\Framework\Attributes\Group;
+
+#[Group("remote-test")]
 class RunGroupCommandTest extends TestCase {
 
 	/**

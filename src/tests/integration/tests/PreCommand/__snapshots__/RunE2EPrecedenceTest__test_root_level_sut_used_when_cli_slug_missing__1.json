@@ -1,0 +1,91 @@
+{
+    "extra": [],
+    "environment": "e2e",
+    "dependencies_mode": "activate",
+    "temporary_env": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/",
+    "created_at": 0,
+    "status": "started",
+    "env_id": "ENV_ID",
+    "volumes": {
+        "/qit/bin": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/bin",
+        "/qit/mu-plugins": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/mu-plugins",
+        "/qit/cache": "/tmp-normalised/qit-cache-NORMALISED/cache",
+        "/qit/wp-cli.yml": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/wp-cli.yml",
+        "/var/www/html": "qit_env_NORMALISED_ENV_ID",
+        "/var/www/html/wp-content/plugins/woocommerce": "/tmp-normalised/qit-cache-NORMALISED/temporary-envs/e2e-ENV_ID/html/wp-content/plugins/woocommerce"
+    },
+    "docker_images": [
+        "qit_env_NORMALISED_ENV_ID",
+        "qit_env_NORMALISED_ENV_ID",
+        "qit_env_NORMALISED_ENV_ID"
+    ],
+    "docker_network": "e2e-ENV_ID_qit_network_ENV_ID",
+    "php_extensions": [],
+    "plugins": [
+        {
+            "slug": "woocommerce",
+            "type": "plugin",
+            "from": "wporg",
+            "version": "NORMALIZED_VERSION",
+            "source": "https://normalized-remote-source/woocommerce.10.6.1.zip",
+            "downloaded_source": "/normalized/downloaded-path/file.zip",
+            "entrypoint": "woocommerce/woocommerce.php",
+            "priority": 50,
+            "added_automatically": "Added from CLI parameter (slug)"
+        }
+    ],
+    "themes": [],
+    "envs": {
+        "QIT_DISABLE_UPDATE_CHECKS": "true",
+        "QIT_NETWORK_LOGGING": "false",
+        "QIT_ENV_ID": "ENV_ID",
+        "QIT_NETWORK_RESTRICTION": "true"
+    },
+    "global_setup_packages": [],
+    "test_packages_metadata": [],
+    "tunnel": false,
+    "tunnel_type": "no_tunnel",
+    "site_url": "http://localhost:PORT",
+    "domain": "localhost",
+    "provider_type": "local",
+    "cloud_environment_id": null,
+    "wordpress_version": "stable",
+    "woocommerce_version": "10.6.1",
+    "php_version": "8.2",
+    "object_cache": false,
+    "network_restriction": true,
+    "nginx_port": "PORT",
+    "php_container": "qit_env_NORMALISED_ENV_ID",
+    "db_container": "qit_env_NORMALISED_ENV_ID",
+    "skip_test_phases": false,
+    "skip_activating_plugins": false,
+    "skip_activating_themes": false,
+    "additional_vars": [],
+    "test_packages": [],
+    "test_packages_for_setup": [],
+    "sut": {
+        "version": "10.6.1",
+        "slug": "woocommerce",
+        "id": 18734001206047,
+        "type": "plugin"
+    },
+    "passthrough_args": [],
+    "db_port": 0,
+    "global_setup_only": false,
+    "tests": [],
+    "playwright_config": [],
+    "pw_test_tag": "",
+    "is_development_build": false,
+    "notify": "",
+    "artifacts_dir": null,
+    "env_info": {
+        "created_at": 0,
+        "nginx_port": "PORT",
+        "temporary_env": "/tmp-normalised/temporary-env/",
+        "plugins": null
+    },
+    "configuration": {
+        "resolved_plugins": null
+    },
+    "resolved_extensions": null
+}

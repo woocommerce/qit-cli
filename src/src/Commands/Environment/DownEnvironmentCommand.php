@@ -37,6 +37,8 @@ class DownEnvironmentCommand extends QITCommand {
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		\QIT_CLI\App::make( \QIT_CLI\Environment\EnvironmentDanglingCleanup::class )->cleanup_dangling();
+
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {

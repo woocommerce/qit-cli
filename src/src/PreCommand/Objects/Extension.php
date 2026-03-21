@@ -52,6 +52,12 @@ class Extension implements \JsonSerializable {
 	/** @var string|null The source type of the extension (see qit json schema). */
 	public $from = null;
 
+	/** @var string|null Build command to run before using a local source. */
+	public $build_command = null;
+
+	/** @var string|null Working directory for the build command. */
+	public $build_cwd = null;
+
 	public function populate_from(): void {
 		if ( ! $this->source ) {
 			return;
@@ -96,6 +102,8 @@ class Extension implements \JsonSerializable {
 			'priority'            => $this->priority,
 			'wccom_id'            => $this->wccom_id,
 			'added_automatically' => $this->added_automatically,
+			'build_command'       => $this->build_command,
+			'build_cwd'           => $this->build_cwd,
 			// phpcs:ignore PEAR.Functions.FunctionCallSignature.Indent -- WordPress standards conflict with PEAR on multi-line function indentation
 		], function ( $value ) {
 			return $value !== null;
@@ -139,6 +147,8 @@ class Extension implements \JsonSerializable {
 		$extension->priority            = $data['priority'] ?? self::PRIORITY_MEDIUM;
 		$extension->wccom_id            = $data['wccom_id'] ?? null;
 		$extension->added_automatically = $data['added_automatically'] ?? null;
+		$extension->build_command       = $data['build_command'] ?? null;
+		$extension->build_cwd           = $data['build_cwd'] ?? null;
 
 		return $extension;
 	}

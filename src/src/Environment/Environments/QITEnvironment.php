@@ -3,11 +3,9 @@
 namespace QIT_CLI\Environment\Environments;
 
 use QIT_CLI\App;
-use QIT_CLI\Environment\Docker;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\Process;
 use QIT_CLI\Tunnel\TunnelRunner;
 use QIT_CLI\Environment\Environments\QITEnvInfo;
 
@@ -199,49 +197,7 @@ abstract class QITEnvironment extends Environment {
 	 * @return array<string,string>
 	 */
 	protected function additional_default_volumes( array $default_volumes ): array {
-		$named_volume = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
-		$process      = new Process( [
-			App::make( Docker::class )->find_docker(),
-			'volume',
-			'create',
-			'--driver',
-			'local',
-			$named_volume,
-		] );
-		if ( $this->output->isVerbose() ) {
-			$this->output->writeln( $process->getCommandLine() );
-		}
-		$process->mustRun( function ( $type, $buffer ) {
-			if ( $this->output->isVerbose() ) {
-				$this->output->write( $buffer );
-			}
-		} );
-
-		$args = [
-			App::make( Docker::class )->find_docker(),
-			'run',
-			'--rm',
-			'--mount',
-			'src=' . $named_volume . ',dst=/var/www/html',
-			'busybox',
-			'sh',
-			'-c',
-			'mkdir -p /var/www/html/wp-content/plugins && mkdir -p /var/www/html/wp-content/themes && mkdir -p /var/www/html/wp-content/mu-plugins && chown -R 82:82 /var/www/html',
-		];
-
-		/*
-		 * Create "wp-content/plugins", "wp-content/themes", and "wp-content/mu-plugins" directories with correct permissions.
-		 * We make them owned by 82:82, which is the UID of "www-data" in our alpine PHP images.
-		 * Once the container starts and the entrypoint is triggered, FixUID will map these to the runtime UID.
-		 */
-		$dirs_process = new Process( $args );
-		$dirs_process->mustRun( function ( $type, $buffer ) {
-			if ( $this->output->isVerbose() ) {
-				$this->output->write( $buffer );
-			}
-		} );
-
-		$default_volumes['/var/www/html'] = $named_volume;
+		$default_volumes['/var/www/html'] = sprintf( 'qit_env_volume_%s', $this->env_info->env_id );
 
 		return $default_volumes;
 	}

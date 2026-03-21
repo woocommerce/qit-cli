@@ -19,4 +19,9 @@
             <directory suffix="Test.php">tests</directory>
         </testsuite>
     </testsuites>
+    <groups>
+        <exclude>
+            <group>docker</group>
+        </exclude>
+    </groups>
 </phpunit>

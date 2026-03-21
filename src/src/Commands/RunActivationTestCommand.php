@@ -55,12 +55,25 @@ class RunActivationTestCommand extends RunE2ECommand {
 		/* ─ special path for unit‑tests that only inspect config parsing ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
 			$profile_cfg = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );
+
+			// Merge CLI overrides into profile config (same as CreateRunCommands step 2)
+			$cli_overrides = [
+				'wordpress_version',
+				'woocommerce_version',
+				'php_version',
+			];
+			foreach ( $cli_overrides as $opt_name ) {
+				if ( $input->hasOption( $opt_name ) && $input->getOption( $opt_name ) !== null ) {
+					$profile_cfg[ $opt_name ] = $input->getOption( $opt_name );
+				}
+			}
+
 			$output->write( json_encode( $profile_cfg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			return self::SUCCESS;
 		}
 
 		// Validate profile exists if explicitly provided
-		$profile_name = $input->getProfileName();
+		$profile_name = $input->get_profile_name();
 		// This will throw an exception if the profile doesn't exist
 		$this->get_current_test_profile( $this->test_type, $profile_name );
 

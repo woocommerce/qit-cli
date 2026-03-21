@@ -1,10 +1,5 @@
 {
-    "profile": "default",
-    "wait": false,
-    "ignore-fail": false,
-    "group": false,
-    "json": true,
-    "woo_id": "12345",
+    "woo_id": 12345,
     "event": "cli_published_extension_test",
     "env_info": {
         "created_at": 0,
@@ -12,6 +7,8 @@
         "temporary_env": "/tmp-normalised/temporary-env/",
         "plugins": null
     },
+    "plugins": null,
+    "themes": null,
     "configuration": {
         "resolved_plugins": null
     },

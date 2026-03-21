@@ -18,11 +18,32 @@ define( 'QIT_TEST_PROCESS_ID', $process_id );
 $GLOBALS['qit-php']  = __DIR__ . '/../../../src/qit-cli.php';
 $GLOBALS['QIT_HOME'] = sys_get_temp_dir() . '/qit-test-' . uniqid();
 
+// Clean up stale lock file from crashed previous runs.
+$lock_file = sys_get_temp_dir() . '/test-initialization-lock-file';
+if ( file_exists( $lock_file ) && filemtime( $lock_file ) < time() - 600 ) {
+	unlink( $lock_file );
+}
+
+// Clean up stale qit-test-* directories from PREVIOUS runs (older than 10 minutes).
+// Must be long enough that running tests don't get cleaned up mid-flight.
+// Triple-guarded: age check + realpath prefix check + basename regex.
+$cleanup_cutoff = time() - 600;
+$cleanup_tmp    = realpath( sys_get_temp_dir() );
+foreach ( glob( sys_get_temp_dir() . '/qit-test-*' ) as $cleanup_dir ) {
+	if ( is_dir( $cleanup_dir )
+		&& filemtime( $cleanup_dir ) < $cleanup_cutoff
+		&& strpos( realpath( $cleanup_dir ), $cleanup_tmp ) === 0
+		&& preg_match( '/^qit-test-[a-f0-9]+$/', basename( $cleanup_dir ) )
+	) {
+		exec( 'rm -rf ' . escapeshellarg( $cleanup_dir ) );
+	}
+}
+
 if ( ! is_dir( '/tmp/qit' ) ) {
 	mkdir( '/tmp/qit', 0755, true );
 }
 
-function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false, bool $capture_stderr_separately = false ): string|Process {
+function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, array $extra_env = [], bool $return_process = false, bool $capture_stderr_separately = false ): string|Process|array {
 	// Handle capture_stderr_separately option if it's in the config array
 	if ( is_array( $qit_env_json ) && isset( $qit_env_json['capture_stderr_separately'] ) ) {
 		$capture_stderr_separately = $qit_env_json['capture_stderr_separately'];
@@ -56,6 +77,7 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 
 	$env = [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
+		'MANAGER_URL'         => $_ENV['QIT_CUSTOM_TESTS_URL'] ?? '', // Never hit production from tests
 		'QIT_DISABLE_CLEANUP' => '1', // Disable cleanup during tests to prevent output pollution
 		'QIT_SELF_TESTS'      => '1',
 		'QIT_NO_PULL'         => '1',

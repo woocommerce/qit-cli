@@ -123,11 +123,29 @@ class CreateRunCommands extends DynamicCommandCreator {
 				/****************************************************************
 				 * 1.  Base configuration comes from qit.json profile
 				 */
-				$profile_name = $input->getProfileName();
+				$profile_name = $input->get_profile_name();
 
-				$options = $this->get_current_test_profile( $this->test_type, $profile_name );
-				if ( ! \is_array( $options ) ) {
-					$options = [];
+				$profile = $this->get_current_test_profile( $this->test_type, $profile_name );
+				if ( ! \is_array( $profile ) ) {
+					$profile = [];
+				}
+
+				/****************************************************************
+				 * 1b. Resolve environment reference — merge env as base,
+				 *     profile inline values override environment values.
+				 */
+				$options = [];
+				if ( isset( $profile['environment'] ) && is_string( $profile['environment'] ) ) {
+					$env_config = $this->get_environment_config( $profile['environment'] );
+					$env_config = \QIT_CLI\PreCommand\Configuration\EnvironmentConfigResolver::normalize_aliases( $env_config );
+					$options    = $env_config;
+				}
+				// Profile values override environment (except the 'environment' key itself)
+				foreach ( $profile as $key => $value ) {
+					if ( $key === 'environment' ) {
+						continue;
+					}
+					$options[ $key ] = $value;
 				}
 
 				/****************************************************************

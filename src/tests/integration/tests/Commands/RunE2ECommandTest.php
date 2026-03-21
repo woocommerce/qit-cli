@@ -15,6 +15,9 @@ use function qit;
  * 4. Testing multiple plugins together
  * 5. CI/CD friendly test execution
  */
+use PHPUnit\Framework\Attributes\Group;
+
+#[Group("docker")]
 class RunE2ECommandTest extends TestCase {
 
 	/**

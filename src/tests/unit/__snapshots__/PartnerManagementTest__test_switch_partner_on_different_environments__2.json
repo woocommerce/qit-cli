@@ -1,17 +1,5 @@
 {
-    "user": {
-        "expire": -1,
-        "value": "local_user"
-    },
-    "qit_token": {
-        "expire": -1,
-        "value": "local_pass"
-    },
-    "manager_url": {
-        "expire": -1,
-        "value": "http:\/\/cd_manager.loc:8081"
-    },
-    "manager_sync_v@QIT_CLI_VERSION@": {
+    "manager_sync_bootstrap_v@QIT_CLI_VERSION@": {
         "expire": 1234567890,
         "value": {
             "latest_cli_version": "0.8.2",
@@ -1593,6 +1581,74 @@
                     }
                 }
             },
+            "versions": {
+                "woocommerce": {
+                    "stable": "X.X.X",
+                    "rc": "X.X.X",
+                    "rc_unsynced": "X.X.X"
+                },
+                "wordpress": {
+                    "stable": "X.X.X",
+                    "rc": "X.X.X"
+                }
+            },
+            "hide_e2e": false,
+            "playwright_version": "X.X.X",
+            "extension_sets": {
+                "test-set": [
+                    "wccom-plugin-4",
+                    "wccom-plugin-5"
+                ],
+                "empty-set": []
+            },
+            "db_dump_file": "https:\/\/qit.woo.com\/wp-content\/uploads\/qit-env-db-dumps\/woocommerce_dump.sql.zip",
+            "default_test_packages": {
+                "performance": "woocommerce\/performance-tests:latest"
+            }
+        }
+    },
+    "manager_sync_environments": {
+        "expire": 1234567890,
+        "value": {
+            "environments": {
+                "e2e": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/c1a78950ca0eb8a23f8706955681bf02.zip",
+                    "checksum": "c1a78950ca0eb8a23f8706955681bf02",
+                    "zip_checksum": 19091
+                },
+                "performance": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/5755c5b6deea6fca548c64886469144a.zip",
+                    "checksum": "5755c5b6deea6fca548c64886469144a",
+                    "zip_checksum": 15544
+                },
+                "performance-v2": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/5755c5b6deea6fca548c64886469144a.zip",
+                    "checksum": "5755c5b6deea6fca548c64886469144a",
+                    "zip_checksum": 15544
+                },
+                "e2e-v2": {
+                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/b93ca4b9c2f7a25fce484a86137b9151.zip",
+                    "checksum": "b93ca4b9c2f7a25fce484a86137b9151",
+                    "zip_checksum": 26308
+                }
+            }
+        }
+    },
+    "user": {
+        "expire": -1,
+        "value": "local_user"
+    },
+    "qit_token": {
+        "expire": -1,
+        "value": "local_pass"
+    },
+    "manager_url": {
+        "expire": -1,
+        "value": "http:\/\/cd_manager.loc:8081"
+    },
+    "manager_sync_extensions_v@QIT_CLI_VERSION@": {
+        "expire": 1234567890,
+        "value": {
             "extensions": [
                 {
                     "id": 10001,
@@ -1659,43 +1715,7 @@
                     "slug": "wccom-theme-2",
                     "type": "theme"
                 }
-            ],
-            "environments": {
-                "performance": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/5755c5b6deea6fca548c64886469144a.zip",
-                    "checksum": "5755c5b6deea6fca548c64886469144a",
-                    "zip_checksum": 15544
-                },
-                "e2e": {
-                    "url": "https:\/\/qit.woo.com\/wp-content\/uploads\/environments\/b93ca4b9c2f7a25fce484a86137b9151.zip",
-                    "checksum": "b93ca4b9c2f7a25fce484a86137b9151",
-                    "zip_checksum": 26308
-                }
-            },
-            "versions": {
-                "woocommerce": {
-                    "stable": "X.X.X",
-                    "rc": "X.X.X",
-                    "rc_unsynced": "X.X.X"
-                },
-                "wordpress": {
-                    "stable": "X.X.X",
-                    "rc": "X.X.X"
-                }
-            },
-            "hide_e2e": false,
-            "playwright_version": "X.X.X",
-            "extension_sets": {
-                "test-set": [
-                    "wccom-plugin-4",
-                    "wccom-plugin-5"
-                ],
-                "empty-set": []
-            },
-            "db_dump_file": "https:\/\/qit.woo.com\/wp-content\/uploads\/qit-env-db-dumps\/woocommerce_dump.sql.zip",
-            "default_test_packages": {
-                "performance": "woocommerce\/performance-tests:latest"
-            }
+            ]
         }
     }
 }

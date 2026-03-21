@@ -219,7 +219,7 @@ function banner( SymfonyStyle $io, string $label, bool $line_before = true, bool
 function is_option_explicitly_provided( InputInterface $input, string $option_name ): bool {
 	// Handle QITInput wrapper
 	if ( $input instanceof \QIT_CLI\QITInput ) {
-		$input = $input->getSymfonyInput();
+		$input = $input->get_symfony_input();
 	}
 
 	if ( $input instanceof ArgvInput ) {

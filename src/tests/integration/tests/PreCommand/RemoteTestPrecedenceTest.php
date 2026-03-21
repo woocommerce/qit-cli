@@ -284,4 +284,81 @@ $configPath,
 
 		$this->assertMatchesRemoteTestSnapshot( $options );
 	}
+
+	/* ================================================================
+	 * Environment reference in profile resolves for remote tests
+	 * ============================================================== */
+	public function test_environment_reference_resolves_in_remote_test(): void {
+		$config = [
+			'environments' => [
+				'staging' => [
+					'wordpress_version'   => '6.2',
+					'woocommerce_version' => '9.0.0',
+				],
+			],
+			'test_types' => [
+				'compatibility' => [
+					'default' => [
+						'environment' => 'staging',
+					],
+				],
+			],
+		];
+		$configPath = tempnam( sys_get_temp_dir(), 'qit_test_' );
+		file_put_contents( $configPath, json_encode( $config ) );
+
+		$raw = qit_run_remote_test( [
+			'run:compatibility',
+			'woocommerce',
+			'--config',
+			$configPath,
+		] );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( '6.2', $options['wordpress_version'], 'Environment wordpress_version should resolve' );
+		$this->assertEquals( '9.0.0', $options['woocommerce_version'], 'Environment woocommerce_version should resolve' );
+
+		$this->assertMatchesRemoteTestSnapshot( $options );
+		unlink( $configPath );
+	}
+
+	/* ================================================================
+	 * Profile inline values override referenced environment for remote tests
+	 * ============================================================== */
+	public function test_profile_inline_overrides_environment_in_remote_test(): void {
+		$config = [
+			'environments' => [
+				'staging' => [
+					'wordpress_version'   => '6.2',
+					'woocommerce_version' => '8.5',
+				],
+			],
+			'test_types' => [
+				'compatibility' => [
+					'default' => [
+						'environment'         => 'staging',
+						'woocommerce_version' => '9.0.0',
+					],
+				],
+			],
+		];
+		$configPath = tempnam( sys_get_temp_dir(), 'qit_test_' );
+		file_put_contents( $configPath, json_encode( $config ) );
+
+		$raw = qit_run_remote_test( [
+			'run:compatibility',
+			'woocommerce',
+			'--config',
+			$configPath,
+		] );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( '6.2', $options['wordpress_version'], 'Environment wp should be used (not overridden)' );
+		$this->assertEquals( '9.0.0', $options['woocommerce_version'], 'Profile inline value must override environment' );
+
+		$this->assertMatchesRemoteTestSnapshot( $options );
+		unlink( $configPath );
+	}
 }

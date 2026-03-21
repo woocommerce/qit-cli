@@ -20,6 +20,10 @@ abstract class QITTestCase extends TestCase {
 		Config::set_current_manager_environment( 'tests' );
 		App::make( ManagerBackend::class )->add_manager_backend( 'tests' );
 		App::setVar( sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/cli/sync' ), file_get_contents( __DIR__ . '/data/sync.json' ) );
+		App::setVar( sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v2/cli/sync' ), file_get_contents( __DIR__ . '/data/sync-v2.json' ) );
+		App::setVar( sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v2/cli/sync/extensions' ), file_get_contents( __DIR__ . '/data/sync-v2-extensions.json' ) );
+		// Set a mock manager secret so maybe_sync_extensions() passes the auth guard.
+		App::make( \QIT_CLI\Cache::class )->set( 'manager_secret', 'test-secret', -1 );
 		App::make( ManagerSync::class )->maybe_sync( true );
 		App::offsetUnset( 'QIT_ACTIVATION_TEST' );
 	}

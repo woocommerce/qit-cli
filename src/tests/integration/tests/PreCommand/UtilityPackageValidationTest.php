@@ -234,6 +234,13 @@ class UtilityPackageValidationTest extends TestCase {
 
 		$outputString = implode( "\n", $output );
 
+		// The JSON filter wraps non-JSON output in a JSON error object with escaped slashes.
+		// Decode to get the raw error message for assertion.
+		$decoded = json_decode( $outputString, true );
+		if ( isset( $decoded['output'] ) ) {
+			$outputString = $decoded['output'];
+		}
+
 		// Should fail
 		$this->assertNotEquals( 0, $returnCode, 'Command should fail when any utility is invalid' );
 		$this->assertStringContainsString( 'test/invalid-utility', $outputString, 'Error should mention the invalid package' );

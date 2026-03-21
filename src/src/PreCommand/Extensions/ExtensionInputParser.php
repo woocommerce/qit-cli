@@ -70,7 +70,26 @@ class ExtensionInputParser {
 			return self::parse_url( $input, $type, $explicit_slug );
 		}
 
-		// 3. Check if it's a pure slug (only if no @ was used)
+		// 3. Check for slug:version format (e.g., "woocommerce:8.8.0", "gutenberg:stable")
+		if ( $explicit_slug === null && strpos( $input, ':' ) !== false ) {
+			$colon_pos         = strpos( $input, ':' );
+			$potential_slug    = substr( $input, 0, $colon_pos );
+			$potential_version = substr( $input, $colon_pos + 1 );
+
+			if ( self::is_valid_slug( $potential_slug ) && $potential_version !== '' ) {
+				// Reject mixing : and @ in the same value (e.g., "woo:8.0@/path").
+				if ( strpos( $potential_version, '@' ) !== false ) {
+					throw new \InvalidArgumentException(
+						"Ambiguous {$type} specification '{$input}': cannot use both ':' (version) and '@' (source) in the same value. " .
+						"Use 'slug:version' OR 'slug@source', not both. For full control, use the object form in qit.json."
+					);
+				}
+
+				return self::parse_slug_version( $potential_slug, $potential_version, $type );
+			}
+		}
+
+		// 4. Check if it's a pure slug (only if no @ was used)
 		if ( $explicit_slug === null && self::is_valid_slug( $input ) ) {
 			return self::parse_slug( $input, $type );
 		}
@@ -212,6 +231,22 @@ class ExtensionInputParser {
 		$extension->from                = 'url';
 		$extension->source              = $url;
 		$extension->added_automatically = $added_from;
+
+		return $extension;
+	}
+
+	/**
+	 * Parse a slug:version pair into an Extension.
+	 *
+	 * @param string $slug    The extension slug.
+	 * @param string $version The version string.
+	 * @param string $type    Extension type ('plugin' or 'theme').
+	 */
+	private static function parse_slug_version( string $slug, string $version, string $type ): Extension {
+		$extension = new Extension( $slug, $type );
+		// Don't set 'from' - let ExtensionResolver determine the correct source.
+		$extension->version             = $version;
+		$extension->added_automatically = 'Added from CLI parameter (slug:version)';
 
 		return $extension;
 	}

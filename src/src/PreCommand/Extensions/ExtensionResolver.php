@@ -55,13 +55,16 @@ class ExtensionResolver {
 
 	protected VersionResolver $version_resolver;
 
+	protected BuildRunner $build_runner;
+
 	public function __construct(
 		ExtensionMetadataFetcher $metadata_fetcher,
 		DependencyResolver $dependency_resolver,
 		ExtensionCacheManager $cache_manager,
 		WooExtensionsList $woo_extensions_list,
 		WPORGExtensionsList $wporg_extensions_list,
-		VersionResolver $version_resolver
+		VersionResolver $version_resolver,
+		BuildRunner $build_runner
 	) {
 		$this->metadata_fetcher      = $metadata_fetcher;
 		$this->dependency_resolver   = $dependency_resolver;
@@ -69,6 +72,7 @@ class ExtensionResolver {
 		$this->woo_extensions_list   = $woo_extensions_list;
 		$this->wporg_extensions_list = $wporg_extensions_list;
 		$this->version_resolver      = $version_resolver;
+		$this->build_runner          = $build_runner;
 	}
 
 	/**
@@ -117,6 +121,9 @@ class ExtensionResolver {
 					debug_log( '  Extension source not fully resolved, resolving...' );
 					$this->resolve_extension_source( $extension );
 				}
+
+				// Step 1.5: Run build command if configured (before cache check)
+				$this->build_runner->run_build_if_needed( $extension );
 
 				// Step 2: Check if extension is already cached (avoid metadata API call if possible)
 				$is_cached = $this->cache_manager->is_cached( $extension, $cache_dir );

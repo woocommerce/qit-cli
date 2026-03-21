@@ -394,13 +394,27 @@ abstract class Environment {
 		} );
 
 		if ( ! $up_process->isSuccessful() ) {
+			$error_output = $up_process->getOutput() . $up_process->getErrorOutput();
+
+			// Detect Docker subnet pool exhaustion and suggest fix.
+			if ( strpos( $error_output, 'subnetted' ) !== false ) {
+				static::down( $this->env_info );
+				throw new \RuntimeException(
+					"Docker has run out of network address space.\n\n" .
+					"This happens when too many Docker networks accumulate. Fix with:\n\n" .
+					"  1. Clean unused networks:  docker network prune\n" .
+					"  2. Prevent recurrence — add to /etc/docker/daemon.json:\n\n" .
+					"     \"default-address-pools\": [{\"base\": \"172.17.0.0/12\", \"size\": 24}]\n\n" .
+					"     Then restart Docker:  sudo systemctl restart docker\n"
+				);
+			}
+
 			static::down( $this->env_info );
-			// Check if docker-compose.yml exists before trying to read it
 			$compose_file = $this->env_info->temporary_env . '/docker-compose.yml';
 			if ( file_exists( $compose_file ) ) {
 				$this->output->writeln( file_get_contents( $compose_file ) );
 			}
-			throw new \RuntimeException( "Failed to start the environment. Output: \n" . $up_process->getOutput() . $up_process->getErrorOutput() );
+			throw new \RuntimeException( "Failed to start the environment. Output: \n" . $error_output );
 		}
 
 		$this->env_info->status = 'started';
@@ -484,21 +498,6 @@ abstract class Environment {
 			}
 		}
 
-		// Remove volume.
-		$process = new Process( [
-			App::make( Docker::class )->find_docker(),
-			'volume',
-			'remove',
-			sprintf( 'qit_env_volume_%s', $env_info->env_id ),
-			'--force',
-		] );
-
-		$process->run( function ( $type, $buffer ) use ( $output ) {
-			if ( $output->isVerbose() ) {
-				$output->write( $buffer );
-			}
-		} );
-
 		if ( $env_info->tunnel ) {
 			TunnelRunner::stop_tunnel( $env_info->env_id );
 		}
@@ -533,11 +532,16 @@ abstract class Environment {
 		}
 		$containers = array_unique( $containers );
 
+		// Exclude init containers - they are expected to exit after completing.
+		$containers = array_filter( $containers, static function ( string $name ): bool {
+			return strpos( $name, 'qit_env_init_' ) === false;
+		} );
+
 		if ( empty( $containers ) ) {
 			throw new \RuntimeException( 'Failed to start the environment. No containers found.' );
 		}
 
-		$this->env_info->docker_images  = $containers;
+		$this->env_info->docker_images  = array_values( $containers );
 		$this->env_info->docker_network = $docker_network;
 	}
 

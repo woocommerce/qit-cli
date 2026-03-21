@@ -1,0 +1,24 @@
+{
+  "environments": {
+    "e2e": {
+      "url": "https://qit.woo.com/wp-content/uploads/environments/c1a78950ca0eb8a23f8706955681bf02.zip",
+      "checksum": "c1a78950ca0eb8a23f8706955681bf02",
+      "zip_checksum": 19091
+    },
+    "performance": {
+      "url": "https://qit.woo.com/wp-content/uploads/environments/5755c5b6deea6fca548c64886469144a.zip",
+      "checksum": "5755c5b6deea6fca548c64886469144a",
+      "zip_checksum": 15544
+    },
+    "performance-v2": {
+      "url": "https://qit.woo.com/wp-content/uploads/environments/5755c5b6deea6fca548c64886469144a.zip",
+      "checksum": "5755c5b6deea6fca548c64886469144a",
+      "zip_checksum": 15544
+    },
+    "e2e-v2": {
+      "url": "https://qit.woo.com/wp-content/uploads/environments/b93ca4b9c2f7a25fce484a86137b9151.zip",
+      "checksum": "b93ca4b9c2f7a25fce484a86137b9151",
+      "zip_checksum": 26308
+    }
+  }
+}

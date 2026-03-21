@@ -360,26 +360,25 @@ class PackageOrchestrator {
 	}
 
 	/**
-	 * Display database restore section
+	 * Display isolation restore section (database + browser state)
 	 */
-	public function database_restore_start(): void {
-		$out        = $this->package_section ?? $this->output;
-		$line_width = min( $this->terminal_width - 5, 75 );
-		$out->writeln( '┌─ DATABASE RESTORE ───────────────────────────────────────────────────────' );
-		$out->writeln( '│ Restoring database snapshot for test isolation...' );
+	public function isolation_restore_start(): void {
+		$out = $this->package_section ?? $this->output;
+		$out->writeln( '┌─ ISOLATION RESTORE ──────────────────────────────────────────────────────' );
 	}
 
-	public function database_restore_end( bool $success = true ): void {
+	public function isolation_restore_message( string $message ): void {
+		$out = $this->package_section ?? $this->output;
+		$out->writeln( '│ ' . $message );
+	}
+
+	public function isolation_restore_end(): void {
 		$out        = $this->package_section ?? $this->output;
 		$line_width = min( $this->terminal_width - 5, 75 );
-		if ( $success ) {
-			$out->writeln( '│ ✓ Database snapshot restored successfully' );
-		} else {
-			$out->writeln( '│ ✗ Database restore failed' );
-		}
 		$out->writeln( '└' . str_repeat( '─', $line_width ) );
 		$out->writeln( '' );
 	}
+
 
 	/**
 	 * Display post-processing section
@@ -478,7 +477,8 @@ class PackageOrchestrator {
 			}
 			// Add debug info for failures
 			if ( isset( $results['status'] ) && $results['status'] === 'failed' ) {
-				$out->writeln( '• Agentic AI:    <comment>qit ai:context failed-e2e</comment> (investigation context for failures)' );
+				$out->writeln( '• Investigate:   <comment>qit ai:context failed-e2e</comment>' );
+				$out->writeln( '• Debug faster:  <comment>qit ai:context debugging-workflow</comment>' );
 			}
 		}
 		$out->writeln( str_repeat( '═', $line_width ) );
