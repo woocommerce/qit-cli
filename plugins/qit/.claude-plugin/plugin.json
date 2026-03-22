@@ -1,0 +1,9 @@
+{
+  "name": "qit",
+  "description": "QIT testing skills for WooCommerce extensions",
+  "version": "1.0.0",
+  "author": {
+    "name": "WooCommerce QIT Team"
+  },
+  "homepage": "https://qit.woo.com/docs"
+}

@@ -273,7 +273,7 @@ class ArtifactValidationTest extends TestCase {
 		mkdir( $tempDir, 0755, true );
 		
 		$config = [
-			'$schema' => 'https://qit.woo.com/json-schema/qit',
+			'$schema' => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 			'sut' => [
 				'type' => 'plugin',
 				'slug' => 'woocommerce',

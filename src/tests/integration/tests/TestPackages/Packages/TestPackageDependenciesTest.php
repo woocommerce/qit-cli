@@ -133,7 +133,7 @@ class TestPackageDependenciesTest extends \PHPUnit\Framework\TestCase {
 		mkdir( $qit_json_dir, 0777, true );
 		
 		$qit_json = [
-			'$schema' => 'https://qit.woo.com/json-schema/qit',
+			'$schema' => 'https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/qit-schema.json',
 			'environments' => [
 				'default' => [
 					'plugins' => [ 'query-monitor', 'code-snippets' ]

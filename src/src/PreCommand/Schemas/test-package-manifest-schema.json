@@ -82,7 +82,7 @@
   "properties": {
     "$schema": {
       "type": "string",
-      "const": "https://qit.woo.com/json-schema/test-package",
+      "const": "https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/test-package-manifest-schema.json",
       "description": "Schema reference for IDE support"
     },
     "package": {

@@ -1,5 +1,5 @@
 {
-  "$schema": "https://qit.woo.com/json-schema/test-package",
+  "$schema": "https://raw.githubusercontent.com/woocommerce/qit-cli/trunk/src/src/PreCommand/Schemas/test-package-manifest-schema.json",
   "package": "woocommerce/global-setup-package",
   "test_type": "e2e",
   "description": "Test package with globalSetup and globalTeardown phases",
