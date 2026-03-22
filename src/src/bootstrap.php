@@ -12,6 +12,7 @@ use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\ShowReportCommand;
+use QIT_CLI\Commands\ClaudeTipDismissCommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
@@ -169,8 +170,12 @@ if ( ! $container->getVar( 'doing_autocompletion' )
 	&& empty( getenv( 'QIT_DISABLE_CLAUDE_TIP' ) )
 ) {
 	try {
-		$tip_file    = Config::get_qit_dir() . '.claude-tip-shown';
-		$should_show = ! file_exists( $tip_file ) || ( time() - (int) file_get_contents( $tip_file ) ) > 86400;
+		$tip_file = Config::get_qit_dir() . '.claude-tip-shown';
+
+		// "dismissed" = permanent opt-out.
+		$tip_content = file_exists( $tip_file ) ? trim( file_get_contents( $tip_file ) ) : '';
+		$should_show = $tip_content !== 'dismissed'
+			&& ( $tip_content === '' || ( time() - (int) $tip_content ) > 86400 );
 
 		if ( $should_show ) {
 			file_put_contents( $tip_file, (string) time() );
@@ -179,6 +184,7 @@ if ( ! $container->getVar( 'doing_autocompletion' )
 			$output->writeln( '<fg=cyan>Install the QIT plugin in Claude Code:</>' );
 			$output->writeln( '<fg=white>  /plugin marketplace add woocommerce/qit-cli</>' );
 			$output->writeln( '<fg=white>  /plugin install qit@woocommerce-qit</>' );
+			$output->writeln( '<fg=gray>Dismiss permanently: qit claude-tip:dismiss</>' );
 			$output->writeln( '' );
 		}
 	} catch ( \Exception $e ) {
@@ -190,6 +196,7 @@ if ( ! $container->getVar( 'doing_autocompletion' )
 $application->add( $container->make( DevModeCommand::class ) );
 $application->add( $container->make( ConfigDirCommand::class ) );
 $application->add( $container->make( ConnectCommand::class ) );
+$application->add( $container->make( ClaudeTipDismissCommand::class ) );
 $application->add( $container->make( WooValidateZipCommand::class ) );
 $application->add( $container->make( TunnelSetupCommand::class ) );
 $application->add( $container->make( TunnelSetDefaultCommand::class ) );
