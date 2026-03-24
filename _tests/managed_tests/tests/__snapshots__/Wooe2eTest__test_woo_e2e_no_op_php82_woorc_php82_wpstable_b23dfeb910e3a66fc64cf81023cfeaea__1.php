@@ -14426,7 +14426,20 @@
         },
         {
             "debug_log": {
-                "generic": []
+                "generic": [
+                    {
+                        "count": "1",
+                        "message": "PHP Warning:  Undefined property: wpdb::$wc_category_lookup in wp-includes\\/class-wpdb.php on line {LINE}"
+                    },
+                    {
+                        "count": "1",
+                        "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'\' at line 1 for query TRUNCATE TABLE  made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook-&gt;do_action, WP_Hook-&gt;apply_filters, {closure}, ActionScheduler_QueueRunner-&gt;run, ActionScheduler_QueueRunner-&gt;do_batch, ActionScheduler_Abstract_QueueRunner-&gt;process_action, ActionScheduler_Action-&gt;execute, do_action_ref_array(\'generate_category_lookup_table_wrapper\'), WP_Hook-&gt;do_action, WP_Hook-&gt;apply_filters, WooCommerce-&gt;add_generate_category_lookup_table_wrapper, do_action(\'generate_category_lookup_table\'), WP_Hook-&gt;do_action, WP_Hook-&gt;apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\CategoryLookup-&gt;regenerate"
+                    },
+                    {
+                        "count": "1",
+                        "message": "WordPress database error You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near \'(category_tree_id,category_id) VALUES (17,17),(16,16),(15,15)\' at line 1 for query INSERT IGNORE INTO  (category_tree_id,category_id) VALUES (17,17),(16,16),(15,15) made by require(\'wp-blog-header.php\'), require_once(\'wp-load.php\'), require_once(\'wp-config.php\'), require_once(\'wp-settings.php\'), do_action(\'init\'), WP_Hook-&gt;do_action, WP_Hook-&gt;apply_filters, {closure}, ActionScheduler_QueueRunner-&gt;run, ActionScheduler_QueueRunner-&gt;do_batch, ActionScheduler_Abstract_QueueRunner-&gt;process_action, ActionScheduler_Action-&gt;execute, do_action_ref_array(\'generate_category_lookup_table_wrapper\'), WP_Hook-&gt;do_action, WP_Hook-&gt;apply_filters, WooCommerce-&gt;add_generate_category_lookup_table_wrapper, do_action(\'generate_category_lookup_table\'), WP_Hook-&gt;do_action, WP_Hook-&gt;apply_filters, Automattic\\\\WooCommerce\\\\Internal\\\\Admin\\\\CategoryLookup-&gt;regenerate"
+                    }
+                ]
             }
         }
     ]
