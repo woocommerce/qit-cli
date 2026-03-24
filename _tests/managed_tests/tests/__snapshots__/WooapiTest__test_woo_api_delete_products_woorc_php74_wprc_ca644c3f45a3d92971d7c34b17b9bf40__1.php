@@ -13,7 +13,6 @@
             "additional_woo_plugins": [],
             "additional_wp_plugins": [],
             "test_log": "",
-            "ctrf_json": [],
             "performance_results": "",
             "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
@@ -48,10 +47,14 @@
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
             "test_result_json_extracted": "{EXTRACTED}",
+            "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
             "test_result_json": []
+        },
+        {
+            "ctrf_json": []
         },
         {
             "debug_log": [
