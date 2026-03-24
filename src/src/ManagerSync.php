@@ -235,7 +235,7 @@ class ManagerSync {
 
 			$this->output->writeln( sprintf( "<bg=red;fg=white>Current version: %s</>\n<bg=red;fg=white;options=bold>Latest version: %s</>", $current_version, $latest_version ) );
 			$this->output->writeln( "\nUpdate today to take advantage of the latest features!" );
-			$this->output->writeln( "How to update: https://qit.woo.com/docs/installation-setup/cli-installation#updating-the-qit-cli\n" );
+			$this->output->writeln( "How to update: https://qit.woo.com/docs/getting-started/#updating-the-qit-cli\n" );
 			if ( version_compare( $current_version, $minimum_cli_version, '<' ) ) {
 				$this->output->writeln( sprintf( '<error>You are using an outdated version of the CLI. Please update to the latest version (%s).</error>', $latest_version ) );
 				throw new UpdateRequiredException();
