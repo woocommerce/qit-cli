@@ -104,8 +104,6 @@ class UpEnvironmentCommand extends QITCommand {
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		/** @var \QIT_CLI\QITInput $input */
 
-		App::make( \QIT_CLI\Environment\EnvironmentDanglingCleanup::class )->cleanup_dangling();
-
 		/* ─ Safety guard ─ */
 		if ( is_windows() ) {
 			$output->writeln( '<comment>QIT environments require WSL on Windows.</comment>' );
@@ -776,9 +774,8 @@ class UpEnvironmentCommand extends QITCommand {
 			$this->createDatabaseBackup( $env_info, $output );
 		}
 
-		/* ─ 9. Save environment info and generate source files ─ */
-		$this->save_environment_info( $env_info );
-		$files = $this->environment_vars->save_environment_file( $env_info );
+		/* ─ 9. Generate source files ─ */
+		$this->environment_vars->save_environment_file( $env_info );
 
 		/* ─ 10. Print result ─ */
 		if ( $input->getOption( 'json' ) ) {
@@ -1068,35 +1065,6 @@ class UpEnvironmentCommand extends QITCommand {
 		unset( $config['env_files'] );
 
 		return $config;
-	}
-
-	/**
-	 * Nicely formatted human output.
-	 */
-	/**
-	 * Save environment info to a JSON file for later use.
-	 *
-	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info The environment info to save.
-	 */
-	private function save_environment_info( $env_info ): void {
-		$env_dir   = $this->environment_vars->get_env_directory();
-		$info_file = $env_dir . '/' . $env_info->env_id . '.json';
-
-		// Store essential information for later retrieval
-		$data = [
-			'env_id'              => $env_info->env_id,
-			'site_url'            => $env_info->site_url,
-			'php_version'         => $env_info->php_version,
-			'wordpress_version'   => $env_info->wordpress_version,
-			'woocommerce_version' => $env_info->woocommerce_version ?? '',
-			'db_port'             => $env_info->db_port ?? 0,
-			'php_container'       => $env_info->php_container ?: 'qit_env_php_' . $env_info->env_id,
-			'db_container'        => $env_info->db_container ?: 'qit_env_db_' . $env_info->env_id,
-			'nginx_port'          => $env_info->nginx_port ?? '',
-			'envs'                => $env_info->envs ?? [], // Include custom environment variables
-		];
-
-		file_put_contents( $info_file, json_encode( $data, JSON_PRETTY_PRINT ) );
 	}
 
 	/**

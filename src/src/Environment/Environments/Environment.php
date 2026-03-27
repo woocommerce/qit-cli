@@ -464,7 +464,6 @@ abstract class Environment {
 				$output->writeln( sprintf( 'Tried to stop environment %s, but it does not exist.', $env_info->temporary_env ) );
 			}
 
-			// It's fine to just remove it, as any dangling leftovers will be cleaned up later.
 			$environment_monitor->environment_stopped( $env_info );
 
 			return;
