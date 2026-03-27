@@ -33,19 +33,22 @@ class ListEnvironmentCommand extends QITCommand {
 		$this
 			->setDescription( 'List running environments.' )
 			->addArgument( 'env_id', InputArgument::OPTIONAL, 'Environment ID to show (otherwise list all).' )
-			->addOption( 'field', 'f', InputOption::VALUE_OPTIONAL, 'Show just a specific field.' );
+			->addOption( 'field', 'f', InputOption::VALUE_OPTIONAL, 'Show just a specific field.' )
+			->addOption( 'json', 'j', InputOption::VALUE_NONE, 'Machine-readable JSON output' );
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		\QIT_CLI\App::make( \QIT_CLI\Environment\EnvironmentDanglingCleanup::class )->cleanup_dangling();
-
 		$io      = new SymfonyStyle( $input, $output );
 		$running = $this->environment_monitor->get();
 		$env_id  = $input->getArgument( 'env_id' );
 		$field   = $input->getOption( 'field' );
 
 		if ( empty( $running ) ) {
-			$output->writeln( '<info>No environments running.</info>' );
+			if ( $input->getOption( 'json' ) ) {
+				$output->writeln( json_encode( [], JSON_UNESCAPED_SLASHES ) );
+			} else {
+				$output->writeln( '<info>No environments running.</info>' );
+			}
 
 			return Command::SUCCESS;
 		}
@@ -53,11 +56,15 @@ class ListEnvironmentCommand extends QITCommand {
 		if ( $env_id ) {
 			$selected_env = $this->find_environment_or_error( $running, $env_id, $io );
 			if ( ! $selected_env ) {
-				// If trait printed an error, we exit with failure
 				return Command::FAILURE;
 			}
-			// If exactly one environment was found, we show details for that
 			$running = [ $selected_env ];
+		}
+
+		if ( $input->getOption( 'json' ) ) {
+			$output->writeln( json_encode( array_values( $running ), JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT ) );
+
+			return Command::SUCCESS;
 		}
 
 		// If "field" option is being used and there is only one environment in $running, just print it.

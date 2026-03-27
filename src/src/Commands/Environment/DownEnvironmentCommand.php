@@ -10,6 +10,7 @@ use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
@@ -33,12 +34,11 @@ class DownEnvironmentCommand extends QITCommand {
 		$this
 			->setDescription( 'Stops a local test environment.' )
 			->setAliases( [ 'env:stop' ] )
-			->addArgument( 'environment', InputArgument::OPTIONAL, 'Environment ID to stop, or "all" to stop all environments' );
+			->addArgument( 'environment', InputArgument::OPTIONAL, 'Environment ID to stop, or "all" to stop all environments' )
+			->addOption( 'all', null, InputOption::VALUE_NONE, 'Stop all running environments' );
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		\QIT_CLI\App::make( \QIT_CLI\Environment\EnvironmentDanglingCleanup::class )->cleanup_dangling();
-
 		$running_environments = $this->environment_monitor->get();
 
 		if ( empty( $running_environments ) ) {
@@ -50,8 +50,10 @@ class DownEnvironmentCommand extends QITCommand {
 		$selected_environment = null;
 		$environment_arg      = $input->getArgument( 'environment' );
 
-		// If an argument was provided, use it
-		if ( $environment_arg ) {
+		// --all flag or "all" argument both mean stop everything.
+		if ( $input->getOption( 'all' ) ) {
+			$selected_environment = 'all';
+		} elseif ( $environment_arg ) {
 			if ( $environment_arg === 'all' ) {
 				$selected_environment = 'all';
 			} else {
