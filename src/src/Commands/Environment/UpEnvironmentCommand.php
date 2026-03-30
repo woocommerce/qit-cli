@@ -782,6 +782,7 @@ class UpEnvironmentCommand extends QITCommand {
 			$output->writeln( json_encode( $env_info, JSON_UNESCAPED_SLASHES ) );
 		} else {
 			$this->renderHumanSummary( $output, $env_info );
+			\QIT_CLI\Utils\UtilitySuggestions::render( $output, $env_info );
 
 			// Show manual testing instructions
 			$output->writeln( '' );
