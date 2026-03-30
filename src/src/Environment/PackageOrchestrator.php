@@ -430,7 +430,7 @@ class PackageOrchestrator {
 	/**
 	 * Display final summary
 	 *
-	 * @param array{status?: string, local_command?: string, remote_url?: string} $results
+	 * @param array{status?: string, local_command?: string, remote_url?: string, html_report_path?: string, artifacts_dir?: string, keep_env?: array{env_id: string, site_url: string}|null} $results
 	 */
 	public function summary( array $results ): void {
 		$duration = microtime( true ) - $this->state['start_time'];
@@ -469,6 +469,9 @@ class PackageOrchestrator {
 			if ( ! empty( $results['local_command'] ) ) {
 				$out->writeln( '• Local Report:  <comment>' . $results['local_command'] . '</comment>' );
 			}
+			if ( ! empty( $results['html_report_path'] ) ) {
+				$out->writeln( '• HTML Report:   <comment>file://' . $results['html_report_path'] . '</comment>' );
+			}
 			if ( ! empty( $results['remote_url'] ) ) {
 				$out->writeln( '• Remote URL:    <comment>' . $results['remote_url'] . '</comment>' );
 			} elseif ( $is_ci && empty( $results['remote_url'] ) && isset( $results['status'] ) ) {
@@ -477,8 +480,18 @@ class PackageOrchestrator {
 			}
 			// Add debug info for failures
 			if ( isset( $results['status'] ) && $results['status'] === 'failed' ) {
-				$out->writeln( '• Investigate:   <comment>qit ai:context failed-e2e</comment>' );
-				$out->writeln( '• Debug faster:  <comment>qit ai:context debugging-workflow</comment>' );
+				if ( ! empty( $results['artifacts_dir'] ) ) {
+					$out->writeln( '• Artifacts:     <comment>' . $results['artifacts_dir'] . '</comment>' );
+				}
+				if ( ! empty( $results['keep_env'] ) ) {
+					$out->writeln( '' );
+					$out->writeln( 'Debug with Playwright MCP:' );
+					$out->writeln( '• Site URL:      <comment>' . $results['keep_env']['site_url'] . '</comment>' );
+					$out->writeln( '• Re-run tests:  <comment>source $(qit env:source ' . $results['keep_env']['env_id'] . ') && npx playwright test</comment>' );
+					$out->writeln( '• Shut down:     <comment>qit env:down ' . $results['keep_env']['env_id'] . '</comment>' );
+				} else {
+					$out->writeln( '• Tip:           <comment>Re-run with --keep-env to debug with Playwright MCP</comment>' );
+				}
 			}
 		}
 		$out->writeln( str_repeat( '═', $line_width ) );
