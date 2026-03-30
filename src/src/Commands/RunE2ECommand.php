@@ -429,6 +429,7 @@ class RunE2ECommand extends QITCommand {
 		// Display environment summary (similar to env:up)
 		if ( ! $input->getOption( 'json' ) ) {
 			$this->renderEnvironmentSummary( $output, $env_info, $test_packages );
+			\QIT_CLI\Utils\UtilitySuggestions::render( $output, $env_info );
 		}
 
 		/*****************************************************************
@@ -1258,8 +1259,11 @@ class RunE2ECommand extends QITCommand {
 				foreach ( $global_setup_commands as $command ) {
 					++$total_commands;
 
-					// Create a normalized hash for the command
-					$command_hash = md5( json_encode( $command ) );
+					// Hash includes package_path so different packages with the same
+					// relative script name (e.g. ./bootstrap/global-setup.sh) don't
+					// collide. Subpackages from the same parent share the same path,
+					// so their inherited commands still dedup correctly.
+					$command_hash = md5( $package_path . '::' . json_encode( $command ) );
 
 					if ( isset( $executed_commands[ $command_hash ] ) ) {
 						// Command already executed, skip with info message
@@ -1610,8 +1614,10 @@ class RunE2ECommand extends QITCommand {
 				foreach ( $global_teardown_commands as $command ) {
 					++$total_teardown_commands;
 
-					// Create a normalized hash for the command
-					$command_hash = md5( json_encode( $command ) );
+					// Hash includes package_path so different packages with the same
+					// relative script name don't collide. Subpackages from the same
+					// parent share the same path, so their commands still dedup.
+					$command_hash = md5( $package_path . '::' . json_encode( $command ) );
 
 					if ( isset( $executed_teardown_commands[ $command_hash ] ) ) {
 						// Command already executed, skip with info message
