@@ -161,7 +161,8 @@ class RunE2ECommand extends QITCommand {
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
 			->addOption( 'print-report-url', null, InputOption::VALUE_NONE, 'Print the test report URL (contains sensitive data - use cautiously in public logs)' )
-			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run tests in Playwright UI mode' );
+			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run tests in Playwright UI mode' )
+			->addOption( 'keep-env', null, InputOption::VALUE_NONE, 'Keep the environment running after tests complete (for debugging with Playwright MCP)' );
 	}
 
 	/**
@@ -647,10 +648,18 @@ class RunE2ECommand extends QITCommand {
 		// Only show remote URL if explicitly requested in CI, or always in non-CI
 		$should_show_url = ! $is_ci || $input->getOption( 'print-report-url' );
 
+		$final_html_report_path = $artifacts_dir . '/final/html-report/index.html';
+
 		$summary_data = [
-			'status'        => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
-			'local_command' => 'qit report',
-			'remote_url'    => $should_show_url ? ( $report_url ?? '' ) : '',
+			'status'           => $exit_status === Command::SUCCESS ? 'passed' : 'failed',
+			'local_command'    => 'qit report',
+			'remote_url'       => $should_show_url ? ( $report_url ?? '' ) : '',
+			'html_report_path' => file_exists( $final_html_report_path ) ? $final_html_report_path : '',
+			'artifacts_dir'    => $artifacts_dir,
+			'keep_env'         => $input->getOption( 'keep-env' ) ? [
+				'env_id'   => $env_info->env_id,
+				'site_url' => $env_info->site_url,
+			] : null,
 		];
 
 		// Set JSON mode flag for shutdown handler
@@ -1062,12 +1071,13 @@ class RunE2ECommand extends QITCommand {
 			echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n";
 		}
 
-		// Show environment shutdown message (only in non-JSON mode)
-		if ( ! App::getVar( 'QIT_JSON_MODE' ) ) {
+		$env_to_shutdown = App::getVar( 'env_to_shutdown' );
+
+		// Show environment shutdown message (only in non-JSON mode and when actually shutting down)
+		if ( ! App::getVar( 'QIT_JSON_MODE' ) && ! empty( $env_to_shutdown ) ) {
 			echo "\nShutting down environment...\n";
 		}
 
-		$env_to_shutdown = App::getVar( 'env_to_shutdown' );
 		if ( ! empty( $env_to_shutdown ) ) {
 			try {
 				// Get the environment info from the environment monitor
@@ -1092,8 +1102,13 @@ class RunE2ECommand extends QITCommand {
 	 * @param InputInterface                                   $input The input interface.
 	 */
 	protected function setupGlobals( \QIT_CLI\Environment\Environments\E2E\E2EEnvInfo $env_info, InputInterface $input ): void {
-		// Set up the DI container variable for environment shutdown
-		App::setVar( 'env_to_shutdown', $env_info->env_id );
+		// Set up the DI container variable for environment shutdown.
+		// When --keep-env is set, skip registering for shutdown so the environment stays alive for debugging.
+		if ( $input->getOption( 'keep-env' ) ) {
+			App::setVar( 'env_to_shutdown', '' );
+		} else {
+			App::setVar( 'env_to_shutdown', $env_info->env_id );
+		}
 	}
 
 	/**
