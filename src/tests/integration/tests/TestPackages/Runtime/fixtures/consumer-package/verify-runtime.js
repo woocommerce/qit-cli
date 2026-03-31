@@ -94,6 +94,32 @@ check('qit.package returns provider exports', () => {
   if (pkg.sayHi() !== 'hi') throw new Error(`expected "hi", got "${pkg.sayHi()}"`);
 });
 
+// 7. qit.wp() — async checks run before writing CTRF
+async function asyncCheck(name, fn) {
+  try {
+    await fn();
+    tests.push({ name, status: 'passed', duration: 0 });
+  } catch (e) {
+    tests.push({ name, status: 'failed', duration: 0, message: e.message });
+    allPassed = false;
+    console.error(`FAIL: ${name} — ${e.message}`);
+  }
+}
+
+async function runAsyncChecks() {
+  await asyncCheck('qit.wp returns WP-CLI output', async () => {
+    const result = await qit.wp('option get blogname');
+    if (typeof result !== 'string') throw new Error(`expected string, got ${typeof result}`);
+    if (result.length === 0) throw new Error('expected non-empty string');
+  });
+
+  await asyncCheck('qit.exec runs command in container', async () => {
+    const result = await qit.exec('php --version');
+    if (!result.includes('PHP')) throw new Error(`expected PHP version string, got: ${result}`);
+  });
+}
+
+runAsyncChecks().then(() => {
 // Write CTRF results
 const resultsDir = path.join(__dirname, 'results');
 fs.mkdirSync(resultsDir, { recursive: true });
@@ -120,3 +146,4 @@ fs.writeFileSync(path.join(resultsDir, 'ctrf.json'), JSON.stringify(ctrf, null, 
 
 console.log(`\nQIT Runtime verification: ${tests.filter(t => t.status === 'passed').length}/${tests.length} passed`);
 process.exit(allPassed ? 0 : 1);
+});

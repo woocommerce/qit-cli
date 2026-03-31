@@ -3,20 +3,26 @@
  *
  * Needs Docker tier: throws if QIT_PHP_CONTAINER is not set.
  */
+interface ExecOptions {
+    /** Timeout in milliseconds. Default: 300000 (5 minutes). */
+    timeout?: number;
+}
 /**
  * Execute a WP-CLI command inside the PHP container.
  *
  * @param command - The WP-CLI command without the leading `wp` (e.g., `'plugin list --format=json'`).
+ * @param options - Optional configuration (timeout).
  * @returns stdout trimmed.
  */
-declare function wp(command: string): Promise<string>;
+declare function wp(command: string, options?: ExecOptions): Promise<string>;
 /**
  * Execute an arbitrary command inside the PHP container.
  *
  * @param command - The shell command to run.
+ * @param options - Optional configuration (timeout).
  * @returns stdout trimmed.
  */
-declare function exec(command: string): Promise<string>;
+declare function exec(command: string, options?: ExecOptions): Promise<string>;
 
 /**
  * Anonymous capability discovery via named actions.

@@ -6,6 +6,13 @@
 
 import { execSync } from 'child_process';
 
+const DEFAULT_TIMEOUT = 300_000; // 5 minutes
+
+export interface ExecOptions {
+  /** Timeout in milliseconds. Default: 300000 (5 minutes). */
+  timeout?: number;
+}
+
 function getPhpContainer(): string {
   const container = process.env.QIT_PHP_CONTAINER;
   if (!container) {
@@ -22,13 +29,15 @@ function getPhpContainer(): string {
  * Execute a WP-CLI command inside the PHP container.
  *
  * @param command - The WP-CLI command without the leading `wp` (e.g., `'plugin list --format=json'`).
+ * @param options - Optional configuration (timeout).
  * @returns stdout trimmed.
  */
-export async function wp(command: string): Promise<string> {
+export async function wp(command: string, options?: ExecOptions): Promise<string> {
   const container = getPhpContainer();
+  const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
   const result = execSync(
     `docker exec ${container} wp ${command} --allow-root`,
-    { encoding: 'utf-8', timeout: 60_000 }
+    { encoding: 'utf-8', timeout }
   );
   return result.trim();
 }
@@ -37,13 +46,15 @@ export async function wp(command: string): Promise<string> {
  * Execute an arbitrary command inside the PHP container.
  *
  * @param command - The shell command to run.
+ * @param options - Optional configuration (timeout).
  * @returns stdout trimmed.
  */
-export async function exec(command: string): Promise<string> {
+export async function exec(command: string, options?: ExecOptions): Promise<string> {
   const container = getPhpContainer();
+  const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
   const result = execSync(
     `docker exec ${container} ${command}`,
-    { encoding: 'utf-8', timeout: 60_000 }
+    { encoding: 'utf-8', timeout }
   );
   return result.trim();
 }

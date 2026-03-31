@@ -105,6 +105,7 @@ var env = {
 
 // src/docker.ts
 import { execSync } from "child_process";
+var DEFAULT_TIMEOUT = 3e5;
 function getPhpContainer() {
   const container = process.env.QIT_PHP_CONTAINER;
   if (!container) {
@@ -114,19 +115,21 @@ function getPhpContainer() {
   }
   return container;
 }
-async function wp(command) {
+async function wp(command, options) {
   const container = getPhpContainer();
+  const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
   const result = execSync(
     `docker exec ${container} wp ${command} --allow-root`,
-    { encoding: "utf-8", timeout: 6e4 }
+    { encoding: "utf-8", timeout }
   );
   return result.trim();
 }
-async function exec(command) {
+async function exec(command, options) {
   const container = getPhpContainer();
+  const timeout = options?.timeout ?? DEFAULT_TIMEOUT;
   const result = execSync(
     `docker exec ${container} ${command}`,
-    { encoding: "utf-8", timeout: 6e4 }
+    { encoding: "utf-8", timeout }
   );
   return result.trim();
 }
