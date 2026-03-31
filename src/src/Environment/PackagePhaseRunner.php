@@ -141,10 +141,7 @@ class PackagePhaseRunner {
 
 		$package_map = [];
 		foreach ( $env_info->test_packages_metadata as $package_id => $metadata ) {
-			$package_path = $metadata['path'] ?? '';
-			if ( empty( $package_path ) ) {
-				continue;
-			}
+			$package_path = $metadata['path'];
 
 			// Resolve the real package name from the manifest's "package" field.
 			// For local packages, $package_id is the filesystem path, not the package ID.
@@ -184,7 +181,7 @@ class PackagePhaseRunner {
 		$actions = [];
 
 		foreach ( $env_info->test_packages_metadata as $package_id => $metadata ) {
-			$package_path  = $metadata['path'] ?? '';
+			$package_path  = $metadata['path'];
 			$manifest_file = $package_path . '/qit-test.json';
 
 			if ( ! file_exists( $manifest_file ) ) {
