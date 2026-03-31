@@ -246,4 +246,45 @@ class TestPackageManifestTest extends TestCase {
 		$this->assertEquals( 'woocommerce/checkout', $manifest->get_package_id() );
 		$this->assertEquals( ['e2e', 'critical'], $manifest->get_tags() );
 	}
+
+	/**
+	 * Test actions field parsing (capability name → file path).
+	 */
+	public function test_actions_field(): void {
+		$data = [
+			'package' => 'stripe/payments',
+			'test' => [
+				'phases' => [ 'globalSetup' => [] ],
+				'results' => []
+			],
+			'actions' => [
+				'makePurchase' => './flows/pay.ts',
+				'refundOrder' => './flows/refund.ts',
+			]
+		];
+
+		$manifest = new TestPackageManifest( $data );
+
+		$this->assertEquals( [
+			'makePurchase' => './flows/pay.ts',
+			'refundOrder' => './flows/refund.ts',
+		], $manifest->get_actions() );
+	}
+
+	/**
+	 * Test actions returns empty array when not declared.
+	 */
+	public function test_actions_empty_when_not_declared(): void {
+		$data = [
+			'package' => 'test/package',
+			'test' => [
+				'phases' => [ 'run' => ['test'] ],
+				'results' => []
+			]
+		];
+
+		$manifest = new TestPackageManifest( $data );
+
+		$this->assertEquals( [], $manifest->get_actions() );
+	}
 }

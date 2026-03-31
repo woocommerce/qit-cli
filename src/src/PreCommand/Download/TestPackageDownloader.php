@@ -762,12 +762,6 @@ class TestPackageDownloader {
 	 * @throws \RuntimeException If npm install fails.
 	 */
 	protected function install_npm_dependencies( string $package_dir ): void {
-		// Ensure @woocommerce/qit-runtime is in the package's dependencies.
-		// This is the QIT runtime that provides qit.env, qit.wp(), qit.providers(), etc.
-		// Adding it before npm install ensures test packages always get the latest version
-		// without authors managing it manually.
-		$this->ensure_qit_runtime_dependency( $package_dir );
-
 		// Always show feedback about npm dependencies
 		$this->output->writeln( 'Installing npm dependencies...' );
 
@@ -785,51 +779,35 @@ class TestPackageDownloader {
 
 		$this->output->writeln( 'npm dependencies installed successfully' );
 
+		// Install/update @woocommerce/qit-runtime to latest without modifying package.json.
+		// This ensures every test package has the QIT runtime available at the latest version.
+		$this->install_qit_runtime( $package_dir );
+
 		// Ensure Playwright browsers are installed if Playwright is present
 		$this->install_playwright_browsers_if_needed( $package_dir );
 	}
 
 	/**
-	 * Ensure @woocommerce/qit-runtime is listed as a dependency in the package.json.
+	 * Install the latest @woocommerce/qit-runtime into the package's node_modules.
 	 *
-	 * If the package doesn't already depend on it, this adds it so that
-	 * the subsequent `npm install` pulls the latest version automatically.
+	 * Runs after npm install so it doesn't interfere with the package's own dependencies.
+	 * Does NOT modify package.json — installs directly into node_modules.
 	 *
-	 * @param string $package_dir The directory containing package.json.
+	 * @param string $package_dir The directory containing the package.
 	 */
-	protected function ensure_qit_runtime_dependency( string $package_dir ): void {
-		$package_json_path = $package_dir . '/package.json';
+	protected function install_qit_runtime( string $package_dir ): void {
+		$runtime_output      = [];
+		$runtime_return_code = 0;
 
-		if ( ! file_exists( $package_json_path ) ) {
-			return;
-		}
-
-		$raw = file_get_contents( $package_json_path );
-		$pkg = json_decode( $raw, true );
-
-		if ( ! is_array( $pkg ) ) {
-			return;
-		}
-
-		$has_runtime = isset( $pkg['dependencies']['@woocommerce/qit-runtime'] )
-			|| isset( $pkg['devDependencies']['@woocommerce/qit-runtime'] );
-
-		if ( $has_runtime ) {
-			return;
-		}
-
-		if ( ! isset( $pkg['dependencies'] ) ) {
-			$pkg['dependencies'] = [];
-		}
-
-		$pkg['dependencies']['@woocommerce/qit-runtime'] = 'latest';
-
-		file_put_contents(
-			$package_json_path,
-			json_encode( $pkg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n"
+		exec(
+			'cd ' . escapeshellarg( $package_dir ) . ' && npm install @woocommerce/qit-runtime@latest --no-save 2>&1',
+			$runtime_output,
+			$runtime_return_code
 		);
 
-		$this->output->writeln( 'Added @woocommerce/qit-runtime dependency.' );
+		if ( $runtime_return_code !== 0 ) {
+			$this->output->writeln( '<warning>Failed to install @woocommerce/qit-runtime: ' . implode( "\n", $runtime_output ) . '</warning>' );
+		}
 	}
 
 	/**

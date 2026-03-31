@@ -220,6 +220,18 @@
         }
       }
     },
+    "actions": {
+      "type": "object",
+      "description": "Named actions this package registers. Like WordPress do_action() — other packages discover and call these at runtime via qit.actions(). Maps action names to relative file paths containing the export default implementation.",
+      "patternProperties": {
+        "^[a-zA-Z][a-zA-Z0-9_]*$": {
+          "type": "string",
+          "pattern": "^\\.\\/.*$",
+          "description": "Relative path to the JS/TS file whose export default is the action implementation."
+        }
+      },
+      "additionalProperties": false
+    },
     "subpackages": {
       "type": "object",
       "description": "Additional packages derived from this codebase that can be published separately",

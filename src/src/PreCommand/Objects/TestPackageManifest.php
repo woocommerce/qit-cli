@@ -42,6 +42,8 @@ final class TestPackageManifest {
 	private ?string $parent_package;
 	private bool $requires_network;
 	private bool $requires_tunnel;
+	/** @var array<string, string> Action name => relative file path */
+	private array $actions;
 
 	/**
 	 * Construct from external data (JSON manifest or cached normalized data).
@@ -127,6 +129,7 @@ final class TestPackageManifest {
 		];
 		$this->subpackages    = $data['subpackages'] ?? [];
 		$this->parent_package = $data['parent_package'] ?? null;
+		$this->actions        = $data['actions'] ?? [];
 
 		// Validate subpackages only override allowed phases
 		$this->validate_subpackages();
@@ -345,6 +348,15 @@ final class TestPackageManifest {
 	 */
 	public function get_retry(): array {
 		return $this->retry;
+	}
+
+	/**
+	 * Get the actions this package registers (capability name => relative file path).
+	 *
+	 * @return array<string, string>
+	 */
+	public function get_actions(): array {
+		return $this->actions;
 	}
 
 	/**

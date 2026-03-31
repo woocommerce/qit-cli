@@ -131,7 +131,7 @@ async function exec(command) {
   return result.trim();
 }
 
-// src/providers.ts
+// src/actions.ts
 import { readFileSync } from "fs";
 import { createRequire } from "module";
 var _cache = null;
@@ -139,7 +139,7 @@ var _require = createRequire(import.meta.url);
 function loadManifest() {
   if (_cache) return _cache;
   _cache = /* @__PURE__ */ new Map();
-  const manifestPath = process.env.QIT_PROVIDERS_MANIFEST;
+  const manifestPath = process.env.QIT_ACTIONS_MANIFEST;
   if (!manifestPath) {
     return _cache;
   }
@@ -161,11 +161,11 @@ function loadManifest() {
   }
   return _cache;
 }
-function providers(name) {
+function actions(name) {
   return loadManifest().get(name) ?? [];
 }
-function hasProvider(name) {
-  return providers(name).length > 0;
+function hasAction(name) {
+  return actions(name).length > 0;
 }
 
 // src/packages.ts
@@ -224,11 +224,11 @@ var qit = {
   env,
   wp,
   exec,
-  providers,
-  hasProvider,
+  actions,
+  hasAction,
   package: loadPackage,
   waitFor,
-  version: "0.1.0"
+  version: "0.1.1"
 };
 var index_default = qit;
 export {
