@@ -762,6 +762,12 @@ class TestPackageDownloader {
 	 * @throws \RuntimeException If npm install fails.
 	 */
 	protected function install_npm_dependencies( string $package_dir ): void {
+		// Ensure @woocommerce/qit-runtime is in the package's dependencies.
+		// This is the QIT runtime that provides qit.env, qit.wp(), qit.providers(), etc.
+		// Adding it before npm install ensures test packages always get the latest version
+		// without authors managing it manually.
+		$this->ensure_qit_runtime_dependency( $package_dir );
+
 		// Always show feedback about npm dependencies
 		$this->output->writeln( 'Installing npm dependencies...' );
 
@@ -781,6 +787,49 @@ class TestPackageDownloader {
 
 		// Ensure Playwright browsers are installed if Playwright is present
 		$this->install_playwright_browsers_if_needed( $package_dir );
+	}
+
+	/**
+	 * Ensure @woocommerce/qit-runtime is listed as a dependency in the package.json.
+	 *
+	 * If the package doesn't already depend on it, this adds it so that
+	 * the subsequent `npm install` pulls the latest version automatically.
+	 *
+	 * @param string $package_dir The directory containing package.json.
+	 */
+	protected function ensure_qit_runtime_dependency( string $package_dir ): void {
+		$package_json_path = $package_dir . '/package.json';
+
+		if ( ! file_exists( $package_json_path ) ) {
+			return;
+		}
+
+		$raw = file_get_contents( $package_json_path );
+		$pkg = json_decode( $raw, true );
+
+		if ( ! is_array( $pkg ) ) {
+			return;
+		}
+
+		$has_runtime = isset( $pkg['dependencies']['@woocommerce/qit-runtime'] )
+			|| isset( $pkg['devDependencies']['@woocommerce/qit-runtime'] );
+
+		if ( $has_runtime ) {
+			return;
+		}
+
+		if ( ! isset( $pkg['dependencies'] ) ) {
+			$pkg['dependencies'] = [];
+		}
+
+		$pkg['dependencies']['@woocommerce/qit-runtime'] = 'latest';
+
+		file_put_contents(
+			$package_json_path,
+			json_encode( $pkg, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n"
+		);
+
+		$this->output->writeln( 'Added @woocommerce/qit-runtime dependency.' );
 	}
 
 	/**

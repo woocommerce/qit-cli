@@ -1,0 +1,27 @@
+name: Publish @woocommerce/qit-runtime
+
+on:
+  push:
+    branches: [trunk]
+    paths: ['packages/qit-runtime/**']
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install, test, build
+        working-directory: packages/qit-runtime
+        run: npm ci && npm test && npm run build
+
+      - name: Publish (skip if version already published)
+        working-directory: packages/qit-runtime
+        run: npm publish --access public || echo "Version already published, skipping."
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

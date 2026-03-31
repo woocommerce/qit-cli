@@ -56,3 +56,4 @@ qit-tests
 **/cache
 .claude/agents
 .claude
+packages/qit-runtime/node_modules/
