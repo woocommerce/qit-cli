@@ -1433,6 +1433,15 @@ HELP;
 				$error_msg   .= "\nSet these environment variables before running this command.\n";
 				$error_msg   .= "Example: export {$first_secret}='your-secret-value'";
 
+				if ( $this->input->getOption( 'json' ) ) {
+					$this->output->writeln( json_encode( [
+						'error'   => true,
+						'message' => $error_msg,
+					] ) );
+
+					return;
+				}
+
 				throw new \RuntimeException( $error_msg );
 			}
 		}
