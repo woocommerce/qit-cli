@@ -564,5 +564,128 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
 
+	/* ================================================================
+	 * 11. Xdebug – `--xdebug` defaults to debug mode
+	 * ============================================================== */
+	public function test_xdebug_flag_defaults_to_debug(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json', '--xdebug' ] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
 
+		$this->assertSame( 'debug', $payload['xdebug'] );
+		$this->assertArrayHasKey( '/tmp/xdebug-output', $payload['volumes'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 12. Xdebug – explicit mode string
+	 * ============================================================== */
+	public function test_xdebug_with_explicit_mode(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json', '--xdebug=profile' ] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 'profile', $payload['xdebug'] );
+		$this->assertArrayHasKey( '/tmp/xdebug-output', $payload['volumes'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 13. Xdebug – combined modes
+	 * ============================================================== */
+	public function test_xdebug_combined_modes(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json', '--xdebug=debug,develop' ] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 'debug,develop', $payload['xdebug'] );
+		$this->assertArrayHasKey( '/tmp/xdebug-output', $payload['volumes'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 14. Xdebug – disabled by default when not passed
+	 * ============================================================== */
+	public function test_xdebug_disabled_by_default(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json' ] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( '', $payload['xdebug'] );
+		$this->assertArrayNotHasKey( '/tmp/xdebug-output', $payload['volumes'] );
+	}
+
+	/* ================================================================
+	 * 15. Xdebug – CLI overrides config
+	 * ============================================================== */
+	public function test_cli_xdebug_overrides_config(): void {
+		$configPath = tempnam( sys_get_temp_dir(), 'qit_test_' );
+		file_put_contents( $configPath, json_encode( [
+			'environments' => [
+				'default' => [
+					'xdebug' => false,
+				],
+			],
+		] ) );
+
+		$raw     = qit_run_env_up( [
+			'env:up',
+			'--json',
+			'--xdebug=profile',
+			'--config',
+			$configPath,
+		] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 'profile', $payload['xdebug'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 16. Xdebug – config value survives when CLI does not override
+	 * ============================================================== */
+	public function test_config_xdebug_survives_without_cli_override(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json' ], [
+			'environments' => [
+				'default' => [
+					'xdebug' => 'profile',
+				],
+			],
+		] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 'profile', $payload['xdebug'], 'Config xdebug value must survive when CLI does not pass --xdebug.' );
+		$this->assertArrayHasKey( '/tmp/xdebug-output', $payload['volumes'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 18. Xdebug – qit.json `true` normalises to `debug`
+	 * ============================================================== */
+	public function test_config_xdebug_true_normalizes_to_debug(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json' ], [
+			'environments' => [
+				'default' => [
+					'xdebug' => true,
+				],
+			],
+		] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 'debug', $payload['xdebug'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 19. Xdebug – qit.json string mode passes through
+	 * ============================================================== */
+	public function test_config_xdebug_string_passes_through(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json' ], [
+			'environments' => [
+				'default' => [
+					'xdebug' => 'trace',
+				],
+			],
+		] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 'trace', $payload['xdebug'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
 }

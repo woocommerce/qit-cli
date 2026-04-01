@@ -120,6 +120,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'xdebug' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'tunnel' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'json' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'env' )

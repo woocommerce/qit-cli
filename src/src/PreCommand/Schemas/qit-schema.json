@@ -251,6 +251,13 @@
               "type": "boolean",
               "description": "Enable object caching"
             },
+            "xdebug": {
+              "oneOf": [
+                { "type": "boolean", "description": "true enables debug mode" },
+                { "type": "string", "description": "Xdebug mode: debug, profile, trace, coverage, develop, or comma-separated combination" }
+              ],
+              "description": "Enable Xdebug (true or mode string)"
+            },
             "envs": {
               "type": "object",
               "description": "Environment variables",

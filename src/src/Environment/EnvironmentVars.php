@@ -136,6 +136,13 @@ class EnvironmentVars {
 			$vars['QIT_PHP_VERSION'] = $env_info->php_version;
 		}
 
+		// Xdebug information
+		if ( property_exists( $env_info, 'xdebug' ) && ! empty( $env_info->xdebug ) ) {
+			$vars['QIT_XDEBUG']      = '1';
+			$vars['QIT_XDEBUG_MODE'] = $env_info->xdebug;
+			$vars['QIT_XDEBUG_PORT'] = '9003';
+		}
+
 		// Add any dynamic environment-specific variables
 		if ( property_exists( $env_info, 'additional_vars' ) && ! empty( $env_info->additional_vars ) ) {
 			$vars = array_merge( $vars, $env_info->additional_vars );

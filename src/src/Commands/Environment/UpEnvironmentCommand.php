@@ -76,6 +76,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'wordpress_version', null, InputOption::VALUE_OPTIONAL, 'WordPress version (stable, rc, 6.6). Alias: --wp', 'stable' )
 			->addOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version. Alias: --woo', null )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
+			->addOption( 'xdebug', null, InputOption::VALUE_OPTIONAL, 'Enable Xdebug (mode=debug by default, or specify: profile, trace, debug,develop, etc.)', false )
 			/* ─ Lists ─ */
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
@@ -308,6 +309,16 @@ class UpEnvironmentCommand extends QITCommand {
 		// Default network mode to 'auto' if not explicitly set.
 		if ( ! isset( $env_config['network_mode'] ) ) {
 			$env_config['network_mode'] = 'auto';
+		}
+
+		// Normalize xdebug: true → 'debug' (qit.json shorthand), false → '', string → as-is.
+		$xdebug_raw = $env_config['xdebug'] ?? false;
+		if ( $xdebug_raw === true ) {
+			$env_config['xdebug'] = 'debug';
+		} elseif ( $xdebug_raw === false ) {
+			$env_config['xdebug'] = '';
+		} else {
+			$env_config['xdebug'] = (string) $xdebug_raw;
 		}
 
 		/*
@@ -698,6 +709,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'woocommerce_version'     => $env_config['woocommerce_version'] ?? '',
 			'sut'                     => $env_config['sut'] ?? [],
 			'object_cache'            => $env_config['object_cache'] ?? false,
+			'xdebug'                  => $env_config['xdebug'] ?? '',
 			'plugins'                 => $plugin_arrays,
 			'themes'                  => $theme_arrays,
 			'php_extensions'          => $env_config['php_extensions'] ?? [],
@@ -713,6 +725,15 @@ class UpEnvironmentCommand extends QITCommand {
 			'network_restriction'     => $env_config['network_restriction'],
 			'site_url'                => 'http://localhost:8080',
 		] );
+
+		/* ─ 4.5. Mount xdebug output directory when xdebug is enabled ─ */
+		if ( ! empty( $env_info->xdebug ) ) {
+			$xdebug_output_dir = $env_info->temporary_env . '/xdebug-output';
+			if ( ! is_dir( $xdebug_output_dir ) ) {
+				mkdir( $xdebug_output_dir, 0755, true );
+			}
+			$env_info->volumes['/tmp/xdebug-output'] = $xdebug_output_dir;
+		}
 
 		/* ─ 5. Add QIT_ENV_ID and QIT_NETWORK_RESTRICTION to environment variables ─ */
 		$env_info->envs['QIT_ENV_ID']              = $env_info->env_id;
@@ -1137,6 +1158,21 @@ class UpEnvironmentCommand extends QITCommand {
 		// Tunnel information (only if enabled)
 		if ( $info->tunnel ) {
 			$out->writeln( sprintf( '  Tunnel:      %s', $info->tunnel_type ) );
+		}
+
+		// Xdebug information (only if enabled)
+		if ( ! empty( $info->xdebug ) ) {
+			$out->writeln( '' );
+			$out->writeln( sprintf( '  Xdebug:      Enabled (mode=%s, port=9003)', $info->xdebug ) );
+			if ( isset( $info->volumes['/tmp/xdebug-output'] ) ) {
+				$out->writeln( sprintf( '  Output dir:  %s', $info->volumes['/tmp/xdebug-output'] ) );
+			}
+			$out->writeln( '  Path mappings (host -> container):' );
+			foreach ( $info->volumes as $container_path => $local_path ) {
+				if ( strpos( $container_path, '/var/www/html/' ) === 0 ) {
+					$out->writeln( sprintf( '    %s -> %s', $local_path, $container_path ) );
+				}
+			}
 		}
 	}
 

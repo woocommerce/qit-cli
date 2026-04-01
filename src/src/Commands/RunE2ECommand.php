@@ -148,6 +148,7 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'volume' )
 			->reuseOption( 'env:up', 'php_extension' )
 			->reuseOption( 'env:up', 'object_cache' )
+			->reuseOption( 'env:up', 'xdebug' )
 			->reuseOption( 'env:up', 'tunnel' )
 			->reuseOption( 'env:up', 'offline' )
 			->reuseOption( 'env:up', 'online' )

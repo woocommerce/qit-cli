@@ -461,9 +461,9 @@ BASH;
 
 	private function write_package_json( string $dir ): void {
 		$pkg = [
-			'private'      => true,
-			'type'         => 'module',
-			'dependencies' => [
+			'private'         => true,
+			'type'            => 'module',
+			'dependencies'    => [
 				'@woocommerce/qit-runtime' => '*',
 			],
 			'devDependencies' => [],
