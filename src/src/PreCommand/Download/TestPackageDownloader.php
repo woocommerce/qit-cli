@@ -820,7 +820,7 @@ class TestPackageDownloader {
 		if ( $latest_ver !== '' && version_compare( $installed_ver, $latest_ver, '<' ) ) {
 			$this->output->writeln(
 				"<comment>@woocommerce/qit-runtime {$installed_ver} is outdated (latest: {$latest_ver}). " .
-				"Update your package.json to \"@woocommerce/qit-runtime\": \"*\" and run npm install</comment>"
+				'Update your package.json to "@woocommerce/qit-runtime": "*" and run npm install</comment>'
 			);
 		}
 	}

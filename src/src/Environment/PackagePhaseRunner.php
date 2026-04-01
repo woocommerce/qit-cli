@@ -121,7 +121,7 @@ class PackagePhaseRunner {
 
 			// Add QIT runtime manifest paths (for @woocommerce/qit-runtime).
 			$env_vars['QIT_PACKAGE_MAP']      = $this->generate_package_map( $env_info );
-			$env_vars['QIT_ACTIONS_MANIFEST']  = $this->generate_actions_manifest( $env_info );
+			$env_vars['QIT_ACTIONS_MANIFEST'] = $this->generate_actions_manifest( $env_info );
 		}
 
 		return $env_vars;
@@ -145,8 +145,8 @@ class PackagePhaseRunner {
 
 			// Resolve the real package name from the manifest's "package" field.
 			// For local packages, $package_id is the filesystem path, not the package ID.
-			$resolved_id    = $package_id;
-			$manifest_file  = $package_path . '/qit-test.json';
+			$resolved_id   = $package_id;
+			$manifest_file = $package_path . '/qit-test.json';
 			if ( file_exists( $manifest_file ) ) {
 				$manifest_data = json_decode( file_get_contents( $manifest_file ), true );
 				if ( ! empty( $manifest_data['package'] ) ) {

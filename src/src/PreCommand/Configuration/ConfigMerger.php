@@ -30,6 +30,7 @@ class ConfigMerger {
 		'wordpress_version',
 		'woocommerce_version',
 		'object_cache',
+		'xdebug',
 		'tunnel',
 		'tunnel_type',
 		'network_mode',

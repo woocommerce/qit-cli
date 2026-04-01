@@ -226,6 +226,7 @@ class QITInput implements InputInterface {
 			'volume',
 			'php_extension',
 			'object_cache',
+			'xdebug',
 			'tunnel',
 			'env',
 			'env_file',

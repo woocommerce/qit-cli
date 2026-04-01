@@ -34,6 +34,9 @@ abstract class QITEnvInfo extends EnvInfo {
 	/** @var bool Whether to enable Redis object cache */
 	public bool $object_cache = false;
 
+	/** @var string Xdebug mode (empty string = disabled, 'debug', 'profile', 'trace', etc.) */
+	public string $xdebug = '';
+
 	/** @var bool Whether to restrict network access */
 	public bool $network_restriction = true;
 

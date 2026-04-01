@@ -37,9 +37,15 @@ class CliConfigParser {
 			}
 		}
 
-		/* ─ Boolean flag ─ */
+		/* ─ Boolean flags ─ */
 		if ( self::is_explicit( $input, 'object_cache' ) ) {
 			$config['object_cache'] = (bool) $input->getOption( 'object_cache' );
+		}
+		if ( self::is_explicit( $input, 'xdebug' ) ) {
+			$value = $input->getOption( 'xdebug' );
+			// --xdebug (no value) returns null → treat as 'debug'.
+			// --xdebug=profile returns 'profile'.
+			$config['xdebug'] = ( $value === null ) ? 'debug' : $value;
 		}
 
 		/* ─ Extension lists ─ */

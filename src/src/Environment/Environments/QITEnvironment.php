@@ -74,6 +74,7 @@ abstract class QITEnvironment extends Environment {
 		$this->setup_site_url_and_tunnel();
 		$this->environment_monitor->environment_added_or_updated( $this->env_info );
 		$this->install_php_extensions();
+		$this->maybe_enable_xdebug();
 		$this->copy_mu_plugins();
 		$this->setup_wordpress();
 		$this->before_plugin_activation();
@@ -117,6 +118,45 @@ abstract class QITEnvironment extends Environment {
 		$this->docker->run_inside_docker( $this->env_info, [ '/bin/bash', '-c', 'bash /qit/bin/php-extensions.sh' ], [
 			'PHP_EXTENSIONS' => implode( ' ', $this->env_info->php_extensions ),
 		], '0:0' );
+	}
+
+	/**
+	 * Enable Xdebug if requested.
+	 * Xdebug is pre-installed in the image with mode=off.
+	 * This writes a higher-priority ini to switch to the requested mode and restarts PHP-FPM.
+	 */
+	protected function maybe_enable_xdebug(): void {
+		if ( ! property_exists( $this->env_info, 'xdebug' ) || empty( $this->env_info->xdebug ) ) {
+			return;
+		}
+
+		$mode = $this->env_info->xdebug;
+		$this->output->writeln( sprintf( '<info>Enabling Xdebug (mode=%s)...</info>', $mode ) );
+
+		$xdebug_ini = implode( "\n", [
+			'xdebug.mode=' . $mode,
+			'xdebug.start_with_request=yes',
+			'xdebug.client_host=host.docker.internal',
+			'xdebug.client_port=9003',
+			'xdebug.log_level=0',
+			'xdebug.output_dir=/tmp/xdebug-output',
+		] );
+
+		// Write ini override (zz- prefix loads after xdebug-defaults.ini alphabetically)
+		// and restart PHP-FPM to pick up the new config.
+		$this->docker->run_inside_docker(
+			$this->env_info,
+			[
+				'/bin/sh',
+				'-c',
+				sprintf(
+					'mkdir -p /tmp/xdebug-output && echo %s > /usr/local/etc/php/conf.d/zz-xdebug-qit-override.ini && kill -USR2 1',
+					escapeshellarg( $xdebug_ini )
+				),
+			],
+			[],
+			'0:0'
+		);
 	}
 
 	/**
