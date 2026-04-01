@@ -29,4 +29,4 @@ jobs:
 
       - name: Publish
         working-directory: packages/qit-runtime
-        run: npm publish --access public
+        run: npm publish --access public --provenance

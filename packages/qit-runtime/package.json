@@ -1,7 +1,7 @@
 {
   "name": "@woocommerce/qit-runtime",
-  "version": "0.1.2",
-  "description": "QIT runtime for test packages — environment info, Docker exec, capability discovery, and cross-package imports.",
+  "version": "0.1.3",
+  "description": "QIT runtime for test packages: environment info, Docker exec, capability discovery, and cross-package imports.",
   "type": "module",
   "exports": {
     ".": {
@@ -33,6 +33,15 @@
     "woocommerce",
     "playwright"
   ],
-  "author": "QIT Team",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woocommerce/qit-cli.git",
+    "directory": "packages/qit-runtime"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "author": "WooCommerce",
   "license": "GPL-2.0-or-later"
 }
