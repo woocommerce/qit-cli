@@ -27,6 +27,6 @@ jobs:
         working-directory: packages/qit-runtime
         run: npm ci && npm test && npm run build
 
-      - name: Publish (skip if version already published)
+      - name: Publish
         working-directory: packages/qit-runtime
-        run: npm publish --access public || echo "Version already published, skipping."
+        run: npm publish --access public
