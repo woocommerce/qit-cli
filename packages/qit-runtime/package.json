@@ -1,6 +1,6 @@
 {
   "name": "@woocommerce/qit-runtime",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "QIT runtime for test packages — environment info, Docker exec, capability discovery, and cross-package imports.",
   "type": "module",
   "exports": {
