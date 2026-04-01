@@ -5,6 +5,10 @@ on:
     branches: [trunk]
     paths: ['packages/qit-runtime/**']
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -16,6 +20,9 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org
 
+      - name: Ensure npm supports OIDC
+        run: npm install -g npm@latest
+
       - name: Install, test, build
         working-directory: packages/qit-runtime
         run: npm ci && npm test && npm run build
@@ -23,5 +30,3 @@ jobs:
       - name: Publish (skip if version already published)
         working-directory: packages/qit-runtime
         run: npm publish --access public || echo "Version already published, skipping."
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
