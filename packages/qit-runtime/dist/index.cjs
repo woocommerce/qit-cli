@@ -262,7 +262,7 @@ var qit = {
   hasAction,
   package: loadPackage,
   waitFor,
-  version: "0.1.2"
+  version: "0.1.3"
 };
 var index_default = qit;
 // Annotate the CommonJS export names for ESM import in node:
