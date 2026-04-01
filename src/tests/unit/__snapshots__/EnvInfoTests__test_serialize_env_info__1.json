@@ -27,6 +27,7 @@
     "woocommerce_version": "",
     "php_version": "",
     "object_cache": false,
+    "xdebug": "",
     "network_restriction": true,
     "nginx_port": "",
     "php_container": "",

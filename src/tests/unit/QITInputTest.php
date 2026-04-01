@@ -35,6 +35,7 @@ class QITInputTest extends TestCase {
 		$definition->addOption( new InputOption( 'wordpress_version', null, InputOption::VALUE_OPTIONAL ) );
 		$definition->addOption( new InputOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL ) );
 		$definition->addOption( new InputOption( 'object_cache', null, InputOption::VALUE_NONE ) );
+		$definition->addOption( new InputOption( 'xdebug', null, InputOption::VALUE_OPTIONAL, '', false ) );
 		$definition->addOption( new InputOption( 'plugin', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '', [] ) );
 		$definition->addOption( new InputOption( 'theme', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '', [] ) );
 		$definition->addOption( new InputOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '', [] ) );
