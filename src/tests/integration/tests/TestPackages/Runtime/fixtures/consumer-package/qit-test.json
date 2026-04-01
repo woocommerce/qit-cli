@@ -1,0 +1,14 @@
+{
+  "package": "test/consumer",
+  "package_type": "test",
+  "test_type": "e2e",
+  "test": {
+    "phases": {
+      "run": ["host:node verify-runtime.js"]
+    },
+    "results": {
+      "ctrf-json": "./results/ctrf.json",
+      "blob-dir": "./results/blob"
+    }
+  }
+}

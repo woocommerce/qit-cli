@@ -139,6 +139,9 @@ class TestPackageDownloader {
 						$this->install_npm_dependencies( $reference );
 					}
 
+					// Warn if @woocommerce/qit-runtime is outdated.
+					$this->check_qit_runtime_version( $reference );
+
 					// Ensure Playwright browsers are installed if Playwright is present
 					$this->install_playwright_browsers_if_needed( $reference );
 				}
@@ -779,8 +782,47 @@ class TestPackageDownloader {
 
 		$this->output->writeln( 'npm dependencies installed successfully' );
 
+		// Warn if @woocommerce/qit-runtime is installed but outdated (local dev packages with pinned versions).
+		$this->check_qit_runtime_version( $package_dir );
+
 		// Ensure Playwright browsers are installed if Playwright is present
 		$this->install_playwright_browsers_if_needed( $package_dir );
+	}
+
+	/**
+	 * Install the latest @woocommerce/qit-runtime into the package's node_modules.
+	 *
+	 * Runs after npm install so it doesn't interfere with the package's own dependencies.
+	 * Does NOT modify package.json — installs directly into node_modules.
+	 *
+	 * @param string $package_dir The directory containing the package.
+	 */
+	/**
+	 * Warn if @woocommerce/qit-runtime is installed but outdated.
+	 *
+	 * Runs after npm install. Does not modify anything — just prints a warning
+	 * so developers know to update their lockfile.
+	 *
+	 * @param string $package_dir The directory containing the package.
+	 */
+	protected function check_qit_runtime_version( string $package_dir ): void {
+		$installed_pkg_path = $package_dir . '/node_modules/@woocommerce/qit-runtime/package.json';
+
+		if ( ! file_exists( $installed_pkg_path ) ) {
+			return;
+		}
+
+		$installed_pkg = json_decode( file_get_contents( $installed_pkg_path ), true );
+		$installed_ver = $installed_pkg['version'] ?? '0.0.0';
+
+		$latest_ver = trim( (string) shell_exec( 'npm view @woocommerce/qit-runtime version 2>/dev/null' ) );
+
+		if ( $latest_ver !== '' && version_compare( $installed_ver, $latest_ver, '<' ) ) {
+			$this->output->writeln(
+				"<comment>@woocommerce/qit-runtime {$installed_ver} is outdated (latest: {$latest_ver}). " .
+				"Update your package.json to \"@woocommerce/qit-runtime\": \"*\" and run npm install</comment>"
+			);
+		}
 	}
 
 	/**

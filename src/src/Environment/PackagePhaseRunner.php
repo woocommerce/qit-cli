@@ -21,6 +21,12 @@ class PackagePhaseRunner {
 	private TestPackageManifestParser $parser;
 	private EnvironmentVars $environment_vars;
 
+	/** @var string|null Cached path to the generated package map JSON. */
+	private ?string $package_map_path = null;
+
+	/** @var string|null Cached path to the generated actions manifest JSON. */
+	private ?string $actions_manifest_path = null;
+
 	public function __construct( Docker $docker, OutputInterface $output, EnvironmentVars $environment_vars, TestPackageManifestParser $parser ) {
 		$this->docker           = $docker;
 		$this->output           = $output;
@@ -112,9 +118,99 @@ class PackagePhaseRunner {
 				}
 				$env_vars['QIT_PLUGIN_ACTIVATION_STACK'] = json_encode( $plugin_activation_stack );
 			}
+
+			// Add QIT runtime manifest paths (for @woocommerce/qit-runtime).
+			$env_vars['QIT_PACKAGE_MAP']      = $this->generate_package_map( $env_info );
+			$env_vars['QIT_ACTIONS_MANIFEST']  = $this->generate_actions_manifest( $env_info );
 		}
 
 		return $env_vars;
+	}
+
+	/**
+	 * Generate a JSON file mapping test package names to their host paths.
+	 * Enables qit.package('woocommerce/core-utils') in the runtime.
+	 *
+	 * @param EnvInfo $env_info Environment information.
+	 * @return string Absolute path to the generated package-map.json.
+	 */
+	private function generate_package_map( EnvInfo $env_info ): string {
+		if ( $this->package_map_path !== null ) {
+			return $this->package_map_path;
+		}
+
+		$package_map = [];
+		foreach ( $env_info->test_packages_metadata as $package_id => $metadata ) {
+			$package_path = $metadata['path'];
+
+			// Resolve the real package name from the manifest's "package" field.
+			// For local packages, $package_id is the filesystem path, not the package ID.
+			$resolved_id    = $package_id;
+			$manifest_file  = $package_path . '/qit-test.json';
+			if ( file_exists( $manifest_file ) ) {
+				$manifest_data = json_decode( file_get_contents( $manifest_file ), true );
+				if ( ! empty( $manifest_data['package'] ) ) {
+					$resolved_id = $manifest_data['package'];
+				}
+			}
+
+			$package_map[ $resolved_id ] = $package_path;
+		}
+
+		$this->package_map_path = $env_info->temporary_env . '/package-map.json';
+		file_put_contents( $this->package_map_path, json_encode( $package_map, JSON_PRETTY_PRINT ) );
+
+		return $this->package_map_path;
+	}
+
+	/**
+	 * Generate a JSON file mapping action names to their provider implementations.
+	 * Enables qit.actions('makePurchase') in the runtime.
+	 *
+	 * Scans all loaded test package manifests for "actions" declarations,
+	 * resolves relative paths to absolute host paths.
+	 *
+	 * @param EnvInfo $env_info Environment information.
+	 * @return string Absolute path to the generated actions-manifest.json.
+	 */
+	private function generate_actions_manifest( EnvInfo $env_info ): string {
+		if ( $this->actions_manifest_path !== null ) {
+			return $this->actions_manifest_path;
+		}
+
+		$actions = [];
+
+		foreach ( $env_info->test_packages_metadata as $package_id => $metadata ) {
+			$package_path  = $metadata['path'];
+			$manifest_file = $package_path . '/qit-test.json';
+
+			if ( ! file_exists( $manifest_file ) ) {
+				continue;
+			}
+
+			$manifest_data = json_decode( file_get_contents( $manifest_file ), true );
+
+			if ( empty( $manifest_data['actions'] ) || ! is_array( $manifest_data['actions'] ) ) {
+				continue;
+			}
+
+			// Resolve the real package name from the manifest.
+			$resolved_id = ! empty( $manifest_data['package'] ) ? $manifest_data['package'] : $package_id;
+
+			foreach ( $manifest_data['actions'] as $action_name => $relative_path ) {
+				$absolute_path = rtrim( $package_path, '/' ) . '/' . ltrim( $relative_path, './' );
+
+				$actions[ $action_name ][] = [
+					'provider' => $resolved_id,
+					'path'     => $absolute_path,
+				];
+			}
+		}
+
+		$this->actions_manifest_path = $env_info->temporary_env . '/actions-manifest.json';
+		file_put_contents( $this->actions_manifest_path, json_encode( $actions, JSON_PRETTY_PRINT ) );
+
+		return $this->actions_manifest_path;
 	}
 
 	/**

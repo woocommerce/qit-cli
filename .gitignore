@@ -56,3 +56,9 @@ qit-tests
 **/cache
 .claude/agents
 .claude
+packages/qit-runtime/node_modules/
+
+# Integration test fixture artifacts
+src/tests/integration/tests/TestPackages/Runtime/fixtures/*/node_modules/
+src/tests/integration/tests/TestPackages/Runtime/fixtures/*/package-lock.json
+src/tests/integration/tests/TestPackages/Runtime/fixtures/*/results/

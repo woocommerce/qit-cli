@@ -1,0 +1,38 @@
+{
+  "name": "@woocommerce/qit-runtime",
+  "version": "0.1.2",
+  "description": "QIT runtime for test packages — environment info, Docker exec, capability discovery, and cross-package imports.",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "devDependencies": {
+    "@types/node": "^25.5.0",
+    "tsup": "^8.0.0",
+    "typescript": "^5.4.0",
+    "vitest": "^3.0.0"
+  },
+  "keywords": [
+    "qit",
+    "testing",
+    "woocommerce",
+    "playwright"
+  ],
+  "author": "QIT Team",
+  "license": "GPL-2.0-or-later"
+}

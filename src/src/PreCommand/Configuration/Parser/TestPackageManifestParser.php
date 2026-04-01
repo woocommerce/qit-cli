@@ -64,9 +64,26 @@ class TestPackageManifestParser {
 		if ( ! $result->isValid() ) {
 			$errors = $this->error_formatter->format( $result->error() );
 
+			// $schema is for IDE support — a mismatch should warn, not block.
+			$non_schema_errors = array_filter(
+				$errors,
+				static function ( $path ) {
+					// The key may be URL-encoded (/%24schema) or plain (/$schema).
+					return strpos( $path, '/$schema' ) !== 0
+						&& strpos( $path, '/%24schema' ) !== 0;
+				},
+				ARRAY_FILTER_USE_KEY
+			);
+
+			// If the only errors are $schema mismatches, continue with a warning.
+			if ( empty( $non_schema_errors ) ) {
+				// Silently continue — $schema is informational.
+				return json_decode( $contents, true );
+			}
+
 			// Check if this is a secrets validation error
 			$is_secrets_error = false;
-			foreach ( $errors as $path => $messages ) {
+			foreach ( $non_schema_errors as $path => $messages ) {
 				if ( $path === '/requires/secrets' ) {
 					$is_secrets_error = true;
 					break;
@@ -84,7 +101,7 @@ class TestPackageManifestParser {
 				);
 			} else {
 				// Standard validation error for other issues
-				$error_msg = $this->format_validation_errors( $errors, $file_path );
+				$error_msg = $this->format_validation_errors( $non_schema_errors, $file_path );
 				throw new \RuntimeException( "Schema validation failed for $file_path:\n$error_msg" );
 			}
 		}

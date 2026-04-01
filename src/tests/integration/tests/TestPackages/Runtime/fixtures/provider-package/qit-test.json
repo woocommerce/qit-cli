@@ -1,0 +1,12 @@
+{
+  "package": "test/provider",
+  "package_type": "utility",
+  "actions": {
+    "testGreet": "./greet.js"
+  },
+  "test": {
+    "phases": {
+      "globalSetup": []
+    }
+  }
+}

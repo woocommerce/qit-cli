@@ -1,0 +1,25 @@
+name: Check runtime version bump
+
+on:
+  pull_request:
+    paths: ['packages/qit-runtime/**']
+
+jobs:
+  check-version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Verify version was bumped
+        run: |
+          PUBLISHED=$(npm view @woocommerce/qit-runtime version 2>/dev/null || echo "0.0.0")
+          LOCAL=$(node -p "require('./packages/qit-runtime/package.json').version")
+          if [ "$PUBLISHED" = "$LOCAL" ]; then
+            echo "::error::packages/qit-runtime/ changed but version ($LOCAL) was not bumped. Bump the version in packages/qit-runtime/package.json and src/index.ts before merging."
+            exit 1
+          fi
+          echo "Version check passed: $LOCAL (published: $PUBLISHED)"
