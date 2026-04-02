@@ -192,6 +192,18 @@ class RequestBuilder {
 			return $mocked;
 		}
 
+		// Integration test fixtures — serve cached API responses.
+		$fixture_dir = Config::get_fixture_dir();
+		if ( $fixture_dir !== null ) {
+			$fixture_response = self::resolve_api_fixture( $fixture_dir, $this->url );
+			if ( $fixture_response !== null ) {
+				self::log_request( $this->url, 'request:fixture', $this->method );
+
+				return $fixture_response;
+			}
+			// URL didn't match any fixture pattern — let it through (e.g., Manager API calls).
+		}
+
 		if ( empty( $this->url ) ) {
 			throw new \LogicException( 'URL cannot be empty.' );
 		}
@@ -442,7 +454,7 @@ class RequestBuilder {
 		}
 
 		// Integration test fixtures — serve local zips instead of downloading.
-		$fixture_dir = getenv( 'QIT_FIXTURE_DIR' );
+		$fixture_dir = Config::get_fixture_dir();
 		if ( $fixture_dir ) {
 			$fixture_file = null;
 
@@ -616,6 +628,38 @@ class RequestBuilder {
 		return file_get_contents( $mock_file );
 	}
 
+	/**
+	 * Check if a URL matches a fixture file for wporg API responses.
+	 *
+	 * @param string $fixture_dir The fixture directory path.
+	 * @param string $url         The request URL.
+	 *
+	 * @return string|null The fixture file contents, or null if URL doesn't match a fixture pattern.
+	 * @throws \RuntimeException If URL matches a fixture pattern but no fixture file exists.
+	 */
+	private static function resolve_api_fixture( string $fixture_dir, string $url ): ?string {
+		// WordPress.org plugin API.
+		if ( preg_match( '#api\.WordPress\.org/plugins/info.+request.slug.=([a-z0-9_-]+)#i', $url, $m ) ) {
+			$file = $fixture_dir . '/api/plugins/' . $m[1] . '.json';
+			if ( file_exists( $file ) ) {
+				return file_get_contents( $file );
+			}
+			throw new \RuntimeException( "No API fixture for plugin '{$m[1]}'. Add: fixtures/api/plugins/{$m[1]}.json" );
+		}
+
+		// WordPress.org theme API.
+		if ( preg_match( '#api\.WordPress\.org/themes/info.+request.slug.=([a-z0-9_-]+)#i', $url, $m ) ) {
+			$file = $fixture_dir . '/api/themes/' . $m[1] . '.json';
+			if ( file_exists( $file ) ) {
+				return file_get_contents( $file );
+			}
+			throw new \RuntimeException( "No API fixture for theme '{$m[1]}'. Add: fixtures/api/themes/{$m[1]}.json" );
+		}
+
+		// Not a wporg URL — let it through.
+		return null;
+	}
+
 	private function record_request( string $mock_dir ): void {
 		$entry = [
 			'url'  => $this->url,
@@ -643,7 +687,7 @@ class RequestBuilder {
 	 * @param string $method HTTP method (GET, POST, etc.).
 	 */
 	private static function log_request( string $url, string $type, string $method = '' ): void {
-		$log_dir = getenv( 'QIT_REQUEST_LOG' );
+		$log_dir = Config::get_request_log();
 		if ( ! $log_dir ) {
 			return;
 		}

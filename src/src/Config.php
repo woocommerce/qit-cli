@@ -19,6 +19,8 @@ class Config {
 		'development_mode'    => false,
 		'proxy_url'           => '127.0.0.1:8080',
 		'last_diagnosis'      => 0,
+		'fixture_dir'         => null,
+		'request_log'         => null,
 	];
 
 	/** @var bool */
@@ -43,6 +45,24 @@ class Config {
 	 */
 	public static function is_development_mode(): bool {
 		return (bool) App::make( self::class )->get( 'development_mode' );
+	}
+
+	/**
+	 * @return string|null Path to fixture directory, or null if not set.
+	 */
+	public static function get_fixture_dir(): ?string {
+		$dir = App::make( self::class )->get( 'fixture_dir' );
+
+		return is_string( $dir ) ? $dir : null;
+	}
+
+	/**
+	 * @return string|null Path to request log directory, or null if not set.
+	 */
+	public static function get_request_log(): ?string {
+		$dir = App::make( self::class )->get( 'request_log' );
+
+		return is_string( $dir ) ? $dir : null;
 	}
 
 	public static function set_current_manager_environment( string $manager_backend ): void {
@@ -106,7 +126,7 @@ class Config {
 	 * @return void
 	 * @throws IOException When can't write to file.
 	 */
-	protected function set( string $key, $value ): void {
+	public function set( string $key, $value ): void {
 		$this->config[ $key ] = $value;
 		$this->save();
 	}
@@ -116,7 +136,7 @@ class Config {
 	 *
 	 * @return scalar|null
 	 */
-	protected function get( string $key ) {
+	public function get( string $key ) {
 		return $this->config[ $key ] ?? null;
 	}
 

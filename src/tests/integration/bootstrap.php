@@ -77,8 +77,6 @@ function qit( array $command, $qit_env_json = [], int $expected_exit_code = 0, a
 
 	$env = [
 		'QIT_HOME'            => $GLOBALS['QIT_HOME'],
-		'QIT_REQUEST_LOG'     => $GLOBALS['QIT_REQUEST_LOG'] ?? '',
-		'QIT_FIXTURE_DIR'     => $GLOBALS['QIT_FIXTURE_DIR'] ?? '',
 		'MANAGER_URL'         => $_ENV['QIT_CUSTOM_TESTS_URL'] ?? '', // Never hit production from tests
 		'QIT_DISABLE_CLEANUP' => '1', // Disable cleanup during tests to prevent output pollution
 		'QIT_SELF_TESTS'      => '1',

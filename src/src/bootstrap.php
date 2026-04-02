@@ -147,7 +147,8 @@ try {
 		$application->add( $container->make( AddBackend::class ) );
 		$application->add( $container->make( SetProxyCommand::class ) );
 		$application->add( $container->make( SwitchBackend::class ) );
-
+		$application->add( $container->make( \QIT_CLI\Commands\ConfigSetCommand::class ) );
+		$application->add( $container->make( \QIT_CLI\Commands\ConfigGetCommand::class ) );
 	}
 
 	// Run a quick diagnose check to see what might be happening and provide some feedback to the user.
@@ -234,6 +235,8 @@ if ( Config::is_development_mode() ) {
 	$application->add( $container->make( SetProxyCommand::class ) );
 	$application->add( $container->make( SyncCommand::class ) );
 	$application->add( $container->make( CacheCommand::class ) );
+	$application->add( $container->make( \QIT_CLI\Commands\ConfigSetCommand::class ) );
+	$application->add( $container->make( \QIT_CLI\Commands\ConfigGetCommand::class ) );
 
 	// Only show options to remove and see the current environment if there's at least one environment added.
 	if ( count( ManagerBackend::get_configured_manager_backends( false ) ) > 0 ) {

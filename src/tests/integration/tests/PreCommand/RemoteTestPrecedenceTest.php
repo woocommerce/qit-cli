@@ -95,7 +95,7 @@ $configPath,
 
 	public function test_zip_upload_option_for_remote_test(): void {
 		// Use existing valid plugin ZIP from test data
-		$zipPath = __DIR__ . '/../../../data/plugins/my-plugin.zip';
+		$zipPath = __DIR__ . '/../../data/plugins/my-plugin.zip';
 		$this->assertFileExists( $zipPath, 'Test plugin ZIP should exist in test data' );
 
 		$raw = qit_run_remote_test( [

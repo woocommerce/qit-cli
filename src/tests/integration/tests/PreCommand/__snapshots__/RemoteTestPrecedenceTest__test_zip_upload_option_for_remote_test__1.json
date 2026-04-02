@@ -1,0 +1,17 @@
+{
+    "woo_id": 18734001206047,
+    "upload_id": "NORMALIZED_UPLOAD_ID",
+    "event": "cli_development_extension_test",
+    "env_info": {
+        "created_at": 0,
+        "nginx_port": "PORT",
+        "temporary_env": "/tmp-normalised/temporary-env/",
+        "plugins": null
+    },
+    "plugins": null,
+    "themes": null,
+    "configuration": {
+        "resolved_plugins": null
+    },
+    "resolved_extensions": null
+}
