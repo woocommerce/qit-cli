@@ -17,7 +17,7 @@
             "type": "plugin",
             "from": "wporg",
             "version": "NORMALIZED_VERSION",
-            "source": "https://normalized-remote-source/woocommerce.10.6.2.zip",
+            "source": "https://normalized-remote-source/woocommerce.8.0.zip",
             "downloaded_source": "/normalized/downloaded-path/file.zip",
             "entrypoint": "woocommerce/woocommerce.php",
             "priority": 50,

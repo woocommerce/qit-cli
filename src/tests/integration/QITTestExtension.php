@@ -48,6 +48,14 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			throw new \RuntimeException( sprintf( 'The qit binary was not found at %s.', realpath( __DIR__ . '/../../../qit' ) ) );
 		}
 
+		// Set up HTTP request logging directory for auditing network activity.
+		$log_dir                    = sys_get_temp_dir() . '/qit-request-log-' . getmypid();
+		@mkdir( $log_dir, 0755, true );
+		$GLOBALS['QIT_REQUEST_LOG'] = $log_dir;
+
+		// Set up fixture directory for serving local zips instead of downloading.
+		$GLOBALS['QIT_FIXTURE_DIR'] = realpath( __DIR__ . '/fixtures' ) ?: '';
+
 		$GLOBALS['qit-php'] = __DIR__ . '/../../../src/qit-cli.php';
 
 		if ( ! file_exists( $GLOBALS['qit-php'] ) ) {
@@ -318,6 +326,22 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 class QITTestFinish implements ExecutionFinishedSubscriber {
 	public function notify( ExecutionFinished $event ): void {
+		// Print HTTP request log summary.
+		if ( ! empty( $GLOBALS['QIT_REQUEST_LOG'] ) ) {
+			$log_file = $GLOBALS['QIT_REQUEST_LOG'] . '/_requests.json';
+			if ( is_file( $log_file ) ) {
+				$requests = json_decode( file_get_contents( $log_file ), true );
+				if ( ! empty( $requests ) ) {
+					echo "\n=== HTTP Requests Made During Tests ===\n";
+					foreach ( $requests as $r ) {
+						echo sprintf( "  [%s] %s\n", $r['type'] ?? '?', $r['url'] ?? '?' );
+					}
+					echo sprintf( "Total: %d requests\n", count( $requests ) );
+					echo "Log: $log_file\n";
+				}
+			}
+		}
+
 		if ( getenv( 'CI' ) ) {
 			echo "Skipping cleanup because this is a CI environment.\n";
 		}

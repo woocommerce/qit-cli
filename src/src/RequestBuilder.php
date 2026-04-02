@@ -201,6 +201,8 @@ class RequestBuilder {
 			throw new DoingAutocompleteException();
 		}
 
+		self::log_request( $this->url, 'request', $this->method );
+
 		$curl = curl_init();
 
 		$curl_parameters = [
@@ -439,6 +441,41 @@ class RequestBuilder {
 			return;
 		}
 
+		// Integration test fixtures — serve local zips instead of downloading.
+		$fixture_dir = getenv( 'QIT_FIXTURE_DIR' );
+		if ( $fixture_dir ) {
+			$fixture_file = null;
+
+			// WordPress.org download URL pattern:
+			// https://downloads.wordpress.org/plugin/{slug}.{version}.zip
+			// https://downloads.wordpress.org/theme/{slug}.{version}.zip
+			if ( preg_match( '#downloads\.WordPress\.org/(?:plugin|theme)/([^.]+)\.#i', $url, $matches ) ) {
+				$slug         = $matches[1];
+				$type         = strpos( $url, '/plugin/' ) !== false ? 'plugins' : 'themes';
+				$fixture_file = $fixture_dir . '/' . $type . '/' . $slug . '.zip';
+			}
+
+			// GitHub release URL pattern (e.g., woocommerce RC/nightly):
+			// https://github.com/{owner}/{repo}/releases/download/{tag}/{slug}.zip
+			if ( $fixture_file === null && preg_match( '#github\.com/.+/releases/download/.+/([^/]+)\.zip$#i', $url, $matches ) ) {
+				$slug         = $matches[1];
+				$fixture_file = $fixture_dir . '/plugins/' . $slug . '.zip';
+			}
+
+			if ( $fixture_file !== null && file_exists( $fixture_file ) ) {
+				copy( $fixture_file, $file_path );
+				self::log_request( $url, 'download:fixture' );
+
+				return;
+			}
+
+			// No fixture found — fail loudly so we know a test needs a new fixture.
+			throw new \RuntimeException(
+				"Integration test attempted to download '$url' but no fixture exists. " .
+				'Add a fixture zip or mock this URL.'
+			);
+		}
+
 		// Open file for writing, create it if it doesn't exist.
 		$fp = fopen( $file_path, 'w' );
 		if ( $fp === false ) {
@@ -469,6 +506,8 @@ class RequestBuilder {
 		}
 
 		curl_setopt_array( $curl, $curl_parameters );
+
+		self::log_request( $url, 'download:network' );
 
 		$start = microtime( true );
 		curl_exec( $curl );
@@ -594,6 +633,30 @@ class RequestBuilder {
 		file_put_contents( $log_file, json_encode( $log, JSON_PRETTY_PRINT ) );
 	}
 
+
+	/**
+	 * Log an outbound HTTP request when QIT_REQUEST_LOG is set.
+	 * Used to audit network activity during tests.
+	 *
+	 * @param string $url    The request URL.
+	 * @param string $type   'request' or 'download'.
+	 * @param string $method HTTP method (GET, POST, etc.).
+	 */
+	private static function log_request( string $url, string $type, string $method = '' ): void {
+		$log_dir = getenv( 'QIT_REQUEST_LOG' );
+		if ( ! $log_dir ) {
+			return;
+		}
+
+		$log_file = $log_dir . '/_requests.json';
+		$log      = is_file( $log_file ) ? json_decode( file_get_contents( $log_file ), true ) : [];
+		$log[]    = [
+			'url'    => $url,
+			'type'   => $type,
+			'method' => $method,
+		];
+		file_put_contents( $log_file, json_encode( $log, JSON_PRETTY_PRINT ) );
+	}
 
 	/**
 	 * Apply rate limiting to prevent hitting API rate limits.
