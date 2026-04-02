@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 346 total, 259 passed, 0 failed, 87 skipped",
+            "test_summary": "Tests: 306 total, 254 passed, 0 failed, 52 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 63,
-                "numPendingTestSuites": 29,
-                "numTotalTestSuites": 92,
+                "numPassedTestSuites": 66,
+                "numPendingTestSuites": 18,
+                "numTotalTestSuites": 84,
                 "numFailedTests": 0,
-                "numPassedTests": 259,
-                "numPendingTests": 87,
-                "numTotalTests": 346,
+                "numPassedTests": 254,
+                "numPendingTests": 52,
+                "numTotalTests": 306,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.js",
@@ -118,39 +118,9 @@
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
-                            "confirms correct summary numbers on overview page": [
-                                {
-                                    "title": "confirms correct summary numbers on overview page",
-                                    "status": "pending"
-                                }
-                            ],
                             "downloads revenue report as CSV": [
                                 {
                                     "title": "downloads revenue report as CSV",
-                                    "status": "pending"
-                                }
-                            ],
-                            "use date filter on overview page": [
-                                {
-                                    "title": "use date filter on overview page",
-                                    "status": "pending"
-                                }
-                            ],
-                            "set custom date range on revenue report": [
-                                {
-                                    "title": "set custom date range on revenue report",
-                                    "status": "pending"
-                                }
-                            ],
-                            "use advanced filters on orders report": [
-                                {
-                                    "title": "use advanced filters on orders report",
-                                    "status": "pending"
-                                }
-                            ],
-                            "use filter by single product on products report": [
-                                {
-                                    "title": "use filter by single product on products report",
                                     "status": "pending"
                                 }
                             ],
@@ -537,27 +507,6 @@
                         }
                     },
                     {
-                        "file": "checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Shortcode Checkout Custom Place Order Button": [
-                                {
-                                    "title": "clicking custom button triggers validation when form is invalid",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "switching between gateways shows\\/hides custom button",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "clicking custom button submits order when form is valid",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "checkout\\/checkout.spec.ts",
                         "status": "passed",
                         "has_pending": false,
@@ -843,55 +792,6 @@
                         }
                     },
                     {
-                        "file": "editor\\/command-palette.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "can use the \\"Add new product\\" command": [
-                                {
-                                    "title": "can use the \\"Add new product\\" command",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can use the \\"Add new order\\" command": [
-                                {
-                                    "title": "can use the \\"Add new order\\" command",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can use the \\"Products\\" command": [
-                                {
-                                    "title": "can use the \\"Products\\" command",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can use the \\"Orders\\" command": [
-                                {
-                                    "title": "can use the \\"Orders\\" command",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can use the product search command": [
-                                {
-                                    "title": "can use the product search command",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can use a settings command": [
-                                {
-                                    "title": "can use a settings command",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can use an analytics command": [
-                                {
-                                    "title": "can use an analytics command",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "email\\/account-emails.spec.ts",
                         "status": "passed",
                         "has_pending": false,
@@ -912,19 +812,6 @@
                                 {
                                     "title": "Customer should receive an email when password reset initiated from admin",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email\\/editor-tracking-selectors.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce Email Editor Tracking Selectors": [
-                                {
-                                    "title": "Check selectors for tracking events",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1024,69 +911,6 @@
                                 {
                                     "title": "Reset color palette with a feature flag",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email-editor\\/email-editor-loads.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce Email Editor Core": [
-                                {
-                                    "title": "Can enable the email editor",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Can access the email editor",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can preview in new tab",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can send test email",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can edit and save content",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email-editor\\/email-editor-reset-template.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce Email Editor Reset Template": [
-                                {
-                                    "title": "Can reset a customized email template to default",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email-editor\\/email-editor-settings-sidebar.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce Email Editor Settings Sidebar Integration": [
-                                {
-                                    "title": "Can update email status",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can update email subject and preview text",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can update email recipients",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1264,10 +1088,6 @@
                             "Store owner can complete the core profiler": [
                                 {
                                     "title": "Can complete the core profiler skipping extension install",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can complete the core profiler installing default extensions",
                                     "status": "pending"
                                 }
                             ],
@@ -1459,16 +1279,12 @@
                     {
                         "file": "order\\/order-refund.spec.ts",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "can delete an issued refund",
-                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1855,43 +1671,6 @@
                         }
                     },
                     {
-                        "file": "product\\/product-edit.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "can edit a product and save the changes": [
-                                {
-                                    "title": "can edit a product and save the changes",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can bulk edit products": [
-                                {
-                                    "title": "can bulk edit products",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can restore regular price when bulk editing products": [
-                                {
-                                    "title": "can restore regular price when bulk editing products",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can decrease the sale price if the product was not previously in sale when bulk editing products": [
-                                {
-                                    "title": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                                    "status": "pending"
-                                }
-                            ],
-                            "increasing the sale price from 0 does not change the sale price when bulk editing products": [
-                                {
-                                    "title": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "product\\/product-export.spec.ts",
                         "status": "passed",
                         "has_pending": false,
@@ -1934,51 +1713,14 @@
                         }
                     },
                     {
-                        "file": "product\\/product-images.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Products > Product Images": [
-                                {
-                                    "title": "can set product image",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can update the product image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can delete the product image",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can create a product gallery",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can update a product gallery",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
                         "file": "product\\/product-import-csv.spec.ts",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "can upload the CSV file and import products",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can override the existing products via CSV import",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2011,7 +1753,7 @@
                     {
                         "file": "product\\/product-reviews.spec.ts",
                         "status": "passed",
-                        "has_pending": true,
+                        "has_pending": false,
                         "tests": {
                             "Product Reviews": [],
                             "Product Reviews > Merchant manages reviews": [
@@ -2038,10 +1780,6 @@
                                 {
                                     "title": "can mark a product review as spam",
                                     "status": "passed"
-                                },
-                                {
-                                    "title": "can reply to a product review",
-                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2464,7 +2202,7 @@
                         }
                     }
                 ],
-                "summary": "346 total, 259 passed, 0 failed, 87 skipped."
+                "summary": "306 total, 254 passed, 0 failed, 52 skipped."
             }
         },
         {
@@ -2479,11 +2217,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 346,
-                        "passed": 259,
+                        "tests": 306,
+                        "passed": 254,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 87,
+                        "skipped": 52,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2652,42 +2390,6 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "confirms correct summary numbers on overview page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
-                                            "line": 269,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
                             "name": "downloads revenue report as CSV",
                             "status": "skipped",
                             "duration": 999,
@@ -2716,150 +2418,6 @@
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
                                             "line": 307,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "use date filter on overview page",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
-                                            "line": 340,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "set custom date range on revenue report",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
-                                            "line": 410,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "use advanced filters on orders report",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
-                                            "line": 512,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "use filter by single product on products report",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
-                                            "line": 606,
                                             "column": 6
                                         }
                                     }
@@ -4645,112 +4203,6 @@
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
                                             "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "clicking custom button triggers validation when form is invalid",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                                            "line": 75,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "switching between gateways shows\\/hides custom button",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                                            "line": 75,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "clicking custom button submits order when form is valid",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-shortcode-custom-place-order-button.spec.ts > Shortcode Checkout Custom Place Order Button",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-shortcode-custom-place-order-button.spec.ts",
-                                            "line": 75,
                                             "column": 15
                                         }
                                     }
@@ -6747,237 +6199,6 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can use the \\"Add new product\\" command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 75,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the \\"Add new order\\" command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 87,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the \\"Products\\" command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 99,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the \\"Orders\\" command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 111,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use the product search command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 123,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use a settings command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 135,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use an analytics command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 145,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
                             "name": "New customer should receive an email with login details",
                             "status": "passed",
                             "duration": 999,
@@ -7087,39 +6308,6 @@
                             ],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Check selectors for tracking events",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/editor-tracking-selectors.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/editor-tracking-selectors.spec.ts > WooCommerce Email Editor Tracking Selectors",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/editor-tracking-selectors.spec.ts",
-                                            "line": 30,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
                             },
                             "retryAttempts": []
                         },
@@ -7560,294 +6748,6 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can enable the email editor",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can access the email editor",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 38,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can preview in new tab",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 58,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can send test email",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 79,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can edit and save content",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-loads.spec.ts > WooCommerce Email Editor Core",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-loads.spec.ts",
-                                            "line": 101,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can reset a customized email template to default",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-reset-template.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-reset-template.spec.ts > WooCommerce Email Editor Reset Template",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-reset-template.spec.ts",
-                                            "line": 56,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can update email status",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can update email subject and preview text",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can update email recipients",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/email-editor-settings-sidebar.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email-editor\\/email-editor-settings-sidebar.spec.ts > WooCommerce Email Editor Settings Sidebar Integration",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/email-editor-settings-sidebar.spec.ts",
-                                            "line": 20,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
                             },
                             "retryAttempts": []
                         },
@@ -8481,41 +7381,6 @@
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
                                             "line": 44,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can complete the core profiler installing default extensions",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@skip-on-external-env"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
-                                            "line": 205,
                                             "column": 8
                                         }
                                     }
@@ -9425,48 +8290,11 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete an issued refund",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.ts",
-                                            "line": 121,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
                             },
                             "retryAttempts": []
                         },
@@ -11589,191 +10417,6 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can edit a product and save the changes",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "edit the product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "edit the product description",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "edit the product price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the updated product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the changes",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can bulk edit products",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
-                                            "line": 135,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can restore regular price when bulk editing products",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
-                                            "line": 231,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can decrease the sale price if the product was not previously in sale when bulk editing products",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
-                                            "line": 337,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "increasing the sale price from 0 does not change the sale price when bulk editing products",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-edit.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-edit.spec.ts",
-                                            "line": 395,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
                             "name": "should allow exporting a single selected simple product",
                             "status": "passed",
                             "duration": 999,
@@ -11992,189 +10635,6 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can set product image",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts",
-                                            "line": 93,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update the product image",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Update product image",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify product image was set",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete the product image",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-images.spec.ts",
-                                            "line": 173,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create a product gallery",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add product gallery images",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify product gallery",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update a product gallery",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Remove images from product gallery",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify product gallery",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-images.spec.ts > Products > Product Images",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
                             "name": "should show error message if you go without providing CSV file",
                             "status": "passed",
                             "duration": 999,
@@ -12195,81 +10655,11 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can upload the CSV file and import products",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
-                                            "line": 183,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can override the existing products via CSV import",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
-                                            "line": 231,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -12634,39 +11024,6 @@
                             ],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can reply to a product review",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.ts",
-                                            "line": 262,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
                             },
                             "retryAttempts": []
                         },
