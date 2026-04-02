@@ -110,7 +110,7 @@
                                 "packageId": "woocommerce\\/activation:latest",
                                 "testType": "e2e",
                                 "exitCode": 0,
-                                "output": "Notice: Function _load_textdomain_just_in_time was called <strong>incorrectly<\\/strong>. Translation loading for the <code>woocommerce<\\/code> domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the <code>init<\\/code> action or later. Please see <a href=\\"https:\\/\\/developer.wordpress.org\\/advanced-administration\\/debug\\/debug-wordpress\\/\\">Debugging in WordPress<\\/a> for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line {LINE}\\nSuccess: Updated \'woocommerce_onboarding_profile_completed\' option.",
+                                "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
                                 "isLifecycle": true,
                                 "countsTowardTotals": false,
                                 "packageType": "test",
