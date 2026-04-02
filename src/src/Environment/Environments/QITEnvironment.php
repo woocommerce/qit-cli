@@ -31,6 +31,8 @@ abstract class QITEnvironment extends Environment {
 	}
 
 	protected function post_generate_docker_compose(): void {
+		$timeout = (string) $this->env_info->timeout;
+
 		$qit_conf = $this->env_info->temporary_env . '/docker/nginx/conf.d/qit.conf';
 
 		if ( ! file_exists( $qit_conf ) ) {
@@ -40,8 +42,8 @@ abstract class QITEnvironment extends Environment {
 		// Replace placeholders.
 		$qit_conf_contents = file_get_contents( $qit_conf );
 		$qit_conf_contents = str_replace(
-			[ '##QIT_PHP_CONTAINER_PLACEHOLDER##', '##QIT_DOMAIN_PLACEHOLDER##' ],
-			[ sprintf( 'qit_env_php_%s', $this->env_info->env_id ), $this->env_info->domain ],
+			[ '##QIT_PHP_CONTAINER_PLACEHOLDER##', '##QIT_DOMAIN_PLACEHOLDER##', '##QIT_TIMEOUT_PLACEHOLDER##' ],
+			[ sprintf( 'qit_env_php_%s', $this->env_info->env_id ), $this->env_info->domain, $timeout ],
 			$qit_conf_contents
 		);
 
@@ -52,6 +54,14 @@ abstract class QITEnvironment extends Environment {
 		}
 
 		file_put_contents( $qit_conf, $qit_conf_contents );
+
+		// Replace timeout in PHP-FPM config.
+		$php_fpm_conf = $this->env_info->temporary_env . '/docker/php-fpm/zz-qit-php-fpm.conf';
+		if ( file_exists( $php_fpm_conf ) ) {
+			$php_fpm_contents = file_get_contents( $php_fpm_conf );
+			$php_fpm_contents = str_replace( '##QIT_TIMEOUT_PLACEHOLDER##', $timeout, $php_fpm_contents );
+			file_put_contents( $php_fpm_conf, $php_fpm_contents );
+		}
 
 		// Update PHP configuration with environment ID.
 		$qit_ini = $this->env_info->temporary_env . '/docker/php-fpm/qit.ini';

@@ -10,11 +10,7 @@
         "/var/www/html/wp-content/mu-plugins/custom-test-mu-plugin.php:ro": "/repo/integration/helpers/CUSTOM_MU_PLUGIN.php"
     },
     "docker_images": [],
-    "php_extensions": [
-        "xdebug",
-        "soap",
-        "imagick"
-    ],
+    "php_extensions": [],
     "plugins": [],
     "themes": [],
     "envs": {
@@ -36,7 +32,7 @@
     "php_version": "8.2",
     "object_cache": false,
     "xdebug": "",
-    "timeout": 600,
+    "timeout": 2,
     "network_restriction": true,
     "nginx_port": "",
     "php_container": "",

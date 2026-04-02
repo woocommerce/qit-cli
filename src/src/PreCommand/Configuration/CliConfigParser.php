@@ -48,6 +48,14 @@ class CliConfigParser {
 			$config['xdebug'] = ( $value === null ) ? 'debug' : $value;
 		}
 
+		/* ─ Timeout ─ */
+		if ( self::is_explicit( $input, 'timeout' ) ) {
+			$value = $input->getOption( 'timeout' );
+			if ( $value !== null ) {
+				$config['timeout'] = (int) $value;
+			}
+		}
+
 		/* ─ Extension lists ─ */
 		if ( self::is_explicit( $input, 'plugin' ) ) {
 			$config['plugins'] = (array) $input->getOption( 'plugin' );

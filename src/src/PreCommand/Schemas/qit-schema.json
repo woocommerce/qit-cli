@@ -258,6 +258,11 @@
               ],
               "description": "Enable Xdebug (true or mode string)"
             },
+            "timeout": {
+              "type": "integer",
+              "minimum": 1,
+              "description": "Timeout in seconds for nginx fastcgi and PHP-FPM (default: 600)"
+            },
             "envs": {
               "type": "object",
               "description": "Environment variables",
