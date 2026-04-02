@@ -34,6 +34,8 @@
     "woocommerce_version": "",
     "php_version": "8.2",
     "object_cache": false,
+    "xdebug": "",
+    "timeout": 600,
     "network_restriction": true,
     "nginx_port": "",
     "php_container": "",

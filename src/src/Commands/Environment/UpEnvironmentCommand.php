@@ -77,6 +77,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'woocommerce_version', null, InputOption::VALUE_OPTIONAL, 'WooCommerce version. Alias: --woo', null )
 			->addOption( 'object_cache', 'o', InputOption::VALUE_NONE, 'Enable Redis object cache' )
 			->addOption( 'xdebug', null, InputOption::VALUE_OPTIONAL, 'Enable Xdebug (mode=debug by default, or specify: profile, trace, debug,develop, etc.)', false )
+			->addOption( 'timeout', null, InputOption::VALUE_REQUIRED, 'Timeout in seconds for nginx fastcgi and PHP-FPM request termination (default: 600)' )
 			/* ─ Lists ─ */
 			->addOption( 'plugin', 'p', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional plugins', [] )
 			->addOption( 'theme', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Additional themes', [] )
@@ -710,6 +711,7 @@ class UpEnvironmentCommand extends QITCommand {
 			'sut'                     => $env_config['sut'] ?? [],
 			'object_cache'            => $env_config['object_cache'] ?? false,
 			'xdebug'                  => $env_config['xdebug'] ?? '',
+			'timeout'                 => $env_config['timeout'] ?? 600,
 			'plugins'                 => $plugin_arrays,
 			'themes'                  => $theme_arrays,
 			'php_extensions'          => $env_config['php_extensions'] ?? [],
@@ -1160,6 +1162,11 @@ class UpEnvironmentCommand extends QITCommand {
 			$out->writeln( sprintf( '  Tunnel:      %s', $info->tunnel_type ) );
 		}
 
+		// Timeout information (only if non-default)
+		if ( $info->timeout !== 600 ) {
+			$out->writeln( sprintf( '  Timeout:     %ds', $info->timeout ) );
+		}
+
 		// Xdebug information (only if enabled)
 		if ( ! empty( $info->xdebug ) ) {
 			$out->writeln( '' );
@@ -1317,6 +1324,9 @@ Examples
   <info>qit env:up --global-setup --config=utilities.json</info>
       Run globalSetup and setup from all packages without executing tests
       Perfect for utility packages that configure environments for development
+
+  <info>qit env:up --timeout=2 --xdebug</info>
+      Set 2-second HTTP timeout (useful with Xdebug + Playwright debugging)
 
   <info>qit env:up --skip-setup</info>
       Skip automatic setup even if qit-test.json exists in current directory

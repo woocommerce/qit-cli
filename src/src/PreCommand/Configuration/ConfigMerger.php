@@ -34,6 +34,7 @@ class ConfigMerger {
 		'tunnel',
 		'tunnel_type',
 		'network_mode',
+		'timeout',
 	];
 
 	/**

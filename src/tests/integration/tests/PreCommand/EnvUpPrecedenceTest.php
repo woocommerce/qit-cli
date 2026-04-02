@@ -688,4 +688,58 @@ final class EnvUpPrecedenceTest extends TestCase {
 		$this->assertSame( 'trace', $payload['xdebug'] );
 		$this->assertMatchesEnvUpSnapshot( $raw );
 	}
+
+	/* ================================================================
+	 * 20. Timeout – CLI `--timeout=2` overrides default
+	 * ============================================================== */
+	public function test_timeout_cli_override(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json', '--timeout=2' ] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 2, $payload['timeout'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 21. Timeout – config value survives when CLI does not override
+	 * ============================================================== */
+	public function test_timeout_config_survives_without_cli_override(): void {
+		$raw     = qit_run_env_up( [ 'env:up', '--json' ], [
+			'environments' => [
+				'default' => [
+					'timeout' => 10,
+				],
+			],
+		] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 10, $payload['timeout'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
+
+	/* ================================================================
+	 * 22. Timeout – CLI overrides config
+	 * ============================================================== */
+	public function test_cli_timeout_overrides_config(): void {
+		$configPath = tempnam( sys_get_temp_dir(), 'qit_test_' );
+		file_put_contents( $configPath, json_encode( [
+			'environments' => [
+				'default' => [
+					'timeout' => 300,
+				],
+			],
+		] ) );
+
+		$raw     = qit_run_env_up( [
+			'env:up',
+			'--json',
+			'--timeout=2',
+			'--config',
+			$configPath,
+		] );
+		$payload = json_decode( $raw, true, 512, JSON_THROW_ON_ERROR );
+
+		$this->assertSame( 2, $payload['timeout'] );
+		$this->assertMatchesEnvUpSnapshot( $raw );
+	}
 }

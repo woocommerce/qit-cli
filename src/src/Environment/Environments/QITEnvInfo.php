@@ -37,6 +37,9 @@ abstract class QITEnvInfo extends EnvInfo {
 	/** @var string Xdebug mode (empty string = disabled, 'debug', 'profile', 'trace', etc.) */
 	public string $xdebug = '';
 
+	/** @var int Timeout in seconds for nginx fastcgi and php-fpm request termination */
+	public int $timeout = 600;
+
 	/** @var bool Whether to restrict network access */
 	public bool $network_restriction = true;
 
