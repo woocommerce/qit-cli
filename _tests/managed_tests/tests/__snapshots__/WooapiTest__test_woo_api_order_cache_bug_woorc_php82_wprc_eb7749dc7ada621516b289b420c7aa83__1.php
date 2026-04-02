@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 265 total, 260 passed, 0 failed, 5 skipped",
+            "test_summary": "Tests: 261 total, 256 passed, 0 failed, 5 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -57,9 +57,9 @@
                 "numPendingTestSuites": 4,
                 "numTotalTestSuites": 23,
                 "numFailedTests": 0,
-                "numPassedTests": 260,
+                "numPassedTests": 256,
                 "numPendingTests": 5,
-                "numTotalTests": 265,
+                "numTotalTests": 261,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.ts",
@@ -266,20 +266,8 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "title": "can view all continents",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can view continent data",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "can view country data",
                                     "status": "pending"
-                                },
-                                {
-                                    "title": "can view all currencies",
-                                    "status": "passed"
                                 },
                                 {
                                     "title": "can view currency data",
@@ -1283,10 +1271,6 @@
                         "tests": {
                             "System Status API tests": [
                                 {
-                                    "title": "can view all system status items",
-                                    "status": "passed"
-                                },
-                                {
                                     "title": "can view all system status tools",
                                     "status": "passed"
                                 },
@@ -1446,7 +1430,7 @@
                         }
                     }
                 ],
-                "summary": "265 total, 260 passed, 0 failed, 5 skipped."
+                "summary": "261 total, 256 passed, 0 failed, 5 skipped."
             }
         },
         {
@@ -1461,8 +1445,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 265,
-                        "passed": 260,
+                        "tests": 261,
+                        "passed": 256,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 5,
@@ -2272,50 +2256,6 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can view all continents",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/data-crud.test.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "api > api-tests\\/data\\/data-crud.test.ts > Data API tests",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can view continent data",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/data-crud.test.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "api > api-tests\\/data\\/data-crud.test.ts > Data API tests",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
                             "name": "can view country data",
                             "status": "skipped",
                             "duration": 999,
@@ -2343,28 +2283,6 @@
                                         }
                                     }
                                 ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can view all currencies",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/data-crud.test.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "api > api-tests\\/data\\/data-crud.test.ts > Data API tests",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
                             },
                             "retryAttempts": []
                         },
@@ -6793,149 +6711,6 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "api > api-tests\\/shipping\\/shipping-zones.test.ts > Shipping zones API tests",
-                            "attachments": [],
-                            "stdout": [],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can view all system status items",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/system-status-crud.test.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Call API to view all system status items",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"environment\\" fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"environment.external_object_cache\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"database\\" fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"database.database_tables\\" fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"database.database_tables.woocommerce\\" fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"database.database_tables.other\\" fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"database.database_size\\" fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"active_plugins\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify plugin \\"WooCommerce Enable COT\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify plugin \\"JSON Basic Authentication\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify plugin \\"Disable All WordPress Updates\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify plugin \\"API - Order Cache Bug\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify plugin \\"WooCommerce Reset\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify plugin \\"WooCommerce\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"dropins_mu_plugins\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"dropins_mu_plugins.dropins\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"dropins_mu_plugins.mu_plugins\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"theme\\" fields.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"settings\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"settings.taxonomies\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"settings.product_visibility_terms\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"security\\" fields",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"pages\\" array",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify page \\"Shop base\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify page \\"Cart\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify page \\"Checkout\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify page \\"My account\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify page \\"Terms and conditions\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify \\"post_type_counts\\" array",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "api > api-tests\\/system-status\\/system-status-crud.test.ts > System Status API tests",
                             "attachments": [],
                             "stdout": [],
                             "stderr": [],
