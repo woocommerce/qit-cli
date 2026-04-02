@@ -135,9 +135,8 @@ $zipPath,
 		$this->assertArrayHasKey( 'additional_plugins', $options );
 		$this->assertIsArray( $options['additional_plugins'] );
 
-		// Should contain the plugin slugs
-		$this->assertContains( 'woocommerce-subscriptions', $options['additional_plugins'] );
-		$this->assertContains( 'woocommerce-bookings', $options['additional_plugins'] );
+		// The CLI passes the comma-separated value as a single string — the Manager handles splitting.
+		$this->assertContains( 'woocommerce-subscriptions,woocommerce-bookings', $options['additional_plugins'] );
 
 		$this->assertMatchesRemoteTestSnapshot( $options );
 	}
