@@ -317,7 +317,7 @@ class RunE2EPrecedenceTest extends TestCase {
 			],
 		] ) );
 
-		[ $stdout, $stderr, $exitCode ] = qit_run_e2e(
+		[ $stdout, $stderr ] = qit_run_e2e(
 			[
 				'run:e2e',
 				'woocommerce',   // positional slug (real plugin)

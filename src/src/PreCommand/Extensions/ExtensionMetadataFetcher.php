@@ -167,6 +167,16 @@ class ExtensionMetadataFetcher {
 				// Only override version if it's not explicitly set or is 'stable'
 				if ( $extension->version === 'stable' || $extension->version === 'undefined' ) {
 					$extension->version = $info['version'];
+				} elseif ( $extension->version !== $info['version'] ) {
+					// User requested a specific version — construct version-specific download URL.
+					// WordPress.org URLs follow: https://downloads.wordpress.org/{type}/{slug}.{version}.zip
+					$type_path         = $extension->type === 'theme' ? 'theme' : 'plugin';
+					$extension->source = sprintf(
+						'https://downloads.wordpress.org/%s/%s.%s.zip',
+						$type_path,
+						$extension->slug,
+						$extension->version
+					);
 				}
 
 				// Cache the metadata

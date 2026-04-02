@@ -95,7 +95,7 @@ $configPath,
 
 	public function test_zip_upload_option_for_remote_test(): void {
 		// Use existing valid plugin ZIP from test data
-		$zipPath = __DIR__ . '/../../../data/plugins/my-plugin.zip';
+		$zipPath = __DIR__ . '/../../data/plugins/my-plugin.zip';
 		$this->assertFileExists( $zipPath, 'Test plugin ZIP should exist in test data' );
 
 		$raw = qit_run_remote_test( [
@@ -135,9 +135,8 @@ $zipPath,
 		$this->assertArrayHasKey( 'additional_plugins', $options );
 		$this->assertIsArray( $options['additional_plugins'] );
 
-		// Should contain the plugin slugs
-		$this->assertContains( 'woocommerce-subscriptions', $options['additional_plugins'] );
-		$this->assertContains( 'woocommerce-bookings', $options['additional_plugins'] );
+		// The CLI passes the comma-separated value as a single string — the Manager handles splitting.
+		$this->assertContains( 'woocommerce-subscriptions,woocommerce-bookings', $options['additional_plugins'] );
 
 		$this->assertMatchesRemoteTestSnapshot( $options );
 	}

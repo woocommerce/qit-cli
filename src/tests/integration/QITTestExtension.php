@@ -48,6 +48,10 @@ class QITTestStart implements ExecutionStartedSubscriber {
 			throw new \RuntimeException( sprintf( 'The qit binary was not found at %s.', realpath( __DIR__ . '/../../../qit' ) ) );
 		}
 
+		// Request log dir — set as global so QITTestFinish can read the log.
+		$GLOBALS['QIT_REQUEST_LOG_DIR'] = sys_get_temp_dir() . '/qit-request-log-' . getmypid();
+		@mkdir( $GLOBALS['QIT_REQUEST_LOG_DIR'], 0755, true );
+
 		$GLOBALS['qit-php'] = __DIR__ . '/../../../src/qit-cli.php';
 
 		if ( ! file_exists( $GLOBALS['qit-php'] ) ) {
@@ -229,6 +233,23 @@ class QITTestStart implements ExecutionStartedSubscriber {
 				}
 				$fs->mirror( __DIR__ . '/cache', self::INIT_SOURCE_DIR . '/cache' );
 
+				// Enable fixture mode and request logging via config:set.
+				$init_env = [ 'QIT_HOME' => self::INIT_SOURCE_DIR, 'MANAGER_URL' => $_ENV['QIT_CUSTOM_TESTS_URL'] ];
+
+				$fixture_set = new Process( [
+					'php', $GLOBALS['qit-php'],
+					'config:set', 'fixture_dir', realpath( __DIR__ . '/fixtures' ),
+				] );
+				$fixture_set->setEnv( $init_env );
+				$fixture_set->mustRun();
+
+				$log_set = new Process( [
+					'php', $GLOBALS['qit-php'],
+					'config:set', 'request_log', $GLOBALS['QIT_REQUEST_LOG_DIR'],
+				] );
+				$log_set->setEnv( $init_env );
+				$log_set->mustRun();
+
 				// Write hourly cache pointing to the stable source directory.
 				$cache_data  = [ 'source_qit_home' => self::INIT_SOURCE_DIR ];
 				$json_output = json_encode( $cache_data, JSON_THROW_ON_ERROR );
@@ -318,6 +339,22 @@ class QITTestStart implements ExecutionStartedSubscriber {
 
 class QITTestFinish implements ExecutionFinishedSubscriber {
 	public function notify( ExecutionFinished $event ): void {
+		// Print HTTP request log summary.
+		if ( ! empty( $GLOBALS['QIT_REQUEST_LOG_DIR'] ) ) {
+			$log_file = $GLOBALS['QIT_REQUEST_LOG_DIR'] . '/_requests.json';
+			if ( is_file( $log_file ) ) {
+				$requests = json_decode( file_get_contents( $log_file ), true );
+				if ( ! empty( $requests ) ) {
+					echo "\n=== HTTP Requests Made During Tests ===\n";
+					foreach ( $requests as $r ) {
+						echo sprintf( "  [%s] %s\n", $r['type'] ?? '?', $r['url'] ?? '?' );
+					}
+					echo sprintf( "Total: %d requests\n", count( $requests ) );
+					echo "Log: $log_file\n";
+				}
+			}
+		}
+
 		if ( getenv( 'CI' ) ) {
 			echo "Skipping cleanup because this is a CI environment.\n";
 		}
