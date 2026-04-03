@@ -37,6 +37,7 @@ class GetCommand extends QITCommand {
 				->request();
 		} catch ( \Exception $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
+			$output->writeln( '<comment>If this persists, run: qit feedback "describe the issue"</comment>' );
 
 			return Command::FAILURE;
 		}

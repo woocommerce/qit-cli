@@ -724,6 +724,11 @@ class RunE2ECommand extends QITCommand {
 		// Save run information for qit ai:context failed-e2e command
 		$this->save_run_info( $env_info, $test_packages, $exit_status, $artifacts_dir, $report_url ?? null );
 
+		if ( ! $input->getOption( 'json' ) && $exit_status !== Command::SUCCESS ) {
+			$output->writeln( '' );
+			$output->writeln( '<comment>Something unexpected? Run: qit feedback "describe the issue"</comment>' );
+		}
+
 		return $exit_status;
 	}
 
