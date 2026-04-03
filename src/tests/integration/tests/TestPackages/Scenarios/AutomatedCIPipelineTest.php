@@ -52,12 +52,12 @@ class AutomatedCIPipelineTest extends BaseScenarioTestCase {
 		$this->assertArrayHasKey( 'status', $data, 'Should have status field' );
 		$this->assertEquals( 'success', $data['status'], 'Test status should be success' );
 		
-		// CTRF data is now embedded in ctrf_json field
+		// CTRF data is embedded in ctrf_json field as a parsed object.
 		$this->assertArrayHasKey( 'ctrf_json', $data, 'Should have CTRF JSON field' );
-		$ctrf = json_decode( $data['ctrf_json'], true );
-		$this->assertIsArray( $ctrf, 'CTRF should be valid JSON' );
+		$ctrf = $data['ctrf_json'];
+		$this->assertIsArray( $ctrf, 'CTRF should be a parsed array' );
 		$this->assertArrayHasKey( 'results', $ctrf, 'CTRF should have results structure' );
-		
+
 		$summary = $ctrf['results']['summary'] ?? [];
 		// The orchestrator adds lifecycle phase tests (globalSetup, setup, run, teardown, globalTeardown)
 		// So we expect more than just the 2 tests from the package
@@ -195,10 +195,10 @@ fi' );
 		$data = json_decode( $proc->getOutput(), true );
 		$this->assertIsArray( $data, 'Should have valid JSON output' );
 		$this->assertArrayHasKey( 'ctrf_json', $data, 'Should have CTRF JSON field' );
-		
-		$ctrf = json_decode( $data['ctrf_json'], true );
-		$this->assertIsArray( $ctrf, 'CTRF should be valid JSON' );
-		
+
+		$ctrf = $data['ctrf_json'];
+		$this->assertIsArray( $ctrf, 'CTRF should be a parsed array' );
+
 		// Verify that results from both packages are present
 		$summary = $ctrf['results']['summary'] ?? [];
 		// Both packages have 2 tests each, so we expect at least 4 tests total

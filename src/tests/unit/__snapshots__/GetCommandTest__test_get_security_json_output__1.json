@@ -1,0 +1,76 @@
+{
+    "test_run_id": 55555,
+    "run_id": 55555,
+    "test_type": "security",
+    "test_type_display": "Security",
+    "wordpress_version": "6.7",
+    "woocommerce_version": "9.5.1",
+    "php_version": "8.2",
+    "max_php_version": "",
+    "min_php_version": "",
+    "additional_woo_plugins": [],
+    "additional_wp_plugins": [],
+    "test_log": "",
+    "test_result_json": {
+        "tool": "phpcs-security-audit",
+        "summary": "2 warnings found",
+        "files": {
+            "my-plugin\/includes\/class-api.php": {
+                "messages": [
+                    {
+                        "message": "Possible SQL injection via $wpdb->prepare() with unquoted placeholder",
+                        "source": "PHPCS.Security.SQLInjection",
+                        "severity": 5,
+                        "line": 42,
+                        "column": 15,
+                        "type": "WARNING"
+                    },
+                    {
+                        "message": "User input detected with $_GET used in output without escaping",
+                        "source": "PHPCS.Security.XSSVulnerability",
+                        "severity": 5,
+                        "line": 88,
+                        "column": 20,
+                        "type": "WARNING"
+                    }
+                ]
+            }
+        }
+    },
+    "ctrf_json": "",
+    "performance_results": "",
+    "status": "warning",
+    "test_result_aws_url": "",
+    "test_result_aws_expiration": 0,
+    "is_development": false,
+    "send_notifications": true,
+    "woo_extension": {
+        "id": 12345,
+        "host": "wccom",
+        "name": "My WooCommerce Plugin",
+        "type": "plugin"
+    },
+    "client": "qit_cli",
+    "event": "cli",
+    "optional_features": {
+        "hpos": false,
+        "new_product_editor": false
+    },
+    "test_results_manager_url": "https:\/\/qit.woo.com\/results\/55555.def456",
+    "test_results_manager_expiration": 1234567890,
+    "test_summary": "2 warnings found",
+    "debug_log": "",
+    "version": "1.0.0",
+    "update_complete": true,
+    "ai_suggestion_status": "none",
+    "malware_whitelist_paths": [],
+    "workflow_id": "",
+    "runner": "",
+    "test_media": [],
+    "extension_set": "",
+    "phpstan_level": null,
+    "test_variation": "",
+    "test_packages": [],
+    "test_group_id": "",
+    "created_at": "2025-01-15 10:30:00"
+}

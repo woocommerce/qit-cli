@@ -22,6 +22,7 @@ class GetMultipleCommand extends QITCommand {
 			->addArgument( 'test_run_ids', InputArgument::REQUIRED, 'Comma-separated list of test run IDs.' )
 			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test runs in the browser.', false )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'json-results', null, InputOption::VALUE_NONE, 'Output only the test results as JSON.' )
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if all tests have finished. Failure if any not finished.', null );
 	}
 
@@ -71,7 +72,16 @@ class GetMultipleCommand extends QITCommand {
 
 		// If JSON requested, we print raw JSON once and exit.
 		if ( $json_output ) {
-			$output->write( $json );
+			$data = json_decode( $json, true );
+			if ( is_array( $data ) ) {
+				foreach ( $data as &$tr_data ) {
+					if ( is_array( $tr_data ) ) {
+						$this->decode_json_fields( $tr_data );
+					}
+				}
+				unset( $tr_data );
+			}
+			$output->write( json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			// Determine overall exit code based on each test.
 			foreach ( $test_runs as $tr ) {
 				$code = $this->determine_exit_code( $tr, $status_map, $default_exit_code );
@@ -79,6 +89,29 @@ class GetMultipleCommand extends QITCommand {
 					$overall_exit_code = $code;
 				}
 			}
+
+			return $overall_exit_code;
+		}
+
+		// If JSON results requested, output only the test results.
+		if ( $input->getOption( 'json-results' ) ) {
+			$all_results = [];
+			foreach ( $test_runs as $tr ) {
+				$results = null;
+				if ( ! empty( $tr['ctrf_json'] ) ) {
+					$results = json_decode( $tr['ctrf_json'], true );
+				}
+				if ( is_null( $results ) && ! empty( $tr['test_result_json'] ) ) {
+					$results = json_decode( $tr['test_result_json'], true );
+				}
+				$all_results[] = $results;
+
+				$code = $this->determine_exit_code( $tr, $status_map, $default_exit_code );
+				if ( $code > $overall_exit_code ) {
+					$overall_exit_code = $code;
+				}
+			}
+			$output->write( json_encode( $all_results, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			return $overall_exit_code;
 		}
@@ -219,5 +252,22 @@ class GetMultipleCommand extends QITCommand {
 		}
 
 		return $renamed;
+	}
+
+	/**
+	 * Decode stringified JSON fields into proper arrays.
+	 *
+	 * @param array<string,mixed> $data The test run data to modify in-place.
+	 */
+	private function decode_json_fields( array &$data ): void {
+		$json_fields = [ 'ctrf_json', 'test_result_json', 'debug_log' ];
+		foreach ( $json_fields as $field ) {
+			if ( ! empty( $data[ $field ] ) && is_string( $data[ $field ] ) ) {
+				$decoded = json_decode( $data[ $field ], true );
+				if ( json_last_error() === JSON_ERROR_NONE ) {
+					$data[ $field ] = $decoded;
+				}
+			}
+		}
 	}
 }

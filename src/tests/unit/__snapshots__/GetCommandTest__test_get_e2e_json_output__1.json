@@ -1,0 +1,108 @@
+{
+    "test_run_id": 98765,
+    "run_id": 98765,
+    "test_type": "e2e",
+    "test_type_display": "E2E",
+    "wordpress_version": "6.7",
+    "woocommerce_version": "9.5.1",
+    "php_version": "8.2",
+    "max_php_version": "",
+    "min_php_version": "",
+    "additional_woo_plugins": [],
+    "additional_wp_plugins": [],
+    "test_log": "",
+    "test_result_json": {
+        "summary": "Tests: 3 total, 2 passed, 1 failed",
+        "testResults": [
+            {
+                "tests": {
+                    "Checkout flow": [
+                        {
+                            "status": "passed",
+                            "title": "can add product to cart"
+                        },
+                        {
+                            "status": "passed",
+                            "title": "can complete checkout"
+                        },
+                        {
+                            "status": "failed",
+                            "title": "can apply coupon at checkout"
+                        }
+                    ]
+                },
+                "status": "failed"
+            }
+        ]
+    },
+    "ctrf_json": {
+        "results": {
+            "tool": {
+                "name": "playwright"
+            },
+            "summary": {
+                "tests": 3,
+                "passed": 2,
+                "failed": 1,
+                "pending": 0,
+                "skipped": 0,
+                "other": 0,
+                "start": 1706644023,
+                "stop": 1706644043
+            },
+            "tests": [
+                {
+                    "name": "can add product to cart",
+                    "status": "passed",
+                    "duration": 1200
+                },
+                {
+                    "name": "can complete checkout",
+                    "status": "passed",
+                    "duration": 2400
+                },
+                {
+                    "name": "can apply coupon at checkout",
+                    "status": "failed",
+                    "duration": 800,
+                    "message": "Expected coupon discount to be applied but total remained unchanged."
+                }
+            ]
+        }
+    },
+    "performance_results": "",
+    "status": "failed",
+    "test_result_aws_url": "",
+    "test_result_aws_expiration": 0,
+    "is_development": false,
+    "send_notifications": true,
+    "woo_extension": {
+        "id": 12345,
+        "host": "wccom",
+        "name": "My WooCommerce Plugin",
+        "type": "plugin"
+    },
+    "client": "qit_cli",
+    "event": "cli",
+    "optional_features": {
+        "hpos": true,
+        "new_product_editor": false
+    },
+    "test_results_manager_url": "https:\/\/qit.woo.com\/results\/98765.abc123",
+    "test_results_manager_expiration": 1234567890,
+    "test_summary": "Tests: 3 total, 2 passed, 1 failed, 0 skipped",
+    "debug_log": "",
+    "version": "1.0.0",
+    "update_complete": true,
+    "ai_suggestion_status": "none",
+    "malware_whitelist_paths": [],
+    "workflow_id": "",
+    "runner": "",
+    "test_media": [],
+    "extension_set": "",
+    "phpstan_level": null,
+    "test_variation": "",
+    "test_packages": [],
+    "test_group_id": "",
+    "created_at": "2025-01-15 10:30:00"
+}
