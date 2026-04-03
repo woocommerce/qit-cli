@@ -58,6 +58,10 @@ Composer dependencies live in `src/composer.json` (not root). Run `composer inst
 
 Tests bootstrap at `src/tests/unit/bootstrap.php`. It mocks the Manager sync response using `tests/unit/data/sync.json` (pulled from production at test init). Config dir is `/tmp/.woo-qit-tests`. All commands are auto-registered during test bootstrap regardless of connection state.
 
+### Self-Tests & Releases
+
+For updating managed test snapshots (the `_tests/managed_tests/` CI tests) and building releases, see [`_tests/managed_tests/CLAUDE.md`](_tests/managed_tests/CLAUDE.md).
+
 ### Static Analysis Exclusions
 
 `src/src/AI/` and `src/src/Commands/AI/` are excluded from PHPStan and Phan analysis.
