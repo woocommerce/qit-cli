@@ -1,0 +1,11 @@
+Test Run Id         55555                                    
+Test Type Display   Security                                 
+Wordpress Version   6.7                                      
+Woocommerce Version 9.5.1                                    
+Php Version         8.2                                      
+Status              warning                                  
+Woo Extension       My WooCommerce Plugin                    
+Test Summary        2 warnings found                         
+Version             1.0.0                                    
+Created At          2025-01-15 10:30:00                      
+Result Url          https://qit.woo.com/results/55555.def456 

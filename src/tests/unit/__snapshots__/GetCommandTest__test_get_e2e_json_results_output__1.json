@@ -1,0 +1,35 @@
+{
+    "results": {
+        "tool": {
+            "name": "playwright"
+        },
+        "summary": {
+            "tests": 3,
+            "passed": 2,
+            "failed": 1,
+            "pending": 0,
+            "skipped": 0,
+            "other": 0,
+            "start": 1706644023,
+            "stop": 1706644043
+        },
+        "tests": [
+            {
+                "name": "can add product to cart",
+                "status": "passed",
+                "duration": 1200
+            },
+            {
+                "name": "can complete checkout",
+                "status": "passed",
+                "duration": 2400
+            },
+            {
+                "name": "can apply coupon at checkout",
+                "status": "failed",
+                "duration": 800,
+                "message": "Expected coupon discount to be applied but total remained unchanged."
+            }
+        ]
+    }
+}

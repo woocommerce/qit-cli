@@ -1,0 +1,11 @@
+Test Run Id         98765                                         
+Test Type Display   E2E                                           
+Wordpress Version   6.7                                           
+Woocommerce Version 9.5.1                                         
+Php Version         8.2                                           
+Status              failed                                        
+Woo Extension       My WooCommerce Plugin                         
+Test Summary        Tests: 3 total, 2 passed, 1 failed, 0 skipped 
+Version             1.0.0                                         
+Created At          2025-01-15 10:30:00                           
+Result Url          https://qit.woo.com/results/98765.abc123      

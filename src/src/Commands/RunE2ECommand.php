@@ -682,8 +682,12 @@ class RunE2ECommand extends QITCommand {
 						->with_retry( 3 )
 						->request();
 
-					// Output the Manager API response directly
-					$output->write( $json );
+					// Decode stringified JSON fields for clean output.
+					$data = json_decode( $json, true );
+					if ( is_array( $data ) ) {
+						$this->decode_json_fields( $data );
+					}
+					$output->write( json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 				} catch ( \Exception $e ) {
 					// If we can't fetch from Manager, output minimal info
 					$output->write( json_encode( [
@@ -1886,5 +1890,22 @@ class RunE2ECommand extends QITCommand {
 		// Convert slug to title case
 		$name = str_replace( [ '-', '_' ], ' ', $slug );
 		return ucwords( $name );
+	}
+
+	/**
+	 * Decode stringified JSON fields into proper arrays.
+	 *
+	 * @param array<string,mixed> $data The test run data to modify in-place.
+	 */
+	private function decode_json_fields( array &$data ): void {
+		$json_fields = [ 'ctrf_json', 'test_result_json', 'debug_log' ];
+		foreach ( $json_fields as $field ) {
+			if ( ! empty( $data[ $field ] ) && is_string( $data[ $field ] ) ) {
+				$decoded = json_decode( $data[ $field ], true );
+				if ( json_last_error() === JSON_ERROR_NONE ) {
+					$data[ $field ] = $decoded;
+				}
+			}
+		}
 	}
 }
