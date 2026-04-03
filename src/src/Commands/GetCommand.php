@@ -23,6 +23,7 @@ class GetCommand extends QITCommand {
 			->addArgument( 'test_run_id', InputArgument::REQUIRED, 'The ID of the test run.' )
 			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'json-results', null, InputOption::VALUE_NONE, 'Output only the test results as JSON.' )
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
 
@@ -63,7 +64,29 @@ class GetCommand extends QITCommand {
 		}
 
 		if ( $input->getOption( 'json' ) ) {
-			$output->write( $json );
+			$data = json_decode( $json, true );
+			if ( is_array( $data ) ) {
+				$this->decode_json_fields( $data );
+			}
+			$output->write( json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+
+			return $exit_status_code;
+		}
+
+		if ( $input->getOption( 'json-results' ) ) {
+			$results = null;
+			if ( ! empty( $test_run['ctrf_json'] ) ) {
+				$results = json_decode( $test_run['ctrf_json'], true );
+			}
+			if ( is_null( $results ) && ! empty( $test_run['test_result_json'] ) ) {
+				$results = json_decode( $test_run['test_result_json'], true );
+			}
+			if ( is_null( $results ) ) {
+				$output->writeln( '<error>No test results available. The test may still be running.</error>' );
+
+				return Command::FAILURE;
+			}
+			$output->write( json_encode( $results, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
 			return $exit_status_code;
 		}
@@ -167,5 +190,22 @@ class GetCommand extends QITCommand {
 		$table->render();
 
 		return $exit_status_code;
+	}
+
+	/**
+	 * Decode stringified JSON fields into proper arrays.
+	 *
+	 * @param array<string,mixed> $data The test run data to modify in-place.
+	 */
+	private function decode_json_fields( array &$data ): void {
+		$json_fields = [ 'ctrf_json', 'test_result_json', 'debug_log' ];
+		foreach ( $json_fields as $field ) {
+			if ( ! empty( $data[ $field ] ) && is_string( $data[ $field ] ) ) {
+				$decoded = json_decode( $data[ $field ], true );
+				if ( json_last_error() === JSON_ERROR_NONE ) {
+					$data[ $field ] = $decoded;
+				}
+			}
+		}
 	}
 }

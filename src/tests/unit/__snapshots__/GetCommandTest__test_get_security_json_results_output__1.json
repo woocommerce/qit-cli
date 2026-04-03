@@ -1,0 +1,26 @@
+{
+    "tool": "phpcs-security-audit",
+    "summary": "2 warnings found",
+    "files": {
+        "my-plugin\/includes\/class-api.php": {
+            "messages": [
+                {
+                    "message": "Possible SQL injection via $wpdb->prepare() with unquoted placeholder",
+                    "source": "PHPCS.Security.SQLInjection",
+                    "severity": 5,
+                    "line": 42,
+                    "column": 15,
+                    "type": "WARNING"
+                },
+                {
+                    "message": "User input detected with $_GET used in output without escaping",
+                    "source": "PHPCS.Security.XSSVulnerability",
+                    "severity": 5,
+                    "line": 88,
+                    "column": 20,
+                    "type": "WARNING"
+                }
+            ]
+        }
+    }
+}
