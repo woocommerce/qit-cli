@@ -14,6 +14,7 @@ use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\Commands\ShowReportCommand;
 use QIT_CLI\Commands\ClaudeTipDismissCommand;
 use QIT_CLI\Commands\DevModeCommand;
+use QIT_CLI\Commands\FeedbackCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
@@ -281,6 +282,7 @@ if ( $is_connected_to_backend ) {
 	$application->add( $container->make( PackageShowCommand::class ) );
 
 	$application->add( $container->make( ShowReportCommand::class ) );
+	$application->add( $container->make( FeedbackCommand::class ) );
 	// Group Commands.
 	$application->add( $container->make( RunGroupCommand::class ) );
 	$application->add( $container->make( GroupFetchCommand::class ) );
