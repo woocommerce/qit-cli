@@ -23,7 +23,7 @@ function test_result_parser( string $json, string $remove_from_snapshot = '' ): 
 			continue;
 		}
 		// Handle already-decoded arrays (from CLI --json decoding).
-		if ( is_array( $value ) && in_array( $key, $json_result_fields ) ) {
+		if ( is_array( $value ) && in_array( $key, $json_result_fields, true ) ) {
 			$human_friendly_test_result[] = [ $key => $value ];
 			$data[ "{$key}_extracted" ] = '{EXTRACTED}';
 			unset( $data[ $key ] );
