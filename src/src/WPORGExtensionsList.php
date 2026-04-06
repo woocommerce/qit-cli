@@ -52,7 +52,7 @@ class WPORGExtensionsList {
 	 * Retrieve plugin info from WP.org.
 	 * If it doesn't exist or there's an HTTP error, throw an exception.
 	 *
-	 * @return array{slug: string, version: string, url: string, last_updated?: string}
+	 * @return array{slug: string, version: string, url: string, last_updated?: string, requires_php?: string}
 	 */
 	public function get_plugin_download_info( string $slug ): array {
 		$cache_key = "wporg_plugin_download_info_$slug";
@@ -90,6 +90,10 @@ class WPORGExtensionsList {
 			$info['last_updated'] = $json['last_updated'];
 		}
 
+		if ( ! empty( $json['requires_php'] ) ) {
+			$info['requires_php'] = $json['requires_php'];
+		}
+
 		// Cache for 30 seconds to prevent API burst but still get fresh data
 		$this->cache->set( $cache_key, $info, 30 );
 
@@ -100,7 +104,7 @@ class WPORGExtensionsList {
 	 * Retrieve theme info from WP.org.
 	 * If it doesn't exist, throw an exception.
 	 *
-	 * @return array{slug: string, version: string, url: string, last_updated?: string}
+	 * @return array{slug: string, version: string, url: string, last_updated?: string, requires_php?: string}
 	 */
 	public function get_theme_download_info( string $slug ): array {
 		$cache_key = "wporg_theme_download_info_$slug";
@@ -136,6 +140,10 @@ class WPORGExtensionsList {
 		// Add last_updated if available for cache validation
 		if ( ! empty( $json['last_updated'] ) ) {
 			$info['last_updated'] = $json['last_updated'];
+		}
+
+		if ( ! empty( $json['requires_php'] ) ) {
+			$info['requires_php'] = $json['requires_php'];
 		}
 
 		// Cache for 30 seconds to prevent API burst but still get fresh data
