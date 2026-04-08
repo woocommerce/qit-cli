@@ -64,7 +64,9 @@ class Upload {
 		$progress_bar_output = App::getVar( 'QIT_JSON_MODE' ) ? new NullOutput() : $output;
 
 		$progress_bar = new ProgressBar( $progress_bar_output, $total_chunks );
-		$output->writeln( 'Uploading zip...' );
+		if ( ! App::getVar( 'QIT_JSON_MODE' ) ) {
+			$output->writeln( 'Uploading zip...' );
+		}
 		$progress_bar->start();
 
 		while ( ! feof( $file ) ) {
@@ -117,7 +119,9 @@ class Upload {
 		}
 
 		$progress_bar->finish();
-		$output->writeln( '' );
+		if ( ! App::getVar( 'QIT_JSON_MODE' ) ) {
+			$output->writeln( '' );
+		}
 
 		return $parsed_response['upload_id'];
 	}

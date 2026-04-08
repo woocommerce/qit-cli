@@ -227,10 +227,12 @@ class CreateRunCommands extends DynamicCommandCreator {
 				 * 8.  Send request to Manager
 				 */
 				try {
-					if ( $input->getOption( 'async' ) ) {
-						$output->writeln( 'Enqueueing test request...' );
-					} else {
-						$output->writeln( 'Starting test on QIT servers...' );
+					if ( ! $input->getOption( 'json' ) ) {
+						if ( $input->getOption( 'async' ) ) {
+							$output->writeln( 'Enqueueing test request...' );
+						} else {
+							$output->writeln( 'Starting test on QIT servers...' );
+						}
 					}
 
 					$json = ( new RequestBuilder( get_manager_url() . "/wp-json/cd/v1/enqueue-{$this->test_type}" ) )
@@ -366,15 +368,19 @@ class CreateRunCommands extends DynamicCommandCreator {
 				$timeout = $input->getOption( 'timeout' ) ?? ( $this->test_type === 'woo-e2e' ? 7200 : 1800 );
 				$timeout = max( 10, min( 7200, (int) $timeout ) );
 
-				$start = time();
-				$is_ci = ! empty( getenv( 'CI' ) );
+				$start   = time();
+				$is_ci   = ! empty( getenv( 'CI' ) );
+				$is_json = $input->getOption( 'json' );
 
 				// Determine poll interval based on test type
 				$poll_interval = ( $this->test_type === 'woo-e2e' ) ? 30 : 15;
 
+				// JSON mode: suppress all human-readable output, just poll silently.
 				// CI Mode: Simple waiting message
-				if ( $is_ci ) {
-					$output->writeln( 'Waiting for test completion (Test ID: ' . $test_run_id . ')...' );
+				if ( $is_ci || $is_json ) {
+					if ( ! $is_json ) {
+						$output->writeln( 'Waiting for test completion (Test ID: ' . $test_run_id . ')...' );
+					}
 				} else {
 					// Interactive Mode: Will use section for redrawable output
 					$output->writeln( 'Running test on QIT servers...' );
@@ -382,8 +388,9 @@ class CreateRunCommands extends DynamicCommandCreator {
 				}
 
 				// Create a section for interactive updates (only works on ConsoleOutput)
+				// Not used in JSON mode - we want clean JSON output.
 				$section = null;
-				if ( ! $is_ci && $output instanceof \Symfony\Component\Console\Output\ConsoleOutputInterface ) {
+				if ( ! $is_ci && ! $is_json && $output instanceof \Symfony\Component\Console\Output\ConsoleOutputInterface ) {
 					$section = $output->section();
 				}
 
@@ -587,7 +594,10 @@ class CreateRunCommands extends DynamicCommandCreator {
 				}
 
 				// Show completion message
-				if ( ! $is_ci && $section ) {
+				if ( $is_json ) {
+					// JSON mode (CI or interactive) - output the result as clean JSON
+					$output->writeln( json_encode( $last_result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
+				} elseif ( ! $is_ci && $section ) {
 					// Interactive mode - we already showed the full table, just show completion message
 					// Calculate total time
 					$total_elapsed = time() - $start;
@@ -604,40 +614,35 @@ class CreateRunCommands extends DynamicCommandCreator {
 					}
 				} else {
 					// CI mode - show minimal output
-					if ( ! $input->getOption( 'json' ) ) {
-						$output->writeln( '<info>Test completed.</info>' );
-						$output->writeln( '' );
-						$output->writeln( sprintf( '<comment>Test ID:</comment> %d', $test_run_id ) );
+					$output->writeln( '<info>Test completed.</info>' );
+					$output->writeln( '' );
+					$output->writeln( sprintf( '<comment>Test ID:</comment> %d', $test_run_id ) );
 
-						// Show status
-						$status_display = $last_status;
-						if ( $last_status === 'success' ) {
-							$status_display = '<info>' . $last_status . '</info>';
-						} elseif ( $last_status === 'failed' ) {
-							$status_display = '<error>' . $last_status . '</error>';
-						} elseif ( $last_status === 'warning' ) {
-							$status_display = '<comment>' . $last_status . '</comment>';
-						}
-						$output->writeln( '<comment>Status:</comment> ' . $status_display );
+					// Show status
+					$status_display = $last_status;
+					if ( $last_status === 'success' ) {
+						$status_display = '<info>' . $last_status . '</info>';
+					} elseif ( $last_status === 'failed' ) {
+						$status_display = '<error>' . $last_status . '</error>';
+					} elseif ( $last_status === 'warning' ) {
+						$status_display = '<comment>' . $last_status . '</comment>';
+					}
+					$output->writeln( '<comment>Status:</comment> ' . $status_display );
 
-						// Show test summary if available
-						if ( $last_result && isset( $last_result['test_summary'] ) && ! empty( $last_result['test_summary'] ) ) {
-							$output->writeln( '<comment>Summary:</comment> ' . $last_result['test_summary'] );
-						}
+					// Show test summary if available
+					if ( $last_result && isset( $last_result['test_summary'] ) && ! empty( $last_result['test_summary'] ) ) {
+						$output->writeln( '<comment>Summary:</comment> ' . $last_result['test_summary'] );
+					}
 
-						// Only show URL if explicitly requested
-						if ( $input->getOption( 'print-report-url' ) ) {
-							if ( $last_result && isset( $last_result['test_results_manager_url'] ) ) {
-								$output->writeln( '<comment>Report URL:</comment> ' . $last_result['test_results_manager_url'] );
-							}
-						} else {
-							$output->writeln( '' );
-							$output->writeln( sprintf( '<comment>View full results: qit get %d</comment>', $test_run_id ) );
-							$output->writeln( '<comment>Note: Add --print-report-url next time to include the report URL in output</comment>' );
+					// Only show URL if explicitly requested
+					if ( $input->getOption( 'print-report-url' ) ) {
+						if ( $last_result && isset( $last_result['test_results_manager_url'] ) ) {
+							$output->writeln( '<comment>Report URL:</comment> ' . $last_result['test_results_manager_url'] );
 						}
 					} else {
-						// JSON mode in CI - output the last result as JSON
-						$output->writeln( json_encode( $last_result ) );
+						$output->writeln( '' );
+						$output->writeln( sprintf( '<comment>View full results: qit get %d</comment>', $test_run_id ) );
+						$output->writeln( '<comment>Note: Add --print-report-url next time to include the report URL in output</comment>' );
 					}
 				}
 
