@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 306 total, 254 passed, 0 failed, 52 skipped",
+            "test_summary": "Tests: 309 total, 250 passed, 0 failed, 59 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,16 +53,16 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 66,
-                "numPendingTestSuites": 18,
-                "numTotalTestSuites": 84,
+                "numPassedTestSuites": 60,
+                "numPendingTestSuites": 23,
+                "numTotalTestSuites": 83,
                 "numFailedTests": 0,
-                "numPassedTests": 254,
-                "numPendingTests": 52,
-                "numTotalTests": 306,
+                "numPassedTests": 250,
+                "numPendingTests": 59,
+                "numTotalTests": 309,
                 "testResults": [
                     {
-                        "file": "..\\/fixtures\\/install-wc.setup.js",
+                        "file": "..\\/fixtures\\/install-wc.setup.ts",
                         "status": "passed",
                         "has_pending": true,
                         "tests": {
@@ -75,7 +75,7 @@
                         }
                     },
                     {
-                        "file": "..\\/fixtures\\/auth.setup.js",
+                        "file": "..\\/fixtures\\/auth.setup.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -88,7 +88,7 @@
                         }
                     },
                     {
-                        "file": "..\\/fixtures\\/site.setup.js",
+                        "file": "..\\/fixtures\\/site.setup.ts",
                         "status": "passed",
                         "has_pending": false,
                         "tests": {
@@ -109,25 +109,6 @@
                                 {
                                     "title": "Can access Analytics Reports from Stats Overview",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "analytics\\/analytics-data.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "downloads revenue report as CSV": [
-                                {
-                                    "title": "downloads revenue report as CSV",
-                                    "status": "pending"
-                                }
-                            ],
-                            "analytics settings": [
-                                {
-                                    "title": "analytics settings",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -773,12 +754,12 @@
                     {
                         "file": "customer\\/customer-list.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Merchant > Customer List": [
                                 {
                                     "title": "Merchant can view a list of all customers, filter and download",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "Merchant can view a single customer",
@@ -869,7 +850,7 @@
                     {
                         "file": "email\\/settings-email.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Email Settings": [
                                 {
@@ -886,7 +867,7 @@
                                 },
                                 {
                                     "title": "Send email preview",
-                                    "status": "passed"
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "See specific email preview",
@@ -1089,6 +1070,10 @@
                                 {
                                     "title": "Can complete the core profiler skipping extension install",
                                     "status": "pending"
+                                },
+                                {
+                                    "title": "Can complete the core profiler installing default extensions",
+                                    "status": "pending"
                                 }
                             ],
                             "Store owner can skip the core profiler": [
@@ -1279,12 +1264,16 @@
                     {
                         "file": "order\\/order-refund.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "WooCommerce Orders > Refund an order": [
                                 {
                                     "title": "can issue a refund by quantity",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "can delete an issued refund",
+                                    "status": "pending"
                                 }
                             ],
                             "WooCommerce Orders > Refund and restock an order item": [
@@ -1580,12 +1569,12 @@
                     {
                         "file": "product\\/create-product-attributes.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "can add custom product attributes": [
                                 {
                                     "title": "can add custom product attributes",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1715,12 +1704,20 @@
                     {
                         "file": "product\\/product-import-csv.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Import Products from a CSV file": [
                                 {
                                     "title": "should show error message if you go without providing CSV file",
-                                    "status": "passed"
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can upload the CSV file and import products",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "can override the existing products via CSV import",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1753,7 +1750,7 @@
                     {
                         "file": "product\\/product-reviews.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Product Reviews": [],
                             "Product Reviews > Merchant manages reviews": [
@@ -1780,6 +1777,10 @@
                                 {
                                     "title": "can mark a product review as spam",
                                     "status": "passed"
+                                },
+                                {
+                                    "title": "can reply to a product review",
+                                    "status": "pending"
                                 },
                                 {
                                     "title": "can delete a product review",
@@ -2202,7 +2203,7 @@
                         }
                     }
                 ],
-                "summary": "306 total, 254 passed, 0 failed, 52 skipped."
+                "summary": "309 total, 250 passed, 0 failed, 59 skipped."
             }
         },
         {
@@ -2217,11 +2218,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 306,
-                        "passed": 254,
+                        "tests": 309,
+                        "passed": 250,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 52,
+                        "skipped": 59,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -2237,11 +2238,11 @@
                             "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/install-wc.setup.js",
+                            "filePath": "\\/normalized\\/path\\/install-wc.setup.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [],
-                            "suite": "install wc > ..\\/fixtures\\/install-wc.setup.js",
+                            "suite": "install wc > ..\\/fixtures\\/install-wc.setup.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2255,8 +2256,8 @@
                                         "type": "skip",
                                         "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found.",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/fixtures\\/install-wc.setup.js",
-                                            "line": 22,
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/fixtures\\/install-wc.setup.ts",
+                                            "line": 23,
                                             "column": 8
                                         }
                                     }
@@ -2273,7 +2274,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/auth.setup.js",
+                            "filePath": "\\/normalized\\/path\\/auth.setup.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -2286,7 +2287,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.js",
+                            "suite": "global authentication > ..\\/fixtures\\/auth.setup.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2306,7 +2307,7 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/site.setup.js",
+                            "filePath": "\\/normalized\\/path\\/site.setup.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
@@ -2331,7 +2332,7 @@
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "site setup > ..\\/fixtures\\/site.setup.js",
+                            "suite": "site setup > ..\\/fixtures\\/site.setup.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -2386,78 +2387,6 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "downloads revenue report as CSV",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
-                                            "line": 307,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "analytics settings",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-data.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > analytics\\/analytics-data.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/analytics\\/analytics-data.spec.ts",
-                                            "line": 705,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
                             },
                             "retryAttempts": []
                         },
@@ -6071,48 +6000,34 @@
                         },
                         {
                             "name": "Merchant can view a list of all customers, filter and download",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/customer-list.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the customers reports page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check that the customers are displayed in the list",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check that the customer list can be filtered by first name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hide and display columns",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Download the customer list",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > customer\\/customer-list.spec.ts > Merchant > Customer List",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customer\\/customer-list.spec.ts",
+                                            "line": 105,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -6579,11 +6494,11 @@
                         },
                         {
                             "name": "Send email preview",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
@@ -6597,7 +6512,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email.spec.ts",
+                                            "line": 178,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -7381,6 +7305,41 @@
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
                                             "line": 44,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Can complete the core profiler installing default extensions",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@skip-on-external-env"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
+                                            "line": 205,
                                             "column": 8
                                         }
                                     }
@@ -8290,11 +8249,48 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
                                 "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can delete an issued refund",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@payments",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.ts",
+                                            "line": 121,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -8566,11 +8562,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-grouped-product-block-editor.spec.ts",
+                                            "line": 58,
+                                            "column": 8
                                         }
                                     }
                                 ]
@@ -8603,11 +8598,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.ts",
+                                            "line": 47,
+                                            "column": 16
                                         }
                                     }
                                 ]
@@ -8639,11 +8633,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.ts",
+                                            "line": 75,
+                                            "column": 8
                                         }
                                     }
                                 ]
@@ -8747,11 +8740,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
+                                            "line": 43,
+                                            "column": 15
                                         }
                                     }
                                 ]
@@ -8783,11 +8775,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
+                                            "line": 43,
+                                            "column": 15
                                         }
                                     }
                                 ]
@@ -8819,11 +8810,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
+                                            "line": 43,
+                                            "column": 15
                                         }
                                     }
                                 ]
@@ -8856,11 +8846,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
+                                            "line": 43,
+                                            "column": 15
                                         }
                                     }
                                 ]
@@ -8893,11 +8882,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
+                                            "line": 43,
+                                            "column": 15
                                         }
                                     }
                                 ]
@@ -8929,11 +8917,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.ts",
+                                            "line": 54,
+                                            "column": 8
                                         }
                                     }
                                 ]
@@ -9037,11 +9024,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.ts",
+                                            "line": 90,
+                                            "column": 8
                                         }
                                     }
                                 ]
@@ -9073,11 +9059,10 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/organization-tab-product-block-editor.spec.ts",
+                                            "line": 44,
+                                            "column": 8
                                         }
                                     }
                                 ]
@@ -9289,6 +9274,14 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.ts",
+                                            "line": 96,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
@@ -9325,6 +9318,14 @@
                                 "annotations": [
                                     {
                                         "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.ts",
+                                            "line": 96,
+                                            "column": 15
+                                        }
+                                    },
+                                    {
+                                        "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
@@ -9359,6 +9360,14 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.ts",
+                                            "line": 96,
+                                            "column": 15
+                                        }
+                                    },
                                     {
                                         "type": "skip",
                                         "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
@@ -9662,160 +9671,34 @@
                         },
                         {
                             "name": "can add custom product attributes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Open \\"Edit product\\" page of product id <ID>",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the \\"Attributes\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Colour\\" with values \\"Red | Green\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Colour\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Red | Green\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Save attributes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Size\\" with values \\"Small | Medium\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \'Add new\'.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Size\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Small | Medium\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Save attributes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the attribute \\"Logo\\" with values \\"Woo | WordPress\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \'Add new\'.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type \\"Logo\\" in the \\"Attribute name\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Type the attribute values \\"Woo | WordPress\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Visible on the product page\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Used for variations\\" checkbox to be checked by default",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Save attributes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for the loading overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Update product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the \\"Attributes\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Colour\\" to appear on the list of saved attributes, and expand it.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect its details to be saved correctly",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Size\\" to appear on the list of saved attributes, and expand it.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect its details to be saved correctly",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Logo\\" to appear on the list of saved attributes, and expand it.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect its details to be saved correctly",
-                                    "status": "passed"
-                                }
-                            ],
+                            "steps": [],
                             "suite": "e2e > product\\/create-product-attributes.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.ts",
+                                            "line": 157,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -10636,11 +10519,11 @@
                         },
                         {
                             "name": "should show error message if you go without providing CSV file",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@not-e2e",
                                 "@non-critical"
@@ -10655,11 +10538,88 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
+                                            "line": 103,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can upload the CSV file and import products",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
+                                            "line": 103,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can override the existing products via CSV import",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@could-be-lower-level-test"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
+                                            "line": 103,
+                                            "column": 15
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -11024,6 +10984,39 @@
                             ],
                             "extra": {
                                 "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can reply to a product review",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > product\\/product-reviews.spec.ts > Product Reviews > Merchant manages reviews",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.ts",
+                                            "line": 262,
+                                            "column": 8
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
