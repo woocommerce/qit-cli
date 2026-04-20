@@ -24,6 +24,9 @@ class RequestBuilder {
 	/** @var bool $onboarding */
 	protected $onboarding = false;
 
+	/** @var bool $skip_auth */
+	protected $skip_auth = false;
+
 	/** @var array<int> */
 	protected $expected_status_codes = [ 200 ];
 
@@ -113,6 +116,17 @@ class RequestBuilder {
 	}
 
 	/**
+	 * Skip automatic credential injection for this request.
+	 *
+	 * @return $this
+	 */
+	public function without_auth(): self {
+		$this->skip_auth = true;
+
+		return $this;
+	}
+
+	/**
 	 * @param int $retry
 	 *
 	 * @return RequestBuilder
@@ -189,6 +203,11 @@ class RequestBuilder {
 
 			App::setVar( 'mocked_request', $this->to_array() );
 
+			// Accumulate all requests with builder state for tests that inspect multiple requests.
+			$all   = App::getVar( 'mocked_requests' ) ?? [];
+			$all[] = array_merge( $this->to_array(), [ 'skip_auth' => $this->skip_auth ] );
+			App::setVar( 'mocked_requests', $all );
+
 			return $mocked;
 		}
 
@@ -259,7 +278,7 @@ class RequestBuilder {
 			$proxied                              = true;
 			$curl_parameters[ CURLOPT_PROXY ]     = Config::get_proxy_url();
 			$curl_parameters[ CURLOPT_PROXYTYPE ] = CURLPROXY_SOCKS5;
-		} else {
+		} elseif ( ! $this->skip_auth ) {
 			if ( ! is_null( App::make( Auth::class )->get_manager_secret() ) ) {
 				$this->post_body['manager_secret'] = App::make( Auth::class )->get_manager_secret();
 				// Connections using the MANAGER_SECRET that are not local must go through Automattic Proxy.

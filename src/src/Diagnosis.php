@@ -52,7 +52,11 @@ class Diagnosis {
 		$output->write( PHP_EOL );
 
 		if ( $connection_to_internet && $connection_to_manager ) {
-			$output->writeln( 'Both the internet and QIT server connections were successful. This is likely an internal issue with the QIT servers. Please try again later.' );
+			$output->writeln( 'Both the internet and QIT server connections were successful.' );
+			$output->writeln( 'This could be caused by expired or revoked credentials. Try refreshing them:' );
+			$output->writeln( '  1. qit partner:remove' );
+			$output->writeln( '  2. qit connect' );
+			$output->writeln( 'If the issue persists, it may be an internal issue with the QIT servers. Please try again later.' );
 		}
 
 		if ( $connection_to_internet && ! $connection_to_manager ) {

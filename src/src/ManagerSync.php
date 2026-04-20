@@ -88,7 +88,7 @@ class ManagerSync {
 		}
 
 		$start    = microtime( true );
-		$response = $this->request_v2( 'cli/sync' );
+		$response = $this->request_v2( 'cli/sync', false );
 
 		if ( $this->output->isVerbose() ) {
 			$this->output->writeln( sprintf( 'Done in %s seconds.', number_format( microtime( true ) - $start, 2 ) ) );
@@ -172,12 +172,17 @@ class ManagerSync {
 	 * @return string The response body.
 	 * @throws NetworkErrorException If the Manager is unreachable.
 	 */
-	private function request_v2( string $route ): string {
+	private function request_v2( string $route, bool $authenticated = true ): string {
 		try {
-			return ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v2/' . $route ) )
+			$builder = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v2/' . $route ) )
 				->with_retry( 2 )
-				->with_method( 'POST' )
-				->request();
+				->with_method( 'POST' );
+
+			if ( ! $authenticated ) {
+				$builder->without_auth();
+			}
+
+			return $builder->request();
 		} catch ( DoingAutocompleteException $e ) {
 			return '{}';
 		} catch ( NetworkErrorException $e ) {
