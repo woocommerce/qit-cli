@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 309 total, 250 passed, 0 failed, 59 skipped",
+            "test_summary": "Tests: 310 total, 250 passed, 0 failed, 60 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -54,12 +54,12 @@
             "test_result_json": {
                 "numFailedTestSuites": 0,
                 "numPassedTestSuites": 60,
-                "numPendingTestSuites": 23,
-                "numTotalTestSuites": 83,
+                "numPendingTestSuites": 24,
+                "numTotalTestSuites": 84,
                 "numFailedTests": 0,
                 "numPassedTests": 250,
-                "numPendingTests": 59,
-                "numTotalTests": 309,
+                "numPendingTests": 60,
+                "numTotalTests": 310,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.ts",
@@ -768,6 +768,19 @@
                                 {
                                     "title": "Merchant can use advanced filters",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "editor\\/command-palette.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "can use a settings command": [
+                                {
+                                    "title": "can use a settings command",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2203,7 +2216,7 @@
                         }
                     }
                 ],
-                "summary": "309 total, 250 passed, 0 failed, 59 skipped."
+                "summary": "310 total, 250 passed, 0 failed, 60 skipped."
             }
         },
         {
@@ -2218,11 +2231,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 309,
+                        "tests": 310,
                         "passed": 250,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 59,
+                        "skipped": 60,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -6110,6 +6123,39 @@
                             ],
                             "extra": {
                                 "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can use a settings command",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > editor\\/command-palette.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
+                                            "line": 135,
+                                            "column": 6
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
