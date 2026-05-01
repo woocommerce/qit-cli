@@ -32,6 +32,7 @@ use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\RunActivationTestCommand;
+use QIT_CLI\Commands\RunWooE2ETestCommand;
 use QIT_CLI\Commands\RunPerformanceTestCommand;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
@@ -257,6 +258,7 @@ if ( $is_connected_to_backend ) {
 	$container->make( CreateRunCommands::class )->register_commands( $application );
 
 	$application->add( $container->make( RunActivationTestCommand::class ) );
+	$application->add( $container->make( RunWooE2ETestCommand::class ) );
 	$application->add( $container->make( RunPerformanceTestCommand::class ) );
 
 	// List tests runs.
