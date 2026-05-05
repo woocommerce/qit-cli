@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 311 total, 252 passed, 0 failed, 59 skipped",
+            "test_summary": "Tests: 311 total, 251 passed, 1 failed, 59 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,12 +52,12 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 61,
+                "numFailedTestSuites": 1,
+                "numPassedTestSuites": 60,
                 "numPendingTestSuites": 23,
                 "numTotalTestSuites": 84,
-                "numFailedTests": 0,
-                "numPassedTests": 252,
+                "numFailedTests": 1,
+                "numPassedTests": 251,
                 "numPendingTests": 59,
                 "numTotalTests": 311,
                 "testResults": [
@@ -489,7 +489,7 @@
                     },
                     {
                         "file": "checkout\\/checkout.spec.ts",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
@@ -531,7 +531,7 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
@@ -2222,7 +2222,7 @@
                         }
                     }
                 ],
-                "summary": "311 total, 252 passed, 0 failed, 59 skipped."
+                "summary": "311 total, 251 passed, 1 failed, 59 skipped."
             }
         },
         {
@@ -2238,8 +2238,8 @@
                     },
                     "summary": {
                         "tests": 311,
-                        "passed": 252,
-                        "failed": 0,
+                        "passed": 251,
+                        "failed": 1,
                         "pending": 0,
                         "skipped": 59,
                         "other": 0,
@@ -4347,11 +4347,14 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Edit shipping address\' })\\u001b[22m\\n",
+                            "trace": "TimeoutError: locator.click: Timeout 20000ms exceeded.\\nCall log:\\n\\u001b[2m  - waiting for getByRole(\'button\', { name: \'Edit shipping address\' })\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.ts:450:7",
+                            "snippet": "\\u001b[0m \\u001b[90m 448 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m page\\n \\u001b[90m 449 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mgetByRole( \\u001b[32m\'button\'\\u001b[39m\\u001b[33m,\\u001b[39m { name\\u001b[33m:\\u001b[39m \\u001b[32m\'Edit shipping address\'\\u001b[39m } )\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 450 |\\u001b[39m \\t\\t\\t\\t\\t\\u001b[33m.\\u001b[39mclick()\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m \\t\\t\\t\\t\\t \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 451 |\\u001b[39m \\t\\t\\t\\t\\u001b[36mawait\\u001b[39m fillShippingCheckoutBlocks( page\\u001b[33m,\\u001b[39m shippingAddress )\\u001b[33m;\\u001b[39m\\n \\u001b[90m 452 |\\u001b[39m \\t\\t\\t}\\n \\u001b[90m 453 |\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4363,7 +4366,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > checkout\\/checkout.spec.ts",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
@@ -9755,11 +9779,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Create a new term \\"Linen-1777396270434\\" from the modal",
+                                    "name": "Create a new term \\"Linen-1777999931555\\" from the modal",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Expect \\"Linen-1777396270434\\" to be in attribute values",
+                                    "name": "Expect \\"Linen-1777999931555\\" to be in attribute values",
                                     "status": "passed"
                                 }
                             ],
