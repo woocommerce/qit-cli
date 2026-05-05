@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 311 total, 252 passed, 0 failed, 59 skipped",
+            "test_summary": "Tests: 311 total, 251 passed, 0 failed, 60 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,12 +53,12 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 61,
-                "numPendingTestSuites": 23,
+                "numPassedTestSuites": 60,
+                "numPendingTestSuites": 24,
                 "numTotalTestSuites": 84,
                 "numFailedTests": 0,
-                "numPassedTests": 252,
-                "numPendingTests": 59,
+                "numPassedTests": 251,
+                "numPendingTests": 60,
                 "numTotalTests": 311,
                 "testResults": [
                     {
@@ -490,7 +490,7 @@
                     {
                         "file": "checkout\\/checkout.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
                                 {
@@ -531,7 +531,7 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
@@ -2222,7 +2222,7 @@
                         }
                     }
                 ],
-                "summary": "311 total, 252 passed, 0 failed, 59 skipped."
+                "summary": "311 total, 251 passed, 0 failed, 60 skipped."
             }
         },
         {
@@ -2238,10 +2238,10 @@
                     },
                     "summary": {
                         "tests": 311,
-                        "passed": 252,
+                        "passed": 251,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 59,
+                        "skipped": 60,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4347,11 +4347,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4372,7 +4372,17 @@
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "description": "Skipped",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.ts",
+                                            "line": 386,
+                                            "column": 9
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -9755,11 +9765,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Create a new term \\"Linen-1777396270434\\" from the modal",
+                                    "name": "Create a new term \\"Linen-1778013099593\\" from the modal",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Expect \\"Linen-1777396270434\\" to be in attribute values",
+                                    "name": "Expect \\"Linen-1778013099593\\" to be in attribute values",
                                     "status": "passed"
                                 }
                             ],
