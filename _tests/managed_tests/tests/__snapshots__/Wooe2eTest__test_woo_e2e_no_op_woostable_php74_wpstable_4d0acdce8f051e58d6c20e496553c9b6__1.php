@@ -9765,11 +9765,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Create a new term \\"Linen-1779848348058\\" from the modal",
+                                    "name": "Create a new term \\"Linen-1779991702865\\" from the modal",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Expect \\"Linen-1779848348058\\" to be in attribute values",
+                                    "name": "Expect \\"Linen-1779991702865\\" to be in attribute values",
                                     "status": "passed"
                                 }
                             ],
