@@ -110,7 +110,7 @@
       "type": "string",
       "description": "Type of test (e.g., 'e2e', 'performance'). Required for test packages, must be omitted for utility packages.",
       "pattern": "^[a-zA-Z0-9_.-]+$",
-      "enum": ["e2e", "api", "performance"]
+      "enum": ["e2e", "performance"]
     },
     "test_dir": {
       "type": "string",
