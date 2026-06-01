@@ -14,7 +14,7 @@
             "additional_wp_plugins": [],
             "test_log": "",
             "performance_results": "",
-            "status": "success",
+            "status": "failed",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
             "test_result_aws_expiration": 1234567890,
             "is_development": true,
@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 311 total, 251 passed, 0 failed, 60 skipped",
+            "test_summary": "Tests: 336 total, 257 passed, 19 failed, 60 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -52,14 +52,14 @@
         },
         {
             "test_result_json": {
-                "numFailedTestSuites": 0,
+                "numFailedTestSuites": 5,
                 "numPassedTestSuites": 60,
                 "numPendingTestSuites": 24,
-                "numTotalTestSuites": 84,
-                "numFailedTests": 0,
-                "numPassedTests": 251,
+                "numTotalTestSuites": 89,
+                "numFailedTests": 19,
+                "numPassedTests": 257,
                 "numPendingTests": 60,
-                "numTotalTests": 311,
+                "numTotalTests": 336,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.ts",
@@ -897,6 +897,114 @@
                         }
                     },
                     {
+                        "file": "email-editor\\/update-propagation\\/backward-compat.spec.ts",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "Update propagation \\u2014 backward compatibility": [
+                                {
+                                    "title": "BC Case A \\u2014 content matches current core, no stamp meta",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "BC Case B \\u2014 timestamps equal and content behind core",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "@pr BC Case C \\u2014 customized post content preserved (critical safety)",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "BC no mass-fire on first upgrade: zero _available, one _backfill_completed",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "BC migration is idempotent: second backfill is a no-op",
+                                    "status": "failed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/update-propagation\\/core-flows.spec.ts",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "Update propagation \\u2014 core flows": [
+                                {
+                                    "title": "@pr Plugin update triggers divergence detection and classifies posts",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "@pr Update-available indicator appears on email list and in editor",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "@pr Auto-apply succeeds silently for unmodified posts",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "@pr Selective apply succeeds and preserves customizations",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "@pr Dismiss flow records the dismissed Tracks event",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "Review drawer: pick per-conflict yours vs core and apply",
+                                    "status": "failed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "Update propagation \\u2014 round-trip and idempotency": [
+                                {
+                                    "title": "Auto-apply round-trip: uncustomized post returns to in_sync",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "Selective apply round-trip: edit, bump, apply with keep-yours \\u2192 stays customized",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "Reset round-trip: customized \\u2192 reset \\u2192 in_sync",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "Detection sweep is idempotent: second run touches zero posts",
+                                    "status": "failed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/update-propagation\\/scope.spec.ts",
+                        "status": "failed",
+                        "has_pending": false,
+                        "tests": {
+                            "Update propagation \\u2014 scope and allow-list": [
+                                {
+                                    "title": "Non-opted-in third-party email is excluded from sync",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "Opted-in third-party email: version bump flips status when unedited",
+                                    "status": "failed"
+                                },
+                                {
+                                    "title": "Opted-in third-party email: version bump flips status when edited",
+                                    "status": "failed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "marketing\\/overview.spec.ts",
                         "status": "passed",
                         "has_pending": false,
@@ -1320,6 +1428,43 @@
                                 },
                                 {
                                     "title": "should filter by Failed",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "order\\/review-order-page.spec.ts",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Customer Review Request \\u2014 Review Order page": [
+                                {
+                                    "title": "Scenario 1 \\u2014 happy path: rate a product, submit, see thank-you in place",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 2 \\u2014 refresh after partial submit pre-fills the submitted row",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 3 \\u2014 per-product reviews disabled hides the row and shows the dismissible notice",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 4 \\u2014 order with no reviewable items renders the empty-state thank-you",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 6 \\u2014 typing review text without a rating surfaces the inline error",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Variations \\u2014 two variations of one parent render two distinct rows with their attribute summaries",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Variations \\u2014 submitting one variation leaves the sibling row open (per-variation tracking)",
                                     "status": "passed"
                                 }
                             ]
@@ -1930,13 +2075,13 @@
                     },
                     {
                         "file": "settings\\/colour-picker-swatch-height.spec.ts",
-                        "status": "passed",
+                        "status": "failed",
                         "has_pending": false,
                         "tests": {
                             "Colour picker swatch height on Email settings": [
                                 {
                                     "title": "colour swatch is correctly sized with WP 7.0 body class",
-                                    "status": "passed"
+                                    "status": "failed"
                                 }
                             ]
                         }
@@ -2222,7 +2367,7 @@
                         }
                     }
                 ],
-                "summary": "311 total, 251 passed, 0 failed, 60 skipped."
+                "summary": "336 total, 257 passed, 19 failed, 60 skipped."
             }
         },
         {
@@ -2237,9 +2382,9 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 311,
-                        "passed": 251,
-                        "failed": 0,
+                        "tests": 336,
+                        "passed": 257,
+                        "failed": 19,
                         "pending": 0,
                         "skipped": 60,
                         "other": 0,
@@ -6705,6 +6850,796 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "BC Case A \\u2014 content matches current core, no stamp meta",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at resetBackfillFence (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:71:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:90:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "BC Case B \\u2014 timestamps equal and content behind core",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at resetBackfillFence (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:71:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:90:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr BC Case C \\u2014 customized post content preserved (critical safety)",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at resetBackfillFence (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:71:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:90:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "BC no mass-fire on first upgrade: zero _available, one _backfill_completed",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at resetBackfillFence (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:71:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:90:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "BC migration is idempotent: second backfill is a no-op",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at resetBackfillFence (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:71:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts:90:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Plugin update triggers divergence detection and classifies posts",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at stampBackfillComplete (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:98:2)\\n    at simulateCoreBump (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/simulate-plugin-update.ts:87:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts:75:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Update-available indicator appears on email list and in editor",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at stampBackfillComplete (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:98:2)\\n    at simulateCoreBump (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/simulate-plugin-update.ts:87:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts:134:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Auto-apply succeeds silently for unmodified posts",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at enableTracksLog (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:82:2)\\n    at attachTracksSpy (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/tracks-spy.ts:60:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts:186:15",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Selective apply succeeds and preserves customizations",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at stampBackfillComplete (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:98:2)\\n    at simulateCoreBump (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/simulate-plugin-update.ts:87:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts:239:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Dismiss flow records the dismissed Tracks event",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at enableTracksLog (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:82:2)\\n    at attachTracksSpy (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/tracks-spy.ts:60:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts:285:15",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Review drawer: pick per-conflict yours vs core and apply",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at stampBackfillComplete (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:98:2)\\n    at simulateCoreBump (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/simulate-plugin-update.ts:87:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts:367:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Auto-apply round-trip: uncustomized post returns to in_sync",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at stampBackfillComplete (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:98:2)\\n    at simulateCoreBump (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/simulate-plugin-update.ts:87:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts:69:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Selective apply round-trip: edit, bump, apply with keep-yours \\u2192 stays customized",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at stampBackfillComplete (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:98:2)\\n    at simulateCoreBump (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/simulate-plugin-update.ts:87:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts:101:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Reset round-trip: customized \\u2192 reset \\u2192 in_sync",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at resetWooEmailPost (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/seed-woo-email.ts:40:14)\\n    at seedWooEmailPost (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/seed-woo-email.ts:81:17)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts:145:18",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Detection sweep is idempotent: second run touches zero posts",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at stampBackfillComplete (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:98:2)\\n    at simulateCoreBump (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/simulate-plugin-update.ts:87:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts:177:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Non-opted-in third-party email is excluded from sync",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at enableFakeThirdPartyEmail (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:90:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/scope.spec.ts:64:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/scope.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/scope.spec.ts > Update propagation \\u2014 scope and allow-list",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Opted-in third-party email: version bump flips status when unedited",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at enableFakeThirdPartyEmail (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:90:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/scope.spec.ts:64:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/scope.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/scope.spec.ts > Update propagation \\u2014 scope and allow-list",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Opted-in third-party email: version bump flips status when edited",
+                            "status": "failed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "message": "AxiosError: Request failed with status code 404",
+                            "trace": "AxiosError: Request failed with status code 404\\n    at settle (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/settle.js:19:12)\\n    at IncomingMessage.handleStreamEnd (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/adapters\\/http.js:1139:13)\\n    at Axios.request (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/node_modules\\/axios\\/lib\\/core\\/Axios.js:46:41)\\n    at Object.post (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213:24)\\n    at setOption (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:33:2)\\n    at enableFakeThirdPartyEmail (\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/helpers\\/test-helper-plugin.ts:90:2)\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/scope.spec.ts:64:3",
+                            "snippet": "   at ..\\/..\\/..\\/packages\\/js\\/e2e-utils-playwright\\/build\\/api-client.js:213\\n\\n\\u001b[0m \\u001b[90m 211 |\\u001b[39m         })\\u001b[33m;\\u001b[39m\\n \\u001b[90m 212 |\\u001b[39m       }\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 213 |\\u001b[39m       \\u001b[36mconst\\u001b[39m response \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m axiosInstance\\u001b[33m.\\u001b[39mpost(path\\u001b[33m,\\u001b[39m data)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                        \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 214 |\\u001b[39m       \\u001b[36mif\\u001b[39m (debug) {\\n \\u001b[90m 215 |\\u001b[39m         logRequest(\\u001b[32m\\"post\\"\\u001b[39m\\u001b[33m,\\u001b[39m {\\n \\u001b[90m 216 |\\u001b[39m           path\\u001b[33m,\\u001b[39m\\u001b[0m",
+                            "rawStatus": "failed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/scope.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/scope.spec.ts > Update propagation \\u2014 scope and allow-list",
+                            "attachments": [
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "Marketing Overview page have relevant content",
                             "status": "passed",
                             "duration": 999,
@@ -8567,6 +9502,210 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "Scenario 1 \\u2014 happy path: rate a product, submit, see thank-you in place",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 2 \\u2014 refresh after partial submit pre-fills the submitted row",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 3 \\u2014 per-product reviews disabled hides the row and shows the dismissible notice",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 4 \\u2014 order with no reviewable items renders the empty-state thank-you",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 6 \\u2014 typing review text without a rating surfaces the inline error",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Variations \\u2014 two variations of one parent render two distinct rows with their attribute summaries",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Variations \\u2014 submitting one variation leaves the sibling row open (per-variation tracking)",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "can create a grouped product",
                             "status": "skipped",
                             "duration": 999,
@@ -9723,7 +10862,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.ts",
-                                            "line": 157,
+                                            "line": 147,
                                             "column": 6
                                         }
                                     }
@@ -9765,11 +10904,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Create a new term \\"Linen-1779991609627\\" from the modal",
+                                    "name": "Create a new term \\"Linen-1780350863881\\" from the modal",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Expect \\"Linen-1779991609627\\" to be in attribute values",
+                                    "name": "Expect \\"Linen-1780350863881\\" to be in attribute values",
                                     "status": "passed"
                                 }
                             ],
@@ -11946,11 +13085,14 @@
                         },
                         {
                             "name": "colour swatch is correctly sized with WP 7.0 body class",
-                            "status": "passed",
+                            "status": "failed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "message": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.colorpickpreview\').first()\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.colorpickpreview\').first()\\u001b[22m\\n",
+                            "trace": "Error: \\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoBeVisible\\u001b[2m(\\u001b[22m\\u001b[2m)\\u001b[22m failed\\n\\nLocator: locator(\'.colorpickpreview\').first()\\nExpected: visible\\nTimeout: 20000ms\\nError: element(s) not found\\n\\nCall log:\\n\\u001b[2m  - Expect \\"toBeVisible\\" with timeout 20000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.colorpickpreview\').first()\\u001b[22m\\n\\n    at \\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/settings\\/colour-picker-swatch-height.spec.ts:25:26",
+                            "snippet": "\\u001b[0m \\u001b[90m 23 |\\u001b[39m\\n \\u001b[90m 24 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m swatch \\u001b[33m=\\u001b[39m page\\u001b[33m.\\u001b[39mlocator( \\u001b[32m\'.colorpickpreview\'\\u001b[39m )\\u001b[33m.\\u001b[39mfirst()\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 25 |\\u001b[39m \\t\\t\\u001b[36mawait\\u001b[39m expect( swatch )\\u001b[33m.\\u001b[39mtoBeVisible()\\u001b[33m;\\u001b[39m\\n \\u001b[90m    |\\u001b[39m \\t\\t                       \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 26 |\\u001b[39m\\n \\u001b[90m 27 |\\u001b[39m \\t\\t\\u001b[36mconst\\u001b[39m swatchBox \\u001b[33m=\\u001b[39m \\u001b[36mawait\\u001b[39m swatch\\u001b[33m.\\u001b[39mboundingBox()\\u001b[33m;\\u001b[39m\\n \\u001b[90m 28 |\\u001b[39m \\t\\t\\u001b[36mif\\u001b[39m ( \\u001b[33m!\\u001b[39m swatchBox ) {\\u001b[0m",
+                            "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/colour-picker-swatch-height.spec.ts",
@@ -11958,7 +13100,28 @@
                             "flaky": false,
                             "steps": [],
                             "suite": "e2e > settings\\/colour-picker-swatch-height.spec.ts > Colour picker swatch height on Email settings",
-                            "attachments": [],
+                            "attachments": [
+                                {
+                                    "name": "screenshot",
+                                    "contentType": "image\\/png",
+                                    "path": "normalized.png"
+                                },
+                                {
+                                    "name": "video",
+                                    "contentType": "video\\/webm",
+                                    "path": "normalized.webm"
+                                },
+                                {
+                                    "name": "error-context",
+                                    "contentType": "text\\/markdown",
+                                    "path": "normalized.md"
+                                },
+                                {
+                                    "name": "trace",
+                                    "contentType": "application\\/zip",
+                                    "path": "normalized.zip"
+                                }
+                            ],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
