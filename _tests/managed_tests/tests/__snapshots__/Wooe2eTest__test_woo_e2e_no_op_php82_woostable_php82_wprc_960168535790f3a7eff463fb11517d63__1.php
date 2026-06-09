@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 310 total, 250 passed, 0 failed, 60 skipped",
+            "test_summary": "Tests: 311 total, 251 passed, 0 failed, 60 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -57,9 +57,9 @@
                 "numPendingTestSuites": 24,
                 "numTotalTestSuites": 84,
                 "numFailedTests": 0,
-                "numPassedTests": 250,
+                "numPassedTests": 251,
                 "numPendingTests": 60,
-                "numTotalTests": 310,
+                "numTotalTests": 311,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.ts",
@@ -490,7 +490,7 @@
                     {
                         "file": "checkout\\/checkout.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
                                 {
@@ -531,7 +531,7 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
@@ -768,19 +768,6 @@
                                 {
                                     "title": "Merchant can use advanced filters",
                                     "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "editor\\/command-palette.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "can use a settings command": [
-                                {
-                                    "title": "can use a settings command",
-                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1589,6 +1576,12 @@
                                     "title": "can add custom product attributes",
                                     "status": "pending"
                                 }
+                            ],
+                            "can create attribute terms from the attributes modal": [
+                                {
+                                    "title": "can create attribute terms from the attributes modal",
+                                    "status": "passed"
+                                }
                             ]
                         }
                     },
@@ -1936,6 +1929,19 @@
                         }
                     },
                     {
+                        "file": "settings\\/colour-picker-swatch-height.spec.ts",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Colour picker swatch height on Email settings": [
+                                {
+                                    "title": "colour swatch is correctly sized with WP 7.0 body class",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
                         "file": "settings\\/consumer-token.spec.ts",
                         "status": "passed",
                         "has_pending": false,
@@ -2216,7 +2222,7 @@
                         }
                     }
                 ],
-                "summary": "310 total, 250 passed, 0 failed, 60 skipped."
+                "summary": "311 total, 251 passed, 0 failed, 60 skipped."
             }
         },
         {
@@ -2231,8 +2237,8 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 310,
-                        "passed": 250,
+                        "tests": 311,
+                        "passed": 251,
                         "failed": 0,
                         "pending": 0,
                         "skipped": 60,
@@ -4341,11 +4347,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4366,7 +4372,17 @@
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "description": "Skipped",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.ts",
+                                            "line": 386,
+                                            "column": 9
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -6123,39 +6139,6 @@
                             ],
                             "extra": {
                                 "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can use a settings command",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/command-palette.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > editor\\/command-palette.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/editor\\/command-palette.spec.ts",
-                                            "line": 135,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
                             },
                             "retryAttempts": []
                         },
@@ -9749,6 +9732,61 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "can create attribute terms from the attributes modal",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Create a global attribute \\"Fabric\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create a variable product with that global attribute",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Open \\"Edit product\\" page of product id <ID>",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Go to the \\"Attributes\\" tab.",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expand the \\"Fabric\\" attribute",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Create a new term \\"Linen-1780353549687\\" from the modal",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Expect \\"Linen-1780353549687\\" to be in attribute values",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > product\\/create-product-attributes.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "can create a variable product",
                             "status": "passed",
                             "duration": 999,
@@ -11896,6 +11934,30 @@
                                 }
                             ],
                             "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "colour swatch is correctly sized with WP 7.0 body class",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/colour-picker-swatch-height.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > settings\\/colour-picker-swatch-height.spec.ts > Colour picker swatch height on Email settings",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"

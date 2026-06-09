@@ -33,7 +33,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 311 total, 252 passed, 0 failed, 59 skipped",
+            "test_summary": "Tests: 336 total, 257 passed, 0 failed, 79 skipped",
             "version": "Undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -53,13 +53,13 @@
         {
             "test_result_json": {
                 "numFailedTestSuites": 0,
-                "numPassedTestSuites": 61,
-                "numPendingTestSuites": 23,
-                "numTotalTestSuites": 84,
+                "numPassedTestSuites": 60,
+                "numPendingTestSuites": 29,
+                "numTotalTestSuites": 89,
                 "numFailedTests": 0,
-                "numPassedTests": 252,
-                "numPendingTests": 59,
-                "numTotalTests": 311,
+                "numPassedTests": 257,
+                "numPendingTests": 79,
+                "numTotalTests": 336,
                 "testResults": [
                     {
                         "file": "..\\/fixtures\\/install-wc.setup.ts",
@@ -490,7 +490,7 @@
                     {
                         "file": "checkout\\/checkout.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "guest can checkout paying with cash on delivery on blocks checkout": [
                                 {
@@ -531,7 +531,7 @@
                             "customer can login at checkout and place the order with a different shipping address blocks checkout": [
                                 {
                                     "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ],
                             "customer can login at checkout and place the order with a different shipping address classic checkout": [
@@ -892,6 +892,114 @@
                                 {
                                     "title": "Reset color palette with a feature flag",
                                     "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/update-propagation\\/backward-compat.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Update propagation \\u2014 backward compatibility": [
+                                {
+                                    "title": "BC Case A \\u2014 content matches current core, no stamp meta",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "BC Case B \\u2014 timestamps equal and content behind core",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "@pr BC Case C \\u2014 customized post content preserved (critical safety)",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "BC no mass-fire on first upgrade: zero _available, one _backfill_completed",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "BC migration is idempotent: second backfill is a no-op",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/update-propagation\\/core-flows.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Update propagation \\u2014 core flows": [
+                                {
+                                    "title": "@pr Plugin update triggers divergence detection and classifies posts",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "@pr Update-available indicator appears on email list and in editor",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "@pr Auto-apply succeeds silently for unmodified posts",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "@pr Selective apply succeeds and preserves customizations",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "@pr Dismiss flow records the dismissed Tracks event",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Review drawer: pick per-conflict yours vs core and apply",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Update propagation \\u2014 round-trip and idempotency": [
+                                {
+                                    "title": "Auto-apply round-trip: uncustomized post returns to in_sync",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Selective apply round-trip: edit, bump, apply with keep-yours \\u2192 stays customized",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Reset round-trip: customized \\u2192 reset \\u2192 in_sync",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Detection sweep is idempotent: second run touches zero posts",
+                                    "status": "pending"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "email-editor\\/update-propagation\\/scope.spec.ts",
+                        "status": "passed",
+                        "has_pending": true,
+                        "tests": {
+                            "Update propagation \\u2014 scope and allow-list": [
+                                {
+                                    "title": "Non-opted-in third-party email is excluded from sync",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Opted-in third-party email: version bump flips status when unedited",
+                                    "status": "pending"
+                                },
+                                {
+                                    "title": "Opted-in third-party email: version bump flips status when edited",
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -1320,6 +1428,43 @@
                                 },
                                 {
                                     "title": "should filter by Failed",
+                                    "status": "passed"
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "file": "order\\/review-order-page.spec.ts",
+                        "status": "passed",
+                        "has_pending": false,
+                        "tests": {
+                            "Customer Review Request \\u2014 Review Order page": [
+                                {
+                                    "title": "Scenario 1 \\u2014 happy path: rate a product, submit, see thank-you in place",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 2 \\u2014 refresh after partial submit pre-fills the submitted row",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 3 \\u2014 per-product reviews disabled hides the row and shows the dismissible notice",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 4 \\u2014 order with no reviewable items renders the empty-state thank-you",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Scenario 6 \\u2014 typing review text without a rating surfaces the inline error",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Variations \\u2014 two variations of one parent render two distinct rows with their attribute summaries",
+                                    "status": "passed"
+                                },
+                                {
+                                    "title": "Variations \\u2014 submitting one variation leaves the sibling row open (per-variation tracking)",
                                     "status": "passed"
                                 }
                             ]
@@ -1931,12 +2076,12 @@
                     {
                         "file": "settings\\/colour-picker-swatch-height.spec.ts",
                         "status": "passed",
-                        "has_pending": false,
+                        "has_pending": true,
                         "tests": {
                             "Colour picker swatch height on Email settings": [
                                 {
                                     "title": "colour swatch is correctly sized with WP 7.0 body class",
-                                    "status": "passed"
+                                    "status": "pending"
                                 }
                             ]
                         }
@@ -2222,7 +2367,7 @@
                         }
                     }
                 ],
-                "summary": "311 total, 252 passed, 0 failed, 59 skipped."
+                "summary": "336 total, 257 passed, 0 failed, 79 skipped."
             }
         },
         {
@@ -2237,11 +2382,11 @@
                         "name": "playwright"
                     },
                     "summary": {
-                        "tests": 311,
-                        "passed": 252,
+                        "tests": 336,
+                        "passed": 257,
                         "failed": 0,
                         "pending": 0,
-                        "skipped": 59,
+                        "skipped": 79,
                         "other": 0,
                         "start": 1111111111,
                         "stop": 2222222222,
@@ -4347,11 +4492,11 @@
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4372,7 +4517,17 @@
                                 "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
                             ],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "description": "Skipped",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.ts",
+                                            "line": 386,
+                                            "column": 9
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
@@ -6695,6 +6850,612 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "BC Case A \\u2014 content matches current core, no stamp meta",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts",
+                                            "line": 109,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "BC Case B \\u2014 timestamps equal and content behind core",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts",
+                                            "line": 146,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr BC Case C \\u2014 customized post content preserved (critical safety)",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts",
+                                            "line": 182,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "BC no mass-fire on first upgrade: zero _available, one _backfill_completed",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts",
+                                            "line": 235,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "BC migration is idempotent: second backfill is a no-op",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/backward-compat.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/backward-compat.spec.ts > Update propagation \\u2014 backward compatibility",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/backward-compat.spec.ts",
+                                            "line": 298,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Plugin update triggers divergence detection and classifies posts",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts",
+                                            "line": 73,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Update-available indicator appears on email list and in editor",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts",
+                                            "line": 131,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Auto-apply succeeds silently for unmodified posts",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts",
+                                            "line": 183,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Selective apply succeeds and preserves customizations",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts",
+                                            "line": 231,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "@pr Dismiss flow records the dismissed Tracks event",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@pr"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts",
+                                            "line": 280,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Review drawer: pick per-conflict yours vs core and apply",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/core-flows.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/core-flows.spec.ts > Update propagation \\u2014 core flows",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/core-flows.spec.ts",
+                                            "line": 340,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Auto-apply round-trip: uncustomized post returns to in_sync",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts",
+                                            "line": 68,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Selective apply round-trip: edit, bump, apply with keep-yours \\u2192 stays customized",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts",
+                                            "line": 97,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Reset round-trip: customized \\u2192 reset \\u2192 in_sync",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts",
+                                            "line": 142,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Detection sweep is idempotent: second run touches zero posts",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/round-trip-idempotency.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts > Update propagation \\u2014 round-trip and idempotency",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/round-trip-idempotency.spec.ts",
+                                            "line": 176,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Non-opted-in third-party email is excluded from sync",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/scope.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/scope.spec.ts > Update propagation \\u2014 scope and allow-list",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/scope.spec.ts",
+                                            "line": 85,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Opted-in third-party email: version bump flips status when unedited",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/scope.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/scope.spec.ts > Update propagation \\u2014 scope and allow-list",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/scope.spec.ts",
+                                            "line": 127,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Opted-in third-party email: version bump flips status when edited",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/scope.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > email-editor\\/update-propagation\\/scope.spec.ts > Update propagation \\u2014 scope and allow-list",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email-editor\\/update-propagation\\/scope.spec.ts",
+                                            "line": 171,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "Marketing Overview page have relevant content",
                             "status": "passed",
                             "duration": 999,
@@ -8557,6 +9318,210 @@
                             "retryAttempts": []
                         },
                         {
+                            "name": "Scenario 1 \\u2014 happy path: rate a product, submit, see thank-you in place",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 2 \\u2014 refresh after partial submit pre-fills the submitted row",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 3 \\u2014 per-product reviews disabled hides the row and shows the dismissible notice",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 4 \\u2014 order with no reviewable items renders the empty-state thank-you",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Scenario 6 \\u2014 typing review text without a rating surfaces the inline error",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Variations \\u2014 two variations of one parent render two distinct rows with their attribute summaries",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Variations \\u2014 submitting one variation leaves the sibling row open (per-variation tracking)",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/review-order-page.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/review-order-page.spec.ts > Customer Review Request \\u2014 Review Order page",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [
+                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
+                            ],
+                            "extra": {
+                                "annotations": []
+                            },
+                            "retryAttempts": []
+                        },
+                        {
                             "name": "can create a grouped product",
                             "status": "skipped",
                             "duration": 999,
@@ -9713,7 +10678,7 @@
                                         "type": "skip",
                                         "location": {
                                             "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.ts",
-                                            "line": 157,
+                                            "line": 147,
                                             "column": 6
                                         }
                                     }
@@ -9755,11 +10720,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Create a new term \\"Linen-1777396289932\\" from the modal",
+                                    "name": "Create a new term \\"Linen-1780353616510\\" from the modal",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Expect \\"Linen-1777396289932\\" to be in attribute values",
+                                    "name": "Expect \\"Linen-1780353616510\\" to be in attribute values",
                                     "status": "passed"
                                 }
                             ],
@@ -11936,11 +12901,11 @@
                         },
                         {
                             "name": "colour swatch is correctly sized with WP 7.0 body class",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/colour-picker-swatch-height.spec.ts",
@@ -11954,7 +12919,16 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/settings\\/colour-picker-swatch-height.spec.ts",
+                                            "line": 14,
+                                            "column": 7
+                                        }
+                                    }
+                                ]
                             },
                             "retryAttempts": []
                         },
