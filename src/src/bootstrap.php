@@ -33,6 +33,7 @@ use QIT_CLI\Commands\Partner\RemovePartner;
 use QIT_CLI\Commands\Partner\SwitchPartner;
 use QIT_CLI\Commands\RunActivationTestCommand;
 use QIT_CLI\Commands\RunPerformanceTestCommand;
+use QIT_CLI\Commands\RunWooApiTestCommand;
 use QIT_CLI\Commands\SetProxyCommand;
 use QIT_CLI\Commands\SyncCommand;
 use QIT_CLI\Commands\TestPackages\PackageDeleteCommand;
@@ -258,6 +259,7 @@ if ( $is_connected_to_backend ) {
 
 	$application->add( $container->make( RunActivationTestCommand::class ) );
 	$application->add( $container->make( RunPerformanceTestCommand::class ) );
+	$application->add( $container->make( RunWooApiTestCommand::class ) );
 
 	// List tests runs.
 	$application->add( $container->make( ListCommand::class ) );
