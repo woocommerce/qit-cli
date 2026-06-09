@@ -26,6 +26,7 @@ class VersionResolver {
 				if ( preg_match( '/^\d+\.\d+\.\d+-dev$/', $version ) ) {
 					return "https://github.com/woocommerce/woocommerce/releases/download/{$version}/woocommerce.zip";
 				}
+
 				return null; // Not a special version we handle
 		}
 	}
