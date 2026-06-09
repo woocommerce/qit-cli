@@ -13,14 +13,22 @@ class OptionReuseTraitTest extends \QIT_CLI_Tests\QITTestCase {
 	public function setUp(): void {
 		parent::setUp();
 
-		$this->source_command = new Command( 'test:option-reuse-source' );
-		$this->source_command->addOption( 'flag', null, InputOption::VALUE_NONE, 'A flag option' );
-		$this->source_command->addOption( 'required_value', 'r', InputOption::VALUE_REQUIRED, 'A required value option', 'the-default' );
-		$this->source_command->addOption( 'optional_value', null, InputOption::VALUE_OPTIONAL, 'An optional value option', 'optional-default' );
-		$this->source_command->addOption( 'array_value', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'An array value option', [ 'a', 'b' ] );
-		$this->source_command->addOption( 'negatable_flag', null, InputOption::VALUE_NONE | InputOption::VALUE_NEGATABLE, 'A negatable flag option' );
+		// Register the source command once: the Application from the DI container is a
+		// singleton shared across test methods, so re-adding would rely on Application::add()
+		// silently replacing the existing registration.
+		$application = App::make( Application::class );
 
-		App::make( Application::class )->add( $this->source_command );
+		if ( ! $application->has( 'test:option-reuse-source' ) ) {
+			$source_command = new Command( 'test:option-reuse-source' );
+			$source_command->addOption( 'flag', null, InputOption::VALUE_NONE, 'A flag option' );
+			$source_command->addOption( 'required_value', 'r', InputOption::VALUE_REQUIRED, 'A required value option', 'the-default' );
+			$source_command->addOption( 'optional_value', null, InputOption::VALUE_OPTIONAL, 'An optional value option', 'optional-default' );
+			$source_command->addOption( 'array_value', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'An array value option', [ 'a', 'b' ] );
+			$source_command->addOption( 'negatable_flag', null, InputOption::VALUE_NONE | InputOption::VALUE_NEGATABLE, 'A negatable flag option' );
+			$application->add( $source_command );
+		}
+
+		$this->source_command = $application->find( 'test:option-reuse-source' );
 	}
 
 	protected function make_consumer_command(): Command {

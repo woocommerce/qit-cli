@@ -30,6 +30,10 @@ class Php85DeprecationGuardTest extends \PHPUnit\Framework\TestCase {
 			}
 
 			$contents = file_get_contents( $file->getPathname() );
+
+			// An unreadable file would otherwise be scanned as an empty string and silently pass the guard.
+			$this->assertNotFalse( $contents, 'Could not read source file: ' . $file->getPathname() );
+
 			foreach ( $deprecated_patterns as $name => $pattern ) {
 				if ( preg_match( $pattern, $contents ) ) {
 					$violations[] = sprintf( '%s in %s', $name, $file->getPathname() );
