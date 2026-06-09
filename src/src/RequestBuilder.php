@@ -360,7 +360,9 @@ class RequestBuilder {
 		$body        = substr( $result, $header_size );
 
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-		curl_close( $curl );
+
+		// Not closing the cURL handle: doing so is a no-op since PHP 8.0 and deprecated in 8.5; on 7.4 the handle is freed when $curl goes out of scope.
+		unset( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
 			if ( $proxied && $result === false ) {
@@ -546,7 +548,9 @@ class RequestBuilder {
 			$output->writeln( sprintf( 'Downloaded %s in %f seconds.', $url, microtime( true ) - $start ) );
 		}
 		$curl_error = curl_error( $curl );
-		curl_close( $curl );
+
+		// Not closing the cURL handle: doing so is a no-op since PHP 8.0 and deprecated in 8.5; on 7.4 the handle is freed when $curl goes out of scope.
+		unset( $curl );
 		fclose( $fp );
 
 		if ( $curl_error ) {

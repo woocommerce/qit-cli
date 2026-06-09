@@ -18,8 +18,6 @@ function post_request( $url ) {
 		$http_code  = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 		$curl_error = curl_error( $curl );
 
-		curl_close( $curl );
-
 		if ( $response === false ) {
 			throw new RuntimeException( 'cURL error: ' . $curl_error );
 		}

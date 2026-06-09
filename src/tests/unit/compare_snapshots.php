@@ -71,11 +71,9 @@ function callOllama( string $endpoint, string $model, string $system, string $us
 	$response = curl_exec( $ch );
 	if ( $response === false ) {
 		$err = curl_error( $ch );
-		curl_close( $ch );
 
 		return "**Error calling Ollama**: $err";
 	}
-	curl_close( $ch );
 
 	$decoded = json_decode( $response, true );
 	if ( ! is_array( $decoded ) ) {
