@@ -61,6 +61,18 @@ class PrepareDebugLog {
 					continue;
 				}
 
+				/*
+				 * Ignore WordPress.org API connectivity warnings (themes_api(), translations_api(), etc.).
+				 * Test environments have restricted/unreliable access to WordPress.org, so these are
+				 * infrastructure noise unrelated to the extension under test.
+				 */
+				if (
+					stripos( $line, 'could not establish a secure connection to WordPress.org' ) !== false
+					|| stripos( $line, 'Something may be wrong with WordPress.org' ) !== false
+				) {
+					continue;
+				}
+
 				// Ignore errors coming from WooCommerce Core if not testing WooCommerce Core, and the error doesn't reference the SUT slug.
 				$error_from_woocommerce_core = stripos( $line, 'in /var/www/html/wp-content/plugins/woocommerce/' ) !== false;
 				$is_testing_woocommerce_core = in_array( $sut_slug, [ 'woocommerce', 'wporg-woocommerce' ], true );
