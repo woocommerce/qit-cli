@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class RunWooApiTestCommand extends RunE2ECommand {
+	use ExtensionSetTrait;
 
 	protected static $defaultName = 'run:woo-api'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 	protected string $test_type   = 'woo-api';
@@ -14,6 +15,7 @@ class RunWooApiTestCommand extends RunE2ECommand {
 	protected function configure(): void {
 		parent::configure();
 		$this->setDescription( 'Run WooCommerce Core API tests' );
+		$this->configure_extension_set_option();
 		$this->addOption(
 			'optional_features',
 			null,
@@ -24,6 +26,11 @@ class RunWooApiTestCommand extends RunE2ECommand {
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		$extension_set_error = $this->resolve_extension_set( $input, $output );
+		if ( $extension_set_error !== null ) {
+			return $extension_set_error;
+		}
+
 		if ( empty( $input->getOption( 'test-package' ) ) ) {
 			$input->setOption( 'test-package', [ 'woocommerce/core-api-tests:latest' ] );
 		}
