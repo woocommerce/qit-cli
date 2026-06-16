@@ -115,13 +115,21 @@ trait ExtensionSetTrait {
 		}
 
 		return $runner->execute(
-			$this,
+			$this->get_qit_command_for_remote_runner(),
 			$remote_test_type,
 			$options_to_send,
 			$input,
 			$output,
 			$profile_test_type ?? $remote_test_type
 		);
+	}
+
+	private function get_qit_command_for_remote_runner(): QITCommand {
+		if ( ! $this instanceof QITCommand ) {
+			throw new \LogicException( 'ExtensionSetTrait remote fallback must be used by QITCommand instances.' );
+		}
+
+		return $this;
 	}
 
 	private function validate_extension_set_exists( string $extension_set_name, OutputInterface $output ): ?int {
@@ -209,8 +217,13 @@ trait ExtensionSetTrait {
 			$flags[] = '--no-' . $hyphenated;
 		}
 
-		if ( method_exists( $this, 'getDefinition' ) && $this->getDefinition()->hasOption( $option_name ) ) {
-			$shortcut = $this->getDefinition()->getOption( $option_name )->getShortcut();
+		if ( $this instanceof Command ) {
+			$definition = $this->getDefinition();
+			if ( ! $definition->hasOption( $option_name ) ) {
+				return $symfony_input->hasParameterOption( $flags, true );
+			}
+
+			$shortcut = $definition->getOption( $option_name )->getShortcut();
 			if ( ! empty( $shortcut ) ) {
 				foreach ( explode( '|', $shortcut ) as $shortcut_name ) {
 					$flags[] = '-' . $shortcut_name;

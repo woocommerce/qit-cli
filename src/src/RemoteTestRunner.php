@@ -9,6 +9,7 @@ use QIT_CLI\PreCommand\Configuration\EnvironmentConfigResolver;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class RemoteTestRunner {
@@ -304,11 +305,13 @@ class RemoteTestRunner {
 		$start         = time();
 		$is_ci         = ! empty( getenv( 'CI' ) );
 		$is_json       = $input->getOption( 'json' );
-		$section       = null;
-		$last_result   = null;
-		$last_status   = '';
-		$completed     = false;
-		$ticks         = 0;
+
+		/** @var ConsoleSectionOutput|null $section */
+		$section     = null;
+		$last_result = null;
+		$last_status = '';
+		$completed   = false;
+		$ticks       = 0;
 
 		if ( $is_ci || $is_json ) {
 			if ( ! $is_json ) {
@@ -393,13 +396,13 @@ class RemoteTestRunner {
 	}
 
 	/**
-	 * @param OutputInterface     $section     The console section output.
-	 * @param array<string,mixed> $result      The Manager test run result.
-	 * @param int                 $test_run_id The Manager test run ID.
-	 * @param bool                $completed   Whether the test has completed.
-	 * @param int                 $elapsed     Elapsed seconds.
+	 * @param ConsoleSectionOutput $section     The console section output.
+	 * @param array<string,mixed>  $result      The Manager test run result.
+	 * @param int                  $test_run_id The Manager test run ID.
+	 * @param bool                 $completed   Whether the test has completed.
+	 * @param int                  $elapsed     Elapsed seconds.
 	 */
-	private function render_wait_table( OutputInterface $section, array $result, int $test_run_id, bool $completed, int $elapsed ): void {
+	private function render_wait_table( ConsoleSectionOutput $section, array $result, int $test_run_id, bool $completed, int $elapsed ): void {
 		$section->clear();
 		$status = $result['status'] ?? 'unknown';
 		$status = $completed ? $status : 'running: ' . $status;
