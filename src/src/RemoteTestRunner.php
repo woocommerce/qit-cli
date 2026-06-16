@@ -330,11 +330,11 @@ class RemoteTestRunner {
 			pcntl_signal( SIGINT, function () use ( $test_run_id, $output ) {
 				$output->writeln( '' );
 				$output->writeln( '' );
-				$output->writeln( '<comment>---------------------------------------</comment>' );
+				$output->writeln( '<comment>───────────────────────────────────────</comment>' );
 				$output->writeln( '<info>Stopped waiting. Test continues running on QIT servers.</info>' );
 				$output->writeln( sprintf( '<info>Test ID: %d</info>', $test_run_id ) );
 				$output->writeln( sprintf( '<info>Check results: qit get %d</info>', $test_run_id ) );
-				$output->writeln( '<comment>---------------------------------------</comment>' );
+				$output->writeln( '<comment>───────────────────────────────────────</comment>' );
 				exit( 0 );
 			} );
 		}
@@ -404,26 +404,48 @@ class RemoteTestRunner {
 	 */
 	private function render_wait_table( ConsoleSectionOutput $section, array $result, int $test_run_id, bool $completed, int $elapsed ): void {
 		$section->clear();
-		$status = $result['status'] ?? 'unknown';
-		$status = $completed ? $status : 'running: ' . $status;
-		$rows   = [ [ 'Test Run ID', $result['test_run_id'] ?? $test_run_id ] ];
 
-		foreach (
-			[
-				'test_type_display'   => 'Test Type',
-				'wordpress_version'   => 'WordPress Version',
-				'woocommerce_version' => 'WooCommerce Version',
-				'php_version'         => 'PHP Version',
-			] as $key => $label
-		) {
-			if ( isset( $result[ $key ] ) ) {
-				$rows[] = [ $label, $result[ $key ] ];
-			}
+		// Status: animated spinner while running, ✓/✗ glyph when finished.
+		$status = $result['status'] ?? 'unknown';
+		if ( ! $completed ) {
+			$spinner_frames = [ '⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏' ];
+			$status         = $spinner_frames[ $elapsed % count( $spinner_frames ) ] . ' ' . $status;
+		} elseif ( $status === 'success' ) {
+			$status = '✓ ' . $status;
+		} elseif ( $status === 'failed' ) {
+			$status = '✗ ' . $status;
+		}
+
+		$rows = [ [ 'Test Run ID', $result['test_run_id'] ?? $test_run_id ] ];
+
+		if ( isset( $result['test_type_display'] ) ) {
+			$rows[] = [ 'Test Type', $result['test_type_display'] ];
+		}
+		if ( isset( $result['wordpress_version'] ) ) {
+			$rows[] = [ 'WordPress Version', $result['wordpress_version'] ];
+		}
+		if ( isset( $result['woocommerce_version'] ) ) {
+			$rows[] = [ 'WooCommerce Version', $result['woocommerce_version'] ];
+		}
+		if ( isset( $result['min_php_version'] ) && isset( $result['max_php_version'] ) ) {
+			$rows[] = [ 'PHP Version Range', $result['min_php_version'] . ' - ' . $result['max_php_version'] ];
+		} elseif ( isset( $result['php_version'] ) ) {
+			$rows[] = [ 'PHP Version', $result['php_version'] ];
 		}
 
 		$rows[] = [ 'Status', $status ];
+
+		if ( isset( $result['woo_extension']['name'] ) ) {
+			$rows[] = [ 'Woo Extension', $result['woo_extension']['name'] ];
+		}
+		if ( isset( $result['version'] ) && ! empty( trim( (string) $result['version'] ) ) ) {
+			$rows[] = [ 'Version', $result['version'] ];
+		}
 		if ( isset( $result['test_results_manager_url'] ) && ! empty( $result['test_results_manager_url'] ) ) {
 			$rows[] = [ 'Result URL', $result['test_results_manager_url'] ];
+		}
+		if ( isset( $result['test_summary'] ) && ! empty( $result['test_summary'] ) ) {
+			$rows[] = [ 'Test Summary', $result['test_summary'] ];
 		}
 
 		$table = new Table( $section );
@@ -432,9 +454,38 @@ class RemoteTestRunner {
 		$table->setRows( $rows );
 		$table->render();
 
-		if ( ! $completed ) {
-			$section->writeln( '' );
-			$section->writeln( sprintf( '<info>Elapsed: %d:%02d</info>', floor( $elapsed / 60 ), $elapsed % 60 ) );
+		if ( $completed ) {
+			return;
+		}
+
+		$section->writeln( '' );
+
+		$elapsed_info = sprintf( 'Elapsed: %d:%02d', floor( $elapsed / 60 ), $elapsed % 60 );
+
+		// Estimated completion time per test type, when known.
+		$estimated_times = [
+			'activation'       => 210,
+			'malware'          => 90,
+			'phpcompatibility' => 90,
+			'phpstan'          => 120,
+			'plugin-check'     => 90,
+			'security'         => 90,
+			'validation'       => 90,
+			'woo-api'          => 180,
+			'woo-e2e'          => 2100,
+		];
+		if ( isset( $result['test_type'], $estimated_times[ $result['test_type'] ] ) ) {
+			$estimated     = $estimated_times[ $result['test_type'] ];
+			$elapsed_info .= sprintf( ' (estimated: ~%d:%02d)', floor( $estimated / 60 ), $estimated % 60 );
+		}
+
+		$section->writeln( '<info>' . $elapsed_info . '</info>' );
+
+		$section->writeln( '' );
+		if ( extension_loaded( 'pcntl' ) ) {
+			$section->writeln( '<comment>Press Ctrl+C to stop waiting (test continues running)</comment>' );
+		} else {
+			$section->writeln( sprintf( '<comment>Press Ctrl+C to stop waiting. If interrupted, check results with: qit get %d</comment>', $test_run_id ) );
 		}
 	}
 
@@ -457,15 +508,33 @@ class RemoteTestRunner {
 
 		if ( ! $is_ci && $section ) {
 			$total_elapsed = time() - $start;
+			$total_min     = floor( $total_elapsed / 60 );
+			$total_sec     = $total_elapsed % 60;
+
 			$output->writeln( '' );
-			$output->writeln( sprintf( '<comment>Test completed in %dm %ds</comment>', floor( $total_elapsed / 60 ), $total_elapsed % 60 ) );
+			if ( $last_status === 'success' ) {
+				$output->writeln( sprintf( '<info>✅ Test completed successfully in %dm %ds</info>', $total_min, $total_sec ) );
+			} elseif ( $last_status === 'failed' ) {
+				$output->writeln( sprintf( '<error>❌ Test failed after %dm %ds</error>', $total_min, $total_sec ) );
+			} else {
+				$output->writeln( sprintf( '<comment>Test completed in %dm %ds</comment>', $total_min, $total_sec ) );
+			}
 			return;
 		}
 
 		$output->writeln( '<info>Test completed.</info>' );
 		$output->writeln( '' );
 		$output->writeln( sprintf( '<comment>Test ID:</comment> %d', $test_run_id ) );
-		$output->writeln( '<comment>Status:</comment> ' . $last_status );
+
+		$status_display = $last_status;
+		if ( $last_status === 'success' ) {
+			$status_display = '<info>' . $last_status . '</info>';
+		} elseif ( $last_status === 'failed' ) {
+			$status_display = '<error>' . $last_status . '</error>';
+		} elseif ( $last_status === 'warning' ) {
+			$status_display = '<comment>' . $last_status . '</comment>';
+		}
+		$output->writeln( '<comment>Status:</comment> ' . $status_display );
 
 		if ( $last_result && isset( $last_result['test_summary'] ) && ! empty( $last_result['test_summary'] ) ) {
 			$output->writeln( '<comment>Summary:</comment> ' . $last_result['test_summary'] );
@@ -486,10 +555,10 @@ class RemoteTestRunner {
 	 * @param bool                $print_report_url Whether to print the report URL.
 	 */
 	private function render_start_table( OutputInterface $output, array $response, bool $print_report_url = false ): void {
-		$output->writeln( '<info>Test enqueued successfully</info>' );
+		$output->writeln( '<info>✓ Test enqueued successfully</info>' );
 		$output->writeln( '' );
 
-		$test_run_id = $response['test_run_id'] ?? '-';
+		$test_run_id = $response['test_run_id'] ?? '–';
 		$output->writeln( '<comment>Test ID:</comment> ' . $test_run_id );
 
 		if ( $print_report_url && isset( $response['test_results_manager_url'] ) ) {

@@ -359,6 +359,66 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 	}
 
 	/**
+	 * The completion summary must keep distinguishing success from failure.
+	 * (Guards against the refactor collapsing both into a generic
+	 * "Test completed" message. ApplicationTester output is not a console
+	 * section, so this exercises the non-interactive branch, which shares the
+	 * same status switch as the interactive one.)
+	 */
+	public function test_remote_run_completion_reports_success(): void {
+		$display = $this->run_remote_waiting_command( 'success' );
+
+		$this->assertStringContainsString( 'Test completed.', $display );
+		$this->assertStringContainsString( 'success', $display );
+	}
+
+	public function test_remote_run_completion_reports_failure(): void {
+		$display = $this->run_remote_waiting_command( 'failed', Command::FAILURE );
+
+		$this->assertStringContainsString( 'Test completed.', $display );
+		$this->assertStringContainsString( 'failed', $display );
+	}
+
+	/**
+	 * Drive run:woo-api through the live enqueue + poll path (no QIT_SELF_TEST
+	 * short-circuit) with mocked Manager responses, and return the display.
+	 */
+	private function run_remote_waiting_command( string $status, int $expected_exit = Command::SUCCESS ): string {
+		$test_run_id = 4242;
+
+		App::setVar(
+			sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/enqueue-woo-api' ),
+			json_encode( [ 'test_run_id' => $test_run_id ] )
+		);
+		App::setVar(
+			sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/get-single' ),
+			json_encode( [
+				'test_run_id'     => $test_run_id,
+				'update_complete' => true,
+				'status'          => $status,
+			] )
+		);
+
+		try {
+			$application = $this->make_application_tester( function ( $application ) {
+				$application->add( App::make( \QIT_CLI\Commands\RunWooApiTestCommand::class ) );
+			} );
+			$exit_code   = $application->run( [
+				'command'         => 'run:woo-api',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+			] );
+		} finally {
+			App::setVar( sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/enqueue-woo-api' ), null );
+			App::setVar( sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/get-single' ), null );
+		}
+
+		$this->assertSame( $expected_exit, $exit_code, $application->getDisplay() );
+
+		return $application->getDisplay();
+	}
+
+	/**
 	 * A minimal object that exposes the trait's protected resolver for testing.
 	 */
 	private function make_resolver(): object {
