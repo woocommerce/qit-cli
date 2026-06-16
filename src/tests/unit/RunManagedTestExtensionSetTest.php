@@ -182,23 +182,6 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		$this->assertArrayNotHasKey( 'zip', $options );
 	}
 
-	public function test_extension_set_announces_remote_mode_for_human_output(): void {
-		putenv( 'QIT_SELF_TEST=remote_test' );
-		try {
-			$application = $this->make_application_tester();
-			$exit_code   = $application->run( [
-				'command'         => 'run:woo-api',
-				'sut'             => 'woocommerce',
-				'--extension_set' => 'test-set',
-			] );
-		} finally {
-			putenv( 'QIT_SELF_TEST' );
-		}
-
-		$this->assertSame( Command::SUCCESS, $exit_code, $application->getDisplay() );
-		$this->assertStringContainsString( '--extension_set detected; running this managed test on QIT servers.', $application->getDisplay() );
-	}
-
 	public function test_woo_e2e_extension_set_uses_remote_payload(): void {
 		$options = $this->run_remote_payload_command( [
 			'command'         => 'run:woo-e2e',
@@ -438,11 +421,18 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		$this->assertStringContainsString( 'failed', $display );
 	}
 
+	public function test_remote_run_completion_prints_report_url_when_requested(): void {
+		$display = $this->run_remote_waiting_command( 'success', Command::SUCCESS, true );
+
+		$this->assertStringContainsString( 'Report URL:', $display );
+		$this->assertStringContainsString( 'https://qit.test/results/4242', $display );
+	}
+
 	/**
 	 * Drive run:woo-api through the live enqueue + poll path (no QIT_SELF_TEST
 	 * short-circuit) with mocked Manager responses, and return the display.
 	 */
-	private function run_remote_waiting_command( string $status, int $expected_exit = Command::SUCCESS ): string {
+	private function run_remote_waiting_command( string $status, int $expected_exit = Command::SUCCESS, bool $print_report_url = false ): string {
 		$test_run_id = 4242;
 
 		App::setVar(
@@ -452,9 +442,10 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		App::setVar(
 			sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/get-single' ),
 			json_encode( [
-				'test_run_id'     => $test_run_id,
-				'update_complete' => true,
-				'status'          => $status,
+				'test_run_id'              => $test_run_id,
+				'update_complete'          => true,
+				'status'                   => $status,
+				'test_results_manager_url' => 'https://qit.test/results/4242',
 			] )
 		);
 
@@ -463,9 +454,10 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 				$application->add( App::make( \QIT_CLI\Commands\RunWooApiTestCommand::class ) );
 			} );
 			$exit_code   = $application->run( [
-				'command'         => 'run:woo-api',
-				'sut'             => 'woocommerce',
-				'--extension_set' => 'test-set',
+				'command'            => 'run:woo-api',
+				'sut'                => 'woocommerce',
+				'--extension_set'    => 'test-set',
+				'--print-report-url' => $print_report_url,
 			] );
 		} finally {
 			App::setVar( sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/enqueue-woo-api' ), null );

@@ -110,10 +110,6 @@ trait ExtensionSetTrait {
 			return $unsupported_options_error;
 		}
 
-		if ( ! $input->getOption( 'json' ) ) {
-			$output->writeln( '<comment>--extension_set detected; running this managed test on QIT servers.</comment>' );
-		}
-
 		return $runner->execute(
 			$this->get_qit_command_for_remote_runner(),
 			$remote_test_type,
