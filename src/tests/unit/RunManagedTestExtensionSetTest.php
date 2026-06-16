@@ -92,6 +92,45 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		$this->assertStringContainsString( 'Unknown extension set "does-not-exist"', $output->fetch() );
 	}
 
+	public function test_activation_extension_set_uses_remote_payload(): void {
+		$options = $this->run_remote_payload_command( [
+			'command'         => 'run:activation',
+			'sut'             => 'woocommerce',
+			'--extension_set' => 'test-set',
+			'--json'          => true,
+		] );
+
+		$this->assertSame( 'test-set', $options['extension_set'] );
+		$this->assertSame( 123456, $options['woo_id'] );
+		$this->assertSame( 'cli_published_extension_test', $options['event'] );
+		$this->assertArrayNotHasKey( 'plugin', $options );
+	}
+
+	public function test_activation_extension_set_with_zip_uses_development_payload(): void {
+		$zip_path = $this->write_plugin_zip();
+		$this->mock_upload_response( 'upload-activation' );
+		App::setVar( 'QIT_JSON_MODE', true );
+
+		try {
+			$options = $this->run_remote_payload_command( [
+				'command'         => 'run:activation',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--zip'           => $zip_path,
+				'--json'          => true,
+			] );
+		} finally {
+			App::setVar( 'QIT_JSON_MODE', null );
+			unlink( $zip_path );
+		}
+
+		$this->assertSame( 'test-set', $options['extension_set'] );
+		$this->assertSame( 123456, $options['woo_id'] );
+		$this->assertSame( 'upload-activation', $options['upload_id'] );
+		$this->assertSame( 'cli_development_extension_test', $options['event'] );
+		$this->assertArrayNotHasKey( 'zip', $options );
+	}
+
 	public function test_woo_api_extension_set_uses_remote_payload(): void {
 		$options = $this->run_remote_payload_command( [
 			'command'         => 'run:woo-api',
@@ -157,7 +196,7 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		}
 
 		$this->assertSame( Command::SUCCESS, $exit_code, $application->getDisplay() );
-		$this->assertStringContainsString( '--extension_set detected; running this Woo API/E2E test on QIT servers.', $application->getDisplay() );
+		$this->assertStringContainsString( '--extension_set detected; running this managed test on QIT servers.', $application->getDisplay() );
 	}
 
 	public function test_woo_e2e_extension_set_uses_remote_payload(): void {
@@ -297,6 +336,26 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 				'sut'             => 'woocommerce',
 				'--extension_set' => 'test-set',
 				'--test-package'  => [ 'woocommerce/core-api-tests:latest' ],
+				'--json'          => true,
+			] );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'local-only option', $application->getDisplay() );
+		$this->assertStringContainsString( '--test-package', $application->getDisplay() );
+	}
+
+	public function test_activation_extension_set_rejects_local_only_options(): void {
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester();
+			$exit_code   = $application->run( [
+				'command'         => 'run:activation',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--test-package'  => [ 'woocommerce/activation:latest' ],
 				'--json'          => true,
 			] );
 		} finally {
@@ -450,6 +509,10 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		putenv( 'QIT_SELF_TEST=remote_test' );
 		try {
 			$application = $this->make_application_tester( function ( $application ) use ( $input ) {
+				if ( ( $input['command'] ?? '' ) === 'run:activation' ) {
+					$application->add( App::make( \QIT_CLI\Commands\RunActivationTestCommand::class ) );
+				}
+
 				if ( ( $input['command'] ?? '' ) === 'run:woo-api' ) {
 					$application->add( App::make( \QIT_CLI\Commands\RunWooApiTestCommand::class ) );
 				}

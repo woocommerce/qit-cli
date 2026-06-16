@@ -111,7 +111,7 @@ trait ExtensionSetTrait {
 		}
 
 		if ( ! $input->getOption( 'json' ) ) {
-			$output->writeln( '<comment>--extension_set detected; running this Woo API/E2E test on QIT servers.</comment>' );
+			$output->writeln( '<comment>--extension_set detected; running this managed test on QIT servers.</comment>' );
 		}
 
 		return $runner->execute(
@@ -197,7 +197,7 @@ trait ExtensionSetTrait {
 		}
 
 		$output->writeln( sprintf(
-			'<error>--extension_set runs Woo API/E2E compatibility-set tests on QIT servers and cannot be combined with local-only option(s): %s.</error>',
+			'<error>--extension_set runs managed compatibility-set tests on QIT servers and cannot be combined with local-only option(s): %s.</error>',
 			implode( ', ', array_unique( $provided ) )
 		) );
 
