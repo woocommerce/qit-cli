@@ -226,8 +226,8 @@ $configPath,
 
 	public function test_woo_e2e_with_version_options(): void {
 		$raw = qit_run_remote_test( [
-'run:woo-e2e',
-'woocommerce',
+	'run:woo-e2e',
+	'woocommerce',
 '--wordpress_version',
 '6.2',
 '--woocommerce_version',
@@ -248,6 +248,145 @@ $configPath,
 		$this->assertEquals( 'cli_published_extension_test', $options['event'] );
 
 		$this->assertMatchesRemoteTestSnapshot( $options );
+	}
+
+	public function test_woo_api_extension_set_uses_remote_payload(): void {
+		$raw = qit_run_remote_test( [
+	'run:woo-api',
+	'woocommerce',
+	'--extension_set',
+	'compatibility',
+	] );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( 'compatibility', $options['extension_set'] );
+		$this->assertEquals( 'cli_published_extension_test', $options['event'] );
+		$this->assertArrayHasKey( 'woo_id', $options );
+		$this->assertArrayNotHasKey( 'plugin', $options, 'Extension sets should not be expanded into local plugin options for remote fallback.' );
+	}
+
+	public function test_woo_api_extension_set_with_zip_uses_development_event(): void {
+		$zipPath = __DIR__ . '/../../data/plugins/my-plugin.zip';
+		$this->assertFileExists( $zipPath, 'Test plugin ZIP should exist in test data' );
+
+		$raw = qit_run_remote_test( [
+	'run:woo-api',
+	'woocommerce',
+	'--extension_set',
+	'compatibility',
+	'--zip',
+	$zipPath,
+	] );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( 'compatibility', $options['extension_set'] );
+		$this->assertEquals( 'cli_development_extension_test', $options['event'] );
+		$this->assertArrayHasKey( 'upload_id', $options );
+		$this->assertArrayNotHasKey( 'zip', $options );
+	}
+
+	public function test_woo_e2e_extension_set_uses_remote_payload(): void {
+		$raw = qit_run_remote_test( [
+	'run:woo-e2e',
+	'woocommerce',
+	'--extension_set',
+	'compatibility',
+	] );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( 'compatibility', $options['extension_set'] );
+		$this->assertEquals( 'cli_published_extension_test', $options['event'] );
+		$this->assertArrayHasKey( 'woo_id', $options );
+		$this->assertArrayNotHasKey( 'plugin', $options, 'Extension sets should not be expanded into local plugin options for remote fallback.' );
+	}
+
+	public function test_woo_e2e_extension_set_with_zip_uses_development_event(): void {
+		$zipPath = __DIR__ . '/../../data/plugins/my-plugin.zip';
+		$this->assertFileExists( $zipPath, 'Test plugin ZIP should exist in test data' );
+
+		$raw = qit_run_remote_test( [
+	'run:woo-e2e',
+	'woocommerce',
+	'--extension_set',
+	'compatibility',
+	'--zip',
+	$zipPath,
+	] );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( 'compatibility', $options['extension_set'] );
+		$this->assertEquals( 'cli_development_extension_test', $options['event'] );
+		$this->assertArrayHasKey( 'upload_id', $options );
+		$this->assertArrayNotHasKey( 'zip', $options );
+	}
+
+	public function test_woo_e2e_extension_set_prefers_woo_e2e_profile(): void {
+		$config = [
+			'test_types' => [
+				'e2e'     => [
+					'default' => [
+						'wordpress_version' => '6.2',
+					],
+				],
+				'woo-e2e' => [
+					'default' => [
+						'wordpress_version' => '6.4.5',
+					],
+				],
+			],
+		];
+
+		$raw = qit_run_remote_test( [
+	'run:woo-e2e',
+	'woocommerce',
+	'--extension_set',
+	'compatibility',
+	], $config );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( '6.4.5', $options['wordpress_version'] );
+	}
+
+	public function test_woo_e2e_extension_set_falls_back_to_e2e_profile(): void {
+		$config = [
+			'test_types' => [
+				'e2e' => [
+					'default' => [
+						'wordpress_version' => '6.2',
+					],
+				],
+			],
+		];
+
+		$raw = qit_run_remote_test( [
+	'run:woo-e2e',
+	'woocommerce',
+	'--extension_set',
+	'compatibility',
+	], $config );
+
+		$options = json_decode( $raw, true );
+
+		$this->assertEquals( '6.2', $options['wordpress_version'] );
+	}
+
+	public function test_extension_set_remote_fallback_rejects_local_only_options(): void {
+		$raw = qit_run_remote_test( [
+	'run:woo-api',
+	'woocommerce',
+	'--extension_set',
+	'compatibility',
+	'--test-package',
+	'woocommerce/core-api-tests:latest',
+	], [], 2 );
+
+		$this->assertStringContainsString( 'local-only option', $raw );
+		$this->assertStringContainsString( '--test-package', $raw );
 	}
 
 	public function test_security_test_basic_options(): void {

@@ -3,6 +3,9 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\Commands\ExtensionSetTrait;
+use QIT_CLI\App;
+use QIT_CLI\Cache;
+use QIT_CLI\ManagerSync;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -89,6 +92,272 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		$this->assertStringContainsString( 'Unknown extension set "does-not-exist"', $output->fetch() );
 	}
 
+	public function test_woo_api_extension_set_uses_remote_payload(): void {
+		$options = $this->run_remote_payload_command( [
+			'command'         => 'run:woo-api',
+			'sut'             => 'woocommerce',
+			'--extension_set' => 'test-set',
+			'--json'          => true,
+		] );
+
+		$this->assertSame( 'test-set', $options['extension_set'] );
+		$this->assertSame( 123456, $options['woo_id'] );
+		$this->assertSame( 'cli_published_extension_test', $options['event'] );
+		$this->assertArrayNotHasKey( 'plugin', $options );
+	}
+
+	public function test_woo_api_extension_set_allows_schema_options(): void {
+		$options = $this->run_remote_payload_command( [
+			'command'             => 'run:woo-api',
+			'sut'                 => 'woocommerce',
+			'--extension_set'     => 'test-set',
+			'--optional_features' => [ 'hpos' ],
+			'--json'              => true,
+		] );
+
+		$this->assertSame( [ 'hpos' ], $options['optional_features'] );
+	}
+
+	public function test_woo_api_extension_set_with_zip_uses_development_payload(): void {
+		$zip_path = $this->write_plugin_zip();
+		$this->mock_upload_response( 'upload-woo-api' );
+		App::setVar( 'QIT_JSON_MODE', true );
+
+		try {
+			$options = $this->run_remote_payload_command( [
+				'command'         => 'run:woo-api',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--zip'           => $zip_path,
+				'--json'          => true,
+			] );
+		} finally {
+			App::setVar( 'QIT_JSON_MODE', null );
+			unlink( $zip_path );
+		}
+
+		$this->assertSame( 'test-set', $options['extension_set'] );
+		$this->assertSame( 123456, $options['woo_id'] );
+		$this->assertSame( 'upload-woo-api', $options['upload_id'] );
+		$this->assertSame( 'cli_development_extension_test', $options['event'] );
+		$this->assertArrayNotHasKey( 'zip', $options );
+	}
+
+	public function test_extension_set_announces_remote_mode_for_human_output(): void {
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester();
+			$exit_code   = $application->run( [
+				'command'         => 'run:woo-api',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+			] );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::SUCCESS, $exit_code, $application->getDisplay() );
+		$this->assertStringContainsString( '--extension_set detected; running this Woo API/E2E test on QIT servers.', $application->getDisplay() );
+	}
+
+	public function test_woo_e2e_extension_set_uses_remote_payload(): void {
+		$options = $this->run_remote_payload_command( [
+			'command'         => 'run:woo-e2e',
+			'sut'             => 'woocommerce',
+			'--extension_set' => 'test-set',
+			'--json'          => true,
+		] );
+
+		$this->assertSame( 'test-set', $options['extension_set'] );
+		$this->assertSame( 123456, $options['woo_id'] );
+		$this->assertSame( 'cli_published_extension_test', $options['event'] );
+		$this->assertArrayNotHasKey( 'plugin', $options );
+	}
+
+	public function test_woo_e2e_extension_set_with_zip_uses_development_payload(): void {
+		$zip_path = $this->write_plugin_zip();
+		$this->mock_upload_response( 'upload-woo-e2e' );
+		App::setVar( 'QIT_JSON_MODE', true );
+
+		try {
+			$options = $this->run_remote_payload_command( [
+				'command'         => 'run:woo-e2e',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--zip'           => $zip_path,
+				'--json'          => true,
+			] );
+		} finally {
+			App::setVar( 'QIT_JSON_MODE', null );
+			unlink( $zip_path );
+		}
+
+		$this->assertSame( 'test-set', $options['extension_set'] );
+		$this->assertSame( 123456, $options['woo_id'] );
+		$this->assertSame( 'upload-woo-e2e', $options['upload_id'] );
+		$this->assertSame( 'cli_development_extension_test', $options['event'] );
+		$this->assertArrayNotHasKey( 'zip', $options );
+	}
+
+	public function test_woo_api_extension_set_uses_explicit_environment_config(): void {
+		$config_path = $this->write_config( [
+			'environments' => [
+				'remote-env' => [
+					'wordpress_version' => '6.6.1',
+					'php_version'       => '8.3',
+				],
+			],
+			'test_types'   => [
+				'woo-api' => [
+					'default' => [],
+				],
+			],
+		] );
+
+		try {
+			$options = $this->run_remote_payload_command( [
+				'command'         => 'run:woo-api',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--environment'   => 'remote-env',
+				'--config'        => $config_path,
+				'--json'          => true,
+			] );
+		} finally {
+			unlink( $config_path );
+		}
+
+		$this->assertSame( '6.6.1', $options['wordpress_version'] );
+		$this->assertSame( '8.3', $options['php_version'] );
+	}
+
+	public function test_woo_e2e_extension_set_prefers_woo_e2e_profile(): void {
+		$config_path = $this->write_config( [
+			'test_types' => [
+				'e2e'     => [
+					'default' => [
+						'wordpress_version' => '6.5.5',
+					],
+				],
+				'woo-e2e' => [
+					'default' => [
+						'wordpress_version' => '6.4.5',
+					],
+				],
+			],
+		] );
+
+		try {
+			$options = $this->run_remote_payload_command( [
+				'command'         => 'run:woo-e2e',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--config'        => $config_path,
+				'--json'          => true,
+			] );
+		} finally {
+			unlink( $config_path );
+		}
+
+		$this->assertSame( '6.4.5', $options['wordpress_version'] );
+	}
+
+	public function test_woo_e2e_extension_set_falls_back_to_e2e_profile(): void {
+		$config_path = $this->write_config( [
+			'test_types' => [
+				'e2e' => [
+					'default' => [
+						'wordpress_version' => '6.5.5',
+					],
+				],
+			],
+		] );
+
+		try {
+			$options = $this->run_remote_payload_command( [
+				'command'         => 'run:woo-e2e',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--config'        => $config_path,
+				'--json'          => true,
+			] );
+		} finally {
+			unlink( $config_path );
+		}
+
+		$this->assertSame( '6.5.5', $options['wordpress_version'] );
+	}
+
+	public function test_woo_api_extension_set_rejects_local_only_options(): void {
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester();
+			$exit_code   = $application->run( [
+				'command'         => 'run:woo-api',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--test-package'  => [ 'woocommerce/core-api-tests:latest' ],
+				'--json'          => true,
+			] );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'local-only option', $application->getDisplay() );
+		$this->assertStringContainsString( '--test-package', $application->getDisplay() );
+	}
+
+	public function test_woo_api_extension_set_rejects_unknown_remote_options(): void {
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester();
+			$exit_code   = $application->run( [
+				'command'         => 'run:woo-api',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--notify'        => true,
+				'--json'          => true,
+			] );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'local-only option', $application->getDisplay() );
+		$this->assertStringContainsString( '--notify', $application->getDisplay() );
+	}
+
+	public function test_woo_api_extension_set_fails_when_remote_schema_is_missing(): void {
+		$cache              = App::make( Cache::class );
+		$manager_sync       = App::make( ManagerSync::class );
+		$bootstrap_key      = $manager_sync->get_cache_key_for( 'schemas' );
+		$original_bootstrap = $cache->get( $bootstrap_key );
+
+		$this->assertIsArray( $original_bootstrap );
+
+		$mutated_bootstrap = $original_bootstrap;
+		unset( $mutated_bootstrap['schemas']['woo-api'] );
+		$cache->set( $bootstrap_key, $mutated_bootstrap, 0 );
+
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester();
+			$exit_code   = $application->run( [
+				'command'         => 'run:woo-api',
+				'sut'             => 'woocommerce',
+				'--extension_set' => 'test-set',
+				'--json'          => true,
+			] );
+		} finally {
+			$cache->set( $bootstrap_key, $original_bootstrap, 0 );
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::FAILURE, $exit_code );
+		$this->assertStringContainsString( 'Could not load Manager schema for test type "woo-api"', $application->getDisplay() );
+	}
+
 	/**
 	 * A minimal object that exposes the trait's protected resolver for testing.
 	 */
@@ -111,5 +380,69 @@ class RunManagedTestExtensionSetTest extends QITTestCase {
 		$definition->addOption( new InputOption( 'plugin', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, '', [] ) );
 
 		return new QITInput( new ArrayInput( $cli_options, $definition ), [], 'e2e' );
+	}
+
+	/**
+	 * @param array<string,mixed> $input
+	 * @return array<string,mixed>
+	 */
+	private function run_remote_payload_command( array $input ): array {
+		putenv( 'QIT_SELF_TEST=remote_test' );
+		try {
+			$application = $this->make_application_tester( function ( $application ) use ( $input ) {
+				if ( ( $input['command'] ?? '' ) === 'run:woo-api' ) {
+					$application->add( App::make( \QIT_CLI\Commands\RunWooApiTestCommand::class ) );
+				}
+
+				if ( ( $input['command'] ?? '' ) === 'run:woo-e2e' ) {
+					$application->add( App::make( \QIT_CLI\Commands\RunWooE2ETestCommand::class ) );
+				}
+			} );
+			$exit_code   = $application->run( $input );
+		} finally {
+			putenv( 'QIT_SELF_TEST' );
+		}
+
+		$this->assertSame( Command::SUCCESS, $exit_code, $application->getDisplay() );
+
+		$decoded = json_decode( $application->getDisplay(), true );
+		$this->assertIsArray( $decoded );
+
+		return $decoded;
+	}
+
+	/**
+	 * @param array<string,mixed> $config
+	 */
+	private function write_config( array $config ): string {
+		$config_path = tempnam( sys_get_temp_dir(), 'qit_config_' );
+		if ( $config_path === false ) {
+			$this->fail( 'Could not create temporary qit config.' );
+		}
+
+		file_put_contents( $config_path, json_encode( $config ) );
+
+		return $config_path;
+	}
+
+	private function mock_upload_response( string $upload_id ): void {
+		App::setVar(
+			sprintf( 'mock_%s%s', \QIT_CLI\get_manager_url(), '/wp-json/cd/v1/upload-build' ),
+			json_encode( [ 'upload_id' => $upload_id ] )
+		);
+	}
+
+	private function write_plugin_zip(): string {
+		$zip_path = tempnam( sys_get_temp_dir(), 'qit_plugin_zip_' );
+		if ( $zip_path === false ) {
+			$this->fail( 'Could not create temporary plugin zip.' );
+		}
+
+		$written = file_put_contents( $zip_path, $this->createMinimalPluginZip( 'test-plugin', '1.0.0' ) );
+		if ( $written === false ) {
+			$this->fail( 'Could not write temporary plugin zip.' );
+		}
+
+		return $zip_path;
 	}
 }
