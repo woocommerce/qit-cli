@@ -26,6 +26,11 @@ class RunWooApiTestCommand extends RunE2ECommand {
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
+		$remote_result = $this->run_remote_extension_set_if_provided( $input, $output, 'woo-api' );
+		if ( $remote_result !== null ) {
+			return $remote_result;
+		}
+
 		$extension_set_error = $this->resolve_extension_set( $input, $output );
 		if ( $extension_set_error !== null ) {
 			return $extension_set_error;

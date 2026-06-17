@@ -37,6 +37,11 @@ class RunActivationTestCommand extends RunE2ECommand {
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		/** @var \QIT_CLI\QITInput $input */
 
+		$remote_result = $this->run_remote_extension_set_if_provided( $input, $output, 'activation' );
+		if ( $remote_result !== null ) {
+			return $remote_result;
+		}
+
 		/* ─ special path for unit‑tests that only inspect config parsing ─ */
 		if ( getenv( 'QIT_SELF_TEST' ) === 'remote_test' ) {
 			$profile_cfg = $this->get_current_test_profile( $this->test_type, $this->get_test_profile() );

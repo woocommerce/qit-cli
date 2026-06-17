@@ -95,6 +95,12 @@ abstract class QITCommand extends Command {
 		return $this->config;
 	}
 
+	public function has_test_type_config( string $test_type ): bool {
+		$config = $this->get_resolved_config();
+
+		return isset( $config['test_types'][ $test_type ] );
+	}
+
 	/**
 	 * Get config file path from options or default location.
 	 */
