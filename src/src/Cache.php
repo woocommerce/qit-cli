@@ -144,6 +144,19 @@ class Cache {
 
 		$bucket_data = $this->get( $cache_key );
 
+		/*
+		 * The bucket can be pruned mid-process when slow setup steps (e.g. cold-CI
+		 * package download, npm install, Playwright browser install) push the elapsed
+		 * time past the bootstrap cache TTL between the startup sync and this read.
+		 * Re-sync once and retry before giving up. Non-forced on purpose: the entry is
+		 * already gone, so sync() will re-fetch it, and we avoid needlessly busting the
+		 * extensions cache or hitting the network when a key is genuinely absent.
+		 */
+		if ( ! is_array( $bucket_data ) ) {
+			$manager_sync->maybe_sync();
+			$bucket_data = $this->get( $cache_key );
+		}
+
 		if ( ! is_array( $bucket_data ) ) {
 			throw new \UnexpectedValueException( "The manager sync data bucket for '$key' is not available." );
 		}
