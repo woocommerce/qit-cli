@@ -107,12 +107,7 @@ class ExtensionSummary {
 	 */
 	private function get_installed_themes( E2EEnvInfo $info ): array {
 		try {
-			$reflection      = new \ReflectionClass( $this->e2e_environment );
-			$docker_property = $reflection->getProperty( 'docker' );
-			$docker_property->setAccessible( true );
-			$docker = $docker_property->getValue( $this->e2e_environment );
-
-			$output = $docker->run_inside_docker(
+			$output = $this->e2e_environment->get_docker()->run_inside_docker(
 				$info,
 				[ 'wp', 'theme', 'list', '--fields=name,status,version', '--format=json' ],
 				[ 'WP_CLI_ALLOW_ROOT' => 'true' ],
@@ -149,13 +144,7 @@ class ExtensionSummary {
 	 */
 	private function get_plugin_status( E2EEnvInfo $info, string $plugin_slug ): string {
 		try {
-			// Access the docker property through reflection since it's protected
-			$reflection      = new \ReflectionClass( $this->e2e_environment );
-			$docker_property = $reflection->getProperty( 'docker' );
-			$docker_property->setAccessible( true );
-			$docker = $docker_property->getValue( $this->e2e_environment );
-
-			$output = $docker->run_inside_docker(
+			$output = $this->e2e_environment->get_docker()->run_inside_docker(
 				$info,
 				[ 'wp', 'plugin', 'is-active', $plugin_slug ],
 				[ 'WP_CLI_ALLOW_ROOT' => 'true' ],
@@ -177,13 +166,7 @@ class ExtensionSummary {
 	 */
 	private function get_plugin_version( E2EEnvInfo $info, string $plugin_slug ): string {
 		try {
-			// Access the docker property through reflection since it's protected
-			$reflection      = new \ReflectionClass( $this->e2e_environment );
-			$docker_property = $reflection->getProperty( 'docker' );
-			$docker_property->setAccessible( true );
-			$docker = $docker_property->getValue( $this->e2e_environment );
-
-			$output = $docker->run_inside_docker(
+			$output = $this->e2e_environment->get_docker()->run_inside_docker(
 				$info,
 				[ 'wp', 'plugin', 'get', $plugin_slug, '--field=version' ],
 				[ 'WP_CLI_ALLOW_ROOT' => 'true' ],

@@ -354,13 +354,22 @@ class RequestBuilder {
 		$result     = curl_exec( $curl );
 		$curl_error = curl_error( $curl );
 
-		// Extract header size and separate headers from body.
-		$header_size = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
-		$headers     = substr( $result, 0, $header_size );
-		$body        = substr( $result, $header_size );
+		if ( $result === false ) {
+			// Network error: there is no response to parse. The error handling below
+			// reports it via $curl_error and the unexpected status code (0).
+			$headers = '';
+			$body    = '';
+		} else {
+			// Extract header size and separate headers from body.
+			$header_size = curl_getinfo( $curl, CURLINFO_HEADER_SIZE );
+			$headers     = substr( $result, 0, $header_size );
+			$body        = substr( $result, $header_size );
+		}
 
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-		curl_close( $curl );
+
+		// Not closing the cURL handle: doing so is a no-op since PHP 8.0 and deprecated in 8.5; on 7.4 the handle is freed when $curl goes out of scope.
+		unset( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
 			if ( $proxied && $result === false ) {
@@ -546,7 +555,9 @@ class RequestBuilder {
 			$output->writeln( sprintf( 'Downloaded %s in %f seconds.', $url, microtime( true ) - $start ) );
 		}
 		$curl_error = curl_error( $curl );
-		curl_close( $curl );
+
+		// Not closing the cURL handle: doing so is a no-op since PHP 8.0 and deprecated in 8.5; on 7.4 the handle is freed when $curl goes out of scope.
+		unset( $curl );
 		fclose( $fp );
 
 		if ( $curl_error ) {

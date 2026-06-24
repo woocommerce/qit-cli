@@ -72,6 +72,10 @@ abstract class Environment {
 
 	abstract public function get_name(): string;
 
+	public function get_docker(): Docker {
+		return $this->docker;
+	}
+
 	public function init( EnvInfo $env_info ): void {
 		$this->env_info = $env_info;
 

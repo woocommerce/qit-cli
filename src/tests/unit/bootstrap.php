@@ -24,13 +24,17 @@ echo "Done.\n";
 define( 'UNIT_TESTS', true );
 
 function qit_tests_reset_config_dir() {
-	exec( 'rm -rf /tmp/.woo-qit-tests' );
+	// Must match the QIT_HOME set below. On macOS, sys_get_temp_dir() is not "/tmp",
+	// so hardcoding "/tmp/.woo-qit-tests" here would leak state between test runs.
+	$config_dir = sys_get_temp_dir() . '/.woo-qit-tests';
 
-	if ( ! mkdir( '/tmp/.woo-qit-tests' ) ) {
+	exec( sprintf( 'rm -rf %s', escapeshellarg( $config_dir ) ) );
+
+	if ( ! mkdir( $config_dir ) ) {
 		throw new RuntimeException( 'Could not create config dir for tests..' );
 	}
 
-	if ( ! mkdir( '/tmp/.woo-qit-tests/environments' ) ) {
+	if ( ! mkdir( $config_dir . '/environments' ) ) {
 		throw new RuntimeException( 'Could not create environments dir for tests.' );
 	}
 
@@ -38,7 +42,7 @@ function qit_tests_reset_config_dir() {
 		throw new RuntimeException( 'Could not find e2e environment for tests.' );
 	}
 
-	if ( ! copy( __DIR__ . '/data/environments/e2e.zip', '/tmp/.woo-qit-tests/environments/e2e.zip' ) ) {
+	if ( ! copy( __DIR__ . '/data/environments/e2e.zip', $config_dir . '/environments/e2e.zip' ) ) {
 		throw new RuntimeException( 'Could not copy e2e environment for tests.' );
 	}
 }

@@ -2,7 +2,6 @@
 
 namespace QIT_CLI;
 
-use ReflectionProperty;
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -33,10 +32,20 @@ trait OptionReuseTrait {
 			);
 		}
 
-		// Using reflection to access the 'mode' private property of the option.
-		$reflected_option = new ReflectionProperty( InputOption::class, 'mode' );
-		$reflected_option->setAccessible( true );
-		$mode = $reflected_option->getValue( $option );
+		// Reconstruct the option's "mode" bitmask from the public API.
+		if ( ! $option->acceptValue() ) {
+			$mode = InputOption::VALUE_NONE;
+		} else {
+			$mode = $option->isValueRequired() ? InputOption::VALUE_REQUIRED : InputOption::VALUE_OPTIONAL;
+
+			if ( $option->isArray() ) {
+				$mode |= InputOption::VALUE_IS_ARRAY;
+			}
+		}
+
+		if ( $option->isNegatable() ) {
+			$mode |= InputOption::VALUE_NEGATABLE;
+		}
 
 		if ( $mode === InputOption::VALUE_NONE ) {
 			$default = null;
