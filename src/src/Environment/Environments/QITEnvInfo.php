@@ -72,4 +72,7 @@ abstract class QITEnvInfo extends EnvInfo {
 
 	/** @var array<string,mixed> System under test information (slug, type, entrypoint, path, id) */
 	public array $sut = [];
+
+	/** @var array<string> WP-CLI commands to run during environment setup (from blueprint). */
+	public array $setup_commands = [];
 }

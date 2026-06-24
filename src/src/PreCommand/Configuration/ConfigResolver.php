@@ -4,6 +4,7 @@ namespace QIT_CLI\PreCommand\Configuration;
 
 use Opis\JsonSchema\{Errors\ErrorFormatter, Validator};
 use QIT_CLI\App;
+use QIT_CLI\Blueprint\BlueprintTranslator;
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\PreCommand\Objects\Extension;
 use Symfony\Component\Filesystem\Path;
@@ -54,6 +55,9 @@ class ConfigResolver {
 
 		// Apply default fallbacks
 		$config = $this->apply_defaults( $config );
+
+		// Resolve blueprints into environment configs
+		$config = $this->resolve_blueprints( $config, $config_file );
 
 		// Resolve extends chains
 		$config = $this->resolve_all_extends( $config );
@@ -138,6 +142,77 @@ class ConfigResolver {
 	}
 
 	/**
+	 * Resolve blueprint references in environments.
+	 *
+	 * For any environment with a "blueprint" property, reads the blueprint JSON,
+	 * translates it into a QIT env config via BlueprintTranslator, and merges
+	 * the QIT-specific overrides on top (blueprint provides defaults).
+	 *
+	 * @param array<string,mixed> $config
+	 * @param string|null         $config_file
+	 * @return array<string,mixed>
+	 */
+	private function resolve_blueprints( array $config, ?string $config_file ): array {
+		$base_dir = $config_file ? dirname( $config_file ) : getcwd();
+
+		foreach ( $config['environments'] as $env_name => $env ) {
+			if ( empty( $env['blueprint'] ) ) {
+				continue;
+			}
+
+			$blueprint_path = $env['blueprint'];
+
+			// Resolve relative paths against config file location.
+			if ( ! Path::isAbsolute( $blueprint_path ) ) {
+				$blueprint_path = $base_dir . '/' . $blueprint_path;
+			}
+
+			$blueprint_path = realpath( $blueprint_path );
+			if ( ! $blueprint_path || ! file_exists( $blueprint_path ) ) {
+				throw new \RuntimeException( sprintf(
+					'Blueprint file not found for environment "%s": %s',
+					$env_name,
+					$env['blueprint']
+				) );
+			}
+
+			$blueprint_contents = file_get_contents( $blueprint_path );
+			$blueprint          = json_decode( $blueprint_contents, true );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				throw new \RuntimeException( sprintf(
+					'Invalid JSON in blueprint file "%s": %s',
+					$blueprint_path,
+					json_last_error_msg()
+				) );
+			}
+
+			// Translate blueprint into QIT env config (the "base").
+			$blueprint_config = BlueprintTranslator::translate( $blueprint );
+
+			// Remove the blueprint key from the environment — it's been resolved.
+			unset( $env['blueprint'] );
+
+			// Merge: blueprint provides defaults, explicit QIT config overrides.
+			// For list keys (plugins, themes), merge and deduplicate.
+			$list_keys = [ 'plugins', 'themes', 'setup_commands' ];
+			$merged    = array_replace_recursive( $blueprint_config, $env );
+
+			foreach ( $list_keys as $list_key ) {
+				if ( isset( $blueprint_config[ $list_key ] ) && isset( $env[ $list_key ] ) ) {
+					$merged[ $list_key ] = array_merge( $blueprint_config[ $list_key ], $env[ $list_key ] );
+				}
+			}
+
+			$config['environments'][ $env_name ] = $merged;
+
+			debug_log( sprintf( 'Resolved blueprint for environment "%s" from %s', $env_name, $blueprint_path ) );
+		}
+
+		return $config;
+	}
+
+	/**
 	 * Resolve all extends chains in environments and test_types.
 	 *
 	 * @param array<string,mixed> $config
@@ -186,7 +261,7 @@ class ConfigResolver {
 		$result = array_replace_recursive( $resolved_parent, $node );
 
 		// Special handling for list keys - merge and deduplicate instead of replace
-		$list_keys = [ 'plugins', 'themes', 'volumes', 'php_extensions' ];
+		$list_keys = [ 'plugins', 'themes', 'volumes', 'php_extensions', 'setup_commands' ];
 		foreach ( $list_keys as $list_key ) {
 			if ( isset( $resolved_parent[ $list_key ] ) && isset( $node[ $list_key ] ) ) {
 				$result[ $list_key ] = array_values(
@@ -255,6 +330,50 @@ class ConfigResolver {
 	private function apply_cli_overrides( array $config, array $cli_overrides ): array {
 		if ( empty( $cli_overrides ) ) {
 			return $config;
+		}
+
+		// Handle --blueprint CLI option: translate and merge into the default environment.
+		if ( ! empty( $cli_overrides['blueprint'] ) ) {
+			$blueprint_path = $cli_overrides['blueprint'];
+
+			if ( ! file_exists( $blueprint_path ) ) {
+				throw new \RuntimeException( "Blueprint file not found: $blueprint_path" );
+			}
+
+			$blueprint_contents = file_get_contents( $blueprint_path );
+			$blueprint          = json_decode( $blueprint_contents, true );
+
+			if ( json_last_error() !== JSON_ERROR_NONE ) {
+				throw new \RuntimeException( sprintf(
+					'Invalid JSON in blueprint file "%s": %s',
+					$blueprint_path,
+					json_last_error_msg()
+				) );
+			}
+
+			$blueprint_config = BlueprintTranslator::translate( $blueprint );
+
+			// Merge blueprint config as defaults into the target environment.
+			$env_name = $cli_overrides['environment'] ?? 'default';
+
+			if ( ! isset( $config['environments'][ $env_name ] ) ) {
+				$config['environments'][ $env_name ] = [];
+			}
+
+			$env       = $config['environments'][ $env_name ];
+			$list_keys = [ 'plugins', 'themes', 'setup_commands' ];
+			$merged    = array_replace_recursive( $blueprint_config, $env );
+
+			foreach ( $list_keys as $list_key ) {
+				if ( isset( $blueprint_config[ $list_key ] ) && isset( $env[ $list_key ] ) ) {
+					$merged[ $list_key ] = array_merge( $blueprint_config[ $list_key ], $env[ $list_key ] );
+				}
+			}
+
+			$config['environments'][ $env_name ] = $merged;
+
+			unset( $cli_overrides['blueprint'] );
+			debug_log( sprintf( 'Resolved --blueprint CLI option from %s into environment "%s"', $blueprint_path, $env_name ) );
 		}
 
 		// List options that should be merged and deduplicated instead of replaced

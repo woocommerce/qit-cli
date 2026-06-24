@@ -87,6 +87,7 @@ abstract class QITEnvironment extends Environment {
 		$this->maybe_enable_xdebug();
 		$this->copy_mu_plugins();
 		$this->setup_wordpress();
+		$this->run_setup_commands();
 		$this->before_plugin_activation();
 		$this->activate_plugins_and_themes();
 		$this->after_plugin_activation();
@@ -189,6 +190,24 @@ abstract class QITEnvironment extends Environment {
 			'QIT_DOCKER_REDIS'        => $this->env_info->object_cache ? 'yes' : 'no',
 			'QIT_NETWORK_RESTRICTION' => $this->env_info->network_restriction ? 'true' : 'false',
 		] );
+	}
+
+	/**
+	 * Execute blueprint-derived setup commands inside the Docker container.
+	 */
+	protected function run_setup_commands(): void {
+		if ( empty( $this->env_info->setup_commands ) ) {
+			return;
+		}
+
+		$this->output->writeln( '<info>Running blueprint setup commands...</info>' );
+		foreach ( $this->env_info->setup_commands as $command ) {
+			if ( empty( $command ) ) {
+				continue;
+			}
+			$this->output->writeln( sprintf( '  > %s', $command ) );
+			$this->docker->run_inside_docker( $this->env_info, [ 'bash', '-c', $command ] );
+		}
 	}
 
 	/**

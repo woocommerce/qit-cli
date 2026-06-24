@@ -157,6 +157,7 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'json' )
 			->addOption( 'skip_activating_plugins', 's', InputOption::VALUE_NONE, 'Skip activating plugins' )
 			->addOption( 'skip_activating_themes', 'st', InputOption::VALUE_NONE, 'Skip activating themes' )
+			->addOption( 'blueprint', null, InputOption::VALUE_OPTIONAL, 'Path to a WordPress Playground blueprint.json file' )
 
 			// Execution options
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )

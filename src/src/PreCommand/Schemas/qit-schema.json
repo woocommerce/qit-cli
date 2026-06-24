@@ -351,6 +351,10 @@
                 "type": "string",
                 "pattern": "^[a-zA-Z0-9_-]+$"
               }
+            },
+            "blueprint": {
+              "type": "string",
+              "description": "Path to a WordPress Playground blueprint.json file"
             }
           }
         },
