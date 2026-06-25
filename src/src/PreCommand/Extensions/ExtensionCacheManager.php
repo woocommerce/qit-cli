@@ -331,8 +331,16 @@ class ExtensionCacheManager {
 
 		$cache_file = $this->make_cache_path( $extension, $cache_dir );
 
-		// Copy to cache if not already there
-		if ( ! file_exists( $cache_file ) ) {
+		// Copy to cache if it's not there yet, or if the source has changed since
+		// it was cached. The cache key is path-based, so overwriting a local zip in
+		// place (e.g. rebuilding a plugin to the same file) would otherwise keep
+		// serving the stale cached copy. Re-copy when the source is newer or a
+		// different size than what we cached.
+		$is_stale = ! file_exists( $cache_file )
+			|| filemtime( $source_path ) > filemtime( $cache_file )
+			|| filesize( $source_path ) !== filesize( $cache_file );
+
+		if ( $is_stale ) {
 			if ( ! copy( $source_path, $cache_file ) ) {
 				throw new \RuntimeException( "Failed to copy file for '{$extension->slug}'" );
 			}
