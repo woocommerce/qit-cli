@@ -115,7 +115,7 @@ class PerformanceTestManager {
 			if ( $this->output->isVerbose() ) {
 				$this->output->writeln( '<comment>Uploading test results...</comment>' );
 			}
-			$this->notifier->notify_test_finished( $final_result );
+			$this->notifier->notify_test_finished( $final_result, null, 'performance' );
 
 			$this->display_results_summary( $final_result );
 

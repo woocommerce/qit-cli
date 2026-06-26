@@ -148,7 +148,7 @@ class Extension implements \JsonSerializable {
 		);
 		$extension->from                = $data['from'] ?? null;
 		$extension->version             = $data['version'] ?? 'undefined';
-		$extension->requested_version   = $data['requested_version'] ?? ( isset( $data['version'] ) ? (string) $data['version'] : null );
+		$extension->requested_version   = self::requested_version_from_array( $data );
 		$extension->artifact_ref        = $data['artifact_ref'] ?? [];
 		$extension->directory           = $data['directory'] ?? null;
 		$extension->downloaded_source   = $data['downloaded_source'] ?? null;
@@ -161,5 +161,18 @@ class Extension implements \JsonSerializable {
 		$extension->build_cwd           = $data['build_cwd'] ?? null;
 
 		return $extension;
+	}
+
+	/**
+	 * @param array<string,mixed> $data
+	 */
+	private static function requested_version_from_array( array $data ): ?string {
+		$requested_version = $data['requested_version'] ?? ( $data['version'] ?? null );
+
+		if ( $requested_version === null || $requested_version === 'undefined' ) {
+			return null;
+		}
+
+		return (string) $requested_version;
 	}
 }

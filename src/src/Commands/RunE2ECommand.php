@@ -630,7 +630,7 @@ class RunE2ECommand extends QITCommand {
 			}
 
 			// Pass orchestrator to notify_test_finished for upload progress (still in POST-PROCESSING)
-			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result, $orchestrator );
+			[ $report_url, $exit_status_override ] = $this->local_test_run_notifier->notify_test_finished( $test_result, $orchestrator, $this->test_type );
 
 			// End post-processing after upload
 			$orchestrator->post_processing_end();

@@ -188,10 +188,11 @@ class LocalTestRunNotifier {
 	/**
 	 * @param TestResult|PerformanceTestResult $test_result
 	 * @param PackageOrchestrator|null         $orchestrator Optional orchestrator for progress display.
+	 * @param string                           $test_type The local test type whose manager run is being finished.
 	 *
 	 * @return array{string, int|null} The first element is the report URL, the second is the exit status code override, if any.
 	 */
-	public function notify_test_finished( $test_result, $orchestrator = null ): array {
+	public function notify_test_finished( $test_result, $orchestrator = null, string $test_type = 'e2e' ): array {
 		$test_run_id = App::getVar( 'test_run_id' );
 
 		if ( empty( $test_run_id ) ) {
@@ -269,9 +270,7 @@ class LocalTestRunNotifier {
 			$prepared_debug_log     = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
 			$debug_log['debug_log'] = $prepared_debug_log;
 			$has_debug_log          = trim( (string) $prepared_debug_log ) !== '' && trim( (string) $prepared_debug_log ) !== '[]';
-			$has_debug_log_fatal    = stripos( (string) $prepared_debug_log, 'PHP Fatal error' ) !== false
-				|| stripos( (string) $prepared_debug_log, 'Fatal error' ) !== false
-				|| stripos( (string) $prepared_debug_log, 'PHP Parse error' ) !== false;
+			$has_debug_log_fatal    = $this->prepared_debug_log_has_php_fatal( (string) $prepared_debug_log );
 		}
 
 		// Use artifacts directory if available, otherwise fall back to results directory
@@ -339,8 +338,9 @@ class LocalTestRunNotifier {
 		 * - warning
 		 * - cancelled
 		 */
-		$status                    = null;
-		$exit_status_code_override = null;
+		$status                             = null;
+		$exit_status_code_override          = null;
+		$should_escalate_prepared_debug_log = $test_type === 'compatibility';
 
 		if ( $test_result->status === 'cancelled' ) {
 			$status = 'cancelled';
@@ -373,14 +373,14 @@ class LocalTestRunNotifier {
 				// We exit with a 1 if it has fatal errors. If Playwright has failed an assertion from a user-perspective, the exit status code is already 1.
 				$exit_status_code_override = Command::FAILURE;
 				$status                    = 'failed';
-			} elseif ( $has_debug_log_fatal ) {
+			} elseif ( $should_escalate_prepared_debug_log && $has_debug_log_fatal ) {
 				$exit_status_code_override = Command::FAILURE;
 				$status                    = 'failed';
 			} elseif ( ! empty( $debug_log['qm_logs']['non_fatal'] ) ) {
 				// We exit with a 2 if it has non-fatal errors.
 				$exit_status_code_override = RunE2ECommand::WARNING;
 				$status                    = 'warning';
-			} elseif ( $has_debug_log ) {
+			} elseif ( $should_escalate_prepared_debug_log && $has_debug_log ) {
 				$exit_status_code_override = RunE2ECommand::WARNING;
 				$status                    = 'warning';
 			}
@@ -473,6 +473,40 @@ class LocalTestRunNotifier {
 		}
 
 		return [ $response['report_url'], $exit_status_code_override ];
+	}
+
+	/**
+	 * Checks whether a prepared debug.log contains a PHP fatal or parse error.
+	 */
+	private function prepared_debug_log_has_php_fatal( string $prepared_debug_log ): bool {
+		$decoded_log = json_decode( $prepared_debug_log, true );
+
+		if ( is_array( $decoded_log ) ) {
+			foreach ( $decoded_log as $entry ) {
+				if (
+					! is_array( $entry )
+					|| ! isset( $entry['message'] )
+					|| ! is_string( $entry['message'] )
+				) {
+					continue;
+				}
+
+				if ( preg_match( '/^\s*PHP\s+(?:Fatal|Parse)\s+error\s*:/i', $entry['message'] ) === 1 ) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		/*
+		 * Normally prepared debug logs are JSON, but keep a raw-line fallback for
+		 * logs copied without EnvInfo.
+		 */
+		return preg_match(
+			'/^\s*(?:\[[^\]]+\]\s*)?PHP\s+(?:Fatal|Parse)\s+error\s*:/mi',
+			$prepared_debug_log
+		) === 1;
 	}
 
 	/**

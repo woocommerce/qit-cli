@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use QIT_CLI\App;
+use QIT_CLI\Commands\RunE2ECommand;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\PreCommand\Objects\Extension;
@@ -55,10 +56,52 @@ class LocalTestRunNotifierCompatibilityTest extends QITTestCase {
 		$env_info          = $this->make_env_info();
 		$this->results_dir = sys_get_temp_dir() . '/qit-notifier-' . uniqid();
 		mkdir( $this->results_dir );
+		$debug_log_content = '[26-Jun-2026 00:00:00 UTC] PHP Fatal error: Class WC_Stripe_Agentic_Commerce_Csv_Feed contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Automattic\WooCommerce\Internal\ProductFeed\Feed\FeedInterface::get_entry_count) in /var/www/html/wp-content/plugins/woocommerce-gateway-stripe/includes/agentic-commerce/class-wc-stripe-agentic-commerce-csv-feed.php on line 31';
+
+		[ $request_body, $debug_log, $exit_status_override ] = $this->finish_notification_with_debug_log( $env_info, $debug_log_content, 'compatibility' );
+
+		$this->assertSame( 'failed', $request_body['status'] );
+		$this->assertSame( Command::FAILURE, $exit_status_override );
+		$this->assertStringContainsString( 'WC_Stripe_Agentic_Commerce_Csv_Feed contains 1 abstract method', $debug_log['debug_log'] );
+		$this->assertSame( 'woocommerce-gateway-stripe', $request_body['extension_specs'][0]['slug'] );
+	}
+
+	public function test_finish_notification_warns_when_debug_log_only_mentions_fatal_error(): void {
+		$env_info          = $this->make_env_info();
+		$this->results_dir = sys_get_temp_dir() . '/qit-notifier-' . uniqid();
+		mkdir( $this->results_dir );
+		$debug_log_content = '[26-Jun-2026 00:00:00 UTC] PHP Warning: Fatal error was mentioned in compatibility guidance in /var/www/html/wp-content/plugins/woocommerce-gateway-stripe/includes/example.php on line 31';
+
+		[ $request_body, $debug_log, $exit_status_override ] = $this->finish_notification_with_debug_log( $env_info, $debug_log_content, 'compatibility' );
+
+		$this->assertSame( 'warning', $request_body['status'] );
+		$this->assertSame( RunE2ECommand::WARNING, $exit_status_override );
+		$this->assertStringContainsString( 'PHP Warning: Fatal error was mentioned', $debug_log['debug_log'] );
+		$this->assertSame( 'woocommerce-gateway-stripe', $request_body['extension_specs'][0]['slug'] );
+	}
+
+	public function test_finish_notification_preserves_e2e_status_when_debug_log_has_fatal(): void {
+		$env_info          = $this->make_env_info();
+		$this->results_dir = sys_get_temp_dir() . '/qit-notifier-' . uniqid();
+		mkdir( $this->results_dir );
+		$debug_log_content = '[26-Jun-2026 00:00:00 UTC] PHP Fatal error: Class WC_Stripe_Agentic_Commerce_Csv_Feed contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Automattic\WooCommerce\Internal\ProductFeed\Feed\FeedInterface::get_entry_count) in /var/www/html/wp-content/plugins/woocommerce-gateway-stripe/includes/agentic-commerce/class-wc-stripe-agentic-commerce-csv-feed.php on line 31';
+
+		[ $request_body, $debug_log, $exit_status_override ] = $this->finish_notification_with_debug_log( $env_info, $debug_log_content, 'e2e' );
+
+		$this->assertSame( 'success', $request_body['status'] );
+		$this->assertNull( $exit_status_override );
+		$this->assertStringContainsString( 'WC_Stripe_Agentic_Commerce_Csv_Feed contains 1 abstract method', $debug_log['debug_log'] );
+		$this->assertSame( 'woocommerce-gateway-stripe', $request_body['extension_specs'][0]['slug'] );
+	}
+
+	/**
+	 * @return array{array<string,mixed>,array<string,mixed>,int|null}
+	 */
+	private function finish_notification_with_debug_log( E2EEnvInfo $env_info, string $debug_log_content, string $test_type ): array {
 
 		file_put_contents(
 			$this->results_dir . '/debug.log',
-			'[26-Jun-2026 00:00:00 UTC] PHP Fatal error: Class WC_Stripe_Agentic_Commerce_Csv_Feed contains 1 abstract method and must therefore be declared abstract or implement the remaining methods (Automattic\WooCommerce\Internal\ProductFeed\Feed\FeedInterface::get_entry_count) in /var/www/html/wp-content/plugins/woocommerce-gateway-stripe/includes/agentic-commerce/class-wc-stripe-agentic-commerce-csv-feed.php on line 31'
+			$debug_log_content
 		);
 
 		App::setVar( 'test_run_id', 4242 );
@@ -90,16 +133,13 @@ class LocalTestRunNotifierCompatibilityTest extends QITTestCase {
 			}
 		};
 
-		[ , $exit_status_override ] = App::make( LocalTestRunNotifier::class )->notify_test_finished( $test_result );
+		[ , $exit_status_override ] = App::make( LocalTestRunNotifier::class )->notify_test_finished( $test_result, null, $test_type );
 
 		$request_body = App::getVar( 'mocked_request' )['post_body'];
 		// phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions.obfuscation_base64_decode -- Test decodes notifier payload.
 		$debug_log = json_decode( gzuncompress( base64_decode( $request_body['debug_log'] ) ), true );
 
-		$this->assertSame( 'failed', $request_body['status'] );
-		$this->assertSame( Command::FAILURE, $exit_status_override );
-		$this->assertStringContainsString( 'WC_Stripe_Agentic_Commerce_Csv_Feed contains 1 abstract method', $debug_log['debug_log'] );
-		$this->assertSame( 'woocommerce-gateway-stripe', $request_body['extension_specs'][0]['slug'] );
+		return [ $request_body, $debug_log, $exit_status_override ];
 	}
 
 	private function make_env_info(): E2EEnvInfo {

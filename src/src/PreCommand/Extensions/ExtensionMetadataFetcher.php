@@ -314,7 +314,11 @@ class ExtensionMetadataFetcher {
 	}
 
 	protected function get_requested_version( Extension $extension ): string {
-		if ( $extension->requested_version !== null && $extension->requested_version !== '' ) {
+		if (
+			$extension->requested_version !== null
+			&& $extension->requested_version !== ''
+			&& $extension->requested_version !== 'undefined'
+		) {
 			return $extension->requested_version;
 		}
 

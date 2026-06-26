@@ -49,4 +49,47 @@ class ExtensionMetadataFetcherTest extends QITTestCase {
 		$this->assertSame( $artifact_ref['url'], $extension->source );
 		$this->assertSame( $artifact_ref, $extension->artifact_ref );
 	}
+
+	public function test_wccom_metadata_treats_deserialized_undefined_version_as_stable(): void {
+		$slug         = 'stripe-undefined-version-metadata';
+		$artifact_ref = [
+			'source' => 'all_plugins',
+			'sha'    => '7904ee2f4f2e4b7fd8259f7f30cb6b2ae06bb6a2',
+			'url'    => 'https://example.com/artifacts/stripe-undefined-version-metadata-10.5.3.zip',
+		];
+
+		$url = get_manager_url() . '/wp-json/cd/v1/cli/download-urls';
+		App::setVar( 'mock_' . $url, json_encode( [
+			'urls' => [
+				$slug => [
+					'slug'              => $slug,
+					'version'           => '10.5.3',
+					'resolved_version'  => '10.5.3',
+					'requested_version' => 'stable',
+					'url'               => $artifact_ref['url'],
+					'artifact_ref'      => $artifact_ref,
+				],
+			],
+		] ) );
+
+		$extension = Extension::fromArray( [
+			'slug'     => $slug,
+			'type'     => 'plugin',
+			'from'     => 'wccom',
+			'version'  => 'undefined',
+			'wccom_id' => 12345,
+		] );
+
+		$this->assertNull( $extension->requested_version );
+
+		App::make( ExtensionMetadataFetcher::class )->fetch_metadata( [ $extension ] );
+
+		$request_body = App::getVar( 'mocked_request' )['post_body'];
+		$this->assertSame( [ $slug => 'stable' ], $request_body['versions'] );
+		$this->assertSame( 'stable', $request_body['extension_specs'][0]['requested_version'] );
+
+		$this->assertSame( 'stable', $extension->requested_version );
+		$this->assertSame( '10.5.3', $extension->version );
+		$this->assertSame( $artifact_ref, $extension->artifact_ref );
+	}
 }
