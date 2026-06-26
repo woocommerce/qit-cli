@@ -13,6 +13,7 @@ use QIT_CLI\E2E\Result\TestResult;
 use QIT_CLI\Environment\Environments\Performance\PerformanceEnvInfo;
 use QIT_CLI\Performance\MetricsExtractor;
 use QIT_CLI\Performance\Result\PerformanceTestResult;
+use QIT_CLI\PreCommand\Objects\Extension;
 use QIT_CLI\RequestBuilder;
 use QIT_CLI\Upload;
 use QIT_CLI\Zipper;
@@ -74,6 +75,7 @@ class LocalTestRunNotifier {
 		App::setVar( 'NOTIFY_TEST_STARTED_RAN', true );
 
 		$additional_plugins = [];
+		$extension_specs    = $this->build_extension_specs_from_env_info( $env_info );
 
 		// Check if we're running a performance test (legacy check for backward compatibility).
 		if ( getenv( 'QIT_ENVIRONMENT_TYPE' ) === 'performance' ) {
@@ -102,6 +104,10 @@ class LocalTestRunNotifier {
 			'send_notification'       => $notify ? 'true' : 'false',
 			'sut_version'             => $sut_version,
 		];
+
+		if ( ! empty( $extension_specs ) ) {
+			$body['extension_specs'] = $extension_specs;
+		}
 
 		/**
 		 * If specified, a test run will be updated instead of created.
@@ -139,6 +145,47 @@ class LocalTestRunNotifier {
 	}
 
 	/**
+	 * @return array<string,mixed>
+	 */
+	protected function build_extension_spec( Extension $extension ): array {
+		$requested_version = $extension->requested_version ?? ( $extension->version === 'undefined' ? '' : $extension->version );
+
+		$spec = [
+			'slug'              => $extension->slug,
+			'woo_product_id'    => $extension->wccom_id,
+			'type'              => $extension->type,
+			'source'            => $extension->from ?: '',
+			'requested_version' => $requested_version,
+			'resolved_version'  => $extension->version === 'undefined' ? '' : $extension->version,
+			'artifact_ref'      => $extension->artifact_ref,
+			'role'              => 'integration',
+			'reason'            => 'local environment additional plugin',
+		];
+
+		return array_filter( $spec, static function ( $value ) {
+			return $value !== null && $value !== [] && $value !== '';
+		} );
+	}
+
+	/**
+	 * @param E2EEnvInfo|PerformanceEnvInfo $env_info
+	 *
+	 * @return array<int,array<string,mixed>>
+	 */
+	protected function build_extension_specs_from_env_info( $env_info ): array {
+		$extension_specs = [];
+		$sut_slug        = isset( $env_info->sut ) ? ( $env_info->sut['slug'] ?? '' ) : '';
+
+		foreach ( $env_info->plugins as $plugin ) {
+			if ( $plugin instanceof Extension && $plugin->type === 'plugin' && $plugin->slug !== $sut_slug ) {
+				$extension_specs[] = $this->build_extension_spec( $plugin );
+			}
+		}
+
+		return $extension_specs;
+	}
+
+	/**
 	 * @param TestResult|PerformanceTestResult $test_result
 	 * @param PackageOrchestrator|null         $orchestrator Optional orchestrator for progress display.
 	 *
@@ -151,8 +198,9 @@ class LocalTestRunNotifier {
 			throw new \RuntimeException( 'Test run ID not set.' );
 		}
 
-		$env_info    = $test_result->get_env_info();
-		$results_dir = $test_result->get_results_dir();
+		$env_info        = $test_result->get_env_info();
+		$results_dir     = $test_result->get_results_dir();
+		$extension_specs = $this->build_extension_specs_from_env_info( $env_info );
 
 		// Use artifacts directory if available, otherwise fall back to results directory
 		if ( isset( $env_info->artifacts_dir ) && ! empty( $env_info->artifacts_dir ) ) {
@@ -197,6 +245,8 @@ class LocalTestRunNotifier {
 				'fatal'     => [],
 			],
 		];
+		$has_debug_log          = false;
+		$has_debug_log_fatal    = false;
 
 		$env_info = $test_result->get_env_info();
 		$sut_slug = isset( $env_info->sut ) ? ( $env_info->sut['slug'] ?? '' ) : '';
@@ -216,7 +266,12 @@ class LocalTestRunNotifier {
 		if ( file_exists( $results_dir . '/debug.log' ) ) {
 			$prepared_debug_log_path = $results_dir . '/debug-prepared.log';
 			$this->prepare_debug_log->prepare_debug_log( $results_dir . '/debug.log', $prepared_debug_log_path, App::make( EnvInfo::class ) );
-			$debug_log['debug_log'] = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
+			$prepared_debug_log     = file_get_contents( $prepared_debug_log_path, false, null, 0, 8 * 1024 * 1024 ); // First 8mb of debug.log.
+			$debug_log['debug_log'] = $prepared_debug_log;
+			$has_debug_log          = trim( (string) $prepared_debug_log ) !== '' && trim( (string) $prepared_debug_log ) !== '[]';
+			$has_debug_log_fatal    = stripos( (string) $prepared_debug_log, 'PHP Fatal error' ) !== false
+				|| stripos( (string) $prepared_debug_log, 'Fatal error' ) !== false
+				|| stripos( (string) $prepared_debug_log, 'PHP Parse error' ) !== false;
 		}
 
 		// Use artifacts directory if available, otherwise fall back to results directory
@@ -318,8 +373,14 @@ class LocalTestRunNotifier {
 				// We exit with a 1 if it has fatal errors. If Playwright has failed an assertion from a user-perspective, the exit status code is already 1.
 				$exit_status_code_override = Command::FAILURE;
 				$status                    = 'failed';
+			} elseif ( $has_debug_log_fatal ) {
+				$exit_status_code_override = Command::FAILURE;
+				$status                    = 'failed';
 			} elseif ( ! empty( $debug_log['qm_logs']['non_fatal'] ) ) {
 				// We exit with a 2 if it has non-fatal errors.
+				$exit_status_code_override = RunE2ECommand::WARNING;
+				$status                    = 'warning';
+			} elseif ( $has_debug_log ) {
 				$exit_status_code_override = RunE2ECommand::WARNING;
 				$status                    = 'warning';
 			}
@@ -373,6 +434,10 @@ class LocalTestRunNotifier {
 			'status'                    => $status,
 			'ctrf_json'                 => $ctrf_encoded,
 		];
+
+		if ( ! empty( $extension_specs ) ) {
+			$data['extension_specs'] = $extension_specs;
+		}
 
 		// Extract performance metrics for performance tests.
 		if ( $test_result instanceof PerformanceTestResult ) {

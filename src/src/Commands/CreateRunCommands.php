@@ -39,7 +39,7 @@ class CreateRunCommands extends DynamicCommandCreator {
 	 * Public API
 	 */
 	public function register_commands( Application $application ): void {
-		$ignored_test_types = [ 'activation', 'performance', 'woo-api', 'woo-e2e' ]; // Activation/woo-api/woo-e2e handled locally, performance both remotely and locally.
+		$ignored_test_types = [ 'activation', 'compatibility', 'performance', 'woo-api', 'woo-e2e' ]; // These have local wrappers; performance also supports remote execution.
 		$schemas            = $this->cache->get_manager_sync_data( 'schemas' );
 
 		foreach ( $this->cache->get_manager_sync_data( 'test_types' ) as $test_type ) {
