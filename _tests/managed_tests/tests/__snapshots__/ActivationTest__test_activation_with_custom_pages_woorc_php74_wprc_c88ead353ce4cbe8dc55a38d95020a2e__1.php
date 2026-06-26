@@ -328,7 +328,7 @@
                             ],
                             "stdout": [
                                 "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a\\n",
-                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a:208:223\\"\\n",
+                                "Uncaught exception: \\"Error - Uncaught Error in custom page. - Error: Uncaught Error in custom page.\\n    at http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-a:LINE:COL\\"\\n",
                                 "Navigating to http:\\/\\/localhost:PORT\\/wp-admin\\/admin.php?page=plugin-b\\n"
                             ],
                             "stderr": [],
