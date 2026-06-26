@@ -770,9 +770,7 @@ class RunE2ECommand extends QITCommand {
 		foreach ( $env_info->plugin_activation_failures as $failure ) {
 			$plugin    = $this->get_plugin_activation_failure_plugin( $failure );
 			$debug_log = $this->get_plugin_activation_failure_debug_log( $failure );
-			$output    = isset( $failure['output'] ) && is_string( $failure['output'] )
-				? trim( $failure['output'] )
-				: '';
+			$output    = trim( $failure['output'] );
 
 			$trace_parts = [];
 			if ( ! empty( $debug_log ) ) {
@@ -799,10 +797,6 @@ class RunE2ECommand extends QITCommand {
 					'testType' => $this->test_type,
 				],
 			];
-		}
-
-		if ( empty( $tests ) ) {
-			return;
 		}
 
 		$now       = (int) round( microtime( true ) * 1000 );
@@ -850,24 +844,18 @@ class RunE2ECommand extends QITCommand {
 	}
 
 	/**
-	 * @param array{plugin?:string,debug_log?:array<string>,output?:string} $failure
+	 * @param array{plugin:string,debug_log:array<string>,output:string} $failure
 	 */
 	private function get_plugin_activation_failure_plugin( array $failure ): string {
-		return isset( $failure['plugin'] ) && is_string( $failure['plugin'] )
-			? $failure['plugin']
-			: 'unknown plugin';
+		return $failure['plugin'];
 	}
 
 	/**
-	 * @param array{plugin?:string,debug_log?:array<string>,output?:string} $failure
+	 * @param array{plugin:string,debug_log:array<string>,output:string} $failure
 	 * @return array<string>
 	 */
 	private function get_plugin_activation_failure_debug_log( array $failure ): array {
-		if ( ! isset( $failure['debug_log'] ) || ! is_array( $failure['debug_log'] ) ) {
-			return [];
-		}
-
-		return array_values( array_filter( $failure['debug_log'], 'is_string' ) );
+		return $failure['debug_log'];
 	}
 
 	/**
