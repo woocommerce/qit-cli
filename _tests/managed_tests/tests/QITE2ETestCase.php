@@ -467,12 +467,16 @@ class QITE2ETestCase extends TestCase {
 								if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
 									foreach ( $test['stdout'] as &$line ) {
 										$line = preg_replace( '/localhost:\d+/', 'localhost:PORT', $line );
+										// Normalize JS stack-trace line:column positions that shift across WP/JS builds (e.g. "?page=plugin-a:208:223").
+										$line = preg_replace( '/(localhost:PORT\S*?):\d+:\d+(?=["\s]|$)/', '$1:LINE:COL', $line );
 									}
 									unset( $line );
 								}
 								if ( isset( $test['stderr'] ) && is_array( $test['stderr'] ) ) {
 									foreach ( $test['stderr'] as &$line ) {
 										$line = preg_replace( '/localhost:\d+/', 'localhost:PORT', $line );
+										// Normalize JS stack-trace line:column positions that shift across WP/JS builds (e.g. "?page=plugin-a:208:223").
+										$line = preg_replace( '/(localhost:PORT\S*?):\d+:\d+(?=["\s]|$)/', '$1:LINE:COL', $line );
 									}
 									unset( $line );
 								}
