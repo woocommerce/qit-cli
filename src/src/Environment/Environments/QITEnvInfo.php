@@ -72,4 +72,7 @@ abstract class QITEnvInfo extends EnvInfo {
 
 	/** @var array<string,mixed> System under test information (slug, type, entrypoint, path, id) */
 	public array $sut = [];
+
+	/** @var array<int,array{plugin:string,debug_log:array<string>,output:string}> */
+	public array $plugin_activation_failures = [];
 }

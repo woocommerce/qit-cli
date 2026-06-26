@@ -33,6 +33,14 @@ class RunCompatibilityTestCommand extends RunE2ECommand {
 			$input->setOption( 'test-package', [ 'woocommerce/compatibility-smoke-tests:latest' ] );
 		}
 
-		return parent::doExecute( $input, $output );
+		App::setVar( 'QIT_COMPATIBILITY_TEST', 'yes' );
+		App::setVar( 'QIT_CONTINUE_ON_PLUGIN_ACTIVATION_FAILURE', true );
+
+		try {
+			return parent::doExecute( $input, $output );
+		} finally {
+			App::offsetUnset( 'QIT_COMPATIBILITY_TEST' );
+			App::offsetUnset( 'QIT_CONTINUE_ON_PLUGIN_ACTIVATION_FAILURE' );
+		}
 	}
 }

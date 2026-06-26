@@ -11,9 +11,10 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Config;
+use QIT_CLI\Environment\CTRFValidator;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
-use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo; // @phan-suppress-current-line PhanUnreferencedUseNormal - Used in PHPDoc
+use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\Environment\PackagePhaseRunner;
@@ -553,6 +554,8 @@ class RunE2ECommand extends QITCommand {
 				unset( $e ); // Unused but expected
 			}
 
+			$this->append_plugin_activation_failures_to_debug_log( $env_info, $results_dir . '/debug.log' );
+
 			$test_result->set_status( $exit_status === Command::SUCCESS ? 'success' : 'failed' );
 
 			// Post-processing section - merging reports and uploading
@@ -563,6 +566,7 @@ class RunE2ECommand extends QITCommand {
 
 			// Save orchestrator CTRF for lifecycle phases
 			$orchestrator->save_orchestrator_ctrf( $artifacts_dir );
+			$this->save_plugin_activation_failure_ctrf( $env_info, $artifacts_dir );
 
 			// Merge CTRF artifacts (including orchestrator.json)
 			$this->result_collector->merge_ctrf( $artifacts_dir, $io, $orchestrator );
@@ -735,6 +739,135 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		return $exit_status;
+	}
+
+	private function append_plugin_activation_failures_to_debug_log( E2EEnvInfo $env_info, string $debug_log_path ): void {
+		if ( empty( $env_info->plugin_activation_failures ) ) {
+			return;
+		}
+
+		$lines = [];
+		foreach ( $env_info->plugin_activation_failures as $failure ) {
+			$lines = array_merge( $lines, $this->get_plugin_activation_failure_debug_log( $failure ) );
+		}
+
+		if ( empty( $lines ) ) {
+			return;
+		}
+
+		$lines  = array_values( array_unique( $lines ) );
+		$prefix = file_exists( $debug_log_path ) && filesize( $debug_log_path ) > 0 ? PHP_EOL : '';
+
+		file_put_contents( $debug_log_path, $prefix . implode( PHP_EOL, $lines ) . PHP_EOL, FILE_APPEND );
+	}
+
+	private function save_plugin_activation_failure_ctrf( E2EEnvInfo $env_info, string $artifacts_dir ): void {
+		if ( empty( $env_info->plugin_activation_failures ) || empty( $artifacts_dir ) ) {
+			return;
+		}
+
+		$tests = [];
+		foreach ( $env_info->plugin_activation_failures as $failure ) {
+			$plugin    = $this->get_plugin_activation_failure_plugin( $failure );
+			$debug_log = $this->get_plugin_activation_failure_debug_log( $failure );
+			$output    = isset( $failure['output'] ) && is_string( $failure['output'] )
+				? trim( $failure['output'] )
+				: '';
+
+			$trace_parts = [];
+			if ( ! empty( $debug_log ) ) {
+				$trace_parts[] = implode( PHP_EOL, $debug_log );
+			}
+			if ( $output !== '' ) {
+				$trace_parts[] = $output;
+			}
+
+			$tests[] = [
+				'name'     => sprintf( 'Activate plugin %s', $plugin ),
+				'status'   => 'failed',
+				'duration' => 0,
+				'suite'    => 'Plugin activation',
+				'message'  => sprintf(
+					'Plugin %s failed to activate during environment setup.',
+					$plugin
+				),
+				'trace'    => trim( implode( PHP_EOL . PHP_EOL, $trace_parts ) ),
+				'extra'    => [
+					'type'     => 'plugin_activation',
+					'phase'    => 'activation',
+					'plugin'   => $plugin,
+					'testType' => $this->test_type,
+				],
+			];
+		}
+
+		if ( empty( $tests ) ) {
+			return;
+		}
+
+		$now       = (int) round( microtime( true ) * 1000 );
+		$ctrf_data = [
+			'reportFormat' => 'CTRF',
+			'specVersion'  => '0.1.0',
+			'results'      => [
+				'tool'    => [
+					'name' => 'qit-plugin-activation',
+				],
+				'summary' => [
+					'tests'   => count( $tests ),
+					'passed'  => 0,
+					'failed'  => count( $tests ),
+					'skipped' => 0,
+					'pending' => 0,
+					'other'   => 0,
+					'start'   => $now,
+					'stop'    => $now,
+				],
+				'tests'   => $tests,
+			],
+		];
+
+		$validation = App::make( CTRFValidator::class )->validate( $ctrf_data );
+		if ( ! $validation['valid'] ) {
+			throw new \RuntimeException(
+				'Plugin activation CTRF validation failed: ' . $validation['errors']
+			);
+		}
+
+		$ctrf_dir = $artifacts_dir . '/ctrf';
+		if ( ! is_dir( $ctrf_dir ) ) {
+			mkdir( $ctrf_dir, 0755, true );
+		}
+
+		$written = file_put_contents(
+			$ctrf_dir . '/plugin-activation.json',
+			json_encode( $ctrf_data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES )
+		);
+
+		if ( $written === false ) {
+			throw new \RuntimeException( 'Could not write plugin activation CTRF report.' );
+		}
+	}
+
+	/**
+	 * @param array{plugin?:string,debug_log?:array<string>,output?:string} $failure
+	 */
+	private function get_plugin_activation_failure_plugin( array $failure ): string {
+		return isset( $failure['plugin'] ) && is_string( $failure['plugin'] )
+			? $failure['plugin']
+			: 'unknown plugin';
+	}
+
+	/**
+	 * @param array{plugin?:string,debug_log?:array<string>,output?:string} $failure
+	 * @return array<string>
+	 */
+	private function get_plugin_activation_failure_debug_log( array $failure ): array {
+		if ( ! isset( $failure['debug_log'] ) || ! is_array( $failure['debug_log'] ) ) {
+			return [];
+		}
+
+		return array_values( array_filter( $failure['debug_log'], 'is_string' ) );
 	}
 
 	/**
@@ -1225,6 +1358,25 @@ class RunE2ECommand extends QITCommand {
 		// Create fresh artifacts directory for this run
 		if ( ! is_dir( $artifacts_dir ) ) {
 			mkdir( $artifacts_dir, 0755, true );
+		}
+
+		if ( ! empty( $env_info->plugin_activation_failures ) ) {
+			App::setVar( 'qit_test_artifacts_dir', $artifacts_dir );
+			App::setVar( 'skip_allure_upload', false );
+			$this->result_collector->reset_tracking();
+			$orchestrator->start( $env_info->env_id, 0 );
+			$io->section( 'Plugin Activation' );
+			foreach ( $env_info->plugin_activation_failures as $failure ) {
+				$io->writeln( sprintf(
+					'<error>Plugin failed to activate: %s</error>',
+					$this->get_plugin_activation_failure_plugin( $failure )
+				) );
+				foreach ( array_slice( $this->get_plugin_activation_failure_debug_log( $failure ), -5 ) as $line ) {
+					$io->writeln( '  ' . $line );
+				}
+			}
+			$env_info->artifacts_dir = $artifacts_dir;
+			return [ Command::FAILURE, $orchestrator, $artifacts_dir ];
 		}
 
 		try {

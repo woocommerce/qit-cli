@@ -13,8 +13,12 @@ class PluginActivationReportRenderer {
 		$this->output = $output;
 	}
 
-	public function render_php_activation_report( EnvInfo $env_info, string $activation_output ): void {
+	/**
+	 * @return array<int,array{plugin:string,debug_log:array<string>,output:string}>
+	 */
+	public function render_php_activation_report( EnvInfo $env_info, string $activation_output, bool $fail_on_activation_error = true ): array {
 		$activation_report_file = $env_info->temporary_env . 'bin/plugin-activation-report.json';
+		$activation_failures    = [];
 
 		/*
 		 * Skip rendering this on self-tests, as this output can be a bit chaotic, as we don't filter
@@ -22,14 +26,14 @@ class PluginActivationReportRenderer {
 		 * might trigger and break snapshot testing.
 		 */
 		if ( getenv( 'QIT_SELF_TESTS' ) ) {
-			return;
+			return [];
 		}
 
 		if ( ! file_exists( $activation_report_file ) ) {
 			// Probably no plugins to activate?
 			$this->output->writeln( '<info>No plugins to activate.</info>' );
 
-			return;
+			return [];
 		}
 
 		$activation_report = json_decode( file_get_contents( $activation_report_file ), true );
@@ -38,7 +42,7 @@ class PluginActivationReportRenderer {
 			$this->output->writeln( '<error>Invalid plugin activation report generated.</error>' );
 			$this->output->writeln( $activation_output );
 
-			return;
+			return [];
 		}
 
 		$has_big_debug_log = false;
@@ -62,12 +66,30 @@ class PluginActivationReportRenderer {
 					$this->output->writeln( '<error>Invalid plugin activation report generated.</error>' );
 					$this->output->writeln( $activation_output );
 
-					return;
+					return [];
 				}
 			}
 
 			if ( ! $r['activated'] ) {
-				throw new \RuntimeException( sprintf( "Plugin %s failed to activate. Output:\n %s", $r['plugin'], $activation_output ) );
+				$failure = [
+					'plugin'    => $r['plugin'],
+					'debug_log' => array_values( array_filter( $r['debug_log'], 'is_string' ) ),
+					'output'    => $activation_output,
+				];
+
+				if ( $fail_on_activation_error ) {
+					throw new \RuntimeException( $this->format_activation_failure_message( $failure ) );
+				}
+
+				$activation_failures[] = $failure;
+				$this->output->writeln(
+					sprintf( '<error>Plugin %s failed to activate.</error>', $r['plugin'] )
+				);
+
+				foreach ( array_slice( $failure['debug_log'], -10 ) as $line ) {
+					$this->output->writeln( substr( $line, 0, 200 ) );
+				}
+				continue;
 			}
 
 			if ( ! empty( $r['debug_log'] ) && $this->output->isVerbose() ) {
@@ -91,5 +113,20 @@ class PluginActivationReportRenderer {
 		if ( $has_big_debug_log && $this->output->isVerbose() ) {
 			$this->output->writeln( sprintf( '<info>Some debug logs were too big to show. Full logs: %s</info>', $activation_report_file ) );
 		}
+
+		return $activation_failures;
+	}
+
+	/**
+	 * @param array{plugin:string,debug_log:array<string>,output:string} $failure
+	 */
+	private function format_activation_failure_message( array $failure ): string {
+		$message = sprintf( "Plugin %s failed to activate. Output:\n %s", $failure['plugin'], $failure['output'] );
+
+		if ( ! empty( $failure['debug_log'] ) ) {
+			$message .= "\nDebug log:\n " . implode( "\n ", $failure['debug_log'] );
+		}
+
+		return $message;
 	}
 }
