@@ -72,6 +72,33 @@ For more detailed information on QIT and how to use it, refer to the [documentat
 
 You can use these parameters individually or in combination to create different scenarios for your tests. Run `qit run:<test-type> --help` to see all the available options. Different test types will have different options to choose from.
 
+### Compatibility Examples
+
+Run a local compatibility smoke test against a specific WooCommerce version:
+
+```bash
+qit run:compatibility woocommerce-gateway-stripe \
+  --woocommerce_version=10.9.0 \
+  --wordpress_version=stable \
+  --php_version=8.2
+```
+
+Enqueue a small compatibility mass test for Woo-owned extensions before expanding to a full sweep:
+
+```bash
+qit mass-test \
+  --trigger="Compatibility Pre Test (Woo 10.9.0)" \
+  --test_type="compatibility" \
+  --only_developed_by_woo=true \
+  --woocommerce_version=10.9.0 \
+  --wordpress_version=stable \
+  --php_version=8.2 \
+  --notify=false \
+  --max_extensions=7 \
+  --test_stage=pre \
+  --group="woo-10.9.0-compatibility"
+```
+
 ## Can I use QIT?
 
 Most features of QIT requires you to log-in as a Partner Developer of the WooCommerce.com Marketplace, but we have plans to open it to all developers in the future.

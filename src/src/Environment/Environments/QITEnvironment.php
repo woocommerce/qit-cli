@@ -205,8 +205,19 @@ abstract class QITEnvironment extends Environment {
 	protected function activate_plugins_and_themes(): void {
 		if ( ! $this->env_info->skip_activating_plugins ) {
 			$this->output->writeln( '<info>Activating plugins...</info>' );
-			$activation_output = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
-			App::make( \QIT_CLI\Environment\PluginActivationReportRenderer::class )->render_php_activation_report( $this->env_info, $activation_output );
+			$activation_output              = $this->docker->run_inside_docker( $this->env_info, [ 'php', '/qit/bin/plugins-activate.php' ] );
+			$continue_on_activation_failure = (bool) App::getVar( 'QIT_CONTINUE_ON_PLUGIN_ACTIVATION_FAILURE', false );
+			$activation_failures            = App::make( \QIT_CLI\Environment\PluginActivationReportRenderer::class )
+				->render_php_activation_report(
+					$this->env_info,
+					$activation_output,
+					! $continue_on_activation_failure
+				);
+
+			if ( ! empty( $activation_failures ) ) {
+				$this->env_info->plugin_activation_failures = $activation_failures;
+				return;
+			}
 		}
 
 		$theme_activation = new ThemeActivation( $this->env_info, $this->docker, $this->output );

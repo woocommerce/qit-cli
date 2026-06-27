@@ -40,6 +40,7 @@
     "test_packages": [],
     "test_packages_for_setup": [],
     "sut": [],
+    "plugin_activation_failures": [],
     "passthrough_args": [],
     "db_port": 0,
     "global_setup_only": false,

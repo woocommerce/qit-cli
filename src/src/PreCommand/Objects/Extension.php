@@ -40,6 +40,12 @@ class Extension implements \JsonSerializable {
 	/** @var string Version of the extension, defaults to 'undefined'. */
 	public $version = 'undefined';
 
+	/** @var string|null The originally requested version selector, if any. */
+	public $requested_version = null;
+
+	/** @var array<string,mixed> Exact artifact metadata resolved by QIT Manager, if any. */
+	public $artifact_ref = [];
+
 	/** @var int Priority for processing, defaults to PRIORITY_MEDIUM. */
 	public $priority = self::PRIORITY_MEDIUM;
 
@@ -94,6 +100,8 @@ class Extension implements \JsonSerializable {
 			'type'                => $this->type,
 			'from'                => $this->from,
 			'version'             => $this->version,
+			'requested_version'   => $this->requested_version,
+			'artifact_ref'        => $this->artifact_ref,
 			'source'              => $this->source,
 			'directory'           => $this->directory,
 			'downloaded_source'   => $this->downloaded_source,
@@ -106,7 +114,7 @@ class Extension implements \JsonSerializable {
 			'build_cwd'           => $this->build_cwd,
 			// phpcs:ignore PEAR.Functions.FunctionCallSignature.Indent -- WordPress standards conflict with PEAR on multi-line function indentation
 		], function ( $value ) {
-			return $value !== null;
+			return $value !== null && $value !== [];
 		} );
 	}
 
@@ -140,6 +148,8 @@ class Extension implements \JsonSerializable {
 		);
 		$extension->from                = $data['from'] ?? null;
 		$extension->version             = $data['version'] ?? 'undefined';
+		$extension->requested_version   = self::requested_version_from_array( $data );
+		$extension->artifact_ref        = $data['artifact_ref'] ?? [];
 		$extension->directory           = $data['directory'] ?? null;
 		$extension->downloaded_source   = $data['downloaded_source'] ?? null;
 		$extension->entrypoint          = $data['entrypoint'] ?? null;
@@ -151,5 +161,18 @@ class Extension implements \JsonSerializable {
 		$extension->build_cwd           = $data['build_cwd'] ?? null;
 
 		return $extension;
+	}
+
+	/**
+	 * @param array<string,mixed> $data
+	 */
+	private static function requested_version_from_array( array $data ): ?string {
+		$requested_version = $data['requested_version'] ?? ( $data['version'] ?? null );
+
+		if ( $requested_version === null || $requested_version === 'undefined' ) {
+			return null;
+		}
+
+		return (string) $requested_version;
 	}
 }

@@ -246,6 +246,7 @@ class ExtensionInputParser {
 		$extension = new Extension( $slug, $type );
 		// Don't set 'from' - let ExtensionResolver determine the correct source.
 		$extension->version             = $version;
+		$extension->requested_version   = $version;
 		$extension->added_automatically = 'Added from CLI parameter (slug:version)';
 
 		return $extension;
@@ -258,6 +259,7 @@ class ExtensionInputParser {
 		$extension = new Extension( $slug, $type );
 		// Don't set 'from' - let ExtensionResolver determine the source
 		$extension->version             = 'stable';
+		$extension->requested_version   = 'stable';
 		$extension->added_automatically = 'Added from CLI parameter (slug)';
 
 		return $extension;

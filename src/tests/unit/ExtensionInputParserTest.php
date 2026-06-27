@@ -23,14 +23,16 @@ use QIT_CLI\PreCommand\Extensions\ExtensionInputParser;
  */
 class ExtensionInputParserTest extends TestCase {
 
-	// ── Bare slug ──
-
+	/**
+	 * Bare slug inputs.
+	 */
 	public function test_bare_slug(): void {
 		$ext = ExtensionInputParser::parse( 'woocommerce', 'plugin' );
 
 		$this->assertSame( 'woocommerce', $ext->slug );
 		$this->assertSame( 'plugin', $ext->type );
 		$this->assertSame( 'stable', $ext->version );
+		$this->assertSame( 'stable', $ext->requested_version );
 		$this->assertNull( $ext->from, 'Bare slug should not set from — let resolver decide' );
 	}
 
@@ -48,13 +50,15 @@ class ExtensionInputParserTest extends TestCase {
 		$this->assertSame( 'my-cool_plugin', $ext->slug );
 	}
 
-	// ── slug:version ──
-
+	/**
+	 * Slug:version inputs.
+	 */
 	public function test_slug_version_semver(): void {
 		$ext = ExtensionInputParser::parse( 'woocommerce:8.8.0', 'plugin' );
 
 		$this->assertSame( 'woocommerce', $ext->slug );
 		$this->assertSame( '8.8.0', $ext->version );
+		$this->assertSame( '8.8.0', $ext->requested_version );
 		$this->assertNull( $ext->from, 'slug:version should not set from — let resolver decide' );
 	}
 
@@ -63,6 +67,7 @@ class ExtensionInputParserTest extends TestCase {
 
 		$this->assertSame( 'jetpack', $ext->slug );
 		$this->assertSame( 'stable', $ext->version );
+		$this->assertSame( 'stable', $ext->requested_version );
 	}
 
 	public function test_slug_version_rc(): void {
@@ -70,6 +75,7 @@ class ExtensionInputParserTest extends TestCase {
 
 		$this->assertSame( 'woocommerce', $ext->slug );
 		$this->assertSame( 'rc', $ext->version );
+		$this->assertSame( 'rc', $ext->requested_version );
 	}
 
 	public function test_slug_version_nightly(): void {
@@ -94,8 +100,9 @@ class ExtensionInputParserTest extends TestCase {
 		$this->assertSame( '4.5.0', $ext->version );
 	}
 
-	// ── slug@path (explicit slug + local source) ──
-
+	/**
+	 * Slug@path inputs with explicit local sources.
+	 */
 	public function test_slug_at_local_directory(): void {
 		$dir = sys_get_temp_dir();
 		$ext = ExtensionInputParser::parse( "my-plugin@{$dir}", 'plugin' );
@@ -120,8 +127,9 @@ class ExtensionInputParserTest extends TestCase {
 		}
 	}
 
-	// ── slug@url (explicit slug + URL source) ──
-
+	/**
+	 * Slug@url inputs with explicit remote sources.
+	 */
 	public function test_slug_at_url(): void {
 		$ext = ExtensionInputParser::parse( 'my-plugin@https://example.com/builds/latest.zip', 'plugin' );
 
@@ -130,8 +138,9 @@ class ExtensionInputParserTest extends TestCase {
 		$this->assertSame( 'https://example.com/builds/latest.zip', $ext->source );
 	}
 
-	// ── Local paths (slug inferred) ──
-
+	/**
+	 * Local paths with inferred slugs.
+	 */
 	public function test_local_directory_path(): void {
 		$dir = sys_get_temp_dir();
 		$ext = ExtensionInputParser::parse( $dir, 'plugin' );
@@ -140,8 +149,9 @@ class ExtensionInputParserTest extends TestCase {
 		$this->assertNotNull( $ext->slug );
 	}
 
-	// ── URLs (slug inferred) ──
-
+	/**
+	 * URL sources with inferred slugs.
+	 */
 	public function test_url_source(): void {
 		$ext = ExtensionInputParser::parse( 'https://example.com/downloads/jetpack.zip', 'plugin' );
 
@@ -156,8 +166,9 @@ class ExtensionInputParserTest extends TestCase {
 		$this->assertSame( 'jetpack', $ext->slug, 'Version suffix should be stripped from inferred slug' );
 	}
 
-	// ── Mutual exclusivity: @ and : cannot combine ──
-
+	/**
+	 * @ and : cannot combine.
+	 */
 	public function test_at_takes_precedence_over_colon(): void {
 		// "my-plugin@https://example.com/thing:8080/file.zip"
 		// @ splits first: slug=my-plugin, rest=https://example.com/thing:8080/file.zip
@@ -176,8 +187,9 @@ class ExtensionInputParserTest extends TestCase {
 		ExtensionInputParser::parse( 'woo:8.0@/tmp/some-path', 'plugin' );
 	}
 
-	// ── Error cases ──
-
+	/**
+	 * Invalid inputs.
+	 */
 	public function test_empty_string_throws(): void {
 		$this->expectException( \InvalidArgumentException::class );
 		ExtensionInputParser::parse( '', 'plugin' );
@@ -207,8 +219,9 @@ class ExtensionInputParserTest extends TestCase {
 		ExtensionInputParser::parse( 'woocommerce:', 'plugin' );
 	}
 
-	// ── Edge cases: URLs with colons don't trigger slug:version ──
-
+	/**
+	 * URLs with colons do not trigger slug:version parsing.
+	 */
 	public function test_http_url_not_parsed_as_slug_version(): void {
 		$ext = ExtensionInputParser::parse( 'https://example.com/plugin.zip', 'plugin' );
 

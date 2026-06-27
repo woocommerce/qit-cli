@@ -89,6 +89,10 @@ class ExtensionMetadataFetcher {
 		// Group extensions by source type
 		$grouped = [];
 		foreach ( $extensions as $extension ) {
+			if ( $extension->requested_version === null && $extension->version !== 'undefined' ) {
+				$extension->requested_version = $extension->version;
+			}
+
 			if ( empty( $extension->from ) ) {
 				throw new \RuntimeException( "Extensions '{$extension->slug}' has no source type set" );
 			}
@@ -216,13 +220,15 @@ class ExtensionMetadataFetcher {
 		// Check cache for each extension's metadata
 		$extensions_needing_fetch = [];
 		foreach ( $extensions as $extension ) {
-			$cache_key       = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version === 'undefined' ? 'stable' : $extension->version ) );
+			$cache_key       = 'wccom_metadata_' . md5( $extension->slug . '_' . $this->get_requested_version( $extension ) );
 			$cached_metadata = $this->cache->get( $cache_key );
 
 			if ( $cached_metadata && is_array( $cached_metadata ) ) {
 				// Use cached metadata
-				$extension->version = $cached_metadata['version'];
-				$extension->source  = $cached_metadata['source'];
+				$extension->version           = $cached_metadata['version'];
+				$extension->source            = $cached_metadata['source'];
+				$extension->requested_version = $cached_metadata['requested_version'] ?? $extension->requested_version;
+				$extension->artifact_ref      = $cached_metadata['artifact_ref'] ?? [];
 				if ( $this->output->isVeryVerbose() ) {
 					$this->output->writeln( "Using cached metadata for WCCOM extension: {$extension->slug}" );
 				}
@@ -239,21 +245,27 @@ class ExtensionMetadataFetcher {
 			return;
 		}
 
-		$start     = microtime( true );
-		$slugs     = array_map( fn( $ext ) => $ext->slug, $extensions_needing_fetch );
-		$types_map = [];
+		$start           = microtime( true );
+		$slugs           = array_map( fn( $ext ) => $ext->slug, $extensions_needing_fetch );
+		$types_map       = [];
+		$versions_map    = [];
+		$extension_specs = [];
 		foreach ( $extensions_needing_fetch as $ext ) {
-			$types_map[ $ext->slug ] = $ext->type;
+			$types_map[ $ext->slug ]    = $ext->type;
+			$versions_map[ $ext->slug ] = $this->get_requested_version( $ext );
+			$extension_specs[]          = $this->build_extension_spec( $ext, $versions_map[ $ext->slug ] );
 		}
 
 		try {
 			$response = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/cli/download-urls' ) )
 				->with_method( 'POST' )
 				->with_post_body( [
-					'sut_slug'   => App::getVar( 'QIT_SUT_SLUG', '' ),
-					'extensions' => implode( ',', $slugs ),
-					'types'      => $types_map,
-					'from'       => 'wccom',
+					'sut_slug'        => App::getVar( 'QIT_SUT_SLUG', '' ),
+					'extensions'      => implode( ',', $slugs ),
+					'types'           => $types_map,
+					'versions'        => $versions_map,
+					'extension_specs' => $extension_specs,
+					'from'            => 'wccom',
 				] )
 				->request();
 
@@ -265,17 +277,22 @@ class ExtensionMetadataFetcher {
 
 			foreach ( $extensions_needing_fetch as $extension ) {
 				if ( isset( $data['urls'][ $extension->slug ] ) ) {
-					$info               = $data['urls'][ $extension->slug ];
-					$extension->slug    = $info['slug']; // May be different from requested
-					$extension->version = $info['version'];
-					$extension->source  = $info['url'];
+					$info                         = $data['urls'][ $extension->slug ];
+					$requested_version            = $this->get_requested_version( $extension );
+					$extension->slug              = $info['slug']; // May be different from requested
+					$extension->requested_version = $info['requested_version'] ?? $requested_version;
+					$extension->version           = $info['resolved_version'] ?? $info['version'];
+					$extension->source            = $info['url'];
+					$extension->artifact_ref      = $info['artifact_ref'] ?? [];
 
 					// Cache the metadata
-					$cache_key = 'wccom_metadata_' . md5( $extension->slug . '_' . ( $extension->version === 'undefined' ? 'stable' : $extension->version ) );
+					$cache_key = 'wccom_metadata_' . md5( $extension->slug . '_' . $extension->requested_version );
 					// Cache metadata for 30 seconds to prevent API burst but still get fresh data
 					$this->cache->set( $cache_key, [
-						'version' => $extension->version,
-						'source'  => $extension->source,
+						'version'           => $extension->version,
+						'requested_version' => $extension->requested_version,
+						'source'            => $extension->source,
+						'artifact_ref'      => $extension->artifact_ref,
 					], 30 );
 				} else {
 					// Fallback for extensions not found
@@ -294,6 +311,40 @@ class ExtensionMetadataFetcher {
 				microtime( true ) - $start
 			) );
 		}
+	}
+
+	protected function get_requested_version( Extension $extension ): string {
+		if (
+			$extension->requested_version !== null
+			&& $extension->requested_version !== ''
+			&& $extension->requested_version !== 'undefined'
+		) {
+			return $extension->requested_version;
+		}
+
+		return $extension->version === 'undefined' ? 'stable' : $extension->version;
+	}
+
+	/**
+	 * @return array<string,mixed>
+	 */
+	protected function build_extension_spec( Extension $extension, string $requested_version ): array {
+		$spec = [
+			'slug'              => $extension->slug,
+			'woo_product_id'    => $extension->wccom_id,
+			'type'              => $extension->type,
+			'source'            => $extension->from ?: 'wccom',
+			'requested_version' => $requested_version,
+			'resolved_version'  => $extension->version === 'undefined' ? '' : $extension->version,
+			'role'              => 'integration',
+			'reason'            => 'cli download-url resolution',
+		];
+
+		if ( ! empty( $extension->artifact_ref ) ) {
+			$spec['artifact_ref'] = $extension->artifact_ref;
+		}
+
+		return $spec;
 	}
 
 	/**
