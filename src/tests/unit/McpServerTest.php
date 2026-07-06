@@ -298,6 +298,17 @@ class McpServerTest extends QITTestCase {
 		$this->assertStringContainsString( 'JSON file is malformed', $response['result']['content'][0]['text'] );
 	}
 
+	public function test_get_artifacts_rejects_test_run_id_with_last_local_run_source(): void {
+		$response = $this->call_tool_response( 'qit_get_artifacts', [
+			'test_run_id' => 98765,
+			'source'      => 'last_local_run',
+		] );
+
+		$this->assertTrue( $response['result']['isError'] );
+		$this->assertStringContainsString( 'Conflicting artifact arguments', $response['result']['content'][0]['text'] );
+		$this->assertStringContainsString( 'source=last_local_run cannot be combined with test_run_id', $response['result']['content'][0]['text'] );
+	}
+
 	public function test_list_environments_returns_running_environment(): void {
 		$environment_monitor = App::make( EnvironmentMonitor::class );
 		$environment_monitor->environment_added_or_updated( $this->make_env_info() );

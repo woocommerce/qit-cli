@@ -135,19 +135,27 @@ class QitReportingService {
 	 * @return array<string,mixed>
 	 */
 	public function get_artifacts( ?int $test_run_id, ?string $source, bool $include_sensitive_urls = false ): array {
+		if ( $source !== null && ! in_array( $source, [ 'last_local_run', 'manager_run' ], true ) ) {
+			throw new McpToolException( 'Invalid artifact source.', [
+				'source'  => $source,
+				'allowed' => [ 'last_local_run', 'manager_run' ],
+			] );
+		}
+
 		if ( $test_run_id !== null && $test_run_id > 0 ) {
+			if ( $source === 'last_local_run' ) {
+				throw new McpToolException( 'Conflicting artifact arguments.', [
+					'test_run_id' => $test_run_id,
+					'source'      => $source,
+					'message'     => 'source=last_local_run cannot be combined with test_run_id. Omit test_run_id or use source=manager_run.',
+				] );
+			}
+
 			$source = 'manager_run';
 		}
 
 		if ( $source === null ) {
 			$source = 'last_local_run';
-		}
-
-		if ( ! in_array( $source, [ 'last_local_run', 'manager_run' ], true ) ) {
-			throw new McpToolException( 'Invalid artifact source.', [
-				'source'  => $source,
-				'allowed' => [ 'last_local_run', 'manager_run' ],
-			] );
 		}
 
 		if ( $source === 'manager_run' ) {
