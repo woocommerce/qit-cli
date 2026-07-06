@@ -690,8 +690,8 @@ class QitReportingService {
 		}
 
 		$path = $parts['path'] ?? '';
-		if ( strpos( $path, '/results/' ) === 0 ) {
-			$path = '/results/[REDACTED]';
+		if ( strpos( $path, '/results/' ) !== false ) {
+			$path = preg_replace( '#/results/[^/]+#', '/results/[REDACTED]', $path, 1 ) ?? $path;
 		}
 
 		$redacted = $parts['scheme'] . '://' . $parts['host'];

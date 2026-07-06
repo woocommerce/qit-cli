@@ -153,6 +153,18 @@ class McpServerTest extends QITTestCase {
 		$this->assertSame( 'playwright', $result['results']['ctrf_json']['results']['tool']['name'] );
 	}
 
+	public function test_get_run_redacts_result_url_under_manager_subpath(): void {
+		$response                             = $this->make_e2e_response();
+		$response['test_results_manager_url'] = 'https://qit.woo.com/qit/results/98765.secret?auth=abc';
+		$this->mock_get_single_response( $response );
+
+		$result = $this->call_tool( 'qit_get_run', [
+			'test_run_id' => 98765,
+		] );
+
+		$this->assertSame( 'https://qit.woo.com/qit/results/[REDACTED]?[REDACTED]', $result['result_url'] );
+	}
+
 	public function test_get_results_prefers_ctrf(): void {
 		$this->mock_get_single_response( $this->make_e2e_response() );
 
