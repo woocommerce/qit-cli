@@ -3,6 +3,10 @@
 namespace QIT_CLI\MCP;
 
 class StdioTransport {
+	private const JSON_ENCODE_FLAGS = JSON_UNESCAPED_SLASHES
+		| JSON_INVALID_UTF8_SUBSTITUTE
+		| JSON_PARTIAL_OUTPUT_ON_ERROR;
+
 	/** @var resource */
 	private $input;
 
@@ -68,7 +72,34 @@ class StdioTransport {
 	 * @param array<string,mixed> $message
 	 */
 	private function write( array $message ): void {
-		fwrite( $this->output, json_encode( $message, JSON_UNESCAPED_SLASHES ) . "\n" );
+		$json = json_encode( $message, self::JSON_ENCODE_FLAGS );
+
+		if ( ! is_string( $json ) ) {
+			$this->write_error( sprintf( 'Failed to encode MCP response: %s', json_last_error_msg() ) );
+
+			$id = $message['id'] ?? null;
+			if ( ! is_int( $id ) && ! is_string( $id ) && $id !== null ) {
+				$id = null;
+			}
+
+			$json = json_encode( [
+				'jsonrpc' => '2.0',
+				'id'      => $id,
+				'error'   => [
+					'code'    => -32603,
+					'message' => 'Internal error',
+					'data'    => [
+						'message' => 'Failed to encode MCP response.',
+					],
+				],
+			], self::JSON_ENCODE_FLAGS );
+		}
+
+		if ( ! is_string( $json ) ) {
+			$json = '{"jsonrpc":"2.0","id":null,"error":{"code":-32603,"message":"Internal error"}}';
+		}
+
+		fwrite( $this->output, $json . "\n" );
 	}
 
 	private function write_error( string $message ): void {

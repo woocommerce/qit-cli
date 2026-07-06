@@ -178,7 +178,10 @@ class McpServer {
 	 * @param mixed $value
 	 */
 	private function encode_json_for_text( $value ): string {
-		$json = json_encode( $value, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES );
+		$json = json_encode(
+			$value,
+			JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_INVALID_UTF8_SUBSTITUTE | JSON_PARTIAL_OUTPUT_ON_ERROR
+		);
 
 		return is_string( $json ) ? $json : '{}';
 	}

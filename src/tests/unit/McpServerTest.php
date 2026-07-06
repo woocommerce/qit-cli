@@ -7,6 +7,7 @@ use QIT_CLI\Environment\Environments\EnvInfo;
 use QIT_CLI\Environment\Environments\Environment;
 use QIT_CLI\MCP\McpServer;
 use QIT_CLI\MCP\StdioTransport;
+use QIT_CLI\MCP\ToolRegistry;
 use QIT_CLI_Tests\QITTestCase;
 use function QIT_CLI\get_manager_url;
 use function QIT_CLI\is_mcp_command_argv;
@@ -82,6 +83,51 @@ class McpServerTest extends QITTestCase {
 
 		$this->assertCount( 1, $lines );
 		$this->assertSame( '2.0', json_decode( $lines[0], true )['jsonrpc'] );
+	}
+
+	public function test_stdio_transport_substitutes_invalid_utf8_in_response(): void {
+		$input  = fopen( 'php://temp', 'r+' );
+		$output = fopen( 'php://temp', 'r+' );
+		$error  = fopen( 'php://temp', 'r+' );
+
+		fwrite( $input, json_encode( [
+			'jsonrpc' => '2.0',
+			'id'      => 7,
+			'method'  => 'tools/call',
+			'params'  => [
+				'name'      => 'invalid_utf8_fixture',
+				'arguments' => new stdClass(),
+			],
+		] ) . "\n" );
+		rewind( $input );
+
+		$registry = new class() extends ToolRegistry {
+			public function __construct() {}
+
+			public function call( string $name, array $arguments ): array {
+				return [
+					'debug_log' => "Fatal error before invalid byte \xB1 after invalid byte",
+				];
+			}
+
+			public function list_tools(): array {
+				return [];
+			}
+		};
+
+		( new StdioTransport( $input, $output, $error ) )->run( new McpServer( $registry ) );
+
+		rewind( $output );
+		$line = trim( stream_get_contents( $output ) );
+
+		$this->assertNotSame( '', $line );
+		$this->assertStringContainsString( '\\ufffd', $line );
+
+		$response = json_decode( $line, true );
+		$this->assertSame( JSON_ERROR_NONE, json_last_error() );
+		$this->assertSame( 7, $response['id'] );
+		$this->assertArrayHasKey( 'result', $response );
+		$this->assertStringContainsString( '\\ufffd', $response['result']['content'][0]['text'] );
 	}
 
 	public function test_mcp_mode_only_matches_command_token(): void {
