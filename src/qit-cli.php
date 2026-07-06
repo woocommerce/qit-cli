@@ -79,7 +79,7 @@ try {
 
 	// Handle CLI request.
 	exit( $application->run() ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-} catch ( \Exception $e ) {
+} catch ( \Throwable $e ) {
 	if ( ! empty( $is_mcp_mode ) ) {
 		fwrite( STDERR, $e->getMessage() . "\n" );
 		exit( 1 );
