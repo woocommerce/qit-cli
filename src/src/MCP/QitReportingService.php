@@ -620,9 +620,8 @@ class QitReportingService {
 
 		if ( is_string( $value ) ) {
 			$value = $this->redact_known_secrets( $value );
-			if ( preg_match( '#^https?://#i', $value ) ) {
-				return $this->redact_url( $value, $include_sensitive_urls );
-			}
+
+			return $this->redact_urls_in_text( $value, $include_sensitive_urls );
 		}
 
 		return $value;
@@ -655,6 +654,18 @@ class QitReportingService {
 		}
 
 		return $value;
+	}
+
+	private function redact_urls_in_text( string $value, bool $include_sensitive_urls ): string {
+		$redacted = preg_replace_callback(
+			'#https?://\S+#i',
+			function ( array $matches ) use ( $include_sensitive_urls ): string {
+				return $this->redact_url( $matches[0], $include_sensitive_urls );
+			},
+			$value
+		);
+
+		return is_string( $redacted ) ? $redacted : $value;
 	}
 
 	private function redact_url( string $url, bool $include_sensitive_urls ): string {

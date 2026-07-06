@@ -181,6 +181,31 @@ class McpServerTest extends QITTestCase {
 		$this->assertNotEmpty( $result['next_steps'] );
 	}
 
+	public function test_embedded_result_urls_are_redacted_in_failures_and_debug_logs(): void {
+		$response = $this->make_e2e_response();
+		$ctrf     = json_decode( $response['ctrf_json'], true );
+
+		$ctrf['results']['tests'][1]['message'] = 'See https://qit.woo.com/results/98765.secret?auth=abc before retrying.';
+		$response['ctrf_json']                  = json_encode( $ctrf );
+		$response['debug_log']                  = json_encode( [
+			'debug_log' => '[01-Jan-2025 00:00:00 UTC] PHP Fatal error: See https://qit.woo.com/results/98765.secret?auth=abc',
+		] );
+
+		$this->mock_get_single_response( $response );
+
+		$result = $this->call_tool( 'qit_get_failures', [
+			'test_run_id' => 98765,
+		] );
+
+		$this->assertSame( 'See https://qit.woo.com/results/[REDACTED]?[REDACTED] before retrying.', $result['failures'][0]['message'] );
+		$this->assertStringContainsString(
+			'https://qit.woo.com/results/[REDACTED]?[REDACTED]',
+			$result['debug_signals']['lines'][0]
+		);
+		$this->assertStringNotContainsString( '98765.secret', $result['failures'][0]['message'] );
+		$this->assertStringNotContainsString( 'auth=abc', $result['debug_signals']['lines'][0] );
+	}
+
 	public function test_get_failures_extracts_legacy_security_messages(): void {
 		$this->mock_get_single_response( $this->make_security_response() );
 
