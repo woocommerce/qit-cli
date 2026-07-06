@@ -198,6 +198,27 @@ class McpServerTest extends QITTestCase {
 		$this->assertSame( [], $result['debug_signals']['lines'] );
 	}
 
+	public function test_get_failures_matching_lines_reports_pre_truncation_count(): void {
+		$response              = $this->make_e2e_response();
+		$response['debug_log'] = json_encode( [
+			'debug_log' => implode( "\n", [
+				'[01-Jan-2025 00:00:00 UTC] PHP Warning: first signal',
+				'[01-Jan-2025 00:00:01 UTC] PHP Notice: second signal',
+				'[01-Jan-2025 00:00:02 UTC] PHP Fatal error: third signal',
+			] ),
+		] );
+		$this->mock_get_single_response( $response );
+
+		$result = $this->call_tool( 'qit_get_failures', [
+			'test_run_id'         => 98765,
+			'max_debug_log_lines' => 1,
+		] );
+
+		$this->assertSame( 3, $result['debug_signals']['matching_lines'] );
+		$this->assertCount( 1, $result['debug_signals']['lines'] );
+		$this->assertStringContainsString( 'third signal', $result['debug_signals']['lines'][0] );
+	}
+
 	public function test_embedded_result_urls_are_redacted_in_failures_and_debug_logs(): void {
 		$response = $this->make_e2e_response();
 		$ctrf     = json_decode( $response['ctrf_json'], true );

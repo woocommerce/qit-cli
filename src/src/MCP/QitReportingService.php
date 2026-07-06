@@ -399,13 +399,15 @@ class QitReportingService {
 			}
 		}
 
-		if ( $max_lines > 0 && count( $hits ) > $max_lines ) {
+		$matching_lines = count( $hits );
+
+		if ( $max_lines > 0 && $matching_lines > $max_lines ) {
 			$hits = array_slice( $hits, -1 * $max_lines );
 		}
 
 		return [
 			'total_lines'    => count( $lines ),
-			'matching_lines' => count( $hits ),
+			'matching_lines' => $matching_lines,
 			'lines'          => $hits,
 		];
 	}
