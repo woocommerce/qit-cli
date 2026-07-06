@@ -382,7 +382,16 @@ class QitReportingService {
 	 */
 	private function extract_debug_signals( $debug_log, int $max_lines ): array {
 		$lines = $this->debug_log_to_lines( $debug_log );
-		$hits  = [];
+
+		if ( $max_lines === 0 ) {
+			return [
+				'total_lines'    => count( $lines ),
+				'matching_lines' => 0,
+				'lines'          => [],
+			];
+		}
+
+		$hits = [];
 
 		foreach ( $lines as $line ) {
 			if ( preg_match( '/fatal error|parse error|warning|notice|deprecated|uncaught|exception/i', $line ) ) {

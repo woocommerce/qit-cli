@@ -181,6 +181,23 @@ class McpServerTest extends QITTestCase {
 		$this->assertNotEmpty( $result['next_steps'] );
 	}
 
+	public function test_get_failures_max_debug_log_lines_zero_returns_no_debug_lines(): void {
+		$response              = $this->make_e2e_response();
+		$response['debug_log'] = json_encode( [
+			'debug_log' => "[01-Jan-2025 00:00:00 UTC] PHP Fatal error: Uncaught RuntimeException\nplain line",
+		] );
+		$this->mock_get_single_response( $response );
+
+		$result = $this->call_tool( 'qit_get_failures', [
+			'test_run_id'         => 98765,
+			'max_debug_log_lines' => 0,
+		] );
+
+		$this->assertSame( 2, $result['debug_signals']['total_lines'] );
+		$this->assertSame( 0, $result['debug_signals']['matching_lines'] );
+		$this->assertSame( [], $result['debug_signals']['lines'] );
+	}
+
 	public function test_embedded_result_urls_are_redacted_in_failures_and_debug_logs(): void {
 		$response = $this->make_e2e_response();
 		$ctrf     = json_decode( $response['ctrf_json'], true );
