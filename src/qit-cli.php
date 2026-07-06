@@ -12,7 +12,7 @@ try {
 	require_once __DIR__ . '/vendor/autoload.php';
 	require_once __DIR__ . '/src/helpers.php';
 
-	$is_mcp_mode = in_array( 'mcp', $_SERVER['argv'] ?? [], true );
+	$is_mcp_mode = \QIT_CLI\is_mcp_command_argv( $_SERVER['argv'] ?? [] );
 
 	// Normalize option aliases in argv before Symfony Console processes them.
 	// Long forms are canonical (--php_version, --wordpress_version, --woocommerce_version).

@@ -9,6 +9,7 @@ use QIT_CLI\MCP\McpServer;
 use QIT_CLI\MCP\StdioTransport;
 use QIT_CLI_Tests\QITTestCase;
 use function QIT_CLI\get_manager_url;
+use function QIT_CLI\is_mcp_command_argv;
 
 class McpServerTest extends QITTestCase {
 	/** @var array<string> */
@@ -81,6 +82,16 @@ class McpServerTest extends QITTestCase {
 
 		$this->assertCount( 1, $lines );
 		$this->assertSame( '2.0', json_decode( $lines[0], true )['jsonrpc'] );
+	}
+
+	public function test_mcp_mode_only_matches_command_token(): void {
+		$this->assertTrue( is_mcp_command_argv( [ 'qit', 'mcp' ] ) );
+		$this->assertTrue( is_mcp_command_argv( [ 'qit', '--no-interaction', 'mcp' ] ) );
+		$this->assertFalse( is_mcp_command_argv( [ 'qit', 'run:e2e', 'mcp' ] ) );
+		$this->assertFalse( is_mcp_command_argv( [ 'qit', 'run:e2e', '--filter', 'mcp' ] ) );
+		$this->assertFalse( is_mcp_command_argv( [ 'qit', 'get', 'mcp', '--json-results' ] ) );
+		$this->assertFalse( is_mcp_command_argv( [ 'qit', '--help' ] ) );
+		$this->assertFalse( is_mcp_command_argv( [ 'qit' ] ) );
 	}
 
 	public function test_get_run_decodes_results_and_redacts_sensitive_report_url(): void {
