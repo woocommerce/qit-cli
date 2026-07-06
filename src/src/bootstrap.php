@@ -126,7 +126,6 @@ $container->bind( 'src_dir', __DIR__ );
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
 
 $is_mcp_mode = \QIT_CLI\is_mcp_command_argv( $GLOBALS['argv'] ?? null );
-App::setVar( 'mcp_mode', $is_mcp_mode );
 
 if ( $is_mcp_mode ) {
 	$application->add( $container->make( McpCommand::class ) );
