@@ -63,6 +63,22 @@ class McpServerTest extends QITTestCase {
 		$this->assertStringContainsString( 'Unknown tool', $response['result']['content'][0]['text'] );
 	}
 
+	public function test_invalid_notification_does_not_return_error_response(): void {
+		$server = App::make( McpServer::class );
+
+		$this->assertNull( $server->handle( [
+			'jsonrpc' => '2.0',
+			'method'  => '',
+		] ) );
+		$this->assertNull( $server->handle( [
+			'jsonrpc' => '2.0',
+			'method'  => [ 'not-a-string' ],
+		] ) );
+		$this->assertNull( $server->handle( [
+			'jsonrpc' => '2.0',
+		] ) );
+	}
+
 	public function test_stdio_transport_writes_only_protocol_messages(): void {
 		$input  = fopen( 'php://temp', 'r+' );
 		$output = fopen( 'php://temp', 'r+' );

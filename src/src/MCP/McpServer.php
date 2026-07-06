@@ -22,13 +22,16 @@ class McpServer {
 		$method          = $message['method'] ?? null;
 		$is_notification = ! $has_id;
 
-		if ( ! is_string( $method ) || $method === '' ) {
-			return $this->error_response( $id, -32600, 'Invalid Request' );
+		if ( $is_notification ) {
+			if ( is_string( $method ) && $method !== '' ) {
+				$this->handle_notification( $method );
+			}
+
+			return null;
 		}
 
-		if ( $is_notification ) {
-			$this->handle_notification( $method );
-			return null;
+		if ( ! is_string( $method ) || $method === '' ) {
+			return $this->error_response( $id, -32600, 'Invalid Request' );
 		}
 
 		switch ( $method ) {
