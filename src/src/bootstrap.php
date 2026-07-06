@@ -27,6 +27,7 @@ use QIT_CLI\Commands\GetMultipleCommand;
 use QIT_CLI\Commands\Group\GroupFetchCommand;
 use QIT_CLI\Commands\Group\RunGroupCommand;
 use QIT_CLI\Commands\ListCommand;
+use QIT_CLI\Commands\McpCommand;
 use QIT_CLI\Commands\OpenCommand;
 use QIT_CLI\Commands\Partner\AddPartner;
 use QIT_CLI\Commands\Partner\RemovePartner;
@@ -123,6 +124,15 @@ $container->singleton( TunnelRunner::class );
 $container->bind( 'src_dir', __DIR__ );
 
 $application->configureIO( $container->make( Input::class ), $container->make( Output::class ) );
+
+$is_mcp_mode = is_array( $GLOBALS['argv'] ?? null ) && in_array( 'mcp', $GLOBALS['argv'], true );
+App::setVar( 'mcp_mode', $is_mcp_mode );
+
+if ( $is_mcp_mode ) {
+	$application->add( $container->make( McpCommand::class ) );
+
+	return $application;
+}
 
 require_once __DIR__ . '/json-filter.php';
 
