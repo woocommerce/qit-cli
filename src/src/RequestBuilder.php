@@ -360,7 +360,6 @@ class RequestBuilder {
 		$body        = substr( $result, $header_size );
 
 		$response_status_code = curl_getinfo( $curl, CURLINFO_HTTP_CODE );
-		curl_close( $curl );
 
 		if ( ! in_array( $response_status_code, $this->expected_status_codes, true ) ) {
 			if ( $proxied && $result === false ) {
@@ -565,7 +564,6 @@ class RequestBuilder {
 		$curl_error    = curl_error( $curl );
 		$http_code     = (int) curl_getinfo( $curl, CURLINFO_HTTP_CODE );
 		$effective_url = curl_getinfo( $curl, CURLINFO_EFFECTIVE_URL );
-		curl_close( $curl );
 		fclose( $fp );
 
 		if ( $curl_error ) {
