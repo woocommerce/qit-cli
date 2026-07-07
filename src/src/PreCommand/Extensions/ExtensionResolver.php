@@ -192,15 +192,18 @@ class ExtensionResolver {
 
 		// For remote sources, check if we have the necessary info
 		if ( $extension->from === 'wporg' ) {
-			// For WPORG, we just need the version - but special tags like nightly/rc require further resolution.
+			// For WPORG, we just need the version - but channel aliases like
+			// nightly/rc require further resolution.
 			$version_lower = strtolower( (string) $extension->version );
-			$special_tag   = in_array( $version_lower, [ 'nightly', 'rc' ], true ) || str_contains( $version_lower, '-rc' );
+			$special_tag   = in_array( $version_lower, [ 'nightly', 'rc' ], true );
 
-			// WooCommerce dev/nightly/rc builds are served from GitHub releases, not
+			// WooCommerce dev builds are served from GitHub releases, not
 			// WordPress.org. A wporg source pinned to such a version is NOT resolved -
 			// it must be routed through resolve_extension_source() so the version
 			// resolver can map it to a real GitHub release URL instead of a dead
-			// downloads.wordpress.org/plugin/woocommerce.{version}.zip URL.
+			// downloads.wordpress.org/plugin/woocommerce.{version}.zip URL. Explicit
+			// beta/RC versions (e.g. 10.9.0-beta.1, 10.9.0-rc.1) are valid WP.org
+			// downloads and should stay on the WP.org path.
 			if ( $extension->slug === 'woocommerce' && $this->version_resolver->is_woo_special_version( (string) $extension->version ) ) {
 				return false;
 			}
@@ -229,8 +232,8 @@ class ExtensionResolver {
 			return; // Local sources are resolved
 		}
 
-		// WooCommerce dev/nightly/rc builds live on GitHub releases, not WordPress.org.
-		// Resolve them to the correct URL up front so a pinned dev/nightly/rc version
+		// WooCommerce dev builds and channel aliases live on GitHub releases, not WordPress.org.
+		// Resolve them to the correct URL up front so a pinned dev version
 		// (whether declared as a plugin entry or via --woo) doesn't fall through to a
 		// non-existent downloads.wordpress.org/plugin/woocommerce.{version}.zip URL.
 		if ( $extension->slug === 'woocommerce' && ! empty( $extension->version ) ) {

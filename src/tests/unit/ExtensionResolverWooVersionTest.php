@@ -48,6 +48,24 @@ class ExtensionResolverWooVersionTest extends QITTestCase {
 		);
 	}
 
+	/**
+	 * @dataProvider wporg_prerelease_provider
+	 */
+	public function test_woo_beta_and_rc_wporg_versions_remain_resolved( string $version ): void {
+		$this->assertTrue(
+			$this->invoke( $this->resolver(), 'is_source_resolved', $this->woo( $version ) ),
+			'Explicit WooCommerce beta/RC versions are legitimately available on WordPress.org.'
+		);
+	}
+
+	/** @return array<string,array{0:string}> */
+	public function wporg_prerelease_provider(): array {
+		return [
+			'explicit beta' => [ '10.9.0-beta.1' ],
+			'explicit rc'   => [ '10.9.0-rc.1' ],
+		];
+	}
+
 	public function test_resolve_source_maps_woo_dev_to_github_url(): void {
 		$ext = $this->woo( '11.0.0-dev' );
 		$this->invoke( $this->resolver(), 'resolve_extension_source', $ext );
