@@ -55,7 +55,7 @@
                 "headers": {
                     "Requires PHP": "7.4",
                     "Requires at least": "5.6",
-                    "Tested up to": "5.8",
+                    "Tested up to": false,
                     "WC requires at least": "5.8",
                     "WC tested up to": "5.8",
                     "Woo": false,
