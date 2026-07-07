@@ -460,10 +460,27 @@ class RequestBuilder {
 				throw new \RuntimeException( $error_message );
 			}
 
+			if ( is_array( $mocked ) ) {
+				$mock_body = (string) ( $mocked['body'] ?? '' );
+				if ( file_put_contents( $file_path, $mock_body ) === false ) {
+					throw new \RuntimeException( 'Could not write mock response to file: ' . $file_path );
+				}
+
+				$mock_status = isset( $mocked['status'] ) ? (int) $mocked['status'] : 200;
+				self::assert_download_succeeded( $mock_status, $url, $file_path, $mocked['effective_url'] ?? null );
+
+				if ( $output->isVerbose() ) {
+					$output->writeln( "Used mock response for $url, written to $file_path" );
+				}
+
+				return;
+			}
+
 			// Write mock response to file
 			if ( file_put_contents( $file_path, $mocked ) === false ) {
 				throw new \RuntimeException( 'Could not write mock response to file: ' . $file_path );
 			}
+			self::assert_download_succeeded( 200, $url, $file_path );
 
 			if ( $output->isVerbose() ) {
 				$output->writeln( "Used mock response for $url, written to $file_path" );
@@ -545,14 +562,92 @@ class RequestBuilder {
 		if ( $output->isVerbose() && ! is_ci() ) {
 			$output->writeln( sprintf( 'Downloaded %s in %f seconds.', $url, microtime( true ) - $start ) );
 		}
-		$curl_error = curl_error( $curl );
+		$curl_error    = curl_error( $curl );
+		$http_code     = (int) curl_getinfo( $curl, CURLINFO_HTTP_CODE );
+		$effective_url = curl_getinfo( $curl, CURLINFO_EFFECTIVE_URL );
 		curl_close( $curl );
 		fclose( $fp );
 
 		if ( $curl_error ) {
 			// Delete the potentially partially written file.
-			unlink( $file_path );
+			self::delete_download_file( $file_path );
 			throw new \RuntimeException( 'Curl ' . $curl_error );
+		}
+
+		self::assert_download_succeeded( $http_code, $url, $file_path, $effective_url );
+	}
+
+	/**
+	 * Validate a completed file download and remove unusable files before throwing.
+	 */
+	protected static function assert_download_succeeded( int $http_code, string $url, string $file_path, ?string $effective_url = null ): void {
+		// A transport-level success can still be an HTTP error (404, 403, 5xx). With
+		// CURLOPT_FILE the error body is streamed to $file_path, so without this guard
+		// a 404 "Not found" page (e.g. a WordPress.org download URL for a version that
+		// does not exist) masquerades as the downloaded zip and only fails later as a
+		// misleading "invalid zip" error. Fail loudly here, naming the real cause.
+		$http_error = self::download_http_error_message( $http_code, $url, $file_path, $effective_url );
+		if ( $http_error !== null ) {
+			self::delete_download_file( $file_path );
+			throw new \RuntimeException( $http_error );
+		}
+
+		clearstatcache( true, $file_path );
+		$file_size = file_exists( $file_path ) ? filesize( $file_path ) : false;
+		if ( $file_size === false || $file_size <= 0 ) {
+			self::delete_download_file( $file_path );
+			throw new \RuntimeException( 'Download failed: empty response for ' . self::sanitize_download_url_for_logs( $effective_url ?: $url ) );
+		}
+	}
+
+	/**
+	 * Build an error message when a download returned an HTTP error status, or null
+	 * when the status is acceptable. Extracted so the branch is unit-testable
+	 * without performing a real network download.
+	 */
+	protected static function download_http_error_message( int $http_code, string $url, string $file_path, ?string $effective_url = null ): ?string {
+		if ( $http_code >= 200 && $http_code < 300 ) {
+			return null;
+		}
+
+		$snippet = '';
+		if ( is_readable( $file_path ) ) {
+			$body    = (string) file_get_contents( $file_path, false, null, 0, 200 );
+			$snippet = trim( (string) preg_replace( '/\s+/', ' ', $body ) );
+		}
+
+		$url_for_logs           = self::sanitize_download_url_for_logs( $url );
+		$effective_url_for_logs = $effective_url !== null ? self::sanitize_download_url_for_logs( $effective_url ) : null;
+		$effective_url_suffix   = $effective_url_for_logs !== null && $effective_url_for_logs !== $url_for_logs
+			? sprintf( ' (effective URL: %s)', $effective_url_for_logs )
+			: '';
+
+		return sprintf(
+			'Download failed: HTTP %d for %s%s',
+			$http_code,
+			$url_for_logs,
+			$effective_url_suffix . ( $snippet !== '' ? ' - response body starts with: ' . $snippet : '' )
+		);
+	}
+
+	protected static function sanitize_download_url_for_logs( string $url ): string {
+		$parts = parse_url( $url );
+		if ( $parts === false || ! isset( $parts['scheme'], $parts['host'] ) ) {
+			return (string) preg_replace( '/[?#].*$/', '', $url );
+		}
+
+		$sanitized = $parts['scheme'] . '://' . $parts['host'];
+		if ( isset( $parts['port'] ) ) {
+			$sanitized .= ':' . $parts['port'];
+		}
+		$sanitized .= $parts['path'] ?? '';
+
+		return $sanitized;
+	}
+
+	protected static function delete_download_file( string $file_path ): void {
+		if ( file_exists( $file_path ) ) {
+			unlink( $file_path );
 		}
 	}
 

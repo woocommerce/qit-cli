@@ -196,6 +196,15 @@ class ExtensionResolver {
 			$version_lower = strtolower( (string) $extension->version );
 			$special_tag   = in_array( $version_lower, [ 'nightly', 'rc' ], true ) || str_contains( $version_lower, '-rc' );
 
+			// WooCommerce dev/nightly/rc builds are served from GitHub releases, not
+			// WordPress.org. A wporg source pinned to such a version is NOT resolved -
+			// it must be routed through resolve_extension_source() so the version
+			// resolver can map it to a real GitHub release URL instead of a dead
+			// downloads.wordpress.org/plugin/woocommerce.{version}.zip URL.
+			if ( $extension->slug === 'woocommerce' && $this->version_resolver->is_woo_special_version( (string) $extension->version ) ) {
+				return false;
+			}
+
 			return ! empty( $extension->version ) && ! $special_tag;
 		}
 
@@ -213,18 +222,33 @@ class ExtensionResolver {
 	protected function resolve_extension_source( Extension $extension ): void {
 		debug_log( "ExtensionResolver: Resolving source for '{$extension->slug}'" );
 
-		// Handle explicit source types
-		if ( ! empty( $extension->from ) ) {
-			if ( in_array( $extension->from, [ 'local', 'url', 'build' ], true ) ) {
-				debug_log( "  Extension has explicit local/non-remote source: {$extension->from}" );
+		// Handle explicit local/non-remote source types (already resolved).
+		if ( ! empty( $extension->from ) && in_array( $extension->from, [ 'local', 'url', 'build' ], true ) ) {
+			debug_log( "  Extension has explicit local/non-remote source: {$extension->from}" );
 
-				return; // Local sources are resolved
-			}
-			if ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) && ! empty( $extension->source ) && ! empty( $extension->version ) ) {
-				debug_log( '  Extension has complete remote source information' );
+			return; // Local sources are resolved
+		}
 
-				return; // Remote sources with metadata are resolved
+		// WooCommerce dev/nightly/rc builds live on GitHub releases, not WordPress.org.
+		// Resolve them to the correct URL up front so a pinned dev/nightly/rc version
+		// (whether declared as a plugin entry or via --woo) doesn't fall through to a
+		// non-existent downloads.wordpress.org/plugin/woocommerce.{version}.zip URL.
+		if ( $extension->slug === 'woocommerce' && ! empty( $extension->version ) ) {
+			$woo_url = $this->version_resolver->resolve_woo( (string) $extension->version );
+			if ( $woo_url !== null ) {
+				$extension->from   = 'url';
+				$extension->source = $woo_url;
+				debug_log( "  Resolved WooCommerce '{$extension->version}' to GitHub release URL: {$woo_url}" );
+
+				return;
 			}
+		}
+
+		// Handle explicit remote source types with complete metadata.
+		if ( ! empty( $extension->from ) && in_array( $extension->from, [ 'wporg', 'wccom' ], true ) && ! empty( $extension->source ) && ! empty( $extension->version ) ) {
+			debug_log( '  Extension has complete remote source information' );
+
+			return; // Remote sources with metadata are resolved
 		}
 
 		// Version resolution is now handled explicitly in UpEnvironmentCommand

@@ -34,6 +34,51 @@ class ExtensionCacheManagerTest extends QITTestCase {
 		return (string) $content;
 	}
 
+	private function validate_cache( ExtensionCacheManager $cache_manager, string $zip_path, Extension $extension ): bool {
+		$ref = new \ReflectionMethod( ExtensionCacheManager::class, 'validate_cache' );
+		$ref->setAccessible( true );
+
+		return (bool) $ref->invoke( $cache_manager, $zip_path, $extension );
+	}
+
+	public function test_woocommerce_dev_cache_expires_after_five_minutes(): void {
+		$cache_manager = App::make( ExtensionCacheManager::class );
+		$slug          = 'woocommerce';
+		$cache_file    = sys_get_temp_dir() . "/qit-cache-test-dev-$slug.zip";
+
+		$this->write_plugin_zip( $cache_file, $slug, '11.0.0-dev' );
+		touch( $cache_file, time() - 6 * MINUTE_IN_SECONDS );
+		clearstatcache( true, $cache_file );
+
+		$ext          = new Extension( $slug, 'plugin', 'https://github.com/woocommerce/woocommerce/releases/download/11.0.0-dev/woocommerce.zip' );
+		$ext->from    = 'url';
+		$ext->version = '11.0.0-dev';
+
+		$this->assertFalse(
+			$this->validate_cache( $cache_manager, $cache_file, $ext ),
+			'WooCommerce dev builds should refresh after the short cache window.'
+		);
+	}
+
+	public function test_regular_version_cache_survives_five_minutes(): void {
+		$cache_manager = App::make( ExtensionCacheManager::class );
+		$slug          = 'woocommerce';
+		$cache_file    = sys_get_temp_dir() . "/qit-cache-test-stable-$slug.zip";
+
+		$this->write_plugin_zip( $cache_file, $slug, '9.5.0' );
+		touch( $cache_file, time() - 6 * MINUTE_IN_SECONDS );
+		clearstatcache( true, $cache_file );
+
+		$ext          = new Extension( $slug, 'plugin', 'https://downloads.wordpress.org/plugin/woocommerce.9.5.0.zip' );
+		$ext->from    = 'wporg';
+		$ext->version = '9.5.0';
+
+		$this->assertTrue(
+			$this->validate_cache( $cache_manager, $cache_file, $ext ),
+			'Regular released versions should keep the longer cache window.'
+		);
+	}
+
 	/**
 	 * Rebuilding a local zip in place (same path) must invalidate the path-based
 	 * cache. Previously the copy was skipped whenever a cache file already existed,

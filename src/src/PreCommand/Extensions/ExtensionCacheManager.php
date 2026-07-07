@@ -371,7 +371,7 @@ class ExtensionCacheManager {
 
 			// Check if this is a special version that changes frequently
 			$is_special_version = in_array( $extension->version, [ 'rc', 'nightly' ], true ) ||
-									( $extension->slug === 'woocommerce' && in_array( $extension->version, [ 'rc', 'nightly' ], true ) );
+									( $extension->slug === 'woocommerce' && preg_match( '/^\d+\.\d+\.\d+-dev$/', (string) $extension->version ) === 1 );
 
 			if ( $is_special_version ) {
 				// RC and nightly versions change frequently, so short cache
