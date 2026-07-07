@@ -35,7 +35,9 @@ trait OptionReuseTrait {
 
 		// Using reflection to access the 'mode' private property of the option.
 		$reflected_option = new ReflectionProperty( InputOption::class, 'mode' );
-		$reflected_option->setAccessible( true );
+		if ( PHP_VERSION_ID < 80100 ) {
+			$reflected_option->setAccessible( true );
+		}
 		$mode = $reflected_option->getValue( $option );
 
 		if ( $mode === InputOption::VALUE_NONE ) {

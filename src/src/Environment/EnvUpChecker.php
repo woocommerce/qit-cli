@@ -63,7 +63,6 @@ class EnvUpChecker {
 		curl_setopt( $ch, CURLOPT_USERAGENT, 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3' );
 		curl_exec( $ch );
 		$http_code = curl_getinfo( $ch, CURLINFO_HTTP_CODE );
-		curl_close( $ch );
 
 		// 502 = Bad Gateway. This can happen for a short period, especially when using Jurassic Tube.
 		if ( $http_code === 502 && $retries < 3 ) { // @phpstan-ignore-line

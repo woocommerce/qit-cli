@@ -32,6 +32,24 @@ class VersionResolver {
 	}
 
 	/**
+	 * Whether a WooCommerce version selector is a "special" version that must be
+	 * resolved to a GitHub release URL rather than a WordPress.org download.
+	 *
+	 * Mirrors the cases handled by {@see resolve_woo()}: the `rc` and `nightly`
+	 * channels and explicit development builds (e.g. `11.0.0-dev`). WordPress.org
+	 * only hosts released tags, so treating one of these as an ordinary wporg
+	 * version produces a dead `downloads.wordpress.org/.../{slug}.{version}.zip`
+	 * URL (HTTP 404), which later surfaces as a misleading "invalid zip" error.
+	 *
+	 * This is a side-effect-free predicate (unlike resolve_woo(), which may hit
+	 * the manager sync cache for `rc`), so it is safe to call from cache checks.
+	 */
+	public function is_woo_special_version( string $version ): bool {
+		return in_array( $version, [ 'rc', 'nightly' ], true )
+			|| preg_match( '/^\d+\.\d+\.\d+-dev$/', $version ) === 1;
+	}
+
+	/**
 	 * Resolve WordPress special versions (rc only).
 	 * Only handles RC - no fallbacks.
 	 */
