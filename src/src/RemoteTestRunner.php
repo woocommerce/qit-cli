@@ -307,11 +307,12 @@ class RemoteTestRunner {
 		$is_json       = $input->getOption( 'json' );
 
 		/** @var ConsoleSectionOutput|null $section */
-		$section     = null;
-		$last_result = null;
-		$last_status = '';
-		$completed   = false;
-		$ticks       = 0;
+		$section       = null;
+		$last_result   = null;
+		$last_status   = '';
+		$completed     = false;
+		$ticks         = 0;
+		$poll_failures = 0;
 
 		if ( $is_ci || $is_json ) {
 			if ( ! $is_json ) {
@@ -354,17 +355,23 @@ class RemoteTestRunner {
 
 			if ( $ticks >= $poll_interval || $last_result === null ) {
 				try {
-					$result_json = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
+					$result_json   = ( new RequestBuilder( get_manager_url() . '/wp-json/cd/v1/get-single' ) )
 						->with_method( 'POST' )
 						->with_post_body( [ 'test_run_id' => $test_run_id ] )
 						->request();
-					$last_result = json_decode( $result_json, true );
-					$ticks       = 0;
+					$last_result   = json_decode( $result_json, true );
+					$ticks         = 0;
+					$poll_failures = 0;
 				} catch ( \Exception $e ) {
-					if ( $last_result === null ) {
-						sleep( 1 );
-						continue;
-					}
+					// A failed poll must not turn into a once-per-second burst (QIT-991):
+					// back off with jitter and reset the tick counter so the next attempt
+					// waits a proper interval. This applies both before the first result
+					// (previously a tight sleep(1) loop) and after a later failure
+					// (previously left $ticks >= $poll_interval, re-polling every second).
+					++$poll_failures;
+					$ticks = 0;
+					sleep( self::poll_retry_delay( $poll_failures, $poll_interval ) );
+					continue;
 				}
 
 				$completed = isset( $last_result['update_complete'] ) && $last_result['update_complete'] === true;
@@ -393,6 +400,20 @@ class RemoteTestRunner {
 		$this->render_completion( $input, $output, $section, $last_result, $last_status, $test_run_id, $start, $is_ci, $is_json );
 
 		return $exit_code;
+	}
+
+	/**
+	 * Backoff delay (seconds) for a failed status poll: exponential from 2s, capped at
+	 * the normal poll interval, with jitter so parallel CI clients do not retry in lockstep.
+	 *
+	 * @param int $failures      Consecutive poll failures so far (1-based).
+	 * @param int $poll_interval The normal polling cadence, used as the backoff ceiling.
+	 */
+	private static function poll_retry_delay( int $failures, int $poll_interval ): int {
+		$delay = 2 ** min( max( 1, $failures ), 5 );
+		$delay = min( $poll_interval, $delay );
+
+		return $delay + rand( 0, 5 );
 	}
 
 	/**
