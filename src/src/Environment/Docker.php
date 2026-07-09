@@ -460,18 +460,41 @@ class Docker {
 		$output     = [];
 		$return_var = 0;
 
-		// Prefer Docker Compose v2 over v1.
+		// Docker Compose v2.
 		exec( 'docker compose version >/dev/null 2>&1', $output, $return_var );
 		if ( $return_var === 0 ) {
 			return [ 'docker', 'compose' ];
 		}
 
+		/*
+		 * The legacy standalone "docker-compose" (v1) is end-of-life and cannot run QIT
+		 * environments. The environment files we generate omit the top-level "version" key,
+		 * which v1 resolves to Compose file format 1. On that path v1 interpolates with
+		 * Python's stdlib string.Template, which does not understand "${VAR:-default}"
+		 * (nor "${VAR-default}"), and fails with "Invalid interpolation format".
+		 *
+		 * Falling back to it silently produced confusing downstream errors, so refuse it
+		 * explicitly and tell the user how to install v2.
+		 */
 		exec( 'docker-compose version >/dev/null 2>&1', $output, $return_var );
 		if ( $return_var === 0 ) {
-			return [ 'docker-compose' ];
+			throw new \RuntimeException(
+				"Docker Compose v2 is required, but only the legacy \"docker-compose\" (v1) was found.\n" .
+				"Docker Compose v1 is end-of-life and cannot run QIT environments.\n\n" .
+				"Install the Compose v2 plugin, then verify with: docker compose version\n" .
+				"  Debian/Ubuntu: sudo apt-get install docker-compose-plugin\n" .
+				"  RHEL/Fedora:   sudo dnf install docker-compose-plugin\n" .
+				'  Other systems: https://docs.docker.com/compose/install/'
+			);
 		}
 
-		throw new \RuntimeException( 'Could not find docker compose or docker-compose' );
+		throw new \RuntimeException(
+			"Could not find Docker Compose v2.\n\n" .
+			"Install it, then verify with: docker compose version\n" .
+			"  Debian/Ubuntu: sudo apt-get install docker-compose-plugin\n" .
+			"  RHEL/Fedora:   sudo dnf install docker-compose-plugin\n" .
+			'  Other systems: https://docs.docker.com/compose/install/'
+		);
 	}
 
 	public function maybe_pull_docker_compose( string $docker_compose_path, string $environment_type ): void {
