@@ -454,34 +454,48 @@ class Docker {
 	}
 
 	/**
+	 * Docker Compose v1 is end-of-life and cannot run QIT environments. The environment files
+	 * we generate omit the top-level "version" key, which v1 resolves to Compose file format 1.
+	 * On that path v1 interpolates with Python's stdlib string.Template, which does not
+	 * understand "${VAR:-default}" (nor "${VAR-default}"), and fails with "Invalid
+	 * interpolation format".
+	 *
+	 * Note that the binary name does not identify the major version: Compose v2 ships both as a
+	 * "docker compose" CLI plugin and as a standalone "docker-compose" binary, so both
+	 * candidates have to be probed for their reported version.
+	 *
 	 * @return array<string> The docker-compose command to use, in a Symfony Process format.
 	 */
 	public function find_docker_compose(): array {
-		$output     = [];
-		$return_var = 0;
+		$candidates = [
+			[ 'docker', 'compose' ],
+			[ 'docker-compose' ],
+		];
 
-		// Docker Compose v2.
-		exec( 'docker compose version >/dev/null 2>&1', $output, $return_var );
-		if ( $return_var === 0 ) {
-			return [ 'docker', 'compose' ];
+		$found_unsupported = null;
+
+		foreach ( $candidates as $candidate ) {
+			$major = $this->get_docker_compose_major_version( $candidate );
+
+			if ( is_null( $major ) ) {
+				continue;
+			}
+
+			if ( $major >= 2 ) {
+				return $candidate;
+			}
+
+			// Installed, but too old. Keep probing: a supported version may exist under the other name.
+			$found_unsupported = implode( ' ', $candidate );
 		}
 
-		/*
-		 * The legacy standalone "docker-compose" (v1) is end-of-life and cannot run QIT
-		 * environments. The environment files we generate omit the top-level "version" key,
-		 * which v1 resolves to Compose file format 1. On that path v1 interpolates with
-		 * Python's stdlib string.Template, which does not understand "${VAR:-default}"
-		 * (nor "${VAR-default}"), and fails with "Invalid interpolation format".
-		 *
-		 * Falling back to it silently produced confusing downstream errors, so refuse it
-		 * explicitly and tell the user how to install v2.
-		 */
-		exec( 'docker-compose version >/dev/null 2>&1', $output, $return_var );
-		if ( $return_var === 0 ) {
+		if ( ! is_null( $found_unsupported ) ) {
 			throw new \RuntimeException(
-				"Docker Compose v2 is required, but only the legacy \"docker-compose\" (v1) was found.\n" .
-				"Docker Compose v1 is end-of-life and cannot run QIT environments.\n\n" .
-				"Install the Compose v2 plugin, then verify with: docker compose version\n" .
+				sprintf(
+					"Docker Compose v2 or higher is required, but \"%s\" reports v1, which is end-of-life and cannot run QIT environments.\n\n",
+					$found_unsupported
+				) .
+				"Upgrade Docker Compose, then verify with: docker compose version\n" .
 				"  Debian/Ubuntu: sudo apt-get install docker-compose-plugin\n" .
 				"  RHEL/Fedora:   sudo dnf install docker-compose-plugin\n" .
 				'  Other systems: https://docs.docker.com/compose/install/'
@@ -489,12 +503,38 @@ class Docker {
 		}
 
 		throw new \RuntimeException(
-			"Could not find Docker Compose v2.\n\n" .
+			"Could not find Docker Compose v2 or higher.\n\n" .
 			"Install it, then verify with: docker compose version\n" .
 			"  Debian/Ubuntu: sudo apt-get install docker-compose-plugin\n" .
 			"  RHEL/Fedora:   sudo dnf install docker-compose-plugin\n" .
 			'  Other systems: https://docs.docker.com/compose/install/'
 		);
+	}
+
+	/**
+	 * @param array<string> $command The Docker Compose command to probe.
+	 *
+	 * @return int|null The reported major version, or null if the command is unavailable or unparseable.
+	 */
+	protected function get_docker_compose_major_version( array $command ): ?int {
+		$output     = [];
+		$return_var = 0;
+
+		exec( implode( ' ', $command ) . ' version 2>&1', $output, $return_var );
+
+		if ( $return_var !== 0 ) {
+			return null;
+		}
+
+		/*
+		 * v1: "docker-compose version 1.29.2, build 5becea4c"
+		 * v2: "Docker Compose version v2.24.5"
+		 */
+		if ( ! preg_match( '/\bversion\s+v?(\d+)\./i', implode( "\n", $output ), $matches ) ) {
+			return null;
+		}
+
+		return (int) $matches[1];
 	}
 
 	public function maybe_pull_docker_compose( string $docker_compose_path, string $environment_type ): void {
