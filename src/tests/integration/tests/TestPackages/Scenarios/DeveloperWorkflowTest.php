@@ -175,6 +175,23 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 		] );
 		$this->assertStringContainsString( 'setup_complete_', trim( $restoredMarker ) );
 		$this->assertNotEquals( 'modified_by_test', trim( $restoredMarker ) );
+
+		// A long-running harness can isolate every generated request by restoring the same snapshot
+		// repeatedly. Verify the second reset does not use the state produced by the first reset.
+		qit( [
+			'env:exec',
+			'--env_id=' . $envId,
+			'wp option update qit_main_package_setup_marker "modified_again" --path=/var/www/html'
+		] );
+		qit( [ 'env:reset', $envId ] );
+
+		$restoredAgain = qit( [
+			'env:exec',
+			'--env_id=' . $envId,
+			'wp option get qit_main_package_setup_marker --path=/var/www/html'
+		] );
+		$this->assertStringContainsString( 'setup_complete_', trim( $restoredAgain ) );
+		$this->assertNotEquals( 'modified_again', trim( $restoredAgain ) );
 	}
 	
 	/**

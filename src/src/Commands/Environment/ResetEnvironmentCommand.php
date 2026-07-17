@@ -36,6 +36,8 @@ class ResetEnvironmentCommand extends QITCommand {
 			->addArgument( 'env_id', InputArgument::OPTIONAL, 'Environment ID (uses current if not specified)' )
 			->setHelp( <<<HELP
 The <info>env:reset</info> command restores the database to the state saved after running setup phases.
+It can be called repeatedly against the same running environment; each call restores the same
+post-setup database snapshot and flushes the WordPress object cache.
 
 This is useful when:
   • You want to run tests with a clean state
@@ -51,6 +53,9 @@ Examples:
 
 Note: This only works if the environment was started with setup phases
 (i.e., a qit-test.json file was present and --skip-setup was not used).
+
+Scope: env:reset restores database state only. It does not restore uploads, plugin files, other
+filesystem changes, or external services. Test harnesses must contain those side effects separately.
 HELP
 			);
 	}
