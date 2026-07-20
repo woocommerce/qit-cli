@@ -18,17 +18,20 @@ class RemoteTestRunner {
 	private Upload $upload;
 	private WooExtensionsList $woo_extensions_list;
 	private TestGroup $test_group;
+	private Zipper $zipper;
 
 	public function __construct(
 		Cache $cache,
 		Upload $upload,
 		WooExtensionsList $woo_extensions_list,
-		TestGroup $test_group
+		TestGroup $test_group,
+		Zipper $zipper
 	) {
 		$this->cache               = $cache;
 		$this->upload              = $upload;
 		$this->woo_extensions_list = $woo_extensions_list;
 		$this->test_group          = $test_group;
+		$this->zipper              = $zipper;
 	}
 
 	/**
@@ -263,15 +266,47 @@ class RemoteTestRunner {
 		$zip_opt        = $input->getOption( 'zip' );
 		$zip_flag_alone = $input->getParameterOption( '--zip', 'NOT_SET', true ) === null;
 		$zip_path       = $zip_flag_alone ? $sut_slug_or_id . '.zip' : (string) $zip_opt;
+		$temporary_zip  = null;
 
 		if ( $zip_flag_alone && ! file_exists( $zip_path ) ) {
 			throw new \RuntimeException( "The ZIP file '{$zip_path}' does not exist.", Command::FAILURE );
 		}
 
-		$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $zip_path, $output );
-		$options['event']     = 'cli_development_extension_test';
+		try {
+			if ( is_dir( $zip_path ) ) {
+				$temporary_zip = $this->make_temporary_zip_path();
+				$this->zipper->zip_directory( $zip_path, $temporary_zip );
+				$zip_path = $temporary_zip;
+			} elseif ( filter_var( $zip_path, FILTER_VALIDATE_URL ) ) {
+				$scheme = strtolower( (string) parse_url( $zip_path, PHP_URL_SCHEME ) );
+				if ( ! in_array( $scheme, [ 'http', 'https' ], true ) ) {
+					throw new \InvalidArgumentException( 'Remote ZIP URLs must use HTTP or HTTPS.' );
+				}
+
+				$temporary_zip = $this->make_temporary_zip_path();
+				RequestBuilder::download_file( $zip_path, $temporary_zip );
+				$zip_path = $temporary_zip;
+			}
+
+			$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $zip_path, $output );
+			$options['event']     = 'cli_development_extension_test';
+		} finally {
+			if ( $temporary_zip !== null && file_exists( $temporary_zip ) ) {
+				unlink( $temporary_zip );
+			}
+		}
 
 		unset( $options['zip'] );
+	}
+
+	private function make_temporary_zip_path(): string {
+		$path = tempnam( sys_get_temp_dir(), 'qit-remote-build-' );
+		if ( $path === false ) {
+			throw new \RuntimeException( 'Could not create a temporary ZIP path.' );
+		}
+		unlink( $path );
+
+		return $path;
 	}
 
 	/**

@@ -55,10 +55,11 @@ qit get <test-run-id> --json
 
 ## Report URLs
 
-Report URLs contain a secret token and should not be written to public logs. Human-mode `run:api-fuzz` output hides the URL unless it is explicitly requested:
+Report URLs contain a secret token and should not be written to public logs. Human-mode output hides the URL unless it is explicitly requested:
 
 ```bash
 qit run:api-fuzz woocommerce-bookings --print-report-url
+qit get <test-run-id> --print-report-url
 ```
 
 JSON output retains the Manager response shape and therefore includes the report URL when the Manager returns one. Handle JSON output as sensitive data.

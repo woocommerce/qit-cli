@@ -211,8 +211,9 @@ class GetCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$exit_code = $this->application_tester->run(
 			[
-				'command'     => 'get',
-				'test_run_id' => '98765',
+				'command'            => 'get',
+				'test_run_id'        => '98765',
+				'--print-report-url' => true,
 			],
 			[ 'capture_stderr_separately' => true ]
 		);
@@ -268,8 +269,9 @@ class GetCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$exit_code = $this->application_tester->run(
 			[
-				'command'     => 'get',
-				'test_run_id' => '55555',
+				'command'            => 'get',
+				'test_run_id'        => '55555',
+				'--print-report-url' => true,
 			],
 			[ 'capture_stderr_separately' => true ]
 		);
@@ -494,5 +496,28 @@ class GetCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		] );
 
 		$this->assertSame( Command::SUCCESS, $exit_code );
+	}
+
+	public function test_get_hides_sensitive_report_url_unless_requested(): void {
+		$response = $this->make_security_response();
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-single' ),
+			json_encode( $response )
+		);
+
+		$hidden_tester = $this->make_application_tester();
+		$hidden_tester->run( [
+			'command'     => 'get',
+			'test_run_id' => '55555',
+		] );
+		$this->assertStringNotContainsString( '55555.def456', $hidden_tester->getDisplay() );
+
+		$visible_tester = $this->make_application_tester();
+		$visible_tester->run( [
+			'command'            => 'get',
+			'test_run_id'        => '55555',
+			'--print-report-url' => true,
+		] );
+		$this->assertStringContainsString( '55555.def456', $visible_tester->getDisplay() );
 	}
 }
