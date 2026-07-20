@@ -47,15 +47,50 @@ function qit_reset_run( string $command ): array {
 		return [ 'exit_code' => 1, 'stdout' => '', 'stderr' => 'Unable to start reset command.' ];
 	}
 
-	$stdout = stream_get_contents( $pipes[1] );
-	$stderr = stream_get_contents( $pipes[2] );
-	fclose( $pipes[1] );
-	fclose( $pipes[2] );
+	$stdout  = '';
+	$stderr  = '';
+	$streams = [
+		'stdout' => $pipes[1],
+		'stderr' => $pipes[2],
+	];
+	foreach ( $streams as $stream ) {
+		stream_set_blocking( $stream, false );
+	}
+
+	while ( ! empty( $streams ) ) {
+		$read     = array_values( $streams );
+		$write    = null;
+		$except   = null;
+		$selected = stream_select( $read, $write, $except, 1 );
+		if ( $selected === false ) {
+			foreach ( $streams as $stream ) {
+				fclose( $stream );
+			}
+			proc_terminate( $process );
+			proc_close( $process );
+			return [ 'exit_code' => 1, 'stdout' => $stdout, 'stderr' => 'Unable to read reset command output.' ];
+		}
+
+		foreach ( $read as $stream ) {
+			$name  = array_search( $stream, $streams, true );
+			$chunk = stream_get_contents( $stream );
+			if ( $name === 'stdout' && is_string( $chunk ) ) {
+				$stdout .= $chunk;
+			} elseif ( $name === 'stderr' && is_string( $chunk ) ) {
+				$stderr .= $chunk;
+			}
+
+			if ( $name !== false && feof( $stream ) ) {
+				fclose( $stream );
+				unset( $streams[ $name ] );
+			}
+		}
+	}
 
 	return [
 		'exit_code' => proc_close( $process ),
-		'stdout'    => is_string( $stdout ) ? $stdout : '',
-		'stderr'    => is_string( $stderr ) ? $stderr : '',
+		'stdout'    => $stdout,
+		'stderr'    => $stderr,
 	];
 }
 

@@ -106,7 +106,9 @@ HELP
 					} );
 					$env_info = reset( $environments );
 					$env_id   = $env_info->env_id;
-					$output->writeln( "<info>Multiple environments found. Using most recent: {$env_id}</info>" );
+					if ( ! $json ) {
+						$output->writeln( "<info>Multiple environments found. Using most recent: {$env_id}</info>" );
+					}
 				} else {
 					// Interactive mode - ask user to choose
 					$helper  = $this->getHelper( 'question' );
@@ -131,9 +133,11 @@ HELP
 						0
 					);
 
-					$selected = $helper->ask( $input, $output, $question );
-					$env_id   = array_search( $selected, $choices, true );
-					$env_info = $environments[ $env_id ];
+					$prompt_started = microtime( true );
+					$selected       = $helper->ask( $input, $output, $question );
+					$phase_started += microtime( true ) - $prompt_started;
+					$env_id         = array_search( $selected, $choices, true );
+					$env_info       = $environments[ $env_id ];
 				}
 			}
 		} else {
@@ -473,6 +477,6 @@ HELP
 			'failed_phase'  => $failed_phase,
 			'message'       => $message,
 			'phases'        => $phases,
-		], JSON_UNESCAPED_SLASHES ) );
+		], JSON_UNESCAPED_SLASHES ), OutputInterface::OUTPUT_RAW );
 	}
 }

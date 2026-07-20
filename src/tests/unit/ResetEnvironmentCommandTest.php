@@ -6,6 +6,8 @@ use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Helper\QuestionHelper;
 use Symfony\Component\Console\Tester\CommandTester;
 
 class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
@@ -34,6 +36,9 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringContainsString( '$started = microtime( true );', $script );
 		$this->assertStringContainsString( 'function qit_reset_elapsed( float $phase_started ): float', $script );
 		$this->assertStringContainsString( 'return round( microtime( true ) - $phase_started, 6 );', $script );
+		$this->assertStringContainsString( 'stream_select( $read, $write, $except, 1 );', $script );
+		$this->assertStringContainsString( 'stream_set_blocking( $stream, false );', $script );
+		$this->assertStringNotContainsString( '$stdout = stream_get_contents( $pipes[1] );', $script );
 		$this->assertStringContainsString( "'snapshot_unavailable'", $script );
 		$this->assertStringContainsString( "'snapshot_checksum_mismatch'", $script );
 	}
@@ -113,6 +118,64 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 			$this->assertGreaterThanOrEqual( 0, $phase['seconds'] );
 		}
 		$this->assertGreaterThanOrEqual( 0, $result['total_seconds'] );
+	}
+
+	public function test_json_mode_does_not_emit_automatic_environment_selection_message(): void {
+		$older_env = $this->create_environment( 'qitenv-reset-json-selection-20260719' );
+		$newer_env = $this->create_environment( 'qitenv-reset-json-selection-20260720' );
+		$monitor   = $this->createMock( EnvironmentMonitor::class );
+		$monitor->expects( $this->once() )
+			->method( 'get' )
+			->willReturn( [ $older_env, $newer_env ] );
+		$docker = $this->createMock( Docker::class );
+		$docker->expects( $this->once() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->exactly( 3 ) )
+			->method( 'run_inside_docker' )
+			->willReturn( '' );
+
+		$tester = new CommandTester( new ResetEnvironmentCommand( $monitor, $docker ) );
+		$status = $tester->execute( [ '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::SUCCESS, $status, $tester->getDisplay() );
+		$this->assertSame( $newer_env->env_id, $result['env_id'] );
+		$this->assertStringNotContainsString( 'Using most recent', $tester->getDisplay() );
+	}
+
+	public function test_environment_lookup_excludes_interactive_prompt_wait(): void {
+		$older_env = $this->create_environment( 'qitenv-reset-json-prompt-20260719' );
+		$newer_env = $this->create_environment( 'qitenv-reset-json-prompt-20260720' );
+		$monitor   = $this->createMock( EnvironmentMonitor::class );
+		$monitor->expects( $this->once() )
+			->method( 'get' )
+			->willReturn( [ $older_env, $newer_env ] );
+		$docker = $this->createMock( Docker::class );
+		$docker->expects( $this->once() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->exactly( 3 ) )
+			->method( 'run_inside_docker' )
+			->willReturn( '' );
+		$question_helper = $this->createMock( QuestionHelper::class );
+		$question_helper->expects( $this->once() )
+			->method( 'ask' )
+			->willReturnCallback( static function (): string {
+				usleep( 500000 );
+				return 'qitenv-reset-json-prompt-20260720 (PHP , WP )';
+			} );
+
+		$command = new ResetEnvironmentCommand( $monitor, $docker );
+		$command->setHelperSet( new HelperSet( [ 'question' => $question_helper ] ) );
+		$tester = new CommandTester( $command );
+		$status = $tester->execute( [ '--json' => true ], [ 'interactive' => true ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::SUCCESS, $status, $tester->getDisplay() );
+		$this->assertSame( $newer_env->env_id, $result['env_id'] );
+		$this->assertGreaterThanOrEqual(
+			0.4,
+			$result['total_seconds'] - $result['phases']['environment_lookup']['seconds']
+		);
 	}
 
 	public function test_staged_reset_parses_last_json_line_and_uses_one_container_execution(): void {
@@ -339,7 +402,7 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 			->method( 'run_inside_docker' )
 			->willReturnCallback( static function ( E2EEnvInfo $actual_env, array $command ): string {
 				if ( $command[0] === 'sh' ) {
-					throw new \RuntimeException( 'Import rejected.' );
+					throw new \RuntimeException( 'Import <error>rejected</error>.' );
 				}
 				return '';
 			} );
@@ -353,6 +416,7 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 'failed', $result['phases']['database_import']['status'] );
 		$this->assertSame( 'completed', $result['phases']['temporary_file_cleanup']['status'] );
 		$this->assertSame( 'not_started', $result['phases']['object_cache_flush']['status'] );
+		$this->assertSame( 'Database restore failed: Import <error>rejected</error>.', $result['message'] );
 	}
 
 	public function test_legacy_cache_failure_is_structured(): void {
