@@ -113,7 +113,7 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertGreaterThanOrEqual( 0, $result['total_seconds'] );
 	}
 
-	public function test_staged_reset_uses_one_container_execution_and_skips_copy_and_cleanup(): void {
+	public function test_staged_reset_parses_last_json_line_and_uses_one_container_execution(): void {
 		$env_id   = 'qitenv-reset-json-staged';
 		$metadata = $this->staged_metadata();
 		$env_info = $this->create_environment( $env_id, $metadata );
@@ -123,14 +123,14 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$docker->expects( $this->once() )
 			->method( 'run_inside_docker' )
 			->with( $env_info, [ 'php', $metadata['reset_helper'], $metadata['container_snapshot'], $metadata['snapshot_sha256'] ] )
-			->willReturn( json_encode( [
+			->willReturn( "PHP Deprecated: noisy extension warning\n" . json_encode( [
 				'status'       => 'success',
 				'failed_phase' => null,
 				'phases'       => [
 					'database_import'    => [ 'status' => 'completed', 'seconds' => 0.75 ],
 					'object_cache_flush' => [ 'status' => 'completed', 'seconds' => 0.25 ],
 				],
-			] ) );
+			] ) . "\nDocker warning: noisy stderr output" );
 
 		$tester = $this->create_command_tester( $env_info, $docker );
 		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );

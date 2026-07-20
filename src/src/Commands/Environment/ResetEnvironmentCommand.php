@@ -262,7 +262,7 @@ HELP
 			];
 		}
 
-		$result = json_decode( trim( $helper_output ), true );
+		$result = $this->parse_staged_helper_output( $helper_output );
 		if ( ! is_array( $result ) || ! isset( $result['status'], $result['phases'] ) || ! is_array( $result['phases'] ) ) {
 			$phases['database_import'] = [
 				'status'  => 'failed',
@@ -299,6 +299,27 @@ HELP
 			'failed_phase' => null,
 			'message'      => '',
 		];
+	}
+
+	/**
+	 * Extract the last JSON object emitted by the staged helper, ignoring Docker, PHP, and WP-CLI noise.
+	 *
+	 * @return array<string,mixed>|null
+	 */
+	private function parse_staged_helper_output( string $helper_output ): ?array {
+		$lines = preg_split( '/\R/', $helper_output );
+		if ( ! is_array( $lines ) ) {
+			return null;
+		}
+
+		foreach ( array_reverse( $lines ) as $line ) {
+			$candidate = json_decode( trim( $line ), true );
+			if ( is_array( $candidate ) ) {
+				return $candidate;
+			}
+		}
+
+		return null;
 	}
 
 	/**
