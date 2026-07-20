@@ -32,10 +32,12 @@ class ResetEnvironmentCommand extends QITCommand {
 
 	protected function configure(): void {
 		parent::configure(); // Call parent to set up base options
-		$this->setDescription( 'Reset the database to the post-setup state' )
+		$this->setDescription( 'Restore the post-setup database snapshot and flush the WordPress object cache' )
 			->addArgument( 'env_id', InputArgument::OPTIONAL, 'Environment ID (uses current if not specified)' )
 			->setHelp( <<<HELP
 The <info>env:reset</info> command restores the database to the state saved after running setup phases.
+It can be called repeatedly against the same running environment; each call restores the same
+post-setup database snapshot and flushes the WordPress object cache.
 
 This is useful when:
   • You want to run tests with a clean state
@@ -51,6 +53,10 @@ Examples:
 
 Note: This only works if the environment was started with setup phases
 (i.e., a qit-test.json file was present and --skip-setup was not used).
+
+Scope: env:reset restores database state and flushes the WordPress object cache. It does not restore
+uploads, plugin files, other filesystem changes, or external services. Test harnesses must contain
+those side effects separately.
 HELP
 			);
 	}
@@ -161,23 +167,25 @@ HELP
 
 			// Clean up the temp file in container
 			$this->docker->run_inside_docker( $env_info, [ 'rm', '-f', $container_path ] );
-
-			$output->writeln( ' <info>Done!</info>' );
-			$output->writeln( '<info>✓ Database restored to post-setup state.</info>' );
-
-			// Clear any caches
-			try {
-				$this->docker->run_inside_docker( $env_info, [ 'sh', '-c', 'wp cache flush --quiet 2>/dev/null' ] );
-			} catch ( \Exception $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-				// Cache flush might fail if no cache plugin active, that's OK
-			}
-
-			return Command::SUCCESS;
-
 		} catch ( \Exception $e ) {
 			$output->writeln( ' <error>Failed!</error>' );
 			$output->writeln( '<error>Database restore failed: ' . $e->getMessage() . '</error>' );
 			return Command::FAILURE;
 		}
+
+		try {
+			// A successful reset requires persistent and in-process object caches to be flushed.
+			$this->docker->run_inside_docker( $env_info, [ 'sh', '-c', 'cd /var/www/html && wp cache flush --quiet' ] );
+		} catch ( \Exception $e ) {
+			$output->writeln( ' <error>Failed!</error>' );
+			$output->writeln( '<error>Object-cache flush failed after database restore: ' . $e->getMessage() . '</error>' );
+			return Command::FAILURE;
+		}
+
+		$output->writeln( ' <info>Done!</info>' );
+		$output->writeln( '<info>✓ Database restored to post-setup state.</info>' );
+		$output->writeln( '<info>✓ WordPress object cache flushed.</info>' );
+
+		return Command::SUCCESS;
 	}
 }
