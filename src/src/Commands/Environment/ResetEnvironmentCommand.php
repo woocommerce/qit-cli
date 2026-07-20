@@ -304,6 +304,19 @@ HELP
 			}
 		}
 
+		if ( $result['status'] === 'success' ) {
+			foreach ( [ 'database_import', 'object_cache_flush' ] as $phase_name ) {
+				if ( $phases[ $phase_name ]['status'] !== 'completed' ) {
+					$phases[ $phase_name ]['status'] = 'failed';
+					return [
+						'failed_phase'       => $phase_name,
+						'message'            => sprintf( 'The staged reset helper reported success without completing %s.', str_replace( '_', ' ', $phase_name ) ),
+						'fallback_to_legacy' => false,
+					];
+				}
+			}
+		}
+
 		if ( $result['status'] !== 'success' ) {
 			$failed_phase = (string) ( $result['failed_phase'] ?? 'database_import' );
 			if ( ! isset( $phases[ $failed_phase ] ) ) {

@@ -146,6 +146,60 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 0.25, $result['phases']['object_cache_flush']['seconds'] );
 	}
 
+	public function test_staged_helper_success_without_cache_phase_returns_structured_failure(): void {
+		$env_id   = 'qitenv-reset-json-staged-incomplete-cache';
+		$metadata = $this->staged_metadata();
+		$env_info = $this->create_environment( $env_id, $metadata );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->never() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->once() )
+			->method( 'run_inside_docker' )
+			->willReturn( json_encode( [
+				'status'       => 'success',
+				'failed_phase' => null,
+				'phases'       => [
+					'database_import' => [ 'status' => 'completed', 'seconds' => 0.75 ],
+				],
+			] ) );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::FAILURE, $status );
+		$this->assertSame( 'failed', $result['status'] );
+		$this->assertSame( 'object_cache_flush', $result['failed_phase'] );
+		$this->assertSame( 'failed', $result['phases']['object_cache_flush']['status'] );
+		$this->assertStringContainsString( 'without completing object cache flush', $result['message'] );
+	}
+
+	public function test_human_output_does_not_claim_incomplete_cache_flush_succeeded(): void {
+		$env_id   = 'qitenv-reset-human-staged-incomplete-cache';
+		$metadata = $this->staged_metadata();
+		$env_info = $this->create_environment( $env_id, $metadata );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->never() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->once() )
+			->method( 'run_inside_docker' )
+			->willReturn( json_encode( [
+				'status'       => 'success',
+				'failed_phase' => null,
+				'phases'       => [
+					'database_import'    => [ 'status' => 'completed', 'seconds' => 0.75 ],
+					'object_cache_flush' => [ 'status' => 'not_started', 'seconds' => 0.0 ],
+				],
+			] ) );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id ], [ 'interactive' => false ] );
+
+		$this->assertSame( Command::FAILURE, $status );
+		$this->assertStringContainsString( 'without completing object cache flush', $tester->getDisplay() );
+		$this->assertStringNotContainsString( 'WordPress object cache flushed.', $tester->getDisplay() );
+	}
+
 	public function test_missing_staged_snapshot_uses_checksum_verified_legacy_fallback(): void {
 		$env_id                      = 'qitenv-reset-json-staged-missing';
 		$metadata                    = $this->staged_metadata();
