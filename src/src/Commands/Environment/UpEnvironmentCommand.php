@@ -1636,9 +1636,35 @@ HELP;
 			// Get Docker instance
 			$docker = \QIT_CLI\App::make( \QIT_CLI\Environment\Docker::class );
 
-			// Export database - run in WordPress directory with defaults
-			$sql_dump = $docker->run_inside_docker( $env_info, [ 'sh', '-c', 'cd /var/www/html && wp db export --defaults --quiet - 2>/dev/null' ] );
-			file_put_contents( $backup_dir . '/setup-complete.sql', $sql_dump );
+			// Make the in-container reset helper available through the existing /qit/bin bind mount.
+			$helper_file = rtrim( $env_info->temporary_env, '/' ) . '/bin/qit-env-reset.php';
+			if ( file_put_contents( $helper_file, ResetEnvironmentHelper::script() ) === false ) {
+				throw new \RuntimeException( 'Unable to stage the environment reset helper.' );
+			}
+			chmod( $helper_file, 0444 );
+
+			// Export once into the running container, make the snapshot immutable to the web process,
+			// and retain the host copy used by older env:reset implementations.
+			$container_snapshot = ResetEnvironmentHelper::CONTAINER_SNAPSHOT_PATH;
+			$container_dir      = dirname( $container_snapshot );
+			$docker->run_inside_docker(
+				$env_info,
+				[
+					'sh',
+					'-c',
+					sprintf(
+						'mkdir -p %1$s && chmod 0755 %1$s && rm -f %2$s && cd /var/www/html && wp db export %2$s --defaults --quiet && chmod 0444 %2$s && chmod 0555 %1$s',
+						escapeshellarg( $container_dir ),
+						escapeshellarg( $container_snapshot )
+					),
+				]
+			);
+			$backup_file = $backup_dir . '/setup-complete.sql';
+			$docker->copy_from_docker( $env_info, $container_snapshot, $backup_file );
+			$checksum = hash_file( 'sha256', $backup_file );
+			if ( ! is_string( $checksum ) ) {
+				throw new \RuntimeException( 'Unable to checksum the staged database snapshot.' );
+			}
 
 			// Save metadata about what was backed up
 			$metadata = [
@@ -1648,6 +1674,10 @@ HELP;
 				'php_version'         => $env_info->php_version,
 				'wordpress_version'   => $env_info->wordpress_version,
 				'woocommerce_version' => $env_info->woocommerce_version ?? '',
+				'snapshot_strategy'   => 'container_staged',
+				'container_snapshot'  => $container_snapshot,
+				'snapshot_sha256'     => $checksum,
+				'reset_helper'        => ResetEnvironmentHelper::CONTAINER_HELPER_PATH,
 			];
 			file_put_contents( $backup_dir . '/metadata.json', json_encode( $metadata, JSON_PRETTY_PRINT ) );
 
