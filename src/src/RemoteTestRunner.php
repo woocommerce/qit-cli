@@ -291,8 +291,15 @@ class RemoteTestRunner {
 			$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $zip_path, $output );
 			$options['event']     = 'cli_development_extension_test';
 		} finally {
-			if ( $temporary_zip !== null && file_exists( $temporary_zip ) ) {
-				unlink( $temporary_zip );
+			if ( $temporary_zip !== null ) {
+				if ( file_exists( $temporary_zip ) ) {
+					unlink( $temporary_zip );
+				}
+
+				$temporary_directory = dirname( $temporary_zip );
+				if ( is_dir( $temporary_directory ) ) {
+					rmdir( $temporary_directory );
+				}
 			}
 		}
 
@@ -300,13 +307,12 @@ class RemoteTestRunner {
 	}
 
 	private function make_temporary_zip_path(): string {
-		$path = tempnam( sys_get_temp_dir(), 'qit-remote-build-' );
-		if ( $path === false ) {
-			throw new \RuntimeException( 'Could not create a temporary ZIP path.' );
+		$directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'qit-remote-build-' . bin2hex( random_bytes( 16 ) );
+		if ( ! mkdir( $directory, 0700 ) ) {
+			throw new \RuntimeException( 'Could not create a temporary ZIP directory.' );
 		}
-		unlink( $path );
 
-		return $path;
+		return $directory . DIRECTORY_SEPARATOR . 'artifact.zip';
 	}
 
 	/**

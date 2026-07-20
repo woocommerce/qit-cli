@@ -128,13 +128,17 @@ class ApiFuzzCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$directory = sys_get_temp_dir() . '/qit-api-fuzz-dir-' . uniqid();
 		mkdir( $directory );
 		file_put_contents( $directory . '/test-plugin.php', "<?php\n/* Plugin Name: Test Plugin */\n" );
+		$temporary_directory = null;
 
 		$original_zipper = App::make( Zipper::class );
 		$zipper          = $this->createMock( Zipper::class );
 		$zipper->expects( $this->once() )
 			->method( 'zip_directory' )
 			->with( $directory, $this->isType( 'string' ) )
-			->willReturnCallback( function ( string $source, string $destination ): void {
+			->willReturnCallback( function ( string $source, string $destination ) use ( &$temporary_directory ): void {
+				$temporary_directory = dirname( $destination );
+				$this->assertDirectoryExists( $temporary_directory );
+				$this->assertFileNotExists( $destination );
 				file_put_contents( $destination, $this->createMinimalPluginZip( 'test-plugin', '1.0.0' ) );
 			} );
 		App::singleton( Zipper::class, $zipper );
@@ -154,6 +158,8 @@ class ApiFuzzCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->assertSame( 'directory-upload', $payload['upload_id'] );
 		$this->assertSame( 'cli_development_extension_test', $payload['event'] );
+		$this->assertNotNull( $temporary_directory );
+		$this->assertFalse( is_dir( $temporary_directory ) );
 	}
 
 	public function test_remote_zip_artifact_is_downloaded_before_upload(): void {
