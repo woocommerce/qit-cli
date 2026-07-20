@@ -34,6 +34,8 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringContainsString( '$started = microtime( true );', $script );
 		$this->assertStringContainsString( 'function qit_reset_elapsed( float $phase_started ): float', $script );
 		$this->assertStringContainsString( 'return round( microtime( true ) - $phase_started, 6 );', $script );
+		$this->assertStringContainsString( "'snapshot_unavailable'", $script );
+		$this->assertStringContainsString( "'snapshot_checksum_mismatch'", $script );
 	}
 
 	public function test_flushes_object_cache_from_wordpress_directory(): void {
@@ -144,6 +146,78 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 0.25, $result['phases']['object_cache_flush']['seconds'] );
 	}
 
+	public function test_missing_staged_snapshot_uses_checksum_verified_legacy_fallback(): void {
+		$env_id                      = 'qitenv-reset-json-staged-missing';
+		$metadata                    = $this->staged_metadata();
+		$metadata['snapshot_sha256'] = hash( 'sha256', '-- test backup' );
+		$env_info                    = $this->create_environment( $env_id, $metadata );
+		$docker                      = $this->createMock( Docker::class );
+		$docker->expects( $this->once() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->exactly( 4 ) )
+			->method( 'run_inside_docker' )
+			->willReturnCallback( static function ( E2EEnvInfo $actual_env, array $command ) use ( $env_info ): string {
+				self::assertSame( $env_info, $actual_env );
+				if ( $command[0] === 'php' ) {
+					return json_encode( [
+						'status'       => 'failed',
+						'failed_phase' => 'database_import',
+						'failure_code'  => 'snapshot_unavailable',
+						'message'      => 'The staged database snapshot is missing or unreadable.',
+						'phases'       => [
+							'database_import'    => [ 'status' => 'failed', 'seconds' => 0.01 ],
+							'object_cache_flush' => [ 'status' => 'not_started', 'seconds' => 0.0 ],
+						],
+					] );
+				}
+
+				return '';
+			} );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::SUCCESS, $status );
+		$this->assertSame( 'success', $result['status'] );
+		$this->assertSame( 'copy_per_reset', $result['strategy'] );
+		foreach ( $result['phases'] as $phase ) {
+			$this->assertSame( 'completed', $phase['status'] );
+		}
+	}
+
+	public function test_missing_staged_snapshot_fails_when_host_backup_checksum_does_not_match(): void {
+		$env_id   = 'qitenv-reset-json-staged-missing-host-mismatch';
+		$metadata = $this->staged_metadata();
+		$env_info = $this->create_environment( $env_id, $metadata );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->never() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->once() )
+			->method( 'run_inside_docker' )
+			->willReturn( json_encode( [
+				'status'       => 'failed',
+				'failed_phase' => 'database_import',
+				'failure_code'  => 'snapshot_unavailable',
+				'message'      => 'The staged database snapshot is missing or unreadable.',
+				'phases'       => [
+					'database_import'    => [ 'status' => 'failed', 'seconds' => 0.01 ],
+					'object_cache_flush' => [ 'status' => 'not_started', 'seconds' => 0.0 ],
+				],
+			] ) );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::FAILURE, $status );
+		$this->assertSame( 'failed', $result['status'] );
+		$this->assertSame( 'copy_per_reset', $result['strategy'] );
+		$this->assertSame( 'snapshot_copy', $result['failed_phase'] );
+		$this->assertSame( 'failed', $result['phases']['snapshot_copy']['status'] );
+		$this->assertStringContainsString( 'host backup failed checksum verification', $result['message'] );
+	}
+
 	public function test_staged_checksum_failure_is_structured_and_does_not_fall_back(): void {
 		$env_id   = 'qitenv-reset-json-checksum-failure';
 		$metadata = $this->staged_metadata();
@@ -156,7 +230,8 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 			->willReturn( json_encode( [
 				'status'       => 'failed',
 				'failed_phase' => 'database_import',
-				'message'      => 'The staged database snapshot is missing or failed checksum verification.',
+				'failure_code'  => 'snapshot_checksum_mismatch',
+				'message'      => 'The staged database snapshot failed checksum verification.',
 				'phases'       => [
 					'database_import'    => [ 'status' => 'failed', 'seconds' => 0.01 ],
 					'object_cache_flush' => [ 'status' => 'not_started', 'seconds' => 0.0 ],

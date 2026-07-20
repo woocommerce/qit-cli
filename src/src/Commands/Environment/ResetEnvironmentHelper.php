@@ -62,11 +62,12 @@ function qit_reset_run( string $command ): array {
 /**
  * @param array<string,array{status:string,seconds:float}> $phase_values
  */
-function qit_reset_finish( string $status, ?string $failed_phase, string $message, array $phase_values ): void {
+function qit_reset_finish( string $status, ?string $failed_phase, string $message, array $phase_values, ?string $failure_code = null ): void {
 	global $started;
 	echo json_encode( [
 		'status'       => $status,
 		'failed_phase' => $failed_phase,
+		'failure_code'  => $failure_code,
 		'message'      => $message,
 		'total_seconds' => qit_reset_elapsed( $started ),
 		'phases'       => $phase_values,
@@ -81,11 +82,16 @@ $phase_started = microtime( true );
 if (
 	$snapshot === '' ||
 	$checksum === '' ||
-	! is_readable( $snapshot ) ||
-	! hash_equals( $checksum, (string) hash_file( 'sha256', $snapshot ) )
+	! is_readable( $snapshot )
 ) {
 	$phases['database_import'] = [ 'status' => 'failed', 'seconds' => qit_reset_elapsed( $phase_started ) ];
-	qit_reset_finish( 'failed', 'database_import', 'The staged database snapshot is missing or failed checksum verification.', $phases );
+	qit_reset_finish( 'failed', 'database_import', 'The staged database snapshot is missing or unreadable.', $phases, 'snapshot_unavailable' );
+}
+
+$actual_checksum = hash_file( 'sha256', $snapshot );
+if ( ! is_string( $actual_checksum ) || ! hash_equals( $checksum, $actual_checksum ) ) {
+	$phases['database_import'] = [ 'status' => 'failed', 'seconds' => qit_reset_elapsed( $phase_started ) ];
+	qit_reset_finish( 'failed', 'database_import', 'The staged database snapshot failed checksum verification.', $phases, 'snapshot_checksum_mismatch' );
 }
 
 $import = qit_reset_run(

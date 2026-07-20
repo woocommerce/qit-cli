@@ -59,7 +59,8 @@ Note: This only works if the environment was started with setup phases
 
 Scope: env:reset restores database state and flushes the WordPress object cache. It does not restore
 uploads, plugin files, other filesystem changes, or external services. Test harnesses must contain
-those side effects separately.
+those side effects separately. If a staged snapshot is unavailable, env:reset uses the host backup
+only after verifying it against the checksum recorded during env:up.
 HELP
 			);
 	}
@@ -177,6 +178,23 @@ HELP
 		if ( isset( $metadata['snapshot_strategy'] ) && $metadata['snapshot_strategy'] === 'container_staged' ) {
 			$strategy = 'container_staged';
 			$status   = $this->restore_staged( $env_info, $metadata, $phases );
+			if ( $status['fallback_to_legacy'] ) {
+				$strategy             = 'copy_per_reset';
+				$verification_started = microtime( true );
+				$expected_checksum    = $metadata['snapshot_sha256'] ?? '';
+				$actual_checksum      = is_readable( $backup_file ) ? hash_file( 'sha256', $backup_file ) : false;
+				$verification_seconds = microtime( true ) - $verification_started;
+				if ( ! is_string( $expected_checksum ) || ! is_string( $actual_checksum ) || ! hash_equals( $expected_checksum, $actual_checksum ) ) {
+					$phases['snapshot_copy'] = $this->phase( 'failed', $verification_started );
+					$status                  = [
+						'failed_phase' => 'snapshot_copy',
+						'message'      => 'The staged database snapshot is unavailable and the host backup failed checksum verification.',
+					];
+				} else {
+					$status                             = $this->restore_legacy( $env_info, $backup_file, $phases );
+					$phases['snapshot_copy']['seconds'] = round( $phases['snapshot_copy']['seconds'] + $verification_seconds, 6 );
+				}
+			}
 		} else {
 			$strategy = 'copy_per_reset';
 			$status   = $this->restore_legacy( $env_info, $backup_file, $phases );
@@ -224,7 +242,7 @@ HELP
 	 * @param EnvInfo                                          $env_info Environment to reset.
 	 * @param array<string,mixed>                              $metadata Snapshot metadata.
 	 * @param array<string,array{status:string,seconds:float}> $phases   Timed reset phases.
-	 * @return array{failed_phase:?string,message:string}
+	 * @return array{failed_phase:?string,message:string,fallback_to_legacy:bool}
 	 */
 	private function restore_staged( EnvInfo $env_info, array $metadata, array &$phases ): array {
 		$phases['snapshot_copy']          = [
@@ -244,8 +262,9 @@ HELP
 				'seconds' => 0.0,
 			];
 			return [
-				'failed_phase' => 'database_import',
-				'message'      => 'Staged reset metadata is incomplete.',
+				'failed_phase'       => 'database_import',
+				'message'            => 'Staged reset metadata is incomplete.',
+				'fallback_to_legacy' => false,
 			];
 		}
 
@@ -257,8 +276,9 @@ HELP
 				'seconds' => 0.0,
 			];
 			return [
-				'failed_phase' => 'database_import',
-				'message'      => 'Database restore failed: ' . $e->getMessage(),
+				'failed_phase'       => 'database_import',
+				'message'            => 'Database restore failed: ' . $e->getMessage(),
+				'fallback_to_legacy' => false,
 			];
 		}
 
@@ -269,8 +289,9 @@ HELP
 				'seconds' => 0.0,
 			];
 			return [
-				'failed_phase' => 'database_import',
-				'message'      => 'The staged reset helper returned an invalid result.',
+				'failed_phase'       => 'database_import',
+				'message'            => 'The staged reset helper returned an invalid result.',
+				'fallback_to_legacy' => false,
 			];
 		}
 
@@ -290,14 +311,16 @@ HELP
 			}
 			$message = trim( (string) ( $result['message'] ?? '' ) );
 			return [
-				'failed_phase' => $failed_phase,
-				'message'      => $message !== '' ? $message : 'The staged environment reset failed.',
+				'failed_phase'       => $failed_phase,
+				'message'            => $message !== '' ? $message : 'The staged environment reset failed.',
+				'fallback_to_legacy' => $failed_phase === 'database_import' && ( $result['failure_code'] ?? '' ) === 'snapshot_unavailable',
 			];
 		}
 
 		return [
-			'failed_phase' => null,
-			'message'      => '',
+			'failed_phase'       => null,
+			'message'            => '',
+			'fallback_to_legacy' => false,
 		];
 	}
 
