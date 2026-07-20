@@ -95,7 +95,7 @@ class RemoteTestRunner {
 			return $e->getCode() > 0 ? $e->getCode() : Command::FAILURE;
 		}
 
-		if ( $input->getOption( 'group' ) ) {
+		if ( $input->hasOption( 'group' ) && $input->getOption( 'group' ) ) {
 			try {
 				$this->test_group->create_or_update( $options, $test_type, $output, null );
 				$output->writeln( '<info>Group item successfully added.</info>' );
@@ -139,7 +139,8 @@ class RemoteTestRunner {
 
 		if ( $input->getOption( 'async' ) ) {
 			if ( $input->getOption( 'json' ) ) {
-				$output->write( $json );
+				GetCommand::decode_json_fields( $response );
+				$output->write( json_encode( $response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 				return Command::SUCCESS;
 			}
 
@@ -300,7 +301,14 @@ class RemoteTestRunner {
 			return Command::FAILURE;
 		}
 
-		$timeout       = max( 10, min( 7200, (int) ( $input->getOption( 'timeout' ) ?? ( $test_type === 'woo-e2e' ? 7200 : 1800 ) ) ) );
+		$default_timeout = 1800;
+		if ( $test_type === 'woo-e2e' ) {
+			$default_timeout = 7200;
+		} elseif ( $test_type === 'api-fuzz' ) {
+			$default_timeout = 2700;
+		}
+
+		$timeout       = max( 10, min( 7200, (int) ( $input->getOption( 'timeout' ) ?? $default_timeout ) ) );
 		$poll_interval = $test_type === 'woo-e2e' ? 30 : 15;
 		$start         = time();
 		$is_ci         = ! empty( getenv( 'CI' ) );
@@ -367,13 +375,14 @@ class RemoteTestRunner {
 					}
 				}
 
-				$completed = isset( $last_result['update_complete'] ) && $last_result['update_complete'] === true;
+				$completed = ( isset( $last_result['update_complete'] ) && $last_result['update_complete'] === true )
+					|| ( isset( $last_result['status'] ) && $last_result['status'] === 'cancelled' );
 			}
 
 			if ( $last_result !== null ) {
 				$last_status = $last_result['status'] ?? 'unknown';
 				if ( $section && ! $is_ci && ! $is_json ) {
-					$this->render_wait_table( $section, $last_result, $test_run_id, $completed, time() - $start );
+					$this->render_wait_table( $section, $last_result, $test_run_id, $completed, time() - $start, (bool) $input->getOption( 'print-report-url' ) );
 				}
 			}
 
@@ -384,7 +393,7 @@ class RemoteTestRunner {
 		}
 
 		$exit_code = Command::SUCCESS;
-		if ( $last_status === 'failed' ) {
+		if ( in_array( $last_status, [ 'failed', 'cancelled', 'unavailable', 'hanged' ], true ) ) {
 			$exit_code = Command::FAILURE;
 		} elseif ( $last_status === 'warning' ) {
 			$exit_code = 3;
@@ -401,8 +410,9 @@ class RemoteTestRunner {
 	 * @param int                  $test_run_id The Manager test run ID.
 	 * @param bool                 $completed   Whether the test has completed.
 	 * @param int                  $elapsed     Elapsed seconds.
+	 * @param bool                 $print_report_url Whether to include the sensitive report URL.
 	 */
-	private function render_wait_table( ConsoleSectionOutput $section, array $result, int $test_run_id, bool $completed, int $elapsed ): void {
+	private function render_wait_table( ConsoleSectionOutput $section, array $result, int $test_run_id, bool $completed, int $elapsed, bool $print_report_url ): void {
 		$section->clear();
 
 		// Status: animated spinner while running, ✓/✗ glyph when finished.
@@ -435,13 +445,18 @@ class RemoteTestRunner {
 
 		$rows[] = [ 'Status', $status ];
 
+		$campaign_state = $this->get_campaign_state( $result );
+		if ( $campaign_state !== null ) {
+			$rows[] = [ 'Campaign State', $campaign_state ];
+		}
+
 		if ( isset( $result['woo_extension']['name'] ) ) {
 			$rows[] = [ 'Woo Extension', $result['woo_extension']['name'] ];
 		}
 		if ( isset( $result['version'] ) && ! empty( trim( (string) $result['version'] ) ) ) {
 			$rows[] = [ 'Version', $result['version'] ];
 		}
-		if ( isset( $result['test_results_manager_url'] ) && ! empty( $result['test_results_manager_url'] ) ) {
+		if ( $print_report_url && isset( $result['test_results_manager_url'] ) && ! empty( $result['test_results_manager_url'] ) ) {
 			$rows[] = [ 'Result URL', $result['test_results_manager_url'] ];
 		}
 		if ( isset( $result['test_summary'] ) && ! empty( $result['test_summary'] ) ) {
@@ -473,6 +488,7 @@ class RemoteTestRunner {
 			'validation'       => 90,
 			'woo-api'          => 180,
 			'woo-e2e'          => 2100,
+			'api-fuzz'         => 1200,
 		];
 		if ( isset( $result['test_type'], $estimated_times[ $result['test_type'] ] ) ) {
 			$estimated     = $estimated_times[ $result['test_type'] ];
@@ -502,6 +518,9 @@ class RemoteTestRunner {
 	 */
 	private function render_completion( InputInterface $input, OutputInterface $output, ?OutputInterface $section, ?array $last_result, string $last_status, int $test_run_id, int $start, bool $is_ci, bool $is_json ): void {
 		if ( $is_json ) {
+			if ( is_array( $last_result ) ) {
+				GetCommand::decode_json_fields( $last_result );
+			}
 			$output->writeln( json_encode( $last_result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			return;
 		}
@@ -536,6 +555,13 @@ class RemoteTestRunner {
 		}
 		$output->writeln( '<comment>Status:</comment> ' . $status_display );
 
+		if ( $last_result ) {
+			$campaign_state = $this->get_campaign_state( $last_result );
+			if ( $campaign_state !== null ) {
+				$output->writeln( '<comment>Campaign State:</comment> ' . $campaign_state );
+			}
+		}
+
 		if ( $last_result && isset( $last_result['test_summary'] ) && ! empty( $last_result['test_summary'] ) ) {
 			$output->writeln( '<comment>Summary:</comment> ' . $last_result['test_summary'] );
 		}
@@ -560,6 +586,7 @@ class RemoteTestRunner {
 
 		$test_run_id = $response['test_run_id'] ?? '–';
 		$output->writeln( '<comment>Test ID:</comment> ' . $test_run_id );
+		$output->writeln( '<comment>Status:</comment> ' . ( $response['status'] ?? 'pending' ) );
 
 		if ( $print_report_url && isset( $response['test_results_manager_url'] ) ) {
 			$output->writeln( '<comment>Result URL:</comment> ' . $response['test_results_manager_url'] );
@@ -571,5 +598,27 @@ class RemoteTestRunner {
 		if ( ! $print_report_url ) {
 			$output->writeln( '<comment>Note:</comment> Report URL available with --print-report-url (use cautiously in public logs)' );
 		}
+	}
+
+	/**
+	 * Read the API-fuzz campaign state from the existing normalized result payload.
+	 *
+	 * @param array<string,mixed> $test_run Manager test run data.
+	 */
+	private function get_campaign_state( array $test_run ): ?string {
+		if ( ! isset( $test_run['test_type'] ) || $test_run['test_type'] !== 'api-fuzz' || empty( $test_run['test_result_json'] ) ) {
+			return null;
+		}
+
+		$results = $test_run['test_result_json'];
+		if ( is_string( $results ) ) {
+			$results = json_decode( $results, true );
+		}
+
+		if ( ! is_array( $results ) || ! isset( $results['campaign']['state'] ) || ! is_string( $results['campaign']['state'] ) ) {
+			return null;
+		}
+
+		return $results['campaign']['state'];
 	}
 }

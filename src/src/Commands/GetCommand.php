@@ -19,10 +19,10 @@ class GetCommand extends QITCommand {
 		parent::configure();
 		$this
 			->setDescription( 'Get a single test run.' )
-			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed), 3 (warning).' )
+			->setHelp( 'Get a single test run. Exit status codes: 0 (success), 1 (failed or cancelled), 3 (warning).' )
 			->addArgument( 'test_run_id', InputArgument::REQUIRED, 'The ID of the test run.' )
 			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
-			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return raw JSON format.', false )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return structured JSON output.', false )
 			->addOption( 'json-results', null, InputOption::VALUE_NONE, 'Output only the test results as JSON.' )
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
@@ -66,7 +66,7 @@ class GetCommand extends QITCommand {
 		if ( $input->getOption( 'json' ) ) {
 			$data = json_decode( $json, true );
 			if ( is_array( $data ) ) {
-				$this->decode_json_fields( $data );
+				self::decode_json_fields( $data );
 			}
 			$output->write( json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 
@@ -92,7 +92,7 @@ class GetCommand extends QITCommand {
 		}
 
 		if ( $input->getOption( 'check_finished' ) ) {
-			if ( $test_run['update_complete'] === true ) {
+			if ( $test_run['update_complete'] === true || $test_run['status'] === 'cancelled' ) {
 				return Command::SUCCESS;
 			} else {
 				return Command::FAILURE;
@@ -135,6 +135,8 @@ class GetCommand extends QITCommand {
 			'workflow_id',
 		];
 
+		$campaign_state = $this->get_campaign_state( $test_run );
+
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {
 			// Remove empty columns.
@@ -174,6 +176,10 @@ class GetCommand extends QITCommand {
 
 		unset( $v );
 
+		if ( $campaign_state !== null ) {
+			$test_run['campaign_state'] = $campaign_state;
+		}
+
 		// woo_extensions => Woo Extensions.
 		foreach ( $test_run as $test_key => $v ) {
 			$test_run[ ucwords( str_replace( '_', ' ', $test_key ) ) ] = $v;
@@ -197,7 +203,7 @@ class GetCommand extends QITCommand {
 	 *
 	 * @param array<string,mixed> $data The test run data to modify in-place.
 	 */
-	private function decode_json_fields( array &$data ): void {
+	public static function decode_json_fields( array &$data ): void {
 		$json_fields = [ 'ctrf_json', 'test_result_json', 'debug_log' ];
 		foreach ( $json_fields as $field ) {
 			if ( ! empty( $data[ $field ] ) && is_string( $data[ $field ] ) ) {
@@ -207,5 +213,27 @@ class GetCommand extends QITCommand {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Read the API-fuzz campaign state without changing the Manager response contract.
+	 *
+	 * @param array<string,mixed> $test_run Manager test run data.
+	 */
+	private function get_campaign_state( array $test_run ): ?string {
+		if ( ! isset( $test_run['test_type'] ) || $test_run['test_type'] !== 'api-fuzz' || empty( $test_run['test_result_json'] ) ) {
+			return null;
+		}
+
+		$results = $test_run['test_result_json'];
+		if ( is_string( $results ) ) {
+			$results = json_decode( $results, true );
+		}
+
+		if ( ! is_array( $results ) || ! isset( $results['campaign']['state'] ) || ! is_string( $results['campaign']['state'] ) ) {
+			return null;
+		}
+
+		return $results['campaign']['state'];
 	}
 }

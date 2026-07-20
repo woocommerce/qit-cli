@@ -106,16 +106,33 @@ class CreateRunCommands extends DynamicCommandCreator {
 		 */
 		self::add_schema_to_command( $command, $schema );
 
+		if ( $test_type === 'api-fuzz' ) {
+			$command
+				->setDescription( 'Run authenticated beta API fuzz testing on a plugin (waits for completion by default)' )
+				->setHelp( <<<'HELP'
+Run schema-driven API fuzz testing against the plugin-owned WordPress REST API surface.
+
+The beta campaign runs for up to 20 minutes or 2,500 generated requests and confirms findings
+twice from clean state. Lifecycle status and campaign state are reported separately. Shared-code
+findings produce a warning exit (3); confirmed plugin findings and unavailable campaigns fail (1).
+Use --async to enqueue without waiting and --json for the complete normalized result.
+HELP
+				);
+		}
+
 		/* Standard non‑schema arguments / flags */
 		$command
 			->addArgument( 'sut', InputArgument::OPTIONAL, 'Extension slug or WooCommerce.com ID' )
 			->addOption( 'zip', null, InputOption::VALUE_OPTIONAL, '(Optional) Local ZIP / dir / URL build to test' )
-			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, '(Optional) Output raw JSON response', false )
+			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, '(Optional) Output the structured JSON response', false )
 			->addOption( 'async', null, InputOption::VALUE_NEGATABLE, '(Optional) Enqueue test and return immediately without waiting', false )
 			->addOption( 'wait', 'w', InputOption::VALUE_NEGATABLE, '(Deprecated) Wait for test completion - this is now the default behavior', false )
 			->addOption( 'print-report-url', null, InputOption::VALUE_NEGATABLE, '(Optional) Print the test report URL (contains sensitive data - use cautiously in public logs)', false )
-			->addOption( 'timeout', 't', InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null )
-			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false );
+			->addOption( 'timeout', 't', InputOption::VALUE_OPTIONAL, '(Optional) Wait timeout in seconds', null );
+
+		if ( $test_type !== 'api-fuzz' ) {
+			$command->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, '(Optional) Register the run into a group', false );
+		}
 
 		// Ensure zip gets forwarded
 		$command->add_option_to_send( 'zip' );

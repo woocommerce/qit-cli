@@ -34,6 +34,7 @@ Run tests out-of-the box with zero configuration.
 - [PHPStan Test](https://qit.woo.com/docs/managed-tests/phpstan) - Run PHPStan checks to catch issues early.
 - [PHP Compatibility Test](https://qit.woo.com/docs/managed-tests/phpcompatibility) - Run PHPCompatibility tests to detect issues with different PHP versions.
 - [Malware Test](https://qit.woo.com/docs/managed-tests/malware) - Scan your code with the Malware check.
+- [API Fuzz Test](docs/api-fuzz.md) - Authenticated beta fuzzing for plugin-owned WordPress REST API routes.
 - _Performance Tests (Work-in-progress)_
 
 #### **Test Packages**
