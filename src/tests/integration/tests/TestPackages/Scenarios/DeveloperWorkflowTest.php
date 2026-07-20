@@ -135,6 +135,7 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 		$output = qit( [ 
 			'env:up', 
 			'--json',
+			'--object_cache',
 			'--test-package=' . __DIR__ . '/fixtures/scenario-main-package'
 		] );
 		$data = json_decode( $output, true );
@@ -163,9 +164,18 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 			'wp option get qit_main_package_setup_marker --path=/var/www/html'
 		] );
 		$this->assertEquals( 'modified_by_test', trim( $modifiedMarker ) );
+		qit( [
+			'env:exec',
+			'--env_id=' . $envId,
+			'wp eval \'wp_cache_set( "qit_reset_sentinel", "dirty" );\' --path=/var/www/html'
+		] );
 		
 		// Run env:reset with explicit env_id for deterministic behavior
-		qit( [ 'env:reset', $envId ] );
+		$firstReset = json_decode( qit( [ 'env:reset', $envId, '--json' ] ), true );
+		$this->assertSame( 'success', $firstReset['status'] );
+		$this->assertSame( 'container_staged', $firstReset['strategy'] );
+		$this->assertSame( 'completed', $firstReset['phases']['database_import']['status'] );
+		$this->assertSame( 'completed', $firstReset['phases']['object_cache_flush']['status'] );
 		
 		// Check that database was restored to post-setup state
 		$restoredMarker = qit( [ 
@@ -175,6 +185,12 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 		] );
 		$this->assertStringContainsString( 'setup_complete_', trim( $restoredMarker ) );
 		$this->assertNotEquals( 'modified_by_test', trim( $restoredMarker ) );
+		$cacheAfterFirstReset = qit( [
+			'env:exec',
+			'--env_id=' . $envId,
+			'wp eval \'var_export( wp_cache_get( "qit_reset_sentinel" ) );\' --path=/var/www/html'
+		] );
+		$this->assertSame( 'false', trim( $cacheAfterFirstReset ) );
 
 		// A long-running harness can isolate every generated request by restoring the same snapshot
 		// repeatedly. Verify the second reset does not use the state produced by the first reset.
@@ -183,7 +199,14 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 			'--env_id=' . $envId,
 			'wp option update qit_main_package_setup_marker "modified_again" --path=/var/www/html'
 		] );
-		qit( [ 'env:reset', $envId ] );
+		qit( [
+			'env:exec',
+			'--env_id=' . $envId,
+			'wp eval \'wp_cache_set( "qit_reset_sentinel", "dirty_again" );\' --path=/var/www/html'
+		] );
+		$secondReset = json_decode( qit( [ 'env:reset', $envId, '--json' ] ), true );
+		$this->assertSame( 'success', $secondReset['status'] );
+		$this->assertSame( 'container_staged', $secondReset['strategy'] );
 
 		$restoredAgain = qit( [
 			'env:exec',
@@ -192,6 +215,12 @@ class DeveloperWorkflowTest extends BaseScenarioTestCase {
 		] );
 		$this->assertStringContainsString( 'setup_complete_', trim( $restoredAgain ) );
 		$this->assertNotEquals( 'modified_again', trim( $restoredAgain ) );
+		$cacheAfterSecondReset = qit( [
+			'env:exec',
+			'--env_id=' . $envId,
+			'wp eval \'var_export( wp_cache_get( "qit_reset_sentinel" ) );\' --path=/var/www/html'
+		] );
+		$this->assertSame( 'false', trim( $cacheAfterSecondReset ) );
 	}
 	
 	/**

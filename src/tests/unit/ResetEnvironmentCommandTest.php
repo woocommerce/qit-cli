@@ -13,8 +13,10 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 	public function tearDown(): void {
 		foreach ( $this->backup_dirs as $backup_dir ) {
-			if ( file_exists( $backup_dir . '/setup-complete.sql' ) ) {
-				unlink( $backup_dir . '/setup-complete.sql' );
+			foreach ( [ 'setup-complete.sql', 'metadata.json' ] as $file ) {
+				if ( file_exists( $backup_dir . '/' . $file ) ) {
+					unlink( $backup_dir . '/' . $file );
+				}
 			}
 			if ( is_dir( $backup_dir ) ) {
 				rmdir( $backup_dir );
@@ -72,13 +74,184 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringNotContainsString( 'WordPress object cache flushed.', $tester->getDisplay() );
 	}
 
-	private function create_environment( string $env_id ): E2EEnvInfo {
+	public function test_legacy_json_result_contains_all_timed_phases(): void {
+		$env_id   = 'qitenv-reset-json-legacy';
+		$env_info = $this->create_environment( $env_id );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->once() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->exactly( 3 ) )
+			->method( 'run_inside_docker' )
+			->willReturn( '' );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::SUCCESS, $status );
+		$this->assertSame( 'success', $result['status'] );
+		$this->assertSame( 'copy_per_reset', $result['strategy'] );
+		$this->assertNull( $result['failed_phase'] );
+		$this->assertSame(
+			[ 'environment_lookup', 'snapshot_copy', 'database_import', 'temporary_file_cleanup', 'object_cache_flush' ],
+			array_keys( $result['phases'] )
+		);
+		foreach ( $result['phases'] as $phase ) {
+			$this->assertSame( 'completed', $phase['status'] );
+			$this->assertGreaterThanOrEqual( 0, $phase['seconds'] );
+		}
+		$this->assertGreaterThanOrEqual( 0, $result['total_seconds'] );
+	}
+
+	public function test_staged_reset_uses_one_container_execution_and_skips_copy_and_cleanup(): void {
+		$env_id   = 'qitenv-reset-json-staged';
+		$metadata = $this->staged_metadata();
+		$env_info = $this->create_environment( $env_id, $metadata );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->never() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->once() )
+			->method( 'run_inside_docker' )
+			->with( $env_info, [ 'php', $metadata['reset_helper'], $metadata['container_snapshot'], $metadata['snapshot_sha256'] ] )
+			->willReturn( json_encode( [
+				'status'       => 'success',
+				'failed_phase' => null,
+				'phases'       => [
+					'database_import'    => [ 'status' => 'completed', 'seconds' => 0.75 ],
+					'object_cache_flush' => [ 'status' => 'completed', 'seconds' => 0.25 ],
+				],
+			] ) );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::SUCCESS, $status );
+		$this->assertSame( 'container_staged', $result['strategy'] );
+		$this->assertEquals( [ 'status' => 'skipped', 'seconds' => 0.0 ], $result['phases']['snapshot_copy'] );
+		$this->assertEquals( [ 'status' => 'skipped', 'seconds' => 0.0 ], $result['phases']['temporary_file_cleanup'] );
+		$this->assertSame( 0.75, $result['phases']['database_import']['seconds'] );
+		$this->assertSame( 0.25, $result['phases']['object_cache_flush']['seconds'] );
+	}
+
+	public function test_staged_checksum_failure_is_structured_and_does_not_fall_back(): void {
+		$env_id   = 'qitenv-reset-json-checksum-failure';
+		$metadata = $this->staged_metadata();
+		$env_info = $this->create_environment( $env_id, $metadata );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->never() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->once() )
+			->method( 'run_inside_docker' )
+			->willReturn( json_encode( [
+				'status'       => 'failed',
+				'failed_phase' => 'database_import',
+				'message'      => 'The staged database snapshot is missing or failed checksum verification.',
+				'phases'       => [
+					'database_import'    => [ 'status' => 'failed', 'seconds' => 0.01 ],
+					'object_cache_flush' => [ 'status' => 'not_started', 'seconds' => 0.0 ],
+				],
+			] ) );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::FAILURE, $status );
+		$this->assertSame( 'failed', $result['status'] );
+		$this->assertSame( 'container_staged', $result['strategy'] );
+		$this->assertSame( 'database_import', $result['failed_phase'] );
+		$this->assertStringContainsString( 'checksum verification', $result['message'] );
+		$this->assertSame( 'not_started', $result['phases']['object_cache_flush']['status'] );
+	}
+
+	public function test_legacy_cleanup_failure_is_fail_closed_and_skips_cache_flush(): void {
+		$env_id   = 'qitenv-reset-json-cleanup-failure';
+		$env_info = $this->create_environment( $env_id );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->once() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->exactly( 2 ) )
+			->method( 'run_inside_docker' )
+			->willReturnCallback( static function ( E2EEnvInfo $actual_env, array $command ): string {
+				if ( $command[0] === 'rm' ) {
+					throw new \RuntimeException( 'Unable to remove temporary snapshot.' );
+				}
+				return '';
+			} );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::FAILURE, $status );
+		$this->assertSame( 'temporary_file_cleanup', $result['failed_phase'] );
+		$this->assertSame( 'failed', $result['phases']['temporary_file_cleanup']['status'] );
+		$this->assertSame( 'not_started', $result['phases']['object_cache_flush']['status'] );
+	}
+
+	public function test_legacy_import_failure_is_structured_and_still_cleans_up(): void {
+		$env_id   = 'qitenv-reset-json-import-failure';
+		$env_info = $this->create_environment( $env_id );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->once() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->exactly( 2 ) )
+			->method( 'run_inside_docker' )
+			->willReturnCallback( static function ( E2EEnvInfo $actual_env, array $command ): string {
+				if ( $command[0] === 'sh' ) {
+					throw new \RuntimeException( 'Import rejected.' );
+				}
+				return '';
+			} );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::FAILURE, $status );
+		$this->assertSame( 'database_import', $result['failed_phase'] );
+		$this->assertSame( 'failed', $result['phases']['database_import']['status'] );
+		$this->assertSame( 'completed', $result['phases']['temporary_file_cleanup']['status'] );
+		$this->assertSame( 'not_started', $result['phases']['object_cache_flush']['status'] );
+	}
+
+	public function test_legacy_cache_failure_is_structured(): void {
+		$env_id   = 'qitenv-reset-json-cache-failure';
+		$env_info = $this->create_environment( $env_id );
+		$docker   = $this->createMock( Docker::class );
+		$docker->expects( $this->once() )
+			->method( 'copy_into_docker' );
+		$docker->expects( $this->exactly( 3 ) )
+			->method( 'run_inside_docker' )
+			->willReturnCallback( static function ( E2EEnvInfo $actual_env, array $command ): string {
+				if ( $command === [ 'sh', '-c', 'cd /var/www/html && wp cache flush --quiet' ] ) {
+					throw new \RuntimeException( 'Cache flush rejected.' );
+				}
+				return '';
+			} );
+
+		$tester = $this->create_command_tester( $env_info, $docker );
+		$status = $tester->execute( [ 'env_id' => $env_id, '--json' => true ], [ 'interactive' => false ] );
+		$result = json_decode( $tester->getDisplay(), true );
+
+		$this->assertSame( Command::FAILURE, $status );
+		$this->assertSame( 'object_cache_flush', $result['failed_phase'] );
+		$this->assertSame( 'failed', $result['phases']['object_cache_flush']['status'] );
+		$this->assertStringContainsString( 'Cache flush rejected', $result['message'] );
+	}
+
+	/** @param array<string,mixed> $metadata */
+	private function create_environment( string $env_id, array $metadata = [] ): E2EEnvInfo {
 		$backup_dir         = sys_get_temp_dir() . '/qit-env-backups/' . $env_id;
 		$this->backup_dirs[] = $backup_dir;
 		if ( ! is_dir( $backup_dir ) ) {
 			mkdir( $backup_dir, 0777, true );
 		}
 		file_put_contents( $backup_dir . '/setup-complete.sql', '-- test backup' );
+		if ( ! empty( $metadata ) ) {
+			file_put_contents( $backup_dir . '/metadata.json', json_encode( $metadata ) );
+		}
 
 		$env_info                        = new E2EEnvInfo();
 		$env_info->env_id                = $env_id;
@@ -86,6 +259,16 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$env_info->temporary_env          = sys_get_temp_dir() . '/' . $env_id;
 
 		return $env_info;
+	}
+
+	/** @return array<string,string> */
+	private function staged_metadata(): array {
+		return [
+			'snapshot_strategy'  => 'container_staged',
+			'container_snapshot' => '/tmp/qit-env-reset/setup-complete.sql',
+			'snapshot_sha256'    => str_repeat( 'a', 64 ),
+			'reset_helper'       => '/qit/bin/qit-env-reset.php',
+		];
 	}
 
 	private function create_command_tester( E2EEnvInfo $env_info, Docker $docker ): CommandTester {
