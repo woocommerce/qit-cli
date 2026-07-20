@@ -428,7 +428,7 @@ class RemoteTestRunner {
 		}
 
 		$exit_code = Command::SUCCESS;
-		if ( in_array( $last_status, [ 'failed', 'cancelled', 'unavailable', 'hanged' ], true ) ) {
+		if ( in_array( $last_status, [ 'failed', 'cancelled', 'hanged' ], true ) ) {
 			$exit_code = Command::FAILURE;
 		} elseif ( $last_status === 'warning' ) {
 			$exit_code = 3;

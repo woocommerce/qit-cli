@@ -252,6 +252,33 @@ class ApiFuzzCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringContainsString( 'cancelled', $tester->getDisplay() );
 	}
 
+	public function test_unavailable_campaign_fails_through_manager_lifecycle_status(): void {
+		$this->mock_enqueue_response( [ 'test_run_id' => 4242, 'status' => 'pending' ] );
+		$this->mock_get_response( [
+			'test_run_id'     => 4242,
+			'test_type'       => 'api-fuzz',
+			'update_complete' => true,
+			'status'          => 'failed',
+			'test_result_json' => json_encode( [
+				'campaign' => [ 'state' => 'unavailable' ],
+				'findings' => [],
+			] ),
+		] );
+
+		try {
+			$tester = $this->make_api_fuzz_tester();
+			$this->assertSame( Command::FAILURE, $tester->run( [
+				'command' => 'run:api-fuzz',
+				'sut'     => '123456',
+			] ) );
+		} finally {
+			$this->clear_manager_mocks();
+		}
+
+		$this->assertStringContainsString( 'Status: failed', $tester->getDisplay() );
+		$this->assertStringContainsString( 'Campaign State: unavailable', $tester->getDisplay() );
+	}
+
 	public function test_human_output_separates_lifecycle_and_campaign_state(): void {
 		$this->mock_enqueue_response( [ 'test_run_id' => 4242, 'status' => 'pending' ] );
 		$this->mock_get_response( [
