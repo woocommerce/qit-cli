@@ -1,6 +1,7 @@
 <?php
 
 use QIT_CLI\Commands\Environment\ResetEnvironmentCommand;
+use QIT_CLI\Commands\Environment\ResetEnvironmentHelper;
 use QIT_CLI\Environment\Docker;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvInfo;
@@ -24,6 +25,15 @@ class ResetEnvironmentCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		}
 
 		parent::tearDown();
+	}
+
+	public function test_staged_helper_uses_php_72_compatible_timing(): void {
+		$script = ResetEnvironmentHelper::script();
+
+		$this->assertStringNotContainsString( 'hrtime(', $script );
+		$this->assertStringContainsString( '$started = microtime( true );', $script );
+		$this->assertStringContainsString( 'function qit_reset_elapsed( float $phase_started ): float', $script );
+		$this->assertStringContainsString( 'return round( microtime( true ) - $phase_started, 6 );', $script );
 	}
 
 	public function test_flushes_object_cache_from_wordpress_directory(): void {

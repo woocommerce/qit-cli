@@ -20,7 +20,7 @@ class ResetEnvironmentHelper {
 		return <<<'PHP'
 <?php
 
-$started = hrtime( true );
+$started = microtime( true );
 $phases  = [
 	'database_import'    => [ 'status' => 'not_started', 'seconds' => 0.0 ],
 	'object_cache_flush' => [ 'status' => 'not_started', 'seconds' => 0.0 ],
@@ -29,8 +29,8 @@ $phases  = [
 /**
  * @return float
  */
-function qit_reset_elapsed( int $phase_started ): float {
-	return round( ( hrtime( true ) - $phase_started ) / 1000000000, 6 );
+function qit_reset_elapsed( float $phase_started ): float {
+	return round( microtime( true ) - $phase_started, 6 );
 }
 
 /**
@@ -77,7 +77,7 @@ function qit_reset_finish( string $status, ?string $failed_phase, string $messag
 $snapshot = $argv[1] ?? '';
 $checksum = $argv[2] ?? '';
 
-$phase_started = hrtime( true );
+$phase_started = microtime( true );
 if (
 	$snapshot === '' ||
 	$checksum === '' ||
@@ -100,7 +100,7 @@ if ( $import['exit_code'] !== 0 ) {
 	qit_reset_finish( 'failed', 'database_import', substr( $message, -2000 ), $phases );
 }
 
-$phase_started = hrtime( true );
+$phase_started = microtime( true );
 $flush         = qit_reset_run( 'wp cache flush --quiet' );
 $phases['object_cache_flush'] = [
 	'status'  => $flush['exit_code'] === 0 ? 'completed' : 'failed',
