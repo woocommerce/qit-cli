@@ -136,7 +136,7 @@ class GetCommand extends QITCommand {
 			'workflow_id',
 		];
 
-		$campaign_state = $this->get_campaign_state( $test_run );
+		$campaign_state = self::get_campaign_state( $test_run );
 
 		// Prepare the data to be rendered.
 		foreach ( $test_run as $test_key => &$v ) {
@@ -223,7 +223,7 @@ class GetCommand extends QITCommand {
 	 *
 	 * @param array<string,mixed> $test_run Manager test run data.
 	 */
-	private function get_campaign_state( array $test_run ): ?string {
+	public static function get_campaign_state( array $test_run ): ?string {
 		if ( ! isset( $test_run['test_type'] ) || $test_run['test_type'] !== 'api-fuzz' || empty( $test_run['test_result_json'] ) ) {
 			return null;
 		}

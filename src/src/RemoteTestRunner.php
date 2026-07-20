@@ -480,7 +480,7 @@ class RemoteTestRunner {
 
 		$rows[] = [ 'Status', $status ];
 
-		$campaign_state = $this->get_campaign_state( $result );
+		$campaign_state = GetCommand::get_campaign_state( $result );
 		if ( $campaign_state !== null ) {
 			$rows[] = [ 'Campaign State', $campaign_state ];
 		}
@@ -591,7 +591,7 @@ class RemoteTestRunner {
 		$output->writeln( '<comment>Status:</comment> ' . $status_display );
 
 		if ( $last_result ) {
-			$campaign_state = $this->get_campaign_state( $last_result );
+			$campaign_state = GetCommand::get_campaign_state( $last_result );
 			if ( $campaign_state !== null ) {
 				$output->writeln( '<comment>Campaign State:</comment> ' . $campaign_state );
 			}
@@ -633,27 +633,5 @@ class RemoteTestRunner {
 		if ( ! $print_report_url ) {
 			$output->writeln( '<comment>Note:</comment> Report URL available with --print-report-url (use cautiously in public logs)' );
 		}
-	}
-
-	/**
-	 * Read the API-fuzz campaign state from the existing normalized result payload.
-	 *
-	 * @param array<string,mixed> $test_run Manager test run data.
-	 */
-	private function get_campaign_state( array $test_run ): ?string {
-		if ( ! isset( $test_run['test_type'] ) || $test_run['test_type'] !== 'api-fuzz' || empty( $test_run['test_result_json'] ) ) {
-			return null;
-		}
-
-		$results = $test_run['test_result_json'];
-		if ( is_string( $results ) ) {
-			$results = json_decode( $results, true );
-		}
-
-		if ( ! is_array( $results ) || ! isset( $results['campaign']['state'] ) || ! is_string( $results['campaign']['state'] ) ) {
-			return null;
-		}
-
-		return $results['campaign']['state'];
 	}
 }
