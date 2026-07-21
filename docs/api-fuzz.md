@@ -7,22 +7,22 @@
 Test the current published build by WooCommerce.com slug or product ID:
 
 ```bash
-qit run:api-fuzz woocommerce-bookings
-qit run:api-fuzz 390890
+qit run:api-fuzz my-plugin
+qit run:api-fuzz 123456
 ```
 
 Test a development build using the standard QIT artifact inputs:
 
 ```bash
-qit run:api-fuzz woocommerce-bookings --zip=woocommerce-bookings.zip
-qit run:api-fuzz woocommerce-bookings --zip=./woocommerce-bookings
-qit run:api-fuzz woocommerce-bookings --zip=https://example.test/woocommerce-bookings.zip
+qit run:api-fuzz my-plugin --zip=my-plugin.zip
+qit run:api-fuzz my-plugin --zip=./my-plugin
+qit run:api-fuzz my-plugin --zip=https://example.test/my-plugin.zip
 ```
 
 Runs wait for completion by default, with a 45-minute client timeout. The fuzz campaign itself is limited to 20 minutes or 2,500 generated requests. Use `--timeout=<seconds>` to change the client wait, or enqueue and follow the run separately:
 
 ```bash
-qit run:api-fuzz woocommerce-bookings --async
+qit run:api-fuzz my-plugin --async
 qit get <test-run-id>
 ```
 
@@ -48,18 +48,18 @@ A shared-code warning is evidence about code reached through a plugin-owned rout
 Use JSON output for the complete normalized result:
 
 ```bash
-qit run:api-fuzz woocommerce-bookings --json
-qit run:api-fuzz woocommerce-bookings --async --json
+qit run:api-fuzz my-plugin --json
+qit run:api-fuzz my-plugin --async --json
 qit get <test-run-id> --json
 ```
 
 ## Report URLs
 
-Report URLs contain a secret token and should not be written to public logs. Human-mode output hides the URL unless it is explicitly requested:
+Report URLs contain a secret token and should not be written to public logs. Interactive synchronous runs and `qit get` display the URL, matching the established managed-test behavior. Async and non-interactive output require an explicit request:
 
 ```bash
-qit run:api-fuzz woocommerce-bookings --print-report-url
-qit get <test-run-id> --print-report-url
+qit run:api-fuzz my-plugin --async --print-report-url
+qit run:api-fuzz my-plugin --print-report-url # non-interactive/CI output
 ```
 
 JSON output retains the Manager response shape and therefore includes the report URL when the Manager returns one. Handle JSON output as sensitive data.

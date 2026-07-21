@@ -4,8 +4,12 @@ use QIT_CLI\App;
 use QIT_CLI\Cache;
 use QIT_CLI\Commands\CreateRunCommands;
 use QIT_CLI\ManagerSync;
+use QIT_CLI\RemoteTestRunner;
 use QIT_CLI\Zipper;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Formatter\OutputFormatter;
+use Symfony\Component\Console\Output\ConsoleSectionOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use function QIT_CLI\get_manager_url;
 
 class ApiFuzzCommandTest extends \QIT_CLI_Tests\QITTestCase {
@@ -310,6 +314,46 @@ class ApiFuzzCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->assertStringContainsString( 'Status: warning', $tester->getDisplay() );
 		$this->assertStringContainsString( 'Campaign State: not_applicable', $tester->getDisplay() );
+	}
+
+	public function test_interactive_wait_table_displays_report_url_by_default(): void {
+		$stream = fopen( 'php://memory', 'w+' );
+		$this->assertIsResource( $stream );
+
+		$sections = [];
+		$section  = new ConsoleSectionOutput(
+			$stream,
+			$sections,
+			OutputInterface::VERBOSITY_NORMAL,
+			false,
+			new OutputFormatter( false )
+		);
+
+		$method = ( new ReflectionClass( RemoteTestRunner::class ) )->getMethod( 'render_wait_table' );
+		if ( PHP_VERSION_ID < 80100 ) {
+			$method->setAccessible( true );
+		}
+		$method->invoke(
+			App::make( RemoteTestRunner::class ),
+			$section,
+			[
+				'test_run_id'              => 4242,
+				'test_type'                => 'api-fuzz',
+				'status'                   => 'running',
+				'test_results_manager_url' => 'https://qit.test/results/4242.secret',
+			],
+			4242,
+			false,
+			9
+		);
+
+		rewind( $stream );
+		$output = stream_get_contents( $stream );
+		fclose( $stream );
+
+		$this->assertIsString( $output );
+		$this->assertStringContainsString( 'Result URL', $output );
+		$this->assertStringContainsString( 'https://qit.test/results/4242.secret', $output );
 	}
 
 	/** @param array<string,mixed> $response */

@@ -423,7 +423,7 @@ class RemoteTestRunner {
 			if ( $last_result !== null ) {
 				$last_status = $last_result['status'] ?? 'unknown';
 				if ( $section && ! $is_ci && ! $is_json ) {
-					$this->render_wait_table( $section, $last_result, $test_run_id, $completed, time() - $start, (bool) $input->getOption( 'print-report-url' ) );
+					$this->render_wait_table( $section, $last_result, $test_run_id, $completed, time() - $start );
 				}
 			}
 
@@ -451,9 +451,8 @@ class RemoteTestRunner {
 	 * @param int                  $test_run_id The Manager test run ID.
 	 * @param bool                 $completed   Whether the test has completed.
 	 * @param int                  $elapsed     Elapsed seconds.
-	 * @param bool                 $print_report_url Whether to include the sensitive report URL.
 	 */
-	private function render_wait_table( ConsoleSectionOutput $section, array $result, int $test_run_id, bool $completed, int $elapsed, bool $print_report_url ): void {
+	private function render_wait_table( ConsoleSectionOutput $section, array $result, int $test_run_id, bool $completed, int $elapsed ): void {
 		$section->clear();
 
 		// Status: animated spinner while running, ✓/✗ glyph when finished.
@@ -497,7 +496,7 @@ class RemoteTestRunner {
 		if ( isset( $result['version'] ) && ! empty( trim( (string) $result['version'] ) ) ) {
 			$rows[] = [ 'Version', $result['version'] ];
 		}
-		if ( $print_report_url && isset( $result['test_results_manager_url'] ) && ! empty( $result['test_results_manager_url'] ) ) {
+		if ( isset( $result['test_results_manager_url'] ) && ! empty( $result['test_results_manager_url'] ) ) {
 			$rows[] = [ 'Result URL', $result['test_results_manager_url'] ];
 		}
 		if ( isset( $result['test_summary'] ) && ! empty( $result['test_summary'] ) ) {

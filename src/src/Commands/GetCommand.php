@@ -24,7 +24,6 @@ class GetCommand extends QITCommand {
 			->addOption( 'open', 'o', InputOption::VALUE_NEGATABLE, 'Open the test run in the browser.', false )
 			->addOption( 'json', 'j', InputOption::VALUE_NEGATABLE, 'Whether to return structured JSON output.', false )
 			->addOption( 'json-results', null, InputOption::VALUE_NONE, 'Output only the test results as JSON.' )
-			->addOption( 'print-report-url', null, InputOption::VALUE_NEGATABLE, 'Print the report URL (contains a sensitive bearer-style token).', false )
 			->addOption( 'check_finished', null, InputOption::VALUE_NONE, 'Return success if test has finished. Failure if not.', null );
 	}
 
@@ -170,9 +169,7 @@ class GetCommand extends QITCommand {
 
 			// Rename "Test Results Manager URL" to "Result URL".
 			if ( $test_key === 'test_results_manager_url' ) {
-				if ( $input->getOption( 'print-report-url' ) ) {
-					$test_run['result_url'] = $v;
-				}
+				$test_run['result_url'] = $v;
 				unset( $test_run['test_results_manager_url'] );
 			}
 		}
