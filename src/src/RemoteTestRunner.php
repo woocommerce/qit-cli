@@ -18,17 +18,20 @@ class RemoteTestRunner {
 	private Upload $upload;
 	private WooExtensionsList $woo_extensions_list;
 	private TestGroup $test_group;
+	private Zipper $zipper;
 
 	public function __construct(
 		Cache $cache,
 		Upload $upload,
 		WooExtensionsList $woo_extensions_list,
-		TestGroup $test_group
+		TestGroup $test_group,
+		Zipper $zipper
 	) {
 		$this->cache               = $cache;
 		$this->upload              = $upload;
 		$this->woo_extensions_list = $woo_extensions_list;
 		$this->test_group          = $test_group;
+		$this->zipper              = $zipper;
 	}
 
 	/**
@@ -95,7 +98,7 @@ class RemoteTestRunner {
 			return $e->getCode() > 0 ? $e->getCode() : Command::FAILURE;
 		}
 
-		if ( $input->getOption( 'group' ) ) {
+		if ( $input->hasOption( 'group' ) && $input->getOption( 'group' ) ) {
 			try {
 				$this->test_group->create_or_update( $options, $test_type, $output, null );
 				$output->writeln( '<info>Group item successfully added.</info>' );
@@ -139,7 +142,8 @@ class RemoteTestRunner {
 
 		if ( $input->getOption( 'async' ) ) {
 			if ( $input->getOption( 'json' ) ) {
-				$output->write( $json );
+				GetCommand::decode_json_fields( $response );
+				$output->write( json_encode( $response, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 				return Command::SUCCESS;
 			}
 
@@ -262,15 +266,53 @@ class RemoteTestRunner {
 		$zip_opt        = $input->getOption( 'zip' );
 		$zip_flag_alone = $input->getParameterOption( '--zip', 'NOT_SET', true ) === null;
 		$zip_path       = $zip_flag_alone ? $sut_slug_or_id . '.zip' : (string) $zip_opt;
+		$temporary_zip  = null;
 
 		if ( $zip_flag_alone && ! file_exists( $zip_path ) ) {
 			throw new \RuntimeException( "The ZIP file '{$zip_path}' does not exist.", Command::FAILURE );
 		}
 
-		$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $zip_path, $output );
-		$options['event']     = 'cli_development_extension_test';
+		try {
+			if ( is_dir( $zip_path ) ) {
+				$temporary_zip = $this->make_temporary_zip_path();
+				$this->zipper->zip_directory( $zip_path, $temporary_zip );
+				$zip_path = $temporary_zip;
+			} elseif ( filter_var( $zip_path, FILTER_VALIDATE_URL ) ) {
+				$scheme = strtolower( (string) parse_url( $zip_path, PHP_URL_SCHEME ) );
+				if ( ! in_array( $scheme, [ 'http', 'https' ], true ) ) {
+					throw new \InvalidArgumentException( 'Remote ZIP URLs must use HTTP or HTTPS.' );
+				}
+
+				$temporary_zip = $this->make_temporary_zip_path();
+				RequestBuilder::download_file( $zip_path, $temporary_zip );
+				$zip_path = $temporary_zip;
+			}
+
+			$options['upload_id'] = $this->upload->upload_build( 'build', $options['woo_id'], $zip_path, $output );
+			$options['event']     = 'cli_development_extension_test';
+		} finally {
+			if ( $temporary_zip !== null ) {
+				if ( file_exists( $temporary_zip ) ) {
+					unlink( $temporary_zip );
+				}
+
+				$temporary_directory = dirname( $temporary_zip );
+				if ( is_dir( $temporary_directory ) ) {
+					rmdir( $temporary_directory );
+				}
+			}
+		}
 
 		unset( $options['zip'] );
+	}
+
+	private function make_temporary_zip_path(): string {
+		$directory = sys_get_temp_dir() . DIRECTORY_SEPARATOR . 'qit-remote-build-' . bin2hex( random_bytes( 16 ) );
+		if ( ! mkdir( $directory, 0700 ) ) {
+			throw new \RuntimeException( 'Could not create a temporary ZIP directory.' );
+		}
+
+		return $directory . DIRECTORY_SEPARATOR . 'artifact.zip';
 	}
 
 	/**
@@ -300,7 +342,14 @@ class RemoteTestRunner {
 			return Command::FAILURE;
 		}
 
-		$timeout       = max( 10, min( 7200, (int) ( $input->getOption( 'timeout' ) ?? ( $test_type === 'woo-e2e' ? 7200 : 1800 ) ) ) );
+		$default_timeout = 1800;
+		if ( $test_type === 'woo-e2e' ) {
+			$default_timeout = 7200;
+		} elseif ( $test_type === 'api-fuzz' ) {
+			$default_timeout = 2700;
+		}
+
+		$timeout       = max( 10, min( 7200, (int) ( $input->getOption( 'timeout' ) ?? $default_timeout ) ) );
 		$poll_interval = $test_type === 'woo-e2e' ? 30 : 15;
 		$start         = time();
 		$is_ci         = ! empty( getenv( 'CI' ) );
@@ -367,7 +416,8 @@ class RemoteTestRunner {
 					}
 				}
 
-				$completed = isset( $last_result['update_complete'] ) && $last_result['update_complete'] === true;
+				$completed = ( isset( $last_result['update_complete'] ) && $last_result['update_complete'] === true )
+					|| ( isset( $last_result['status'] ) && $last_result['status'] === 'cancelled' );
 			}
 
 			if ( $last_result !== null ) {
@@ -384,7 +434,7 @@ class RemoteTestRunner {
 		}
 
 		$exit_code = Command::SUCCESS;
-		if ( $last_status === 'failed' ) {
+		if ( in_array( $last_status, [ 'failed', 'cancelled', 'hanged' ], true ) ) {
 			$exit_code = Command::FAILURE;
 		} elseif ( $last_status === 'warning' ) {
 			$exit_code = 3;
@@ -435,6 +485,11 @@ class RemoteTestRunner {
 
 		$rows[] = [ 'Status', $status ];
 
+		$campaign_state = GetCommand::get_campaign_state( $result );
+		if ( $campaign_state !== null ) {
+			$rows[] = [ 'Campaign State', $campaign_state ];
+		}
+
 		if ( isset( $result['woo_extension']['name'] ) ) {
 			$rows[] = [ 'Woo Extension', $result['woo_extension']['name'] ];
 		}
@@ -473,6 +528,7 @@ class RemoteTestRunner {
 			'validation'       => 90,
 			'woo-api'          => 180,
 			'woo-e2e'          => 2100,
+			'api-fuzz'         => 1200,
 		];
 		if ( isset( $result['test_type'], $estimated_times[ $result['test_type'] ] ) ) {
 			$estimated     = $estimated_times[ $result['test_type'] ];
@@ -502,6 +558,9 @@ class RemoteTestRunner {
 	 */
 	private function render_completion( InputInterface $input, OutputInterface $output, ?OutputInterface $section, ?array $last_result, string $last_status, int $test_run_id, int $start, bool $is_ci, bool $is_json ): void {
 		if ( $is_json ) {
+			if ( is_array( $last_result ) ) {
+				GetCommand::decode_json_fields( $last_result );
+			}
 			$output->writeln( json_encode( $last_result, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) );
 			return;
 		}
@@ -536,6 +595,13 @@ class RemoteTestRunner {
 		}
 		$output->writeln( '<comment>Status:</comment> ' . $status_display );
 
+		if ( $last_result ) {
+			$campaign_state = GetCommand::get_campaign_state( $last_result );
+			if ( $campaign_state !== null ) {
+				$output->writeln( '<comment>Campaign State:</comment> ' . $campaign_state );
+			}
+		}
+
 		if ( $last_result && isset( $last_result['test_summary'] ) && ! empty( $last_result['test_summary'] ) ) {
 			$output->writeln( '<comment>Summary:</comment> ' . $last_result['test_summary'] );
 		}
@@ -560,6 +626,7 @@ class RemoteTestRunner {
 
 		$test_run_id = $response['test_run_id'] ?? '–';
 		$output->writeln( '<comment>Test ID:</comment> ' . $test_run_id );
+		$output->writeln( '<comment>Status:</comment> ' . ( $response['status'] ?? 'pending' ) );
 
 		if ( $print_report_url && isset( $response['test_results_manager_url'] ) ) {
 			$output->writeln( '<comment>Result URL:</comment> ' . $response['test_results_manager_url'] );

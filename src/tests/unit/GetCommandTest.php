@@ -2,6 +2,7 @@
 
 use QIT_CLI\App;
 use Spatie\Snapshots\MatchesSnapshots;
+use Symfony\Component\Console\Command\Command;
 use function QIT_CLI\get_manager_url;
 
 class GetCommandTest extends \QIT_CLI_Tests\QITTestCase {
@@ -450,5 +451,63 @@ class GetCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 1, $exit_code );
 		$display = $this->application_tester->getDisplay();
 		$this->assertStringContainsString( 'No test results available', $display );
+	}
+
+	public function test_get_api_fuzz_displays_campaign_state_separately(): void {
+		$response                     = $this->make_security_response();
+		$response['test_type']         = 'api-fuzz';
+		$response['test_type_display'] = 'API Fuzz';
+		$response['test_result_json'] = json_encode( [
+			'campaign' => [ 'state' => 'not_applicable' ],
+			'findings' => [],
+		] );
+
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-single' ),
+			json_encode( $response )
+		);
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'get',
+			'test_run_id' => '55555',
+		] );
+
+		$this->assertSame( 3, $exit_code );
+		$this->assertStringContainsString( 'Campaign State', $this->application_tester->getDisplay() );
+		$this->assertStringContainsString( 'not_applicable', $this->application_tester->getDisplay() );
+	}
+
+	public function test_get_check_finished_treats_cancelled_as_terminal(): void {
+		$response                    = $this->make_security_response();
+		$response['status']          = 'cancelled';
+		$response['update_complete'] = false;
+
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-single' ),
+			json_encode( $response )
+		);
+
+		$exit_code = $this->application_tester->run( [
+			'command'          => 'get',
+			'test_run_id'      => '55555',
+			'--check_finished' => true,
+		] );
+
+		$this->assertSame( Command::SUCCESS, $exit_code );
+	}
+
+	public function test_get_displays_report_url(): void {
+		$response = $this->make_security_response();
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-single' ),
+			json_encode( $response )
+		);
+
+		$tester = $this->make_application_tester();
+		$tester->run( [
+			'command'     => 'get',
+			'test_run_id' => '55555',
+		] );
+		$this->assertStringContainsString( '55555.def456', $tester->getDisplay() );
 	}
 }
