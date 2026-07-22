@@ -32,6 +32,17 @@ class LocalSubpackageExecutionTest extends TestCase {
 	protected function tearDown(): void {
 		chdir( $this->originalCwd );
 
+		foreach ( $this->tempDirs as $dir ) {
+			$config_path = $dir . '/qit.json';
+			if ( file_exists( $config_path ) ) {
+				unlink( $config_path );
+			}
+			if ( is_dir( $dir ) ) {
+				rmdir( $dir );
+			}
+		}
+		$this->tempDirs = [];
+
 		// Clean up any test packages created during the test
 		TestCleanupHelper::cleanup_all_test_packages();
 
