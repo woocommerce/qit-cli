@@ -458,25 +458,21 @@ final class TestPackageManifest {
 			);
 		}
 
-		// Start with parent's complete configuration (subpackages inherit everything)
+		// Start with parent's complete configuration -- subpackages inherit everything _except_ the run phase.
 		$subpackage_data = [
 			'package'        => $subpackage_id,
 			'parent_package' => $this->package_id,
 			'test_type'      => $this->test_type,
 			'test_dir'       => $this->test_dir,
 			'test'           => [
-				'phases'  => [
-					// Inherit ALL phases from parent
-					'globalSetup'    => $this->phases['globalSetup'] ?? [],
-					'globalTeardown' => $this->phases['globalTeardown'] ?? [],
-					'setup'          => $this->phases['setup'] ?? [],
-					'run'            => [], // Will be overridden below
-					'teardown'       => $this->phases['teardown'] ?? [],
-				],
-				// Results paths inherited from parent
+				'phases'  => array_merge(
+					$this->phases,
+					[
+						'run' => []
+					]
+				),
 				'results' => $this->test_results,
 			],
-			// Inherit all other configurations from parent
 			'requires'       => $this->requires,
 			'mu_plugins'     => $this->mu_plugins,
 			'envs'           => $this->env_vars,
@@ -484,7 +480,7 @@ final class TestPackageManifest {
 			'retry'          => $this->retry,
 		];
 
-		// Apply subpackage-specific overrides (only metadata fields)
+		// Apply subpackage-specific overrides
 		if ( isset( $subpackage_config['description'] ) ) {
 			$subpackage_data['description'] = $subpackage_config['description'];
 		}
@@ -492,7 +488,6 @@ final class TestPackageManifest {
 			$subpackage_data['tags'] = $subpackage_config['tags'];
 		}
 
-		// Subpackages can still override requires if needed (for metadata purposes)
 		if ( isset( $subpackage_config['requires'] ) ) {
 			$subpackage_data['requires'] = array_merge(
 				$this->requires,
@@ -500,16 +495,15 @@ final class TestPackageManifest {
 			);
 		}
 
-		// Override ONLY the run phase - this is the key difference for subpackages
-		if ( isset( $subpackage_config['test']['phases']['run'] ) ) {
-			$subpackage_data['test']['phases']['run'] = $subpackage_config['test']['phases']['run'];
-		} else {
-			// Subpackage must specify run phase
+		if ( ! isset( $subpackage_config['test']['phases']['run'] ) ) {
 			throw new InvalidArgumentException(
 				"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
 				'Subpackages exist to run a subset of tests from the parent package.'
 			);
 		}
+
+		// Now override the run phase with the value from the subpackage.
+		$subpackage_data['test']['phases']['run'] = $subpackage_config['test']['phases']['run'];
 
 		return new TestPackageManifest( $subpackage_data );
 	}
