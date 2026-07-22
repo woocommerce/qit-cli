@@ -3,6 +3,7 @@
 namespace QIT_CLI\Utils;
 
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
+use QIT_CLI\Utils\PackageReferenceUtils;
 
 /**
  * Validates --subpackage selections against the supplied test packages.
@@ -30,8 +31,15 @@ class SubpackageSelector {
 		$local_dirs  = [];
 		$remote_refs = [];
 		foreach ( $package_refs as $ref ) {
-			if ( is_dir( $ref ) && file_exists( rtrim( $ref, '/' ) . '/qit-test.json' ) ) {
-				$local_dirs[] = $ref;
+			if ( PackageReferenceUtils::is_local_reference( $ref ) ) {
+				$local_dir = PackageReferenceUtils::expand_local_path( $ref );
+				if ( ! file_exists( rtrim( $local_dir, '/' ) . '/qit-test.json' ) ) {
+					throw new \RuntimeException(
+						"The local test package directory {$local_dir} does not contain a qit-test.json file.\n" .
+						"Unable to validate the specified subpackages."
+					);
+				}
+				$local_dirs[] = $local_dir;
 			} else {
 				$remote_refs[] = $ref;
 			}
