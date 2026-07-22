@@ -143,8 +143,8 @@ class RunE2ECommand extends QITCommand {
 			->addOption(
 				'subpackage',
 				null,
-				InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
-				'Run only the given subpackage(s) of a single local test package (full ID, e.g. namespace/name; multiple allowed)',
+				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				'Run only the given subpackage(s) of a single local test package; the value(s) must match the subpackage ID(s) in the test package manifest',
 				[]
 			)
 			->reuseOption( 'env:up', 'environment' )
