@@ -72,6 +72,10 @@ class SubpackageSelector {
 			throw new \RuntimeException( "Invalid JSON in {$manifest_path}: " . json_last_error_msg() );
 		}
 
+		if ( ! is_array( $manifest_data ) ) {
+			throw new \RuntimeException( "Invalid JSON in {$manifest_path}: expected an object." );
+		}
+
 		try {
 			$manifest = new TestPackageManifest( $manifest_data );
 		} catch ( \InvalidArgumentException $e ) {
