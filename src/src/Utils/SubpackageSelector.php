@@ -99,6 +99,13 @@ class SubpackageSelector {
 					)
 				);
 			}
+
+			// Fail fast if the subpackage is not runnable (e.g. missing a run phase).
+			try {
+				$manifest->create_subpackage_manifest( $subpackage_id );
+			} catch ( \InvalidArgumentException $e ) {
+				throw new \RuntimeException( $e->getMessage() );
+			}
 		}
 
 		return $parent_dir;
