@@ -157,6 +157,120 @@ class TestPackageManifestTest extends TestCase {
 	}
 	
 	/**
+	 * Build a parent manifest with subpackages for create_subpackage_manifest tests.
+	 */
+	private function get_parent_manifest_with_subpackages(): TestPackageManifest {
+		return new TestPackageManifest( [
+			'package' => 'woocommerce/e2e-suite',
+			'description' => 'Parent test suite',
+			'test_dir' => './tests',
+			'test_type' => 'e2e',
+			'test' => [
+				'phases' => [
+					'globalSetup' => ['./bootstrap/global-setup.sh'],
+					'setup' => ['npm ci'],
+					'run' => ['npx playwright test'],
+					'teardown' => ['./cleanup.sh'],
+					'globalTeardown' => ['./global-teardown.sh'],
+				],
+				'results' => ['ctrf-json' => './results/ctrf.json'],
+			],
+			'requires' => ['plugins' => ['woocommerce']],
+			'mu_plugins' => ['./mu/helper.php'],
+			'envs' => ['FOO' => 'bar'],
+			'timeout' => 900,
+			'retry' => ['times' => 1, 'delay' => 5],
+			'subpackages' => [
+				'woocommerce/checkout' => [
+					'description' => 'Checkout tests only',
+					'tags' => ['checkout'],
+					'test' => ['phases' => ['run' => ['npx playwright test tests/checkout.spec.js']]],
+				],
+				'woocommerce/cart' => [
+					'requires' => ['plugins' => ['woocommerce', 'woocommerce-gateway-stripe']],
+					'test' => ['phases' => ['run' => ['npx playwright test tests/cart.spec.js']]],
+				],
+				'woocommerce/no-run-phase' => [
+					'description' => 'Missing test.phases entirely',
+				],
+			],
+		] );
+	}
+
+	/**
+	 * Test create_subpackage_manifest inherits everything except the run phase.
+	 */
+	public function test_create_subpackage_manifest_inherits_parent_config(): void {
+		$parent = $this->get_parent_manifest_with_subpackages();
+
+		$subpackage = $parent->create_subpackage_manifest( 'woocommerce/checkout' );
+
+		$this->assertEquals( 'woocommerce/checkout', $subpackage->get_package_id() );
+		$this->assertEquals( 'woocommerce/e2e-suite', $subpackage->get_parent_package() );
+		$this->assertTrue( $subpackage->is_subpackage() );
+
+		// Only the run phase is overridden.
+		$phases = $subpackage->get_phases();
+		$this->assertEquals( ['npx playwright test tests/checkout.spec.js'], $phases['run'] );
+		$this->assertEquals( ['./bootstrap/global-setup.sh'], $phases['globalSetup'] );
+		$this->assertEquals( ['npm ci'], $phases['setup'] );
+		$this->assertEquals( ['./cleanup.sh'], $phases['teardown'] );
+		$this->assertEquals( ['./global-teardown.sh'], $phases['globalTeardown'] );
+
+		// Everything else is inherited from the parent.
+		$this->assertEquals( ['ctrf-json' => './results/ctrf.json'], $subpackage->get_test_results() );
+		$this->assertEquals( ['plugins' => ['woocommerce']], $subpackage->get_requires() );
+		$this->assertEquals( ['./mu/helper.php'], $subpackage->get_mu_plugins() );
+		$this->assertEquals( ['FOO' => 'bar'], $subpackage->get_env() );
+		$this->assertEquals( 900, $subpackage->get_timeout() );
+		$this->assertEquals( ['times' => 1, 'delay' => 5], $subpackage->get_retry() );
+		$this->assertEquals( './tests', $subpackage->get_test_dir() );
+		$this->assertEquals( 'e2e', $subpackage->get_test_type() );
+
+		// Metadata overrides from the subpackage config are applied.
+		$this->assertEquals( 'Checkout tests only', $subpackage->get_description() );
+		$this->assertEquals( ['checkout'], $subpackage->get_tags() );
+	}
+
+	/**
+	 * Test create_subpackage_manifest merges subpackage requires overrides.
+	 */
+	public function test_create_subpackage_manifest_merges_requires_override(): void {
+		$parent = $this->get_parent_manifest_with_subpackages();
+
+		$subpackage = $parent->create_subpackage_manifest( 'woocommerce/cart' );
+
+		$this->assertEquals(
+			['plugins' => ['woocommerce', 'woocommerce-gateway-stripe']],
+			$subpackage->get_requires()
+		);
+	}
+
+	/**
+	 * Test create_subpackage_manifest throws for an unknown subpackage ID.
+	 */
+	public function test_create_subpackage_manifest_throws_for_unknown_id(): void {
+		$parent = $this->get_parent_manifest_with_subpackages();
+
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( "Subpackage 'woocommerce/nonexistent' not found in package 'woocommerce/e2e-suite'" );
+
+		$parent->create_subpackage_manifest( 'woocommerce/nonexistent' );
+	}
+
+	/**
+	 * Test create_subpackage_manifest throws when the subpackage lacks a run phase.
+	 */
+	public function test_create_subpackage_manifest_throws_for_missing_run_phase(): void {
+		$parent = $this->get_parent_manifest_with_subpackages();
+
+		$this->expectException( \InvalidArgumentException::class );
+		$this->expectExceptionMessage( "Subpackage 'woocommerce/no-run-phase' must specify a 'run' phase" );
+
+		$parent->create_subpackage_manifest( 'woocommerce/no-run-phase' );
+	}
+
+	/**
 	 * Test utility package detection (no run phase).
 	 */
 	public function test_utility_package(): void {

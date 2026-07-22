@@ -163,38 +163,7 @@ class UpEnvironmentCommand extends QITCommand {
 					continue;
 				}
 
-				// Skip absolute paths (already absolute)
-				if ( substr( $package, 0, 1 ) === '/' ) {
-					continue;
-				}
-
-				// Check if it's a relative path starting with . (includes ./, ., ../, etc.)
-				if ( substr( $package, 0, 1 ) === '.' ) {
-					// Try realpath first, fall back to manual construction if it fails
-					$resolved = @realpath( $package );
-					if ( $resolved === false ) {
-						// realpath failed (possibly due to permissions or non-existent path)
-						// For simple . and ./, use getcwd
-						if ( $package === '.' || $package === './' ) {
-							$package = getcwd();
-						} else {
-							// For other relative paths, construct manually
-							// This preserves the relative path structure even if intermediate dirs don't exist
-							$package = getcwd() . '/' . $package;
-						}
-					} else {
-						$package = $resolved;
-					}
-				} else {
-					// For other paths (not starting with . or /), try to resolve as local path
-					// If it exists locally, expand it; otherwise assume it's a package reference
-					$resolved = @realpath( $package );
-					if ( $resolved !== false ) {
-						// Path exists locally, use the resolved absolute path
-						$package = $resolved;
-					}
-					// If realpath fails, leave it unchanged (likely a package reference like vendor/package:1.0.0)
-				}
+				$package = PackageReferenceUtils::expand_local_path( $package );
 			}
 			unset( $package ); // Break the reference
 		}

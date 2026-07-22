@@ -437,6 +437,83 @@ final class TestPackageManifest {
 		return $this->subpackages[ $identifier ] ?? null;
 	}
 
+	/**
+	 * Synthesize a full manifest for one of this package's subpackages.
+	 *
+	 * Subpackages are pure subsets that inherit all configuration from the
+	 * parent except the 'run' phase, which they must override to select which
+	 * tests to execute. Note: subpackage-level 'requires' overrides are merged
+	 * for metadata purposes only — environment provisioning always uses the
+	 * parent manifest's requirements.
+	 *
+	 * @param string $subpackage_id The subpackage ID to synthesize (full ID, e.g. "namespace/name").
+	 * @return TestPackageManifest The synthesized subpackage manifest.
+	 * @throws InvalidArgumentException If the subpackage does not exist or lacks a 'run' phase.
+	 */
+	public function create_subpackage_manifest( string $subpackage_id ): TestPackageManifest {
+		$subpackage_config = $this->get_subpackage( $subpackage_id );
+		if ( ! $subpackage_config ) {
+			throw new InvalidArgumentException(
+				"Subpackage '{$subpackage_id}' not found in package '{$this->package_id}'."
+			);
+		}
+
+		// Start with parent's complete configuration (subpackages inherit everything)
+		$subpackage_data = [
+			'package'        => $subpackage_id,
+			'parent_package' => $this->package_id,
+			'test_type'      => $this->test_type,
+			'test_dir'       => $this->test_dir,
+			'test'           => [
+				'phases'  => [
+					// Inherit ALL phases from parent
+					'globalSetup'    => $this->phases['globalSetup'] ?? [],
+					'globalTeardown' => $this->phases['globalTeardown'] ?? [],
+					'setup'          => $this->phases['setup'] ?? [],
+					'run'            => [], // Will be overridden below
+					'teardown'       => $this->phases['teardown'] ?? [],
+				],
+				// Results paths inherited from parent
+				'results' => $this->test_results,
+			],
+			// Inherit all other configurations from parent
+			'requires'       => $this->requires,
+			'mu_plugins'     => $this->mu_plugins,
+			'envs'           => $this->env_vars,
+			'timeout'        => $this->timeout,
+			'retry'          => $this->retry,
+		];
+
+		// Apply subpackage-specific overrides (only metadata fields)
+		if ( isset( $subpackage_config['description'] ) ) {
+			$subpackage_data['description'] = $subpackage_config['description'];
+		}
+		if ( isset( $subpackage_config['tags'] ) ) {
+			$subpackage_data['tags'] = $subpackage_config['tags'];
+		}
+
+		// Subpackages can still override requires if needed (for metadata purposes)
+		if ( isset( $subpackage_config['requires'] ) ) {
+			$subpackage_data['requires'] = array_merge(
+				$this->requires,
+				$subpackage_config['requires']
+			);
+		}
+
+		// Override ONLY the run phase - this is the key difference for subpackages
+		if ( isset( $subpackage_config['test']['phases']['run'] ) ) {
+			$subpackage_data['test']['phases']['run'] = $subpackage_config['test']['phases']['run'];
+		} else {
+			// Subpackage must specify run phase
+			throw new InvalidArgumentException(
+				"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
+				'Subpackages exist to run a subset of tests from the parent package.'
+			);
+		}
+
+		return new TestPackageManifest( $subpackage_data );
+	}
+
 	public function requires_plugin( string $slug ): bool {
 		// Now plugins is an array, check if slug is in the array
 		return isset( $this->requires['plugins'] ) &&

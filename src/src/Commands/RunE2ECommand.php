@@ -140,6 +140,13 @@ class RunE2ECommand extends QITCommand {
 				'Test packages to include (multiple values allowed)',
 				[]
 			)
+			->addOption(
+				'subpackage',
+				null,
+				InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
+				'Run only the given subpackage(s) of a single local test package (full ID, e.g. namespace/name; multiple allowed)',
+				[]
+			)
 			->reuseOption( 'env:up', 'environment' )
 			->reuseOption( 'env:up', 'php_version' )
 			->reuseOption( 'env:up', 'wordpress_version' )
@@ -183,6 +190,46 @@ class RunE2ECommand extends QITCommand {
 			$output->writeln( '<comment>To run E2E tests on Windows, please use WSL.</comment>' );
 
 			return self::FAILURE;
+		}
+
+		/* ─ Validate --subpackage selection (fail fast, before any expensive work) ─ */
+		$requested_subpackages = array_values( array_unique( array_filter( (array) $input->getOption( 'subpackage' ) ) ) );
+		$subpackage_parent_dir = null;
+		if ( ! empty( $requested_subpackages ) ) {
+			// Validate against user-supplied test packages only (profile + CLI).
+			// Env-config utilities are merged later and are exempt by construction.
+			$candidate_refs = array_map(
+				[ \QIT_CLI\Utils\PackageReferenceUtils::class, 'expand_local_path' ],
+				$input->get_test_packages()
+			);
+
+			// Mirror env:up's auto-detection: the current directory counts as a
+			// local test package when it contains a qit-test.json.
+			$cwd = getcwd();
+			if ( $cwd !== false && file_exists( $cwd . '/qit-test.json' ) ) {
+				$cwd_real     = realpath( $cwd );
+				$already_seen = array_filter( $candidate_refs, static function ( $ref ) use ( $cwd_real ) {
+					return is_dir( $ref ) && realpath( $ref ) === $cwd_real;
+				} );
+				if ( empty( $already_seen ) ) {
+					$candidate_refs[] = $cwd;
+				}
+			}
+
+			try {
+				$subpackage_parent_dir = \QIT_CLI\Utils\SubpackageSelector::validate_selection( $requested_subpackages, $candidate_refs );
+			} catch ( \RuntimeException $e ) {
+				if ( $input->getOption( 'json' ) ) {
+					$output->write( json_encode( [
+						'error'   => 'invalid_subpackage',
+						'message' => $e->getMessage(),
+					] ) );
+				} else {
+					$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
+				}
+
+				return Command::FAILURE;
+			}
 		}
 
 		/* ─ Warn about unimplemented --async flag ─ */
@@ -355,6 +402,37 @@ class RunE2ECommand extends QITCommand {
 				// The package_id might be different (e.g., for local packages)
 				// Check if this package has manifest data (added by env:up)
 				if ( ! empty( $pkg_info['manifest'] ) ) {
+					// When --subpackage is used, expand the single local parent package
+					// into one entry per selected subpackage. All entries share the
+					// parent's host directory and container mount; only the 'run'
+					// phase differs per subpackage (pure subset contract).
+					if ( ! empty( $requested_subpackages )
+						&& $subpackage_parent_dir !== null
+						&& $pkg_info['source'] === 'local'
+						&& realpath( $pkg_info['path'] ) === realpath( $subpackage_parent_dir ) ) {
+						$parent_manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $pkg_info['manifest'] );
+						foreach ( $requested_subpackages as $subpackage_id ) {
+							try {
+								$subpackage_manifest = $parent_manifest->create_subpackage_manifest( $subpackage_id );
+							} catch ( \InvalidArgumentException $e ) {
+								// Defensive: the selection was validated before env:up ran.
+								throw new \RuntimeException( $e->getMessage() );
+							}
+
+							$test_packages[ $subpackage_id ] = [
+								'manifest'       => $subpackage_manifest,
+								'path'           => $pkg_info['path'],           // Parent host dir (shared).
+								'container_path' => $pkg_info['container_path'], // Parent container path (shared mount).
+								'metadata'       => [
+									'downloaded_path' => $pkg_info['path'],
+									'version'         => 'local',
+									'remote'          => false,
+								],
+							];
+						}
+						continue;
+					}
+
 					// Determine version based on source
 					$version = 'local'; // Default for local packages
 					if ( $pkg_info['source'] === 'registry' && str_contains( $original_ref, ':' ) ) {
@@ -422,7 +500,9 @@ class RunE2ECommand extends QITCommand {
 		if ( ! empty( $test_packages ) ) {
 			foreach ( $test_packages as $pkg_id => $meta ) {
 				if ( ! empty( $meta['path'] ) ) {
-					$is_local                     = file_exists( $pkg_id ) && is_dir( $pkg_id );
+					// Keys are not always paths (e.g. subpackage IDs), so rely on
+					// the metadata built during reconstruction instead.
+					$is_local                     = $meta['metadata']['remote'] === false;
 					$package_local_map[ $pkg_id ] = $is_local;
 				}
 			}
@@ -459,9 +539,12 @@ class RunE2ECommand extends QITCommand {
 		$test_packages_metadata = [];
 		if ( ! empty( $test_packages ) ) {
 			foreach ( $test_packages as $pkg_id => $meta ) {
+				// Subpackage entries are keyed by subpackage ID and absent from
+				// test_packages_for_setup - they carry the parent's container path.
 				$test_packages_metadata[ $pkg_id ] = [
 					'path'           => $meta['path'],
-					'container_path' => $env_info->test_packages_for_setup[ $pkg_id ]['container_path'] ?? '',
+					'container_path' => $env_info->test_packages_for_setup[ $pkg_id ]['container_path']
+						?? ( $meta['container_path'] ?? '' ),
 				];
 			}
 		}
