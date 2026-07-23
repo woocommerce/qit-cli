@@ -44,20 +44,33 @@ class SubpackageSelectorTest extends TestCase {
 	}
 
 	/**
-	 * @return array<string,mixed> A parent manifest with two subpackages.
+	 * A schema-valid e2e results block (ctrf-json + blob-dir are required for e2e).
+	 *
+	 * @return array<string,string>
+	 */
+	private function get_e2e_results_config(): array {
+		return [
+			'ctrf-json' => './results/ctrf.json',
+			'blob-dir'  => './blob-report',
+		];
+	}
+
+	/**
+	 * @return array<string,mixed> A schema-valid parent manifest with two subpackages.
 	 */
 	private function get_parent_manifest_data(): array {
 		return [
-			'package' => 'woocommerce/e2e-suite',
-			'test' => [
-				'phases' => [ 'run' => [ 'npx playwright test' ] ],
-				'results' => [],
+			'package'     => 'woocommerce/e2e-suite',
+			'test_type'   => 'e2e',
+			'test'        => [
+				'phases'  => [ 'run' => [ 'npx playwright test' ] ],
+				'results' => $this->get_e2e_results_config(),
 			],
 			'subpackages' => [
 				'woocommerce/checkout' => [
 					'test' => [ 'phases' => [ 'run' => [ 'npx playwright test tests/checkout.spec.js' ] ] ],
 				],
-				'woocommerce/cart' => [
+				'woocommerce/cart'     => [
 					'test' => [ 'phases' => [ 'run' => [ 'npx playwright test tests/cart.spec.js' ] ] ],
 				],
 			],
@@ -98,14 +111,16 @@ class SubpackageSelectorTest extends TestCase {
 	public function test_remote_reference_is_rejected(): void {
 		$dir = $this->create_package_dir( $this->get_parent_manifest_data() );
 
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( 'Remote test package references are not allowed when using --subpackage' );
-		$this->expectExceptionMessage( 'woocommerce/e2e:latest' );
-
-		SubpackageSelector::validate_selection(
-			[ 'woocommerce/checkout' ],
-			[ $dir, 'woocommerce/e2e:latest' ]
-		);
+		try {
+			SubpackageSelector::validate_selection(
+				[ 'woocommerce/checkout' ],
+				[ $dir, 'woocommerce/e2e:latest' ]
+			);
+			$this->fail( 'Expected a RuntimeException for the remote reference, but none was thrown.' );
+		} catch ( \RuntimeException $e ) {
+			$this->assertStringContainsString( 'Remote test package references are not allowed when using --subpackage', $e->getMessage() );
+			$this->assertStringContainsString( 'woocommerce/e2e:latest', $e->getMessage() );
+		}
 	}
 
 	/**
@@ -124,10 +139,11 @@ class SubpackageSelectorTest extends TestCase {
 	public function test_multiple_local_packages_are_rejected(): void {
 		$dir_one = $this->create_package_dir( $this->get_parent_manifest_data() );
 		$dir_two = $this->create_package_dir( [
-			'package' => 'woocommerce/other-suite',
-			'test' => [
-				'phases' => [ 'run' => [ 'npx playwright test' ] ],
-				'results' => [],
+			'package'   => 'woocommerce/other-suite',
+			'test_type' => 'e2e',
+			'test'      => [
+				'phases'  => [ 'run' => [ 'npx playwright test' ] ],
+				'results' => $this->get_e2e_results_config(),
 			],
 		] );
 
@@ -142,10 +158,11 @@ class SubpackageSelectorTest extends TestCase {
 	 */
 	public function test_package_without_subpackages_is_rejected(): void {
 		$dir = $this->create_package_dir( [
-			'package' => 'woocommerce/plain-suite',
-			'test' => [
-				'phases' => [ 'run' => [ 'npx playwright test' ] ],
-				'results' => [],
+			'package'   => 'woocommerce/plain-suite',
+			'test_type' => 'e2e',
+			'test'      => [
+				'phases'  => [ 'run' => [ 'npx playwright test' ] ],
+				'results' => $this->get_e2e_results_config(),
 			],
 		] );
 
@@ -162,13 +179,15 @@ class SubpackageSelectorTest extends TestCase {
 	public function test_unknown_subpackage_id_is_rejected_with_available_list(): void {
 		$dir = $this->create_package_dir( $this->get_parent_manifest_data() );
 
-		$this->expectException( \RuntimeException::class );
-		$this->expectExceptionMessage( "Subpackage 'checkout' not found in test package 'woocommerce/e2e-suite'" );
-		$this->expectExceptionMessage( 'woocommerce/checkout' );
-		$this->expectExceptionMessage( 'woocommerce/cart' );
-
 		// 'checkout' is a short name - only the full ID 'woocommerce/checkout' is valid.
-		SubpackageSelector::validate_selection( [ 'checkout' ], [ $dir ] );
+		try {
+			SubpackageSelector::validate_selection( [ 'checkout' ], [ $dir ] );
+			$this->fail( 'Expected a RuntimeException for the unknown subpackage ID, but none was thrown.' );
+		} catch ( \RuntimeException $e ) {
+			$this->assertStringContainsString( "Subpackage 'checkout' not found in test package 'woocommerce/e2e-suite'", $e->getMessage() );
+			$this->assertStringContainsString( 'woocommerce/checkout', $e->getMessage() );
+			$this->assertStringContainsString( 'woocommerce/cart', $e->getMessage() );
+		}
 	}
 
 	/**
@@ -179,6 +198,31 @@ class SubpackageSelectorTest extends TestCase {
 
 		$this->expectException( \RuntimeException::class );
 		$this->expectExceptionMessage( "Invalid JSON in {$dir}/qit-test.json" );
+
+		SubpackageSelector::validate_selection( [ 'woocommerce/checkout' ], [ $dir ] );
+	}
+
+	/**
+	 * Test that a schema-invalid manifest (valid JSON, but violates the test
+	 * package schema) is rejected early.
+	 */
+	public function test_schema_invalid_manifest_is_rejected(): void {
+		$dir = $this->create_package_dir( [
+			'package'     => 'woocommerce/e2e-suite',
+			'test_type'   => 'e2e',
+			'test'        => [
+				'phases'  => [ 'run' => [ 'npx playwright test' ] ],
+				'results' => [], // Missing required ctrf-json / blob-dir for e2e.
+			],
+			'subpackages' => [
+				'woocommerce/checkout' => [
+					'test' => [ 'phases' => [ 'run' => [ 'npx playwright test tests/checkout.spec.js' ] ] ],
+				],
+			],
+		] );
+
+		$this->expectException( \RuntimeException::class );
+		$this->expectExceptionMessage( 'Schema validation failed' );
 
 		SubpackageSelector::validate_selection( [ 'woocommerce/checkout' ], [ $dir ] );
 	}
