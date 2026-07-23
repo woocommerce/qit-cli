@@ -129,9 +129,6 @@ class RunE2ECommand extends QITCommand {
 			->addOption( 'passthrough_target', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
 			'Test packages that should receive passthrough arguments (multiple allowed)', [] )
 
-			/*
-			─────────────── Shared Options (reused from env:up) ───────────────
-			*/
 			/* ─────────────── E2E-specific options ─────────────── */
 			->addOption(
 				'test-package',
@@ -143,10 +140,14 @@ class RunE2ECommand extends QITCommand {
 			->addOption(
 				'subpackage',
 				null,
-				InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY,
+				InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
 				'Run only the given subpackage(s) of a single local test package; the value(s) must match the subpackage ID(s) in the test package manifest',
 				[]
 			)
+
+			/*
+			─────────────── Shared Options (reused from env:up) ───────────────
+			*/
 			->reuseOption( 'env:up', 'environment' )
 			->reuseOption( 'env:up', 'php_version' )
 			->reuseOption( 'env:up', 'wordpress_version' )
