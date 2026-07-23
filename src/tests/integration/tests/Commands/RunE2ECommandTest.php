@@ -238,6 +238,7 @@ class RunE2ECommandTest extends TestCase {
 		$tempDir = null;
 		$packageDir = null;
 		$pluginDir = null;
+		$subpackageId = null;
 
 		try {
 			$tempDir = sys_get_temp_dir() . '/qit-test-' . uniqid();
@@ -297,42 +298,33 @@ test('site loads', async ({ page }) => {
 			file_put_contents( $configPath, json_encode( $qit_json, JSON_PRETTY_PRINT ) );
 
 			if ( $subpackage ) {
-				$subpackageDir = $packageDir . '/test-subpackage';
-				mkdir( $subpackageDir, 0755, true );
+				// Modify the existing manifest to add a subpackage.
+				$manifestPath = $packageDir . '/qit-test.json';
+				$manifest     = json_decode( (string) file_get_contents( $manifestPath ), true );
 
-				$qit_test_json = [
-					'package'      => 'woocommerce/plugin-test-package',
-					'package_type' => 'test',
-					'description'  => 'Test package for testing the plugin',
-					'test_type'    => 'e2e',
-					'test'         => [
-						'phases' => [
-							'setup' => [
-								"echo 'Setting up test package'",
-							],
-							'run'   => [
-								"npx playwright test $testFile",
-							],
-						],
-					],
-					'subpackages'  => [
-						'woocommerce/plugin-test-package-subpackage' => [
-							'description' => 'Test subpackage for testing the plugin',
-							'test' => [
-								'phases' => [
-									'setup' => [
-										"echo 'Setting up SUBPACKAGE'",
-									],
-									'run'   => [
-										"npx playwright test $testFile",
-									],
+				// Add output to the parent package's setup phase.
+				$manifest['test']['phases']['setup']   = $manifest['test']['phases']['setup'] ?? [];
+				$manifest['test']['phases']['setup'][] = "echo 'INHERITED_PARENT_SETUP'";
+
+				$parentPackage = $manifest['package'];
+				$subpackageId  = $parentPackage . '-subpackage';
+
+				$manifest['subpackages'] = [
+					$subpackageId => [
+						'description' => 'Subpackage that runs only the example spec',
+						'test' => [
+							'phases' => [
+								// Add custom output to the subpackage's run phase for later verification.
+								'run' => [
+									"echo 'RUNNING_SUBPACKAGE'",
+									"npx playwright test $testFile",
 								],
 							],
 						],
 					],
 				];
 
-				file_put_contents( $packageDir . '/qit-test.json', json_encode( $qit_test_json, JSON_PRETTY_PRINT ) );
+				file_put_contents( $manifestPath, json_encode( $manifest, JSON_PRETTY_PRINT ) );
 			}
 
 			// Run the test
@@ -344,7 +336,7 @@ test('site loads', async ({ page }) => {
 			}
 			if ( $subpackage ) {
 				$qit_args[] = '--subpackage';
-				$qit_args[] = 'woocommerce/plugin-test-package-subpackage';
+				$qit_args[] = $subpackageId;
 			}
 
 			$proc = qit( $qit_args, return_process: true );
@@ -357,7 +349,10 @@ test('site loads', async ({ page }) => {
 			$this->assertStringContainsString( 'Running Test Packages', $output );
 
 			if ( $subpackage ) {
-				$this->assertStringContainsString( 'Setting up SUBPACKAGE', $output );
+				// Confirm the subpackage 'run' phase output is present.
+				$this->assertStringContainsString( 'RUNNING_SUBPACKAGE', $output );
+				// Confirm the parent package's 'setup' phase output is present.
+				$this->assertStringContainsString( 'INHERITED_PARENT_SETUP', $output );
 			}
 
 			// The test should complete - we're testing the workflow, not the actual plugin functionality
