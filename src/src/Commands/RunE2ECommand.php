@@ -220,16 +220,7 @@ class RunE2ECommand extends QITCommand {
 			try {
 				$subpackage_parent_dir = \QIT_CLI\Utils\SubpackageSelector::validate_selection( $requested_subpackages, $candidate_refs );
 			} catch ( \RuntimeException $e ) {
-				if ( $input->getOption( 'json' ) ) {
-					$output->write( json_encode( [
-						'error'   => 'invalid_subpackage',
-						'message' => $e->getMessage(),
-					] ) );
-				} else {
-					$output->writeln( sprintf( '<error>%s</error>', $e->getMessage() ) );
-				}
-
-				return Command::FAILURE;
+				return $this->fail_subpackage_selection( $input, $output, $e->getMessage() );
 			}
 		}
 
@@ -411,25 +402,16 @@ class RunE2ECommand extends QITCommand {
 						&& $subpackage_parent_dir !== null
 						&& $pkg_info['source'] === 'local'
 						&& realpath( $pkg_info['path'] ) === realpath( $subpackage_parent_dir ) ) {
-						$parent_manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $pkg_info['manifest'] );
-						foreach ( $requested_subpackages as $subpackage_id ) {
-							try {
-								$subpackage_manifest = $parent_manifest->create_subpackage_manifest( $subpackage_id );
-							} catch ( \InvalidArgumentException $e ) {
-								// Defensive: the selection was validated before env:up ran.
-								throw new \RuntimeException( $e->getMessage() );
-							}
+						try {
+							$expanded = $this->expand_subpackages( $pkg_info, $requested_subpackages );
+						} catch ( \InvalidArgumentException $e ) {
+							// This should not happen, as we validate subpackages early on, but this
+							// serves as an additional defensive measure.
+							return $this->fail_subpackage_selection( $input, $output, $e->getMessage() );
+						}
 
-							$test_packages[ $subpackage_id ] = [
-								'manifest'       => $subpackage_manifest,
-								'path'           => $pkg_info['path'],           // Parent host dir (shared).
-								'container_path' => $pkg_info['container_path'], // Parent container path (shared mount).
-								'metadata'       => [
-									'downloaded_path' => $pkg_info['path'],
-									'version'         => 'local',
-									'remote'          => false,
-								],
-							];
+						foreach ( $expanded as $subpackage_id => $entry ) {
+							$test_packages[ $subpackage_id ] = $entry;
 						}
 						continue;
 					}
@@ -452,6 +434,23 @@ class RunE2ECommand extends QITCommand {
 						],
 					];
 				}
+			}
+		}
+
+		// Ensure that when --subpackage is used, every requested subpackage
+		// has an entry in $test_packages. This ensures we only run requested 
+		// subpackages and not the full parent package.
+		if ( ! empty( $requested_subpackages ) ) {
+			$missing_subpackages = array_diff( $requested_subpackages, array_keys( $test_packages ) );
+			if ( ! empty( $missing_subpackages ) ) {
+				return $this->fail_subpackage_selection(
+					$input,
+					$output,
+					sprintf(
+						"Failed to apply the --subpackage selection. The following subpackage(s) were not expanded from the local parent package:\n  - %s\n\nThe full parent package was NOT run, to avoid executing unintended tests.",
+						implode( "\n  - ", $missing_subpackages )
+					)
+				);
 			}
 		}
 
@@ -1194,6 +1193,60 @@ class RunE2ECommand extends QITCommand {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Expand a local parent test package into one entry per selected subpackage.
+	 *
+	 * All entries share the parent's host directory and container mount; only the
+	 * 'run' phase differs per subpackage.
+	 *
+	 * @param array<string,mixed> $pkg_info              Reconstructed parent package info from env_info (needs 'manifest', 'path', 'container_path').
+	 * @param array<string>       $requested_subpackages Subpackage IDs to expand.
+	 *
+	 * @return array<string,array<string,mixed>> Map of subpackage ID => reconstructed test package entry.
+	 * @throws \InvalidArgumentException If a subpackage manifest cannot be synthesized.
+	 */
+	private function expand_subpackages( array $pkg_info, array $requested_subpackages ): array {
+		$parent_manifest = new \QIT_CLI\PreCommand\Objects\TestPackageManifest( $pkg_info['manifest'] );
+		$entries         = [];
+
+		foreach ( $requested_subpackages as $subpackage_id ) {
+			$entries[ $subpackage_id ] = [
+				'manifest'       => $parent_manifest->create_subpackage_manifest( $subpackage_id ),
+				'path'           => $pkg_info['path'],           // Parent host dir (shared).
+				'container_path' => $pkg_info['container_path'], // Parent container path (shared mount).
+				'metadata'       => [
+					'downloaded_path' => $pkg_info['path'],
+					'version'         => 'local',
+					'remote'          => false,
+				],
+			];
+		}
+
+		return $entries;
+	}
+
+	/**
+	 * Emit a --subpackage selection failure using the command's output mode.
+	 *
+	 * @param QITInput        $input The input interface.
+	 * @param OutputInterface $output The output interface.
+	 * @param string          $message The error message.
+	 *
+	 * @return int The exit status.
+	 */
+	private function fail_subpackage_selection( QITInput $input, OutputInterface $output, string $message ): int {
+		if ( $input->getOption( 'json' ) ) {
+			$output->write( json_encode( [
+				'error'   => 'invalid_subpackage',
+				'message' => $message,
+			] ) );
+		} else {
+			$output->writeln( sprintf( '<error>%s</error>', $message ) );
+		}
+
+		return Command::FAILURE;
 	}
 
 
