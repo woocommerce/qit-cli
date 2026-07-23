@@ -33,12 +33,20 @@ class SubpackageSelector {
 		foreach ( $package_refs as $ref ) {
 			if ( PackageReferenceUtils::is_local_reference( $ref ) ) {
 				$local_dir = PackageReferenceUtils::expand_local_path( $ref );
+
+				if ( ! is_dir( $local_dir ) ) {
+					throw new \RuntimeException(
+						"The local test package directory {$local_dir} does not exist for package {$ref}."
+					);
+				}
+
 				if ( ! file_exists( rtrim( $local_dir, '/' ) . '/qit-test.json' ) ) {
 					throw new \RuntimeException(
 						"The local test package directory {$local_dir} does not contain a qit-test.json file.\n" .
 						'Unable to validate the specified subpackages.'
 					);
 				}
+
 				$local_dirs[] = $local_dir;
 			} else {
 				$remote_refs[] = $ref;
