@@ -468,7 +468,7 @@ final class TestPackageManifest {
 				'phases'  => array_merge(
 					$this->phases,
 					[
-						'run' => []
+						'run' => [],
 					]
 				),
 				'results' => $this->test_results,

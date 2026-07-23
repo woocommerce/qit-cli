@@ -36,7 +36,7 @@ class SubpackageSelector {
 				if ( ! file_exists( rtrim( $local_dir, '/' ) . '/qit-test.json' ) ) {
 					throw new \RuntimeException(
 						"The local test package directory {$local_dir} does not contain a qit-test.json file.\n" .
-						"Unable to validate the specified subpackages."
+						'Unable to validate the specified subpackages.'
 					);
 				}
 				$local_dirs[] = $local_dir;
