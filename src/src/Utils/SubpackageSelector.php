@@ -2,7 +2,7 @@
 
 namespace QIT_CLI\Utils;
 
-use QIT_CLI\PreCommand\Objects\TestPackageManifest;
+use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
 use QIT_CLI\Utils\PackageReferenceUtils;
 
 /**
@@ -72,21 +72,13 @@ class SubpackageSelector {
 			);
 		}
 
-		$parent_dir    = $local_dirs[0];
-		$manifest_path = rtrim( $parent_dir, '/' ) . '/qit-test.json';
-		$manifest_data = json_decode( (string) file_get_contents( $manifest_path ), true );
+		$parent_dir = $local_dirs[0];
 
-		if ( json_last_error() !== JSON_ERROR_NONE ) {
-			throw new \RuntimeException( "Invalid JSON in {$manifest_path}: " . json_last_error_msg() );
-		}
-
-		if ( ! is_array( $manifest_data ) ) {
-			throw new \RuntimeException( "Invalid JSON in {$manifest_path}: expected an object." );
-		}
-
+		// Ensure we have a valid test package manifest.
 		try {
-			$manifest = new TestPackageManifest( $manifest_data );
+			$manifest = ( new TestPackageManifestParser() )->parse( $parent_dir );
 		} catch ( \InvalidArgumentException $e ) {
+			$manifest_path = rtrim( $parent_dir, '/' ) . '/qit-test.json';
 			throw new \RuntimeException( "Invalid test package manifest at {$manifest_path}: " . $e->getMessage() );
 		}
 
@@ -112,7 +104,7 @@ class SubpackageSelector {
 				);
 			}
 
-			// Fail fast if the subpackage is not runnable (e.g. missing a run phase).
+			// Validate that we can create a valid subpackage manifest.
 			try {
 				$manifest->create_subpackage_manifest( $subpackage_id );
 			} catch ( \InvalidArgumentException $e ) {
