@@ -11,7 +11,7 @@ use Symfony\Component\Console\Input\StringInput;
 class RunE2ESubpackageOptionTest extends QITTestCase {
 
 	/**
-	 * Generate a {@see \Symfony\Component\Console\Input\StringInput} using the 
+	 * Generate a {@see \Symfony\Component\Console\Input\StringInput} using the
 	 * `run:e2e` command definition.
 	 *
 	 * @param string $cli The command line values, without the command name.

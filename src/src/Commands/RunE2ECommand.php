@@ -438,7 +438,7 @@ class RunE2ECommand extends QITCommand {
 		}
 
 		// Ensure that when --subpackage is used, every requested subpackage
-		// has an entry in $test_packages. This ensures we only run requested 
+		// has an entry in $test_packages. This ensures we only run requested
 		// subpackages and not the full parent package.
 		if ( ! empty( $requested_subpackages ) ) {
 			$missing_subpackages = array_diff( $requested_subpackages, array_keys( $test_packages ) );
