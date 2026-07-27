@@ -271,7 +271,8 @@ add_action( "wp_body_open", function() {
 			] );
 			
 			// Modify the test to just check if the site loads
-			$testFile = $packageDir . '/tests/example.spec.js';
+			$testFileRelativePath = 'tests/example.spec.js';
+			$testFile = $packageDir . '/' . $testFileRelativePath;
 			file_put_contents( $testFile, "import { test, expect } from '@playwright/test';
 
 test('site loads', async ({ page }) => {
@@ -317,7 +318,7 @@ test('site loads', async ({ page }) => {
 								// Add custom output to the subpackage's run phase for later verification.
 								'run' => [
 									"echo 'RUNNING_SUBPACKAGE'",
-									"npx playwright test $testFile",
+									"npx playwright test $testFileRelativePath",
 								],
 							],
 						],
