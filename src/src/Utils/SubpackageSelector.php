@@ -71,16 +71,17 @@ class SubpackageSelector {
 			);
 		}
 
-		if ( count( $local_dirs ) > 1 ) {
+		$normalized_local_dirs = array_values( array_unique( $local_dirs ) );
+		if ( count( $normalized_local_dirs ) > 1 ) {
 			throw new \RuntimeException(
-				'The --subpackage option requires exactly ONE local test package, but ' . count( $local_dirs ) . " were found:\n" .
-				'  - ' . implode( "\n  - ", $local_dirs ) . "\n" .
+				'The --subpackage option requires exactly ONE local test package, but ' . count( $normalized_local_dirs ) . " were found:\n" .
+				'  - ' . implode( "\n  - ", $normalized_local_dirs ) . "\n" .
 				"\n" .
 				'Remove the extra packages or run each selection separately.'
 			);
 		}
 
-		$parent_dir = $local_dirs[0];
+		$parent_dir = reset( $normalized_local_dirs );
 
 		// Ensure we have a valid test package manifest.
 		try {
