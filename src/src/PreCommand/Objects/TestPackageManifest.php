@@ -458,43 +458,30 @@ final class TestPackageManifest {
 			);
 		}
 
-		// Start with parent's complete configuration -- subpackages inherit everything _except_ the run phase.
-		$subpackage_data = [
-			'package'        => $subpackage_id,
-			'parent_package' => $this->package_id,
-			'test_type'      => $this->test_type,
-			'test_dir'       => $this->test_dir,
-			'test'           => [
-				'phases'  => array_merge(
-					$this->phases,
-					[
-						'run' => [],
-					]
-				),
-				'results' => $this->test_results,
-			],
-			'requires'       => $this->requires,
-			'mu_plugins'     => $this->mu_plugins,
-			'envs'           => $this->env_vars,
-			'timeout'        => $this->timeout,
-			'retry'          => $this->retry,
-		];
+		// Start with parent's complete configuration.
+		$package_data = $this->to_array();
+
+		$package_data['package_id']     = $subpackage_id;
+		$package_data['parent_package'] = $this->package_id;
+		$package_data['subpackages']    = [];
+
+		$package_data['phases']['run'] = [];
 
 		// Apply subpackage-specific overrides
 		if ( isset( $subpackage_config['description'] ) ) {
-			$subpackage_data['description'] = $subpackage_config['description'];
+			$package_data['description'] = $subpackage_config['description'];
 		}
 		if ( isset( $subpackage_config['tags'] ) ) {
-			$subpackage_data['tags'] = $subpackage_config['tags'];
+			$package_data['tags'] = $subpackage_config['tags'];
 		}
 
 		if ( isset( $subpackage_config['requires'] ) ) {
-			$subpackage_data['requires'] = array_merge(
+			$package_data['requires'] = array_merge(
 				$this->requires,
 				$subpackage_config['requires']
 			);
 		}
-
+ 
 		if ( ! isset( $subpackage_config['test']['phases']['run'] ) ) {
 			throw new InvalidArgumentException(
 				"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
@@ -502,10 +489,9 @@ final class TestPackageManifest {
 			);
 		}
 
-		// Now override the run phase with the value from the subpackage.
-		$subpackage_data['test']['phases']['run'] = $subpackage_config['test']['phases']['run'];
+		$package_data['phases']['run'] = $subpackage_config['test']['phases']['run'];
 
-		return new TestPackageManifest( $subpackage_data );
+		return new TestPackageManifest( $package_data );
 	}
 
 	public function requires_plugin( string $slug ): bool {

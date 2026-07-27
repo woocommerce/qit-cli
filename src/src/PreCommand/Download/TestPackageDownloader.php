@@ -961,7 +961,6 @@ class TestPackageDownloader {
 		}
 
 		try {
-			// Synthesis logic lives on the manifest so it can be reused outside the download flow.
 			return $parent_manifest->create_subpackage_manifest( $subpackage_id );
 		} catch ( \InvalidArgumentException $e ) {
 			// Preserve historical behavior: a subpackage without a 'run' phase is a runtime error here.
