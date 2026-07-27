@@ -186,6 +186,7 @@ final class TestPackageManifest {
 		$this->retry          = $data['retry'];
 		$this->subpackages    = $data['subpackages'];
 		$this->parent_package = $data['parent_package'];
+		$this->actions        = $data['actions'] ?? [];
 		// For normalized data, only support new format (requires.network)
 		if ( isset( $data['requires']['network'] ) ) {
 			if ( is_string( $data['requires']['network'] ) ) {
@@ -258,6 +259,7 @@ final class TestPackageManifest {
 			'parent_package'   => $this->parent_package,
 			'requires_network' => $this->requires_network,
 			'requires_tunnel'  => $this->requires_tunnel,
+			'actions'          => $this->actions,
 		];
 	}
 
