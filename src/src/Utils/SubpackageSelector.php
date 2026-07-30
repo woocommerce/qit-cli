@@ -3,7 +3,6 @@
 namespace QIT_CLI\Utils;
 
 use QIT_CLI\PreCommand\Configuration\Parser\TestPackageManifestParser;
-use QIT_CLI\Utils\PackageReferenceUtils;
 
 /**
  * Validates --subpackage selections against the supplied test packages.
