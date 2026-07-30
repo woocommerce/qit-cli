@@ -72,8 +72,8 @@ final class TestPackageManifest {
 		// Package identification - handle v1 vs v2 format
 		if ( isset( $data['package'] ) && str_contains( $data['package'], '/' ) ) {
 			// v2 format: "package": "woocommerce/checkout"
-			$this->package_id                         = $data['package'];
-			[ $this->namespace, $this->package_name ] = explode( '/', $this->package_id, 2 );
+			$this->package_id = $data['package'];
+			$this->populate_namespace_and_package_name_from_package_id();
 		} elseif ( isset( $data['namespace'] ) && isset( $data['package'] ) ) {
 			// v1 format: separate namespace and package fields
 			$this->namespace    = $data['namespace'];
@@ -211,6 +211,17 @@ final class TestPackageManifest {
 			}
 		} else {
 			$this->requires_tunnel = false;
+		}
+	}
+
+	/**
+	 * Populate {@see $namespace} and {@see $package_name} from {@see $package_id}
+	 * when package_id is using the v2 package format, e.g. "woocommerce/checkout".
+	 */
+	protected function populate_namespace_and_package_name_from_package_id(): void {
+		if ( str_contains( $this->package_id, '/' ) ) {
+			// v2 format: "package": "woocommerce/checkout"
+			[ $this->namespace, $this->package_name ] = explode( '/', $this->package_id, 2 );
 		}
 	}
 
@@ -491,7 +502,11 @@ final class TestPackageManifest {
 
 		$package_data['phases']['run'] = $subpackage_config['test']['phases']['run'];
 
-		return new TestPackageManifest( $package_data );
+		$subpackage_manifest = new TestPackageManifest( $package_data );
+
+		$subpackage_manifest->populate_namespace_and_package_name_from_package_id();
+
+		return $subpackage_manifest;
 	}
 
 	public function requires_plugin( string $slug ): bool {

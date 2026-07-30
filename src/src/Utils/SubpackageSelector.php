@@ -110,6 +110,8 @@ class SubpackageSelector {
 				);
 			}
 
+			self::validate_subpackage_id( $subpackage_id );
+
 			// Validate that we can create a valid subpackage manifest.
 			try {
 				$manifest->create_subpackage_manifest( $subpackage_id );
@@ -119,5 +121,26 @@ class SubpackageSelector {
 		}
 
 		return $parent_dir;
+	}
+
+	/**
+	 * Validate a subpackage ID.
+	 *
+	 * @param string $subpackage_id The subpackage ID to validate.
+	 *
+	 * @return void
+	 * @throws \RuntimeException If the subpackage ID is invalid.
+	 */
+	private static function validate_subpackage_id( string $subpackage_id ): void {
+		if ( str_contains( $subpackage_id, '/' ) && ! str_starts_with( $subpackage_id, '/' ) && ! str_ends_with( $subpackage_id, '/' ) ) {
+			return;
+		}
+
+		throw new \RuntimeException(
+			sprintf(
+				"Invalid subpackage ID: '%s'. Subpackage IDs must be in the format 'namespace/subpackage'.",
+				$subpackage_id
+			)
+		);
 	}
 }
