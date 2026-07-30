@@ -57,7 +57,7 @@ class SubpackageSelector {
 				'  - ' . implode( "\n  - ", $remote_refs ) . "\n" .
 				"\n" .
 				"To run a remote subpackage, reference it directly, e.g.:\n" .
-				'  --test-package namespace/subpackage:version'
+				'  --test-package namespace/package/subpackage:version'
 			);
 		}
 
