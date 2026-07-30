@@ -143,11 +143,18 @@ class ApiFuzzCommandTest extends \QIT_CLI_Tests\QITTestCase {
 				$temporary_directory = dirname( $destination );
 				$this->assertDirectoryExists( $temporary_directory );
 				$this->assertFileNotExists( $destination );
-				file_put_contents( $destination, $this->createMinimalPluginZip( 'test-plugin', '1.0.0' ) );
+
+				// Zipper::zip_directory() archives the directory contents, not the
+				// directory itself. Keep this fixture flat so it mirrors --zip=<dir>.
+				$zip = new \ZipArchive();
+				$this->assertTrue( $zip->open( $destination, \ZipArchive::CREATE | \ZipArchive::OVERWRITE ) );
+				$this->assertTrue( $zip->addFile( $source . '/test-plugin.php', 'test-plugin.php' ) );
+				$zip->close();
 			} );
 		App::singleton( Zipper::class, $zipper );
 
 		$this->mock_upload_response( 'directory-upload' );
+		App::setVar( 'mocked_requests', [] );
 		App::setVar( 'QIT_JSON_MODE', true );
 
 		try {
@@ -164,6 +171,31 @@ class ApiFuzzCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 'cli_development_extension_test', $payload['event'] );
 		$this->assertNotNull( $temporary_directory );
 		$this->assertFalse( is_dir( $temporary_directory ) );
+
+		$mocked_requests = App::getVar( 'mocked_requests' );
+		App::setVar( 'mocked_requests', null );
+		$this->assertIsArray( $mocked_requests );
+
+		$uploaded_zip = '';
+		foreach ( $mocked_requests as $request ) {
+			if ( str_ends_with( $request['url'], '/wp-json/cd/v1/upload-build' ) ) {
+				$uploaded_zip .= base64_decode( $request['post_body']['chunk'] );
+			}
+		}
+
+		$uploaded_zip_path = tempnam( sys_get_temp_dir(), 'qit-uploaded-directory-' );
+		$this->assertNotFalse( $uploaded_zip_path );
+		file_put_contents( $uploaded_zip_path, $uploaded_zip );
+
+		try {
+			$archive = new \ZipArchive();
+			$this->assertTrue( $archive->open( $uploaded_zip_path ) );
+			$this->assertNotFalse( $archive->locateName( 'test-plugin.php' ) );
+			$this->assertFalse( $archive->locateName( basename( $directory ) . '/test-plugin.php' ) );
+			$archive->close();
+		} finally {
+			unlink( $uploaded_zip_path );
+		}
 	}
 
 	public function test_remote_zip_artifact_is_downloaded_before_upload(): void {
