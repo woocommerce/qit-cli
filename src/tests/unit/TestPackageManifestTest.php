@@ -3,6 +3,7 @@
 namespace QIT_CLI_Tests;
 
 use PHPUnit\Framework\TestCase;
+use QIT_CLI\PreCommand\Objects\PackageType;
 use QIT_CLI\PreCommand\Objects\TestPackageManifest;
 
 /**
@@ -400,5 +401,435 @@ class TestPackageManifestTest extends TestCase {
 		$manifest = new TestPackageManifest( $data );
 
 		$this->assertEquals( [], $manifest->get_actions() );
+	}
+
+	/**
+	 * External manifest data exercising every supported field.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function get_full_manifest_data(): array {
+		return [
+			'package' => 'woocommerce/e2e-suite',
+			'tags' => ['e2e', 'critical'],
+			'package_type' => 'test',
+			'test_type' => 'e2e',
+			'test_dir' => './tests',
+			'description' => 'Full manifest',
+			'requires' => [
+				'plugins' => ['woocommerce'],
+				'themes' => ['storefront'],
+				'secrets' => ['API_KEY'],
+				'network' => true,
+				'tunnel' => true,
+			],
+			'test' => [
+				'phases' => [
+					'globalSetup' => ['./bootstrap/global-setup.sh'],
+					'setup' => ['npm ci'],
+					'run' => ['npx playwright test'],
+					'teardown' => ['./cleanup.sh'],
+					'globalTeardown' => ['./global-teardown.sh'],
+				],
+				'results' => ['ctrf-json' => './results/ctrf.json'],
+			],
+			'mu_plugins' => ['./mu/helper.php'],
+			'envs' => [
+				'FOO' => 'bar',
+				'DEBUG' => true,
+				'RETRIES' => 3,
+			],
+			'timeout' => 900,
+			'retry' => ['times' => 2, 'delay' => 5],
+			'subpackages' => [
+				'woocommerce/checkout' => [
+					'description' => 'Checkout tests only',
+					'tags' => ['checkout'],
+					'test' => ['phases' => ['run' => ['npx playwright test tests/checkout.spec.js']]],
+				],
+			],
+			'actions' => [
+				'makePurchase' => './flows/pay.ts',
+				'refundOrder' => './flows/refund.ts',
+			],
+		];
+	}
+
+	/**
+	 * The phases as stored internally, including the defaults applied for missing phases.
+	 *
+	 * @return array<string, array<string>>
+	 */
+	private function get_full_manifest_phases(): array {
+		return [
+			'globalSetup' => ['./bootstrap/global-setup.sh'],
+			'setup' => ['npm ci'],
+			'run' => ['npx playwright test'],
+			'teardown' => ['./cleanup.sh'],
+			'globalTeardown' => ['./global-teardown.sh'],
+		];
+	}
+
+	/**
+	 * Test to_array() exports every field of the normalized (cache) representation.
+	 */
+	public function test_to_array_exports_all_fields(): void {
+		$manifest = new TestPackageManifest( $this->get_full_manifest_data() );
+
+		$expected = [
+			'_normalized' => true,
+			'package_id' => 'woocommerce/e2e-suite',
+			'namespace' => 'woocommerce',
+			'package_name' => 'e2e-suite',
+			'package_type' => 'test',
+			'tags' => ['e2e', 'critical'],
+			'test_type' => 'e2e',
+			'test_dir' => './tests',
+			'description' => 'Full manifest',
+			'requires' => [
+				'plugins' => ['woocommerce'],
+				'themes' => ['storefront'],
+				'secrets' => ['API_KEY'],
+				'network' => true,
+				'tunnel' => true,
+			],
+			'phases' => $this->get_full_manifest_phases(),
+			'test_results' => ['ctrf-json' => './results/ctrf.json'],
+			'mu_plugins' => ['./mu/helper.php'],
+			// Env values are stringified.
+			'env_vars' => [
+				'FOO' => 'bar',
+				'DEBUG' => 'true',
+				'RETRIES' => '3',
+			],
+			'timeout' => 900,
+			'retry' => ['times' => 2, 'delay' => 5],
+			'subpackages' => [
+				'woocommerce/checkout' => [
+					'description' => 'Checkout tests only',
+					'tags' => ['checkout'],
+					'test' => ['phases' => ['run' => ['npx playwright test tests/checkout.spec.js']]],
+				],
+			],
+			'parent_package' => null,
+			'requires_network' => true,
+			'requires_tunnel' => true,
+			'actions' => [
+				'makePurchase' => './flows/pay.ts',
+				'refundOrder' => './flows/refund.ts',
+			],
+		];
+
+		$this->assertEquals( $expected, $manifest->to_array() );
+	}
+
+	/**
+	 * Test jsonSerialize() exports every field in the external manifest format.
+	 */
+	public function test_json_serialize_exports_all_fields(): void {
+		$manifest = new TestPackageManifest( $this->get_full_manifest_data() );
+
+		$expected = [
+			'package' => 'woocommerce/e2e-suite',
+			'tags' => ['e2e', 'critical'],
+			'package_type' => 'test',
+			'test_type' => 'e2e',
+			'test_dir' => './tests',
+			'description' => 'Full manifest',
+			'requires' => [
+				'plugins' => ['woocommerce'],
+				'themes' => ['storefront'],
+				'secrets' => ['API_KEY'],
+				'network' => true,
+				'tunnel' => true,
+			],
+			'test' => [
+				'phases' => $this->get_full_manifest_phases(),
+				'results' => ['ctrf-json' => './results/ctrf.json'],
+			],
+			'mu_plugins' => ['./mu/helper.php'],
+			// Env values are stringified.
+			'envs' => [
+				'FOO' => 'bar',
+				'DEBUG' => 'true',
+				'RETRIES' => '3',
+			],
+			'timeout' => 900,
+			'retry' => ['times' => 2, 'delay' => 5],
+			'subpackages' => [
+				'woocommerce/checkout' => [
+					'description' => 'Checkout tests only',
+					'tags' => ['checkout'],
+					'test' => ['phases' => ['run' => ['npx playwright test tests/checkout.spec.js']]],
+				],
+			],
+			'parent_package' => null,
+			'actions' => [
+				'makePurchase' => './flows/pay.ts',
+				'refundOrder' => './flows/refund.ts',
+			],
+		];
+
+		$this->assertEquals( $expected, $manifest->jsonSerialize() );
+	}
+
+	/**
+	 * Test to_array() -> constructor round trip is lossless (cache write/read).
+	 */
+	public function test_to_array_round_trip_preserves_all_fields(): void {
+		$original = new TestPackageManifest( $this->get_full_manifest_data() );
+
+		$reloaded = new TestPackageManifest( $original->to_array() );
+
+		$this->assertEquals( $original->to_array(), $reloaded->to_array() );
+		$this->assertEquals( $original->jsonSerialize(), $reloaded->jsonSerialize() );
+	}
+
+	/**
+	 * Test jsonSerialize() -> constructor round trip is lossless.
+	 *
+	 * Comparing the normalized state of both manifests catches any field that
+	 * jsonSerialize() forgets to emit, since a dropped field would fall back to
+	 * its default when the serialized output is re-adapted.
+	 */
+	public function test_json_serialize_round_trip_preserves_all_fields(): void {
+		$original = new TestPackageManifest( $this->get_full_manifest_data() );
+
+		$reloaded = new TestPackageManifest( $original->jsonSerialize() );
+
+		$this->assertEquals( $original->jsonSerialize(), $reloaded->jsonSerialize() );
+		$this->assertEquals( $original->to_array(), $reloaded->to_array() );
+	}
+
+	/**
+	 * Test a round trip through an actual JSON string is lossless.
+	 */
+	public function test_json_encoded_round_trip_preserves_all_fields(): void {
+		$original = new TestPackageManifest( $this->get_full_manifest_data() );
+
+		$json = json_encode( $original->jsonSerialize() );
+		$this->assertIsString( $json );
+
+		$reloaded = new TestPackageManifest( json_decode( $json, true ) );
+
+		$this->assertEquals( $original->to_array(), $reloaded->to_array() );
+	}
+
+	/**
+	 * Test both serializations always emit every key, using defaults for fields
+	 * that the external manifest did not declare.
+	 */
+	public function test_serialization_of_minimal_manifest_uses_defaults(): void {
+		$manifest = new TestPackageManifest( [
+			'package' => 'test/package',
+			'test' => [
+				'phases' => ['run' => ['npx playwright test']],
+			],
+		] );
+
+		$expected_phases = [
+			'globalSetup' => [],
+			'globalTeardown' => [],
+			'setup' => [],
+			'run' => ['npx playwright test'],
+			'teardown' => [],
+		];
+
+		$this->assertEquals( [
+			'_normalized' => true,
+			'package_id' => 'test/package',
+			'namespace' => 'test',
+			'package_name' => 'package',
+			// Derived: has a run phase, so it is a test package.
+			'package_type' => PackageType::TEST,
+			'tags' => [],
+			'test_type' => 'e2e',
+			'test_dir' => './',
+			'description' => '',
+			'requires' => [],
+			'phases' => $expected_phases,
+			'test_results' => [],
+			'mu_plugins' => [],
+			'env_vars' => [],
+			'timeout' => 1800,
+			'retry' => ['times' => 0, 'delay' => 0],
+			'subpackages' => [],
+			'parent_package' => null,
+			'requires_network' => false,
+			'requires_tunnel' => false,
+			'actions' => [],
+		], $manifest->to_array() );
+
+		$this->assertEquals( [
+			'package' => 'test/package',
+			'tags' => [],
+			'package_type' => PackageType::TEST,
+			'test_type' => 'e2e',
+			'test_dir' => './',
+			'description' => '',
+			'requires' => [],
+			'test' => [
+				'phases' => $expected_phases,
+				'results' => [],
+			],
+			'mu_plugins' => [],
+			'envs' => [],
+			'timeout' => 1800,
+			'retry' => ['times' => 0, 'delay' => 0],
+			'subpackages' => [],
+			'parent_package' => null,
+			'actions' => [],
+		], $manifest->jsonSerialize() );
+	}
+
+	/**
+	 * Test normalized data written before actions existed still loads (backwards compatibility).
+	 */
+	public function test_normalized_data_without_actions_defaults_to_empty(): void {
+		$normalized = [
+			'_normalized' => true,
+			'package_id' => 'woocommerce/checkout',
+			'namespace' => 'woocommerce',
+			'package_name' => 'checkout',
+			'tags' => [],
+			'test_type' => 'e2e',
+			'test_dir' => './',
+			'description' => 'Test package',
+			'requires' => [],
+			'phases' => ['run' => ['test']],
+			'test_results' => [],
+			'mu_plugins' => [],
+			'env_vars' => [],
+			'timeout' => 1800,
+			'retry' => ['times' => 0, 'delay' => 0],
+			'subpackages' => [],
+			'parent_package' => null,
+			// No 'actions' key - cached before actions were supported.
+		];
+
+		$manifest = new TestPackageManifest( $normalized );
+
+		$this->assertSame( [], $manifest->get_actions() );
+		$this->assertSame( [], $manifest->to_array()['actions'] );
+		$this->assertSame( [], $manifest->jsonSerialize()['actions'] );
+	}
+
+	/**
+	 * Test a utility package (no run phase) serializes its derived package type.
+	 */
+	public function test_serialization_of_utility_package_type(): void {
+		$manifest = new TestPackageManifest( [
+			'package' => 'woocommerce/setup-utils',
+			'test' => [
+				'phases' => ['globalSetup' => ['composer install']],
+			],
+		] );
+
+		$this->assertSame( PackageType::UTILITY, $manifest->to_array()['package_type'] );
+		$this->assertSame( PackageType::UTILITY, $manifest->jsonSerialize()['package_type'] );
+
+		// The derived type survives a round trip rather than being re-derived differently.
+		$reloaded = new TestPackageManifest( $manifest->jsonSerialize() );
+		$this->assertSame( PackageType::UTILITY, $reloaded->get_package_type() );
+	}
+
+	/**
+	 * Test string network/tunnel requirements are normalized to booleans on export.
+	 */
+	public function test_serialization_normalizes_string_network_and_tunnel_flags(): void {
+		$manifest = new TestPackageManifest( [
+			'package' => 'test/package',
+			'requires' => [
+				'network' => 'true',
+				'tunnel' => 'false',
+			],
+			'test' => [
+				'phases' => ['run' => ['test']],
+			],
+		] );
+
+		$normalized = $manifest->to_array();
+		$this->assertTrue( $normalized['requires_network'] );
+		$this->assertFalse( $normalized['requires_tunnel'] );
+
+		// The raw requires values are exported untouched, and re-adapted on reload.
+		$this->assertSame( 'true', $manifest->jsonSerialize()['requires']['network'] );
+		$this->assertSame( 'false', $manifest->jsonSerialize()['requires']['tunnel'] );
+
+		$reloaded = new TestPackageManifest( $manifest->jsonSerialize() );
+		$this->assertTrue( $reloaded->requires_network() );
+		$this->assertFalse( $reloaded->requires_tunnel() );
+	}
+
+	/**
+	 * Test a synthesized subpackage serializes all of its inherited and overridden fields.
+	 */
+	public function test_serialization_of_synthesized_subpackage(): void {
+		$parent = new TestPackageManifest( $this->get_full_manifest_data() );
+
+		$subpackage = $parent->create_subpackage_manifest( 'woocommerce/checkout' );
+		$serialized = $subpackage->jsonSerialize();
+
+		// Subpackage identity, including the namespace/package name derived from the subpackage ID
+		// rather than inherited from the parent.
+		$this->assertSame( 'woocommerce/checkout', $serialized['package'] );
+		$this->assertSame( 'woocommerce/e2e-suite', $serialized['parent_package'] );
+		$this->assertSame( [], $serialized['subpackages'] );
+		$this->assertSame( 'woocommerce', $subpackage->get_namespace() );
+		$this->assertSame( 'checkout', $subpackage->get_package_name() );
+		$this->assertSame( 'woocommerce-checkout', $subpackage->get_container_directory_name() );
+
+		// Overridden fields.
+		$this->assertEquals( ['npx playwright test tests/checkout.spec.js'], $serialized['test']['phases']['run'] );
+		$this->assertSame( 'Checkout tests only', $serialized['description'] );
+		$this->assertEquals( ['checkout'], $serialized['tags'] );
+
+		// Everything else is inherited from the parent.
+		$parent_serialized = $parent->jsonSerialize();
+		foreach ( ['package_type', 'test_type', 'test_dir', 'requires', 'mu_plugins', 'envs', 'timeout', 'retry', 'actions'] as $inherited ) {
+			$this->assertEquals( $parent_serialized[ $inherited ], $serialized[ $inherited ], "Field '{$inherited}' was not inherited." );
+		}
+		$this->assertEquals( $parent_serialized['test']['results'], $serialized['test']['results'] );
+		foreach ( ['globalSetup', 'setup', 'teardown', 'globalTeardown'] as $phase ) {
+			$this->assertEquals( $parent_serialized['test']['phases'][ $phase ], $serialized['test']['phases'][ $phase ], "Phase '{$phase}' was not inherited." );
+		}
+
+		// The serialized subpackage reloads into an equivalent manifest. Since jsonSerialize() only
+		// emits the combined 'package' field, this also pins that a synthesized subpackage's
+		// namespace/package name match what re-deriving them from the package ID produces.
+		$reloaded = new TestPackageManifest( $serialized );
+		$this->assertEquals( $subpackage->to_array(), $reloaded->to_array() );
+	}
+
+	/**
+	 * Test a subpackage in a different namespace to its parent derives its own identity.
+	 */
+	public function test_synthesized_subpackage_in_other_namespace_derives_own_identity(): void {
+		$parent = new TestPackageManifest( [
+			'package' => 'woocommerce/e2e-suite',
+			'test' => [
+				'phases' => ['run' => ['npx playwright test']],
+				'results' => []
+			],
+			'subpackages' => [
+				'partner/checkout' => [
+					'test' => ['phases' => ['run' => ['npx playwright test tests/checkout.spec.js']]],
+				],
+			],
+		] );
+
+		$subpackage = $parent->create_subpackage_manifest( 'partner/checkout' );
+
+		$this->assertSame( 'partner/checkout', $subpackage->get_package_id() );
+		$this->assertSame( 'partner', $subpackage->get_namespace() );
+		$this->assertSame( 'checkout', $subpackage->get_package_name() );
+
+		$normalized = $subpackage->to_array();
+		$this->assertSame( 'partner', $normalized['namespace'] );
+		$this->assertSame( 'checkout', $normalized['package_name'] );
+
+		// The identity survives both round trips.
+		$this->assertEquals( $normalized, ( new TestPackageManifest( $normalized ) )->to_array() );
+		$this->assertEquals( $normalized, ( new TestPackageManifest( $subpackage->jsonSerialize() ) )->to_array() );
 	}
 }

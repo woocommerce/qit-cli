@@ -705,6 +705,7 @@ final class TestPackageManifest {
 			'retry'          => $this->retry,
 			'subpackages'    => $this->subpackages,
 			'parent_package' => $this->parent_package,
+			'actions'        => $this->actions,
 		];
 	}
 }
