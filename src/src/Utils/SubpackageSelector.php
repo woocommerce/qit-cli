@@ -17,15 +17,13 @@ class SubpackageSelector {
 	/**
 	 * Validate a --subpackage selection against the candidate test packages.
 	 *
-	 * @param array<string> $subpackage_ids Requested subpackage IDs (full IDs, e.g. "namespace/name").
+	 * @param array<string> $subpackage_ids Requested subpackage IDs (full IDs, e.g. "namespace/name"). These values are expected to be normalized and unique.
 	 * @param array<string> $package_refs   Candidate test package references, with local paths already expanded to absolute paths.
 	 *
 	 * @return string Absolute path of the single local parent package directory.
 	 * @throws \RuntimeException On any violation.
 	 */
 	public static function validate_selection( array $subpackage_ids, array $package_refs ): string {
-		$subpackage_ids = array_values( array_unique( array_filter( $subpackage_ids ) ) );
-
 		// Classify each reference as a local package directory or a remote reference.
 		$local_dirs  = [];
 		$remote_refs = [];
