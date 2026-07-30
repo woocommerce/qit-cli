@@ -401,7 +401,9 @@ class RunE2ECommand extends QITCommand {
 					if ( ! empty( $requested_subpackages )
 						&& $subpackage_parent_dir !== null
 						&& $pkg_info['source'] === 'local'
-						&& realpath( $pkg_info['path'] ) === realpath( $subpackage_parent_dir ) ) {
+						&& realpath( $pkg_info['path'] ) === realpath( $subpackage_parent_dir )
+						&& false !== realpath( $pkg_info['path'] )
+					) {
 						try {
 							$expanded = $this->expand_subpackages( $pkg_info, $requested_subpackages );
 						} catch ( \InvalidArgumentException $e ) {
