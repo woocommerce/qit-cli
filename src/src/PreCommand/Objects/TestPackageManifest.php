@@ -467,8 +467,6 @@ final class TestPackageManifest {
 		$package_data['parent_package'] = $this->package_id;
 		$package_data['subpackages']    = [];
 
-		$package_data['phases']['run'] = [];
-
 		// Apply subpackage-specific overrides
 		if ( isset( $subpackage_config['description'] ) ) {
 			$package_data['description'] = $subpackage_config['description'];
@@ -483,7 +481,7 @@ final class TestPackageManifest {
 				$subpackage_config['requires']
 			);
 		}
- 
+
 		if ( ! isset( $subpackage_config['test']['phases']['run'] ) ) {
 			throw new InvalidArgumentException(
 				"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
