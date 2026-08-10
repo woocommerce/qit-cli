@@ -118,6 +118,7 @@ class RunPerformanceTestCommand extends DynamicCommand {
 			->addOption( 'local', null, InputOption::VALUE_NONE, 'Run tests locally instead of on QIT infrastructure' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_version' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'volume' )
+			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'blueprint' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'php_extension' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'object_cache' )
 			->reuseOption( UpEnvironmentCommand::getDefaultName(), 'xdebug' )

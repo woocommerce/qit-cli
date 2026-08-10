@@ -15,6 +15,8 @@ use QIT_CLI\Commands\ShowReportCommand;
 use QIT_CLI\Commands\ClaudeTipDismissCommand;
 use QIT_CLI\Commands\DevModeCommand;
 use QIT_CLI\Commands\FeedbackCommand;
+use QIT_CLI\Commands\Blueprint\BlueprintExportCommand;
+use QIT_CLI\Commands\Blueprint\BlueprintImportCommand;
 use QIT_CLI\Commands\Environment\DownEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnterEnvironmentCommand;
 use QIT_CLI\Commands\Environment\EnvSourceCommand;
@@ -215,6 +217,8 @@ try {
 	$application->add( $container->make( ExecEnvironmentCommand::class ) );
 	$application->add( $container->make( EnvSourceCommand::class ) );
 	$application->add( $container->make( ResetEnvironmentCommand::class ) );
+	$application->add( $container->make( BlueprintImportCommand::class ) );
+	$application->add( $container->make( BlueprintExportCommand::class ) );
 } catch ( \Exception $e ) {
 	App::make( Output::class )->writeln( $e->getMessage() );
 }
