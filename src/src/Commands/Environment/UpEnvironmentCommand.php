@@ -87,7 +87,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'test-package', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to set up environment from (processes requirements and runs setup phases)', [] )
 			->addOption( 'utility', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Utility packages for environment setup (local paths or registry references)', [] )
 			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
-			->addOption( 'blueprint', null, InputOption::VALUE_OPTIONAL, 'Path to a WordPress Playground Blueprint (JSON) used as the base environment definition' )
+			->addOption( 'blueprint', null, InputOption::VALUE_OPTIONAL, 'Path to a local WordPress Playground Blueprint (JSON) used as the base environment definition. Remote URLs are not accepted. Blueprint steps run in e2e environments only; performance environments apply versions, plugins and themes.' )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
