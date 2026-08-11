@@ -358,8 +358,23 @@ class PackagePhaseRunner {
 		$exit_code  = 0;
 
 		// Create output callback for orchestrator
-		$line_buffer     = '';
-		$output_callback = function ( $type, $buffer ) use ( &$line_buffer, &$stdout, $orchestrator ) {
+		$line_buffer = '';
+		$emit_line   = function ( string $line ) use ( $orchestrator ): void {
+			if ( $orchestrator->parse_line( $line ) ) {
+				return; // Line was handled by orchestrator
+			}
+			// Skip playwright show-report lines
+			if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
+				return;
+			}
+			// Default output if not handled
+			if ( trim( $line ) !== '' ) {
+				// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw test output
+				echo $line . PHP_EOL;
+			}
+		};
+
+		$output_callback = function ( $type, $buffer ) use ( &$line_buffer, &$stdout, $emit_line ) {
 				$stdout .= $buffer;
 
 				// Parse line by line for orchestrator
@@ -368,18 +383,7 @@ class PackagePhaseRunner {
 				$line_buffer = array_pop( $lines );
 
 			foreach ( $lines as $line ) {
-				if ( $orchestrator->parse_line( $line ) ) {
-					continue; // Line was handled by orchestrator
-				}
-				// Skip playwright show-report lines
-				if ( strpos( $line, 'npx playwright show-report' ) !== false ) {
-					continue;
-				}
-				// Default output if not handled
-				if ( trim( $line ) !== '' ) {
-					// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw test output
-					echo $line . PHP_EOL;
-				}
+				$emit_line( $line );
 			}
 		};
 
@@ -418,6 +422,13 @@ class PackagePhaseRunner {
 
 			// Re-throw to maintain existing behavior
 			throw $e;
+		}
+
+		// A command whose last line has no trailing newline (a bare `echo` in a
+		// runPHP payload, for instance) would otherwise never be printed.
+		if ( $line_buffer !== '' ) {
+			$emit_line( $line_buffer );
+			$line_buffer = '';
 		}
 
 		$end_time = microtime( true );
@@ -701,9 +712,10 @@ class PackagePhaseRunner {
 			} catch ( \RuntimeException $e ) {
 				// If continue_on_error is true, log the error but don't throw
 				if ( $cmd_continue_on_error ) {
-					$this->output->writeln( '<warning>Command failed but continue_on_error is set, continuing...</warning>' );
+					// "warning" is not a registered Symfony style; it would print as literal tags.
+					$this->output->writeln( '<comment>│   Command failed but continue_on_error is set, continuing...</comment>' );
 					if ( $this->output->isVerbose() ) {
-						$this->output->writeln( '<warning>Error: ' . $e->getMessage() . '</warning>' );
+						$this->output->writeln( '<comment>│   Error: ' . $e->getMessage() . '</comment>' );
 					}
 					// Record the failure but continue
 					if ( $phase !== 'run' ) {

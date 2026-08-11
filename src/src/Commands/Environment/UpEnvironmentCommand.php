@@ -4,6 +4,7 @@ declare( strict_types=1 );
 namespace QIT_CLI\Commands\Environment;
 
 use QIT_CLI\App;
+use QIT_CLI\Blueprints\BlueprintEnvironment;
 use QIT_CLI\Commands\QITCommand;
 use QIT_CLI\Environment\EnvironmentMonitor;
 use QIT_CLI\Environment\Environments\E2E\E2EEnvironment;
@@ -39,6 +40,8 @@ class UpEnvironmentCommand extends QITCommand {
 	private \QIT_CLI\Environment\EnvironmentVars $environment_vars;
 	/** @var EnvironmentMonitor */
 	private EnvironmentMonitor $environment_monitor;
+	/** @var string|null landingPage of the Blueprint in use, if any. */
+	private ?string $blueprint_landing_page = null;
 
 	protected static $defaultName = 'env:up'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 
@@ -84,6 +87,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'test-package', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to set up environment from (processes requirements and runs setup phases)', [] )
 			->addOption( 'utility', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Utility packages for environment setup (local paths or registry references)', [] )
 			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
+			->addOption( 'blueprint', null, InputOption::VALUE_OPTIONAL, 'Path to a local WordPress Playground Blueprint (JSON) used as the base environment definition. Remote URLs are not accepted. Supported in e2e environments only.' )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
@@ -302,6 +306,14 @@ class UpEnvironmentCommand extends QITCommand {
 		$cli_overlay = CliConfigParser::parse( $input );
 		$env_config  = ConfigMerger::merge( $env_config, $cli_overlay );
 
+		/* ─ 1.01. A Blueprint, when given, is the base everything else overrides ─ */
+		$blueprint_utility_dir = null;
+		$blueprint_path        = $input->getOption( 'blueprint' );
+
+		if ( $blueprint_path ) {
+			$blueprint_utility_dir = $this->apply_blueprint( (string) $blueprint_path, $env_config, $output, (bool) $input->getOption( 'json' ), $environment_type );
+		}
+
 		// Post-merge resolution steps.
 		$env_config = $this->resolveWooCommerceVersion( $env_config );
 		$env_config = $this->resolveWordPressVersion( $env_config );
@@ -338,6 +350,11 @@ class UpEnvironmentCommand extends QITCommand {
 		$cli_utilities = $input->getOption( 'utility' ) ?? [];
 		if ( ! empty( $cli_utilities ) ) {
 			$utility_packages = array_merge( $utility_packages, $cli_utilities );
+		}
+
+		// Blueprint steps run before any other utility package.
+		if ( $blueprint_utility_dir !== null ) {
+			array_unshift( $utility_packages, $blueprint_utility_dir );
 		}
 
 		foreach ( $utility_packages as $package_ref ) {
@@ -983,6 +1000,59 @@ class UpEnvironmentCommand extends QITCommand {
 	}
 
 	/**
+	 * Transpile a Playground Blueprint and fold it into the environment config.
+	 *
+	 * The Blueprint is the base layer: anything set in qit.json or on the CLI
+	 * still wins. Steps that cannot be expressed declaratively are written out
+	 * as a utility package so the existing phase runner executes them once the
+	 * environment is up.
+	 *
+	 * @param string              $blueprint_path Path to the Blueprint JSON file.
+	 * @param array<string,mixed> $env_config     Merged environment config, modified in place.
+	 * @param OutputInterface     $output         Console output.
+	 * @param bool                $input_is_json  Whether the command is running in machine-readable mode.
+	 * @param string              $environment_type The environment being created ("e2e" or "performance").
+	 *
+	 * @return string|null Directory of the generated utility package, if any.
+	 */
+	private function apply_blueprint( string $blueprint_path, array &$env_config, OutputInterface $output, bool $input_is_json, string $environment_type ): ?string {
+		$blueprints = App::make( BlueprintEnvironment::class );
+		$result     = $blueprints->prepare( $blueprint_path );
+
+		// Blueprint first, then qit.json ⊕ CLI on top.
+		$env_config = ConfigMerger::merge( $result->env_config, $env_config );
+
+		$this->blueprint_landing_page = $result->landing_page;
+
+		// In JSON mode the caller (run:e2e, run:performance) reports this itself;
+		// anything written here is swallowed by the JSON filter.
+		if ( ! $input_is_json ) {
+			$blueprints->report( $blueprint_path, $result, $output );
+		}
+
+		// Only E2E environments run test package phases, so a Blueprint's steps would
+		// be mounted and never executed anywhere else. Rather than honour some halves
+		// of a Blueprint and not others, Blueprints are e2e-only for now.
+		if ( $environment_type !== 'e2e' ) {
+			throw new \RuntimeException( sprintf(
+				'Blueprints are not supported in %s environments — they only apply to e2e environments.',
+				$environment_type
+			) );
+		}
+
+		$package_dir = $blueprints->materialize( $blueprint_path, $result );
+
+		if ( $package_dir !== null && $output->isVerbose() ) {
+			$output->writeln( sprintf( '<info>Blueprint steps (%d) written to %s</info>', count( $result->steps ), $package_dir ) );
+			foreach ( $result->steps as $step ) {
+				$output->writeln( sprintf( '  • %s', $step['description'] ) );
+			}
+		}
+
+		return $package_dir;
+	}
+
+	/**
 	 * Convert woocommerce_version scalar to a plugin entry.
 	 *
 	 * If the merged config contains a woocommerce_version key (from CLI --woo
@@ -1104,6 +1174,9 @@ class UpEnvironmentCommand extends QITCommand {
 
 		// URL and credentials
 		$out->writeln( sprintf( '  URL:         %s', $info->site_url ) );
+		if ( $this->blueprint_landing_page !== null ) {
+			$out->writeln( sprintf( '  Landing:     %s/%s', rtrim( $info->site_url, '/' ), ltrim( $this->blueprint_landing_page, '/' ) ) );
+		}
 		$out->writeln( '  Credentials: admin/password' );
 
 		// Stack information

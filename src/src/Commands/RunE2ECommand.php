@@ -147,6 +147,7 @@ class RunE2ECommand extends QITCommand {
 			->reuseOption( 'env:up', 'plugin' )
 			->reuseOption( 'env:up', 'theme' )
 			->reuseOption( 'env:up', 'volume' )
+			->reuseOption( 'env:up', 'blueprint' )
 			->reuseOption( 'env:up', 'php_extension' )
 			->reuseOption( 'env:up', 'object_cache' )
 			->reuseOption( 'env:up', 'xdebug' )
@@ -293,6 +294,22 @@ class RunE2ECommand extends QITCommand {
 		// Pass original test package references to env:up for requirement processing
 		// env:up will handle downloading (or cache hits) and requirement extraction
 		$original_test_packages = $input->get_test_packages(); // Get the original refs from input
+
+		// A Blueprint contributes its steps as a utility package. env:up runs with
+		// --skip-test-phases here, so this command owns their execution.
+		$blueprint_path = $input->hasOption( 'blueprint' ) ? $input->getOption( 'blueprint' ) : null;
+
+		if ( $blueprint_path ) {
+			$blueprints        = App::make( \QIT_CLI\Blueprints\BlueprintEnvironment::class );
+			$transpiled        = $blueprints->prepare( (string) $blueprint_path );
+			$blueprint_package = $blueprints->materialize( (string) $blueprint_path, $transpiled );
+
+			$blueprints->report( (string) $blueprint_path, $transpiled, $output );
+
+			if ( $blueprint_package !== null ) {
+				array_unshift( $original_test_packages, $blueprint_package );
+			}
+		}
 
 		// Merge utility packages from the selected environment
 		// Check for 'utilities' (preferred) and 'global_setup' (legacy) fields
