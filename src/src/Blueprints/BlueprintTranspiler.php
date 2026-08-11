@@ -784,7 +784,15 @@ PHP;
 			return $code;
 		}
 
-		return str_replace( self::PLAYGROUND_WP_ROOT . '/', self::QIT_WP_ROOT . '/', $code );
+		// Match URLs first so a host path like https://example.com/wordpress/x.zip
+		// survives; only bare filesystem paths are rewritten.
+		return (string) preg_replace_callback(
+			'#https?://\S*|' . preg_quote( self::PLAYGROUND_WP_ROOT, '#' ) . '/#',
+			static function ( array $match ): string {
+				return strpos( $match[0], '://' ) !== false ? $match[0] : self::QIT_WP_ROOT . '/';
+			},
+			$code
+		);
 	}
 
 	/**

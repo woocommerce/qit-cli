@@ -285,6 +285,24 @@ class BlueprintTranspilerTest extends TestCase {
 		$this->assertStringNotContainsString( '/wordpress/', $payload );
 	}
 
+	public function test_path_rewriting_leaves_urls_alone(): void {
+		// A bare /wordpress path is a container path; the same string inside a URL
+		// is somebody's host and must survive untouched.
+		$result = $this->transpile( [
+			'steps' => [
+				[
+					'step' => 'runPHP',
+					'code' => "<?php \$zip = 'https://example.com/wordpress/x.zip'; require_once '/wordpress/wp-load.php';",
+				],
+			],
+		] );
+
+		$payload = $this->payload_of( $this->commands( $result )[0] );
+
+		$this->assertStringContainsString( "'https://example.com/wordpress/x.zip'", $payload );
+		$this->assertStringContainsString( "require_once '/var/www/html/wp-load.php'", $payload );
+	}
+
 	public function test_php_extension_bundles_are_reported(): void {
 		$result = $this->transpile( [ 'phpExtensionBundles' => [ 'kitchen-sink' ] ] );
 
@@ -339,6 +357,25 @@ class BlueprintTranspilerTest extends TestCase {
 	}
 
 	// ── Steps QIT cannot honour ──
+
+	public function test_git_resources_are_reported_rather_than_installed(): void {
+		// Unsupported resource types must not leave a plugin quietly missing.
+		$result = $this->transpile( [
+			'steps' => [
+				[
+					'step'       => 'installPlugin',
+					'pluginData' => [
+						'resource' => 'git:directory',
+						'url'      => 'https://github.com/WordPress/learn-app',
+						'ref'      => 'dist/main',
+					],
+				],
+			],
+		] );
+
+		$this->assertArrayNotHasKey( 'plugins', $result->env_config );
+		$this->assertNotEmpty( preg_grep( '/unsupported resource type/', $result->warnings ) );
+	}
 
 	public function test_playground_only_steps_are_reported_not_silently_dropped(): void {
 		$result = $this->transpile( [
@@ -487,6 +524,34 @@ class BlueprintTranspilerTest extends TestCase {
 		$this->assertStringContainsString( "unzip -o '/qit/packages/blueprint-steps/uploads.zip'", $commands[0] );
 		$this->assertStringContainsString( "-d '/var/www/html/wp-content/uploads'", $commands[0] );
 		$this->assertSame( "wp db query < '/qit/packages/blueprint-steps/seed.sql'", $commands[1] );
+	}
+
+	public function test_bundled_files_sharing_a_basename_both_survive(): void {
+		// Two bundled files land in one flat package directory; the second must not
+		// overwrite the first.
+		$dir = sys_get_temp_dir() . '/qit-bundle-' . uniqid();
+		mkdir( $dir . '/a', 0777, true );
+		mkdir( $dir . '/b', 0777, true );
+		file_put_contents( $dir . '/a/content.xml', '<rss>a</rss>' );
+		file_put_contents( $dir . '/b/content.xml', '<rss>b</rss>' );
+
+		$blueprint = [
+			'steps' => [
+				[ 'step' => 'importWxr', 'file' => [ 'resource' => 'bundled', 'path' => './a/content.xml' ] ],
+				[ 'step' => 'importWxr', 'file' => [ 'resource' => 'bundled', 'path' => './b/content.xml' ] ],
+			],
+		];
+
+		$path = $dir . '/blueprint.json';
+		file_put_contents( $path, (string) json_encode( $blueprint ) );
+
+		$result = ( new BlueprintTranspiler() )->transpile( $blueprint, $path );
+
+		$this->assertCount( 2, $result->assets, 'Both files are shipped under distinct names.' );
+		$this->assertSame(
+			[ $dir . '/a/content.xml', $dir . '/b/content.xml' ],
+			array_values( $result->assets )
+		);
 	}
 
 	public function test_bundled_paths_cannot_escape_the_blueprint_directory(): void {
