@@ -19,7 +19,7 @@
     },
     "default": {
       "wp": "6.4",
-      "woo": "8.5",
+      "woo": "8.5.0",
       "php": "8.0",
       "plugins": ["woocommerce-subscriptions"]
     },

@@ -14,8 +14,8 @@
         {
             "step": "installPlugin",
             "pluginData": {
-                "resource": "wordpress.org/plugins",
-                "slug": "woocommerce@8.5"
+                "resource": "url",
+                "url": "https://downloads.wordpress.org/plugin/woocommerce.8.5.0.zip"
             },
             "options": {
                 "activate": true

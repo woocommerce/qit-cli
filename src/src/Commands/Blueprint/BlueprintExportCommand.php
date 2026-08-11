@@ -47,7 +47,12 @@ HELP
 
 		$exporter  = new BlueprintExporter();
 		$blueprint = $exporter->export( $env_config );
-		$json      = json_encode( $blueprint, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n";
+
+		if ( ! $input->getOption( 'skip-download-check' ) ) {
+			$blueprint = $this->drop_undownloadable_steps( $blueprint, $output );
+		}
+
+		$json = json_encode( $blueprint, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n";
 
 		$output_file = $input->getOption( 'output' );
 
@@ -66,44 +71,76 @@ HELP
 			$output->writeln( sprintf( '<comment>Warning: %s</comment>', $warning ) );
 		}
 
-		if ( ! $input->getOption( 'skip-download-check' ) ) {
-			$this->check_pinned_downloads( $blueprint, $output );
-		}
-
 		return self::SUCCESS;
 	}
 
 	/**
-	 * Check that every pinned wordpress.org download actually exists.
+	 * Remove install steps whose download does not exist on wordpress.org.
 	 *
-	 * wordpress.org serves exact release tags, so a version like "8.5" produces a
-	 * URL that 404s. QIT would hit the same wall on install, but an exported
-	 * Blueprint fails somewhere else entirely, long after the qit.json that caused
-	 * it, so it is worth saying now.
+	 * Two ways to end up here. A pinned version that is not a real release tag
+	 * ("8.5" where wordpress.org serves "8.5.0"), and a slug that is not a
+	 * wordpress.org extension at all — a bare slug in qit.json defaults to wporg,
+	 * but WooCommerce.com extensions resolve through a marketplace QIT can reach
+	 * and Playground cannot.
+	 *
+	 * Either way the Blueprint would die on that step, so the step is dropped and
+	 * the reason reported. A Blueprint that boots without a paid extension beats
+	 * one that boots not at all.
 	 *
 	 * @param array<string, mixed> $blueprint The exported Blueprint.
+	 *
+	 * @return array<string, mixed>
 	 */
-	private function check_pinned_downloads( array $blueprint, OutputInterface $output ): void {
-		foreach ( $blueprint['steps'] as $step ) {
-			$resource = $step['pluginData'] ?? $step['themeData'] ?? [];
-			$url      = is_array( $resource ) ? (string) ( $resource['url'] ?? '' ) : '';
+	private function drop_undownloadable_steps( array $blueprint, OutputInterface $output ): array {
+		$kept = [];
 
-			if ( strpos( $url, 'https://downloads.wordpress.org/' ) !== 0 ) {
+		foreach ( $blueprint['steps'] as $step ) {
+			$resource = $step['pluginData'] ?? $step['themeData'] ?? null;
+
+			if ( ! is_array( $resource ) ) {
+				$kept[] = $step;
 				continue;
 			}
 
-			try {
-				( new RequestBuilder( $url ) )
-					->with_method( 'HEAD' )
-					->with_timeout_in_seconds( 10 )
-					->with_expected_status_codes( [ 200 ] )
-					->request();
-			} catch ( \Exception $e ) {
-				$output->writeln( sprintf(
-					'<comment>Warning: %s is not downloadable. wordpress.org serves exact release tags, so a partial version like "8.5" needs to be "8.5.0".</comment>',
-					$url
-				) );
+			$type = isset( $step['pluginData'] ) ? 'plugin' : 'theme';
+			$url  = (string) ( $resource['url'] ?? '' );
+			$slug = (string) ( $resource['slug'] ?? '' );
+
+			// A wordpress.org resource resolves to the latest release; that is the
+			// URL Playground will ask for.
+			if ( $url === '' && $slug !== '' ) {
+				$url = sprintf( 'https://downloads.wordpress.org/%s/%s.latest-stable.zip', $type, $slug );
 			}
+
+			if ( strpos( $url, 'https://downloads.wordpress.org/' ) !== 0 || $this->is_downloadable( $url ) ) {
+				$kept[] = $step;
+				continue;
+			}
+
+			$output->writeln( sprintf(
+				'<comment>Warning: dropped %s "%s" — %s is not downloadable. Either the version is not a real release tag (wordpress.org serves "8.5.0", not "8.5"), or it is not a wordpress.org extension and Playground cannot install it.</comment>',
+				$type,
+				$slug !== '' ? $slug : basename( $url ),
+				$url
+			) );
+		}
+
+		$blueprint['steps'] = $kept;
+
+		return $blueprint;
+	}
+
+	private function is_downloadable( string $url ): bool {
+		try {
+			( new RequestBuilder( $url ) )
+				->with_method( 'HEAD' )
+				->with_timeout_in_seconds( 10 )
+				->with_expected_status_codes( [ 200 ] )
+				->request();
+
+			return true;
+		} catch ( \Exception $e ) {
+			return false;
 		}
 	}
 }

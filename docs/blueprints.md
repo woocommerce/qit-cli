@@ -173,10 +173,15 @@ and are reported as warnings.
 A pinned version becomes a versioned wordpress.org download
 (`https://downloads.wordpress.org/plugin/woocommerce.9.4.0.zip`) rather than a
 `wordpress.org/plugins` resource, which always fetches the current release and
-does not understand `slug@version`. wordpress.org only serves exact release tags,
-so `woo: "8.5"` produces a URL that 404s where `8.5.0` works; the export checks
-each pinned download and warns when one is missing. Pass `--skip-download-check`
-to skip that.
+does not understand `slug@version`.
+
+Before writing the file, the export checks that every wordpress.org download it
+references actually exists, and drops the ones that don't, saying which and why.
+Two things get caught: a version that is not a real release tag (wordpress.org
+serves `8.5.0`, not `8.5`), and an extension that isn't on wordpress.org at all.
+A bare slug in qit.json means `from: wporg`, but QIT also resolves slugs through
+WooCommerce.com, and Playground cannot install a paid extension. Pass
+`--skip-download-check` to keep every step regardless.
 
 Worth running an export through Playground itself before trusting it, since a
 Blueprint can be schema-valid and still fail:
