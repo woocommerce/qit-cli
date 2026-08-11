@@ -151,11 +151,12 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		// Handle group registration (same for local and remote).
 		$is_local = $input->getOption( 'local' );
 
-		// Remote runs are built by the Manager, which knows nothing about Blueprints.
-		// Silently ignoring the flag would hand back a environment that does not
-		// match what was asked for.
-		if ( ! $is_local && $input->getOption( 'blueprint' ) ) {
-			$output->writeln( '<error>--blueprint only applies to local runs. Add --local, or drop --blueprint to run this test on QIT servers.</error>' );
+		// Performance environments run no test package phases, so Blueprint steps
+		// would never execute; remote runs are built by the Manager, which knows
+		// nothing about Blueprints at all. Refuse here rather than let env:up fail
+		// with the message wrapped in its JSON envelope.
+		if ( $input->getOption( 'blueprint' ) ) {
+			$output->writeln( '<error>Blueprints are not supported in performance tests — they only apply to e2e environments (qit env:up, qit run:e2e).</error>' );
 
 			return Command::INVALID;
 		}

@@ -7,7 +7,7 @@ by hand. Run the fast set first — if it fails, the Docker cases will too.
 
 ```
 _tests/blueprint-validation/
-├── run-fast-checks.sh              60 assertions, no Docker, ~40s
+├── run-fast-checks.sh              55 assertions, no Docker, ~40s
 ├── blueprints/                     fixtures, one per behaviour
 └── packages/assert-blueprint/      test package that asserts Blueprint state from inside the container
 ```
@@ -19,7 +19,7 @@ git checkout 26-08/blueprint-env-support
 ./_tests/blueprint-validation/run-fast-checks.sh
 ```
 
-Expected: `Result: 60 passed, 0 failed`, exit 0.
+Expected: `Result: 55 passed, 0 failed`, exit 0.
 
 To point it at another checkout (a worktree, say):
 
@@ -28,7 +28,7 @@ QIT_BIN="php /path/to/qit-cli/src/qit-cli.php" ./_tests/blueprint-validation/run
 ```
 
 Sanity check on the harness itself: run it against `trunk` and it should report
-roughly `4 passed, 56 failed`. If `trunk` passes, the script is not testing what
+roughly `4 passed, 51 failed`. If `trunk` passes, the script is not testing what
 it claims.
 
 What it covers: version mapping and aliases · plugin/theme resolution (wporg,
@@ -150,27 +150,19 @@ Same shape for `run:woo-e2e`.
 
 ### D8 — Performance
 
-Performance environments have no phase runner, so Blueprint **steps** cannot run
-there. Both refusals are asserted by the fast checks; these are the Docker-level
-confirmations.
+Blueprints are e2e-only. Performance environments run no test package phases, so
+every Blueprint is refused there, with or without steps. The fast checks assert
+all of this; nothing here needs Docker.
 
 ```bash
 $QIT run:performance woocommerce --blueprint=$BP/store.json
-# expect: --blueprint only applies to local runs. Add --local…
-
 $QIT run:performance woocommerce --local --blueprint=$BP/store.json
-# expect: This Blueprint has N step(s), and performance environments do not run…
-
-$QIT run:performance woocommerce --local --blueprint=$BP/no-steps.json
-# expect: boots, with the Blueprint's versions/plugins applied
+$QIT env:up --environment_type=performance --blueprint=$BP/no-steps.json
 ```
 
-- [ ] Remote run refuses the flag, nothing enqueued
-- [ ] Local run with steps refuses before booting
-- [ ] Step-less Blueprint boots and its plugins/versions are present
-
-Note: a local performance run needs a **published** performance test package —
-`--test-package` there only accepts registry references, not local paths.
+- [ ] All three refuse with `Blueprints are not supported in performance …`
+- [ ] Nothing is enqueued and no environment boots
+- [ ] The message is plain text, not wrapped in a JSON envelope
 
 ### D9 — Remote runs refuse the flag
 
@@ -215,9 +207,8 @@ $QIT env:reset
 
 - Managed/remote tests (`run:activation`, `run:security`, `run:phpstan`, …) do not
   accept `--blueprint`; their environments are built server-side.
-- Performance environments run no test package phases, so Blueprint steps are
-  refused there (versions/plugins/themes still apply).
-- `git:directory` and `vfs:` resources are unsupported; `bundled` files shipped
-  next to the Blueprint are supported.
+- Performance environments run no test package phases, so Blueprints are refused
+  there entirely.
+- `vfs:` resources and Blueprint bundles (zipped Blueprints) are unsupported.
 - Blueprints v2 is rejected outright.
 - Remote Blueprint URLs are rejected by design.

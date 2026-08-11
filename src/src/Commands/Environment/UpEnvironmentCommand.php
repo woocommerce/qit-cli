@@ -87,7 +87,7 @@ class UpEnvironmentCommand extends QITCommand {
 			->addOption( 'test-package', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Test packages to set up environment from (processes requirements and runs setup phases)', [] )
 			->addOption( 'utility', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Utility packages for environment setup (local paths or registry references)', [] )
 			->addOption( 'volume', null, InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'Volumes (host:container)', [] )
-			->addOption( 'blueprint', null, InputOption::VALUE_OPTIONAL, 'Path to a local WordPress Playground Blueprint (JSON) used as the base environment definition. Remote URLs are not accepted. Blueprint steps run in e2e environments only; performance environments apply versions, plugins and themes.' )
+			->addOption( 'blueprint', null, InputOption::VALUE_OPTIONAL, 'Path to a local WordPress Playground Blueprint (JSON) used as the base environment definition. Remote URLs are not accepted. Supported in e2e environments only.' )
 			->addOption( 'php_extension', 'x', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, 'PHP extensions', [] )
 			/* ─ Misc ─ */
 			->addOption( 'tunnel', null, InputOption::VALUE_OPTIONAL, 'Enable tunnelling (cloudflare, ngrok)', 'no_tunnel' )
@@ -1030,14 +1030,12 @@ class UpEnvironmentCommand extends QITCommand {
 			$blueprints->report( $blueprint_path, $result, $output );
 		}
 
-		// Only E2E environments run test package phases, so a Blueprint's imperative
-		// half would be mounted and never executed anywhere else. Say so instead of
-		// handing back an environment that silently ignores half the Blueprint.
-		if ( $environment_type !== 'e2e' && $result->has_steps() ) {
+		// Only E2E environments run test package phases, so a Blueprint's steps would
+		// be mounted and never executed anywhere else. Rather than honour some halves
+		// of a Blueprint and not others, Blueprints are e2e-only for now.
+		if ( $environment_type !== 'e2e' ) {
 			throw new \RuntimeException( sprintf(
-				'This Blueprint has %d step(s), and %s environments do not run Blueprint steps — only versions, plugins and themes would be applied. '
-				. 'Use an e2e environment, or remove the steps from the Blueprint.',
-				count( $result->steps ),
+				'Blueprints are not supported in %s environments — they only apply to e2e environments.',
 				$environment_type
 			) );
 		}

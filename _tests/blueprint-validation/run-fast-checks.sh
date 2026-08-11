@@ -180,21 +180,29 @@ check 'bundled WXR uses the mounted package path' '/qit/packages/blueprint-steps
 check_absent 'bundled files are not inlined as base64' "$(printf '<rss/>' | base64)" "$out"
 check 'paths escaping the Blueprint directory are refused' 'outside the Blueprint directory' "$out"
 
-section '11. Environments that cannot run steps refuse them'
+section '11. Blueprints are e2e-only'
 out=$(cd "$WORK" && $QIT_BIN env:up --environment_type=performance --blueprint="$BP/store.json" 2>&1)
-check 'performance env refuses a Blueprint with steps' 'performance environments do not run Blueprint steps' "$out"
+check 'performance env refuses a Blueprint with steps' 'not supported in performance environments' "$out"
 
-out=$(cd "$WORK" && QIT_SELF_TEST=env_up $QIT_BIN env:up --environment_type=performance --blueprint="$BP/no-steps.json" 2>&1)
-check 'performance env accepts a step-less Blueprint' '"php_version":"8.3"' "$out"
+out=$(cd "$WORK" && $QIT_BIN env:up --environment_type=performance --blueprint="$BP/no-steps.json" 2>&1)
+check 'performance env refuses a step-less Blueprint too' 'not supported in performance environments' "$out"
 
 out=$($QIT_BIN run:performance woocommerce --blueprint="$BP/store.json" 2>&1)
-check 'remote performance runs refuse --blueprint' 'only applies to local runs' "$out"
+check 'run:performance refuses --blueprint' 'Blueprints are not supported in performance tests' "$out"
+
+out=$($QIT_BIN run:performance woocommerce --local --blueprint="$BP/store.json" 2>&1)
+check 'run:performance --local refuses it before booting' 'Blueprints are not supported in performance tests' "$out"
+check_absent 'the refusal is not wrapped in a JSON envelope' 'Command failed with non-JSON output' "$out"
 
 section '12. Option is exposed by every command that can use it'
-for cmd in env:up run:e2e run:performance run:woo-e2e run:woo-api; do
+for cmd in env:up run:e2e run:woo-e2e run:woo-api; do
 	out=$($QIT_BIN "$cmd" --help 2>&1)
 	check "$cmd accepts --blueprint" '--blueprint[=BLUEPRINT]' "$out"
 done
+
+# run:performance declares the option only so it can refuse it with an explanation.
+out=$($QIT_BIN run:performance --help 2>&1)
+check 'run:performance declares --blueprint (to refuse it clearly)' '--blueprint[=BLUEPRINT]' "$out"
 
 printf '\n\033[1mResult: %d passed, %d failed\033[0m\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

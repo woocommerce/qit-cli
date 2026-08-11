@@ -16,6 +16,8 @@ qit run:woo-e2e my-plugin --blueprint=./blueprint.json
 qit run:woo-api my-plugin --blueprint=./blueprint.json
 ```
 
+`run:performance` does not accept `--blueprint`; see below.
+
 The Blueprint sets the site up before the test packages run, so tests see the
 state it describes. Where both set the same option, the test package wins — its
 own setup runs after the Blueprint's.
@@ -104,28 +106,20 @@ Blueprint package first, ahead of every other utility and test package.
 
 ## Performance environments
 
-Only E2E environments run test package phases, so a Blueprint's **steps** cannot
-be executed in a performance environment. Rather than apply half a Blueprint,
-`env:up --environment_type=performance` and `run:performance --local` refuse a
-Blueprint that has steps:
+Blueprints apply to e2e environments only. Performance environments run no test
+package phases, so a Blueprint's steps would be mounted and never executed — and
+honouring the versions and plugins while quietly dropping the steps is worse than
+refusing:
 
 ```
-This Blueprint has 4 step(s), and performance environments do not run Blueprint
-steps — only versions, plugins and themes would be applied.
+Blueprints are not supported in performance environments — they only apply to
+e2e environments.
 ```
 
-A Blueprint with no steps (versions, plugins, themes only) works there.
+`run:performance` refuses `--blueprint` before it does anything, local or remote.
 
-`run:performance` without `--local` enqueues the test on QIT servers, where
-Blueprints mean nothing, so it rejects `--blueprint` outright:
-
-```
---blueprint only applies to local runs. Add --local, or drop --blueprint to run
-this test on QIT servers.
-```
-
-Teaching `PerformanceEnvironment` to run package phases would lift the first
-restriction; today it has no phase runner at all.
+Lifting this means teaching `PerformanceEnvironment` to run package phases; it has
+no phase runner at all today.
 
 ## Exporting a QIT environment as a Blueprint
 
