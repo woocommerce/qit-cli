@@ -39,8 +39,9 @@ HELP
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		$blueprint = ( new BlueprintParser() )->from_file( (string) $input->getArgument( 'blueprint' ) );
-		$result    = ( new BlueprintTranspiler() )->transpile( $blueprint );
+		$path      = (string) $input->getArgument( 'blueprint' );
+		$blueprint = ( new BlueprintParser() )->from_file( $path );
+		$result    = ( new BlueprintTranspiler() )->transpile( $blueprint, $path );
 
 		$env_name = (string) ( $input->getOption( 'environment' ) ?: 'default' );
 		$json     = json_encode( $result->to_qit_json( $env_name ), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES ) . "\n";

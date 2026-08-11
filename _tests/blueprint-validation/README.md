@@ -7,7 +7,7 @@ by hand. Run the fast set first — if it fails, the Docker cases will too.
 
 ```
 _tests/blueprint-validation/
-├── run-fast-checks.sh              55 assertions, no Docker, ~40s
+├── run-fast-checks.sh              60 assertions, no Docker, ~40s
 ├── blueprints/                     fixtures, one per behaviour
 └── packages/assert-blueprint/      test package that asserts Blueprint state from inside the container
 ```
@@ -19,7 +19,7 @@ git checkout 26-08/blueprint-env-support
 ./_tests/blueprint-validation/run-fast-checks.sh
 ```
 
-Expected: `Result: 55 passed, 0 failed`, exit 0.
+Expected: `Result: 60 passed, 0 failed`, exit 0.
 
 To point it at another checkout (a worktree, say):
 
@@ -28,7 +28,7 @@ QIT_BIN="php /path/to/qit-cli/src/qit-cli.php" ./_tests/blueprint-validation/run
 ```
 
 Sanity check on the harness itself: run it against `trunk` and it should report
-roughly `4 passed, 51 failed`. If `trunk` passes, the script is not testing what
+roughly `4 passed, 56 failed`. If `trunk` passes, the script is not testing what
 it claims.
 
 What it covers: version mapping and aliases · plugin/theme resolution (wporg,
@@ -217,6 +217,7 @@ $QIT env:reset
   accept `--blueprint`; their environments are built server-side.
 - Performance environments run no test package phases, so Blueprint steps are
   refused there (versions/plugins/themes still apply).
-- `vfs:` resources and Blueprint bundles (zipped Blueprints) are unsupported.
+- `git:directory` and `vfs:` resources are unsupported; `bundled` files shipped
+  next to the Blueprint are supported.
 - Blueprints v2 is rejected outright.
 - Remote Blueprint URLs are rejected by design.

@@ -38,11 +38,19 @@ class BlueprintTranspiler {
 		'trunk'   => 'nightly',
 	];
 
+	/** @var string|null Directory holding the Blueprint, for resolving "bundled" resources. */
+	private ?string $bundle_dir = null;
+
 	/**
-	 * @param array<string, mixed> $blueprint The decoded Blueprint.
+	 * @param array<string, mixed> $blueprint      The decoded Blueprint.
+	 * @param string|null          $blueprint_path Path the Blueprint was read from. Required to
+	 *                                             resolve "bundled" resources, which are relative
+	 *                                             to the Blueprint's own directory.
 	 */
-	public function transpile( array $blueprint ): TranspiledBlueprint {
+	public function transpile( array $blueprint, ?string $blueprint_path = null ): TranspiledBlueprint {
 		$result = new TranspiledBlueprint();
+
+		$this->bundle_dir = $blueprint_path !== null ? ( realpath( dirname( $blueprint_path ) ) ?: null ) : null;
 
 		$this->transpile_preferred_versions( $blueprint, $result );
 		$this->transpile_features( $blueprint, $result );
@@ -255,6 +263,16 @@ class BlueprintTranspiler {
 				break;
 
 			case 'runSql':
+				if ( ( $step['sql']['resource'] ?? '' ) === 'bundled' ) {
+					$bundled = $this->bundled_container_path( $step['sql'], $result );
+
+					if ( $bundled !== null ) {
+						$result->add_step( sprintf( 'wp db query < %s', escapeshellarg( $bundled ) ), 'Run bundled SQL' );
+						$result->add_warning( 'runSql executed against MySQL: Blueprints written for Playground target SQLite and may not be portable.' );
+					}
+					break;
+				}
+
 				$sql = $this->resource_contents( $step['sql'] ?? null, $result, 'runSql' );
 				if ( $sql !== null ) {
 					$sql = (string) $this->translate_paths_in_code( $sql );
@@ -271,6 +289,19 @@ class BlueprintTranspiler {
 				break;
 
 			case 'writeFile':
+				if ( ( $step['data']['resource'] ?? '' ) === 'bundled' ) {
+					$bundled = $this->bundled_container_path( $step['data'], $result );
+					$path    = $this->translate_path( (string) ( $step['path'] ?? '' ) );
+
+					if ( $bundled !== null ) {
+						$result->add_step(
+							sprintf( 'mkdir -p %s && cp %s %s', escapeshellarg( dirname( $path ) ), escapeshellarg( $bundled ), escapeshellarg( $path ) ),
+							'Write bundled file to ' . $path
+						);
+					}
+					break;
+				}
+
 				$contents = $this->resource_contents( $step['data'] ?? null, $result, 'writeFile' );
 				if ( $contents !== null ) {
 					$path = $this->translate_path( (string) ( $step['path'] ?? '' ) );
@@ -298,7 +329,9 @@ class BlueprintTranspiler {
 				break;
 
 			case 'unzip':
-				$zip  = $this->translate_path( (string) ( $step['zipFile']['path'] ?? $step['zipPath'] ?? '' ) );
+				$zip  = ( $step['zipFile']['resource'] ?? '' ) === 'bundled'
+					? (string) $this->bundled_container_path( $step['zipFile'], $result )
+					: $this->translate_path( (string) ( $step['zipFile']['path'] ?? $step['zipPath'] ?? '' ) );
 				$dest = $this->translate_path( (string) ( $step['extractToPath'] ?? '' ) );
 				if ( $zip === '' ) {
 					$result->add_unsupported( 'unzip', 'only zip files already present in the container can be extracted.' );
@@ -351,7 +384,7 @@ class BlueprintTranspiler {
 	 * @param TranspiledBlueprint              $result        Accumulator for the transpiled output.
 	 */
 	private function add_extension( string $key, $resource_data, array $options, TranspiledBlueprint $result ): void {
-		$parsed = $this->parse_resource( $resource_data );
+		$parsed = $this->parse_resource( $resource_data, $result );
 
 		if ( $parsed === null ) {
 			$result->add_warning( sprintf( 'Skipped a %s entry: unsupported resource type.', rtrim( $key, 's' ) ) );
@@ -383,13 +416,65 @@ class BlueprintTranspiler {
 	}
 
 	/**
+	 * Resolve a "bundled" resource to an absolute path next to the Blueprint.
+	 *
+	 * @param array<string, mixed> $resource_data The Blueprint resource.
+	 *
+	 * @return string|null Null when it cannot be resolved, with a warning recorded.
+	 */
+	private function resolve_bundled_path( array $resource_data, TranspiledBlueprint $result ): ?string {
+		$relative = (string) ( $resource_data['path'] ?? '' );
+
+		if ( $relative === '' ) {
+			return null;
+		}
+
+		if ( $this->bundle_dir === null ) {
+			$result->add_warning( sprintf( 'Cannot resolve bundled file "%s": the Blueprint path is unknown.', $relative ) );
+
+			return null;
+		}
+
+		// Strip a leading "./" only — ltrim() with a character list would also eat
+		// the dots of "../", quietly turning an escape into a different local file.
+		$resolved = realpath( $this->bundle_dir . '/' . preg_replace( '#^\./#', '', $relative ) );
+
+		if ( $resolved === false || ! is_file( $resolved ) ) {
+			$result->add_warning( sprintf( 'Bundled file "%s" was not found next to the Blueprint.', $relative ) );
+
+			return null;
+		}
+
+		// A Blueprint may only ship files from its own directory.
+		if ( strpos( $resolved, $this->bundle_dir . '/' ) !== 0 ) {
+			$result->add_warning( sprintf( 'Bundled file "%s" resolves outside the Blueprint directory and was skipped.', $relative ) );
+
+			return null;
+		}
+
+		return $resolved;
+	}
+
+	/**
+	 * The in-container path of a bundled file, shipped with the generated package.
+	 *
+	 * @param array<string, mixed> $resource_data The Blueprint resource.
+	 */
+	private function bundled_container_path( array $resource_data, TranspiledBlueprint $result ): ?string {
+		$source = $this->resolve_bundled_path( $resource_data, $result );
+
+		return $source === null ? null : $result->add_asset( $source );
+	}
+
+	/**
 	 * Convert a Blueprint resource into a QIT extension entry.
 	 *
 	 * @param array<string, mixed>|string|null $resource_data The Blueprint resource.
+	 * @param TranspiledBlueprint              $result        Accumulator for the transpiled output.
 	 *
 	 * @return array<string, string>|null Null when the resource cannot be mapped.
 	 */
-	private function parse_resource( $resource_data ): ?array {
+	private function parse_resource( $resource_data, TranspiledBlueprint $result ): ?array {
 		if ( is_string( $resource_data ) ) {
 			// Shorthand: a bare slug or a URL.
 			if ( preg_match( '#^https?://#i', $resource_data ) === 1 ) {
@@ -422,6 +507,17 @@ class BlueprintTranspiler {
 			}
 
 			return $entry['slug'] === '' ? null : $entry;
+		}
+
+		if ( $type === 'bundled' ) {
+			// Shipped next to the Blueprint; QIT installs local zips and directories already.
+			$source = $this->resolve_bundled_path( $resource_data, $result );
+
+			return $source === null ? null : [
+				'slug' => $this->slug_from_url( $source ),
+				'from' => 'local',
+				'path' => $source,
+			];
 		}
 
 		if ( $type === 'url' ) {
@@ -521,10 +617,27 @@ PHP;
 			return;
 		}
 
+		if ( is_array( $file ) && ( $file['resource'] ?? '' ) === 'bundled' ) {
+			$bundled = $this->bundled_container_path( $file, $result );
+
+			if ( $bundled === null ) {
+				$result->add_unsupported( 'importWxr', 'the bundled WXR file could not be resolved.' );
+
+				return;
+			}
+
+			$result->add_step(
+				sprintf( 'wp import %s --authors=create', escapeshellarg( $bundled ) ),
+				'Import bundled WXR content'
+			);
+
+			return;
+		}
+
 		$contents = $this->resource_contents( $file, $result, 'importWxr' );
 
 		if ( $contents === null ) {
-			$result->add_unsupported( 'importWxr', 'only "url" and inline literal WXR resources are supported.' );
+			$result->add_unsupported( 'importWxr', 'only "url", "bundled" and inline literal WXR resources are supported.' );
 
 			return;
 		}

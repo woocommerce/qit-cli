@@ -19,7 +19,7 @@ class BlueprintEnvironment {
 	public function prepare( string $blueprint_path ): TranspiledBlueprint {
 		$blueprint = ( new BlueprintParser() )->from_file( $blueprint_path );
 
-		return ( new BlueprintTranspiler() )->transpile( $blueprint );
+		return ( new BlueprintTranspiler() )->transpile( $blueprint, $blueprint_path );
 	}
 
 	/**
@@ -29,10 +29,10 @@ class BlueprintEnvironment {
 	 * run resolves the same package and env:up deduplicates it against the
 	 * references it was given.
 	 *
-	 * @return string|null Null when the Blueprint has no imperative steps.
+	 * @return string|null Null when the Blueprint has neither steps nor bundled files.
 	 */
 	public function materialize( string $blueprint_path, TranspiledBlueprint $result ): ?string {
-		if ( ! $result->has_steps() ) {
+		if ( ! $result->needs_package() ) {
 			return null;
 		}
 

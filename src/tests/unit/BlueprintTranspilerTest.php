@@ -391,6 +391,142 @@ class BlueprintTranspilerTest extends TestCase {
 		rmdir( $dir );
 	}
 
+	// ── Bundled files (shipped next to the Blueprint) ──
+
+	/**
+	 * @param array<string, mixed> $blueprint
+	 *
+	 * @return array{0: TranspiledBlueprint, 1: string} The result and the bundle directory.
+	 */
+	private function transpile_bundle( array $blueprint, array $files ): array {
+		$dir = sys_get_temp_dir() . '/qit-bundle-' . uniqid();
+		mkdir( $dir );
+
+		foreach ( $files as $name => $contents ) {
+			file_put_contents( $dir . '/' . $name, $contents );
+		}
+
+		$path = $dir . '/blueprint.json';
+		file_put_contents( $path, (string) json_encode( $blueprint ) );
+
+		return [ ( new BlueprintTranspiler() )->transpile( $blueprint, $path ), $dir ];
+	}
+
+	public function test_bundled_theme_becomes_a_local_extension(): void {
+		// QIT already installs local zips, so a bundled theme needs no shell step.
+		[ $result, $dir ] = $this->transpile_bundle(
+			[
+				'steps' => [
+					[
+						'step'      => 'installTheme',
+						'themeData' => [ 'resource' => 'bundled', 'path' => './koinonia.zip' ],
+					],
+				],
+			],
+			[ 'koinonia.zip' => 'PK' ]
+		);
+
+		$this->assertSame(
+			[ [ 'slug' => 'koinonia', 'from' => 'local', 'path' => $dir . '/koinonia.zip' ] ],
+			$result->env_config['themes']
+		);
+		$this->assertSame( [], $result->assets, 'An extension is installed from the host, not shipped in the package.' );
+	}
+
+	public function test_bundled_wxr_is_shipped_with_the_package(): void {
+		[ $result ] = $this->transpile_bundle(
+			[
+				'steps' => [
+					[ 'step' => 'importWxr', 'file' => [ 'resource' => 'bundled', 'path' => './content.xml' ] ],
+				],
+			],
+			[ 'content.xml' => '<rss/>' ]
+		);
+
+		$this->assertArrayHasKey( 'content.xml', $result->assets );
+		$this->assertContains(
+			"wp import '/qit/packages/blueprint-steps/content.xml' --authors=create",
+			$this->commands( $result ),
+			'Large bundled files are mounted, never inlined as base64.'
+		);
+	}
+
+	public function test_bundled_files_are_copied_into_the_package(): void {
+		[ $result ] = $this->transpile_bundle(
+			[
+				'steps' => [
+					[ 'step' => 'importWxr', 'file' => [ 'resource' => 'bundled', 'path' => './content.xml' ] ],
+				],
+			],
+			[ 'content.xml' => '<rss>hello</rss>' ]
+		);
+
+		$package = sys_get_temp_dir() . '/qit-bundle-pkg-' . uniqid();
+		$result->write_utility_package( $package );
+
+		$this->assertSame( '<rss>hello</rss>', file_get_contents( $package . '/content.xml' ) );
+	}
+
+	public function test_bundled_unzip_and_sql_use_the_mounted_path(): void {
+		[ $result ] = $this->transpile_bundle(
+			[
+				'steps' => [
+					[
+						'step'          => 'unzip',
+						'zipFile'       => [ 'resource' => 'bundled', 'path' => './uploads.zip' ],
+						'extractToPath' => '/wordpress/wp-content/uploads',
+					],
+					[ 'step' => 'runSql', 'sql' => [ 'resource' => 'bundled', 'path' => './seed.sql' ] ],
+				],
+			],
+			[ 'uploads.zip' => 'PK', 'seed.sql' => 'SELECT 1;' ]
+		);
+
+		$commands = $this->commands( $result );
+
+		$this->assertStringContainsString( "unzip -o '/qit/packages/blueprint-steps/uploads.zip'", $commands[0] );
+		$this->assertStringContainsString( "-d '/var/www/html/wp-content/uploads'", $commands[0] );
+		$this->assertSame( "wp db query < '/qit/packages/blueprint-steps/seed.sql'", $commands[1] );
+	}
+
+	public function test_bundled_paths_cannot_escape_the_blueprint_directory(): void {
+		[ $result ] = $this->transpile_bundle(
+			[
+				'steps' => [
+					[ 'step' => 'importWxr', 'file' => [ 'resource' => 'bundled', 'path' => '../../../../etc/hosts' ] ],
+				],
+			],
+			[]
+		);
+
+		$this->assertSame( [], $result->assets );
+		$this->assertNotEmpty( preg_grep( '/outside the Blueprint directory|was not found/', $result->warnings ) );
+	}
+
+	public function test_a_missing_bundled_file_is_reported(): void {
+		[ $result ] = $this->transpile_bundle(
+			[
+				'steps' => [
+					[ 'step' => 'importWxr', 'file' => [ 'resource' => 'bundled', 'path' => './nope.xml' ] ],
+				],
+			],
+			[]
+		);
+
+		$this->assertNotEmpty( preg_grep( '/was not found next to the Blueprint/', $result->warnings ) );
+	}
+
+	public function test_bundled_resources_need_the_blueprint_path(): void {
+		// transpile() without a path (blueprint:import of a decoded array) cannot resolve them.
+		$result = $this->transpile( [
+			'steps' => [
+				[ 'step' => 'importWxr', 'file' => [ 'resource' => 'bundled', 'path' => './content.xml' ] ],
+			],
+		] );
+
+		$this->assertNotEmpty( preg_grep( '/the Blueprint path is unknown/', $result->warnings ) );
+	}
+
 	// ── Shared preparation across commands ──
 
 	public function test_package_directory_is_stable_for_the_same_blueprint(): void {

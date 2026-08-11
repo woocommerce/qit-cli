@@ -160,7 +160,27 @@ out=$(cd "$WORK" && QIT_SELF_TEST=env_up $QIT_BIN env:up --blueprint="$BP/store.
 check 'steps are mounted as a utility package' '/qit/packages/blueprint-steps' "$out"
 check 'blueprint plugins reach the environment' '"slug":"classic-editor"' "$out"
 
-section '10. Environments that cannot run steps refuse them'
+section '10. Bundled files shipped next to the Blueprint'
+mkdir -p "$WORK/bundle"
+printf 'PK' > "$WORK/bundle/mytheme.zip"
+printf '<rss/>' > "$WORK/bundle/content.xml"
+cat > "$WORK/bundle/blueprint.json" <<'JSON'
+{
+	"steps": [
+		{ "step": "installTheme", "themeData": { "resource": "bundled", "path": "./mytheme.zip" } },
+		{ "step": "importWxr", "file": { "resource": "bundled", "path": "./content.xml" } },
+		{ "step": "importWxr", "file": { "resource": "bundled", "path": "../../../../../../../../../../../../etc/hosts" } }
+	]
+}
+JSON
+out=$($QIT_BIN blueprint:import "$WORK/bundle/blueprint.json" -v 2>&1)
+check 'bundled theme installs as a local extension' '"from": "local"' "$out"
+check 'bundled theme resolves next to the Blueprint' "$WORK/bundle/mytheme.zip" "$out"
+check 'bundled WXR uses the mounted package path' '/qit/packages/blueprint-steps/content.xml' "$out"
+check_absent 'bundled files are not inlined as base64' "$(printf '<rss/>' | base64)" "$out"
+check 'paths escaping the Blueprint directory are refused' 'outside the Blueprint directory' "$out"
+
+section '11. Environments that cannot run steps refuse them'
 out=$(cd "$WORK" && $QIT_BIN env:up --environment_type=performance --blueprint="$BP/store.json" 2>&1)
 check 'performance env refuses a Blueprint with steps' 'performance environments do not run Blueprint steps' "$out"
 
@@ -170,7 +190,7 @@ check 'performance env accepts a step-less Blueprint' '"php_version":"8.3"' "$ou
 out=$($QIT_BIN run:performance woocommerce --blueprint="$BP/store.json" 2>&1)
 check 'remote performance runs refuse --blueprint' 'only applies to local runs' "$out"
 
-section '11. Option is exposed by every command that can use it'
+section '12. Option is exposed by every command that can use it'
 for cmd in env:up run:e2e run:performance run:woo-e2e run:woo-api; do
 	out=$($QIT_BIN "$cmd" --help 2>&1)
 	check "$cmd accepts --blueprint" '--blueprint[=BLUEPRINT]' "$out"

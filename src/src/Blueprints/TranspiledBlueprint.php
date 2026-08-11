@@ -9,6 +9,9 @@ namespace QIT_CLI\Blueprints;
  */
 class TranspiledBlueprint {
 
+	/** Where the generated package is mounted inside the WordPress container. */
+	public const CONTAINER_PACKAGE_PATH = '/qit/packages/blueprint-steps';
+
 	/** @var array<string, mixed> A qit.json "environments.<name>" block. */
 	public array $env_config = [];
 
@@ -24,8 +27,20 @@ class TranspiledBlueprint {
 	/** @var string|null The Blueprint landingPage, if any. */
 	public ?string $landing_page = null;
 
+	/**
+	 * Files shipped alongside the Blueprint that steps refer to, keyed by the
+	 * name they take inside the container.
+	 *
+	 * @var array<string, string> container file name => absolute path on the host
+	 */
+	public array $assets = [];
+
 	public function has_steps(): bool {
 		return ! empty( $this->steps );
+	}
+
+	public function needs_package(): bool {
+		return ! empty( $this->steps ) || ! empty( $this->assets );
 	}
 
 	/**
@@ -39,6 +54,26 @@ class TranspiledBlueprint {
 			'description' => $description,
 			'tolerant'    => $tolerant,
 		];
+	}
+
+	/**
+	 * Register a bundled file to ship with the generated package.
+	 *
+	 * @param string $source Absolute path on the host.
+	 *
+	 * @return string The path the file will have inside the container.
+	 */
+	public function add_asset( string $source ): string {
+		$name = basename( $source );
+
+		// Two bundled files can share a basename; keep both.
+		if ( isset( $this->assets[ $name ] ) && $this->assets[ $name ] !== $source ) {
+			$name = substr( md5( $source ), 0, 8 ) . '-' . $name;
+		}
+
+		$this->assets[ $name ] = $source;
+
+		return self::CONTAINER_PACKAGE_PATH . '/' . $name;
 	}
 
 	public function add_warning( string $warning ): void {
@@ -107,6 +142,12 @@ class TranspiledBlueprint {
 				],
 			],
 		];
+
+		foreach ( $this->assets as $name => $source ) {
+			if ( ! copy( $source, $dir . '/' . $name ) ) {
+				throw new BlueprintException( sprintf( 'Could not copy bundled Blueprint file %s into %s', $source, $dir ) );
+			}
+		}
 
 		$written = file_put_contents(
 			$dir . '/qit-test.json',

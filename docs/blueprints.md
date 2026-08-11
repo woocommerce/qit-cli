@@ -83,7 +83,13 @@ Notes and caveats:
 - WooCommerce is pinned via `woocommerce_version` rather than added as a plugin.
 - `runSql` runs against MySQL. Blueprints written for Playground target SQLite and
   may not be portable.
-- `vfs:` resources and Blueprint bundles (zipped Blueprints) are not supported yet.
+- `bundled` resources — files shipped next to `blueprint.json` — are supported.
+  Plugins and themes install from the host as ordinary local extensions; other
+  files (WXR, SQL, zips) are copied into the generated package, which is mounted
+  at `/qit/packages/blueprint-steps`, so an 8 MB uploads archive costs nothing
+  extra. Paths are confined to the Blueprint's own directory.
+- `git:directory` resources (a plugin or theme from a git ref) and `vfs:`
+  resources are not supported; those entries are skipped with a warning.
 - Blueprints v2 (the declarative format) is rejected; only v1 (`steps`) is handled.
 - Remote Blueprint URLs are rejected on purpose. Playground sandboxes Blueprints in
   WASM; QIT executes them in a container with host volumes mounted, so download and
