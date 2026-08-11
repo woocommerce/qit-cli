@@ -123,11 +123,11 @@ no phase runner at all today.
 
 ## Validating a change to this feature
 
-Translation is covered by `BlueprintTranspilerTest` and `BlueprintExporterTest`;
-command wiring and precedence by `tests/integration/tests/PreCommand/BlueprintTest.php`.
+Translation is covered by `BlueprintTranspilerTest` and `BlueprintExporterTest`.
 
-What those cannot reach is the container. After changing how steps are generated,
-boot one and look:
+Command wiring and anything inside the container are not: the integration suite
+needs a reachable Manager and does not run on pull requests, so after changing how
+steps are generated, boot an environment and look:
 
 ```bash
 qit env:up --blueprint=./blueprint.json
@@ -142,6 +142,15 @@ Worth checking by hand, because each has been broken at least once:
 - `env:reset` returns the site to its post-Blueprint state, not a bare install.
 - Running the same Blueprint twice mounts one package, not two.
 - A Blueprint with bundled files installs the theme and imports the content.
+
+Precedence is worth a look too, since it spans three layers:
+
+```bash
+QIT_SELF_TEST=env_up qit env:up --json --blueprint=./blueprint.json --php=8.4
+```
+
+That prints the resolved environment and exits before Docker, so it is quick to
+confirm the CLI still beats qit.json, which still beats the Blueprint.
 
 A Blueprint that asserts its own outcome is the strongest check available — the
 ones in [WordPress/blueprints](https://github.com/WordPress/blueprints) that end
