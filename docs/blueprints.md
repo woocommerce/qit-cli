@@ -121,6 +121,32 @@ e2e environments.
 Lifting this means teaching `PerformanceEnvironment` to run package phases; it has
 no phase runner at all today.
 
+## Validating a change to this feature
+
+Translation is covered by `BlueprintTranspilerTest` and `BlueprintExporterTest`;
+command wiring and precedence by `tests/integration/tests/PreCommand/BlueprintTest.php`.
+
+What those cannot reach is the container. After changing how steps are generated,
+boot one and look:
+
+```bash
+qit env:up --blueprint=./blueprint.json
+docker exec qit_env_php_<env_id> bash -c 'wp option get blogname --allow-root'
+```
+
+Worth checking by hand, because each has been broken at least once:
+
+- A step whose command fails (WordPress refusing an option, say) must not abort
+  the steps after it.
+- A payload whose output has no trailing newline still reaches the log.
+- `env:reset` returns the site to its post-Blueprint state, not a bare install.
+- Running the same Blueprint twice mounts one package, not two.
+- A Blueprint with bundled files installs the theme and imports the content.
+
+A Blueprint that asserts its own outcome is the strongest check available — the
+ones in [WordPress/blueprints](https://github.com/WordPress/blueprints) that end
+in `exit(N)` on failure will tell you plainly whether the translation held.
+
 ## Exporting a QIT environment as a Blueprint
 
 The reverse direction turns an environment into something shareable as a

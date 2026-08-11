@@ -1,6 +1,0 @@
-{
-	"constants": { "WP_DEBUG": true, "WP_MEMORY_LIMIT": "512M" },
-	"steps": [
-		{ "step": "setSiteOptions", "options": { "blogname": "Blueprint Store", "woocommerce_currency": "EUR", "woocommerce_onboarding_profile": { "skipped": true } } }
-	]
-}

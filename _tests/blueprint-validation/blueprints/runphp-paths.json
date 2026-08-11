@@ -1,7 +1,0 @@
-{
-	"steps": [
-		{ "step": "runPHP", "code": "<?php require_once '/wordpress/wp-load.php'; echo 'hi';" },
-		{ "step": "writeFile", "path": "/wordpress/wp-content/mu-plugins/x.php", "data": "<?php // noop" },
-		{ "step": "wp-cli", "command": "wp eval-file /wordpress/wp-content/x.php" }
-	]
-}
