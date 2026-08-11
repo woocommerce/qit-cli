@@ -416,6 +416,21 @@ class BlueprintTranspiler {
 	}
 
 	/**
+	 * Split a wordpress.org reference into slug and version.
+	 *
+	 * @return array{0: string, 1: string} The slug, and the version or an empty string.
+	 */
+	private function split_slug_version( string $reference ): array {
+		if ( strpos( $reference, '@' ) === false ) {
+			return [ $reference, '' ];
+		}
+
+		[ $slug, $version ] = explode( '@', $reference, 2 );
+
+		return [ $slug, $version ];
+	}
+
+	/**
 	 * Resolve a "bundled" resource to an absolute path next to the Blueprint.
 	 *
 	 * @param array<string, mixed> $resource_data The Blueprint resource.
@@ -498,12 +513,17 @@ class BlueprintTranspiler {
 		$type = $resource_data['resource'] ?? '';
 
 		if ( $type === 'wordpress.org/plugins' || $type === 'wordpress.org/themes' ) {
+			// Playground pins the version in the slug: "akismet@6.4.3".
+			[ $slug, $slug_version ] = $this->split_slug_version( (string) ( $resource_data['slug'] ?? '' ) );
+
 			$entry = [
-				'slug' => (string) ( $resource_data['slug'] ?? '' ),
+				'slug' => $slug,
 				'from' => 'wporg',
 			];
-			if ( ! empty( $resource_data['version'] ) ) {
-				$entry['version'] = (string) $resource_data['version'];
+
+			$version = (string) ( $resource_data['version'] ?? $slug_version );
+			if ( $version !== '' ) {
+				$entry['version'] = $version;
 			}
 
 			return $entry['slug'] === '' ? null : $entry;
