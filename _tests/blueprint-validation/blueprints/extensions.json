@@ -1,0 +1,9 @@
+{
+	"steps": [
+		{ "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "woocommerce", "version": "9.5.0" } },
+		{ "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "akismet" } },
+		{ "step": "installPlugin", "pluginData": { "resource": "url", "url": "https://example.com/my-plugin.zip" }, "options": { "activate": false } },
+		{ "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "classic-editor" }, "options": { "activate": false } },
+		{ "step": "installTheme", "themeData": { "resource": "wordpress.org/themes", "slug": "storefront" }, "options": { "activate": true } }
+	]
+}

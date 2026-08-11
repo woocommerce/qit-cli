@@ -149,7 +149,17 @@ class RunPerformanceTestCommand extends DynamicCommand {
 		}
 
 		// Handle group registration (same for local and remote).
-		$is_local     = $input->getOption( 'local' );
+		$is_local = $input->getOption( 'local' );
+
+		// Remote runs are built by the Manager, which knows nothing about Blueprints.
+		// Silently ignoring the flag would hand back a environment that does not
+		// match what was asked for.
+		if ( ! $is_local && $input->getOption( 'blueprint' ) ) {
+			$output->writeln( '<error>--blueprint only applies to local runs. Add --local, or drop --blueprint to run this test on QIT servers.</error>' );
+
+			return Command::INVALID;
+		}
+
 		$group_result = $this->handle_group_registration(
 			$input,
 			$output,

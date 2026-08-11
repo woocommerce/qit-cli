@@ -311,7 +311,7 @@ class UpEnvironmentCommand extends QITCommand {
 		$blueprint_path        = $input->getOption( 'blueprint' );
 
 		if ( $blueprint_path ) {
-			$blueprint_utility_dir = $this->apply_blueprint( (string) $blueprint_path, $env_config, $output, (bool) $input->getOption( 'json' ) );
+			$blueprint_utility_dir = $this->apply_blueprint( (string) $blueprint_path, $env_config, $output, (bool) $input->getOption( 'json' ), $environment_type );
 		}
 
 		// Post-merge resolution steps.
@@ -1011,10 +1011,11 @@ class UpEnvironmentCommand extends QITCommand {
 	 * @param array<string,mixed> $env_config     Merged environment config, modified in place.
 	 * @param OutputInterface     $output         Console output.
 	 * @param bool                $input_is_json  Whether the command is running in machine-readable mode.
+	 * @param string              $environment_type The environment being created ("e2e" or "performance").
 	 *
 	 * @return string|null Directory of the generated utility package, if any.
 	 */
-	private function apply_blueprint( string $blueprint_path, array &$env_config, OutputInterface $output, bool $input_is_json ): ?string {
+	private function apply_blueprint( string $blueprint_path, array &$env_config, OutputInterface $output, bool $input_is_json, string $environment_type ): ?string {
 		$blueprints = App::make( BlueprintEnvironment::class );
 		$result     = $blueprints->prepare( $blueprint_path );
 
@@ -1027,6 +1028,18 @@ class UpEnvironmentCommand extends QITCommand {
 		// anything written here is swallowed by the JSON filter.
 		if ( ! $input_is_json ) {
 			$blueprints->report( $blueprint_path, $result, $output );
+		}
+
+		// Only E2E environments run test package phases, so a Blueprint's imperative
+		// half would be mounted and never executed anywhere else. Say so instead of
+		// handing back an environment that silently ignores half the Blueprint.
+		if ( $environment_type !== 'e2e' && $result->has_steps() ) {
+			throw new \RuntimeException( sprintf(
+				'This Blueprint has %d step(s), and %s environments do not run Blueprint steps — only versions, plugins and themes would be applied. '
+				. 'Use an e2e environment, or remove the steps from the Blueprint.',
+				count( $result->steps ),
+				$environment_type
+			) );
 		}
 
 		$package_dir = $blueprints->materialize( $blueprint_path, $result );

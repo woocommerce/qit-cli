@@ -12,11 +12,19 @@ Blueprints also work when running tests, not only when starting an environment:
 
 ```bash
 qit run:e2e my-plugin --blueprint=./blueprint.json --test-package=./my-tests
-qit run:performance my-plugin --blueprint=./blueprint.json
+qit run:woo-e2e my-plugin --blueprint=./blueprint.json
+qit run:woo-api my-plugin --blueprint=./blueprint.json
 ```
 
 The Blueprint sets the site up before the test packages run, so tests see the
-state it describes. `blueprint:import` / `blueprint:export` cover the conversion
+state it describes. Where both set the same option, the test package wins — its
+own setup runs after the Blueprint's.
+
+Mind what the Blueprint changes underneath a suite that has expectations baked
+in. Pointing a Blueprint that sets `woocommerce_currency: EUR` at
+`woocommerce/core-api-tests` fails two of its tests, because they assert `USD` —
+the Blueprint applied correctly, and the suite disagrees with the store it
+describes. `blueprint:import` / `blueprint:export` cover the conversion
 on its own.
 
 ## How the translation works
@@ -83,10 +91,35 @@ Notes and caveats:
 
 ## Where the steps run
 
-`env:up` executes the generated utility package itself. Under `run:e2e`, `env:up`
-is invoked with `--skip-test-phases`, so `run:e2e` owns phase execution and runs
-the Blueprint package first, ahead of every other utility and test package.
-`run:performance` delegates the whole thing to `env:up`.
+`env:up` executes the generated utility package itself. Under `run:e2e` (and its
+`run:woo-e2e` / `run:woo-api` subclasses), `env:up` is invoked with
+`--skip-test-phases`, so the run command owns phase execution and runs the
+Blueprint package first, ahead of every other utility and test package.
+
+## Performance environments
+
+Only E2E environments run test package phases, so a Blueprint's **steps** cannot
+be executed in a performance environment. Rather than apply half a Blueprint,
+`env:up --environment_type=performance` and `run:performance --local` refuse a
+Blueprint that has steps:
+
+```
+This Blueprint has 4 step(s), and performance environments do not run Blueprint
+steps — only versions, plugins and themes would be applied.
+```
+
+A Blueprint with no steps (versions, plugins, themes only) works there.
+
+`run:performance` without `--local` enqueues the test on QIT servers, where
+Blueprints mean nothing, so it rejects `--blueprint` outright:
+
+```
+--blueprint only applies to local runs. Add --local, or drop --blueprint to run
+this test on QIT servers.
+```
+
+Teaching `PerformanceEnvironment` to run package phases would lift the first
+restriction; today it has no phase runner at all.
 
 ## Exporting a QIT environment as a Blueprint
 

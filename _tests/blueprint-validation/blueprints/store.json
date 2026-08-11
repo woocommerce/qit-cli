@@ -1,0 +1,12 @@
+{
+	"landingPage": "/shop/",
+	"preferredVersions": { "php": "8.3", "wp": "latest" },
+	"steps": [
+		{ "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "woocommerce" } },
+		{ "step": "installPlugin", "pluginData": { "resource": "wordpress.org/plugins", "slug": "classic-editor" }, "options": { "activate": false } },
+		{ "step": "setSiteOptions", "options": { "blogname": "Blueprint Store", "woocommerce_currency": "EUR", "woocommerce_api_enabled": "yes" } },
+		{ "step": "defineWpConfigConsts", "consts": { "WP_DEBUG": true } },
+		{ "step": "runPHP", "code": "<?php require_once '/wordpress/wp-load.php'; wp_insert_post( [ 'post_title' => 'From the Blueprint', 'post_status' => 'publish' ] ); echo 'seeded-no-newline';" },
+		{ "step": "enableMultisite" }
+	]
+}
