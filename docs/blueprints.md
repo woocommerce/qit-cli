@@ -169,3 +169,18 @@ qit blueprint:export --environment=legacy --output=bp.json
 The export is lossy and says so: local plugin/theme paths, Docker volumes, PHP
 extensions, env vars, the object cache and Xdebug have no Playground equivalent
 and are reported as warnings.
+
+A pinned version becomes a versioned wordpress.org download
+(`https://downloads.wordpress.org/plugin/woocommerce.9.4.0.zip`) rather than a
+`wordpress.org/plugins` resource, which always fetches the current release and
+does not understand `slug@version`. wordpress.org only serves exact release tags,
+so `woo: "8.5"` produces a URL that 404s where `8.5.0` works; the export checks
+each pinned download and warns when one is missing. Pass `--skip-download-check`
+to skip that.
+
+Worth running an export through Playground itself before trusting it, since a
+Blueprint can be schema-valid and still fail:
+
+```bash
+npx @wp-playground/cli@latest server --blueprint=./blueprint.json
+```
