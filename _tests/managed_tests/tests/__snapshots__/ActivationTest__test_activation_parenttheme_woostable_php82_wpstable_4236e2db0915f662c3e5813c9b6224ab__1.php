@@ -36,7 +36,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 17 total, 13 passed, 1 failed, 3 skipped",
+            "test_summary": "Tests: 18 total, 13 passed, 1 failed, 4 skipped",
             "version": "undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,6 +49,19 @@
             "test_packages": [],
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
+            "extension_specs": [
+                {
+                    "slug": "woocommerce",
+                    "woo_product_id": null,
+                    "type": "plugin",
+                    "source": "wporg",
+                    "requested_version": "stable",
+                    "resolved_version": "normalized",
+                    "artifact_ref": [],
+                    "role": "integration",
+                    "reason": "local environment additional plugin"
+                }
+            ],
             "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
@@ -64,10 +77,10 @@
                         }
                     },
                     "summary": {
-                        "tests": 17,
+                        "tests": 18,
                         "passed": 13,
                         "failed": 1,
-                        "skipped": 3,
+                        "skipped": 4,
                         "pending": 0,
                         "other": 0,
                         "start": 1111111111,
@@ -225,6 +238,46 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Verify global request resilience",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "chromium > activation.spec.js",
+                            "attachments": [],
+                            "stdout": [],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "description": "The release-smoke hook resilience check currently supports plugin SUTs only.",
+                                        "location": {
+                                            "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
+                                            "line": 315,
+                                            "column": 10
+                                        }
+                                    }
+                                ],
                                 "packageSlug": "woocommerce\\/activation:latest",
                                 "phase": "run",
                                 "testType": "e2e",
@@ -416,7 +469,7 @@
                                         "type": "slow",
                                         "location": {
                                             "file": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js",
-                                            "line": 719,
+                                            "line": 863,
                                             "column": 10
                                         }
                                     }
@@ -439,8 +492,8 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n",
-                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:830:69",
-                            "snippet": "  828 |\\n  829 |     await page.goto(\'\\/cart\');\\n> 830 |     await expect(page.locator(\'.wc-block-components-product-name\')).toContainText(\'Test Product\');\\n      |                                                                     ^\\n  831 |     await expect(page.locator(\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\')).toContainText(\'$10.00\');\\n  832 |     await expect(page.locator(\'.wc-block-components-totals-item__value > span\')).toContainText(\'$10.00\');\\n  833 | });",
+                            "trace": "Error: \\u001b[31mTimed out 5000ms waiting for \\u001b[39m\\u001b[2mexpect(\\u001b[22m\\u001b[31mlocator\\u001b[39m\\u001b[2m).\\u001b[22mtoContainText\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m)\\u001b[22m\\n\\nLocator: locator(\'.wc-block-components-product-name\')\\nExpected string: \\u001b[32m\\"Test Product\\"\\u001b[39m\\nReceived: <element(s) not found>\\nCall log:\\n\\u001b[2m  - Expect \\"toContainText\\" with timeout 5000ms\\u001b[22m\\n\\u001b[2m  - waiting for locator(\'.wc-block-components-product-name\')\\u001b[22m\\n\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:974:69",
+                            "snippet": "\\u001b[0m \\u001b[90m 972 |\\u001b[39m\\n \\u001b[90m 973 |\\u001b[39m     \\u001b[36mawait\\u001b[39m page\\u001b[33m.\\u001b[39mgoto(\\u001b[32m\'\\/cart\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 974 |\\u001b[39m     \\u001b[36mawait\\u001b[39m expect(page\\u001b[33m.\\u001b[39mlocator(\\u001b[32m\'.wc-block-components-product-name\'\\u001b[39m))\\u001b[33m.\\u001b[39mtoContainText(\\u001b[32m\'Test Product\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                                                                     \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 975 |\\u001b[39m     \\u001b[36mawait\\u001b[39m expect(page\\u001b[33m.\\u001b[39mlocator(\\u001b[32m\'td.wc-block-cart-item__total .wc-block-formatted-money-amount\'\\u001b[39m))\\u001b[33m.\\u001b[39mtoContainText(\\u001b[32m\'$10.00\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 976 |\\u001b[39m     \\u001b[36mawait\\u001b[39m expect(page\\u001b[33m.\\u001b[39mlocator(\\u001b[32m\'.wc-block-components-totals-item__value > span\'\\u001b[39m))\\u001b[33m.\\u001b[39mtoContainText(\\u001b[32m\'$10.00\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 977 |\\u001b[39m })\\u001b[33m;\\u001b[39m\\u001b[0m",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -586,7 +639,7 @@
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,
-                                    "testCount": 11,
+                                    "testCount": 12,
                                     "packageType": "test",
                                     "executionOrder": 1,
                                     "firstSeen": 0,

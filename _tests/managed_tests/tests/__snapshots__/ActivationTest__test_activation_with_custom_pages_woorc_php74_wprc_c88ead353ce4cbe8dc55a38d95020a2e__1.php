@@ -36,7 +36,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 17 total, 7 passed, 1 failed, 9 skipped",
+            "test_summary": "Tests: 18 total, 8 passed, 1 failed, 9 skipped",
             "version": "undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -49,6 +49,19 @@
             "test_packages": [],
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
+            "extension_specs": [
+                {
+                    "slug": "woocommerce",
+                    "woo_product_id": null,
+                    "type": "plugin",
+                    "source": "url",
+                    "requested_version": "rc",
+                    "resolved_version": "normalized",
+                    "artifact_ref": [],
+                    "role": "integration",
+                    "reason": "local environment additional plugin"
+                }
+            ],
             "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
@@ -64,8 +77,8 @@
                         }
                     },
                     "summary": {
-                        "tests": 17,
-                        "passed": 7,
+                        "tests": 18,
+                        "passed": 8,
                         "failed": 1,
                         "skipped": 9,
                         "pending": 0,
@@ -110,7 +123,7 @@
                                 "packageId": "woocommerce\\/activation:latest",
                                 "testType": "e2e",
                                 "exitCode": 0,
-                                "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
+                                "output": "Notice: Function _load_textdomain_just_in_time was called <strong>incorrectly<\\/strong>. Translation loading for the <code>woocommerce<\\/code> domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the <code>init<\\/code> action or later. Please see <a href=\\"https:\\/\\/developer.wordpress.org\\/advanced-administration\\/debug\\/debug-wordpress\\/\\">Debugging in WordPress<\\/a> for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line {LINE}\\nSuccess: Updated \'woocommerce_onboarding_profile_completed\' option.",
                                 "isLifecycle": true,
                                 "countsTowardTotals": false,
                                 "packageType": "test",
@@ -220,7 +233,15 @@
                             "flaky": false,
                             "steps": [
                                 {
+                                    "name": "Capture pre-activation global request baseline",
+                                    "status": "passed"
+                                },
+                                {
                                     "name": "Expect \\"The plugin \\"Activation - Plugin A\\" never appeared active in the UI.\\"",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Probe global requests after activating the SUT",
                                     "status": "passed"
                                 }
                             ],
@@ -252,7 +273,40 @@
                                 "[TIMING NORMALIZED] Starting activation loop\\n",
                                 "[TIMING NORMALIZED] Navigating to the activation link for \\"Activation - Plugin A\\".\\n",
                                 "[TIMING NORMALIZED] Activated \\"Activation - Plugin A\\" successfully.\\n",
+                                "QIT_ACTIVATION_SMOKE_PASSED: all baseline and post-activation probes were healthy.\\n",
                                 "[TIMING NORMALIZED] Plugin activation test completed. Total activated: 1\\n"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/activation:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/activation",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "Verify global request resilience",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/activation.spec.js",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "chromium > activation.spec.js",
+                            "attachments": [],
+                            "stdout": [
+                                "QIT_ACTIVATION_SMOKE_PASSED: all baseline and post-activation probes were healthy.\\n"
                             ],
                             "stderr": [],
                             "extra": {
@@ -275,8 +329,8 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php({LINE}): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php({LINE}): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m",
-                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php({LINE}): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php({LINE}): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:537:89\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:473:9",
-                            "snippet": "  535 |\\n  536 |             \\/\\/ There should be no \\"Fatal Error\\" in the debug log.\\n> 537 |             expect(debugLog.join(\'\\\\n\'), \'There was a fatal error in the debug log\').not.toContain(\'Fatal error\');\\n      |                                                                                         ^\\n  538 |\\n  539 |             visitedPages.push(addedMenuItem.url);\\n  540 |",
+                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php({LINE}): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php({LINE}): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:681:89\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:604:9",
+                            "snippet": "\\u001b[0m \\u001b[90m 679 |\\u001b[39m\\n \\u001b[90m 680 |\\u001b[39m             \\u001b[90m\\/\\/ There should be no \\"Fatal Error\\" in the debug log.\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 681 |\\u001b[39m             expect(debugLog\\u001b[33m.\\u001b[39mjoin(\\u001b[32m\'\\\\n\'\\u001b[39m)\\u001b[33m,\\u001b[39m \\u001b[32m\'There was a fatal error in the debug log\'\\u001b[39m)\\u001b[33m.\\u001b[39mnot\\u001b[33m.\\u001b[39mtoContain(\\u001b[32m\'Fatal error\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                                                                                         \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 682 |\\u001b[39m\\n \\u001b[90m 683 |\\u001b[39m             visitedPages\\u001b[33m.\\u001b[39mpush(addedMenuItem\\u001b[33m.\\u001b[39murl)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 684 |\\u001b[39m\\u001b[0m",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -625,7 +679,7 @@
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,
-                                    "testCount": 11,
+                                    "testCount": 12,
                                     "packageType": "test",
                                     "executionOrder": 1,
                                     "firstSeen": 0,

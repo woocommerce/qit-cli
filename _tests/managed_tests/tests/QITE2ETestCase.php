@@ -62,6 +62,22 @@ class QITE2ETestCase extends TestCase {
 					return ! empty( $value ) && strlen( $value ) > 1 && strlen( $value ) < 60;
 				},
 			],
+			'extension_specs'                 => [
+				'normalize' => static function ( $value ) {
+					// Resolved versions change with every WP/Woo release, which would break snapshots.
+					foreach ( $value as &$spec ) {
+						if ( isset( $spec['resolved_version'] ) ) {
+							$spec['resolved_version'] = 'normalized';
+						}
+					}
+					unset( $spec );
+
+					return $value;
+				},
+				'validate'  => static function ( $value ) {
+					return is_array( $value );
+				},
+			],
 			'test_results_manager_url'        => [
 				'normalize' => 'https://test-results-manager.com',
 				'validate'  => static function ( $value ) {
@@ -351,6 +367,12 @@ class QITE2ETestCase extends TestCase {
 
 								foreach ( $test['stdout'] as &$line ) {
 									if ( stripos( $line, 'Using cached file' ) !== false ) {
+										continue;
+									}
+
+									// Per-probe smoke lines vary between runs (probe set and durations).
+									// The stable "QIT_ACTIVATION_SMOKE_PASSED" summary line is kept.
+									if ( strpos( $line, '[QIT activation smoke]' ) !== false ) {
 										continue;
 									}
 
