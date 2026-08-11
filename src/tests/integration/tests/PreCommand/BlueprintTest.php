@@ -2,6 +2,7 @@
 
 namespace integration\tests\PreCommand;
 
+use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -11,6 +12,7 @@ use PHPUnit\Framework\TestCase;
  * BlueprintExporterTest). What needs a real command run is the wiring: where the
  * Blueprint sits in the precedence chain, and the environments that refuse it.
  */
+#[Group("env-up")]
 final class BlueprintTest extends TestCase {
 
 	/** @var string[] Files to clean up. */
