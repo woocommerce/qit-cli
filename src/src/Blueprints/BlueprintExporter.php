@@ -137,17 +137,19 @@ class BlueprintExporter {
 
 		if ( $from === 'wporg' ) {
 			$version = (string) ( $extension['version'] ?? '' );
+			$pinned  = $version !== '' && $version !== 'stable' && $version !== 'latest';
 
-			// Playground pins a wordpress.org version in the slug ("akismet@6.4.3");
-			// the resource itself takes no version property.
-			if ( $version !== '' && $version !== 'stable' && $version !== 'latest' ) {
-				$slug .= '@' . $version;
-			}
-
-			$resource = [
-				'resource' => $type === 'plugin' ? 'wordpress.org/plugins' : 'wordpress.org/themes',
-				'slug'     => $slug,
-			];
+			// A wordpress.org resource carries no version — Playground always fetches
+			// the current release. Pinning means pointing at the versioned zip.
+			$resource = $pinned
+				? [
+					'resource' => 'url',
+					'url'      => sprintf( 'https://downloads.wordpress.org/%s/%s.%s.zip', $type, $slug, $version ),
+				]
+				: [
+					'resource' => $type === 'plugin' ? 'wordpress.org/plugins' : 'wordpress.org/themes',
+					'slug'     => $slug,
+				];
 		} elseif ( $from === 'url' ) {
 			$resource = [
 				'resource' => 'url',

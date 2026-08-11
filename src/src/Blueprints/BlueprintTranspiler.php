@@ -543,6 +543,16 @@ class BlueprintTranspiler {
 		if ( $type === 'url' ) {
 			$url = (string) ( $resource_data['url'] ?? '' );
 
+			// A wordpress.org download URL is a pinned wporg extension, not an
+			// arbitrary zip; keep it as one so the slug and version survive.
+			if ( preg_match( '#^https?://downloads\.WordPress\.org/(?:plugin|theme)/([a-z0-9\-_]+)\.([0-9][^/]*)\.zip$#i', $url, $matches ) === 1 ) {
+				return [
+					'slug'    => $matches[1],
+					'from'    => 'wporg',
+					'version' => $matches[2],
+				];
+			}
+
 			return $url === '' ? null : [
 				'slug' => (string) ( $resource_data['slug'] ?? $this->slug_from_url( $url ) ),
 				'from' => 'url',

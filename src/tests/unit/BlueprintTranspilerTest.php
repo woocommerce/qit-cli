@@ -104,6 +104,24 @@ class BlueprintTranspilerTest extends TestCase {
 		);
 	}
 
+	public function test_wordpress_org_download_urls_resolve_back_to_wporg(): void {
+		// Exported pins are versioned wp.org zips; importing one must not leave QIT
+		// with a plugin slugged "woocommerce.9.4.0".
+		$result = $this->transpile( [
+			'steps' => [
+				[
+					'step'       => 'installPlugin',
+					'pluginData' => [ 'resource' => 'url', 'url' => 'https://downloads.wordpress.org/plugin/classic-editor.1.6.5.zip' ],
+				],
+			],
+		] );
+
+		$this->assertSame(
+			[ [ 'slug' => 'classic-editor', 'from' => 'wporg', 'version' => '1.6.5' ] ],
+			$result->env_config['plugins']
+		);
+	}
+
 	public function test_woocommerce_is_pinned_instead_of_listed_as_a_plugin(): void {
 		$result = $this->transpile( [
 			'steps' => [

@@ -67,7 +67,7 @@ class BlueprintExporterTest extends TestCase {
 
 		$this->assertSame( '8.3', $blueprint['preferredVersions']['php'] );
 		$this->assertSame( '6.7', $blueprint['preferredVersions']['wp'] );
-		$this->assertSame( 'woocommerce@9.4.0', $blueprint['steps'][1]['pluginData']['slug'] );
+		$this->assertStringContainsString( 'woocommerce.9.4.0.zip', $blueprint['steps'][1]['pluginData']['url'] );
 	}
 
 	public function test_only_the_first_theme_is_activated(): void {
@@ -83,16 +83,28 @@ class BlueprintExporterTest extends TestCase {
 		$this->assertFalse( $themes[1]['options']['activate'] );
 	}
 
-	public function test_pinned_versions_ride_in_the_slug(): void {
-		// Playground's CorePluginReference takes no version property — the version
-		// belongs in the slug, and the schema forbids anything else.
+	public function test_pinned_versions_become_versioned_download_urls(): void {
+		// Playground's CorePluginReference carries no version and always fetches the
+		// current release, and it does not parse a "slug@version" reference either.
+		// Pinning has to point at the versioned zip.
 		$blueprint = $this->export( [ 'woocommerce_version' => '9.1.0' ] );
 
 		$woo = $blueprint['steps'][1];
 
 		$this->assertSame( 'installPlugin', $woo['step'] );
-		$this->assertSame( 'woocommerce@9.1.0', $woo['pluginData']['slug'] );
-		$this->assertArrayNotHasKey( 'version', $woo['pluginData'] );
+		$this->assertSame(
+			[ 'resource' => 'url', 'url' => 'https://downloads.wordpress.org/plugin/woocommerce.9.1.0.zip' ],
+			$woo['pluginData']
+		);
+	}
+
+	public function test_pinned_themes_use_the_theme_download_path(): void {
+		$blueprint = $this->export( [ 'themes' => [ [ 'slug' => 'storefront', 'from' => 'wporg', 'version' => '4.6.2' ] ] ] );
+
+		$this->assertSame(
+			'https://downloads.wordpress.org/theme/storefront.4.6.2.zip',
+			$blueprint['steps'][1]['themeData']['url']
+		);
 	}
 
 	public function test_local_extensions_are_reported_as_lost(): void {
