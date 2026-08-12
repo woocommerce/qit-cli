@@ -164,7 +164,7 @@ class RunE2ECommand extends QITCommand {
 			->addOption( 'notify', null, InputOption::VALUE_NONE, 'Notify on failures' )
 			->addOption( 'group', 'g', InputOption::VALUE_NEGATABLE, 'Register into a group', false )
 			->addOption( 'print-report-url', null, InputOption::VALUE_NONE, 'Print the test report URL (contains sensitive data - use cautiously in public logs)' )
-			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, 'Wait timeout in seconds for remote extension-set runs', null )
+			->addOption( 'timeout', null, InputOption::VALUE_OPTIONAL, 'Wait timeout in seconds for remote runs', null )
 			->addOption( 'ui', null, InputOption::VALUE_NONE, 'Run tests in Playwright UI mode' )
 			->addOption( 'keep-env', null, InputOption::VALUE_NONE, 'Keep the environment running after tests complete (for debugging with Playwright MCP)' );
 	}

@@ -16,6 +16,7 @@ class RunWooApiTestCommand extends RunE2ECommand {
 		parent::configure();
 		$this->setDescription( 'Run WooCommerce Core API tests' );
 		$this->configure_extension_set_option();
+		$this->configure_remote_option();
 		$this->addOption(
 			'optional_features',
 			null,
@@ -26,7 +27,7 @@ class RunWooApiTestCommand extends RunE2ECommand {
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		$remote_result = $this->run_remote_extension_set_if_provided( $input, $output, 'woo-api' );
+		$remote_result = $this->run_remote_if_requested( $input, $output, 'woo-api' );
 		if ( $remote_result !== null ) {
 			return $remote_result;
 		}
