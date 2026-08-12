@@ -28,30 +28,22 @@ jobs:
         run: mkdir -p ${{ github.workspace }}/tmp
       - name: Wait before request to avoid 429
         if: github.event_name != 'workflow_dispatch'
+        env:
+          TEST_TYPE: ${{ inputs.test_type }}
         run: |
-          if [[ "${{ inputs.test_type }}" == "activation" ]]; then
-            echo "Test type is activation. No wait."
-          elif [[ "${{ inputs.test_type }}" == "api" ]]; then
-            echo "Test type is api. Waiting 30 seconds."
-            sleep 30
-          elif [[ "${{ inputs.test_type }}" == "phpstan" ]]; then
-            echo "Test type is phpstan. Waiting 60 seconds."
-            sleep 60
-          elif [[ "${{ inputs.test_type }}" == "security" ]]; then
-            echo "Test type is security. Waiting 90 seconds."
-            sleep 90
-          elif [[ "${{ inputs.test_type }}" == "phpcompatibility" ]]; then
-            echo "Test type is phpcompatibility. Waiting 120 seconds."
-            sleep 120
-          
-          # E2E should always be last, as it takes long and uses queue slots.
-          elif [[ "${{ inputs.test_type }}" == "e2e" ]]; then
-            echo "Test type is e2e. Waiting 150 seconds."
-            sleep 150
-          
-          else
-            echo "Unknown test type. No wait."
-          fi
+          case "$TEST_TYPE" in
+            activation)       WAIT_SECONDS=0 ;;
+            woo-api)          WAIT_SECONDS=30 ;;
+            phpstan)          WAIT_SECONDS=60 ;;
+            security)         WAIT_SECONDS=90 ;;
+            phpcompatibility) WAIT_SECONDS=120 ;;
+            malware)          WAIT_SECONDS=150 ;;
+            validation)       WAIT_SECONDS=180 ;;
+            woo-e2e)          WAIT_SECONDS=210 ;;
+            *) echo "::error::Unknown test type: $TEST_TYPE"; exit 1 ;;
+          esac
+          echo "Test type is $TEST_TYPE. Waiting $WAIT_SECONDS seconds."
+          sleep "$WAIT_SECONDS"
 
       - name: Checkout code
         uses: actions/checkout@v4
