@@ -21,6 +21,14 @@ class NormalizationTest extends QITE2ETestCase {
 
 		$fixture = [
 			[
+				'runner'          => 'public',
+				'extension_specs' => [
+					[
+						'slug'              => 'woocommerce',
+						'requested_version' => '11.0.1',
+						'resolved_version'  => '11.0.1',
+					],
+				],
 				'ctrf_json' => [
 					'results' => [
 						'tests' => [
@@ -32,6 +40,18 @@ class NormalizationTest extends QITE2ETestCase {
 							],
 							[
 								'name'  => 'can create a variable product',
+								'extra' => [
+									'annotations' => [
+										[
+											'type'     => 'skip',
+											'location' => [
+												'file'   => '/tmp/qit-cache/packages/hash/tests/example.spec.ts',
+												'line'   => 123,
+												'column' => 7,
+											],
+										],
+									],
+								],
 								'stdout' => [ 'volatile output' ],
 								'stderr' => [
 									"(node:893) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.\n(Use `node --trace-warnings ...` to show where the warning was created)\n",
@@ -71,6 +91,11 @@ class NormalizationTest extends QITE2ETestCase {
 		$this->assertStringContainsString( "Success: Plugin already activated.\\nWarning: Plugin 'woocommerce' is already active.", $normalized );
 		$this->assertStringNotContainsString( 'wp-includes\\/class-wp-hook.php', $normalized );
 		$this->assertStringContainsString( 'wp-content\\/plugins\\/example\\/plugin.php', $normalized );
+		$this->assertStringContainsString( '"runner": "public"', $normalized );
+		$this->assertSame( 2, substr_count( $normalized, '"normalized"' ) );
+		$this->assertStringContainsString( '"type": "skip"', $normalized );
+		$this->assertStringNotContainsString( 'qit-cache', $normalized );
+		$this->assertStringNotContainsString( '"location"', $normalized );
 	}
 
 	public function test_ctrf_only_parser_split_succeeds() {

@@ -64,8 +64,11 @@ class QITE2ETestCase extends TestCase {
 			],
 			'extension_specs'                 => [
 				'normalize' => static function ( $value ) {
-					// Resolved versions change with every WP/Woo release, which would break snapshots.
+					// Requested and resolved versions change with every WP/Woo release, which would break snapshots.
 					foreach ( $value as &$spec ) {
+						if ( isset( $spec['requested_version'] ) ) {
+							$spec['requested_version'] = 'normalized';
+						}
 						if ( isset( $spec['resolved_version'] ) ) {
 							$spec['resolved_version'] = 'normalized';
 						}
@@ -92,8 +95,18 @@ class QITE2ETestCase extends TestCase {
 			],
 			'runner'                          => [
 				'optional'  => true,
-				'normalize' => 'normalized',
-				'validate'  => static function ( $value ) {
+				'normalize' => static function ( $value ) use ( $file_path ) {
+					if ( stripos( $file_path, 'woo-api/' ) !== false || stripos( $file_path, 'woo-e2e/' ) !== false ) {
+						return $value;
+					}
+
+					return 'normalized';
+				},
+				'validate'  => static function ( $value ) use ( $file_path ) {
+					if ( stripos( $file_path, 'woo-api/' ) !== false || stripos( $file_path, 'woo-e2e/' ) !== false ) {
+						return $value === 'public';
+					}
+
 					return ! empty( $value );
 				},
 			],
@@ -471,6 +484,12 @@ class QITE2ETestCase extends TestCase {
 								}
 								if ( isset( $test['filePath'] ) ) {
 									$test['filePath'] = '/normalized/path/' . basename( $test['filePath'] );
+								}
+								if ( isset( $test['extra']['annotations'] ) && is_array( $test['extra']['annotations'] ) ) {
+									foreach ( $test['extra']['annotations'] as &$annotation ) {
+										unset( $annotation['location'] );
+									}
+									unset( $annotation );
 								}
 								if ( isset( $test['retries'] ) ) {
 									$test['retries'] = 0;
