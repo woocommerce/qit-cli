@@ -82,6 +82,11 @@ class QitRunner {
 	 */
 	private function get_test_timeout_settings( string $test_type ): array {
 		switch ( $test_type ) {
+			case 'woo_api':
+				$timeout_in_seconds = 30 * 60; // 30 minutes
+				$poll_interval      = 15;      // Poll every 15 seconds
+				break;
+
 			case 'woo_e2e':
 				// For example, the "woo_e2e" test might need up to 2 hours.
 				$timeout_in_seconds = 2 * 60 * 60; // 2 hours
@@ -205,6 +210,9 @@ class QitRunner {
 			'--async',  // Add async flag to get old behavior (return immediately with test_run_id)
 			"--zip={$t['path']}/sut.zip",
 		];
+		if ( in_array( $test_type, [ 'woo-api', 'woo-e2e' ], true ) ) {
+			$args[] = '--remote';
+		}
 
 		// Track files we want to clean up later.
 		Context::$to_delete[] = "{$t['path']}/sut.zip";
@@ -396,9 +404,12 @@ class QitRunner {
 					$elapsed_seconds    = time() - $start_time;
 
 					/*
-					 * If we've surpassed the configured timeout, mark the test as timed out.
+					 * A completed response wins even if it arrives at the timeout boundary.
+					 * Missing and incomplete responses still time out normally.
 					 */
-					if ( $elapsed_seconds >= $timeout_in_seconds ) {
+					$is_complete = isset( $result_json[ $test_run_id ]['update_complete'] )
+						&& $result_json[ $test_run_id ]['update_complete'] === true;
+					if ( ! $is_complete && $elapsed_seconds >= $timeout_in_seconds ) {
 						$this->logger->log(
 							"Test_run_id {$test_run_id} timed out after {$timeout_in_seconds} seconds."
 						);
@@ -437,10 +448,7 @@ class QitRunner {
 					/*
 					 * Mark the test as done if update_complete is true, otherwise it's still in progress.
 					 */
-					if (
-						isset( $test_result['update_complete'] ) &&
-						$test_result['update_complete'] === true
-					) {
+					if ( $is_complete ) {
 						$this->logger->log( "Test_run_id {$test_run_id} completed. Handling final response..." );
 						$this->handle_qit_response_final(
 							$all_tests[ $test_run_id ],
