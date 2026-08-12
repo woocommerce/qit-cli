@@ -190,7 +190,7 @@ class QITE2ETestCase extends TestCase {
 						$value = json_encode( $value );
 					}
 
-					return ! is_null( json_decode( $value ) );
+					return is_string( $value ) && ! is_null( json_decode( $value ) );
 				},
 			],
 			'test_media'                      => [
@@ -324,7 +324,6 @@ class QITE2ETestCase extends TestCase {
 							$test['retryAttempts'] = [];
 
 							if (
-								$is_woo_e2e &&
 								( $test['name'] ?? '' ) === 'wp plugin activate woocommerce' &&
 								( $test['extra']['output'] ?? '' ) === "Warning: Plugin 'woocommerce' is already active.\nSuccess: Plugin already activated."
 							) {
@@ -532,19 +531,11 @@ class QITE2ETestCase extends TestCase {
 					return $value;
 				},
 				'validate'  => static function ( $value ) {
-					if ( is_string( $value ) ) {
-						$value = trim( $value );
-					}
-
-					if ( empty( $value ) ) {
-						return true;
-					}
-
 					if ( is_array( $value ) ) {
 						$value = json_encode( $value );
 					}
 
-					return ! is_null( json_decode( $value ) );
+					return is_string( $value ) && ! is_null( json_decode( $value ) );
 				},
 			],
 			'debug_log'                       => [
@@ -766,6 +757,12 @@ class QITE2ETestCase extends TestCase {
 			$rules = $callback( $rules );
 		}
 
+		$result_fields     = [ 'test_result_json', 'ctrf_json' ];
+		$is_result_present = static function ( $value ): bool {
+			return is_array( $value ) || ( ! is_null( $value ) && ( ! is_string( $value ) || trim( $value ) !== '' ) );
+		};
+		$has_valid_result  = false;
+
 		foreach ( $json as &$j ) {
 			foreach ( $j as $k => &$v ) {
 				// Remove unwanted keys
@@ -776,17 +773,16 @@ class QITE2ETestCase extends TestCase {
 
 				// Check if the current key is in the processing rules.
 				if ( array_key_exists( $k, $rules ) ) {
-					// Special case: test_result_json is optional for e2e and activation test types
-					if ( $k === 'test_result_json' ) {
-						$test_type = $j['test_type'] ?? '';
-						if ( in_array( $test_type, [ 'e2e', 'activation' ], true ) && empty( $v ) ) {
-							// Skip validation for empty test_result_json in e2e/activation tests
-							continue;
-						}
+					if ( in_array( $k, $result_fields, true ) && ! $is_result_present( $v ) ) {
+						continue;
 					}
 
 					// Validate the existing value.
 					if ( $rules[ $k ]['validate']( $v ) ) {
+						if ( in_array( $k, $result_fields, true ) ) {
+							$has_valid_result = true;
+						}
+
 						// Normalize for snapshot testing.
 						if ( is_callable( $rules[ $k ]['normalize'] ) ) {
 							$v = $rules[ $k ]['normalize']( $v );
@@ -808,6 +804,10 @@ class QITE2ETestCase extends TestCase {
 					}
 				}
 			}
+		}
+
+		if ( ! $has_valid_result ) {
+			$this->fail( 'Expected at least one present, valid test_result_json or ctrf_json value.' );
 		}
 
 		$json = json_encode( $json, JSON_PRETTY_PRINT );
