@@ -232,7 +232,7 @@ class QITLiveOutput {
 		}
 	}
 
-	public function printFinalSummary( int $phpUnitFailedCount ) {
+	public function printFinalSummary( int $phpUnitFailedCount ): int {
 		clear_output();
 
 		echo "──────────────────────────────────────────────────────────────────────\n";
@@ -276,7 +276,9 @@ class QITLiveOutput {
 
 		echo "\nAll snapshots have been verified.\n\n";
 
-		if ( $phpUnitFailedCount > 0 || $finalFailures > 0 ) {
+		$exitCode = ( $phpUnitFailedCount > 0 || $finalFailures > 0 ) ? 1 : 0;
+
+		if ( $exitCode > 0 ) {
 			echo "Some snapshots still failed. Final outcome: ❌\n";
 		} else {
 			if ( $this->isUpdateAction ) {
@@ -287,6 +289,8 @@ class QITLiveOutput {
 		}
 
 		echo "\nFor more details, see last-self-test.log.\n";
+
+		return $exitCode;
 	}
 
 	private function computeDuration( array $testInfo ): string {

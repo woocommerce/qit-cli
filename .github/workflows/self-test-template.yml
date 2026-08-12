@@ -61,6 +61,10 @@ jobs:
         working-directory: src
         run: composer install
 
+      - name: Test self-test runner
+        working-directory: _tests/managed_tests
+        run: vendor/bin/phpunit --do-not-cache-result --filter '/(QITLiveOutputTest|NormalizationTest)/' tests/self_test
+
       - name: Connect to QIT
         run: ./qit partner:add --user="${{ secrets.QIT_USER }}" --application_password="${{ secrets.QIT_ACCESS_TOKEN }}"
 

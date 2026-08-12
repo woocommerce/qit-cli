@@ -402,6 +402,7 @@ class QitRunner {
 						$this->logger->log(
 							"Test_run_id {$test_run_id} timed out after {$timeout_in_seconds} seconds."
 						);
+						$this->live_output->setTestCompleted( $test_run_id, false );
 						$this->live_output->addTestError(
 							$test_run_id,
 							"Did not finish within {$timeout_in_seconds} seconds."
@@ -482,10 +483,10 @@ class QitRunner {
 		$this->logger->log( 'All tests completed. Preparing final summary...' );
 
 		$failures = $this->phpunit_runner->getFailedTestsCount();
-		$this->live_output->printFinalSummary( $failures );
+		$exit_code = $this->live_output->printFinalSummary( $failures );
 		global $gracefulEnding;
 		$gracefulEnding = true;
-		exit( $failures > 0 ? 1 : 0 );
+		exit( $exit_code );
 	}
 
 	/**

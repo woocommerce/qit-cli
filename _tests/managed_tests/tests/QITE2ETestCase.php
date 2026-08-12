@@ -323,6 +323,14 @@ class QITE2ETestCase extends TestCase {
 							// Ignore retries.
 							$test['retryAttempts'] = [];
 
+							if (
+								$is_woo_e2e &&
+								( $test['name'] ?? '' ) === 'wp plugin activate woocommerce' &&
+								( $test['extra']['output'] ?? '' ) === "Warning: Plugin 'woocommerce' is already active.\nSuccess: Plugin already activated."
+							) {
+								$test['extra']['output'] = "Success: Plugin already activated.\nWarning: Plugin 'woocommerce' is already active.";
+							}
+
 							/* -----------------------------------------------------------------
 							 * Playwright hook-step normalisation
 							 * -----------------------------------------------------------------
@@ -358,10 +366,7 @@ class QITE2ETestCase extends TestCase {
 
 							if ( $is_woo_e2e && isset( $test['stdout'] ) ) {
 								$test['stdout'] = [ '[IGNORED FOR WOO-E2E]' ];
-								continue;
-							}
-
-							if ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
+							} elseif ( isset( $test['stdout'] ) && is_array( $test['stdout'] ) ) {
 								$filtered          = [];
 								$processes_console = []; // track unique "Console " lines
 
@@ -478,6 +483,13 @@ class QITE2ETestCase extends TestCase {
 									foreach ( $test['steps'] as &$step ) {
 										if ( isset( $step['name'] ) ) {
 											$step['name'] = preg_replace( '/id\s*\d+/i', 'id <ID>', $step['name'] );
+											if ( $is_woo_e2e && ( $test['name'] ?? '' ) === 'can create a variable product' ) {
+												$step['name'] = preg_replace(
+													'/^Type "[^"]+" into the "Product name" input field\.$/',
+													'Type "<PRODUCT_NAME>" into the "Product name" input field.',
+													$step['name']
+												);
+											}
 										}
 										if ( isset( $step['duration'] ) ) {
 											$step['duration'] = 999;
@@ -648,9 +660,15 @@ class QITE2ETestCase extends TestCase {
 								continue;
 							}
 
-							// Ignore containing "Maximum execution time of 30 seconds exceeded in" in E2E.
-							if ( stripos( $file_path, 'woo-e2e/' ) !== false && stripos( $debug_log['message'], 'Maximum execution time of 30 seconds exceeded in' ) !== false ) {
-								echo "Removing 'Maximum execution time of 30 seconds exceeded in' from debug_log.message\n";
+							// Ignore a known intermittent timeout in WordPress core without hiding extension timeouts.
+							if (
+								stripos( $file_path, 'woo-e2e/' ) !== false &&
+								preg_match(
+									'#Maximum execution time of 30 seconds exceeded in [^\r\n]*/wp-includes/class-wp-hook\.php on line \{LINE\}(?:\r?\n|$)#i',
+									$debug_log['message']
+								)
+							) {
+								echo "Removing known WordPress core hook timeout from debug_log.message\n";
 								unset( $value[ $k ] );
 								continue;
 							}
