@@ -3,16 +3,19 @@
         {
             "test_run_id": 123456,
             "run_id": 123456,
-            "test_type": "woo-e2e",
-            "test_type_display": "Woo E2E",
+            "test_type": "e2e",
+            "test_type_display": "E2E",
             "wordpress_version": "6.0.0-normalized",
             "woocommerce_version": "6.0.0-normalized",
             "php_version": "8.2",
             "max_php_version": "",
             "min_php_version": "",
             "additional_woo_plugins": [],
-            "additional_wp_plugins": [],
+            "additional_wp_plugins": [
+                "woocommerce"
+            ],
             "test_log": "",
+            "test_result_json": "",
             "performance_results": "",
             "status": "success",
             "test_result_aws_url": "https:\\/\\/test-results-aws.com",
@@ -26,19 +29,19 @@
                 "type": "plugin"
             },
             "client": "qit_cli",
-            "event": "cli_development_extension_test",
+            "event": "local_or_ci_run_normalized",
             "optional_features": {
                 "hpos": false,
                 "new_product_editor": false
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 311 total, 251 passed, 0 failed, 60 skipped",
-            "version": "Undefined",
+            "test_summary": "Tests: 140 total, 138 passed, 0 failed, 2 skipped",
+            "version": "undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
-            "workflow_id": "1234567890",
-            "runner": "normalized",
+            "workflow_id": "",
+            "runner": "",
             "test_media": [],
             "extension_set": "",
             "phpstan_level": null,
@@ -46,2208 +49,242 @@
             "test_packages": [],
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
-            "test_result_json_extracted": "{EXTRACTED}",
+            "extension_specs": [
+                {
+                    "slug": "woocommerce",
+                    "woo_product_id": null,
+                    "type": "plugin",
+                    "source": "wporg",
+                    "requested_version": "stable",
+                    "resolved_version": "normalized",
+                    "artifact_ref": [],
+                    "role": "integration",
+                    "reason": "local environment additional plugin"
+                }
+            ],
             "ctrf_json_extracted": "{EXTRACTED}",
             "debug_log_extracted": "{EXTRACTED}"
         },
         {
-            "test_result_json": {
-                "numFailedTestSuites": 0,
-                "numPassedTestSuites": 60,
-                "numPendingTestSuites": 24,
-                "numTotalTestSuites": 84,
-                "numFailedTests": 0,
-                "numPassedTests": 251,
-                "numPendingTests": 60,
-                "numTotalTests": 311,
-                "testResults": [
-                    {
-                        "file": "..\\/fixtures\\/install-wc.setup.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Install WC using WC Beta Tester": [
-                                {
-                                    "title": "Install WC using WC Beta Tester",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "..\\/fixtures\\/auth.setup.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "authenticate users": [
-                                {
-                                    "title": "authenticate users",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "..\\/fixtures\\/site.setup.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "setup site": [
-                                {
-                                    "title": "setup site",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "analytics\\/analytics-access.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Home": [
-                                {
-                                    "title": "Can access Analytics Reports from Stats Overview",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "analytics\\/analytics-overview.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Analytics pages": [
-                                {
-                                    "title": "a user should see 3 sections by default - Performance, Charts, and Leaderboards",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should allow a user to remove a section",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should allow a user to add a section back in",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Analytics pages > moving sections": [
-                                {
-                                    "title": "should not display move up for the top, or move down for the bottom section",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should allow a user to move a section down",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should allow a user to move a section up",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Analytics Overview - Manual Import Trigger": [
-                                {
-                                    "title": "should show manual update trigger in scheduled mode",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should hide manual update trigger in immediate mode",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "analytics\\/analytics-settings.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Analytics Settings - Scheduled Import": [
-                                {
-                                    "title": "should show Immediate mode by default when option is not set",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should switch from scheduled to immediate mode with confirmation modal - cancel flow",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should switch from scheduled to immediate mode with confirmation modal - confirm flow",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should switch from immediate to scheduled mode without confirmation modal",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "basic\\/basic.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Load the home page": [
-                                {
-                                    "title": "Load the home page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Load wp-admin as admin": [
-                                {
-                                    "title": "Load wp-admin as admin",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Load my account page as customer": [
-                                {
-                                    "title": "Load my account page as customer",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "basic\\/dashboard-access.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Customer-role users are blocked from accessing the WP Dashboard.": [
-                                {
-                                    "title": "Customer is redirected from WP Admin home back to the My Account page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Customer is redirected from WP Admin profile page back to the My Account page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "basic\\/page-loads.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can load WooCommerce > Home page": [
-                                {
-                                    "title": "can load WooCommerce > Home page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load WooCommerce > Orders page": [
-                                {
-                                    "title": "can load WooCommerce > Orders page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load WooCommerce > Customers page": [
-                                {
-                                    "title": "can load WooCommerce > Customers page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load WooCommerce > Reports page": [
-                                {
-                                    "title": "can load WooCommerce > Reports page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load WooCommerce > Settings page": [
-                                {
-                                    "title": "can load WooCommerce > Settings page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load WooCommerce > Status page": [
-                                {
-                                    "title": "can load WooCommerce > Status page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Products > All Products page": [
-                                {
-                                    "title": "can load Products > All Products page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Products > Add new product page": [
-                                {
-                                    "title": "can load Products > Add new product page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Products > Categories page": [
-                                {
-                                    "title": "can load Products > Categories page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Products > Tags page": [
-                                {
-                                    "title": "can load Products > Tags page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Products > Attributes page": [
-                                {
-                                    "title": "can load Products > Attributes page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Overview page": [
-                                {
-                                    "title": "can load Analytics > Overview page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Products page": [
-                                {
-                                    "title": "can load Analytics > Products page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Revenue page": [
-                                {
-                                    "title": "can load Analytics > Revenue page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Orders page": [
-                                {
-                                    "title": "can load Analytics > Orders page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Variations page": [
-                                {
-                                    "title": "can load Analytics > Variations page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Categories page": [
-                                {
-                                    "title": "can load Analytics > Categories page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Coupons page": [
-                                {
-                                    "title": "can load Analytics > Coupons page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Taxes page": [
-                                {
-                                    "title": "can load Analytics > Taxes page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Downloads page": [
-                                {
-                                    "title": "can load Analytics > Downloads page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Stock page": [
-                                {
-                                    "title": "can load Analytics > Stock page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Analytics > Settings page": [
-                                {
-                                    "title": "can load Analytics > Settings page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Marketing > Overview page": [
-                                {
-                                    "title": "can load Marketing > Overview page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can load Marketing > Coupons page": [
-                                {
-                                    "title": "can load Marketing > Coupons page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "brands\\/create-product-brand.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Merchant can add brands": [
-                                {
-                                    "title": "Merchant can add brands",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "cart\\/add-to-cart.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Add to Cart behavior": [
-                                {
-                                    "title": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "should be able to navigate and remove item from mini cart using keyboard",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "cart\\/cart.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "can undo product removal in classic cart": [
-                                {
-                                    "title": "can undo product removal in classic cart",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can add and remove products, increase quantity and proceed to checkout - blocks cart": [
-                                {
-                                    "title": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can add and remove products, increase quantity and proceed to checkout - classic cart": [
-                                {
-                                    "title": "can add and remove products, increase quantity and proceed to checkout - classic cart",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "checkout\\/checkout-link.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Checkout Link Endpoint": [],
-                            "Checkout Link Endpoint > Guest user": [
-                                {
-                                    "title": "Guest user redirected to checkout with correct cart",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Guest user sees error when invalid coupon is applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Guest user sees error when invalid products are provided",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Guest user sees error when invalid product is provided",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Guest user sees error when invalid link is provided",
-                                    "status": "pending"
-                                }
-                            ],
-                            "Checkout Link Endpoint > Logged-in user": [
-                                {
-                                    "title": "Logged-in user redirected to checkout with correct cart",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Logged-in user sees error when invalid coupon is applied",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Logged-in user sees error when invalid products are provided",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Logged-in user sees error when invalid product is provided",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Logged-in user sees error when invalid link is provided",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "checkout\\/checkout.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "guest can checkout paying with cash on delivery on blocks checkout": [
-                                {
-                                    "title": "guest can checkout paying with cash on delivery on blocks checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "guest can checkout paying with cash on delivery on classic checkout": [
-                                {
-                                    "title": "guest can checkout paying with cash on delivery on classic checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "guest can create an account at checkout on blocks checkout": [
-                                {
-                                    "title": "guest can create an account at checkout on blocks checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "guest can create an account at checkout on classic checkout": [
-                                {
-                                    "title": "guest can create an account at checkout on classic checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "logged in customer can checkout with default addresses and direct bank transfer on blocks checkout": [
-                                {
-                                    "title": "logged in customer can checkout with default addresses and direct bank transfer on blocks checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "logged in customer can checkout with default addresses and direct bank transfer on classic checkout": [
-                                {
-                                    "title": "logged in customer can checkout with default addresses and direct bank transfer on classic checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "customer can login at checkout and place the order with a different shipping address blocks checkout": [
-                                {
-                                    "title": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                                    "status": "pending"
-                                }
-                            ],
-                            "customer can login at checkout and place the order with a different shipping address classic checkout": [
-                                {
-                                    "title": "customer can login at checkout and place the order with a different shipping address classic checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout": [
-                                {
-                                    "title": "existing customer can update the billing address and place the order with direct bank transfer on blocks checkout",
-                                    "status": "passed"
-                                }
-                            ],
-                            "existing customer can update the billing address and place the order with direct bank transfer on classic checkout": [
-                                {
-                                    "title": "existing customer can update the billing address and place the order with direct bank transfer on classic checkout",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "coupons\\/cart-block-coupons.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Cart Block Applying Coupons": [
-                                {
-                                    "title": "allows cart block to apply coupon of any type",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "allows cart block to apply multiple coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "prevents cart block applying same coupon twice",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "prevents cart block applying coupon with usage limit",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "coupons\\/cart-checkout-coupons.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Cart & Checkout applying coupons": [
-                                {
-                                    "title": "allows applying coupon of type fixed_cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "allows applying coupon of type percent",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "allows applying coupon of type fixed_product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "prevents applying same coupon twice",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "allows applying multiple coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "restores total when coupons are removed",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "coupons\\/cart-checkout-restricted-coupons.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Cart & Checkout Restricted Coupons": [
-                                {
-                                    "title": "expired coupon cannot be used",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon requiring min and max amounts and can only be used alone can only be used within limits",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon cannot be used on sale item",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon can only be used twice",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon cannot be used on certain products\\/categories (included product\\/category)",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon can be used on certain products\\/categories",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon cannot be used on specific products\\/categories (excluded product\\/category)",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon can be used on other products\\/categories",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon cannot be used by any customer on cart (email restricted)",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon cannot be used by any customer on checkout (email restricted)",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "coupon can be used by the right customer (email restricted) but only once",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "coupons\\/create-coupon.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Coupon management": [
-                                {
-                                    "title": "can create new fixedCart coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new fixedProduct coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new percentage coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new expiryDate coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new freeShipping coupon",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "coupons\\/create-restricted-coupons.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Restricted coupon management": [
-                                {
-                                    "title": "can create new minimumSpend coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new maximumSpend coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new individualUse coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new excludeSaleItems coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new productCategories coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new excludeProductCategories coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new excludeProductBrands coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new products coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new excludeProducts coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new allowedEmails coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new usageLimitPerCoupon coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new usageLimitPerUser coupon",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "customer\\/customer-list.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Merchant > Customer List": [
-                                {
-                                    "title": "Merchant can view a list of all customers, filter and download",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Merchant can view a single customer",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Merchant can use advanced filters",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email\\/account-emails.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "New customer should receive an email with login details": [
-                                {
-                                    "title": "New customer should receive an email with login details",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Customer should receive an email when initiating a password reset": [
-                                {
-                                    "title": "Customer should receive an email when initiating a password reset",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Customer should receive an email when password reset initiated from admin": [
-                                {
-                                    "title": "Customer should receive an email when password reset initiated from admin",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email\\/order-emails.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "customer receives email for processing order": [
-                                {
-                                    "title": "customer receives email for processing order",
-                                    "status": "passed"
-                                }
-                            ],
-                            "admin receives email for processing order": [
-                                {
-                                    "title": "admin receives email for processing order",
-                                    "status": "passed"
-                                }
-                            ],
-                            "customer receives email for completed order": [
-                                {
-                                    "title": "customer receives email for completed order",
-                                    "status": "passed"
-                                }
-                            ],
-                            "admin receives email for cancelled order": [
-                                {
-                                    "title": "admin receives email for cancelled order",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Merchant can resend order details to customer": [
-                                {
-                                    "title": "Merchant can resend order details to customer",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email\\/settings-email-listing.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Email Settings List View": [
-                                {
-                                    "title": "Email settings list view renders correctly and allows to edit email status and search",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "email\\/settings-email.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce Email Settings": [
-                                {
-                                    "title": "See email preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Email sender options live change in email preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Live preview when changing email settings",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Send email preview",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "See specific email preview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Choose image in email image url field",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "See color palette settings",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "See font family setting",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "See updated footer text field",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Reset color palette with a feature flag",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "marketing\\/overview.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Marketing page": [
-                                {
-                                    "title": "Marketing Overview page have relevant content",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Learning section can be expanded",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "my-account\\/my-account-addresses.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Customer can manage addresses in My Account > Addresses page": [
-                                {
-                                    "title": "can add billing address from my account",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can add shipping address from my account",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "my-account\\/my-account-create-account.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Shopper My Account Create Account": [
-                                {
-                                    "title": "can create a new account via my account",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "my-account\\/my-account-downloads.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Customer can manage downloadable file in My Account > Downloads page": [
-                                {
-                                    "title": "can see downloadable file and click to download it",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "my-account\\/my-account-pay-order.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Customer can pay for their order through My Account": [
-                                {
-                                    "title": "allows customer to pay for their order in My Account",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "my-account\\/my-account.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "My account page": [
-                                {
-                                    "title": "allows customer to login and navigate",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "onboarding\\/add-product-task.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Add Product Task": [
-                                {
-                                    "title": "Add product task displays options for different product types",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Products page redirects to add product task when no products exist",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Products page shows products table when products exist",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Products page redirects to add product task when no products exist and task list is hidden",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "onboarding\\/launch-your-store.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Launch Your Store - logged in": [
-                                {
-                                    "title": "Entire site coming soon mode frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Store only coming soon mode frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Site visibility settings",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Homescreen badge coming soon store only",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Homescreen badge coming soon entire store",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Homescreen badge live",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Launch Your Store front end - logged out": [],
-                            "Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)": [
-                                {
-                                    "title": "Entire site coming soon mode (Block Theme (Twenty Twenty Four))",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Store only coming soon mode (Block Theme (Twenty Twenty Four))",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Launch Your Store front end - logged out > Classic Theme (Storefront)": [
-                                {
-                                    "title": "Entire site coming soon mode (Classic Theme (Storefront))",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Store only coming soon mode (Classic Theme (Storefront))",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "onboarding\\/onboarding-wizard.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Store owner can complete the core profiler": [
-                                {
-                                    "title": "Can complete the core profiler skipping extension install",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "Can complete the core profiler installing default extensions",
-                                    "status": "pending"
-                                }
-                            ],
-                            "Store owner can skip the core profiler": [
-                                {
-                                    "title": "Can skip the guided setup",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "onboarding\\/setup-checklist.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Can hide the task list": [
-                                {
-                                    "title": "Can hide the task list",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Payments task list item links to Payments settings page": [
-                                {
-                                    "title": "Payments task list item links to Payments settings page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Can connect to WooCommerce.com": [
-                                {
-                                    "title": "Can connect to WooCommerce.com",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/create-order.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Orders > Add new order": [
-                                {
-                                    "title": "can create a simple guest order",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create an order for an existing customer",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new order",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can create new complex order with multiple product types & tax classes",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/customer-payment-page.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Merchant Flow: Orders > Customer Payment Page": [
-                                {
-                                    "title": "should show the customer payment page link on a pending order",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should load the customer payment page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can pay for the order through the customer payment page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/order-bulk-edit.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Bulk edit orders": [
-                                {
-                                    "title": "can bulk update order status",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/order-coupon.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Orders > Apply Coupon": [
-                                {
-                                    "title": "can apply a coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can remove a coupon",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/order-edit.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Edit order": [
-                                {
-                                    "title": "can view single order",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can update order status",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can update order status to cancelled",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can update order details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can add and delete order notes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can load billing and shipping details",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can copy billing address to shipping address",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Edit order > Downloadable product permissions": [
-                                {
-                                    "title": "can add downloadable product permissions to order without product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can add downloadable product permissions to order with product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can edit downloadable product permissions",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can revoke downloadable product permissions",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should not allow downloading a product if download attempts are exceeded",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should not allow downloading a product if expiration date has passed",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/order-grace-period.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "guest shopper can verify their email address after the grace period": [
-                                {
-                                    "title": "guest shopper can verify their email address after the grace period",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/order-refund.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "WooCommerce Orders > Refund an order": [
-                                {
-                                    "title": "can issue a refund by quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can delete an issued refund",
-                                    "status": "pending"
-                                }
-                            ],
-                            "WooCommerce Orders > Refund and restock an order item": [
-                                {
-                                    "title": "can update order after refunding item without automatic stock adjustment",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "order\\/order-status-filter.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Orders > Filter Order by Status": [
-                                {
-                                    "title": "should filter by All",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should filter by Pending payment",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should filter by Processing",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should filter by On hold",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should filter by Completed",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should filter by Cancelled",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should filter by Refunded",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should filter by Failed",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/create-grouped-product-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "General tab": [],
-                            "General tab > Grouped product": [
-                                {
-                                    "title": "can create a grouped product",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/create-simple-product-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "General tab": [],
-                            "General tab > Simple product form": [
-                                {
-                                    "title": "renders each block without error",
-                                    "status": "pending"
-                                }
-                            ],
-                            "General tab > Create product": [
-                                {
-                                    "title": "can create a simple product",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can not create a product with duplicated SKU",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can a shopper add the simple product to the cart",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Variations tab": [],
-                            "Variations tab > Create variable products": [
-                                {
-                                    "title": "can create a variation option and publish the product",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can edit a variation",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can delete a variation",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can see variations warning and click the CTA",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can see single variation warning and click the CTA",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/disable-block-product-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Disable block product editor": [
-                                {
-                                    "title": "is hooked up to sidebar \\"Add New\\"",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can be disabled from the header",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can be disabled from settings",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/linked-product-tab-product-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "General tab": [],
-                            "General tab > Linked product": [
-                                {
-                                    "title": "can create a product with linked products",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/organization-tab-product-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "General tab": [],
-                            "General tab > Create product - Organization tab": [
-                                {
-                                    "title": "can create a simple product with categories, tags and with password required",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/product-attributes-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "add local attribute (with terms) to the Product": [
-                                {
-                                    "title": "add local attribute (with terms) to the Product",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can add existing attributes": [
-                                {
-                                    "title": "can add existing attributes",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can update product attributes": [
-                                {
-                                    "title": "can update product attributes",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can remove product attributes": [
-                                {
-                                    "title": "can remove product attributes",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/product-edit-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Publish dropdown options": [
-                                {
-                                    "title": "can schedule a product publication",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can duplicate a product",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can delete a product",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can update the general information of a product": [
-                                {
-                                    "title": "can update the general information of a product",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/product-images-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "can add images": [
-                                {
-                                    "title": "can add images",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can replace an image": [
-                                {
-                                    "title": "can replace an image",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can remove an image": [
-                                {
-                                    "title": "can remove an image",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can set an image as cover": [
-                                {
-                                    "title": "can set an image as cover",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/block-editor\\/product-inventory-block-editor.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "can update sku": [
-                                {
-                                    "title": "can update sku",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can update stock status": [
-                                {
-                                    "title": "can update stock status",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can track stock quantity": [
-                                {
-                                    "title": "can track stock quantity",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can limit purchases": [
-                                {
-                                    "title": "can limit purchases",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/create-product-attributes.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "can add custom product attributes": [
-                                {
-                                    "title": "can add custom product attributes",
-                                    "status": "pending"
-                                }
-                            ],
-                            "can create attribute terms from the attributes modal": [
-                                {
-                                    "title": "can create attribute terms from the attributes modal",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/create-variable-product.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Add variable product": [
-                                {
-                                    "title": "can create a variable product",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/create-variations.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Add variations": [
-                                {
-                                    "title": "can generate variations from product attributes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can manually add a variation",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-create-simple.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can create a simple virtual product": [
-                                {
-                                    "title": "can create a simple virtual product",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can create a simple non virtual product": [
-                                {
-                                    "title": "can create a simple non virtual product",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can create a simple downloadable product": [
-                                {
-                                    "title": "can create a simple downloadable product",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-delete.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can delete a product from edit view": [
-                                {
-                                    "title": "can delete a product from edit view",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can quick delete a product from product list": [
-                                {
-                                    "title": "can quick delete a product from product list",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can permanently delete a product from trash list": [
-                                {
-                                    "title": "can permanently delete a product from trash list",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-export.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Product > Export Selected Products": [
-                                {
-                                    "title": "should allow exporting a single selected simple product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should allow exporting multiple selected products (simple and variable)",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should allow clearing selection from the export page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should show the default export screen when no products are selected",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-grouped.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Grouped Product Page": [
-                                {
-                                    "title": "should be able to add grouped products to the cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should be able to remove grouped products from the cart",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-import-csv.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Import Products from a CSV file": [
-                                {
-                                    "title": "should show error message if you go without providing CSV file",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can upload the CSV file and import products",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can override the existing products via CSV import",
-                                    "status": "pending"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-linked-products.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Products > Related products": [
-                                {
-                                    "title": "add up-sells",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "remove up-sells",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "add cross-sells",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "remove cross-sells",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-reviews.spec.ts",
-                        "status": "passed",
-                        "has_pending": true,
-                        "tests": {
-                            "Product Reviews": [],
-                            "Product Reviews > Merchant manages reviews": [
-                                {
-                                    "title": "can view products reviews list",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can filter the reviews by product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can quick edit a product review",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can edit a product review",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can approve a product review",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can mark a product review as spam",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can reply to a product review",
-                                    "status": "pending"
-                                },
-                                {
-                                    "title": "can delete a product review",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Product Reviews > Shopper adds reviews": [
-                                {
-                                    "title": "shopper can post a review",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-search.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Products > Search and View a product": [
-                                {
-                                    "title": "can do a partial search for a product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can view a product\'s details after search",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "returns no results for non-existent product search",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-settings.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Products > Downloadable Product Settings": [
-                                {
-                                    "title": "can update settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-tags-attributes.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Browse product tags and attributes from the product page": [
-                                {
-                                    "title": "should see shop catalog with all its products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should see and sort tags page with all the products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should see and sort attributes page with all its products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can see products showcase",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/product-variable.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Variable Product Page": [
-                                {
-                                    "title": "should be able to add variation products to the cart",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should be able to remove variation products from the cart",
-                                    "status": "passed"
-                                }
-                            ],
-                            "Shopper > Update variable product": [
-                                {
-                                    "title": "Shopper can change variable attributes to the same value",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Shopper can change attributes to combination with dimensions and weight",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Shopper can change variable product attributes to variation with a different price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "Shopper can reset variations",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "product\\/update-variations.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Update variations": [
-                                {
-                                    "title": "can individually edit variations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can bulk edit variations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can delete all variations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can manage stock levels",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can set variation defaults",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can remove a variation",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "settings\\/colour-picker-swatch-height.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Colour picker swatch height on Email settings": [
-                                {
-                                    "title": "colour swatch is correctly sized with WP 7.0 body class",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "settings\\/consumer-token.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "admin can manage consumer keys": [
-                                {
-                                    "title": "admin can manage consumer keys",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "settings\\/settings-general.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce General Settings": [
-                                {
-                                    "title": "Save Changes button is disabled by default and enabled only after changes.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can update settings",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "settings\\/settings-tax.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce Tax Settings > enable": [
-                                {
-                                    "title": "can enable tax calculation",
-                                    "status": "passed"
-                                }
-                            ],
-                            "WooCommerce Tax Settings": [
-                                {
-                                    "title": "can set tax options",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can add tax classes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can set rate settings",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can remove tax classes",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "settings\\/settings-woo-com.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "WooCommerce woo.com Settings": [
-                                {
-                                    "title": "can enable analytics tracking",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can enable marketplace suggestions",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "settings\\/webhooks.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Manage webhooks": [
-                                {
-                                    "title": "Webhook cannot be bulk deleted without nonce",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "shipping\\/shipping-classes.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can add a shipping class with an unique slug": [
-                                {
-                                    "title": "can add a shipping class with an unique slug",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can add a shipping class with an auto-generated slug": [
-                                {
-                                    "title": "can add a shipping class with an auto-generated slug",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "shipping\\/shipping-zones.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can delete the shipping zone region": [
-                                {
-                                    "title": "can delete the shipping zone region",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can delete the shipping zone method": [
-                                {
-                                    "title": "can delete the shipping zone method",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "shop\\/cart-redirection.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Cart > Redirect to cart from shop": [
-                                {
-                                    "title": "can redirect user to cart from shop page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can redirect user to cart from detail page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "shop\\/shop-search-browse-sort.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Search, browse by categories and sort items in the shop": [
-                                {
-                                    "title": "should let user search the store",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should let user browse products by categories",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "should let user sort the products in the shop",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "shop\\/shop-title-after-deletion.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Check the title of the shop page after the page has been deleted": [
-                                {
-                                    "title": "Check the title of the shop page after the page has been deleted",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "user\\/lost-password.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Can go to lost password page and submit the form": [
-                                {
-                                    "title": "can visit the lost password page from the login page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "title": "can submit the lost password form",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "user\\/users-create.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can create a new Customer": [
-                                {
-                                    "title": "can create a new Customer",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "user\\/users-manage.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "can update customer data": [
-                                {
-                                    "title": "can update customer data",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can update shop manager data": [
-                                {
-                                    "title": "can update shop manager data",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can delete a customer": [
-                                {
-                                    "title": "can delete a customer",
-                                    "status": "passed"
-                                }
-                            ],
-                            "can delete a shop manager": [
-                                {
-                                    "title": "can delete a shop manager",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "wp-core\\/create-page.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Can create a new page": [
-                                {
-                                    "title": "can create new page",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "wp-core\\/create-post.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "Can create a new post": [
-                                {
-                                    "title": "can create new post",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    },
-                    {
-                        "file": "wp-core\\/post-comments.spec.ts",
-                        "status": "passed",
-                        "has_pending": false,
-                        "tests": {
-                            "logged-in customer can comment on a post": [
-                                {
-                                    "title": "logged-in customer can comment on a post",
-                                    "status": "passed"
-                                }
-                            ]
-                        }
-                    }
-                ],
-                "summary": "311 total, 251 passed, 0 failed, 60 skipped."
-            }
-        },
-        {
             "ctrf_json": {
                 "reportFormat": "CTRF",
-                "specVersion": "0.0.0",
-                "reportId": "normalized-report-id",
-                "timestamp": "2025-01-01T00:00:00.000Z",
-                "generatedBy": "playwright-ctrf-json-reporter",
+                "specVersion": "0.1.0",
                 "results": {
                     "tool": {
-                        "name": "playwright"
+                        "name": "qit-orchestrator",
+                        "extra": {
+                            "orchestrationType": "test-packages"
+                        }
                     },
                     "summary": {
-                        "tests": 311,
-                        "passed": 251,
+                        "tests": 140,
+                        "passed": 138,
                         "failed": 0,
+                        "skipped": 2,
                         "pending": 0,
-                        "skipped": 60,
                         "other": 0,
                         "start": 1111111111,
-                        "stop": 2222222222,
-                        "suites": 0
+                        "stop": 2222222222
                     },
                     "tests": [
+                        {
+                            "name": "wp plugin activate woocommerce",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-0",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Plugin already activated.\\nWarning: Plugin \'woocommerce\' is already active.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp user create customer customer@woocommercecoree2etestsuite.com --user_pass=password --role=customer --first_name=Jane --last_name=Smith",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-1",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Created user 2.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_onboarding_profile_completed yes",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-2",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_redirect_to_setup no",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-3",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_redirect_to_setup\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_onboarding_profile \'{\\"completed\\":true,\\"skipped\\":true}\' --format=json",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-4",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_onboarding_profile\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_coming_soon no",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-5",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_coming_soon\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_store_pages_only no",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-6",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'woocommerce_store_pages_only\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update blogname \'WooCommerce Core E2E Test Suite\'",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-7",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Updated \'blogname\' option.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp option update woocommerce_enable_ajax_add_to_cart yes",
+                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-8",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Value passed for \'woocommerce_enable_ajax_add_to_cart\' option is unchanged.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
                         {
                             "name": "Install WC using WC Beta Tester",
                             "status": "skipped",
@@ -2266,21 +303,27 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
                                 "annotations": [
                                     {
                                         "type": "skip",
                                         "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found.",
                                         "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/fixtures\\/install-wc.setup.ts",
+                                            "file": "\\/tmp\\/qit-cache\\/packages\\/afc7c3d8e592598aad011f844226664c\\/fixtures\\/install-wc.setup.ts",
                                             "line": 23,
                                             "column": 8
                                         }
                                     }
-                                ]
+                                ],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -2313,7 +356,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -2357,1804 +408,18 @@
                                 "[IGNORED FOR WOO-E2E]"
                             ],
                             "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
                                 "Failed to update onboarding profile: \\u001b[90mundefined\\u001b[39m\\n"
                             ],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can access Analytics Reports from Stats Overview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-access.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to the WooCommerce Home page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Navigate to Revenue Report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Navigate to Orders Report",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Navigate to Analytics Overview",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-access.spec.ts > WooCommerce Home",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "a user should see 3 sections by default - Performance, Charts, and Leaderboards",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert that the \\"Performance\\" section is visible",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert that the \\"Charts\\" section is visible",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Assert that the \\"Leaderboards\\" section is visible",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should allow a user to remove a section",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Remove the Performance section",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the Performance section to be hidden",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should allow a user to add a section back in",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Send POST request to hide Performance section",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Inspect the response payload to verify that Performance section was successfully hidden",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Add the Performance section back in.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the Performance section to be added back.",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should not display move up for the top, or move down for the bottom section",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check the top section",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check the bottom section",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages > moving sections",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should allow a user to move a section down",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Move first section down",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the second section to become first, and first becomes second.",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages > moving sections",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should allow a user to move a section up",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Move second section up",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect second section becomes first section, first becomes second",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics pages > moving sections",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should show manual update trigger in scheduled mode",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics Overview - Manual Import Trigger",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should hide manual update trigger in immediate mode",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Overview",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-overview.spec.ts > Analytics Overview - Manual Import Trigger",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should show Immediate mode by default when option is not set",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Settings",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should switch from scheduled to immediate mode with confirmation modal - cancel flow",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Settings",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should switch from scheduled to immediate mode with confirmation modal - confirm flow",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Settings",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should switch from immediate to scheduled mode without confirmation modal",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/analytics-settings.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to Analytics > Settings",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > analytics\\/analytics-settings.spec.ts > Analytics Settings - Scheduled Import",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Load the home page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/basic.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/basic.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Load wp-admin as admin",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/basic.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/basic.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Load my account page as customer",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/basic.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/basic.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Customer is redirected from WP Admin home back to the My Account page.",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/dashboard-access.spec.ts > Customer-role users are blocked from accessing the WP Dashboard.",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Customer is redirected from WP Admin profile page back to the My Account page.",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/dashboard-access.spec.ts > Customer-role users are blocked from accessing the WP Dashboard.",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Customer is redirected from WP Admin using ajax query param back to the My Account page.",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/dashboard-access.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/dashboard-access.spec.ts > Customer-role users are blocked from accessing the WP Dashboard.",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Home page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Orders page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Customers page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Reports page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Settings page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load WooCommerce > Status page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > All Products page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Add new product page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Categories page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Tags page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Products > Attributes page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Overview page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Products page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Revenue page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Orders page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Variations page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Categories page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Coupons page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Taxes page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Downloads page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Stock page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Analytics > Settings page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Marketing > Overview page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can load Marketing > Coupons page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/page-loads.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > basic\\/page-loads.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Merchant can add brands",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-product-brand.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > brands\\/create-product-brand.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/brands\\/create-product-brand.spec.ts",
-                                            "line": 21,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > cart\\/add-to-cart.spec.ts > Add to Cart behavior",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.ts",
-                                            "line": 18,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should be able to navigate and remove item from mini cart using keyboard",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > cart\\/add-to-cart.spec.ts > Add to Cart behavior",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/add-to-cart.spec.ts",
-                                            "line": 18,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can undo product removal in classic cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > cart\\/cart.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
-                                            "line": 128,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > cart\\/cart.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
-                                            "line": 204,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can add and remove products, increase quantity and proceed to checkout - classic cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > cart\\/cart.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/cart\\/cart.spec.ts",
-                                            "line": 204,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Guest user redirected to checkout with correct cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Guest user sees error when invalid coupon is applied",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Guest user sees error when invalid products are provided",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Guest user sees error when invalid product is provided",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Guest user sees error when invalid link is provided",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Guest user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Logged-in user redirected to checkout with correct cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Logged-in user sees error when invalid coupon is applied",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Logged-in user sees error when invalid products are provided",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Logged-in user sees error when invalid product is provided",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Logged-in user sees error when invalid link is provided",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/checkout-link.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > checkout\\/checkout-link.spec.ts > Checkout Link Endpoint > Logged-in user",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout-link.spec.ts",
-                                            "line": 63,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4180,13 +445,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4212,12 +481,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4243,12 +517,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4274,12 +553,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4305,12 +589,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4336,22 +625,27 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "customer can login at checkout and place the order with a different shipping address blocks checkout",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@payments",
                                 "@services",
@@ -4367,22 +661,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Skipped",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/checkout\\/checkout.spec.ts",
-                                            "line": 386,
-                                            "column": 9
-                                        }
-                                    }
-                                ]
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4408,12 +697,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4439,12 +733,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4470,12 +769,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4501,11 +805,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4533,7 +843,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4561,7 +879,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4587,11 +913,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4627,14 +959,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4672,7 +1007,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4710,7 +1053,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4748,7 +1099,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4786,7 +1145,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4822,11 +1189,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4862,13 +1235,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4906,7 +1283,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4944,7 +1329,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -4980,11 +1373,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5022,7 +1421,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5060,7 +1467,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5098,7 +1513,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5136,7 +1559,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5165,7 +1596,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5194,7 +1633,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5221,12 +1668,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5263,11 +1715,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5304,11 +1762,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5345,11 +1809,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5390,11 +1860,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5435,11 +1911,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5484,11 +1966,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5533,11 +2021,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5582,11 +2076,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5631,11 +2131,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5680,11 +2186,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5729,11 +2241,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5774,11 +2292,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5823,11 +2347,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5872,11 +2402,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5921,11 +2457,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -5970,11 +2512,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6019,44 +2567,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Merchant can view a list of all customers, filter and download",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-list.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > customer\\/customer-list.spec.ts > Merchant > Customer List",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/customer\\/customer-list.spec.ts",
-                                            "line": 105,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6087,11 +2608,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6134,624 +2661,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "New customer should receive an email with login details",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/account-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "check the email exists",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email content",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > email\\/account-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Customer should receive an email when initiating a password reset",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/account-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "initiate password reset from my account",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email exists",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email content",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > email\\/account-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Customer should receive an email when password reset initiated from admin",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/account-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "admin sends password reset link",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email exists",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email content",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > email\\/account-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "customer receives email for processing order",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "check the email exists",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email content",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > email\\/order-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "admin receives email for processing order",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "check the email exists",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email content",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > email\\/order-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "customer receives email for completed order",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "check the email exists",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email content",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > email\\/order-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "admin receives email for cancelled order",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "check the email exists",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "check the email content",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > email\\/order-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Merchant can resend order details to customer",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-emails.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/order-emails.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Email settings list view renders correctly and allows to edit email status and search",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email-listing.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email-listing.spec.ts > WooCommerce Email Settings List View",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "See email preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Email sender options live change in email preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Live preview when changing email settings",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@skip-on-external-env"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Send email preview",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/email\\/settings-email.spec.ts",
-                                            "line": 178,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "See specific email preview",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Choose image in email image url field",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "See color palette settings",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "See font family setting",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "See updated footer text field",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Reset color palette with a feature flag",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/settings-email.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > email\\/settings-email.spec.ts > WooCommerce Email Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Marketing Overview page have relevant content",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > marketing\\/overview.spec.ts > Marketing page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Learning section can be expanded",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e",
-                                "@non-critical"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/overview.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > marketing\\/overview.spec.ts > Marketing page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6773,11 +2693,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6799,11 +2725,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6825,12 +2757,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6852,12 +2789,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -6883,625 +2825,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "allows customer to login and navigate",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/my-account.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "customer can navigate to Orders page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "customer can navigate to Downloads page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "customer can navigate to Addresses page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "customer can navigate to Account details page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > my-account\\/my-account.spec.ts > My account page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Add product task displays options for different product types",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Products page redirects to add product task when no products exist",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Products page shows products table when products exist",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Products page redirects to add product task when no products exist and task list is hidden",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/add-product-task.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/add-product-task.spec.ts > Add Product Task",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Entire site coming soon mode frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@skip-on-wpcom"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Store only coming soon mode frontend",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@skip-on-wpcom"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Site visibility settings",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@skip-on-wpcom"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Homescreen badge coming soon store only",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@skip-on-wpcom"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Homescreen badge coming soon entire store",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@skip-on-wpcom"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Homescreen badge live",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@skip-on-wpcom"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store - logged in",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Entire site coming soon mode (Block Theme (Twenty Twenty Four))",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Store only coming soon mode (Block Theme (Twenty Twenty Four))",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Block Theme (Twenty Twenty Four)",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Entire site coming soon mode (Classic Theme (Storefront))",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Classic Theme (Storefront)",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Store only coming soon mode (Classic Theme (Storefront))",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/launch-your-store.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/launch-your-store.spec.ts > Launch Your Store front end - logged out > Classic Theme (Storefront)",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can complete the core profiler skipping extension install",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@skip-on-external-env"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
-                                            "line": 44,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can complete the core profiler installing default extensions",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@skip-on-external-env"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can complete the core profiler",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/onboarding-wizard.spec.ts",
-                                            "line": 205,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can skip the guided setup",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@skip-on-external-env"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/onboarding-wizard.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Confirm that the store is in coming soon mode after skipping the core profiler",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > onboarding\\/onboarding-wizard.spec.ts > Store owner can skip the core profiler",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can hide the task list",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load the WC Admin page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hide the task list",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > onboarding\\/setup-checklist.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Payments task list item links to Payments settings page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/setup-checklist.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Can connect to WooCommerce.com",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/setup-checklist.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > onboarding\\/setup-checklist.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/onboarding\\/setup-checklist.spec.ts",
-                                            "line": 117,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7526,12 +2860,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7556,11 +2895,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7585,11 +2930,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7614,115 +2965,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should show the customer payment page link on a pending order",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/customer-payment-page.spec.ts > WooCommerce Merchant Flow: Orders > Customer Payment Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should load the customer payment page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/customer-payment-page.spec.ts > WooCommerce Merchant Flow: Orders > Customer Payment Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can pay for the order through the customer payment page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/customer-payment-page.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load the customer payment page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select payment method and pay for the order",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify the order received page",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > order\\/customer-payment-page.spec.ts > WooCommerce Merchant Flow: Orders > Customer Payment Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7747,12 +3000,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7777,11 +3035,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7806,11 +3070,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7835,11 +3105,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7866,7 +3142,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7893,7 +3177,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7920,17 +3212,25 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can add and delete order notes",
-                            "status": "passed",
+                            "status": "skipped",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "passed",
+                            "rawStatus": "skipped",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -7947,7 +3247,24 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/tmp\\/qit-cache\\/packages\\/afc7c3d8e592598aad011f844226664c\\/tests\\/order\\/order-edit.spec.ts",
+                                            "line": 233,
+                                            "column": 7
+                                        }
+                                    }
+                                ],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -7987,7 +3304,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8025,11 +3350,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8054,11 +3385,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8083,11 +3420,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8112,11 +3455,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8141,11 +3490,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8171,11 +3526,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8201,58 +3562,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "guest shopper can verify their email address after the grace period",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-grace-period.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "navigate to order confirmation page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "simulate cookies cleared, but within 10 minute grace period",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "simulate cookies cleared, outside 10 minute window",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "supply incorrect email address for the order, error",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "supply the correct email address for the order, display order confirmation",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > order\\/order-grace-period.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8277,49 +3597,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete an issued refund",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@payments",
-                                "@hpos"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/order\\/order-refund.spec.ts",
-                                            "line": 121,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8345,12 +3633,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n",
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8374,11 +3667,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8404,7 +3703,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8430,7 +3737,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8456,7 +3771,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8482,7 +3805,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8508,7 +3839,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8534,7 +3873,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -8558,1231 +3905,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create a grouped product",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-grouped-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-grouped-product-block-editor.spec.ts > General tab > Grouped product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-grouped-product-block-editor.spec.ts",
-                                            "line": 58,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "renders each block without error",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Simple product form",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.ts",
-                                            "line": 47,
-                                            "column": 16
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create a simple product",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Create product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-simple-product-block-editor.spec.ts",
-                                            "line": 75,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can not create a product with duplicated SKU",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Create product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can a shopper add the simple product to the cart",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-simple-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-simple-product-block-editor.spec.ts > General tab > Create product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create a variation option and publish the product",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
-                                            "line": 43,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can edit a variation",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
-                                            "line": 43,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete a variation",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
-                                            "line": 43,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can see variations warning and click the CTA",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
-                                            "line": 43,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can see single variation warning and click the CTA",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variable-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/create-variable-product-block-editor.spec.ts > Variations tab > Create variable products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/create-variable-product-block-editor.spec.ts",
-                                            "line": 43,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "is hooked up to sidebar \\"Add New\\"",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.ts > Disable block product editor",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/disable-block-product-editor.spec.ts",
-                                            "line": 54,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can be disabled from the header",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.ts > Disable block product editor",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can be disabled from settings",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/disable-block-product-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/disable-block-product-editor.spec.ts > Disable block product editor",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create a product with linked products",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/linked-product-tab-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/linked-product-tab-product-block-editor.spec.ts > General tab > Linked product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/linked-product-tab-product-block-editor.spec.ts",
-                                            "line": 90,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create a simple product with categories, tags and with password required",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/organization-tab-product-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/organization-tab-product-block-editor.spec.ts > General tab > Create product - Organization tab",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/organization-tab-product-block-editor.spec.ts",
-                                            "line": 44,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "add local attribute (with terms) to the Product",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can add existing attributes",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update product attributes",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can remove product attributes",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-attributes-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-attributes-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update the general information of a product",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can schedule a product publication",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts > Publish dropdown options",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.ts",
-                                            "line": 96,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can duplicate a product",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts > Publish dropdown options",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.ts",
-                                            "line": 96,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete a product",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-edit-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-edit-block-editor.spec.ts > Publish dropdown options",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/product-edit-block-editor.spec.ts",
-                                            "line": 96,
-                                            "column": 15
-                                        }
-                                    },
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can add images",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can replace an image",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can remove an image",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can set an image as cover",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-images-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-images-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update sku",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update stock status",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can track stock quantity",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can limit purchases",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-inventory-block-editor.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/block-editor\\/product-inventory-block-editor.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "description": "Experimental block-based product editor is officially deprecated since 10.2. See: https:\\/\\/developer.woocommerce.com\\/2025\\/07\\/23\\/10-1-pre-release-updates\\/#:~:text=%F0%9F%8C%85%20Say%20sayonara,the%20near%20future",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/block-editor\\/helpers\\/skip-tests.ts",
-                                            "line": 8,
-                                            "column": 7
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can add custom product attributes",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/create-product-attributes.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/create-product-attributes.spec.ts",
-                                            "line": 157,
-                                            "column": 6
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create attribute terms from the attributes modal",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-product-attributes.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Create a global attribute \\"Fabric\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create a variable product with that global attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Open \\"Edit product\\" page of product id <ID>",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Go to the \\"Attributes\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expand the \\"Fabric\\" attribute",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Create a new term \\"Linen-1780353679260\\" from the modal",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Linen-1780353679260\\" to be in attribute values",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/create-product-attributes.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -9806,7 +3939,7 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Type \\"Variable Product with Three Variations\\" into the \\"Product name\\" input field.",
+                                    "name": "Type \\"<PRODUCT_NAME>\\" into the \\"Product name\\" input field.",
                                     "status": "passed"
                                 },
                                 {
@@ -9857,197 +3990,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can generate variations from product attributes",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Open \\"Edit product\\" page of product id <ID>",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Generate variations\\" button.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the number of variations to be 8",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Red, Small, Woo\\" to be generated.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Red, Small, WordPress\\" to be generated.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Red, Medium, Woo\\" to be generated.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Red, Medium, WordPress\\" to be generated.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Green, Small, Woo\\" to be generated.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Green, Small, WordPress\\" to be generated.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Green, Medium, Woo\\" to be generated.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation \\"Green, Medium, WordPress\\" to be generated.",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/create-variations.spec.ts > Add variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can manually add a variation",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Open \\"Edit product\\" page of product id <ID>",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Hook up the woocommerce_variations_added jQuery trigger",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Manually add 3 variations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Add manually\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Red\\" from the \\"Colour\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Small\\" from the \\"Size\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Woo\\" from the \\"Logo\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save changes\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation Red, Small, Woo to be successfully saved.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Add manually\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Red\\" from the \\"Colour\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Small\\" from the \\"Size\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"WordPress\\" from the \\"Logo\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save changes\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation Red, Small, WordPress to be successfully saved.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Add manually\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Red\\" from the \\"Colour\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Medium\\" from the \\"Size\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Woo\\" from the \\"Logo\\" attribute menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save changes\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation Red, Medium, Woo to be successfully saved.",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/create-variations.spec.ts > Add variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10116,11 +4067,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10189,11 +4146,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10258,11 +4221,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10297,11 +4266,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10336,11 +4311,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10375,16 +4356,22 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
                         {
-                            "name": "should allow exporting a single selected simple product",
+                            "name": "can edit a product and save the changes",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -10392,154 +4379,47 @@
                             "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Navigate to product list and select product",
+                                    "name": "edit the product name",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Verify export button text and link for single selection",
+                                    "name": "edit the product description",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Navigate to export page and verify UI elements",
+                                    "name": "edit the product price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "publish the updated product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the changes",
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
+                            "suite": "e2e > product\\/product-edit.spec.ts",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should allow exporting multiple selected products (simple and variable)",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product list and select multiple products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify export button text and link for multiple selections",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Navigate to export page and verify UI elements for multiple products",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should allow clearing selection from the export page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product list, select product, and go to export page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify export page notice and URL for selected product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \'clear your selection\' link",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify redirect to general export page and UI elements",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should show the default export screen when no products are selected",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-export.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product list",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify default export button state and navigate to export page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Verify UI elements for default export",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-export.spec.ts > Product > Export Selected Products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10564,11 +4444,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10593,325 +4479,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should show error message if you go without providing CSV file",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@not-e2e",
-                                "@non-critical"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
-                                            "line": 103,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can upload the CSV file and import products",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
-                                            "line": 103,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can override the existing products via CSV import",
-                            "status": "skipped",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "skipped",
-                            "tags": [
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-import-csv.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-import-csv.spec.ts > Import Products from a CSV file",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-import-csv.spec.ts",
-                                            "line": 103,
-                                            "column": 15
-                                        }
-                                    }
-                                ]
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "add up-sells",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add an up-sell by searching for product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add an up-sell by searching for product id",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the up-sell in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "remove up-sells",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "verify the up-sells in the store frontend",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove up-sells for a product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the up-sells in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "add cross-sells",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add a cross-sell by searching for product name",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "add a cross-sell by searching for product id",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the cross-sell in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "remove cross-sells",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-linked-products.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Navigate to product edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "go to Linked Products",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "remove cross-sells for a product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update the product",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the cross-sells in the store frontend",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/product-linked-products.spec.ts > Products > Related products",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10933,11 +4511,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10959,11 +4543,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -10985,11 +4575,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11011,11 +4607,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11037,11 +4639,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11063,21 +4671,27 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
                         {
                             "name": "can reply to a product review",
-                            "status": "skipped",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/product-reviews.spec.ts",
@@ -11091,16 +4705,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/home\\/runner\\/work\\/qit-runner\\/qit-runner\\/ci\\/woo-e2e\\/tests\\/product\\/product-reviews.spec.ts",
-                                            "line": 262,
-                                            "column": 8
-                                        }
-                                    }
-                                ]
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11122,11 +4735,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11148,11 +4767,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11174,11 +4799,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11202,7 +4833,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -11224,747 +4863,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update settings",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-settings.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-settings.spec.ts > WooCommerce Products > Downloadable Product Settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should see shop catalog with all its products",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should see and sort tags page with all the products",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should see and sort attributes page with all its products",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can see products showcase",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-tags-attributes.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-tags-attributes.spec.ts > Browse product tags and attributes from the product page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should be able to add variation products to the cart",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.ts > Variable Product Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "should be able to remove variation products from the cart",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.ts > Variable Product Page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Shopper can change variable attributes to the same value",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Shopper can change attributes to combination with dimensions and weight",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Shopper can change variable product attributes to variation with a different price",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "Shopper can reset variations",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/product-variable.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > product\\/product-variable.spec.ts > Shopper > Update variable product",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can individually edit variations",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the \\"Edit product\\" page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expand all variations.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Edit the first variation.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check the \\"Virtual\\" checkbox.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Set regular price to \\"9.99\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Edit the second variation.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check the \\"Virtual\\" checkbox.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Set regular price to \\"11.99\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Edit the third variation.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check \\"Manage stock?\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Set regular price to \\"20.00\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Set the weight and dimensions.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save changes\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expand all variations.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the first variation to be virtual.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the regular price of the first variation to be \\"9.99\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the second variation to be virtual.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the regular price of the second variation to be \\"11.99\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the \\"Manage stock?\\" checkbox of the third variation to be checked.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the regular price of the third variation to be \\"20.00\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the weight and dimensions of the third variation to be correct.",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can bulk edit variations",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the \\"Edit product\\" page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select the \'Toggle \\"Downloadable\\"\' bulk action.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expand all variations.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect all \\"Downloadable\\" checkboxes to be checked.",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete all variations",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the \\"Edit product\\" page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select the bulk action \\"Delete all variations\\".",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect that there are no more variations.",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can manage stock levels",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the \\"Edit product\\" page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expand all variations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Check the \\"Manage stock?\\" box",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the \\"Stock status\\" text box to disappear",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Enter \\"9.99\\" as the regular price",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Enter \\"100\\" as the stock quantity",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select \\"Allow, but notify customer\\" from the \\"Allow backorders?\\" menu",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Enter \\"10\\" in the \\"Low stock threshold\\" input field.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save changes\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expand all variations",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the stock quantity to be saved correctly",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the \\"Low stock threshold\\" value to be saved correctly",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the \\"Allow backorders?\\" value to be saved correctly",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can set variation defaults",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the \\"Edit product\\" page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Wait for block overlay to disappear.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Select variation defaults",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Save changes\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "View the product from the shop",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the default attributes to be pre-selected",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Red\\" is selected as the default \\"Colour\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"Small\\" is selected as the default \\"Size\\"",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect \\"WordPress\\" is selected as the default \\"Logo\\"",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can remove a variation",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/update-variations.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Go to the \\"Edit product\\" page.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click on the \\"Variations\\" tab.",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Click \\"Remove\\" on a variation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Expect the variation to be removed",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > product\\/update-variations.spec.ts > Update variations",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "colour swatch is correctly sized with WP 7.0 body class",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/colour-picker-swatch-height.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > settings\\/colour-picker-swatch-height.spec.ts > Colour picker swatch height on Email settings",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12005,7 +4914,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12033,7 +4950,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12057,11 +4982,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12085,7 +5016,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12107,11 +5046,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12133,11 +5078,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12159,11 +5110,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12185,11 +5142,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12214,11 +5177,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12245,7 +5214,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12269,11 +5246,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12297,11 +5280,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12325,11 +5314,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12351,11 +5346,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12377,11 +5378,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12407,11 +5414,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12437,11 +5450,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12471,11 +5490,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12511,7 +5536,15 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12545,11 +5578,17 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
+                            "stderr": [],
                             "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         },
@@ -12573,363 +5612,75 @@
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
                             ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can visit the lost password page from the login page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/lost-password.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > user\\/lost-password.spec.ts > Can go to lost password page and submit the form",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
                             "stderr": [],
                             "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can submit the lost password form",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@not-e2e"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/lost-password.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > user\\/lost-password.spec.ts > Can go to lost password page and submit the form",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create a new Customer",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-create.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "create a new user",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the new user is displayed in users list",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify you can access the new user edit page",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the new user can login",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > user\\/users-create.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update customer data",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "update user data",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "update billing address",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "copy shipping address from billing address",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "save the changes",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the updates",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > user\\/users-manage.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can update shop manager data",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "update user data",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > user\\/users-manage.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete a customer",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "hover the username and delete",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "confirm deletion",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the user was deleted",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > user\\/users-manage.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can delete a shop manager",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/users-manage.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "hover the username and delete",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "confirm deletion",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify the user was deleted",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > user\\/users-manage.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new page",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@wp-core"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-page.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > wp-core\\/create-page.spec.ts > Can create a new page",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new post",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@gutenberg",
-                                "@wp-core"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-post.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > wp-core\\/create-post.spec.ts > Can create a new post",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "logged-in customer can comment on a post",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@wp-core"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/post-comments.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "disable Jetpack comments if Jetpack is installed and active",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > wp-core\\/post-comments.spec.ts",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [
-                                "Warning: Using Basic Auth over HTTP exposes credentials in plaintext!\\n"
-                            ],
-                            "extra": {
-                                "annotations": []
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
                             },
                             "retryAttempts": []
                         }
-                    ]
+                    ],
+                    "extra": {
+                        "qitPackageMetadata": {
+                            "version": "1.0.0",
+                            "packages": [
+                                {
+                                    "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                    "namespace": "woocommerce",
+                                    "testType": "e2e",
+                                    "hasRunPhase": true,
+                                    "testCount": 131,
+                                    "packageType": "test",
+                                    "executionOrder": 1,
+                                    "firstSeen": 0,
+                                    "duration": 999,
+                                    "isLocal": false,
+                                    "hasBlobReport": false,
+                                    "hasAllureReport": true
+                                }
+                            ],
+                            "summary": {
+                                "totalPackages": 1,
+                                "packagesWithTests": 1,
+                                "utilityPackages": 0
+                            },
+                            "reportCompleteness": {
+                                "blob": {
+                                    "complete": false,
+                                    "packagesWithBlob": 0,
+                                    "totalPackagesWithTests": 1,
+                                    "missingFrom": [
+                                        "core-e2e-tests:latest"
+                                    ]
+                                },
+                                "allure": {
+                                    "complete": true,
+                                    "packagesWithAllure": 1,
+                                    "totalPackagesWithTests": 1,
+                                    "missingFrom": []
+                                }
+                            }
+                        }
+                    }
                 }
             }
         },
         {
             "debug_log": {
-                "generic": []
+                "qm_logs": [],
+                "debug_log": [
+                    {
+                        "count": "Between 10 and 149, normalized to 75",
+                        "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::update_options function is deprecated since version 6.3."
+                    }
+                ]
             }
         }
     ]
