@@ -1463,8 +1463,9 @@ class RunE2ECommand extends QITCommand {
 
 					// Run the command using package phase runner
 					$temp_manifest_data = [
-						'package' => $pkg_id,
-						'test'    => [
+						'package'   => $pkg_id,
+						'test_type' => $manifest->get_test_type(),
+						'test'      => [
 							'phases' => [
 								'globalSetup' => [ $command ],
 							],
@@ -1818,8 +1819,9 @@ class RunE2ECommand extends QITCommand {
 					try {
 						// Run the command using package phase runner
 						$temp_manifest_data = [
-							'package' => $pkg_id,
-							'test'    => [
+							'package'   => $pkg_id,
+							'test_type' => $manifest->get_test_type(),
+							'test'      => [
 								'phases' => [
 									'globalTeardown' => [ $command ],
 								],
