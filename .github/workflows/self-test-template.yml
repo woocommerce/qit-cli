@@ -46,10 +46,10 @@ jobs:
           sleep "$WAIT_SECONDS"
 
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Setup PHP
-        uses: shivammathur/setup-php@v2
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # v2
         with:
           php-version: '7.4'
 
@@ -83,7 +83,7 @@ jobs:
 
       - name: Restore ZIP Image Cache if it exists
         id: cache-docker-zip
-        uses: actions/cache@v3
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3
         with:
           path: cache-zip
           key: cache-docker-zip-${{ env.ZIP_YEAR }}-${{ env.ZIP_MONTH }}
@@ -107,7 +107,7 @@ jobs:
       # After the tests run, upload all qit_non_json_ files (each test has its own)
       - name: Upload all QIT non-JSON output files
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: qit-non-json-outputs
           path: '/tmp/qit_non_json_*'
