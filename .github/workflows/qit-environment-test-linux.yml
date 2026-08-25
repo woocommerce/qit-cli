@@ -10,6 +10,7 @@ on:
 jobs:
   linux_environment_test:
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 5
     strategy:
       matrix:
         os: [ ubuntu-latest ]

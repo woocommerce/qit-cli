@@ -18,6 +18,7 @@ on:
 jobs:
   self_test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     env:
       NO_COLOR: 1
       FORCE_COLOR: 0
