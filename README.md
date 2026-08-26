@@ -65,6 +65,25 @@ Environments can also be defined with a [WordPress Playground Blueprint](docs/bl
 
 For more detailed information on QIT and how to use it, refer to the [documentation](https://qit.woo.com/docs/).
 
+## MCP Server
+
+QIT includes a read-only Model Context Protocol server for agentic tools that support stdio MCP servers. The server exposes structured reporting and debugging context for existing QIT runs; it does not start tests, change environments, upload packages, or run arbitrary CLI commands.
+
+Example client configuration:
+
+```json
+{
+  "mcpServers": {
+    "qit": {
+      "command": "qit",
+      "args": ["mcp"]
+    }
+  }
+}
+```
+
+Available tools include run metadata, decoded result payloads, failure summaries, last local run context, running environments, and report/artifact locations. Report URLs and known secrets are redacted by default.
+
 <p align="center">
   <img src="https://github.com/woocommerce/qit-cli/assets/9341686/640698a7-01c3-498a-8bb2-7c5e337e0a9c" alt="Qit Quick Demo">
 </p>
