@@ -1,0 +1,41 @@
+Comparing test run 1001 (A) against 1002 (B)
+
+Context           A                            B                                    
+Test type         activation                   activation                           
+WordPress         6.7                          6.7                                  
+WooCommerce       11.0.1                       11.1.0                       differs 
+PHP               8.2                          8.2                                  
+Extension         My WooCommerce Plugin        My WooCommerce Plugin                
+Extension version 1.0.0                        1.0.0                                
+Test packages     woocommerce/activation@1.2.0 woocommerce/activation@1.2.0         
+
+Summary A B Delta 
+Tests   4 4 0     
+Passed  2 1 -1    
+Failed  2 2 0     
+Skipped 0 1 +1    
+Pending 0 0 0     
+Other   0 0 0     
+
+Introduced failures (1)
+  plugin-a (passed -> failed)
+
+Resolved failures (1)
+  plugin-b (failed -> passed)
+
+Still failing (1)
+  plugin-c (failed)
+
+Other status changes (0)
+
+Added tests (only in B) (1)
+  plugin-new (skipped)
+
+Removed tests (only in A) (1)
+  plugin-gone (passed)
+
+Annotation changes (1)
+  + plugin-a [error] Fatal on activation
+
+0 test(s) unchanged.
+Run B introduced 1 failure(s).
