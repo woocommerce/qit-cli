@@ -180,6 +180,59 @@ class PackageReferenceUtils {
 	}
 
 	/**
+	 * Expand a possibly-relative local path reference to an absolute path.
+	 *
+	 * - Absolute paths are returned unchanged.
+	 * - Relative paths starting with '.' ('.', './x', '../x') are resolved via
+	 *   realpath(), falling back to manual construction from getcwd() when
+	 *   realpath() fails (e.g. permissions or non-existent intermediate dirs).
+	 * - Other references are resolved via realpath() when they exist locally;
+	 *   otherwise they are returned unchanged (likely remote references such
+	 *   as "vendor/package:1.0.0").
+	 *
+	 * @param string $reference The package reference.
+	 * @return string The expanded reference.
+	 */
+	public static function expand_local_path( string $reference ): string {
+		// Skip absolute paths (already absolute).
+		if ( substr( $reference, 0, 1 ) === '/' ) {
+			return $reference;
+		}
+
+		// Check if it's a relative path starting with . (includes ./, ., ../, etc.)
+		if ( substr( $reference, 0, 1 ) === '.' ) {
+			// Try realpath first, fall back to manual construction if it fails
+			$resolved = @realpath( $reference );
+			if ( $resolved === false ) {
+				// realpath failed (possibly due to permissions or non-existent path)
+				$cwd = getcwd();
+				if ( $cwd === false ) {
+					return $reference;
+				}
+				// For simple . and ./, use getcwd
+				if ( $reference === '.' || $reference === './' ) {
+					return $cwd;
+				}
+				// For other relative paths, construct manually
+				// This preserves the relative path structure even if intermediate dirs don't exist
+				return $cwd . '/' . $reference;
+			}
+			return $resolved;
+		}
+
+		// For other paths (not starting with . or /), try to resolve as local path
+		// If it exists locally, expand it; otherwise assume it's a package reference
+		$resolved = @realpath( $reference );
+		if ( $resolved !== false ) {
+			// Path exists locally, use the resolved absolute path
+			return $resolved;
+		}
+
+		// If realpath fails, leave it unchanged (likely a package reference like vendor/package:1.0.0)
+		return $reference;
+	}
+
+	/**
 	 * Read package ID from a local package's qit-test.json manifest.
 	 *
 	 * @param string $path Path to the package directory.

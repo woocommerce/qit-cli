@@ -72,8 +72,8 @@ final class TestPackageManifest {
 		// Package identification - handle v1 vs v2 format
 		if ( isset( $data['package'] ) && str_contains( $data['package'], '/' ) ) {
 			// v2 format: "package": "woocommerce/checkout"
-			$this->package_id                         = $data['package'];
-			[ $this->namespace, $this->package_name ] = explode( '/', $this->package_id, 2 );
+			$this->package_id = $data['package'];
+			$this->populate_namespace_and_package_name_from_package_id();
 		} elseif ( isset( $data['namespace'] ) && isset( $data['package'] ) ) {
 			// v1 format: separate namespace and package fields
 			$this->namespace    = $data['namespace'];
@@ -186,6 +186,7 @@ final class TestPackageManifest {
 		$this->retry          = $data['retry'];
 		$this->subpackages    = $data['subpackages'];
 		$this->parent_package = $data['parent_package'];
+		$this->actions        = $data['actions'] ?? [];
 		// For normalized data, only support new format (requires.network)
 		if ( isset( $data['requires']['network'] ) ) {
 			if ( is_string( $data['requires']['network'] ) ) {
@@ -210,6 +211,17 @@ final class TestPackageManifest {
 			}
 		} else {
 			$this->requires_tunnel = false;
+		}
+	}
+
+	/**
+	 * Populate {@see $namespace} and {@see $package_name} from {@see $package_id}
+	 * when package_id is using the v2 package format, e.g. "woocommerce/checkout".
+	 */
+	protected function populate_namespace_and_package_name_from_package_id(): void {
+		if ( str_contains( $this->package_id, '/' ) ) {
+			// v2 format: "package": "woocommerce/checkout"
+			[ $this->namespace, $this->package_name ] = explode( '/', $this->package_id, 2 );
 		}
 	}
 
@@ -258,6 +270,7 @@ final class TestPackageManifest {
 			'parent_package'   => $this->parent_package,
 			'requires_network' => $this->requires_network,
 			'requires_tunnel'  => $this->requires_tunnel,
+			'actions'          => $this->actions,
 		];
 	}
 
@@ -435,6 +448,65 @@ final class TestPackageManifest {
 	 */
 	public function get_subpackage( string $identifier ): ?array {
 		return $this->subpackages[ $identifier ] ?? null;
+	}
+
+	/**
+	 * Synthesize a full manifest for one of this package's subpackages.
+	 *
+	 * Subpackages are pure subsets that inherit all configuration from the
+	 * parent except the 'run' phase, which they must override to select which
+	 * tests to execute. Note: subpackage-level 'requires' overrides are merged
+	 * for metadata purposes only — environment provisioning always uses the
+	 * parent manifest's requirements.
+	 *
+	 * @param string $subpackage_id The subpackage ID to synthesize (full ID, e.g. "namespace/name").
+	 * @return TestPackageManifest The synthesized subpackage manifest.
+	 * @throws InvalidArgumentException If the subpackage does not exist or lacks a 'run' phase.
+	 */
+	public function create_subpackage_manifest( string $subpackage_id ): TestPackageManifest {
+		$subpackage_config = $this->get_subpackage( $subpackage_id );
+		if ( ! $subpackage_config ) {
+			throw new InvalidArgumentException(
+				"Subpackage '{$subpackage_id}' not found in package '{$this->package_id}'."
+			);
+		}
+
+		// Start with parent's complete configuration.
+		$package_data = $this->to_array();
+
+		$package_data['package_id']     = $subpackage_id;
+		$package_data['parent_package'] = $this->package_id;
+		$package_data['subpackages']    = [];
+
+		// Apply subpackage-specific overrides
+		if ( isset( $subpackage_config['description'] ) ) {
+			$package_data['description'] = $subpackage_config['description'];
+		}
+		if ( isset( $subpackage_config['tags'] ) ) {
+			$package_data['tags'] = $subpackage_config['tags'];
+		}
+
+		if ( isset( $subpackage_config['requires'] ) ) {
+			$package_data['requires'] = array_merge(
+				$this->requires,
+				$subpackage_config['requires']
+			);
+		}
+
+		if ( ! isset( $subpackage_config['test']['phases']['run'] ) ) {
+			throw new InvalidArgumentException(
+				"Subpackage '{$subpackage_id}' must specify a 'run' phase. " .
+				'Subpackages exist to run a subset of tests from the parent package.'
+			);
+		}
+
+		$package_data['phases']['run'] = $subpackage_config['test']['phases']['run'];
+
+		$subpackage_manifest = new TestPackageManifest( $package_data );
+
+		$subpackage_manifest->populate_namespace_and_package_name_from_package_id();
+
+		return $subpackage_manifest;
 	}
 
 	public function requires_plugin( string $slug ): bool {
@@ -633,6 +705,7 @@ final class TestPackageManifest {
 			'retry'          => $this->retry,
 			'subpackages'    => $this->subpackages,
 			'parent_package' => $this->parent_package,
+			'actions'        => $this->actions,
 		];
 	}
 }
