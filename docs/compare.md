@@ -25,7 +25,25 @@ that repeat a name keep each occurrence distinct (`my test`, `my test #2`).
 
 ## Which test types can be compared
 
-Both runs must report results in CTRF, which covers:
+**Both runs must be of the same test type.** Two test types are two different
+populations of tests, so the diff would degenerate to "every test was removed, every
+other test was added" — and, because a new failing test counts as a failure introduced
+by run B, it would report a regression that says nothing about either run. Comparing
+across test types is refused outright:
+
+```
+$ qit compare 12345 12346
+Cannot compare a "activation" run against a "woo-api" run. Only two runs of the same
+test type share a population of tests. Test run 12345 is "activation" and test run
+12346 is "woo-api".
+```
+
+One wrinkle worth knowing: QIT has recorded the Woo E2E suite under both `woo-e2e` and
+`e2e` at different times, and `sync` advertises both. Two runs of the same suite that
+were recorded under the two different names are refused by this check. The message names
+both types, so it is clear that this is what happened rather than a genuine mismatch.
+
+Both runs must also report results in CTRF, which covers:
 
 ```
 activation       CTRF
@@ -63,14 +81,17 @@ compared for free, without `qit compare` knowing what the data means.
 ## The comparability guard
 
 A comparison is only meaningful when the two runs differ in the one variable you are
-testing. `qit compare` checks the test type, WordPress / WooCommerce / PHP versions, the
-extension and its version, and the test packages recorded in `qitPackageMetadata`.
+testing. `qit compare` checks the WordPress / WooCommerce / PHP versions, the extension
+and its version, and the test packages recorded in `qitPackageMetadata`.
 
 * No differences, or exactly one — the runs are comparable, and the differing dimension is
   shown as `differs`.
 * Two or more differences — the comparison is still printed, but flagged, because a change
   in results cannot be attributed to any single one of them.
-* Different test types — flagged, because the two runs are not the same population of tests.
+
+A differing test type is not part of this guard: it is refused before a comparison is
+built at all, so every difference the guard reports is one the runs can actually be
+judged on.
 
 In `--format=json` this is the `guard` object: `comparable`, `differences` and `warnings`.
 
@@ -80,7 +101,7 @@ In `--format=json` this is the `guard` object: `comparable`, `differences` and `
 |------|---------|
 | `0`  | Run B introduced no failures |
 | `1`  | Run B introduced failures (a regression on a shared test, or a new test that fails) |
-| `2`  | The runs could not be fetched or compared |
+| `2`  | The runs could not be fetched, are of different test types, or could not be compared |
 
 This makes the command usable as a CI gate:
 

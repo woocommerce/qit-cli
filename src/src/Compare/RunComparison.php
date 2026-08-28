@@ -120,15 +120,9 @@ class RunComparison {
 			];
 		}
 
+		// A differing test type is refused before a comparison is ever built, so the
+		// only differences that reach here are ones the runs can actually be judged on.
 		$warnings = [];
-
-		if ( $this->a->context['test_type'] !== $this->b->context['test_type'] ) {
-			$warnings[] = sprintf(
-				'The runs are of different test types (%s vs %s), so their tests are not the same population.',
-				$this->a->context['test_type'] !== '' ? $this->a->context['test_type'] : 'unknown',
-				$this->b->context['test_type'] !== '' ? $this->b->context['test_type'] : 'unknown'
-			);
-		}
 
 		if ( count( $differences ) > 1 ) {
 			$labels     = array_column( $differences, 'label' );

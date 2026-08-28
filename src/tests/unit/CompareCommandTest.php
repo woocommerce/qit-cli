@@ -304,18 +304,69 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	/**
-	 * Different test types are not the same population of tests.
+	 * Two test types are two different populations of tests. Comparing them would
+	 * degenerate to "everything removed, everything added", and - because a new
+	 * failing test counts as a failure introduced by run B - would report a
+	 * regression that says nothing about either run. So it is refused outright.
 	 */
-	public function test_guard_flags_different_test_types(): void {
+	public function test_compare_rejects_runs_of_different_test_types(): void {
 		$this->mock_runs( [
 			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [ $this->test_case( 'plugin-a', 'passed' ) ], [ 'test_type' => 'woo-api' ] ),
+			$this->make_run( 1002, [ $this->test_case( 'GET /orders', 'failed' ) ], [ 'test_type' => 'woo-api' ] ),
 		] );
 
-		list( , $result ) = $this->run_compare_json();
+		$exit_code = $this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertFalse( $result['guard']['comparable'] );
-		$this->assertStringContainsString( 'different test types', $result['guard']['warnings'][0] );
+		$display = $this->application_tester->getDisplay();
+
+		$this->assertSame( Command::INVALID, $exit_code, 'A cross-test-type comparison must not report a regression' );
+		$this->assertStringContainsString( 'Cannot compare a "activation" run against a "woo-api" run', $display );
+		$this->assertStringContainsString( '1001 is "activation"', $display );
+		$this->assertStringContainsString( '1002 is "woo-api"', $display );
+	}
+
+	/**
+	 * The Manager has recorded the Woo E2E suite as both "woo-e2e" and "e2e" at
+	 * different times, and advertises both in sync. Two runs of the same suite under
+	 * the two names are refused, and the message names both so it is clear why.
+	 */
+	public function test_compare_rejects_the_woo_e2e_and_e2e_test_type_spellings(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->test_case( 'checkout', 'passed' ) ], [ 'test_type' => 'woo-e2e' ] ),
+			$this->make_run( 1002, [ $this->test_case( 'checkout', 'passed' ) ], [ 'test_type' => 'e2e' ] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'Cannot compare a "woo-e2e" run against a "e2e" run', $this->application_tester->getDisplay() );
+	}
+
+	/**
+	 * A run whose test type is missing is not silently treated as matching anything.
+	 */
+	public function test_compare_rejects_a_run_with_an_unknown_test_type(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
+			$this->make_run( 1002, [ $this->test_case( 'plugin-a', 'passed' ) ], [ 'test_type' => '' ] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'against a "unknown" run', $this->application_tester->getDisplay() );
 	}
 
 	/**

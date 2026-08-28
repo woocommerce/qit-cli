@@ -43,8 +43,11 @@ Reports, for the two runs:
 	* Summary counts side by side
 	* Changes to the tests' CTRF annotations
 
-Both runs must report results in CTRF format, which covers the activation,
-compatibility, ecosystem, woo-api and woo-e2e test types.
+Both runs must be of the same test type, and must report results in CTRF format,
+which covers the activation, compatibility, ecosystem, woo-api and woo-e2e test
+types. Two different test types are two different populations of tests, so
+comparing them is refused rather than reported as everything being added and
+removed at once.
 
 The comparison only sees what survives the round trip through QIT: test names,
 statuses, durations, "extra.annotations", package metadata, and the run's own
@@ -90,10 +93,12 @@ HELP
 		try {
 			$test_runs = $this->fetch_runs( $run_a, $run_b );
 
-			$comparison = new RunComparison(
-				RunSnapshot::from_manager_run( $run_a, $this->pick_run( $test_runs, $run_a ) ),
-				RunSnapshot::from_manager_run( $run_b, $this->pick_run( $test_runs, $run_b ) )
-			);
+			$snapshot_a = RunSnapshot::from_manager_run( $run_a, $this->pick_run( $test_runs, $run_a ) );
+			$snapshot_b = RunSnapshot::from_manager_run( $run_b, $this->pick_run( $test_runs, $run_b ) );
+
+			$this->assert_same_test_type( $snapshot_a, $snapshot_b );
+
+			$comparison = new RunComparison( $snapshot_a, $snapshot_b );
 		} catch ( \RuntimeException $e ) {
 			$output->writeln( "<error>{$e->getMessage()}</error>" );
 
@@ -137,6 +142,41 @@ HELP
 		}
 
 		return $test_runs;
+	}
+
+	/**
+	 * Refuse to compare runs of different test types.
+	 *
+	 * Two test types are two different populations of tests, so the diff degenerates
+	 * to "every test was removed, every other test was added" - and, because a new
+	 * failing test counts as a failure introduced by run B, it would report a
+	 * regression that says nothing about either run.
+	 *
+	 * Note that the Manager has recorded the Woo E2E suite under both "woo-e2e" and
+	 * "e2e" at different times, and advertises both. Two runs of the same suite
+	 * recorded under the two names are refused here; the message names both types so
+	 * that it is clear what happened.
+	 *
+	 * @throws \RuntimeException If the two runs are of different test types.
+	 */
+	private function assert_same_test_type( RunSnapshot $a, RunSnapshot $b ): void {
+		if ( $a->context['test_type'] === $b->context['test_type'] ) {
+			return;
+		}
+
+		throw new \RuntimeException( sprintf(
+			'Cannot compare a "%s" run against a "%s" run. Only two runs of the same test type share a population of tests. Test run %s is "%s" and test run %s is "%s".',
+			$this->describe_test_type( $a ),
+			$this->describe_test_type( $b ),
+			$a->id,
+			$this->describe_test_type( $a ),
+			$b->id,
+			$this->describe_test_type( $b )
+		) );
+	}
+
+	private function describe_test_type( RunSnapshot $run ): string {
+		return $run->context['test_type'] !== '' ? $run->context['test_type'] : 'unknown';
 	}
 
 	/**
