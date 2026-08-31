@@ -30,6 +30,7 @@ class CompareCommand extends QITCommand {
 			->addArgument( 'run_b', InputArgument::REQUIRED, 'The test run ID to compare against the baseline.' )
 			->addOption( 'format', null, InputOption::VALUE_REQUIRED, 'Output format: "human" or "json".', 'human' )
 			->addOption( 'limit', null, InputOption::VALUE_REQUIRED, 'Maximum entries printed per section in human output. Use 0 for no limit.', (string) self::DEFAULT_LIMIT )
+			->addOption( 'exit-code', null, InputOption::VALUE_NONE, 'Exit with 1 when run B introduced failures, for use as a CI gate. Without it, a comparison that ran exits 0 whatever it found.' )
 			->setHelp( <<<'HELP'
 Compare two test runs that already finished, without re-running anything.
 
@@ -59,8 +60,13 @@ When the two runs differ in more than one dimension (WordPress, PHP, package
 version, and so on), the comparison is still printed but flagged, because a
 difference in results cannot be attributed to any single one of them.
 
-Exit status codes: 0 (no failures introduced), 1 (run B introduced failures),
-2 (the runs could not be fetched or compared).
+Reporting a difference is not a failure: a comparison that ran exits 0 whatever it
+found, so dropping this into a pipeline does not turn the step red. Pass
+--exit-code to gate on the result, as you would with "git diff --exit-code", and
+it exits 1 when run B introduced failures.
+
+Exit status codes: 0 (the comparison ran), 1 (only with --exit-code: run B
+introduced failures), 2 (the runs could not be fetched or compared).
 HELP
 			);
 	}
@@ -110,7 +116,19 @@ HELP
 			$this->render_human( $comparison->to_array(), $output, $this->get_limit( $input ) );
 		}
 
-		return $comparison->has_regressions() ? Command::FAILURE : Command::SUCCESS;
+		/*
+		 * Finding a difference is the command working, not the command failing, so the
+		 * result does not colour the exit code unless the caller asks for it. This is
+		 * the "git diff --exit-code" split: a bare compare is safe to drop into a
+		 * pipeline, and gating on the outcome is opted into explicitly. A genuine
+		 * failure - an unfetchable run, two different test types - still exits 2 above,
+		 * so a mistyped ID can never pass silently.
+		 */
+		if ( $input->getOption( 'exit-code' ) && $comparison->has_regressions() ) {
+			return Command::FAILURE;
+		}
+
+		return Command::SUCCESS;
 	}
 
 	/**

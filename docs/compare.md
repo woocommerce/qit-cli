@@ -101,17 +101,27 @@ In `--format=json` this is the `guard` object: `comparable`, `differences` and `
 
 ## Exit codes
 
+Reporting a difference is not a failure. A comparison that ran exits `0` whatever it
+found, so dropping `qit compare` into a pipeline does not turn the step red and does not
+need a trailing `|| true`.
+
 | Code | Meaning |
 |------|---------|
-| `0`  | Run B introduced no failures |
-| `1`  | Run B introduced failures (a regression on a shared test, or a new test that fails) |
+| `0`  | The comparison ran |
+| `1`  | Only with `--exit-code`: run B introduced failures (a regression on a shared test, or a new test that fails) |
 | `2`  | The runs could not be fetched, are of different test types, or could not be compared |
 
-This makes the command usable as a CI gate:
+To gate on the result, ask for it explicitly — the same split `git diff --exit-code` makes:
 
 ```
-qit compare "$BASELINE_RUN" "$CANDIDATE_RUN" || echo "New failures against the candidate"
+qit compare "$BASELINE_RUN" "$CANDIDATE_RUN" --exit-code
 ```
+
+Note that `2` is not suppressed by anything. A mistyped run ID fails the step rather than
+passing as "no regressions", with or without `--exit-code`.
+
+If you would rather decide for yourself, `--format=json` carries the same answer in
+`totals.introduced` and in the `tests.added` entries whose status is `failed`.
 
 ## Options
 
@@ -119,6 +129,7 @@ qit compare "$BASELINE_RUN" "$CANDIDATE_RUN" || echo "New failures against the c
 |--------|-------------|
 | `--format` | `human` (default) or `json` |
 | `--limit`  | Maximum entries printed per section in human output. `0` shows all. Defaults to 25. |
+| `--exit-code` | Exit `1` when run B introduced failures. Off by default. |
 
 ## Relationship to `compatibility-regression`
 

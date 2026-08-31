@@ -145,7 +145,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		list( $exit_code, $result ) = $this->run_compare_json();
 
-		$this->assertSame( Command::FAILURE, $exit_code, 'An introduced failure must exit 1' );
+		$this->assertSame( Command::SUCCESS, $exit_code, 'Reporting a difference is not a failure of the command' );
 
 		$this->assertSame( [ 'plugin-a' ], array_column( $result['tests']['introduced'], 'key' ) );
 		$this->assertSame( [ 'plugin-b' ], array_column( $result['tests']['resolved'], 'key' ) );
@@ -159,9 +159,97 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	/**
-	 * A run with no introduced failures exits 0, so the command is usable as a CI gate.
+	 * --exit-code turns the result into a gate, the way "git diff --exit-code" does.
+	 * A regression on a shared test is what it gates on.
 	 */
-	public function test_compare_without_regressions_exits_zero(): void {
+	public function test_exit_code_option_gates_on_an_introduced_failure(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
+			$this->make_run( 1002, [ $this->test_case( 'plugin-a', 'failed' ) ] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::FAILURE, $exit_code );
+	}
+
+	/**
+	 * A new test that fails is a failure introduced by run B, so it gates too.
+	 */
+	public function test_exit_code_option_gates_on_a_new_failing_test(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
+			$this->make_run( 1002, [
+				$this->test_case( 'plugin-a', 'passed' ),
+				$this->test_case( 'plugin-new', 'failed' ),
+			] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::FAILURE, $exit_code );
+	}
+
+	/**
+	 * --exit-code gates on introduced failures only. A run that resolved failures and
+	 * introduced none is a pass, even though plenty changed.
+	 */
+	public function test_exit_code_option_passes_when_nothing_was_introduced(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->test_case( 'plugin-a', 'failed' ),
+				$this->test_case( 'plugin-gone', 'failed' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->test_case( 'plugin-a', 'passed' ),
+				$this->test_case( 'plugin-new', 'passed' ),
+			] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::SUCCESS, $exit_code );
+	}
+
+	/**
+	 * --exit-code gates on the result, never on a failure to produce one: an
+	 * unfetchable run must not be reported as "no regressions".
+	 */
+	public function test_exit_code_option_still_reports_a_real_error(): void {
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
+			'exception: "Test run with ID 1001 does not exist."'
+		);
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::INVALID, $exit_code );
+	}
+
+	/**
+	 * A comparison that ran exits 0, whatever it found.
+	 */
+	public function test_compare_exits_zero_by_default(): void {
 		$this->mock_runs( [
 			$this->make_run( 1001, [
 				$this->test_case( 'plugin-a', 'failed' ),
@@ -218,7 +306,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		list( $exit_code, $result ) = $this->run_compare_json();
 
-		$this->assertSame( Command::FAILURE, $exit_code );
+		$this->assertSame( Command::SUCCESS, $exit_code );
 		$this->assertSame( 0, $result['totals']['introduced'] );
 		$this->assertSame( [ 'plugin-new' ], array_column( $result['tests']['added'], 'key' ) );
 	}
@@ -608,7 +696,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 			'run_b'   => '1002',
 		], [ 'capture_stderr_separately' => true ] );
 
-		$this->assertSame( Command::FAILURE, $exit_code );
+		$this->assertSame( Command::SUCCESS, $exit_code );
 		$this->assertMatchesSnapshot( $this->application_tester->getDisplay() );
 	}
 
