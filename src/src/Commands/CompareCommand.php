@@ -44,10 +44,9 @@ Reports, for the two runs:
 	* Changes to the tests' CTRF annotations
 
 Both runs must be of the same test type, and must report results in CTRF format,
-which covers the activation, compatibility, ecosystem, woo-api and woo-e2e test
-types. Two different test types are two different populations of tests, so
-comparing them is refused rather than reported as everything being added and
-removed at once.
+which covers the activation, compatibility, woo-api and woo-e2e test types. Two
+different test types are two different populations of tests, so comparing them is
+refused rather than reported as everything being added and removed at once.
 
 The comparison only sees what survives the round trip through QIT: test names,
 statuses, durations, "extra.annotations", package metadata, and the run's own

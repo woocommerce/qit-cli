@@ -7,7 +7,7 @@ namespace QIT_CLI\Compare;
  * through the Manager: test names, statuses and annotations.
  *
  * The diff needs no domain knowledge, which is what makes it work for every test
- * type that reports in CTRF (activation, compatibility, ecosystem, woo-api, woo-e2e).
+ * type that reports in CTRF (activation, compatibility, woo-api, woo-e2e).
  */
 class RunComparison {
 	private RunSnapshot $a;

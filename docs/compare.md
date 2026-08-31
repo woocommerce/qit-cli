@@ -53,7 +53,6 @@ Both runs must also report results in CTRF, which covers:
 ```
 activation       CTRF
 compatibility    CTRF
-ecosystem        CTRF
 woo-api          CTRF
 woo-e2e          CTRF
 ```

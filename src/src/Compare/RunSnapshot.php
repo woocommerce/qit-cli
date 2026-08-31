@@ -75,7 +75,7 @@ class RunSnapshot {
 
 		if ( is_null( $ctrf ) ) {
 			throw new \RuntimeException( sprintf(
-				'Test run %s has no CTRF results to compare. Only test types that report in CTRF format can be compared (activation, compatibility, ecosystem, woo-api, woo-e2e), and the run must have finished.',
+				'Test run %s has no CTRF results to compare. Only test types that report in CTRF format can be compared (activation, compatibility, woo-api, woo-e2e), and the run must have finished.',
 				$run_id
 			) );
 		}
