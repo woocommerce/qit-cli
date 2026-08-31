@@ -38,10 +38,15 @@ test type share a population of tests. Test run 12345 is "activation" and test r
 12346 is "woo-api".
 ```
 
-One wrinkle worth knowing: QIT has recorded the Woo E2E suite under both `woo-e2e` and
-`e2e` at different times, and `sync` advertises both. Two runs of the same suite that
-were recorded under the two different names are refused by this check. The message names
-both types, so it is clear that this is what happened rather than a genuine mismatch.
+One wrinkle worth knowing: run records for the Woo E2E suite carry two different
+`test_type` spellings. The CLI has changed which value it submits for `run:woo-e2e` more
+than once, and today the two paths of that command still disagree — `--extension-set`
+submits `woo-e2e`, while without one it falls through to the generic E2E command and
+submits `e2e`. `sync` advertises both as test types.
+
+Two runs of that suite recorded under the different spellings are therefore refused by
+this check. That is deliberate rather than an oversight: the message names both types, so
+the case reads as what it is instead of producing a silent wrong answer.
 
 Both runs must also report results in CTRF, which covers:
 

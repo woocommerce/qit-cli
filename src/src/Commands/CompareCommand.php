@@ -152,10 +152,18 @@ HELP
 	 * failing test counts as a failure introduced by run B, it would report a
 	 * regression that says nothing about either run.
 	 *
-	 * Note that the Manager has recorded the Woo E2E suite under both "woo-e2e" and
-	 * "e2e" at different times, and advertises both. Two runs of the same suite
-	 * recorded under the two names are refused here; the message names both types so
-	 * that it is clear what happened.
+	 * The check is strict string equality on the run record's test_type, deliberately.
+	 *
+	 * One consequence is worth knowing. This CLI has changed which test_type it submits
+	 * for run:woo-e2e more than once (99db9c61, b25740f6, b8e41ff2), and today the two
+	 * paths of that command still disagree: --extension-set submits "woo-e2e", while
+	 * without one it falls through to RunE2ECommand and submits "e2e". So run records
+	 * for the Woo E2E suite carry both spellings, and two such runs are refused here
+	 * even though b8e41ff2 settled on "woo-e2e is a flavour of e2e".
+	 *
+	 * Strict equality is kept anyway: this command exists to compare two runs of the
+	 * same type, and the error message names both types, so the case reads as what it
+	 * is rather than as a silent wrong answer.
 	 *
 	 * @throws \RuntimeException If the two runs are of different test types.
 	 */

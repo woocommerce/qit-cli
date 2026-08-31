@@ -330,9 +330,10 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	/**
-	 * The Manager has recorded the Woo E2E suite as both "woo-e2e" and "e2e" at
-	 * different times, and advertises both in sync. Two runs of the same suite under
-	 * the two names are refused, and the message names both so it is clear why.
+	 * Run records for the Woo E2E suite carry two test_type spellings, because
+	 * run:woo-e2e submits "woo-e2e" with --extension-set and "e2e" without one. Strict
+	 * equality refuses that pairing on purpose, naming both types, rather than
+	 * special-casing an equivalence that would then have to track the CLI's naming.
 	 */
 	public function test_compare_rejects_the_woo_e2e_and_e2e_test_type_spellings(): void {
 		$this->mock_runs( [
