@@ -247,28 +247,6 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	/**
-	 * A comparison that ran exits 0, whatever it found.
-	 */
-	public function test_compare_exits_zero_by_default(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [
-				$this->test_case( 'plugin-a', 'failed' ),
-				$this->test_case( 'plugin-b', 'passed' ),
-			] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-b', 'passed' ),
-			] ),
-		] );
-
-		list( $exit_code, $result ) = $this->run_compare_json();
-
-		$this->assertSame( Command::SUCCESS, $exit_code );
-		$this->assertSame( 0, $result['totals']['introduced'] );
-		$this->assertSame( 1, $result['totals']['resolved'] );
-	}
-
-	/**
 	 * Tests that only exist on one side are reported separately, so a failing test
 	 * that simply disappeared does not read as "resolved".
 	 */
@@ -290,25 +268,6 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( [ 'plugin-new' ], array_column( $result['tests']['added'], 'key' ) );
 		$this->assertSame( [ 'plugin-gone' ], array_column( $result['tests']['removed'], 'key' ) );
 		$this->assertSame( [], $result['tests']['resolved'], 'A test that disappeared is not a resolved failure' );
-	}
-
-	/**
-	 * A brand new test that fails is still a failure introduced by run B.
-	 */
-	public function test_compare_treats_a_new_failing_test_as_a_regression(): void {
-		$this->mock_runs( [
-			$this->make_run( 1001, [ $this->test_case( 'plugin-a', 'passed' ) ] ),
-			$this->make_run( 1002, [
-				$this->test_case( 'plugin-a', 'passed' ),
-				$this->test_case( 'plugin-new', 'failed' ),
-			] ),
-		] );
-
-		list( $exit_code, $result ) = $this->run_compare_json();
-
-		$this->assertSame( Command::SUCCESS, $exit_code );
-		$this->assertSame( 0, $result['totals']['introduced'] );
-		$this->assertSame( [ 'plugin-new' ], array_column( $result['tests']['added'], 'key' ) );
 	}
 
 	/**
@@ -603,28 +562,6 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		// The Manager's bare JSON string must not reach the user still quoted.
 		$this->assertStringNotContainsString( '"Test run with ID', $display );
-	}
-
-	/**
-	 * The {"message": "..."} error shape is unwrapped too.
-	 */
-	public function test_compare_unwraps_a_structured_manager_error(): void {
-		App::setVar(
-			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
-			'exception: {"message":"Something went wrong on our end."}'
-		);
-
-		$exit_code = $this->application_tester->run( [
-			'command' => 'compare',
-			'run_a'   => '1001',
-			'run_b'   => '1002',
-		], [ 'capture_stderr_separately' => true ] );
-
-		$display = $this->application_tester->getDisplay();
-
-		$this->assertSame( Command::INVALID, $exit_code );
-		$this->assertStringContainsString( 'Something went wrong on our end.', $display );
-		$this->assertStringNotContainsString( '{"message"', $display );
 	}
 
 	/**

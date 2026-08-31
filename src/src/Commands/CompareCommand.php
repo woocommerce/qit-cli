@@ -220,8 +220,11 @@ HELP
 	/**
 	 * The Manager reports some errors as a bare JSON string, which reaches us still
 	 * carrying its quotes - "Test run with ID 1 does not exist." - and reads like a
-	 * quoting bug when pasted into a sentence. Unwrap it, and unwrap the {"message":…}
-	 * shape too, falling back to the raw text for anything else.
+	 * quoting bug when pasted into a sentence. Unwrap that, and pass anything else
+	 * through untouched.
+	 *
+	 * The {"message": "..."} shape needs no handling here: RequestBuilder already
+	 * unwraps it before it throws, so it cannot reach this method.
 	 */
 	private function unwrap_manager_message( string $message ): string {
 		$message = trim( $message );
@@ -229,10 +232,6 @@ HELP
 
 		if ( is_string( $decoded ) && trim( $decoded ) !== '' ) {
 			return trim( $decoded );
-		}
-
-		if ( is_array( $decoded ) && isset( $decoded['message'] ) && is_string( $decoded['message'] ) ) {
-			return trim( $decoded['message'] );
 		}
 
 		return $message;
