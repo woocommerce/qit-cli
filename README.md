@@ -60,6 +60,7 @@ Environments can also be defined with a [WordPress Playground Blueprint](docs/bl
 - **GitHub Integration**: Integrate QIT into your PR reviews with GitHub Actions.
 - **Test Reports**: Detailed test reports to help you understand the results.
 - **Notifications**: Stay informed with test result notifications.
+- **[Comparing Test Runs](docs/compare.md)**: `qit compare <run-a> <run-b>` shows what changed between two runs that already happened.
 
 ## Documentation
 

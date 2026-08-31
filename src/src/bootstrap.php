@@ -7,6 +7,7 @@ use QIT_CLI\Commands\Backend\CurrentBackend;
 use QIT_CLI\Commands\Backend\RemoveBackend;
 use QIT_CLI\Commands\Backend\SwitchBackend;
 use QIT_CLI\Commands\CacheCommand;
+use QIT_CLI\Commands\CompareCommand;
 use QIT_CLI\Commands\ConfigDirCommand;
 use QIT_CLI\Commands\ConnectCommand;
 use QIT_CLI\Commands\CreateMassTestCommands;
@@ -275,6 +276,9 @@ if ( $is_connected_to_backend ) {
 	// Get a single or multiple test runs.
 	$application->add( $container->make( GetCommand::class ) );
 	$application->add( $container->make( GetMultipleCommand::class ) );
+
+	// Compare two finished test runs.
+	$application->add( $container->make( CompareCommand::class ) );
 
 	// Open a test run result in the browser.
 	$application->add( $container->make( OpenCommand::class ) );
