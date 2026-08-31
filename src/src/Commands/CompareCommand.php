@@ -100,7 +100,7 @@ HELP
 
 			$comparison = new RunComparison( $snapshot_a, $snapshot_b );
 		} catch ( \RuntimeException $e ) {
-			$output->writeln( "<error>{$e->getMessage()}</error>" );
+			$this->render_error( $e->getMessage(), $output );
 
 			return Command::INVALID;
 		}
@@ -129,10 +129,23 @@ HELP
 				->with_post_body( [
 					'test_run_ids' => $run_a . ',' . $run_b,
 				] )
-				->with_retry( 3 )
+
+				/*
+				 * The Manager answers an unknown test run ID with a 500, which a retry can
+				 * only reproduce. A mistyped ID is the likeliest way this call fails, and
+				 * retrying it buys the user three alarming lines and up to fifteen seconds
+				 * of sleeping before the same error. A compare reads nothing and changes
+				 * nothing, so it is cheap to run again if the Manager really was blipping.
+				 */
+				->with_retry( 0 )
 				->request();
 		} catch ( \Exception $e ) {
-			throw new \RuntimeException( sprintf( 'Could not fetch the test runs: %s', $e->getMessage() ), 0, $e );
+			throw new \RuntimeException( sprintf(
+				"Could not fetch test runs %s and %s: %s\nCheck that both IDs are correct and belong to this account. Run \"qit list-tests\" to see your recent test runs.",
+				$run_a,
+				$run_b,
+				$this->unwrap_manager_message( $e->getMessage() )
+			), 0, $e );
 		}
 
 		$test_runs = json_decode( $json, true );
@@ -188,6 +201,27 @@ HELP
 	}
 
 	/**
+	 * The Manager reports some errors as a bare JSON string, which reaches us still
+	 * carrying its quotes - "Test run with ID 1 does not exist." - and reads like a
+	 * quoting bug when pasted into a sentence. Unwrap it, and unwrap the {"message":…}
+	 * shape too, falling back to the raw text for anything else.
+	 */
+	private function unwrap_manager_message( string $message ): string {
+		$message = trim( $message );
+		$decoded = json_decode( $message, true );
+
+		if ( is_string( $decoded ) && trim( $decoded ) !== '' ) {
+			return trim( $decoded );
+		}
+
+		if ( is_array( $decoded ) && isset( $decoded['message'] ) && is_string( $decoded['message'] ) ) {
+			return trim( $decoded['message'] );
+		}
+
+		return $message;
+	}
+
+	/**
 	 * @param array<int|string,mixed> $test_runs
 	 *
 	 * @return array<string,mixed>
@@ -208,6 +242,19 @@ HELP
 		}
 
 		throw new \RuntimeException( sprintf( 'Test run %s was not found.', $run_id ) );
+	}
+
+	/**
+	 * Print a failure. The first line is the error itself; any further lines are
+	 * guidance on what to do about it, and read better unhighlighted.
+	 */
+	private function render_error( string $message, OutputInterface $output ): void {
+		$lines = explode( "\n", $message );
+
+		foreach ( $lines as $index => $line ) {
+			$line = OutputFormatter::escape( $line );
+			$output->writeln( $index === 0 ? "<error>{$line}</error>" : $line );
+		}
 	}
 
 	private function get_limit( QITInput $input ): int {

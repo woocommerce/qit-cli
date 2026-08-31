@@ -489,6 +489,75 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringContainsString( 'Test run 1002 was not found', $this->application_tester->getDisplay() );
 	}
 
+	/**
+	 * A mistyped run ID is the likeliest way the fetch fails. The Manager answers it
+	 * with a 500 whose body is a bare JSON string, so the message must be unwrapped
+	 * rather than pasted in with its quotes, and must say what to do next.
+	 */
+	public function test_compare_explains_a_test_run_that_does_not_exist(): void {
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
+			'exception: "Test run with ID 511324 does not exist."'
+		);
+
+		$exit_code = $this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '511324',
+			'run_b'   => '5113022',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$display = $this->application_tester->getDisplay();
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'Could not fetch test runs 511324 and 5113022', $display );
+		$this->assertStringContainsString( 'Test run with ID 511324 does not exist.', $display );
+		$this->assertStringContainsString( 'qit list-tests', $display );
+
+		// The Manager's bare JSON string must not reach the user still quoted.
+		$this->assertStringNotContainsString( '"Test run with ID', $display );
+	}
+
+	/**
+	 * The {"message": "..."} error shape is unwrapped too.
+	 */
+	public function test_compare_unwraps_a_structured_manager_error(): void {
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
+			'exception: {"message":"Something went wrong on our end."}'
+		);
+
+		$exit_code = $this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$display = $this->application_tester->getDisplay();
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'Something went wrong on our end.', $display );
+		$this->assertStringNotContainsString( '{"message"', $display );
+	}
+
+	/**
+	 * A plain error message is passed through untouched.
+	 */
+	public function test_compare_passes_through_a_plain_error_message(): void {
+		App::setVar(
+			sprintf( 'mock_%s%s', get_manager_url(), '/wp-json/cd/v1/get-multiple' ),
+			'exception: Could not resolve host: qit.woo.com'
+		);
+
+		$exit_code = $this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::INVALID, $exit_code );
+		$this->assertStringContainsString( 'Could not resolve host: qit.woo.com', $this->application_tester->getDisplay() );
+	}
+
 	public function test_compare_rejects_comparing_a_run_against_itself(): void {
 		$exit_code = $this->application_tester->run( [
 			'command' => 'compare',
