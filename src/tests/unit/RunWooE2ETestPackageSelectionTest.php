@@ -46,13 +46,17 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$cache->set( $manager_sync->bootstrap_cache_key, $sync_data, 60 );
 	}
 
+	/**
+	 * The version as `get_environment_options()` reports it: the merged view of a
+	 * qit.json profile and the CLI flag, which is also what `env:up` receives.
+	 */
 	private function resolve_for( ?string $woocommerce_version ): string {
+		$env_options = $woocommerce_version === null
+			? [ '--environment' => 'default' ]
+			: [ '--environment' => 'default', '--woocommerce_version' => $woocommerce_version ];
+
 		$input = $this->createMock( QITInput::class );
-		$input->method( 'getOption' )->willReturnCallback(
-			static function ( string $name ) use ( $woocommerce_version ) {
-				return $name === 'woocommerce_version' ? $woocommerce_version : null;
-			}
-		);
+		$input->method( 'get_environment_options' )->willReturn( $env_options );
 
 		return App::make( ExposedRunWooE2ETestCommand::class )
 			->resolve_test_package_for_test( $input, new NullOutput() );
@@ -89,6 +93,20 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( null ) );
 		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '  ' ) );
+	}
+
+	public function test_uses_a_version_pinned_by_a_profile_rather_than_a_flag(): void {
+		$this->given_sync_offers( [
+			'e2e' => [
+				'11.0.1' => 'woocommerce/core-e2e-tests:11.0',
+				'stable' => 'woocommerce/core-e2e-tests:11.1',
+			],
+		] );
+
+		// `get_environment_options()` reports a profile's `woo: 11.0.1` under the
+		// same key as the flag, so the suite follows the environment either way.
+		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.0.1' ) );
 	}
 
 	public function test_falls_back_for_a_version_the_table_does_not_cover(): void {

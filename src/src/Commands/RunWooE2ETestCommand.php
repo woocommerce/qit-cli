@@ -55,11 +55,22 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 	 */
 	protected function resolve_test_package( QITInput $input, OutputInterface $output ): string {
 		/*
-		 * A run that names no version is assumed to mean `stable`, and that is an
-		 * assumption rather than something observed. Nothing here asks the
-		 * environment what it will install, and nothing can: the package supplies
-		 * mu-plugins and a globalSetup phase that go into building the environment,
-		 * so it has to be chosen before `env:up` reports a version.
+		 * Read from the same array that is handed to `env:up`, so the package
+		 * follows whatever WooCommerce the run installs. A version can be pinned
+		 * by a `qit.json` profile as well as by `--woo`, and the raw CLI option
+		 * sees only the second: a profile pinning 11.0.1 would otherwise get the
+		 * `stable` suite while the environment installed 11.0.1.
+		 */
+		$env_options = $input->get_environment_options();
+		$pinned      = $env_options['--woocommerce_version'] ?? null;
+		$requested   = is_scalar( $pinned ) ? trim( (string) $pinned ) : '';
+
+		/*
+		 * Nothing pinned a version, so this assumes `stable`. That is an
+		 * assumption rather than something observed, and nothing here can observe
+		 * it: the package supplies mu-plugins and a globalSetup phase that go into
+		 * building the environment, so it has to be chosen before `env:up` reports
+		 * a version.
 		 *
 		 * It holds because two independent sources agree on what "latest stable"
 		 * is. The Manager derives `stable` from the WooCommerce GitHub releases,
@@ -68,7 +79,9 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 		 * stable tag. They can disagree for a few hours around a release, and a
 		 * run started in that window gets the package for the previous version.
 		 */
-		$requested = (string) ( $input->getOption( 'woocommerce_version' ) ?: 'stable' );
+		if ( $requested === '' ) {
+			$requested = 'stable';
+		}
 
 		try {
 			$by_version = $this->cache->get_manager_sync_data( 'test_package_versions' );
