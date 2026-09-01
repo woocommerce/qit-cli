@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\PreCommand\Configuration\EnvironmentConfigResolver;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -54,16 +55,7 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 	 * WooCommerce version executed the same specs as a run on any other.
 	 */
 	protected function resolve_test_package( QITInput $input, OutputInterface $output ): string {
-		/*
-		 * Read from the same array that is handed to `env:up`, so the package
-		 * follows whatever WooCommerce the run installs. A version can be pinned
-		 * by a `qit.json` profile as well as by `--woo`, and the raw CLI option
-		 * sees only the second: a profile pinning 11.0.1 would otherwise get the
-		 * `stable` suite while the environment installed 11.0.1.
-		 */
-		$env_options = $input->get_environment_options();
-		$pinned      = $env_options['--woocommerce_version'] ?? null;
-		$requested   = is_scalar( $pinned ) ? trim( (string) $pinned ) : '';
+		$requested = self::pinned_woocommerce_version( $input );
 
 		/*
 		 * Nothing pinned a version, so this assumes `stable`. That is an
@@ -103,5 +95,51 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 		) );
 
 		return $test_package;
+	}
+
+	/**
+	 * The WooCommerce version this run will install, as far as it can be known here.
+	 *
+	 * Three places can pin one, and `env:up` reads all three, so this has to as
+	 * well or the suite and the environment diverge — which is what this command
+	 * exists to prevent. In its precedence order:
+	 *
+	 * 1. `--woo`, and 2. a test profile, both of which `get_environment_options()`
+	 *    already merges with the flag winning. That array is what is handed to
+	 *    `env:up`.
+	 * 3. The selected environment block. `get_environment_options()` passes this
+	 *    one on as `--environment` and lets `env:up` resolve it later, so the
+	 *    version is not in that array and has to be read from the block.
+	 *
+	 * Returns an empty string when nothing pins a version.
+	 */
+	private static function pinned_woocommerce_version( QITInput $input ): string {
+		$from_options = $input->get_environment_options()['--woocommerce_version'] ?? null;
+
+		if ( is_scalar( $from_options ) && trim( (string) $from_options ) !== '' ) {
+			return trim( (string) $from_options );
+		}
+
+		$environment = EnvironmentConfigResolver::normalize_aliases( $input->get_environment_config() );
+		$from_block  = $environment['woocommerce_version'] ?? null;
+
+		if ( is_scalar( $from_block ) && trim( (string) $from_block ) !== '' ) {
+			return trim( (string) $from_block );
+		}
+
+		// An environment may pin WooCommerce as a plugin entry instead of a scalar.
+		foreach ( ( is_array( $environment['plugins'] ?? null ) ? $environment['plugins'] : [] ) as $plugin ) {
+			if ( ! is_array( $plugin ) || ( $plugin['slug'] ?? '' ) !== 'woocommerce' ) {
+				continue;
+			}
+
+			$version = $plugin['version'] ?? null;
+
+			if ( is_scalar( $version ) && trim( (string) $version ) !== '' ) {
+				return trim( (string) $version );
+			}
+		}
+
+		return '';
 	}
 }

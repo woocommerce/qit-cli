@@ -55,8 +55,17 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 			? [ '--environment' => 'default' ]
 			: [ '--environment' => 'default', '--woocommerce_version' => $woocommerce_version ];
 
+		return $this->resolve( $env_options, [] );
+	}
+
+	/**
+	 * @param array<string, mixed> $env_options        As get_environment_options() reports them.
+	 * @param array<string, mixed> $environment_config The selected environment block.
+	 */
+	private function resolve( array $env_options, array $environment_config ): string {
 		$input = $this->createMock( QITInput::class );
 		$input->method( 'get_environment_options' )->willReturn( $env_options );
+		$input->method( 'get_environment_config' )->willReturn( $environment_config );
 
 		return App::make( ExposedRunWooE2ETestCommand::class )
 			->resolve_test_package_for_test( $input, new NullOutput() );
@@ -107,6 +116,58 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		// `get_environment_options()` reports a profile's `woo: 11.0.1` under the
 		// same key as the flag, so the suite follows the environment either way.
 		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.0.1' ) );
+	}
+
+	public function test_uses_a_version_pinned_by_the_selected_environment(): void {
+		$this->given_sync_offers( [
+			'e2e' => [
+				'10.0.0' => 'woocommerce/core-e2e-tests:10.0',
+				'stable' => 'woocommerce/core-e2e-tests:11.1',
+			],
+		] );
+
+		// `get_environment_options()` passes the block on as `--environment` and lets
+		// `env:up` resolve it, so the version is only in the block itself.
+		$only_environment = [ '--environment' => 'default' ];
+
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.0',
+			$this->resolve( $only_environment, [ 'woocommerce_version' => '10.0.0' ] )
+		);
+
+		// The short form is the same pin.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.0',
+			$this->resolve( $only_environment, [ 'woo' => '10.0.0' ] )
+		);
+
+		// So is pinning it as a plugin entry.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.0',
+			$this->resolve( $only_environment, [
+				'plugins' => [
+					[ 'slug' => 'some-other-plugin', 'version' => '3.0.0' ],
+					[ 'slug' => 'woocommerce', 'version' => '10.0.0' ],
+				],
+			] )
+		);
+	}
+
+	public function test_a_flag_outranks_a_version_pinned_by_the_environment(): void {
+		$this->given_sync_offers( [
+			'e2e' => [
+				'10.0.0' => 'woocommerce/core-e2e-tests:10.0',
+				'11.0.1' => 'woocommerce/core-e2e-tests:11.0',
+			],
+		] );
+
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve(
+				[ '--environment' => 'default', '--woocommerce_version' => '11.0.1' ],
+				[ 'woocommerce_version' => '10.0.0' ]
+			)
+		);
 	}
 
 	public function test_falls_back_for_a_version_the_table_does_not_cover(): void {
