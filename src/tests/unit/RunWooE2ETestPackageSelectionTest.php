@@ -6,8 +6,8 @@ use QIT_CLI\Commands\RunWooE2ETestCommand;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Output\BufferedOutput;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Exposes the package choice without reflection, which behaves differently across
@@ -21,37 +21,48 @@ class ExposedRunWooE2ETestCommand extends RunWooE2ETestCommand {
 }
 
 /**
- * `run:woo-e2e` picks its package from the table the Manager resolved.
+ * `run:woo-e2e` picks its package from the versions the Manager has published.
  *
  * It used to hardcode `latest` for every run, so a run on one WooCommerce
- * version executed the same specs as a run on any other.
+ * version executed the same specs as a run on any other. The Manager says which
+ * package versions exist; matching a WooCommerce version against them happens
+ * here, because a local run chooses its package before the Manager is told the
+ * run exists, and may name any version.
  */
 class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	private const FALLBACK = 'woocommerce/core-e2e-tests:latest';
 
 	/**
-	 * @param array<string, array<string, string>>|null $test_package_versions Null removes the key.
+	 * @param array<int, string>|null $versions Published package versions; null removes the key.
 	 */
-	private function given_sync_offers( ?array $test_package_versions ): void {
+	private function given_published( ?array $versions ): void {
+		$this->set_sync_key(
+			'test_package_versions',
+			$versions === null
+				? null
+				: [ 'e2e' => [ 'package' => 'woocommerce/core-e2e-tests', 'versions' => $versions ] ]
+		);
+	}
+
+	/**
+	 * @param mixed $value Null removes the key.
+	 */
+	private function set_sync_key( string $key, $value ): void {
 		$cache        = App::make( Cache::class );
 		$manager_sync = App::make( ManagerSync::class );
 		$sync_data    = $cache->get( $manager_sync->bootstrap_cache_key );
 
 		$this->assertIsArray( $sync_data );
 
-		if ( is_null( $test_package_versions ) ) {
-			unset( $sync_data['test_package_versions'] );
+		if ( is_null( $value ) ) {
+			unset( $sync_data[ $key ] );
 		} else {
-			$sync_data['test_package_versions'] = $test_package_versions;
+			$sync_data[ $key ] = $value;
 		}
 
 		$cache->set( $manager_sync->bootstrap_cache_key, $sync_data, 60 );
 	}
 
-	/**
-	 * The version as `get_environment_options()` reports it: the merged view of a
-	 * qit.json profile and the CLI flag, which is also what `env:up` receives.
-	 */
 	private function resolve_for( ?string $woocommerce_version ): string {
 		$env_options = $woocommerce_version === null
 			? [ '--environment' => 'default' ]
@@ -64,69 +75,76 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	 * @param array<string, mixed> $env_options        As get_environment_options() reports them.
 	 * @param array<string, mixed> $environment_config The selected environment block.
 	 */
-	private function resolve( array $env_options, array $environment_config ): string {
+	private function resolve( array $env_options, array $environment_config, ?OutputInterface $output = null ): string {
 		$input = $this->createMock( QITInput::class );
 		$input->method( 'get_environment_options' )->willReturn( $env_options );
 		$input->method( 'get_environment_config' )->willReturn( $environment_config );
 
 		return App::make( ExposedRunWooE2ETestCommand::class )
-			->resolve_test_package_for_test( $input, new NullOutput() );
+			->resolve_test_package_for_test( $input, $output ?? new NullOutput() );
 	}
 
-	public function test_uses_the_package_the_manager_resolved_for_the_requested_version(): void {
-		$this->given_sync_offers( [
-			'e2e' => [
-				'11.0.1' => 'woocommerce/core-e2e-tests:11.0',
-				'11.1.0' => 'woocommerce/core-e2e-tests:11.1',
-			],
-		] );
+	public function test_a_patch_release_takes_the_version_covering_it(): void {
+		$this->given_published( [ '11.0', '11.1' ] );
 
 		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.0.1' ) );
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.1', $this->resolve_for( '11.1.0' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:11.1', $this->resolve_for( '11.1.4' ) );
 	}
 
-	public function test_uses_the_entry_for_a_channel_named_verbatim(): void {
-		$this->given_sync_offers( [
-			'e2e' => [
-				'stable' => 'woocommerce/core-e2e-tests:11.0',
-				'rc'     => 'woocommerce/core-e2e-tests:11.1',
-			],
-		] );
+	public function test_a_prerelease_keeps_the_version_it_belongs_to(): void {
+		$this->given_published( [ '11.1', '11.2' ] );
 
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( 'stable' ) );
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.1', $this->resolve_for( 'rc' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:11.2', $this->resolve_for( '11.2.0-beta.1' ) );
 	}
 
-	public function test_a_run_that_names_no_version_takes_the_stable_entry(): void {
-		$this->given_sync_offers( [
-			'e2e' => [ 'stable' => 'woocommerce/core-e2e-tests:11.0' ],
-		] );
+	public function test_falls_back_to_an_older_version_when_none_covers_it_exactly(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
 
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( null ) );
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '' ) );
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '  ' ) );
+		// Nothing published for 11.1 yet, so it runs the 11.0 specs rather than a
+		// moving tag.
+		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.1.0' ) );
 	}
 
-	public function test_uses_a_version_pinned_by_a_profile_rather_than_a_flag(): void {
-		$this->given_sync_offers( [
-			'e2e' => [
-				'11.0.1' => 'woocommerce/core-e2e-tests:11.0',
-				'stable' => 'woocommerce/core-e2e-tests:11.1',
-			],
-		] );
+	public function test_never_takes_a_version_above_the_requested_one(): void {
+		$this->given_published( [ '10.9', '11.0', '11.1' ] );
 
-		// `get_environment_options()` reports a profile's `woo: 11.0.1` under the
-		// same key as the flag, so the suite follows the environment either way.
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.0.1' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:10.9', $this->resolve_for( '10.9.4' ) );
+	}
+
+	public function test_compares_versions_numerically_not_as_strings(): void {
+		$this->given_published( [ '9.9', '11.0', '11.10' ] );
+
+		$this->assertSame( 'woocommerce/core-e2e-tests:11.10', $this->resolve_for( '11.10.1' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.0.5' ) );
+	}
+
+	public function test_takes_a_historical_version_the_manager_never_offers(): void {
+		// The Manager's own version list holds a handful of recent releases, but a
+		// local run may name any version, and a package published for it must win.
+		$this->given_published( [ '10.0', '11.0' ] );
+
+		$this->assertSame( 'woocommerce/core-e2e-tests:10.0', $this->resolve_for( '10.0.0' ) );
+	}
+
+	public function test_resolves_a_channel_to_the_version_it_stands_for(): void {
+		$this->given_published( [ '9.6', '9.7' ] );
+
+		// The fixture's sync data resolves stable to 9.6.0 and rc to 9.7.0-beta.1.
+		$this->assertSame( 'woocommerce/core-e2e-tests:9.6', $this->resolve_for( 'stable' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:9.7', $this->resolve_for( 'rc' ) );
+	}
+
+	public function test_a_run_that_names_no_version_takes_the_stable_channel(): void {
+		$this->given_published( [ '9.6', '9.7' ] );
+
+		// stable is 9.6.0 in the fixture, so an unpinned run must not take 9.7.
+		$this->assertSame( 'woocommerce/core-e2e-tests:9.6', $this->resolve_for( null ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:9.6', $this->resolve_for( '' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:9.6', $this->resolve_for( '  ' ) );
 	}
 
 	public function test_uses_a_version_pinned_by_the_selected_environment(): void {
-		$this->given_sync_offers( [
-			'e2e' => [
-				'10.0.0' => 'woocommerce/core-e2e-tests:10.0',
-				'stable' => 'woocommerce/core-e2e-tests:11.1',
-			],
-		] );
+		$this->given_published( [ '10.0', '11.1' ] );
 
 		// `get_environment_options()` passes the block on as `--environment` and lets
 		// `env:up` resolve it, so the version is only in the block itself.
@@ -156,12 +174,7 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	public function test_a_flag_outranks_a_version_pinned_by_the_environment(): void {
-		$this->given_sync_offers( [
-			'e2e' => [
-				'10.0.0' => 'woocommerce/core-e2e-tests:10.0',
-				'11.0.1' => 'woocommerce/core-e2e-tests:11.0',
-			],
-		] );
+		$this->given_published( [ '10.0', '11.0' ] );
 
 		$this->assertSame(
 			'woocommerce/core-e2e-tests:11.0',
@@ -172,69 +185,61 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		);
 	}
 
-	public function test_falls_back_for_a_version_the_table_does_not_cover(): void {
-		$this->given_sync_offers( [
-			'e2e' => [ '11.0.1' => 'woocommerce/core-e2e-tests:11.0' ],
-		] );
+	public function test_falls_back_when_nothing_published_is_low_enough(): void {
+		$this->given_published( [ '11.0', '11.1' ] );
 
 		$this->assertSame( self::FALLBACK, $this->resolve_for( '10.9.4' ) );
 	}
 
-	/**
-	 * @param array<string, mixed> $env_options
-	 */
-	private function output_for( array $env_options ): string {
-		$input = $this->createMock( QITInput::class );
-		$input->method( 'get_environment_options' )->willReturn( $env_options );
-		$input->method( 'get_environment_config' )->willReturn( [] );
+	public function test_falls_back_when_the_manager_publishes_no_versions(): void {
+		$this->given_published( null );
+
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
+	}
+
+	public function test_falls_back_when_nothing_is_published_for_e2e(): void {
+		$this->set_sync_key( 'test_package_versions', [] );
+
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
+	}
+
+	public function test_ignores_anything_that_is_not_exactly_two_segments(): void {
+		$this->given_published( [ 'latest', '11.0.1', '11.0.0-beta.1' ] );
+
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
+	}
+
+	public function test_says_which_package_it_chose(): void {
+		$this->given_published( [ '11.0' ] );
 
 		$output = new BufferedOutput();
-		App::make( ExposedRunWooE2ETestCommand::class )->resolve_test_package_for_test( $input, $output );
+		$this->resolve( [ '--woocommerce_version' => '11.0.1' ], [], $output );
 
-		return $output->fetch();
+		$this->assertStringContainsString(
+			'Using test package woocommerce/core-e2e-tests:11.0',
+			$output->fetch()
+		);
 	}
 
 	public function test_says_so_when_no_package_covers_the_version(): void {
-		$this->given_sync_offers( [ 'e2e' => [ '11.0.1' => 'woocommerce/core-e2e-tests:11.0' ] ] );
+		$this->given_published( [ '11.0' ] );
 
-		$output = $this->output_for( [ '--woocommerce_version' => '9.0.0' ] );
+		$output = new BufferedOutput();
+		$this->resolve( [ '--woocommerce_version' => '9.0.0' ], [], $output );
+		$written = $output->fetch();
 
-		$this->assertStringContainsString( 'No test package covers WooCommerce 9.0.0', $output );
-		$this->assertStringContainsString( self::FALLBACK, $output );
+		$this->assertStringContainsString( 'No test package covers WooCommerce 9.0.0', $written );
+		$this->assertStringContainsString( self::FALLBACK, $written );
 	}
 
-	public function test_says_so_when_the_manager_publishes_no_table(): void {
-		$this->given_sync_offers( null );
+	public function test_says_so_when_the_manager_publishes_no_versions(): void {
+		$this->given_published( null );
 
-		$output = $this->output_for( [ '--woocommerce_version' => '11.0.1' ] );
+		$output = new BufferedOutput();
+		$this->resolve( [ '--woocommerce_version' => '11.0.1' ], [], $output );
+		$written = $output->fetch();
 
-		$this->assertStringContainsString( 'does not publish test package versions', $output );
-		$this->assertStringContainsString( self::FALLBACK, $output );
-	}
-
-	public function test_names_the_package_it_chose(): void {
-		$this->given_sync_offers( [ 'e2e' => [ '11.0.1' => 'woocommerce/core-e2e-tests:11.0' ] ] );
-
-		$output = $this->output_for( [ '--woocommerce_version' => '11.0.1' ] );
-
-		$this->assertStringContainsString( 'Using test package woocommerce/core-e2e-tests:11.0', $output );
-	}
-
-	public function test_falls_back_when_the_manager_publishes_no_table(): void {
-		$this->given_sync_offers( null );
-
-		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
-	}
-
-	public function test_falls_back_when_the_table_holds_nothing_for_e2e(): void {
-		$this->given_sync_offers( [] );
-
-		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
-	}
-
-	public function test_falls_back_on_an_unusable_entry(): void {
-		$this->given_sync_offers( [ 'e2e' => [ '11.0.1' => '' ] ] );
-
-		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
+		$this->assertStringContainsString( 'does not publish test package versions', $written );
+		$this->assertStringContainsString( self::FALLBACK, $written );
 	}
 }

@@ -75,10 +75,12 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 			$requested = 'stable';
 		}
 
+		$requested = $this->resolve_channel( $requested );
+
 		try {
-			$by_version = $this->cache->get_manager_sync_data( 'test_package_versions' );
+			$offered = $this->cache->get_manager_sync_data( 'test_package_versions' );
 		} catch ( \Throwable $e ) {
-			// Absent on a Manager that does not publish the table yet.
+			// Absent on a Manager that does not publish package versions yet.
 			$output->writeln( sprintf(
 				'<comment>This QIT Manager does not publish test package versions. Using %s.</comment>',
 				self::FALLBACK_TEST_PACKAGE
@@ -87,9 +89,14 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 			return self::FALLBACK_TEST_PACKAGE;
 		}
 
-		$test_package = is_array( $by_version ) ? ( $by_version['e2e'][ $requested ] ?? null ) : null;
+		$package  = is_array( $offered ) ? ( $offered['e2e']['package'] ?? null ) : null;
+		$versions = is_array( $offered ) ? ( $offered['e2e']['versions'] ?? null ) : null;
 
-		if ( ! is_string( $test_package ) || $test_package === '' ) {
+		$covering = is_string( $package ) && is_array( $versions )
+			? self::covering_version( $requested, $versions )
+			: null;
+
+		if ( $covering === null ) {
 			// Every WooCommerce version older than the oldest published package
 			// lands here, and so does one too new to have a package yet. The run
 			// goes ahead on the default, which is worth saying out loud: the suite
@@ -103,6 +110,8 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 			return self::FALLBACK_TEST_PACKAGE;
 		}
 
+		$test_package = $package . ':' . $covering;
+
 		$output->writeln( sprintf(
 			'<comment>Using test package %s for WooCommerce %s.</comment>',
 			$test_package,
@@ -110,6 +119,87 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 		) );
 
 		return $test_package;
+	}
+
+	/**
+	 * A channel name replaced by the version it stands for.
+	 *
+	 * `--woo stable` and `--woo rc` name a channel, not a version, and what they
+	 * currently mean is in sync data already. Resolving them here keeps the
+	 * matching below working on versions only.
+	 */
+	private function resolve_channel( string $requested ): string {
+		if ( ! in_array( $requested, [ 'stable', 'rc' ], true ) ) {
+			return $requested;
+		}
+
+		try {
+			$versions = $this->cache->get_manager_sync_data( 'versions' );
+		} catch ( \Throwable $e ) {
+			return $requested;
+		}
+
+		$resolved = is_array( $versions ) ? ( $versions['woocommerce'][ $requested ] ?? null ) : null;
+
+		return is_scalar( $resolved ) && trim( (string) $resolved ) !== '' ? trim( (string) $resolved ) : $requested;
+	}
+
+	/**
+	 * The published version covering a WooCommerce version: the highest whose
+	 * `major.minor` is not above the requested one.
+	 *
+	 * A package version covers a whole WooCommerce `major.minor`, so 11.0.0 and
+	 * 11.0.1 both take `11.0`, and a prerelease keeps the version it belongs to:
+	 * 11.2.0-beta.1 is 11.2. Falling to an older one is deliberate — it is
+	 * reproducible, where resolving to a moving tag is not.
+	 *
+	 * The Manager applies the same rule for the runs it creates itself. It cannot
+	 * apply it for this one: the package is chosen before the Manager is told the
+	 * run exists, and any WooCommerce version may be asked for.
+	 *
+	 * @param string            $woocommerce_version The version the run asked for.
+	 * @param array<int, mixed> $published           Published versions, as sync data lists them.
+	 */
+	private static function covering_version( string $woocommerce_version, array $published ): ?string {
+		$requested = self::major_minor( $woocommerce_version );
+
+		if ( $requested === null ) {
+			return null;
+		}
+
+		$covering = null;
+
+		foreach ( $published as $version ) {
+			if ( ! is_scalar( $version ) ) {
+				continue;
+			}
+
+			$version = trim( (string) $version );
+
+			// Only an exactly two-segment version names a package version. This
+			// keeps `latest`, and anything carrying a patch or a suffix, out.
+			if ( self::major_minor( $version ) !== $version ) {
+				continue;
+			}
+
+			if ( version_compare( $version, $requested, '>' ) ) {
+				continue;
+			}
+
+			if ( $covering === null || version_compare( $version, $covering, '>' ) ) {
+				$covering = $version;
+			}
+		}
+
+		return $covering;
+	}
+
+	private static function major_minor( string $version ): ?string {
+		if ( preg_match( '/^(\d+)\.(\d+)(?:\D|$)/', trim( $version ), $matches ) !== 1 ) {
+			return null;
+		}
+
+		return $matches[1] . '.' . $matches[2];
 	}
 
 	/**
