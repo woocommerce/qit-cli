@@ -79,12 +79,27 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 			$by_version = $this->cache->get_manager_sync_data( 'test_package_versions' );
 		} catch ( \Throwable $e ) {
 			// Absent on a Manager that does not publish the table yet.
+			$output->writeln( sprintf(
+				'<comment>This QIT Manager does not publish test package versions. Using %s.</comment>',
+				self::FALLBACK_TEST_PACKAGE
+			) );
+
 			return self::FALLBACK_TEST_PACKAGE;
 		}
 
 		$test_package = is_array( $by_version ) ? ( $by_version['e2e'][ $requested ] ?? null ) : null;
 
 		if ( ! is_string( $test_package ) || $test_package === '' ) {
+			// Every WooCommerce version older than the oldest published package
+			// lands here, and so does one too new to have a package yet. The run
+			// goes ahead on the default, which is worth saying out loud: the suite
+			// it runs was not written for the version it is running against.
+			$output->writeln( sprintf(
+				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
+				$requested,
+				self::FALLBACK_TEST_PACKAGE
+			) );
+
 			return self::FALLBACK_TEST_PACKAGE;
 		}
 

@@ -5,6 +5,8 @@ use QIT_CLI\Cache;
 use QIT_CLI\Commands\RunWooE2ETestCommand;
 use QIT_CLI\ManagerSync;
 use QIT_CLI\QITInput;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\NullOutput;
 
 /**
@@ -13,7 +15,7 @@ use Symfony\Component\Console\Output\NullOutput;
  * and deprecated from 8.5.
  */
 class ExposedRunWooE2ETestCommand extends RunWooE2ETestCommand {
-	public function resolve_test_package_for_test( QITInput $input, NullOutput $output ): string {
+	public function resolve_test_package_for_test( QITInput $input, OutputInterface $output ): string {
 		return $this->resolve_test_package( $input, $output );
 	}
 }
@@ -176,6 +178,46 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		] );
 
 		$this->assertSame( self::FALLBACK, $this->resolve_for( '10.9.4' ) );
+	}
+
+	/**
+	 * @param array<string, mixed> $env_options
+	 */
+	private function output_for( array $env_options ): string {
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( $env_options );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+
+		$output = new BufferedOutput();
+		App::make( ExposedRunWooE2ETestCommand::class )->resolve_test_package_for_test( $input, $output );
+
+		return $output->fetch();
+	}
+
+	public function test_says_so_when_no_package_covers_the_version(): void {
+		$this->given_sync_offers( [ 'e2e' => [ '11.0.1' => 'woocommerce/core-e2e-tests:11.0' ] ] );
+
+		$output = $this->output_for( [ '--woocommerce_version' => '9.0.0' ] );
+
+		$this->assertStringContainsString( 'No test package covers WooCommerce 9.0.0', $output );
+		$this->assertStringContainsString( self::FALLBACK, $output );
+	}
+
+	public function test_says_so_when_the_manager_publishes_no_table(): void {
+		$this->given_sync_offers( null );
+
+		$output = $this->output_for( [ '--woocommerce_version' => '11.0.1' ] );
+
+		$this->assertStringContainsString( 'does not publish test package versions', $output );
+		$this->assertStringContainsString( self::FALLBACK, $output );
+	}
+
+	public function test_names_the_package_it_chose(): void {
+		$this->given_sync_offers( [ 'e2e' => [ '11.0.1' => 'woocommerce/core-e2e-tests:11.0' ] ] );
+
+		$output = $this->output_for( [ '--woocommerce_version' => '11.0.1' ] );
+
+		$this->assertStringContainsString( 'Using test package woocommerce/core-e2e-tests:11.0', $output );
 	}
 
 	public function test_falls_back_when_the_manager_publishes_no_table(): void {
