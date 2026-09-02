@@ -49,7 +49,7 @@ trait SelectsVersionedTestPackage {
 		// parse error for whatever reads it. RunE2ECommand guards its own output
 		// the same way.
 		$speak     = empty( $options['--json'] );
-		$requested = self::pinned_woocommerce_version( $input );
+		$requested = $this->pinned_woocommerce_version( $input );
 
 		if ( $requested === null ) {
 			// WooCommerce is the extension under test and arrives as an artifact, so
@@ -237,103 +237,138 @@ trait SelectsVersionedTestPackage {
 	/**
 	 * The WooCommerce version this run will install, as far as it can be known here.
 	 *
-	 * Three places can pin one, and `env:up` reads all three, so this has to as
-	 * well or the suite and the environment diverge — which is what this command
-	 * exists to prevent. In its precedence order:
+	 * `env:up` merges the environment block with the CLI overlay and then runs
+	 * `resolveWooCommerceVersion()`, and what gets installed is the first request
+	 * for the `woocommerce` slug to survive that. Two details decide the order,
+	 * and neither is the one you would guess:
 	 *
-	 * 1. `--woo`, and 2. a test profile, both of which `get_environment_options()`
-	 *    already merges with the flag winning. That array is what is handed to
-	 *    `env:up`.
-	 * 3. The selected environment block. `get_environment_options()` passes this
-	 *    one on as `--environment` and lets `env:up` resolve it later, so the
-	 *    version is not in that array and has to be read from the block.
+	 * - That filter drops a request whose slug is literally `woocommerce`, which a
+	 *   raw `woocommerce:10.9.0` is not — the slug there is the whole string. So a
+	 *   `--plugin` pin survives a scalar version, and the entry the scalar builds
+	 *   is appended behind it.
+	 * - With no scalar version nothing is dropped, and `ConfigMerger` keeps base
+	 *   before overlay, so the environment's own request comes first.
 	 *
-	 * Either of the first two can pin it as a plugin instead of as a version. A
-	 * scalar version outranks any plugin entry, because
-	 * `resolveWooCommerceVersion()` drops every WooCommerce plugin entry when one
-	 * is set. Between plugin entries the environment's own list wins over
-	 * `--plugin`: `EnvironmentConfigResolver` keys requests by the raw value, so
-	 * `woocommerce` and `woocommerce:10.9.0` are two requests rather than one
-	 * overriding the other, and `ExtensionResolver` then keeps the first it meets
-	 * for a slug — the environment's, loaded before the CLI's.
+	 * Hence: a `--plugin` pin outranks a scalar, a scalar clears the
+	 * environment's requests, and without a scalar the environment wins.
 	 *
-	 * Returns an empty string when nothing pins a version, and null when
-	 * WooCommerce is itself the extension under test and arrives as an artifact:
-	 * the environment then installs whatever that ZIP holds, which no pin here
-	 * changes and nothing can read before the environment is built.
+	 * Returns an empty string when the winning request leaves the version to
+	 * wp.org, and null when it cannot be known here at all — an artifact, whose
+	 * version lives inside the ZIP.
 	 */
-	private static function pinned_woocommerce_version( QITInput $input ): ?string {
+	private function pinned_woocommerce_version( QITInput $input ): ?string {
 		$options = $input->get_environment_options();
 
-		// The SUT is never displaced: `add_plugin_request()` prepends it and lets
-		// nothing overwrite it, and a local artifact is not re-resolved from
-		// wp.org, so a version pin cannot change what a supplied ZIP contains.
+		// The SUT is added to the environment later and is never displaced, so it
+		// settles the matter before any of the above.
+		$sut = $this->woocommerce_sut( $input );
+
+		if ( $sut !== null ) {
+			return $sut['version'];
+		}
+
+		$environment = EnvironmentConfigResolver::normalize_aliases( $input->get_environment_config() );
+
+		$scalar = self::first_scalar( [
+			$options['--woocommerce_version'] ?? null,
+			$environment['woocommerce_version'] ?? null,
+		] );
+
+		$requests = array_merge(
+			self::woocommerce_requests( $environment['plugins'] ?? null, $scalar !== null ),
+			self::woocommerce_requests( $options['--plugin'] ?? null, $scalar !== null )
+		);
+
+		if ( ! empty( $requests ) ) {
+			return $requests[0];
+		}
+
+		return $scalar ?? '';
+	}
+
+	/**
+	 * The extension under test, when it is WooCommerce.
+	 *
+	 * Null when it is anything else, so a caller can carry on. Otherwise the
+	 * version it brings, which is null when it arrives as an artifact: the
+	 * environment installs what that ZIP holds, no pin changes it, and nothing
+	 * reads it before the environment is built.
+	 *
+	 * A numeric argument is a WooCommerce.com ID, which `RunE2ECommand` turns into
+	 * a slug later on. The same lookup is done here off cached sync data, so
+	 * `run:activation <woo id> --zip` is recognised as well as the slug form.
+	 *
+	 * @return array{version: string|null}|null
+	 */
+	private function woocommerce_sut( QITInput $input ): ?array {
 		$sut = $input->get_sut();
 
-		if ( is_array( $sut ) && ( $sut['slug'] ?? '' ) === 'woocommerce' ) {
-			$sut_version = $sut['version'] ?? null;
+		if ( ! is_array( $sut ) ) {
+			return null;
+		}
 
-			if ( is_scalar( $sut_version ) && trim( (string) $sut_version ) !== '' ) {
-				return trim( (string) $sut_version );
-			}
+		$slug = (string) ( $sut['slug'] ?? '' );
 
-			if ( self::has_custom_source( $input ) ) {
+		if ( is_numeric( $slug ) ) {
+			try {
+				$slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $slug );
+			} catch ( \Throwable $e ) {
+				// An id this cannot resolve is one it cannot rule out either, and
+				// guessing would put every id-and-artifact run on the default.
 				return null;
 			}
 		}
 
-		$from_options = $options['--woocommerce_version'] ?? null;
-
-		if ( is_scalar( $from_options ) && trim( (string) $from_options ) !== '' ) {
-			return trim( (string) $from_options );
+		if ( $slug !== 'woocommerce' ) {
+			return null;
 		}
 
-		$environment = EnvironmentConfigResolver::normalize_aliases( $input->get_environment_config() );
-		$from_block  = $environment['woocommerce_version'] ?? null;
+		$version = self::first_scalar( [ $sut['version'] ?? null ] );
 
-		if ( is_scalar( $from_block ) && trim( (string) $from_block ) !== '' ) {
-			return trim( (string) $from_block );
+		if ( $version !== null ) {
+			return [ 'version' => $version ];
 		}
 
-		// An environment that asks for WooCommerce itself settles the matter: what
-		// `--plugin` names never reaches the environment, whether or not the
-		// environment's own request carries a version.
-		$from_block_plugins = self::woocommerce_request( $environment['plugins'] ?? null );
-
-		if ( $from_block_plugins !== null ) {
-			return $from_block_plugins;
-		}
-
-		// `--plugin woocommerce:11.0.0` installs a version as surely as `--woo`
-		// does, and reaches `env:up` through the same array.
-		return self::woocommerce_request( $options['--plugin'] ?? null ) ?? '';
+		return self::has_custom_source( $input ) ? [ 'version' => null ] : null;
 	}
 
 	/**
-	 * The version a list of plugin requests asks WooCommerce for.
+	 * Every request for WooCommerce in a plugin list, in the order `env:up` keeps
+	 * them, as versions.
 	 *
-	 * Null when the list does not ask for WooCommerce at all, which is what tells
-	 * a caller to look elsewhere. An empty string when it asks without naming a
-	 * version this can read: a bare slug leaves the version to wp.org, and a path
-	 * or URL carries it inside the ZIP, out of reach until the environment is
-	 * built. Either way the request is there and outranks whatever comes next.
+	 * An entry contributes the version it names; an empty string when it leaves
+	 * that to wp.org; null when it names an artifact instead.
 	 *
-	 * Accepts both shapes `env:up` does — a raw `--plugin` string and an
-	 * environment block's entry — and reads `slug:version` the way
-	 * `ExtensionInputParser` does, which rejects mixing `:` with `@`.
+	 * @param mixed $plugins    Plugin requests, in either shape `env:up` accepts.
+	 * @param bool  $scalar_set Whether a scalar version will clear the literal ones.
 	 *
-	 * @param mixed $plugins Plugin requests, as either source reports them.
+	 * @return array<int, string|null>
 	 */
-	private static function woocommerce_request( $plugins ): ?string {
+	private static function woocommerce_requests( $plugins, bool $scalar_set ): array {
+		$found = [];
+
 		foreach ( is_array( $plugins ) ? $plugins : [] as $plugin ) {
 			if ( is_array( $plugin ) ) {
 				if ( ( $plugin['slug'] ?? '' ) !== 'woocommerce' ) {
 					continue;
 				}
 
-				$version = $plugin['version'] ?? null;
+				// `resolveWooCommerceVersion()` drops these once a scalar is set.
+				if ( $scalar_set ) {
+					continue;
+				}
 
-				return is_scalar( $version ) ? trim( (string) $version ) : '';
+				$version = self::first_scalar( [ $plugin['version'] ?? null ] );
+
+				if ( $version !== null ) {
+					$found[] = $version;
+					continue;
+				}
+
+				$from = (string) ( $plugin['from'] ?? '' );
+
+				$found[] = in_array( $from, [ '', 'wporg' ], true ) ? '' : null;
+				continue;
 			}
 
 			if ( ! is_scalar( $plugin ) ) {
@@ -343,15 +378,17 @@ trait SelectsVersionedTestPackage {
 			$plugin = trim( (string) $plugin );
 
 			if ( $plugin === 'woocommerce' ) {
-				return '';
-			}
-
-			// A source after `@` hides the version inside the ZIP it points at.
-			if ( strpos( $plugin, '@' ) !== false ) {
-				if ( strpos( $plugin, 'woocommerce@' ) === 0 ) {
-					return '';
+				if ( ! $scalar_set ) {
+					$found[] = '';
 				}
 
+				continue;
+			}
+
+			// A source after `@` hides the version inside the ZIP it points at, and
+			// the slug of such a request is the whole string, so no scalar drops it.
+			if ( strpos( $plugin, 'woocommerce@' ) === 0 ) {
+				$found[] = null;
 				continue;
 			}
 
@@ -359,7 +396,22 @@ trait SelectsVersionedTestPackage {
 				continue;
 			}
 
-			return trim( substr( $plugin, strlen( 'woocommerce:' ) ) );
+			$found[] = trim( substr( $plugin, strlen( 'woocommerce:' ) ) );
+		}
+
+		return $found;
+	}
+
+	/**
+	 * The first of several candidates that says something, trimmed.
+	 *
+	 * @param array<int, mixed> $candidates
+	 */
+	private static function first_scalar( array $candidates ): ?string {
+		foreach ( $candidates as $candidate ) {
+			if ( is_scalar( $candidate ) && trim( (string) $candidate ) !== '' ) {
+				return trim( (string) $candidate );
+			}
 		}
 
 		return null;
@@ -371,10 +423,6 @@ trait SelectsVersionedTestPackage {
 	 * The same pair `RunE2ECommand` treats as a custom source.
 	 */
 	private static function has_custom_source( QITInput $input ): bool {
-		$zip    = $input->getOption( 'zip' );
-		$source = $input->getOption( 'source' );
-
-		return ( is_scalar( $zip ) && trim( (string) $zip ) !== '' )
-			|| ( is_scalar( $source ) && trim( (string) $source ) !== '' );
+		return self::first_scalar( [ $input->getOption( 'zip' ), $input->getOption( 'source' ) ] ) !== null;
 	}
 }
