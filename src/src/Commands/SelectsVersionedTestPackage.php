@@ -2,6 +2,8 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\App;
+use QIT_CLI\Blueprints\BlueprintEnvironment;
 use QIT_CLI\PreCommand\Configuration\EnvironmentConfigResolver;
 use QIT_CLI\QITInput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -240,16 +242,21 @@ trait SelectsVersionedTestPackage {
 	/**
 	 * The WooCommerce version this run will install, as far as it can be known here.
 	 *
-	 * `env:up` merges the environment block with the CLI overlay through
-	 * `ConfigMerger` and then runs `resolveWooCommerceVersion()`. What gets
-	 * installed is the first request for the `woocommerce` slug left standing, so
-	 * this replays both steps rather than guessing at their outcome. Three details
-	 * decide it, and none is the one you would guess:
+	 * `env:up` builds one plugin list out of every source and installs the first
+	 * request for the `woocommerce` slug left standing in it, so this builds the
+	 * same list rather than guessing at the outcome. In the order
+	 * `UpEnvironmentCommand` assembles them:
 	 *
-	 * - `ConfigMerger::merge_by_slug()` indexes by the raw value, so a CLI
-	 *   `woocommerce` replaces an environment entry for the same slug, while
+	 *   merge( blueprint, merge( environment block, CLI ) )
+	 *
+	 * with the extension under test appended to the CLI's `--plugin` afterwards by
+	 * `add_sut_to_env_up_options()`. Three details decide the result, and none is
+	 * the one you would guess:
+	 *
+	 * - `ConfigMerger::merge_by_slug()` indexes by the raw value, so a bare
+	 *   `woocommerce` replaces an entry for the same slug, while
 	 *   `woocommerce:10.9.0` is a separate key that joins the list behind it.
-	 * - `resolveWooCommerceVersion()` drops requests whose slug is literally
+	 * - `resolveWooCommerceVersion()` then drops requests whose slug is literally
 	 *   `woocommerce` once a scalar version is set, which a raw
 	 *   `woocommerce:10.9.0` is not — its slug is the whole string. So a
 	 *   `--plugin` pin survives a scalar, whose entry is appended behind it.
@@ -258,38 +265,38 @@ trait SelectsVersionedTestPackage {
 	 * @return array{version: string|null, from: string} `version` is an empty
 	 *         string when the winning request leaves it to wp.org, and null when
 	 *         it cannot be known here at all — an artifact, whose version lives
-	 *         inside the ZIP. `from` says which request that was, for the message.
+	 *         inside the ZIP. `from` says which source that was, for the message.
 	 */
 	private function pinned_woocommerce_version( QITInput $input ): array {
-		$options = $input->get_environment_options();
-
-		// The SUT is added to the environment later and is never displaced, so it
-		// settles the matter before any of the above.
-		$sut = $this->woocommerce_sut( $input );
-
-		if ( $sut !== null ) {
-			return [
-				'version' => $sut['version'],
-				'from'    => 'sut',
-			];
-		}
-
+		$options     = $input->get_environment_options();
 		$environment = EnvironmentConfigResolver::normalize_aliases( $input->get_environment_config() );
+		$blueprint   = $this->blueprint_config( $input );
 
+		// A scalar is overlaid the other way round, so the CLI's wins and the
+		// Blueprint, being the base of the last merge, is the last resort.
 		$scalar = self::first_scalar( [
 			$options['--woocommerce_version'] ?? null,
 			$environment['woocommerce_version'] ?? null,
+			$blueprint['woocommerce_version'] ?? null,
 		] );
 
-		$plugins = self::merge_by_slug( $environment['plugins'] ?? null, $options['--plugin'] ?? null );
+		$cli = is_array( $options['--plugin'] ?? null ) ? $options['--plugin'] : [];
+		$sut = $this->woocommerce_sut_request( $input );
+
+		$plugins = self::merge_by_slug( [
+			'blueprint'   => $blueprint['plugins'] ?? null,
+			'environment' => $environment['plugins'] ?? null,
+			'request'     => $cli,
+			'sut'         => $sut === null ? [] : [ $sut ],
+		] );
 
 		foreach ( $plugins as $plugin ) {
-			$version = self::woocommerce_request( $plugin, $scalar !== null );
+			$version = self::woocommerce_request( $plugin['entry'], $scalar !== null );
 
 			if ( $version !== false ) {
 				return [
 					'version' => $version,
-					'from'    => 'request',
+					'from'    => $plugin['from'],
 				];
 			}
 		}
@@ -301,26 +308,92 @@ trait SelectsVersionedTestPackage {
 	}
 
 	/**
-	 * The plugin list `env:up` will work from, in its order.
+	 * What a `--blueprint` contributes to the environment, if one was given.
+	 *
+	 * `apply_blueprint()` merges it as the base, under everything else, and a
+	 * Blueprint installing WooCommerce from wp.org sets a version there. Parsing
+	 * is pure — `prepare()` transpiles and writes nothing — and a Blueprint this
+	 * cannot read is one `RunE2ECommand` will report on properly later.
+	 *
+	 * @return array<string, mixed>
+	 */
+	private function blueprint_config( QITInput $input ): array {
+		$path = $input->hasOption( 'blueprint' ) ? $input->getOption( 'blueprint' ) : null;
+
+		if ( ! is_scalar( $path ) || trim( (string) $path ) === '' ) {
+			return [];
+		}
+
+		try {
+			return App::make( BlueprintEnvironment::class )->prepare( trim( (string) $path ) )->env_config;
+		} catch ( \Throwable $e ) {
+			return [];
+		}
+	}
+
+	/**
+	 * The plugin entry the extension under test will add, when it is WooCommerce.
+	 *
+	 * `add_sut_to_env_up_options()` appends the slug, or `slug@source` when the
+	 * artifact is supplied, and nothing else — a version alongside the SUT never
+	 * reaches the environment, so it is not read here either.
+	 *
+	 * A numeric argument is a WooCommerce.com ID, which `RunE2ECommand` turns into
+	 * a slug later on. The same lookup is done here off cached sync data, so
+	 * `run:activation <woo id> --zip` is recognised as well as the slug form. An
+	 * id this cannot resolve is one it cannot rule out either, and guessing would
+	 * put every id-and-artifact run on the default.
+	 */
+	private function woocommerce_sut_request( QITInput $input ): ?string {
+		$sut = $input->get_sut();
+
+		if ( ! is_array( $sut ) ) {
+			return null;
+		}
+
+		$slug = (string) ( $sut['slug'] ?? '' );
+
+		if ( is_numeric( $slug ) ) {
+			try {
+				$slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $slug );
+			} catch ( \Throwable $e ) {
+				return null;
+			}
+		}
+
+		if ( $slug !== 'woocommerce' ) {
+			return null;
+		}
+
+		$source = self::first_scalar( [ $input->getOption( 'zip' ), $input->getOption( 'source' ) ] );
+
+		return $source === null ? $slug : $slug . '@' . $source;
+	}
+
+	/**
+	 * The plugin list `env:up` will work from, in its order, each entry labelled
+	 * with the source it survived from.
 	 *
 	 * Replays `ConfigMerger::merge_by_slug()`, which indexes by the raw value and
-	 * lets the overlay replace a matching key in place, keeping everything else in
-	 * the order it arrived.
+	 * lets a later list replace a matching key in place, keeping everything else
+	 * in the order it arrived.
 	 *
-	 * @param mixed $block Plugin requests from the environment block.
-	 * @param mixed $cli   Plugin requests from `--plugin`.
+	 * @param array<string, mixed> $lists Plugin requests by source, in merge order.
 	 *
-	 * @return array<int, mixed>
+	 * @return array<int, array{entry: mixed, from: string}>
 	 */
-	private static function merge_by_slug( $block, $cli ): array {
+	private static function merge_by_slug( array $lists ): array {
 		$index = [];
 
-		foreach ( [ $block, $cli ] as $list ) {
+		foreach ( $lists as $from => $list ) {
 			foreach ( is_array( $list ) ? $list : [] as $entry ) {
 				$slug = is_array( $entry ) ? ( $entry['slug'] ?? null ) : $entry;
 
 				if ( is_scalar( $slug ) && (string) $slug !== '' ) {
-					$index[ (string) $slug ] = $entry;
+					$index[ (string) $slug ] = [
+						'entry' => $entry,
+						'from'  => (string) $from,
+					];
 				}
 			}
 		}
@@ -413,52 +486,6 @@ trait SelectsVersionedTestPackage {
 	}
 
 	/**
-	 * The extension under test, when it is WooCommerce.
-	 *
-	 * Null when it is anything else, so a caller can carry on. Otherwise the
-	 * version it brings, which is null when it arrives as an artifact: the
-	 * environment installs what that ZIP holds, no pin changes it, and nothing
-	 * reads it before the environment is built.
-	 *
-	 * A numeric argument is a WooCommerce.com ID, which `RunE2ECommand` turns into
-	 * a slug later on. The same lookup is done here off cached sync data, so
-	 * `run:activation <woo id> --zip` is recognised as well as the slug form.
-	 *
-	 * @return array{version: string|null}|null
-	 */
-	private function woocommerce_sut( QITInput $input ): ?array {
-		$sut = $input->get_sut();
-
-		if ( ! is_array( $sut ) ) {
-			return null;
-		}
-
-		$slug = (string) ( $sut['slug'] ?? '' );
-
-		if ( is_numeric( $slug ) ) {
-			try {
-				$slug = $this->woo_extensions_list->get_woo_extension_slug_by_id( (int) $slug );
-			} catch ( \Throwable $e ) {
-				// An id this cannot resolve is one it cannot rule out either, and
-				// guessing would put every id-and-artifact run on the default.
-				return null;
-			}
-		}
-
-		if ( $slug !== 'woocommerce' ) {
-			return null;
-		}
-
-		$version = self::first_scalar( [ $sut['version'] ?? null ] );
-
-		if ( $version !== null ) {
-			return [ 'version' => $version ];
-		}
-
-		return self::has_custom_source( $input ) ? [ 'version' => null ] : null;
-	}
-
-	/**
 	 * The first of several candidates that says something, trimmed.
 	 *
 	 * @param array<int, mixed> $candidates
@@ -471,14 +498,5 @@ trait SelectsVersionedTestPackage {
 		}
 
 		return null;
-	}
-
-	/**
-	 * Whether the extension under test is supplied rather than named.
-	 *
-	 * The same pair `RunE2ECommand` treats as a custom source.
-	 */
-	private static function has_custom_source( QITInput $input ): bool {
-		return self::first_scalar( [ $input->getOption( 'zip' ), $input->getOption( 'source' ) ] ) !== null;
 	}
 }

@@ -422,6 +422,82 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringContainsString( self::FALLBACK, $written );
 	}
 
+	/** Writes a Blueprint that installs WooCommerce from wp.org at a version. */
+	private function blueprint_pinning( string $woocommerce_version ): string {
+		$dir = sys_get_temp_dir() . '/qit-selection-' . uniqid();
+		mkdir( $dir );
+		$path = $dir . '/blueprint.json';
+
+		file_put_contents( $path, (string) json_encode( [
+			'steps' => [
+				[
+					'step'       => 'installPlugin',
+					'pluginData' => [
+						'resource' => 'wordpress.org/plugins',
+						'slug'     => 'woocommerce',
+						'version'  => $woocommerce_version,
+					],
+				],
+			],
+		] ) );
+
+		return $path;
+	}
+
+	public function test_uses_a_version_a_blueprint_installs(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `apply_blueprint()` merges the Blueprint as the base, so with nothing
+		// overriding it, its WooCommerce is what the environment installs.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve_with_blueprint( $this->blueprint_pinning( '10.9.4' ), [] )
+		);
+	}
+
+	public function test_a_flag_outranks_a_blueprint(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// The Blueprint is the base of that merge, so a scalar from anywhere else
+		// wins.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve_with_blueprint(
+				$this->blueprint_pinning( '10.9.4' ),
+				[ '--woocommerce_version' => '11.0.1' ]
+			)
+		);
+	}
+
+	public function test_an_unreadable_blueprint_changes_nothing(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// RunE2ECommand reports on it properly a moment later; this must not throw.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:9.6',
+			$this->resolve_with_blueprint( '/tmp/qit-no-such-blueprint.json', [] )
+		);
+	}
+
+	/**
+	 * @param array<string, mixed> $options As get_environment_options() reports them.
+	 */
+	private function resolve_with_blueprint( string $blueprint, array $options ): string {
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( $options + [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+		$input->method( 'get_sut' )->willReturn( null );
+		$input->method( 'hasOption' )->willReturn( true );
+		$input->method( 'getOption' )->willReturnMap( [
+			[ 'zip', '' ],
+			[ 'source', '' ],
+			[ 'blueprint', $blueprint ],
+		] );
+
+		return App::make( ExposedRunWooE2ETestCommand::class )
+			->resolve_test_package_for_test( $input, new NullOutput() );
+	}
+
 	public function test_a_bare_plugin_option_replaces_the_environments_entry(): void {
 		$this->given_published( [ '9.6', '10.9', '11.0' ] );
 
@@ -538,12 +614,43 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		);
 	}
 
-	public function test_a_woocommerce_sut_that_names_its_version_uses_it(): void {
-		$this->given_published( [ '10.9', '11.0' ] );
+	public function test_a_version_alongside_the_woocommerce_sut_is_not_installed(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `add_sut_to_env_up_options()` appends the slug, or `slug@source`, and
+		// nothing else — a version configured beside the SUT never reaches the
+		// environment, so reading it here would pin specs to a version nobody
+		// installs. Supplied, the ZIP decides and cannot be read.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce', 'version' => '10.9.4' ], [], '/tmp/woo.zip' )
+		);
+
+		// Not supplied, WooCommerce comes from wp.org at stable.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:9.6',
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] )
+		);
+	}
+
+	public function test_the_woocommerce_sut_replaces_the_environments_entry(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `RunE2ECommand` appends a bare `woocommerce` to `--plugin`, which lands
+		// on the same key as the block's entry and replaces it. The environment
+		// installs stable, not 10.9.4.
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn(
+			[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] ] ]
+		);
+		$input->method( 'get_sut' )->willReturn( [ 'slug' => 'woocommerce' ] );
+		$input->method( 'getOption' )->willReturnMap( [ [ 'zip', '' ], [ 'source', '' ], [ 'blueprint', '' ] ] );
 
 		$this->assertSame(
-			'woocommerce/core-e2e-tests:10.9',
-			$this->resolve_with_sut( [ 'slug' => 'woocommerce', 'version' => '10.9.4' ], [], '/tmp/woo.zip' )
+			'woocommerce/core-e2e-tests:9.6',
+			App::make( ExposedRunWooE2ETestCommand::class )
+				->resolve_test_package_for_test( $input, new NullOutput() )
 		);
 	}
 
