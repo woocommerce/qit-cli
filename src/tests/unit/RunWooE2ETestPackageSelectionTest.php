@@ -127,11 +127,22 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	public function test_resolves_a_channel_to_the_version_it_stands_for(): void {
-		$this->given_published( [ '9.6', '9.7' ] );
+		$this->given_published( [ '9.6', '10.6' ] );
 
-		// The fixture's sync data resolves stable to 9.6.0 and rc to 9.7.0-beta.1.
+		// The fixture's sync data resolves stable to 9.6.0, and rc to 10.6.1
+		// through rc_unsynced.
 		$this->assertSame( 'woocommerce/core-e2e-tests:9.6', $this->resolve_for( 'stable' ) );
-		$this->assertSame( 'woocommerce/core-e2e-tests:9.7', $this->resolve_for( 'rc' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:10.6', $this->resolve_for( 'rc' ) );
+	}
+
+	public function test_rc_follows_the_release_the_environment_installs(): void {
+		// `VersionResolver::resolve_woo('rc')` builds its download URL from
+		// rc_unsynced, so that is the release installed. The fixture has the two
+		// keys disagreeing — rc is 9.7.0-beta.1, rc_unsynced is 10.6.1 — and
+		// reading rc put a 10.6 environment on the 9.7 specs.
+		$this->given_published( [ '9.7', '10.6' ] );
+
+		$this->assertSame( 'woocommerce/core-e2e-tests:10.6', $this->resolve_for( 'rc' ) );
 	}
 
 	public function test_a_run_that_names_no_version_takes_the_stable_channel(): void {

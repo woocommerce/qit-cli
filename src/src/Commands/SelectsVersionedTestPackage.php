@@ -141,6 +141,12 @@ trait SelectsVersionedTestPackage {
 	 * `--woo stable` and `--woo rc` name a channel, not a version, and what they
 	 * currently mean is in sync data already. Resolving them here keeps the
 	 * matching below working on versions only.
+	 *
+	 * `rc` is read from `rc_unsynced`, which is the key `VersionResolver::resolve_woo()`
+	 * builds its download URL from — so this follows the release the environment
+	 * actually installs. The Manager fills both keys from one call today, but they
+	 * are separate keys, and the one that decides the environment is the one to
+	 * follow. `rc` remains the fallback for a Manager that publishes only it.
 	 */
 	private function resolve_channel( string $requested ): string {
 		if ( ! in_array( $requested, [ 'stable', 'rc' ], true ) ) {
@@ -153,9 +159,21 @@ trait SelectsVersionedTestPackage {
 			return $requested;
 		}
 
-		$resolved = is_array( $versions ) ? ( $versions['woocommerce'][ $requested ] ?? null ) : null;
+		$woocommerce = is_array( $versions ) && is_array( $versions['woocommerce'] ?? null )
+			? $versions['woocommerce']
+			: [];
 
-		return is_scalar( $resolved ) && trim( (string) $resolved ) !== '' ? trim( (string) $resolved ) : $requested;
+		$keys = $requested === 'rc' ? [ 'rc_unsynced', 'rc' ] : [ $requested ];
+
+		foreach ( $keys as $key ) {
+			$resolved = $woocommerce[ $key ] ?? null;
+
+			if ( is_scalar( $resolved ) && trim( (string) $resolved ) !== '' ) {
+				return trim( (string) $resolved );
+			}
+		}
+
+		return $requested;
 	}
 
 	/**
