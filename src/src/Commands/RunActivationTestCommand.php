@@ -18,9 +18,20 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class RunActivationTestCommand extends RunE2ECommand {
 	use ExtensionSetTrait;
+	use SelectsVersionedTestPackage;
 
 	protected static $defaultName = 'run:activation'; // phpcs:ignore WordPress.NamingConventions.ValidVariableName.PropertyNotSnakeCase
 	protected string $test_type   = 'activation';
+
+	/** The key this package is published under in sync data. */
+	protected const PACKAGE_TEST_TYPE = 'activation';
+
+	/**
+	 * Used when the Manager offers nothing for the requested WooCommerce version,
+	 * which covers a Manager that predates the lookup table as well as a version
+	 * no published package covers.
+	 */
+	protected const FALLBACK_TEST_PACKAGE = 'woocommerce/activation:latest';
 
 	/******************************************************************
 	 * CLI definition
@@ -78,8 +89,11 @@ class RunActivationTestCommand extends RunE2ECommand {
 		/****************************************************************
 		 * Inject activation‑specific defaults BEFORE delegating to parent
 		 */
-		// Always use 'latest' version for activation test package
-		$input->setOption( 'test-package', [ 'woocommerce/activation:latest' ] );
+		// The activation specs drive WooCommerce's admin UI, so their selectors are
+		// tied to the markup of a WooCommerce release. Pick the package published
+		// for the version this run installs. Unconditional, as before: this command
+		// owns its package and does not take one from the caller.
+		$input->setOption( 'test-package', [ $this->resolve_test_package( $input, $output ) ] );
 		$input->setOption( 'skip_activating_plugins', true );
 		$input->setOption( 'skip_activating_themes', true );
 
