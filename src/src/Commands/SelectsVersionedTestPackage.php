@@ -204,10 +204,14 @@ trait SelectsVersionedTestPackage {
 	 *    one on as `--environment` and lets `env:up` resolve it later, so the
 	 *    version is not in that array and has to be read from the block.
 	 *
-	 * Either of the first two can pin it as a plugin instead of as a version, and
-	 * a scalar version outranks a plugin entry: `resolveWooCommerceVersion()`
-	 * drops every WooCommerce plugin entry when one is set. The order below is
-	 * that order.
+	 * Either of the first two can pin it as a plugin instead of as a version. A
+	 * scalar version outranks any plugin entry, because
+	 * `resolveWooCommerceVersion()` drops every WooCommerce plugin entry when one
+	 * is set. Between plugin entries the environment's own list wins over
+	 * `--plugin`: `EnvironmentConfigResolver` keys requests by the raw value, so
+	 * `woocommerce` and `woocommerce:10.9.0` are two requests rather than one
+	 * overriding the other, and `ExtensionResolver` then keeps the first it meets
+	 * for a slug — the environment's, loaded before the CLI's.
 	 *
 	 * Returns an empty string when nothing pins a version.
 	 */
@@ -226,61 +230,73 @@ trait SelectsVersionedTestPackage {
 			return trim( (string) $from_block );
 		}
 
+		// An environment that asks for WooCommerce itself settles the matter: what
+		// `--plugin` names never reaches the environment, whether or not the
+		// environment's own request carries a version.
+		$from_block_plugins = self::woocommerce_request( $environment['plugins'] ?? null );
+
+		if ( $from_block_plugins !== null ) {
+			return $from_block_plugins;
+		}
+
 		// `--plugin woocommerce:11.0.0` installs a version as surely as `--woo`
 		// does, and reaches `env:up` through the same array.
-		$from_plugin_option = self::version_from_plugin_options( $options['--plugin'] ?? null );
-
-		if ( $from_plugin_option !== '' ) {
-			return $from_plugin_option;
-		}
-
-		// An environment may pin WooCommerce as a plugin entry instead of a scalar.
-		foreach ( ( is_array( $environment['plugins'] ?? null ) ? $environment['plugins'] : [] ) as $plugin ) {
-			if ( ! is_array( $plugin ) || ( $plugin['slug'] ?? '' ) !== 'woocommerce' ) {
-				continue;
-			}
-
-			$version = $plugin['version'] ?? null;
-
-			if ( is_scalar( $version ) && trim( (string) $version ) !== '' ) {
-				return trim( (string) $version );
-			}
-		}
-
-		return '';
+		return self::woocommerce_request( $options['--plugin'] ?? null ) ?? '';
 	}
 
 	/**
-	 * The version pinned by a `--plugin woocommerce:<version>` value, if any.
+	 * The version a list of plugin requests asks WooCommerce for.
 	 *
-	 * Only the `slug:version` form names a version this can use. A bare slug
-	 * leaves the version to wp.org, and a path or URL carries it inside the ZIP,
-	 * where nothing can read it before the environment is built. Mirrors
-	 * `ExtensionInputParser`, which rejects mixing `:` with `@`.
+	 * Null when the list does not ask for WooCommerce at all, which is what tells
+	 * a caller to look elsewhere. An empty string when it asks without naming a
+	 * version this can read: a bare slug leaves the version to wp.org, and a path
+	 * or URL carries it inside the ZIP, out of reach until the environment is
+	 * built. Either way the request is there and outranks whatever comes next.
 	 *
-	 * @param mixed $plugins The `--plugin` values, as get_environment_options() reports them.
+	 * Accepts both shapes `env:up` does — a raw `--plugin` string and an
+	 * environment block's entry — and reads `slug:version` the way
+	 * `ExtensionInputParser` does, which rejects mixing `:` with `@`.
+	 *
+	 * @param mixed $plugins Plugin requests, as either source reports them.
 	 */
-	private static function version_from_plugin_options( $plugins ): string {
+	private static function woocommerce_request( $plugins ): ?string {
 		foreach ( is_array( $plugins ) ? $plugins : [] as $plugin ) {
+			if ( is_array( $plugin ) ) {
+				if ( ( $plugin['slug'] ?? '' ) !== 'woocommerce' ) {
+					continue;
+				}
+
+				$version = $plugin['version'] ?? null;
+
+				return is_scalar( $version ) ? trim( (string) $version ) : '';
+			}
+
 			if ( ! is_scalar( $plugin ) ) {
 				continue;
 			}
 
 			$plugin = trim( (string) $plugin );
 
-			if ( strpos( $plugin, '@' ) !== false || strpos( $plugin, ':' ) === false ) {
+			if ( $plugin === 'woocommerce' ) {
+				return '';
+			}
+
+			// A source after `@` hides the version inside the ZIP it points at.
+			if ( strpos( $plugin, '@' ) !== false ) {
+				if ( strpos( $plugin, 'woocommerce@' ) === 0 ) {
+					return '';
+				}
+
 				continue;
 			}
 
-			list( $slug, $version ) = explode( ':', $plugin, 2 );
-
-			if ( trim( $slug ) !== 'woocommerce' || trim( $version ) === '' ) {
+			if ( strpos( $plugin, 'woocommerce:' ) !== 0 ) {
 				continue;
 			}
 
-			return trim( $version );
+			return trim( substr( $plugin, strlen( 'woocommerce:' ) ) );
 		}
 
-		return '';
+		return null;
 	}
 }

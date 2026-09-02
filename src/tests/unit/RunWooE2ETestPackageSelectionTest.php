@@ -194,6 +194,53 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		);
 	}
 
+	public function test_an_environment_that_asks_for_woocommerce_outranks_a_plugin_option(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// `EnvironmentConfigResolver` keys requests by the raw value, so the block's
+		// `woocommerce` and the CLI's `woocommerce:10.9.0` are two requests, and
+		// `ExtensionResolver` keeps the first it meets for the slug — the block's.
+		// The environment installs stable, so the specs have to be stable's.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ 'woocommerce' ] ]
+			)
+		);
+
+		// The same when the block spells it out as an entry without a version.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce' ] ] ]
+			)
+		);
+
+		// And when it names its own version, that is the one installed.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '11.0.1' ] ] ]
+			)
+		);
+	}
+
+	public function test_a_plugin_option_still_counts_when_the_environment_asks_for_others(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// Only a WooCommerce request in the block displaces the flag.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ 'some-other-plugin', [ 'slug' => 'another' ] ] ]
+			)
+		);
+	}
+
 	public function test_ignores_a_plugin_option_that_names_no_readable_version(): void {
 		$this->given_published( [ '10.9', '11.0' ] );
 
