@@ -422,6 +422,81 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringContainsString( self::FALLBACK, $written );
 	}
 
+	public function test_a_bare_plugin_option_replaces_the_environments_entry(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `ConfigMerger::merge_by_slug()` indexes by the raw value, so a bare
+		// `woocommerce` from the CLI lands on the same key as the block's entry and
+		// replaces it. The environment installs stable, not 10.9.4.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:9.6',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] ] ]
+			)
+		);
+
+		// A pin is a different key, so it joins the list instead of replacing.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:11.0.1' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] ] ]
+			)
+		);
+	}
+
+	public function test_a_raw_artifact_that_reads_as_woocommerce_is_unknown(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `ExtensionInputParser` infers the slug from the filename, so each of
+		// these installs WooCommerce from an artifact whose version is inside it.
+		foreach ( [
+			'https://example.test/woocommerce.zip',
+			'https://example.test/woocommerce.10.9.0.zip',
+			'/tmp/woocommerce.zip',
+		] as $value ) {
+			$this->assertSame(
+				self::FALLBACK,
+				$this->resolve(
+					[ '--woocommerce_version' => '11.0.1', '--plugin' => [ $value ] ],
+					[]
+				),
+				$value
+			);
+		}
+
+		// An artifact for something else says nothing about WooCommerce. Nor does
+		// `woocommerce-v11.0.1.zip`: the parser strips `.0.1` first, and its second
+		// pattern then finds no dot left to match, so it infers `woocommerce-v11`.
+		// Mirrored quirk and all — the point is to agree with it, not to improve it.
+		foreach ( [ 'https://example.test/some-plugin.zip', '/tmp/woocommerce-v11.0.1.zip' ] as $value ) {
+			$this->assertSame(
+				'woocommerce/core-e2e-tests:11.0',
+				$this->resolve(
+					[ '--woocommerce_version' => '11.0.1', '--plugin' => [ $value ] ],
+					[]
+				),
+				$value
+			);
+		}
+	}
+
+	public function test_an_artifact_that_is_not_the_sut_says_so(): void {
+		$this->given_published( [ '11.0' ] );
+
+		$output = new BufferedOutput();
+		$this->resolve(
+			[ '--environment' => 'default', '--plugin' => [ 'woocommerce@https://example.test/woo.zip' ] ],
+			[],
+			$output
+		);
+		$written = $output->fetch();
+
+		$this->assertStringContainsString( 'WooCommerce is supplied as an artifact', $written );
+		$this->assertStringNotContainsString( 'extension under test', $written );
+	}
+
 	public function test_a_supplied_woocommerce_sut_named_by_id_leaves_its_version_unknown(): void {
 		// 9.6 is what the fixture's stable resolves to, so falling through to
 		// stable would answer 9.6 rather than the fallback.
