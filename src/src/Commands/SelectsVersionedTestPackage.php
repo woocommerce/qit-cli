@@ -15,12 +15,22 @@ use Symfony\Component\Console\Output\OutputInterface;
  * versions. One implementation on purpose — the Manager applies the same rule
  * for the runs it creates itself, and a third copy would be one too many.
  *
- * A using command declares:
- *
- * - `PACKAGE_TEST_TYPE`: the key it is published under in sync data.
- * - `FALLBACK_TEST_PACKAGE`: what to run when nothing covers the version.
+ * A using command declares two things: the key it is published under in sync
+ * data, and what to run when nothing covers the version.
  */
 trait SelectsVersionedTestPackage {
+	/**
+	 * The key this package is published under in sync data.
+	 *
+	 * Methods rather than constants: constants in traits need PHP 8.2 and this
+	 * runs from 7.4, and `static::` on a constant a trait does not declare is
+	 * invisible to static analysis either way.
+	 */
+	abstract protected function package_test_type(): string;
+
+	/** What to run when no published version covers the WooCommerce version. */
+	abstract protected function fallback_test_package(): string;
+
 	/**
 	 * The package covering the WooCommerce version this run asks for.
 	 *
@@ -61,14 +71,14 @@ trait SelectsVersionedTestPackage {
 			// Absent on a Manager that does not publish package versions yet.
 			$output->writeln( sprintf(
 				'<comment>This QIT Manager does not publish test package versions. Using %s.</comment>',
-				static::FALLBACK_TEST_PACKAGE
+				$this->fallback_test_package()
 			) );
 
-			return static::FALLBACK_TEST_PACKAGE;
+			return $this->fallback_test_package();
 		}
 
-		$package  = is_array( $offered ) ? ( $offered[ static::PACKAGE_TEST_TYPE ]['package'] ?? null ) : null;
-		$versions = is_array( $offered ) ? ( $offered[ static::PACKAGE_TEST_TYPE ]['versions'] ?? null ) : null;
+		$package  = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['package'] ?? null ) : null;
+		$versions = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['versions'] ?? null ) : null;
 
 		$covering = is_string( $package ) && is_array( $versions )
 			? self::covering_version( $requested, $versions )
@@ -82,10 +92,10 @@ trait SelectsVersionedTestPackage {
 			$output->writeln( sprintf(
 				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
 				$requested,
-				static::FALLBACK_TEST_PACKAGE
+				$this->fallback_test_package()
 			) );
 
-			return static::FALLBACK_TEST_PACKAGE;
+			return $this->fallback_test_package();
 		}
 
 		$test_package = $package . ':' . $covering;
@@ -194,10 +204,16 @@ trait SelectsVersionedTestPackage {
 	 *    one on as `--environment` and lets `env:up` resolve it later, so the
 	 *    version is not in that array and has to be read from the block.
 	 *
+	 * Either of the first two can pin it as a plugin instead of as a version, and
+	 * a scalar version outranks a plugin entry: `resolveWooCommerceVersion()`
+	 * drops every WooCommerce plugin entry when one is set. The order below is
+	 * that order.
+	 *
 	 * Returns an empty string when nothing pins a version.
 	 */
 	private static function pinned_woocommerce_version( QITInput $input ): string {
-		$from_options = $input->get_environment_options()['--woocommerce_version'] ?? null;
+		$options      = $input->get_environment_options();
+		$from_options = $options['--woocommerce_version'] ?? null;
 
 		if ( is_scalar( $from_options ) && trim( (string) $from_options ) !== '' ) {
 			return trim( (string) $from_options );
@@ -208,6 +224,14 @@ trait SelectsVersionedTestPackage {
 
 		if ( is_scalar( $from_block ) && trim( (string) $from_block ) !== '' ) {
 			return trim( (string) $from_block );
+		}
+
+		// `--plugin woocommerce:11.0.0` installs a version as surely as `--woo`
+		// does, and reaches `env:up` through the same array.
+		$from_plugin_option = self::version_from_plugin_options( $options['--plugin'] ?? null );
+
+		if ( $from_plugin_option !== '' ) {
+			return $from_plugin_option;
 		}
 
 		// An environment may pin WooCommerce as a plugin entry instead of a scalar.
@@ -221,6 +245,40 @@ trait SelectsVersionedTestPackage {
 			if ( is_scalar( $version ) && trim( (string) $version ) !== '' ) {
 				return trim( (string) $version );
 			}
+		}
+
+		return '';
+	}
+
+	/**
+	 * The version pinned by a `--plugin woocommerce:<version>` value, if any.
+	 *
+	 * Only the `slug:version` form names a version this can use. A bare slug
+	 * leaves the version to wp.org, and a path or URL carries it inside the ZIP,
+	 * where nothing can read it before the environment is built. Mirrors
+	 * `ExtensionInputParser`, which rejects mixing `:` with `@`.
+	 *
+	 * @param mixed $plugins The `--plugin` values, as get_environment_options() reports them.
+	 */
+	private static function version_from_plugin_options( $plugins ): string {
+		foreach ( is_array( $plugins ) ? $plugins : [] as $plugin ) {
+			if ( ! is_scalar( $plugin ) ) {
+				continue;
+			}
+
+			$plugin = trim( (string) $plugin );
+
+			if ( strpos( $plugin, '@' ) !== false || strpos( $plugin, ':' ) === false ) {
+				continue;
+			}
+
+			list( $slug, $version ) = explode( ':', $plugin, 2 );
+
+			if ( trim( $slug ) !== 'woocommerce' || trim( $version ) === '' ) {
+				continue;
+			}
+
+			return trim( $version );
 		}
 
 		return '';

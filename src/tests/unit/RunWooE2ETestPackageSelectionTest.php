@@ -173,6 +173,55 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		);
 	}
 
+	public function test_uses_a_version_pinned_as_a_plugin_option(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// `--plugin woocommerce:10.9.0` installs 10.9.0 as surely as `--woo` does.
+		// Reading only `--woocommerce_version` here put the run on the 11.0 specs
+		// against a 10.9 environment.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve( [ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ], [] )
+		);
+
+		// Alongside other plugins, and unbothered by their versions.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'some-plugin:11.0.0', 'woocommerce:10.9.4' ] ],
+				[]
+			)
+		);
+	}
+
+	public function test_ignores_a_plugin_option_that_names_no_readable_version(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// The fixture's stable is 9.6.0, below everything published, so anything
+		// this cannot read falls back rather than silently taking a version.
+		foreach ( [ 'woocommerce', 'woocommerce@/tmp/woo.zip', 'woocommerce:', 'other:10.9.0' ] as $value ) {
+			$this->assertSame(
+				self::FALLBACK,
+				$this->resolve( [ '--environment' => 'default', '--plugin' => [ $value ] ], [] ),
+				sprintf( '--plugin %s should not pin a version', $value )
+			);
+		}
+	}
+
+	public function test_a_version_flag_outranks_a_plugin_option(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// env:up drops every WooCommerce plugin entry once a version is set, so
+		// the flag is what gets installed.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve(
+				[ '--woocommerce_version' => '11.0.1', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[]
+			)
+		);
+	}
+
 	public function test_a_flag_outranks_a_version_pinned_by_the_environment(): void {
 		$this->given_published( [ '10.0', '11.0' ] );
 

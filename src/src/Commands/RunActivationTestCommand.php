@@ -24,14 +24,18 @@ class RunActivationTestCommand extends RunE2ECommand {
 	protected string $test_type   = 'activation';
 
 	/** The key this package is published under in sync data. */
-	protected const PACKAGE_TEST_TYPE = 'activation';
+	protected function package_test_type(): string {
+		return 'activation';
+	}
 
 	/**
 	 * Used when the Manager offers nothing for the requested WooCommerce version,
 	 * which covers a Manager that predates the lookup table as well as a version
 	 * no published package covers.
 	 */
-	protected const FALLBACK_TEST_PACKAGE = 'woocommerce/activation:latest';
+	protected function fallback_test_package(): string {
+		return 'woocommerce/activation:latest';
+	}
 
 	/******************************************************************
 	 * CLI definition

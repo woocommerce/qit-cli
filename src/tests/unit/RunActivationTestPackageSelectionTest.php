@@ -90,6 +90,23 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
 	}
 
+	public function test_uses_a_version_pinned_as_a_plugin_option(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '10.9', '11.0' ] ) ] );
+
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( [
+			'--environment' => 'default',
+			'--plugin'      => [ 'woocommerce:10.9.4' ],
+		] );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+
+		$this->assertSame(
+			'woocommerce/activation:10.9',
+			App::make( ExposedRunActivationTestCommand::class )
+				->resolve_test_package_for_test( $input, new NullOutput() )
+		);
+	}
+
 	public function test_falls_back_when_nothing_published_is_low_enough(): void {
 		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0' ] ) ] );
 
