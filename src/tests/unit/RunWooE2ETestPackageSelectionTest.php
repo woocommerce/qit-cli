@@ -305,6 +305,91 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
 	}
 
+	/**
+	 * @param array<string, mixed> $sut     As get_sut() reports it; null for none.
+	 * @param array<string, mixed> $options As get_environment_options() reports them.
+	 */
+	private function resolve_with_sut( ?array $sut, array $options = [], string $zip = '' ): string {
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( $options + [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+		$input->method( 'get_sut' )->willReturn( $sut );
+		$input->method( 'getOption' )->willReturnMap( [
+			[ 'zip', $zip ],
+			[ 'source', '' ],
+		] );
+
+		return App::make( ExposedRunWooE2ETestCommand::class )
+			->resolve_test_package_for_test( $input, new NullOutput() );
+	}
+
+	public function test_a_supplied_woocommerce_leaves_its_version_unknown(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// The environment installs the ZIP, and no pin here changes what is in it.
+		// Assuming stable put a build of one version on another version's specs.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce' ], [ '--woocommerce_version' => '11.0.1' ], '/tmp/woo.zip' )
+		);
+	}
+
+	public function test_a_supplied_woocommerce_says_why_it_cannot_tell(): void {
+		$this->given_published( [ '11.0' ] );
+
+		$output = new BufferedOutput();
+		$input  = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+		$input->method( 'get_sut' )->willReturn( [ 'slug' => 'woocommerce' ] );
+		$input->method( 'getOption' )->willReturnMap( [
+			[ 'zip', '' ],
+			[ 'source', './woocommerce' ],
+		] );
+
+		App::make( ExposedRunWooE2ETestCommand::class )->resolve_test_package_for_test( $input, $output );
+		$written = $output->fetch();
+
+		$this->assertStringContainsString( 'WooCommerce is the extension under test', $written );
+		$this->assertStringContainsString( self::FALLBACK, $written );
+	}
+
+	public function test_a_woocommerce_sut_that_names_its_version_uses_it(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce', 'version' => '10.9.4' ], [], '/tmp/woo.zip' )
+		);
+	}
+
+	public function test_a_woocommerce_sut_named_by_slug_still_takes_the_flag(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// Nothing was supplied, so WooCommerce comes from wp.org and the flag is
+		// what decides which version that is.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce' ], [ '--woocommerce_version' => '11.0.1' ] )
+		);
+	}
+
+	public function test_says_nothing_when_the_caller_asked_for_json(): void {
+		$this->given_published( [ '11.0' ] );
+
+		// stdout is a payload in JSON mode, and a notice beside it is a parse error.
+		foreach ( [ '11.0.1', '9.0.0' ] as $woocommerce_version ) {
+			$output = new BufferedOutput();
+			$this->resolve(
+				[ '--woocommerce_version' => $woocommerce_version, '--json' => true ],
+				[],
+				$output
+			);
+
+			$this->assertSame( '', $output->fetch(), sprintf( 'WooCommerce %s', $woocommerce_version ) );
+		}
+	}
+
 	public function test_says_which_package_it_chose(): void {
 		$this->given_published( [ '11.0' ] );
 

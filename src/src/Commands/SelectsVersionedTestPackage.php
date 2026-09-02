@@ -43,7 +43,26 @@ trait SelectsVersionedTestPackage {
 	 * WooCommerce version executed the same specs as a run on any other.
 	 */
 	protected function resolve_test_package( QITInput $input, OutputInterface $output ): string {
+		$options = $input->get_environment_options();
+
+		// `--json` makes stdout a payload, and a notice printed alongside it is a
+		// parse error for whatever reads it. RunE2ECommand guards its own output
+		// the same way.
+		$speak     = empty( $options['--json'] );
 		$requested = self::pinned_woocommerce_version( $input );
+
+		if ( $requested === null ) {
+			// WooCommerce is the extension under test and arrives as an artifact, so
+			// which version the environment ends up with is inside that ZIP. Say so
+			// rather than assume: `--test-package` names one outright, and both
+			// commands leave a named package alone.
+			$this->announce( $output, $speak, sprintf(
+				'<comment>WooCommerce is the extension under test, so its version is not known before the environment is built. Using %s.</comment>',
+				$this->fallback_test_package()
+			) );
+
+			return $this->fallback_test_package();
+		}
 
 		/*
 		 * Nothing pinned a version, so this assumes `stable`. That is an
@@ -69,7 +88,7 @@ trait SelectsVersionedTestPackage {
 			$offered = $this->cache->get_manager_sync_data( 'test_package_versions' );
 		} catch ( \Throwable $e ) {
 			// Absent on a Manager that does not publish package versions yet.
-			$output->writeln( sprintf(
+			$this->announce( $output, $speak, sprintf(
 				'<comment>This QIT Manager does not publish test package versions. Using %s.</comment>',
 				$this->fallback_test_package()
 			) );
@@ -89,7 +108,7 @@ trait SelectsVersionedTestPackage {
 			// lands here, and so does one too new to have a package yet. The run
 			// goes ahead on the default, which is worth saying out loud: the suite
 			// it runs was not written for the version it is running against.
-			$output->writeln( sprintf(
+			$this->announce( $output, $speak, sprintf(
 				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
 				$requested,
 				$this->fallback_test_package()
@@ -100,13 +119,20 @@ trait SelectsVersionedTestPackage {
 
 		$test_package = $package . ':' . $covering;
 
-		$output->writeln( sprintf(
+		$this->announce( $output, $speak, sprintf(
 			'<comment>Using test package %s for WooCommerce %s.</comment>',
 			$test_package,
 			$requested
 		) );
 
 		return $test_package;
+	}
+
+	/** Writes a line unless the caller asked for machine-readable output. */
+	private function announce( OutputInterface $output, bool $speak, string $message ): void {
+		if ( $speak ) {
+			$output->writeln( $message );
+		}
 	}
 
 	/**
@@ -213,10 +239,31 @@ trait SelectsVersionedTestPackage {
 	 * overriding the other, and `ExtensionResolver` then keeps the first it meets
 	 * for a slug — the environment's, loaded before the CLI's.
 	 *
-	 * Returns an empty string when nothing pins a version.
+	 * Returns an empty string when nothing pins a version, and null when
+	 * WooCommerce is itself the extension under test and arrives as an artifact:
+	 * the environment then installs whatever that ZIP holds, which no pin here
+	 * changes and nothing can read before the environment is built.
 	 */
-	private static function pinned_woocommerce_version( QITInput $input ): string {
-		$options      = $input->get_environment_options();
+	private static function pinned_woocommerce_version( QITInput $input ): ?string {
+		$options = $input->get_environment_options();
+
+		// The SUT is never displaced: `add_plugin_request()` prepends it and lets
+		// nothing overwrite it, and a local artifact is not re-resolved from
+		// wp.org, so a version pin cannot change what a supplied ZIP contains.
+		$sut = $input->get_sut();
+
+		if ( is_array( $sut ) && ( $sut['slug'] ?? '' ) === 'woocommerce' ) {
+			$sut_version = $sut['version'] ?? null;
+
+			if ( is_scalar( $sut_version ) && trim( (string) $sut_version ) !== '' ) {
+				return trim( (string) $sut_version );
+			}
+
+			if ( self::has_custom_source( $input ) ) {
+				return null;
+			}
+		}
+
 		$from_options = $options['--woocommerce_version'] ?? null;
 
 		if ( is_scalar( $from_options ) && trim( (string) $from_options ) !== '' ) {
@@ -298,5 +345,18 @@ trait SelectsVersionedTestPackage {
 		}
 
 		return null;
+	}
+
+	/**
+	 * Whether the extension under test is supplied rather than named.
+	 *
+	 * The same pair `RunE2ECommand` treats as a custom source.
+	 */
+	private static function has_custom_source( QITInput $input ): bool {
+		$zip    = $input->getOption( 'zip' );
+		$source = $input->getOption( 'source' );
+
+		return ( is_scalar( $zip ) && trim( (string) $zip ) !== '' )
+			|| ( is_scalar( $source ) && trim( (string) $source ) !== '' );
 	}
 }
