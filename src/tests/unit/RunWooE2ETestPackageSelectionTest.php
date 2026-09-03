@@ -693,6 +693,29 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		);
 	}
 
+	public function test_says_so_when_the_version_it_took_is_an_older_one(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		$output = new BufferedOutput();
+		$this->resolve( [ '--woocommerce_version' => '11.3.0' ], [], $output );
+		$written = $output->fetch();
+
+		// Taking 11.0 for a WooCommerce 11.3 is the rule working, but it reads
+		// exactly like an exact match unless it says otherwise.
+		$this->assertStringContainsString( 'woocommerce/core-e2e-tests:11.0', $written );
+		$this->assertStringContainsString( 'Nothing is published for WooCommerce 11.3', $written );
+		$this->assertStringContainsString( 'these are the 11.0 specs', $written );
+	}
+
+	public function test_says_nothing_extra_when_the_version_matches(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		$output = new BufferedOutput();
+		$this->resolve( [ '--woocommerce_version' => '11.0.1' ], [], $output );
+
+		$this->assertStringNotContainsString( 'Nothing is published', $output->fetch() );
+	}
+
 	public function test_says_so_when_no_package_covers_the_version(): void {
 		$this->given_published( [ '11.0' ] );
 

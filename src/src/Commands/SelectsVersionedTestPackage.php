@@ -109,10 +109,11 @@ trait SelectsVersionedTestPackage {
 			: null;
 
 		if ( $covering === null ) {
-			// Every WooCommerce version older than the oldest published package
-			// lands here, and so does one too new to have a package yet. The run
-			// goes ahead on the default, which is worth saying out loud: the suite
-			// it runs was not written for the version it is running against.
+			// Only a WooCommerce older than everything published lands here. One
+			// newer than everything takes the highest instead, which is the point
+			// of the rule. The run goes ahead on the default, which is worth
+			// saying out loud: the suite it runs was not written for the version
+			// it is running against.
 			$this->announce( $output, $speak, sprintf(
 				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
 				$requested,
@@ -129,6 +130,17 @@ trait SelectsVersionedTestPackage {
 			$test_package,
 			$requested
 		) );
+
+		// Taking an older version is the rule working as intended, but it is not
+		// the same thing as a package written for this WooCommerce, and the two
+		// read identically above.
+		if ( self::major_minor( $requested ) !== $covering ) {
+			$this->announce( $output, $speak, sprintf(
+				'<comment>Nothing is published for WooCommerce %s, so these are the %s specs.</comment>',
+				self::major_minor( $requested ) ?? $requested,
+				$covering
+			) );
+		}
 
 		return $test_package;
 	}
