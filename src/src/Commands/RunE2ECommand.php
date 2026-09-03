@@ -202,7 +202,11 @@ class RunE2ECommand extends QITCommand {
 		$test_packages = $input->get_test_packages();
 		if ( $input->getArgument( 'sut' ) === 'woocommerce' &&
 			array_filter( $test_packages, fn( $pkg ) => str_starts_with( $pkg, 'woocommerce/activation:' ) ) ) {
-			$output->writeln( '<info>Running activation test scenario.</info>' );
+			if ( ! $input->getOption( 'json' ) ) {
+				// stdout is a payload in JSON mode, and a stray line here is enough
+				// for the wrapper to report the whole run as non-JSON output.
+				$output->writeln( '<info>Running activation test scenario.</info>' );
+			}
 			App::setVar( 'QIT_ACTIVATION_TEST', 'yes' );
 			$input->setOption( 'skip_activating_plugins', true );
 			$input->setOption( 'skip_activating_themes', true );

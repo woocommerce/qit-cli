@@ -97,12 +97,20 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 'woocommerce/core-e2e-tests:11.2', $this->resolve_for( '11.2.0-beta.1' ) );
 	}
 
-	public function test_falls_back_to_an_older_version_when_none_covers_it_exactly(): void {
+	public function test_a_version_with_no_package_of_its_own_takes_the_default(): void {
 		$this->given_published( [ '10.9', '11.0' ] );
 
-		// Nothing published for 11.1 yet, so it runs the 11.0 specs rather than a
-		// moving tag.
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.1.0' ) );
+		// Nothing is published for 11.1, and the 11.0 specs were not written for
+		// it. Taking them would read as a match; the default at least says so.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
+
+		// The same above everything published, which is where the next line's RC
+		// lands every cycle until its package exists.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.3.0' ) );
+
+		// And in a gap between two published versions.
+		$this->given_published( [ '10.9', '11.1' ] );
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
 	}
 
 	public function test_never_takes_a_version_above_the_requested_one(): void {
@@ -127,11 +135,22 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	public function test_resolves_a_channel_to_the_version_it_stands_for(): void {
-		$this->given_published( [ '9.6', '9.7' ] );
+		$this->given_published( [ '9.6', '10.6' ] );
 
-		// The fixture's sync data resolves stable to 9.6.0 and rc to 9.7.0-beta.1.
+		// The fixture's sync data resolves stable to 9.6.0, and rc to 10.6.1
+		// through rc_unsynced.
 		$this->assertSame( 'woocommerce/core-e2e-tests:9.6', $this->resolve_for( 'stable' ) );
-		$this->assertSame( 'woocommerce/core-e2e-tests:9.7', $this->resolve_for( 'rc' ) );
+		$this->assertSame( 'woocommerce/core-e2e-tests:10.6', $this->resolve_for( 'rc' ) );
+	}
+
+	public function test_rc_follows_the_release_the_environment_installs(): void {
+		// `VersionResolver::resolve_woo('rc')` builds its download URL from
+		// rc_unsynced, so that is the release installed. The fixture has the two
+		// keys disagreeing — rc is 9.7.0-beta.1, rc_unsynced is 10.6.1 — and
+		// reading rc put a 10.6 environment on the 9.7 specs.
+		$this->given_published( [ '9.7', '10.6' ] );
+
+		$this->assertSame( 'woocommerce/core-e2e-tests:10.6', $this->resolve_for( 'rc' ) );
 	}
 
 	public function test_a_run_that_names_no_version_takes_the_stable_channel(): void {
@@ -173,6 +192,159 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		);
 	}
 
+	public function test_uses_a_version_pinned_as_a_plugin_option(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// `--plugin woocommerce:10.9.0` installs 10.9.0 as surely as `--woo` does.
+		// Reading only `--woocommerce_version` here put the run on the 11.0 specs
+		// against a 10.9 environment.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve( [ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ], [] )
+		);
+
+		// Alongside other plugins, and unbothered by their versions.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'some-plugin:11.0.0', 'woocommerce:10.9.4' ] ],
+				[]
+			)
+		);
+	}
+
+	public function test_an_environment_that_asks_for_woocommerce_outranks_a_plugin_option(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// `EnvironmentConfigResolver` keys requests by the raw value, so the block's
+		// `woocommerce` and the CLI's `woocommerce:10.9.0` are two requests, and
+		// `ExtensionResolver` keeps the first it meets for the slug — the block's.
+		// The environment installs stable, so the specs have to be stable's.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ 'woocommerce' ] ]
+			)
+		);
+
+		// The same when the block spells it out as an entry without a version.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce' ] ] ]
+			)
+		);
+
+		// And when it names its own version, that is the one installed.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '11.0.1' ] ] ]
+			)
+		);
+	}
+
+	public function test_a_plugin_option_still_counts_when_the_environment_asks_for_others(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// Only a WooCommerce request in the block displaces the flag.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'plugins' => [ 'some-other-plugin', [ 'slug' => 'another' ] ] ]
+			)
+		);
+	}
+
+	public function test_ignores_a_plugin_option_that_names_no_readable_version(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// The fixture's stable is 9.6.0, below everything published, so anything
+		// this cannot read falls back rather than silently taking a version.
+		foreach ( [ 'woocommerce', 'woocommerce@/tmp/woo.zip', 'woocommerce:', 'other:10.9.0' ] as $value ) {
+			$this->assertSame(
+				self::FALLBACK,
+				$this->resolve( [ '--environment' => 'default', '--plugin' => [ $value ] ], [] ),
+				sprintf( '--plugin %s should not pin a version', $value )
+			);
+		}
+	}
+
+	public function test_a_plugin_option_outranks_a_version_flag(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// `resolveWooCommerceVersion()` drops requests whose slug is literally
+		// `woocommerce`, and the slug of the raw `woocommerce:10.9.0` is the whole
+		// string, so it survives and the flag's entry is appended behind it. 10.9
+		// is what gets installed, however backwards that reads.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--woocommerce_version' => '11.0.1', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[]
+			)
+		);
+
+		// Same for a version the environment block declares.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:10.9.0' ] ],
+				[ 'woocommerce_version' => '11.0.1' ]
+			)
+		);
+	}
+
+	public function test_a_version_clears_the_environments_own_request(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// With a scalar set, `resolveWooCommerceVersion()` removes the block's
+		// WooCommerce entries and installs the version instead.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve(
+				[ '--woocommerce_version' => '11.0.1' ],
+				[ 'plugins' => [ 'woocommerce' ] ]
+			)
+		);
+
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve(
+				[ '--woocommerce_version' => '11.0.1' ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] ] ]
+			)
+		);
+	}
+
+	public function test_a_supplied_woocommerce_plugin_leaves_its_version_unknown(): void {
+		// As above: 9.6 is published so that reading these as stable is visible.
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// The ZIP behind `@` decides the version, and nothing here can read it, so
+		// this must not settle for stable.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce@https://example.test/woo.zip' ] ],
+				[]
+			)
+		);
+
+		// Nor when the environment declares it as a non-wporg source.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve(
+				[ '--environment' => 'default' ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'from' => 'url', 'url' => 'https://example.test/woo.zip' ] ] ]
+			)
+		);
+	}
+
 	public function test_a_flag_outranks_a_version_pinned_by_the_environment(): void {
 		$this->given_published( [ '10.0', '11.0' ] );
 
@@ -207,6 +379,314 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->given_published( [ 'latest', '11.0.1', '11.0.0-beta.1' ] );
 
 		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
+	}
+
+	/**
+	 * @param array<string, mixed> $sut     As get_sut() reports it; null for none.
+	 * @param array<string, mixed> $options As get_environment_options() reports them.
+	 */
+	private function resolve_with_sut( ?array $sut, array $options = [], string $zip = '' ): string {
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( $options + [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+		$input->method( 'get_sut' )->willReturn( $sut );
+		$input->method( 'getOption' )->willReturnMap( [
+			[ 'zip', $zip ],
+			[ 'source', '' ],
+		] );
+
+		return App::make( ExposedRunWooE2ETestCommand::class )
+			->resolve_test_package_for_test( $input, new NullOutput() );
+	}
+
+	public function test_a_supplied_woocommerce_leaves_its_version_unknown(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// The environment installs the ZIP, and no pin here changes what is in it.
+		// Assuming stable put a build of one version on another version's specs.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce' ], [ '--woocommerce_version' => '11.0.1' ], '/tmp/woo.zip' )
+		);
+	}
+
+	public function test_a_supplied_woocommerce_says_why_it_cannot_tell(): void {
+		$this->given_published( [ '11.0' ] );
+
+		$output = new BufferedOutput();
+		$input  = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+		$input->method( 'get_sut' )->willReturn( [ 'slug' => 'woocommerce' ] );
+		$input->method( 'getOption' )->willReturnMap( [
+			[ 'zip', '' ],
+			[ 'source', './woocommerce' ],
+		] );
+
+		App::make( ExposedRunWooE2ETestCommand::class )->resolve_test_package_for_test( $input, $output );
+		$written = $output->fetch();
+
+		$this->assertStringContainsString( 'WooCommerce is the extension under test', $written );
+		$this->assertStringContainsString( self::FALLBACK, $written );
+	}
+
+	/** Writes a Blueprint that installs WooCommerce from wp.org at a version. */
+	private function blueprint_pinning( string $woocommerce_version ): string {
+		$dir = sys_get_temp_dir() . '/qit-selection-' . uniqid();
+		mkdir( $dir );
+		$path = $dir . '/blueprint.json';
+
+		file_put_contents( $path, (string) json_encode( [
+			'steps' => [
+				[
+					'step'       => 'installPlugin',
+					'pluginData' => [
+						'resource' => 'wordpress.org/plugins',
+						'slug'     => 'woocommerce',
+						'version'  => $woocommerce_version,
+					],
+				],
+			],
+		] ) );
+
+		return $path;
+	}
+
+	public function test_uses_a_version_a_blueprint_installs(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `apply_blueprint()` merges the Blueprint as the base, so with nothing
+		// overriding it, its WooCommerce is what the environment installs.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve_with_blueprint( $this->blueprint_pinning( '10.9.4' ), [] )
+		);
+	}
+
+	public function test_a_flag_outranks_a_blueprint(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// The Blueprint is the base of that merge, so a scalar from anywhere else
+		// wins.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve_with_blueprint(
+				$this->blueprint_pinning( '10.9.4' ),
+				[ '--woocommerce_version' => '11.0.1' ]
+			)
+		);
+	}
+
+	public function test_an_unreadable_blueprint_changes_nothing(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// RunE2ECommand reports on it properly a moment later; this must not throw.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:9.6',
+			$this->resolve_with_blueprint( '/tmp/qit-no-such-blueprint.json', [] )
+		);
+	}
+
+	/**
+	 * @param array<string, mixed> $options As get_environment_options() reports them.
+	 */
+	private function resolve_with_blueprint( string $blueprint, array $options ): string {
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( $options + [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn( [] );
+		$input->method( 'get_sut' )->willReturn( null );
+		$input->method( 'hasOption' )->willReturn( true );
+		$input->method( 'getOption' )->willReturnMap( [
+			[ 'zip', '' ],
+			[ 'source', '' ],
+			[ 'blueprint', $blueprint ],
+		] );
+
+		return App::make( ExposedRunWooE2ETestCommand::class )
+			->resolve_test_package_for_test( $input, new NullOutput() );
+	}
+
+	public function test_a_bare_plugin_option_replaces_the_environments_entry(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `ConfigMerger::merge_by_slug()` indexes by the raw value, so a bare
+		// `woocommerce` from the CLI lands on the same key as the block's entry and
+		// replaces it. The environment installs stable, not 10.9.4.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:9.6',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] ] ]
+			)
+		);
+
+		// A pin is a different key, so it joins the list instead of replacing.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:10.9',
+			$this->resolve(
+				[ '--environment' => 'default', '--plugin' => [ 'woocommerce:11.0.1' ] ],
+				[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] ] ]
+			)
+		);
+	}
+
+	public function test_a_raw_artifact_that_reads_as_woocommerce_is_unknown(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `ExtensionInputParser` infers the slug from the filename, so each of
+		// these installs WooCommerce from an artifact whose version is inside it.
+		foreach ( [
+			'https://example.test/woocommerce.zip',
+			'https://example.test/woocommerce.10.9.0.zip',
+			'/tmp/woocommerce.zip',
+		] as $value ) {
+			$this->assertSame(
+				self::FALLBACK,
+				$this->resolve(
+					[ '--woocommerce_version' => '11.0.1', '--plugin' => [ $value ] ],
+					[]
+				),
+				$value
+			);
+		}
+
+		// An artifact for something else says nothing about WooCommerce. Nor does
+		// `woocommerce-v11.0.1.zip`: the parser strips `.0.1` first, and its second
+		// pattern then finds no dot left to match, so it infers `woocommerce-v11`.
+		// Mirrored quirk and all — the point is to agree with it, not to improve it.
+		foreach ( [ 'https://example.test/some-plugin.zip', '/tmp/woocommerce-v11.0.1.zip' ] as $value ) {
+			$this->assertSame(
+				'woocommerce/core-e2e-tests:11.0',
+				$this->resolve(
+					[ '--woocommerce_version' => '11.0.1', '--plugin' => [ $value ] ],
+					[]
+				),
+				$value
+			);
+		}
+	}
+
+	public function test_an_artifact_that_is_not_the_sut_says_so(): void {
+		$this->given_published( [ '11.0' ] );
+
+		$output = new BufferedOutput();
+		$this->resolve(
+			[ '--environment' => 'default', '--plugin' => [ 'woocommerce@https://example.test/woo.zip' ] ],
+			[],
+			$output
+		);
+		$written = $output->fetch();
+
+		$this->assertStringContainsString( 'WooCommerce is supplied as an artifact', $written );
+		$this->assertStringNotContainsString( 'extension under test', $written );
+	}
+
+	public function test_a_supplied_woocommerce_sut_named_by_id_leaves_its_version_unknown(): void {
+		// 9.6 is what the fixture's stable resolves to, so falling through to
+		// stable would answer 9.6 rather than the fallback.
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+		$this->set_sync_key( 'extensions', [ [ 'id' => 123456, 'slug' => 'woocommerce', 'type' => 'plugin' ] ] );
+
+		// `RunE2ECommand` turns the id into a slug later, so matching on the slug
+		// alone missed `run:activation <woo id> --zip`, which is the form the CI
+		// runner uses.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve_with_sut( [ 'slug' => '123456' ], [], '/tmp/woo.zip' )
+		);
+	}
+
+	public function test_an_id_for_another_extension_is_left_alone(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+		$this->set_sync_key( 'extensions', [
+			[ 'id' => 123456, 'slug' => 'woocommerce', 'type' => 'plugin' ],
+			[ 'id' => 10001, 'slug' => 'wccom-plugin-1', 'type' => 'plugin' ],
+		] );
+
+		// The common case: a partner extension supplied as a ZIP, with WooCommerce
+		// coming from the flag. Treating every id-and-artifact run as unknowable
+		// would put all of these on the default.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve_with_sut( [ 'slug' => '10001' ], [ '--woocommerce_version' => '11.0.1' ], '/tmp/plugin.zip' )
+		);
+	}
+
+	public function test_an_unresolvable_id_changes_nothing(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+		$this->set_sync_key( 'extensions', [] );
+
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve_with_sut( [ 'slug' => '999999' ], [ '--woocommerce_version' => '11.0.1' ], '/tmp/plugin.zip' )
+		);
+	}
+
+	public function test_a_version_alongside_the_woocommerce_sut_is_not_installed(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `add_sut_to_env_up_options()` appends the slug, or `slug@source`, and
+		// nothing else — a version configured beside the SUT never reaches the
+		// environment, so reading it here would pin specs to a version nobody
+		// installs. Supplied, the ZIP decides and cannot be read.
+		$this->assertSame(
+			self::FALLBACK,
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce', 'version' => '10.9.4' ], [], '/tmp/woo.zip' )
+		);
+
+		// Not supplied, WooCommerce comes from wp.org at stable.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:9.6',
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] )
+		);
+	}
+
+	public function test_the_woocommerce_sut_replaces_the_environments_entry(): void {
+		$this->given_published( [ '9.6', '10.9', '11.0' ] );
+
+		// `RunE2ECommand` appends a bare `woocommerce` to `--plugin`, which lands
+		// on the same key as the block's entry and replaces it. The environment
+		// installs stable, not 10.9.4.
+		$input = $this->createMock( QITInput::class );
+		$input->method( 'get_environment_options' )->willReturn( [ '--environment' => 'default' ] );
+		$input->method( 'get_environment_config' )->willReturn(
+			[ 'plugins' => [ [ 'slug' => 'woocommerce', 'version' => '10.9.4' ] ] ]
+		);
+		$input->method( 'get_sut' )->willReturn( [ 'slug' => 'woocommerce' ] );
+		$input->method( 'getOption' )->willReturnMap( [ [ 'zip', '' ], [ 'source', '' ], [ 'blueprint', '' ] ] );
+
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:9.6',
+			App::make( ExposedRunWooE2ETestCommand::class )
+				->resolve_test_package_for_test( $input, new NullOutput() )
+		);
+	}
+
+	public function test_a_woocommerce_sut_named_by_slug_still_takes_the_flag(): void {
+		$this->given_published( [ '10.9', '11.0' ] );
+
+		// Nothing was supplied, so WooCommerce comes from wp.org and the flag is
+		// what decides which version that is.
+		$this->assertSame(
+			'woocommerce/core-e2e-tests:11.0',
+			$this->resolve_with_sut( [ 'slug' => 'woocommerce' ], [ '--woocommerce_version' => '11.0.1' ] )
+		);
+	}
+
+	public function test_says_nothing_when_the_caller_asked_for_json(): void {
+		$this->given_published( [ '11.0' ] );
+
+		// stdout is a payload in JSON mode, and a notice beside it is a parse error.
+		foreach ( [ '11.0.1', '9.0.0' ] as $woocommerce_version ) {
+			$output = new BufferedOutput();
+			$this->resolve(
+				[ '--woocommerce_version' => $woocommerce_version, '--json' => true ],
+				[],
+				$output
+			);
+
+			$this->assertSame( '', $output->fetch(), sprintf( 'WooCommerce %s', $woocommerce_version ) );
+		}
 	}
 
 	public function test_says_which_package_it_chose(): void {
