@@ -109,11 +109,11 @@ trait SelectsVersionedTestPackage {
 			: null;
 
 		if ( $covering === null ) {
-			// Only a WooCommerce older than everything published lands here. One
-			// newer than everything takes the highest instead, which is the point
-			// of the rule. The run goes ahead on the default, which is worth
-			// saying out loud: the suite it runs was not written for the version
-			// it is running against.
+			// Every WooCommerce version without a package of its own lands here.
+			// The run goes ahead on the default, which is worth saying out loud:
+			// the suite it runs was not written for the version it is running
+			// against, and the default is a moving tag, so a rerun may not run
+			// the same specs.
 			$this->announce( $output, $speak, sprintf(
 				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
 				$requested,
@@ -130,17 +130,6 @@ trait SelectsVersionedTestPackage {
 			$test_package,
 			$requested
 		) );
-
-		// Taking an older version is the rule working as intended, but it is not
-		// the same thing as a package written for this WooCommerce, and the two
-		// read identically above.
-		if ( self::major_minor( $requested ) !== $covering ) {
-			$this->announce( $output, $speak, sprintf(
-				'<comment>Nothing is published for WooCommerce %s, so these are the %s specs.</comment>',
-				self::major_minor( $requested ) ?? $requested,
-				$covering
-			) );
-		}
 
 		return $test_package;
 	}
@@ -194,13 +183,19 @@ trait SelectsVersionedTestPackage {
 	}
 
 	/**
-	 * The published version covering a WooCommerce version: the highest whose
-	 * `major.minor` is not above the requested one.
+	 * The published version covering a WooCommerce version: the one published for
+	 * its `major.minor`, or none.
 	 *
 	 * A package version covers a whole WooCommerce `major.minor`, so 11.0.0 and
 	 * 11.0.1 both take `11.0`, and a prerelease keeps the version it belongs to:
-	 * 11.2.0-beta.1 is 11.2. Falling to an older one is deliberate — it is
-	 * reproducible, where resolving to a moving tag is not.
+	 * 11.2.0-beta.1 is 11.2.
+	 *
+	 * Nothing else covers it. Taking the nearest older version instead reads as a
+	 * match while running specs written for another release, which is the one
+	 * thing this exists to prevent — and it hides the case that comes round every
+	 * cycle, where the next line's RC is offered before its package is published.
+	 * Falling to the default at least says so, and the default is the line in
+	 * development, which is what an unpublished newer version most resembles.
 	 *
 	 * The Manager applies the same rule for the runs it creates itself. It cannot
 	 * apply it for this one: the package is chosen before the Manager is told the
@@ -216,8 +211,6 @@ trait SelectsVersionedTestPackage {
 			return null;
 		}
 
-		$covering = null;
-
 		foreach ( $published as $version ) {
 			if ( ! is_scalar( $version ) ) {
 				continue;
@@ -231,16 +224,12 @@ trait SelectsVersionedTestPackage {
 				continue;
 			}
 
-			if ( version_compare( $version, $requested, '>' ) ) {
-				continue;
-			}
-
-			if ( $covering === null || version_compare( $version, $covering, '>' ) ) {
-				$covering = $version;
+			if ( $version === $requested ) {
+				return $version;
 			}
 		}
 
-		return $covering;
+		return null;
 	}
 
 	private static function major_minor( string $version ): ?string {

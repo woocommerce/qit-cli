@@ -97,12 +97,20 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 'woocommerce/core-e2e-tests:11.2', $this->resolve_for( '11.2.0-beta.1' ) );
 	}
 
-	public function test_falls_back_to_an_older_version_when_none_covers_it_exactly(): void {
+	public function test_a_version_with_no_package_of_its_own_takes_the_default(): void {
 		$this->given_published( [ '10.9', '11.0' ] );
 
-		// Nothing published for 11.1 yet, so it runs the 11.0 specs rather than a
-		// moving tag.
-		$this->assertSame( 'woocommerce/core-e2e-tests:11.0', $this->resolve_for( '11.1.0' ) );
+		// Nothing is published for 11.1, and the 11.0 specs were not written for
+		// it. Taking them would read as a match; the default at least says so.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
+
+		// The same above everything published, which is where the next line's RC
+		// lands every cycle until its package exists.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.3.0' ) );
+
+		// And in a gap between two published versions.
+		$this->given_published( [ '10.9', '11.1' ] );
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.0.1' ) );
 	}
 
 	public function test_never_takes_a_version_above_the_requested_one(): void {
@@ -691,29 +699,6 @@ class RunWooE2ETestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 			'Using test package woocommerce/core-e2e-tests:11.0',
 			$output->fetch()
 		);
-	}
-
-	public function test_says_so_when_the_version_it_took_is_an_older_one(): void {
-		$this->given_published( [ '10.9', '11.0' ] );
-
-		$output = new BufferedOutput();
-		$this->resolve( [ '--woocommerce_version' => '11.3.0' ], [], $output );
-		$written = $output->fetch();
-
-		// Taking 11.0 for a WooCommerce 11.3 is the rule working, but it reads
-		// exactly like an exact match unless it says otherwise.
-		$this->assertStringContainsString( 'woocommerce/core-e2e-tests:11.0', $written );
-		$this->assertStringContainsString( 'Nothing is published for WooCommerce 11.3', $written );
-		$this->assertStringContainsString( 'these are the 11.0 specs', $written );
-	}
-
-	public function test_says_nothing_extra_when_the_version_matches(): void {
-		$this->given_published( [ '10.9', '11.0' ] );
-
-		$output = new BufferedOutput();
-		$this->resolve( [ '--woocommerce_version' => '11.0.1' ], [], $output );
-
-		$this->assertStringNotContainsString( 'Nothing is published', $output->fetch() );
 	}
 
 	public function test_says_so_when_no_package_covers_the_version(): void {

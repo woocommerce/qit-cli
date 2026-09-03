@@ -76,12 +76,16 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	public function test_reads_its_own_key_not_the_core_e2e_one(): void {
+		// Only the Core E2E package is published for 11.1, so reading that key
+		// would answer 11.1 where this must fall back, and only the activation
+		// package is published for 11.0, where this must answer.
 		$this->given_sync_offers( [
 			'e2e'        => $this->published( [ '11.1' ], 'woocommerce/core-e2e-tests' ),
 			'activation' => $this->published( [ '11.0' ] ),
 		] );
 
-		$this->assertSame( 'woocommerce/activation:11.0', $this->resolve_for( '11.1.0' ) );
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
+		$this->assertSame( 'woocommerce/activation:11.0', $this->resolve_for( '11.0.1' ) );
 	}
 
 	public function test_falls_back_to_the_activation_package_not_the_core_e2e_one(): void {
