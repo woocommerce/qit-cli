@@ -30,10 +30,11 @@ class RunWooE2ETestCommand extends RunE2ECommand {
 		parent::configure();
 		$this->setDescription( 'Run WooCommerce Core E2E tests' );
 		$this->configure_extension_set_option();
+		$this->configure_remote_option();
 	}
 
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
-		$remote_result = $this->run_remote_extension_set_if_provided( $input, $output, 'woo-e2e', 'woo-e2e' );
+		$remote_result = $this->run_remote_if_requested( $input, $output, 'woo-e2e', 'woo-e2e' );
 		if ( $remote_result !== null ) {
 			return $remote_result;
 		}

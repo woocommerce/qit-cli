@@ -20,8 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  *
  * For local commands, the set name is expanded into the extensions it contains
  * and merged into `--plugin`, which env:up then resolves like any other plugin
- * slug. Woo API/E2E commands use this trait to switch extension-set runs back
- * to the Manager-hosted flow instead.
+ * slug. Managed package commands also use this trait to opt into the
+ * Manager-hosted flow explicitly or when an extension set requires it.
  *
  * This trait is meant to be used in the context of Command classes.
  *
@@ -48,6 +48,18 @@ trait ExtensionSetTrait {
 			null,
 			InputOption::VALUE_OPTIONAL,
 			$set_description
+		);
+	}
+
+	/**
+	 * Register the explicit Manager-hosted execution option.
+	 */
+	protected function configure_remote_option(): void {
+		$this->addOption(
+			'remote',
+			null,
+			InputOption::VALUE_NONE,
+			'Run the managed test on QIT servers instead of locally'
 		);
 	}
 
@@ -86,26 +98,34 @@ trait ExtensionSetTrait {
 		return null;
 	}
 
-	protected function run_remote_extension_set_if_provided(
+	protected function run_remote_if_requested(
 		QITInput $input,
 		OutputInterface $output,
 		string $remote_test_type,
 		?string $profile_test_type = null
 	): ?int {
 		$extension_set_name = $input->getOption( 'extension_set' );
-		if ( empty( $extension_set_name ) ) {
+		if ( ! $input->getOption( 'remote' ) && empty( $extension_set_name ) ) {
 			return null;
 		}
 
-		$extension_set_error = $this->validate_extension_set_exists( (string) $extension_set_name, $output );
-		if ( $extension_set_error !== null ) {
-			return $extension_set_error;
+		if ( getenv( 'QIT_TEST_RUN_ID' ) !== false ) {
+			$output->writeln( '<error>Cannot start a remote test while QIT_TEST_RUN_ID is set.</error>' );
+
+			return Command::INVALID;
+		}
+
+		if ( ! empty( $extension_set_name ) ) {
+			$extension_set_error = $this->validate_extension_set_exists( (string) $extension_set_name, $output );
+			if ( $extension_set_error !== null ) {
+				return $extension_set_error;
+			}
 		}
 
 		$runner          = App::make( RemoteTestRunner::class );
 		$options_to_send = $runner->get_options_to_send_for_schema( $remote_test_type );
 
-		$unsupported_options_error = $this->validate_only_remote_options_for_remote_extension_set( $input, $output, array_keys( $options_to_send ) );
+		$unsupported_options_error = $this->validate_only_remote_options( $input, $output, array_keys( $options_to_send ) );
 		if ( $unsupported_options_error !== null ) {
 			return $unsupported_options_error;
 		}
@@ -147,7 +167,7 @@ trait ExtensionSetTrait {
 	 * @param OutputInterface $output         The command output.
 	 * @param array<string>   $schema_options Options the Manager schema accepts.
 	 */
-	private function validate_only_remote_options_for_remote_extension_set( QITInput $input, OutputInterface $output, array $schema_options ): ?int {
+	private function validate_only_remote_options( QITInput $input, OutputInterface $output, array $schema_options ): ?int {
 		$allowed_options = array_unique( array_merge(
 			$schema_options,
 			[
@@ -164,6 +184,7 @@ trait ExtensionSetTrait {
 				'print-report-url',
 				'profile',
 				'quiet',
+				'remote',
 				'timeout',
 				'verbose',
 				'version',
@@ -193,7 +214,7 @@ trait ExtensionSetTrait {
 		}
 
 		$output->writeln( sprintf(
-			'<error>--extension_set runs managed compatibility-set tests on QIT servers and cannot be combined with local-only option(s): %s.</error>',
+			'<error>Remote managed tests cannot be combined with local-only option(s): %s.</error>',
 			implode( ', ', array_unique( $provided ) )
 		) );
 

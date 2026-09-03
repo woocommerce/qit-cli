@@ -128,8 +128,10 @@ class ExtensionResolver {
 				// Step 2: Check if extension is already cached (avoid metadata API call if possible)
 				$is_cached = $this->cache_manager->is_cached( $extension, $cache_dir );
 
-				// Step 3: Fetch metadata only if not cached (version, download URL, etc.)
-				if ( ! $is_cached ) {
+				// Local metadata comes from the source itself, even when it is already cached.
+				if ( in_array( $extension->from, [ 'local', 'build' ], true ) ) {
+					$this->metadata_fetcher->fetch_metadata( [ $extension ] );
+				} elseif ( ! $is_cached ) {
 					try {
 						if ( in_array( $extension->from, [ 'wporg', 'wccom' ], true ) ) {
 							debug_log( '  Extension not cached, fetching metadata for remote extension' );

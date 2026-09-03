@@ -89,12 +89,31 @@ class ExtensionResolverWooVersionTest extends QITTestCase {
 	}
 
 	public function test_resolve_source_leaves_woo_dev_url_untouched_when_already_a_url(): void {
-		$ext          = $this->woo( '11.0.0-dev', 'url' );
-		$ext->source  = 'https://example.com/custom-woocommerce.zip';
+		$ext         = $this->woo( '11.0.0-dev', 'url' );
+		$ext->source = 'https://example.com/custom-woocommerce.zip';
 		$this->invoke( $this->resolver(), 'resolve_extension_source', $ext );
 
 		// An explicit url source is already resolved and must not be overridden.
 		$this->assertSame( 'url', $ext->from );
 		$this->assertSame( 'https://example.com/custom-woocommerce.zip', $ext->source );
+	}
+
+	public function test_resolve_extracts_version_from_cached_local_theme(): void {
+		$directory = sys_get_temp_dir() . '/qit-local-theme-' . uniqid();
+		mkdir( $directory );
+		file_put_contents( $directory . '/style.css', "/*\nTheme Name: Local Theme\nVersion: 1.2.3\n*/" );
+
+		$extension            = new Extension( 'local-theme', 'theme' );
+		$extension->from      = 'local';
+		$extension->source    = $directory;
+		$extension->directory = $directory;
+
+		try {
+			$this->resolver()->resolve( [ $extension ], sys_get_temp_dir() );
+			$this->assertSame( '1.2.3', $extension->version );
+		} finally {
+			unlink( $directory . '/style.css' );
+			rmdir( $directory );
+		}
 	}
 }
