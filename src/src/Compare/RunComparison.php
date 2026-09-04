@@ -22,6 +22,22 @@ class RunComparison {
 	 */
 	private ?array $tests = null;
 
+	/**
+	 * Memoized answer to "do these runs carry ecosystem canary annotations", which
+	 * both the canary section and the generic annotation diff need.
+	 *
+	 * @var bool|null
+	 */
+	private ?bool $canary = null;
+
+	/**
+	 * Memoized canary comparison, built once and read by both the report and the
+	 * verdict.
+	 *
+	 * @var CanaryComparison|null
+	 */
+	private ?CanaryComparison $canary_comparison = null;
+
 	public function __construct( RunSnapshot $a, RunSnapshot $b ) {
 		$this->a = $a;
 		$this->b = $b;
@@ -37,7 +53,7 @@ class RunComparison {
 		$tests       = $this->compare_tests();
 		$annotations = $this->compare_annotations();
 
-		return [
+		$comparison = [
 			'runs'        => [
 				'a' => $this->describe_run( $this->a ),
 				'b' => $this->describe_run( $this->b ),
@@ -55,28 +71,79 @@ class RunComparison {
 				'removed'        => count( $tests['removed'] ),
 				'unchanged'      => $tests['unchanged_count'],
 				'annotations'    => count( $annotations['added'] ) + count( $annotations['removed'] ),
+				'regressions'    => $this->count_regressions(),
 			],
 		];
+
+		/*
+		 * Only present when there is canary data to compare, so the shape of every
+		 * other comparison is unchanged and a consumer can tell "no canary findings"
+		 * from "these runs are not canary runs at all".
+		 */
+		if ( $this->has_canary_data() ) {
+			$comparison['canary'] = $this->canary_comparison()->to_array();
+		}
+
+		return $comparison;
 	}
 
 	/**
 	 * True when run B introduced failures that run A did not have, either as a
 	 * regression on a shared test or as a new test that fails.
+	 *
+	 * Canary results are read through their own classification rather than through
+	 * the status change, in both directions.
+	 *
+	 * A probe fails when it records anything at all, so the status is a poor proxy
+	 * for what changed. A finding that only moved probes flips two results and
+	 * would otherwise arrive here as a regression the comparison has already said
+	 * is not one. And a probe that was failing already stays failed when the
+	 * candidate adds a finding to it, so a confirmed new observation would
+	 * otherwise never reach the verdict at all.
+	 *
+	 * A probe that failed while recording nothing still counts. That failure is the
+	 * harness, not an observation, and no canary bucket will ever mention it.
 	 */
 	public function has_regressions(): bool {
-		$tests = $this->compare_tests();
+		return $this->count_regressions() > 0;
+	}
 
-		if ( count( $tests['introduced'] ) > 0 ) {
-			return true;
-		}
+	/**
+	 * How many distinct things run B introduced, by the reckoning the exit code
+	 * uses. Reported alongside the buckets so the JSON, the human summary and the
+	 * exit code cannot disagree.
+	 */
+	private function count_regressions(): int {
+		$tests       = $this->compare_tests();
+		$has_canary  = $this->has_canary_data();
+		$spoken_for  = $has_canary ? $this->canary_comparison()->tests_with_findings() : [];
+		$regressions = $has_canary ? $this->canary_comparison()->introduced_count() : 0;
 
-		foreach ( $tests['added'] as $test ) {
-			if ( $test['status'] === 'failed' ) {
-				return true;
+		foreach ( $tests['introduced'] as $test ) {
+			if ( ! isset( $spoken_for[ $test['key'] ] ) ) {
+				++$regressions;
 			}
 		}
 
-		return false;
+		foreach ( $tests['added'] as $test ) {
+			if ( $test['status'] !== 'failed' || isset( $spoken_for[ $test['key'] ] ) ) {
+				continue;
+			}
+
+			/*
+			 * A probe keeps its published id across a rename, but its CTRF test key is
+			 * its filename and description, so rewording one arrives here as a test
+			 * removed and a different one added. A probe that was failing before and is
+			 * failing now has not regressed, whatever it is called.
+			 */
+			if ( $has_canary && $this->canary_comparison()->failed_before( $test['key'] ) ) {
+				continue;
+			}
+
+			++$regressions;
+		}
+
+		return $regressions;
 	}
 
 	/**
@@ -270,6 +337,12 @@ class RunComparison {
 	 * Packages that emit structured, already-normalised data as annotations get
 	 * compared for free here, without this command knowing what the data means.
 	 *
+	 * The ecosystem canary's own annotations are the exception, and are left out
+	 * when its section is being built. A canary finding is not tied to the probe
+	 * that recorded it, so diffing it per test reports a finding that changed
+	 * probes as a regression and a fix at once - which is the whole reason
+	 * CanaryComparison exists.
+	 *
 	 * @return array{added:array<int,array<string,string>>,removed:array<int,array<string,string>>}
 	 */
 	private function compare_annotations(): array {
@@ -279,8 +352,8 @@ class RunComparison {
 		$keys = array_keys( $this->a->tests + $this->b->tests );
 
 		foreach ( $keys as $key ) {
-			$a_annotations = $this->a->tests[ $key ]['annotations'] ?? [];
-			$b_annotations = $this->b->tests[ $key ]['annotations'] ?? [];
+			$a_annotations = $this->generic_annotations( (string) $key, $this->a->tests[ $key ]['annotations'] ?? [] );
+			$b_annotations = $this->generic_annotations( (string) $key, $this->b->tests[ $key ]['annotations'] ?? [] );
 
 			foreach ( array_diff_key( $b_annotations, $a_annotations ) as $annotation ) {
 				$added[] = [
@@ -303,5 +376,45 @@ class RunComparison {
 			'added'   => $added,
 			'removed' => $removed,
 		];
+	}
+
+	/**
+	 * Drop the annotations the canary rules account for, so nothing is reported
+	 * twice and in two different ways.
+	 *
+	 * Scoped to the tests that are canary probe results, not to the whole run. A
+	 * run can carry several packages, and `probe-id` is a generic enough name that
+	 * another one could emit it - dropping it everywhere would silently swallow a
+	 * change this comparison never looked at.
+	 *
+	 * @param string                                              $key
+	 * @param array<string,array{type:string,description:string}> $annotations
+	 *
+	 * @return array<string,array{type:string,description:string}>
+	 */
+	private function generic_annotations( string $key, array $annotations ): array {
+		if ( ! $this->has_canary_data() || ! isset( $this->canary_comparison()->canary_tests()[ $key ] ) ) {
+			return $annotations;
+		}
+
+		return array_filter( $annotations, function ( array $annotation ): bool {
+			return ! in_array( $annotation['type'], CanaryComparison::HANDLED_ANNOTATIONS, true );
+		} );
+	}
+
+	private function canary_comparison(): CanaryComparison {
+		if ( is_null( $this->canary_comparison ) ) {
+			$this->canary_comparison = new CanaryComparison( $this->a, $this->b );
+		}
+
+		return $this->canary_comparison;
+	}
+
+	private function has_canary_data(): bool {
+		if ( is_null( $this->canary ) ) {
+			$this->canary = CanaryComparison::present( $this->a, $this->b );
+		}
+
+		return $this->canary;
 	}
 }
