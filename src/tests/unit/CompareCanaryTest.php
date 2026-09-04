@@ -809,4 +809,97 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 		);
 		$this->assertStringContainsString( 'every probe that could have recorded them', $result['canary']['warnings'][0] );
 	}
+
+	/**
+	 * An annotation nobody could read is not an absence. It may be the very finding
+	 * being judged, still present and merely unreadable, so calling it a fix is the
+	 * same invented improvement as reading a truncated probe's silence.
+	 */
+	public function test_an_unreadable_candidate_finding_blocks_a_resolution(): void {
+		$candidate = $this->probe( 'woo-canary.checkout.custom-fields', 'complete' );
+
+		$candidate['extra']['annotations'][] = [ 'type' => 'canary-finding', 'description' => 'not json at all' ];
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-cart.php' ),
+				] ),
+			] ),
+			$this->make_run( 1002, [ $candidate ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 0, $result['canary']['totals']['resolved'], 'The unreadable annotation could be this finding' );
+		$this->assertSame( 1, $result['canary']['totals']['unverified'] );
+		$this->assertStringContainsString( 'could not be read', $result['canary']['findings']['unverified'][0]['reason'] );
+	}
+
+	/**
+	 * A probe that failed carrying an annotation nobody could parse has been
+	 * classified into no bucket at all, so its status change is the only evidence
+	 * left that something happened. Discarding it would let a run go green on a
+	 * finding the comparison silently dropped.
+	 */
+	public function test_exit_code_gates_on_a_probe_that_failed_with_an_unreadable_finding(): void {
+		$candidate           = $this->probe( 'woo-canary.checkout.custom-fields', 'complete' );
+		$candidate['status'] = 'failed';
+
+		$candidate['extra']['annotations'][] = [ 'type' => 'canary-finding', 'description' => '{"nope":true}' ];
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ) ] ),
+			$this->make_run( 1002, [ $candidate ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 0, $result['canary']['totals']['introduced'], 'It could not be classified' );
+		$this->assertSame( 1, $result['totals']['regressions'], 'So the status change is the only evidence left' );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::FAILURE, $exit_code );
+	}
+
+	/**
+	 * A probe that recorded findings but published no state is the one most likely
+	 * to have swallowed something, so it has to reach the completeness check even
+	 * though it is in neither state map.
+	 */
+	public function test_a_probe_with_findings_but_no_state_blocks_a_resolution(): void {
+		$stateless = $this->probe( 'woo-canary.pricing.drift', 'complete', [
+			$this->finding( 'monetary-drift', 'order total' ),
+		] );
+
+		$stateless['extra']['annotations'] = array_values( array_filter(
+			$stateless['extra']['annotations'],
+			function ( $annotation ) {
+				return $annotation['type'] !== 'canary-probe-state';
+			}
+		) );
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-queue.php' ),
+				] ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$stateless,
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 0, $result['canary']['totals']['resolved'] );
+		$this->assertStringContainsString( 'woo-canary.pricing.drift', $result['canary']['findings']['unverified'][0]['reason'] );
+	}
 }

@@ -237,39 +237,32 @@ class CanaryComparison {
 	}
 
 	/**
-	 * The CTRF tests in run B whose findings are all accounted for as moved or
-	 * pre-existing, so a status change on them says nothing new.
+	 * The CTRF tests in run B carrying findings this comparison could read, and
+	 * whose status change the canary buckets have therefore already spoken for.
 	 *
-	 * A probe fails when it records anything at all, so a finding that only changed
-	 * probes flips two results: the probe that lost it passes, the probe that
-	 * gained it fails. Read as ordinary test statuses that is a fix and a
-	 * regression, which is the double report the moved bucket exists to prevent -
-	 * and it would still reach the exit code through the generic verdict.
+	 * A probe fails when it records anything at all, so its status is a poor proxy
+	 * for what changed: a finding that only moved probes flips two results, and a
+	 * probe that was failing already stays failed when a new finding lands on it.
+	 * Whichever it is, the buckets have said it, and the status change would say it
+	 * again or contradict it.
 	 *
-	 * A test that failed while recording nothing is deliberately not listed. Its
-	 * failure is the harness rather than an observation, and that is a real
-	 * regression whatever the findings say.
+	 * Only readable findings count. A probe that failed carrying an annotation
+	 * nobody could parse has been classified into no bucket at all, so its status
+	 * change is the only evidence left that something happened, and discarding that
+	 * would let a run go green on a finding the comparison silently dropped. The
+	 * same goes for a probe that failed while recording nothing: that failure is
+	 * the harness, and no bucket will ever mention it.
 	 *
 	 * @return array<string,bool>
 	 */
-	public function tests_explained_by_moves(): array {
-		$introduced = [];
-
-		foreach ( $this->compare_introduced( $this->only_b(), $this->moved_signatures() ) as $finding ) {
-			$introduced[ $finding['test'] ] = true;
-		}
-
-		$explained = [];
+	public function tests_with_findings(): array {
+		$tests = [];
 
 		foreach ( $this->b_findings as $finding ) {
-			if ( isset( $introduced[ $finding['test'] ] ) ) {
-				continue;
-			}
-
-			$explained[ $finding['test'] ] = true;
+			$tests[ $finding['test'] ] = true;
 		}
 
-		return $explained;
+		return $tests;
 	}
 
 	/**
@@ -441,6 +434,21 @@ class CanaryComparison {
 				continue;
 			}
 
+			/*
+			 * An annotation nobody could read is not an absence. It may be this very
+			 * finding, still present and merely unreadable, and calling that a fix is
+			 * the same invented improvement as reading a truncated probe's silence.
+			 */
+			if ( $this->malformed['b'] > 0 ) {
+				$entry['reason'] = sprintf(
+					'Run B carries %d finding annotation(s) that could not be read, any of which could be this one.',
+					$this->malformed['b']
+				);
+
+				$unverified[] = $entry;
+				continue;
+			}
+
 			$resolved[] = $entry;
 		}
 
@@ -478,13 +486,36 @@ class CanaryComparison {
 	private function unfinished_probes(): array {
 		$unfinished = [];
 
-		foreach ( array_keys( $this->a_states + $this->b_states ) as $probe ) {
-			if ( self::STATE_COMPLETE !== $this->state_of( $this->b_states, (string) $probe ) ) {
-				$unfinished[] = (string) $probe;
+		foreach ( $this->probe_universe() as $probe ) {
+			if ( self::STATE_COMPLETE !== $this->state_of( $this->b_states, $probe ) ) {
+				$unfinished[] = $probe;
 			}
 		}
 
 		return $unfinished;
+	}
+
+	/**
+	 * Every probe either run is known to have, whether or not it said how far it
+	 * got.
+	 *
+	 * Reading this off the state annotations alone would make a probe that recorded
+	 * findings but published no state invisible to the completeness check, and a
+	 * probe nobody can account for is the one most likely to have swallowed
+	 * something.
+	 *
+	 * @return array<int,string>
+	 */
+	private function probe_universe(): array {
+		$probes = $this->a_states + $this->b_states;
+
+		foreach ( [ $this->a_findings, $this->b_findings ] as $findings ) {
+			foreach ( $findings as $finding ) {
+				$probes[ $finding['probe'] ] = self::STATE_UNKNOWN;
+			}
+		}
+
+		return array_map( 'strval', array_keys( $probes ) );
 	}
 
 	/**

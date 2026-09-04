@@ -116,41 +116,22 @@ class RunComparison {
 	private function count_regressions(): int {
 		$tests       = $this->compare_tests();
 		$has_canary  = $this->has_canary_data();
-		$explained   = $has_canary ? $this->canary_comparison()->tests_explained_by_moves() : [];
+		$spoken_for  = $has_canary ? $this->canary_comparison()->tests_with_findings() : [];
 		$regressions = $has_canary ? $this->canary_comparison()->introduced_count() : 0;
 
 		foreach ( $tests['introduced'] as $test ) {
-			if ( ! isset( $explained[ $test['key'] ] ) && ! $this->recorded_findings( $test['key'] ) ) {
+			if ( ! isset( $spoken_for[ $test['key'] ] ) ) {
 				++$regressions;
 			}
 		}
 
 		foreach ( $tests['added'] as $test ) {
-			if ( $test['status'] === 'failed' && ! isset( $explained[ $test['key'] ] ) && ! $this->recorded_findings( $test['key'] ) ) {
+			if ( $test['status'] === 'failed' && ! isset( $spoken_for[ $test['key'] ] ) ) {
 				++$regressions;
 			}
 		}
 
 		return $regressions;
-	}
-
-	/**
-	 * True when the test carries canary findings in run B, so the canary buckets
-	 * have already spoken for it and counting its status change as well would
-	 * report the same thing twice.
-	 */
-	private function recorded_findings( string $key ): bool {
-		if ( ! $this->has_canary_data() ) {
-			return false;
-		}
-
-		foreach ( $this->b->tests[ $key ]['annotations'] ?? [] as $annotation ) {
-			if ( $annotation['type'] === CanaryComparison::FINDING_ANNOTATION ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
