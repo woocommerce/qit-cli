@@ -902,4 +902,126 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 0, $result['canary']['totals']['resolved'] );
 		$this->assertStringContainsString( 'woo-canary.pricing.drift', $result['canary']['findings']['unverified'][0]['reason'] );
 	}
+
+	/**
+	 * The test buckets are about probe results and the canary section is about
+	 * findings, so a move legitimately appears in both, saying different things. A
+	 * reader who has just been told the finding moved needs to know why the section
+	 * above disagrees.
+	 */
+	public function test_the_report_reconciles_a_move_with_the_test_buckets(): void {
+		$fatal = $this->finding( 'fatal', 'Uncaught Error @ class-wc-queue.php' );
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [ $fatal ] ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete', [ $fatal ] ),
+			] ),
+		] );
+
+		$this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertStringContainsString(
+			'Neither is a change in what the build does',
+			$this->application_tester->getDisplay()
+		);
+	}
+
+	/**
+	 * A probe keeps its published id across a rename, but its CTRF test key is its
+	 * filename and description. A probe that was failing before and is failing now
+	 * has not regressed, whatever it is called.
+	 */
+	public function test_renaming_an_already_failing_probe_does_not_gate(): void {
+		$before           = $this->probe( 'woo-canary.checkout.custom-fields', 'incomplete' );
+		$before['status'] = 'failed';
+
+		$after           = $this->probe( 'woo-canary.checkout.custom-fields', 'incomplete' );
+		$after['status'] = 'failed';
+		$after['name']   = 'woo-canary.checkout.custom-fields - reworded';
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $before ] ),
+			$this->make_run( 1002, [ $after ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( [ 'woo-canary.checkout.custom-fields - reworded' ], array_column( $result['tests']['added'], 'key' ) );
+		$this->assertSame( 0, $result['totals']['regressions'], 'It was failing before the rename too' );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::SUCCESS, $exit_code );
+	}
+
+	/**
+	 * A renamed probe that was passing and now fails is still a regression, so the
+	 * carry-over above cannot be used to hide one behind a rename.
+	 */
+	public function test_renaming_a_newly_failing_probe_still_gates(): void {
+		$after           = $this->probe( 'woo-canary.checkout.custom-fields', 'incomplete' );
+		$after['status'] = 'failed';
+		$after['name']   = 'woo-canary.checkout.custom-fields - reworded';
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ) ] ),
+			$this->make_run( 1002, [ $after ] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::FAILURE, $exit_code );
+	}
+
+	/**
+	 * A run can carry several packages, and `probe-id` is a generic enough name
+	 * that another one could emit it. Suppressing it run-wide would swallow a
+	 * change this comparison never looked at.
+	 */
+	public function test_a_non_canary_test_keeps_its_annotations(): void {
+		$other_a = [
+			'name'     => 'some other package test',
+			'status'   => 'passed',
+			'duration' => 1000,
+			'extra'    => [ 'annotations' => [ [ 'type' => 'probe-id', 'description' => 'unrelated-one' ] ] ],
+		];
+
+		$other_b            = $other_a;
+		$other_b['extra']['annotations'] = [ [ 'type' => 'probe-id', 'description' => 'unrelated-two' ] ];
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ), $other_a ] ),
+			$this->make_run( 1002, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ), $other_b ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame(
+			[ 'unrelated-two' ],
+			array_column( $result['annotations']['added'], 'description' )
+		);
+		$this->assertSame(
+			[ 'unrelated-one' ],
+			array_column( $result['annotations']['removed'], 'description' )
+		);
+	}
 }

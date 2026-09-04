@@ -515,6 +515,19 @@ HELP
 
 		$this->render_probe_states( $canary['probes']['changed'], $output, $limit );
 
+		/*
+		 * The sections above this one are about findings; the test buckets near the
+		 * top of the report are about probe results, which are a different thing. A
+		 * probe fails when it records anything, so a finding that only moved probes
+		 * shows up there as one probe passing and another failing. Both readings are
+		 * true, and a reader who has just been told the finding moved needs to know
+		 * why the other section disagrees.
+		 */
+		if ( count( $canary['findings']['moved'] ) > 0 ) {
+			$output->writeln( '<comment>A probe fails when it records anything, so a finding that moved probes also shows above as one probe resolved and another introduced. Neither is a change in what the build does.</comment>' );
+			$output->writeln( '' );
+		}
+
 		foreach ( $canary['warnings'] as $warning ) {
 			$output->writeln( sprintf( '<comment>Warning: %s</comment>', OutputFormatter::escape( $warning ) ) );
 		}

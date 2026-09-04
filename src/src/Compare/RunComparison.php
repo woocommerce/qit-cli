@@ -126,9 +126,21 @@ class RunComparison {
 		}
 
 		foreach ( $tests['added'] as $test ) {
-			if ( $test['status'] === 'failed' && ! isset( $spoken_for[ $test['key'] ] ) ) {
-				++$regressions;
+			if ( $test['status'] !== 'failed' || isset( $spoken_for[ $test['key'] ] ) ) {
+				continue;
 			}
+
+			/*
+			 * A probe keeps its published id across a rename, but its CTRF test key is
+			 * its filename and description, so rewording one arrives here as a test
+			 * removed and a different one added. A probe that was failing before and is
+			 * failing now has not regressed, whatever it is called.
+			 */
+			if ( $has_canary && $this->canary_comparison()->failed_before( $test['key'] ) ) {
+				continue;
+			}
+
+			++$regressions;
 		}
 
 		return $regressions;
@@ -340,8 +352,8 @@ class RunComparison {
 		$keys = array_keys( $this->a->tests + $this->b->tests );
 
 		foreach ( $keys as $key ) {
-			$a_annotations = $this->generic_annotations( $this->a->tests[ $key ]['annotations'] ?? [] );
-			$b_annotations = $this->generic_annotations( $this->b->tests[ $key ]['annotations'] ?? [] );
+			$a_annotations = $this->generic_annotations( (string) $key, $this->a->tests[ $key ]['annotations'] ?? [] );
+			$b_annotations = $this->generic_annotations( (string) $key, $this->b->tests[ $key ]['annotations'] ?? [] );
 
 			foreach ( array_diff_key( $b_annotations, $a_annotations ) as $annotation ) {
 				$added[] = [
@@ -368,15 +380,20 @@ class RunComparison {
 
 	/**
 	 * Drop the annotations the canary rules account for, so nothing is reported
-	 * twice and in two different ways. When neither run is a canary run there is
-	 * nothing to account for, and every annotation is compared generically.
+	 * twice and in two different ways.
 	 *
+	 * Scoped to the tests that are canary probe results, not to the whole run. A
+	 * run can carry several packages, and `probe-id` is a generic enough name that
+	 * another one could emit it - dropping it everywhere would silently swallow a
+	 * change this comparison never looked at.
+	 *
+	 * @param string                                              $key
 	 * @param array<string,array{type:string,description:string}> $annotations
 	 *
 	 * @return array<string,array{type:string,description:string}>
 	 */
-	private function generic_annotations( array $annotations ): array {
-		if ( ! $this->has_canary_data() ) {
+	private function generic_annotations( string $key, array $annotations ): array {
+		if ( ! $this->has_canary_data() || ! isset( $this->canary_comparison()->canary_tests()[ $key ] ) ) {
 			return $annotations;
 		}
 

@@ -132,6 +132,28 @@ class CanaryComparison {
 	 */
 	private array $malformed;
 
+	/**
+	 * Test keys, on either side, that are canary probe results.
+	 *
+	 * @var array<string,bool>
+	 */
+	private array $canary_tests;
+
+	/**
+	 * CTRF status of each of run A's probes, keyed by probe identity rather than
+	 * test key, so a reworded probe is still the same probe.
+	 *
+	 * @var array<string,string>
+	 */
+	private array $a_probe_status;
+
+	/**
+	 * Run B's test key to probe identity.
+	 *
+	 * @var array<string,string>
+	 */
+	private array $b_test_probe;
+
 	public function __construct( RunSnapshot $a, RunSnapshot $b ) {
 		/*
 		 * One keying scheme for both runs, decided here rather than per run.
@@ -153,6 +175,38 @@ class CanaryComparison {
 			'a' => self::malformed_findings( $a ),
 			'b' => self::malformed_findings( $b ),
 		];
+
+		$this->canary_tests   = self::canary_test_keys( $a ) + self::canary_test_keys( $b );
+		$this->a_probe_status = self::probe_statuses( $a, $by_id );
+		$this->b_test_probe   = self::test_probes( $b, $by_id );
+	}
+
+	/**
+	 * The CTRF tests, on either side, that are canary probe results.
+	 *
+	 * @return array<string,bool>
+	 */
+	public function canary_tests(): array {
+		return $this->canary_tests;
+	}
+
+	/**
+	 * True when the run B test names a probe that was already failing in run A.
+	 *
+	 * A probe keeps its published id across a rename, but its CTRF test key is its
+	 * filename and description, so rewording one makes the generic diff report the
+	 * probe as removed and a different one added. If it was failing before and is
+	 * failing now, nothing regressed, and the verdict should not read the rename as
+	 * a new failure.
+	 */
+	public function failed_before( string $b_test_key ): bool {
+		$probe = $this->b_test_probe[ $b_test_key ] ?? null;
+
+		if ( is_null( $probe ) ) {
+			return false;
+		}
+
+		return ( $this->a_probe_status[ $probe ] ?? '' ) === 'failed';
 	}
 
 	/**
@@ -701,6 +755,50 @@ class CanaryComparison {
 		}
 
 		return null;
+	}
+
+	/**
+	 * @return array<string,bool>
+	 */
+	private static function canary_test_keys( RunSnapshot $run ): array {
+		$keys = [];
+
+		foreach ( $run->tests as $test_key => $test ) {
+			foreach ( $test['annotations'] as $annotation ) {
+				if ( in_array( $annotation['type'], self::CANARY_ANNOTATIONS, true ) ) {
+					$keys[ (string) $test_key ] = true;
+					break;
+				}
+			}
+		}
+
+		return $keys;
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	private static function probe_statuses( RunSnapshot $run, bool $by_id ): array {
+		$statuses = [];
+
+		foreach ( self::test_probes( $run, $by_id ) as $test_key => $probe ) {
+			$statuses[ $probe ] = (string) $run->tests[ $test_key ]['status'];
+		}
+
+		return $statuses;
+	}
+
+	/**
+	 * @return array<string,string>
+	 */
+	private static function test_probes( RunSnapshot $run, bool $by_id ): array {
+		$probes = [];
+
+		foreach ( self::canary_test_keys( $run ) as $test_key => $unused ) {
+			$probes[ $test_key ] = self::probe_identity( $test_key, $run->tests[ $test_key ]['annotations'], $by_id );
+		}
+
+		return $probes;
 	}
 
 	/**
