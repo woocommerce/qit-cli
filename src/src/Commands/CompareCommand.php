@@ -328,28 +328,22 @@ HELP
 			$comparison['tests']['unchanged_count']
 		) );
 
-		$introduced = $comparison['totals']['introduced'] + $this->count_failed( $comparison['tests']['added'] );
+		/*
+		 * The same number the exit code gates on, so the summary cannot contradict
+		 * either the sections above it or the status the command exits with. For a
+		 * canary run that means findings rather than probe statuses: a probe fails
+		 * when it records anything, so "one more failing probe" and "one new finding"
+		 * are not the same statement.
+		 */
+		$regressions = $comparison['totals']['regressions'];
 
-		if ( $introduced === 0 ) {
+		if ( $regressions === 0 ) {
 			$output->writeln( '<info>No failures introduced by run B.</info>' );
+		} elseif ( isset( $comparison['canary'] ) ) {
+			$output->writeln( sprintf( '<fg=red>Run B introduced %d finding(s) or failure(s).</>', $regressions ) );
 		} else {
-			$output->writeln( sprintf( '<fg=red>Run B introduced %d failure(s).</>', $introduced ) );
+			$output->writeln( sprintf( '<fg=red>Run B introduced %d failure(s).</>', $regressions ) );
 		}
-	}
-
-	/**
-	 * @param array<int,array<string,mixed>> $tests
-	 */
-	private function count_failed( array $tests ): int {
-		$failed = 0;
-
-		foreach ( $tests as $test ) {
-			if ( $test['status'] === 'failed' ) {
-				++$failed;
-			}
-		}
-
-		return $failed;
 	}
 
 	/**

@@ -59,8 +59,20 @@ class CanaryComparison {
 	 * The annotation types this class accounts for, and which the generic
 	 * annotation diff therefore leaves alone: reporting a moved finding as one
 	 * annotation added and another removed is exactly what this exists to prevent.
+	 *
+	 * `probe-id` is in here because it is read as the probe's identity. Rewording a
+	 * probe changes its CTRF test key, so the generic diff would report the
+	 * unchanged id as removed from one test and added to another, contradicting the
+	 * canary section that has just recognised it as the same probe.
 	 */
-	public const HANDLED_ANNOTATIONS = [ self::FINDING_ANNOTATION, self::PROBE_STATE_ANNOTATION ];
+	public const HANDLED_ANNOTATIONS = [ self::FINDING_ANNOTATION, self::PROBE_STATE_ANNOTATION, self::PROBE_ID_ANNOTATION ];
+
+	/**
+	 * The types that make a run a canary run. `probe-id` is deliberately absent: it
+	 * is a generic enough name that another package could emit it, and one stray
+	 * annotation should not conjure a canary section onto an unrelated comparison.
+	 */
+	private const CANARY_ANNOTATIONS = [ self::FINDING_ANNOTATION, self::PROBE_STATE_ANNOTATION ];
 
 	/**
 	 * The one probe state that makes an absent finding mean something.
@@ -121,10 +133,22 @@ class CanaryComparison {
 	private array $malformed;
 
 	public function __construct( RunSnapshot $a, RunSnapshot $b ) {
-		$this->a_findings = self::findings( $a );
-		$this->b_findings = self::findings( $b );
-		$this->a_states   = self::probe_states( $a );
-		$this->b_states   = self::probe_states( $b );
+		/*
+		 * One keying scheme for both runs, decided here rather than per run.
+		 *
+		 * Keying by published id where a run has one and by test key where it does
+		 * not would key the same probe two different ways across a comparison: the
+		 * probe would look absent from the candidate, its findings would go to
+		 * unverified, and two probe state changes would appear that nobody caused.
+		 * Where either run is missing an id, both fall back to the test key, which
+		 * at least matches itself.
+		 */
+		$by_id = self::publishes_probe_ids( $a ) && self::publishes_probe_ids( $b );
+
+		$this->a_findings = self::findings( $a, $by_id );
+		$this->b_findings = self::findings( $b, $by_id );
+		$this->a_states   = self::probe_states( $a, $by_id );
+		$this->b_states   = self::probe_states( $b, $by_id );
 		$this->malformed  = [
 			'a' => self::malformed_findings( $a ),
 			'b' => self::malformed_findings( $b ),
@@ -142,7 +166,7 @@ class CanaryComparison {
 	private static function carries_canary_data( RunSnapshot $run ): bool {
 		foreach ( $run->tests as $test ) {
 			foreach ( $test['annotations'] as $annotation ) {
-				if ( in_array( $annotation['type'], self::HANDLED_ANNOTATIONS, true ) ) {
+				if ( in_array( $annotation['type'], self::CANARY_ANNOTATIONS, true ) ) {
 					return true;
 				}
 			}
@@ -202,6 +226,14 @@ class CanaryComparison {
 				'pre_existing' => count( $findings['pre_existing'] ),
 			],
 		];
+	}
+
+	/**
+	 * How many findings the candidate introduced, for a caller that wants the
+	 * verdict without the whole report.
+	 */
+	public function introduced_count(): int {
+		return count( $this->compare_introduced( $this->only_b(), $this->moved_signatures() ) );
 	}
 
 	/**
@@ -521,7 +553,7 @@ class CanaryComparison {
 
 		if ( count( $findings['unverified'] ) > 0 ) {
 			$warnings[] = sprintf(
-				'%d baseline finding(s) could not be judged: the probe that recorded them did not run to completion in run B, so their absence is not a fix.',
+				'%d baseline finding(s) could not be judged: run B did not complete every probe that could have recorded them, so their absence is not a fix. Each one says which probe.',
 				count( $findings['unverified'] )
 			);
 		}
@@ -617,15 +649,49 @@ class CanaryComparison {
 	 *
 	 * @param string                                              $test_key
 	 * @param array<string,array{type:string,description:string}> $annotations
+	 * @param bool                                                $by_id
 	 */
-	private static function probe_identity( string $test_key, array $annotations ): string {
+	private static function probe_identity( string $test_key, array $annotations, bool $by_id ): string {
+		if ( ! $by_id ) {
+			return $test_key;
+		}
+
+		return self::published_probe_id( $annotations ) ?? $test_key;
+	}
+
+	/**
+	 * @param array<string,array{type:string,description:string}> $annotations
+	 */
+	private static function published_probe_id( array $annotations ): ?string {
 		foreach ( $annotations as $annotation ) {
 			if ( self::PROBE_ID_ANNOTATION === $annotation['type'] && '' !== trim( $annotation['description'] ) ) {
 				return trim( $annotation['description'] );
 			}
 		}
 
-		return $test_key;
+		return null;
+	}
+
+	/**
+	 * True when every canary result in the run publishes a probe id.
+	 */
+	private static function publishes_probe_ids( RunSnapshot $run ): bool {
+		foreach ( $run->tests as $test ) {
+			$is_canary = false;
+
+			foreach ( $test['annotations'] as $annotation ) {
+				if ( in_array( $annotation['type'], self::CANARY_ANNOTATIONS, true ) ) {
+					$is_canary = true;
+					break;
+				}
+			}
+
+			if ( $is_canary && is_null( self::published_probe_id( $test['annotations'] ) ) ) {
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	/**
@@ -636,11 +702,11 @@ class CanaryComparison {
 	 *
 	 * @return array<string,array<string,mixed>>
 	 */
-	private static function findings( RunSnapshot $run ): array {
+	private static function findings( RunSnapshot $run, bool $by_id ): array {
 		$findings = [];
 
 		foreach ( $run->tests as $test_key => $test ) {
-			$probe = self::probe_identity( (string) $test_key, $test['annotations'] );
+			$probe = self::probe_identity( (string) $test_key, $test['annotations'], $by_id );
 
 			foreach ( $test['annotations'] as $annotation ) {
 				if ( self::FINDING_ANNOTATION !== $annotation['type'] ) {
@@ -732,11 +798,11 @@ class CanaryComparison {
 	 *
 	 * @return array<string,string>
 	 */
-	private static function probe_states( RunSnapshot $run ): array {
+	private static function probe_states( RunSnapshot $run, bool $by_id ): array {
 		$states = [];
 
 		foreach ( $run->tests as $test_key => $test ) {
-			$probe = self::probe_identity( (string) $test_key, $test['annotations'] );
+			$probe = self::probe_identity( (string) $test_key, $test['annotations'], $by_id );
 
 			foreach ( $test['annotations'] as $annotation ) {
 				if ( self::PROBE_STATE_ANNOTATION !== $annotation['type'] ) {

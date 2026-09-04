@@ -71,6 +71,7 @@ class RunComparison {
 				'removed'        => count( $tests['removed'] ),
 				'unchanged'      => $tests['unchanged_count'],
 				'annotations'    => count( $annotations['added'] ) + count( $annotations['removed'] ),
+				'regressions'    => $this->count_regressions(),
 			],
 		];
 
@@ -91,24 +92,60 @@ class RunComparison {
 	 * regression on a shared test or as a new test that fails.
 	 *
 	 * Canary results are read through their own classification rather than through
-	 * the status change. A probe fails when it records anything at all, so a
-	 * finding that only changed probes flips two results and would otherwise reach
-	 * the exit code as a regression the comparison has already said is not one. A
-	 * probe that failed while recording nothing still counts: that failure is the
-	 * harness, not an observation.
+	 * the status change, in both directions.
+	 *
+	 * A probe fails when it records anything at all, so the status is a poor proxy
+	 * for what changed. A finding that only moved probes flips two results and
+	 * would otherwise arrive here as a regression the comparison has already said
+	 * is not one. And a probe that was failing already stays failed when the
+	 * candidate adds a finding to it, so a confirmed new observation would
+	 * otherwise never reach the verdict at all.
+	 *
+	 * A probe that failed while recording nothing still counts. That failure is the
+	 * harness, not an observation, and no canary bucket will ever mention it.
 	 */
 	public function has_regressions(): bool {
-		$tests     = $this->compare_tests();
-		$explained = $this->has_canary_data() ? $this->canary_comparison()->tests_explained_by_moves() : [];
+		return $this->count_regressions() > 0;
+	}
+
+	/**
+	 * How many distinct things run B introduced, by the reckoning the exit code
+	 * uses. Reported alongside the buckets so the JSON, the human summary and the
+	 * exit code cannot disagree.
+	 */
+	private function count_regressions(): int {
+		$tests       = $this->compare_tests();
+		$has_canary  = $this->has_canary_data();
+		$explained   = $has_canary ? $this->canary_comparison()->tests_explained_by_moves() : [];
+		$regressions = $has_canary ? $this->canary_comparison()->introduced_count() : 0;
 
 		foreach ( $tests['introduced'] as $test ) {
-			if ( ! isset( $explained[ $test['key'] ] ) ) {
-				return true;
+			if ( ! isset( $explained[ $test['key'] ] ) && ! $this->recorded_findings( $test['key'] ) ) {
+				++$regressions;
 			}
 		}
 
 		foreach ( $tests['added'] as $test ) {
-			if ( $test['status'] === 'failed' && ! isset( $explained[ $test['key'] ] ) ) {
+			if ( $test['status'] === 'failed' && ! isset( $explained[ $test['key'] ] ) && ! $this->recorded_findings( $test['key'] ) ) {
+				++$regressions;
+			}
+		}
+
+		return $regressions;
+	}
+
+	/**
+	 * True when the test carries canary findings in run B, so the canary buckets
+	 * have already spoken for it and counting its status change as well would
+	 * report the same thing twice.
+	 */
+	private function recorded_findings( string $key ): bool {
+		if ( ! $this->has_canary_data() ) {
+			return false;
+		}
+
+		foreach ( $this->b->tests[ $key ]['annotations'] ?? [] as $annotation ) {
+			if ( $annotation['type'] === CanaryComparison::FINDING_ANNOTATION ) {
 				return true;
 			}
 		}

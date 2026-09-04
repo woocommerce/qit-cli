@@ -661,4 +661,152 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->assertSame( Command::FAILURE, $exit_code );
 	}
+
+	/**
+	 * A probe that was already failing stays failed when the candidate adds a
+	 * finding to it, so the status change says nothing. Reading the verdict off the
+	 * status alone would let a confirmed new observation pass CI silently.
+	 */
+	public function test_exit_code_gates_on_a_new_finding_on_an_already_failing_probe(): void {
+		$existing = $this->finding( 'fatal', 'Uncaught Error @ class-wc-cart.php' );
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [ $existing ] ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$existing,
+					$this->finding( 'monetary-drift', 'order total' ),
+				] ),
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( [], $result['tests']['introduced'], 'The probe was failing before and is failing now' );
+		$this->assertSame( 1, $result['canary']['totals']['introduced'] );
+		$this->assertSame( 1, $result['totals']['regressions'] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::FAILURE, $exit_code );
+	}
+
+	/**
+	 * The closing summary reports the number the exit code gates on, so a pure move
+	 * cannot be called a regression on the last line of a report that has just
+	 * called it a move.
+	 */
+	public function test_the_summary_does_not_call_a_move_a_regression(): void {
+		$fatal = $this->finding( 'fatal', 'Uncaught Error @ class-wc-queue.php' );
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [ $fatal ] ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete', [ $fatal ] ),
+			] ),
+		] );
+
+		$this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$display = $this->application_tester->getDisplay();
+
+		$this->assertStringContainsString( 'Moved between probes (1)', $display );
+		$this->assertStringContainsString( 'No failures introduced by run B.', $display );
+	}
+
+	/**
+	 * Keying one run by its published probe ids and the other by test keys would
+	 * key the same probe two different ways, so the probe would look absent from
+	 * the candidate. Where either run lacks an id, both fall back to the test key.
+	 */
+	public function test_a_run_without_probe_ids_still_matches_one_that_has_them(): void {
+		$baseline = $this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+			$this->finding( 'fatal', 'Uncaught Error @ class-wc-cart.php' ),
+		] );
+
+		$baseline['extra']['annotations'] = array_values( array_filter(
+			$baseline['extra']['annotations'],
+			function ( $annotation ) {
+				return $annotation['type'] !== 'probe-id';
+			}
+		) );
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $baseline ] ),
+			$this->make_run( 1002, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ) ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 1, $result['canary']['totals']['resolved'] );
+		$this->assertSame( [], $result['canary']['probes']['changed'] );
+	}
+
+	/**
+	 * `probe-id` is read as the probe's identity, so the generic diff must not
+	 * report an unchanged id as removed from one test and added to another when a
+	 * probe is reworded.
+	 */
+	public function test_probe_ids_are_left_out_of_the_generic_annotation_diff(): void {
+		$candidate         = $this->probe( 'woo-canary.checkout.custom-fields', 'complete' );
+		$candidate['name'] = 'woo-canary.checkout.custom-fields - reworded';
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ) ] ),
+			$this->make_run( 1002, [ $candidate ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$types = array_merge(
+			array_column( $result['annotations']['added'], 'type' ),
+			array_column( $result['annotations']['removed'], 'type' )
+		);
+
+		$this->assertNotContains( 'probe-id', $types );
+	}
+
+	/**
+	 * The summary warning must not claim the recording probe failed to finish, now
+	 * that a finding can be unverified while its own probe completed.
+	 */
+	public function test_the_warning_does_not_blame_a_probe_that_completed(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-queue.php' ),
+				] ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$this->probe( 'woo-canary.pricing.drift', 'incomplete' ),
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 1, $result['canary']['totals']['unverified'] );
+		$this->assertStringNotContainsString(
+			'the probe that recorded them',
+			$result['canary']['warnings'][0],
+			'The recording probe completed, so the warning must not say otherwise'
+		);
+		$this->assertStringContainsString( 'every probe that could have recorded them', $result['canary']['warnings'][0] );
+	}
 }
