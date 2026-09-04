@@ -2,6 +2,7 @@
 
 namespace QIT_CLI\Commands;
 
+use QIT_CLI\Compare\CanaryComparison;
 use QIT_CLI\Compare\RunComparison;
 use QIT_CLI\Compare\RunSnapshot;
 use QIT_CLI\QITInput;
@@ -43,6 +44,14 @@ Reports, for the two runs:
 	* Tests that were added or removed between the runs
 	* Summary counts side by side
 	* Changes to the tests' CTRF annotations
+
+Runs of the WooCommerce ecosystem canary get an extra section, because two of
+its properties defeat a plain annotation diff. A canary finding is not tied to
+the probe that recorded it - a fatal from a loopback request or a scheduled
+action lands under whichever probe was running - so a finding that changed
+probes is reported as "moved" rather than as a regression and a fix at once. And
+each probe says how far it got: a finding missing from a probe that stopped
+early was never looked for, so it is reported as such instead of as resolved.
 
 Both runs must be of the same test type, and must report results in CTRF format,
 which covers the activation, compatibility, woo-api and woo-e2e test types. Two
@@ -310,6 +319,10 @@ HELP
 
 		$this->render_annotations( $comparison['annotations'], $output, $limit );
 
+		if ( isset( $comparison['canary'] ) ) {
+			$this->render_canary( $comparison['canary'], $output, $limit );
+		}
+
 		$output->writeln( sprintf(
 			'<info>%d test(s) unchanged.</info>',
 			$comparison['tests']['unchanged_count']
@@ -483,6 +496,120 @@ HELP
 		if ( $total > 0 ) {
 			$output->writeln( '' );
 		}
+	}
+
+	/**
+	 * Print the ecosystem canary section, which reports observations rather than
+	 * assertions and so is bucketed on its own terms.
+	 *
+	 * "Moved" and "unverified" are the two buckets that only exist here, and both
+	 * are there to avoid claiming something the runs do not show: a finding that
+	 * changed probes is neither a regression nor a fix, and a finding missing from
+	 * a probe that stopped early was never looked for.
+	 *
+	 * @param array<string,mixed> $canary
+	 */
+	private function render_canary( array $canary, OutputInterface $output, int $limit ): void {
+		$output->writeln( '<options=bold>Ecosystem canary findings</>' );
+		$output->writeln( '' );
+
+		$this->render_findings( 'Introduced', $canary['findings']['introduced'], 'fg=red', $output, $limit );
+		$this->render_findings( 'Resolved', $canary['findings']['resolved'], 'fg=green', $output, $limit );
+		$this->render_moved_findings( $canary['findings']['moved'], $output, $limit );
+		$this->render_findings( 'Not looked for in run B', $canary['findings']['unverified'], 'fg=yellow', $output, $limit );
+		$this->render_findings( 'Pre-existing', $canary['findings']['pre_existing'], 'fg=gray', $output, $limit );
+
+		$this->render_probe_states( $canary['probes']['changed'], $output, $limit );
+
+		foreach ( $canary['warnings'] as $warning ) {
+			$output->writeln( sprintf( '<comment>Warning: %s</comment>', OutputFormatter::escape( $warning ) ) );
+		}
+
+		if ( ! empty( $canary['warnings'] ) ) {
+			$output->writeln( '' );
+		}
+	}
+
+	/**
+	 * @param string                         $heading
+	 * @param array<int,array<string,mixed>> $findings
+	 * @param string                         $style
+	 * @param OutputInterface                $output
+	 * @param int                            $limit
+	 */
+	private function render_findings( string $heading, array $findings, string $style, OutputInterface $output, int $limit ): void {
+		$this->render_heading( '  ' . $heading, count( $findings ), $output );
+
+		foreach ( $this->limited( $findings, $limit ) as $finding ) {
+			$output->writeln( sprintf(
+				'    <%s>%s</> <fg=gray>(%s)</>',
+				$style,
+				OutputFormatter::escape( (string) $finding['key'] ),
+				OutputFormatter::escape( $this->describe_finding_context( $finding ) )
+			) );
+		}
+
+		$this->render_truncation( count( $findings ), $limit, $output );
+	}
+
+	/**
+	 * @param array<string,mixed> $finding
+	 */
+	private function describe_finding_context( array $finding ): string {
+		$parts = array_filter( [ (string) $finding['surface'], (string) $finding['profile'] ] );
+
+		if ( ! empty( $finding['fixtures'] ) ) {
+			$parts[] = 'fixtures: ' . implode( ' + ', $finding['fixtures'] );
+		}
+
+		if ( isset( $finding['probe_state'] ) && $finding['probe_state'] !== CanaryComparison::STATE_COMPLETE ) {
+			$parts[] = 'run B probe: ' . $finding['probe_state'];
+		}
+
+		if ( isset( $finding['baseline_probe_state'] ) && $finding['baseline_probe_state'] !== CanaryComparison::STATE_COMPLETE ) {
+			$parts[] = 'run A probe: ' . $finding['baseline_probe_state'];
+		}
+
+		return implode( ', ', $parts );
+	}
+
+	/**
+	 * @param array<int,array<string,mixed>> $moved
+	 */
+	private function render_moved_findings( array $moved, OutputInterface $output, int $limit ): void {
+		$this->render_heading( '  Moved between probes', count( $moved ), $output );
+
+		foreach ( $this->limited( $moved, $limit ) as $finding ) {
+			$output->writeln( sprintf(
+				'    %s',
+				OutputFormatter::escape( (string) $finding['signature'] )
+			) );
+			$output->writeln( sprintf(
+				'      <fg=gray>%s -> %s</>',
+				OutputFormatter::escape( implode( ', ', array_column( $finding['from'], 'test' ) ) ),
+				OutputFormatter::escape( implode( ', ', array_column( $finding['to'], 'test' ) ) )
+			) );
+		}
+
+		$this->render_truncation( count( $moved ), $limit, $output );
+	}
+
+	/**
+	 * @param array<int,array<string,string>> $changed
+	 */
+	private function render_probe_states( array $changed, OutputInterface $output, int $limit ): void {
+		$this->render_heading( '  Probe state changes', count( $changed ), $output );
+
+		foreach ( $this->limited( $changed, $limit ) as $probe ) {
+			$output->writeln( sprintf(
+				'    %s <fg=gray>(%s -> %s)</>',
+				OutputFormatter::escape( $probe['test'] ),
+				$probe['a'],
+				$probe['b']
+			) );
+		}
+
+		$this->render_truncation( count( $changed ), $limit, $output );
 	}
 
 	private function render_heading( string $heading, int $count, OutputInterface $output ): void {

@@ -22,6 +22,14 @@ class RunComparison {
 	 */
 	private ?array $tests = null;
 
+	/**
+	 * Memoized answer to "do these runs carry ecosystem canary annotations", which
+	 * both the canary section and the generic annotation diff need.
+	 *
+	 * @var bool|null
+	 */
+	private ?bool $canary = null;
+
 	public function __construct( RunSnapshot $a, RunSnapshot $b ) {
 		$this->a = $a;
 		$this->b = $b;
@@ -37,7 +45,7 @@ class RunComparison {
 		$tests       = $this->compare_tests();
 		$annotations = $this->compare_annotations();
 
-		return [
+		$comparison = [
 			'runs'        => [
 				'a' => $this->describe_run( $this->a ),
 				'b' => $this->describe_run( $this->b ),
@@ -57,6 +65,17 @@ class RunComparison {
 				'annotations'    => count( $annotations['added'] ) + count( $annotations['removed'] ),
 			],
 		];
+
+		/*
+		 * Only present when there is canary data to compare, so the shape of every
+		 * other comparison is unchanged and a consumer can tell "no canary findings"
+		 * from "these runs are not canary runs at all".
+		 */
+		if ( $this->has_canary_data() ) {
+			$comparison['canary'] = ( new CanaryComparison( $this->a, $this->b ) )->to_array();
+		}
+
+		return $comparison;
 	}
 
 	/**
@@ -270,6 +289,12 @@ class RunComparison {
 	 * Packages that emit structured, already-normalised data as annotations get
 	 * compared for free here, without this command knowing what the data means.
 	 *
+	 * The ecosystem canary's own annotations are the exception, and are left out
+	 * when its section is being built. A canary finding is not tied to the probe
+	 * that recorded it, so diffing it per test reports a finding that changed
+	 * probes as a regression and a fix at once - which is the whole reason
+	 * CanaryComparison exists.
+	 *
 	 * @return array{added:array<int,array<string,string>>,removed:array<int,array<string,string>>}
 	 */
 	private function compare_annotations(): array {
@@ -279,8 +304,8 @@ class RunComparison {
 		$keys = array_keys( $this->a->tests + $this->b->tests );
 
 		foreach ( $keys as $key ) {
-			$a_annotations = $this->a->tests[ $key ]['annotations'] ?? [];
-			$b_annotations = $this->b->tests[ $key ]['annotations'] ?? [];
+			$a_annotations = $this->generic_annotations( $this->a->tests[ $key ]['annotations'] ?? [] );
+			$b_annotations = $this->generic_annotations( $this->b->tests[ $key ]['annotations'] ?? [] );
 
 			foreach ( array_diff_key( $b_annotations, $a_annotations ) as $annotation ) {
 				$added[] = [
@@ -303,5 +328,32 @@ class RunComparison {
 			'added'   => $added,
 			'removed' => $removed,
 		];
+	}
+
+	/**
+	 * Drop the annotations the canary rules account for, so nothing is reported
+	 * twice and in two different ways. When neither run is a canary run there is
+	 * nothing to account for, and every annotation is compared generically.
+	 *
+	 * @param array<string,array{type:string,description:string}> $annotations
+	 *
+	 * @return array<string,array{type:string,description:string}>
+	 */
+	private function generic_annotations( array $annotations ): array {
+		if ( ! $this->has_canary_data() ) {
+			return $annotations;
+		}
+
+		return array_filter( $annotations, function ( array $annotation ): bool {
+			return ! in_array( $annotation['type'], CanaryComparison::HANDLED_ANNOTATIONS, true );
+		} );
+	}
+
+	private function has_canary_data(): bool {
+		if ( is_null( $this->canary ) ) {
+			$this->canary = CanaryComparison::present( $this->a, $this->b );
+		}
+
+		return $this->canary;
 	}
 }
