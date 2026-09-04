@@ -238,14 +238,8 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 		$moved = $result['canary']['findings']['moved'][0];
 
 		$this->assertSame( 'fatal:Uncaught Error: scheduled action failed @ class-wc-queue.php', $moved['signature'] );
-		$this->assertSame(
-			[ 'woo-canary.checkout.custom-fields - explores something' ],
-			array_column( $moved['from'], 'test' )
-		);
-		$this->assertSame(
-			[ 'woo-canary.pricing.drift - explores something' ],
-			array_column( $moved['to'], 'test' )
-		);
+		$this->assertSame( [ 'woo-canary.checkout.custom-fields' ], array_column( $moved['from'], 'probe' ) );
+		$this->assertSame( [ 'woo-canary.pricing.drift' ], array_column( $moved['to'], 'probe' ) );
 	}
 
 	/**
@@ -334,7 +328,7 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 0, $result['canary']['totals']['resolved'] );
 		$this->assertSame( 'incomplete', $result['canary']['findings']['unverified'][0]['probe_state'] );
 		$this->assertSame(
-			[ [ 'test' => 'woo-canary.checkout.custom-fields - explores something', 'a' => 'complete', 'b' => 'incomplete' ] ],
+			[ [ 'probe' => 'woo-canary.checkout.custom-fields', 'a' => 'complete', 'b' => 'incomplete' ] ],
 			$result['canary']['probes']['changed']
 		);
 	}
@@ -510,5 +504,161 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringContainsString( 'Resolved (0)', $display );
 		$this->assertStringContainsString( 'Probe state changes (1)', $display );
 		$this->assertStringContainsString( 'could not be judged', $display );
+	}
+
+	/**
+	 * A finding is not tied to the probe that recorded it, which is the premise of
+	 * the moved bucket. So a fatal the candidate's own probe did not see may simply
+	 * have landed during another probe's window, and a probe that did not finish
+	 * published nothing. Gating on the recording probe alone would call that a fix.
+	 */
+	public function test_another_unfinished_probe_blocks_a_resolution(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-queue.php' ),
+				] ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$this->probe( 'woo-canary.pricing.drift', 'truncated' ),
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 0, $result['canary']['totals']['resolved'], 'Another probe could have recorded it and did not finish' );
+		$this->assertSame( 1, $result['canary']['totals']['unverified'] );
+
+		$unverified = $result['canary']['findings']['unverified'][0];
+
+		$this->assertSame( 'complete', $unverified['probe_state'], 'The recording probe itself did finish' );
+		$this->assertStringContainsString( 'woo-canary.pricing.drift', $unverified['reason'] );
+	}
+
+	/**
+	 * The healthy case is unaffected by that stricter rule: every probe completed,
+	 * so an absence is an absence.
+	 */
+	public function test_a_fully_completed_candidate_run_still_resolves(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-queue.php' ),
+				] ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete' ),
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 1, $result['canary']['totals']['resolved'] );
+		$this->assertSame( 0, $result['canary']['totals']['unverified'] );
+	}
+
+	/**
+	 * A CTRF test key is the probe's filename and its human-readable description,
+	 * both of which are prose. The published probe id is the identity, so rewording
+	 * a description must not make a completed probe look absent.
+	 */
+	public function test_a_reworded_probe_description_does_not_lose_the_probe(): void {
+		$candidate         = $this->probe( 'woo-canary.checkout.custom-fields', 'complete' );
+		$candidate['name'] = 'woo-canary.checkout.custom-fields - now described differently';
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-cart.php' ),
+				] ),
+			] ),
+			$this->make_run( 1002, [ $candidate ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( 1, $result['canary']['totals']['resolved'], 'The probe is identified by its id, not its description' );
+		$this->assertSame( [], $result['canary']['probes']['changed'] );
+	}
+
+	/**
+	 * A probe fails when it records anything, so a finding that only changed probes
+	 * flips two results: one probe passes, another fails. The comparison has
+	 * already said that is neither a regression nor a fix, so it must not reach the
+	 * exit code as one.
+	 */
+	public function test_exit_code_does_not_gate_on_a_finding_that_only_moved(): void {
+		$fatal = $this->finding( 'fatal', 'Uncaught Error @ class-wc-queue.php' );
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [ $fatal ] ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$this->probe( 'woo-canary.pricing.drift', 'complete', [ $fatal ] ),
+			] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::SUCCESS, $exit_code );
+	}
+
+	/**
+	 * A genuinely new finding still gates, so the reconciliation above cannot be
+	 * used to make a regression disappear.
+	 */
+	public function test_exit_code_still_gates_on_an_introduced_finding(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ) ] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-cart.php' ),
+				] ),
+			] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::FAILURE, $exit_code );
+	}
+
+	/**
+	 * A probe that failed while recording nothing failed for a reason that has
+	 * nothing to do with what it observed. That is the harness, and it gates.
+	 */
+	public function test_exit_code_gates_on_a_probe_that_failed_without_recording_anything(): void {
+		$broken           = $this->probe( 'woo-canary.checkout.custom-fields', 'incomplete' );
+		$broken['status'] = 'failed';
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ) ] ),
+			$this->make_run( 1002, [ $broken ] ),
+		] );
+
+		$exit_code = $this->application_tester->run( [
+			'command'     => 'compare',
+			'run_a'       => '1001',
+			'run_b'       => '1002',
+			'--exit-code' => true,
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertSame( Command::FAILURE, $exit_code );
 	}
 }

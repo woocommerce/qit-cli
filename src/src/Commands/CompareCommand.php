@@ -586,8 +586,8 @@ HELP
 			) );
 			$output->writeln( sprintf(
 				'      <fg=gray>%s -> %s</>',
-				OutputFormatter::escape( implode( ', ', array_column( $finding['from'], 'test' ) ) ),
-				OutputFormatter::escape( implode( ', ', array_column( $finding['to'], 'test' ) ) )
+				OutputFormatter::escape( implode( ', ', array_column( $finding['from'], 'probe' ) ) ),
+				OutputFormatter::escape( implode( ', ', array_column( $finding['to'], 'probe' ) ) )
 			) );
 		}
 
@@ -603,7 +603,7 @@ HELP
 		foreach ( $this->limited( $changed, $limit ) as $probe ) {
 			$output->writeln( sprintf(
 				'    %s <fg=gray>(%s -> %s)</>',
-				OutputFormatter::escape( $probe['test'] ),
+				OutputFormatter::escape( $probe['probe'] ),
 				$probe['a'],
 				$probe['b']
 			) );

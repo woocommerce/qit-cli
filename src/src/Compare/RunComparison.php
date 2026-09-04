@@ -30,6 +30,14 @@ class RunComparison {
 	 */
 	private ?bool $canary = null;
 
+	/**
+	 * Memoized canary comparison, built once and read by both the report and the
+	 * verdict.
+	 *
+	 * @var CanaryComparison|null
+	 */
+	private ?CanaryComparison $canary_comparison = null;
+
 	public function __construct( RunSnapshot $a, RunSnapshot $b ) {
 		$this->a = $a;
 		$this->b = $b;
@@ -72,7 +80,7 @@ class RunComparison {
 		 * from "these runs are not canary runs at all".
 		 */
 		if ( $this->has_canary_data() ) {
-			$comparison['canary'] = ( new CanaryComparison( $this->a, $this->b ) )->to_array();
+			$comparison['canary'] = $this->canary_comparison()->to_array();
 		}
 
 		return $comparison;
@@ -81,16 +89,26 @@ class RunComparison {
 	/**
 	 * True when run B introduced failures that run A did not have, either as a
 	 * regression on a shared test or as a new test that fails.
+	 *
+	 * Canary results are read through their own classification rather than through
+	 * the status change. A probe fails when it records anything at all, so a
+	 * finding that only changed probes flips two results and would otherwise reach
+	 * the exit code as a regression the comparison has already said is not one. A
+	 * probe that failed while recording nothing still counts: that failure is the
+	 * harness, not an observation.
 	 */
 	public function has_regressions(): bool {
-		$tests = $this->compare_tests();
+		$tests     = $this->compare_tests();
+		$explained = $this->has_canary_data() ? $this->canary_comparison()->tests_explained_by_moves() : [];
 
-		if ( count( $tests['introduced'] ) > 0 ) {
-			return true;
+		foreach ( $tests['introduced'] as $test ) {
+			if ( ! isset( $explained[ $test['key'] ] ) ) {
+				return true;
+			}
 		}
 
 		foreach ( $tests['added'] as $test ) {
-			if ( $test['status'] === 'failed' ) {
+			if ( $test['status'] === 'failed' && ! isset( $explained[ $test['key'] ] ) ) {
 				return true;
 			}
 		}
@@ -347,6 +365,14 @@ class RunComparison {
 		return array_filter( $annotations, function ( array $annotation ): bool {
 			return ! in_array( $annotation['type'], CanaryComparison::HANDLED_ANNOTATIONS, true );
 		} );
+	}
+
+	private function canary_comparison(): CanaryComparison {
+		if ( is_null( $this->canary_comparison ) ) {
+			$this->canary_comparison = new CanaryComparison( $this->a, $this->b );
+		}
+
+		return $this->canary_comparison;
 	}
 
 	private function has_canary_data(): bool {

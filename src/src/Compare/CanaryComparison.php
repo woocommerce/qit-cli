@@ -44,6 +44,18 @@ class CanaryComparison {
 	public const PROBE_STATE_ANNOTATION = 'canary-probe-state';
 
 	/**
+	 * The annotation carrying the probe's stable id.
+	 *
+	 * A CTRF test key is suite plus name, which for a probe means its filename and
+	 * its human-readable description. Both are prose that can be reworded without
+	 * the probe changing, and a reworded description would make a completed probe
+	 * look absent - turning resolved findings into unverified ones and inventing
+	 * probe state changes. The package publishes an id built for this, validated
+	 * against a pattern at declaration time, so that is the identity used here.
+	 */
+	public const PROBE_ID_ANNOTATION = 'probe-id';
+
+	/**
 	 * The annotation types this class accounts for, and which the generic
 	 * annotation diff therefore leaves alone: reporting a moved finding as one
 	 * annotation added and another removed is exactly what this exists to prevent.
@@ -149,8 +161,8 @@ class CanaryComparison {
 		$a_keys = array_keys( $this->a_findings );
 		$b_keys = array_keys( $this->b_findings );
 
-		$only_a = array_values( array_diff( $a_keys, $b_keys ) );
-		$only_b = array_values( array_diff( $b_keys, $a_keys ) );
+		$only_a = $this->only_a();
+		$only_b = $this->only_b();
 
 		/*
 		 * A signature moved when it left at least one probe and turned up under at
@@ -159,10 +171,7 @@ class CanaryComparison {
 		 * under a new one in B has not moved anywhere, it happened somewhere new,
 		 * and calling that a move would hide it.
 		 */
-		$moved_signatures = array_intersect_key(
-			self::signatures_of( $only_a, $this->a_findings ),
-			self::signatures_of( $only_b, $this->b_findings )
-		);
+		$moved_signatures = $this->moved_signatures();
 
 		$moved        = $this->compare_moved( $moved_signatures, $only_a, $only_b );
 		$introduced   = $this->compare_introduced( $only_b, $moved_signatures );
@@ -193,6 +202,66 @@ class CanaryComparison {
 				'pre_existing' => count( $findings['pre_existing'] ),
 			],
 		];
+	}
+
+	/**
+	 * The CTRF tests in run B whose findings are all accounted for as moved or
+	 * pre-existing, so a status change on them says nothing new.
+	 *
+	 * A probe fails when it records anything at all, so a finding that only changed
+	 * probes flips two results: the probe that lost it passes, the probe that
+	 * gained it fails. Read as ordinary test statuses that is a fix and a
+	 * regression, which is the double report the moved bucket exists to prevent -
+	 * and it would still reach the exit code through the generic verdict.
+	 *
+	 * A test that failed while recording nothing is deliberately not listed. Its
+	 * failure is the harness rather than an observation, and that is a real
+	 * regression whatever the findings say.
+	 *
+	 * @return array<string,bool>
+	 */
+	public function tests_explained_by_moves(): array {
+		$introduced = [];
+
+		foreach ( $this->compare_introduced( $this->only_b(), $this->moved_signatures() ) as $finding ) {
+			$introduced[ $finding['test'] ] = true;
+		}
+
+		$explained = [];
+
+		foreach ( $this->b_findings as $finding ) {
+			if ( isset( $introduced[ $finding['test'] ] ) ) {
+				continue;
+			}
+
+			$explained[ $finding['test'] ] = true;
+		}
+
+		return $explained;
+	}
+
+	/**
+	 * @return array<int,string>
+	 */
+	private function only_a(): array {
+		return array_values( array_diff( array_keys( $this->a_findings ), array_keys( $this->b_findings ) ) );
+	}
+
+	/**
+	 * @return array<int,string>
+	 */
+	private function only_b(): array {
+		return array_values( array_diff( array_keys( $this->b_findings ), array_keys( $this->a_findings ) ) );
+	}
+
+	/**
+	 * @return array<string,bool>
+	 */
+	private function moved_signatures(): array {
+		return array_intersect_key(
+			self::signatures_of( $this->only_a(), $this->a_findings ),
+			self::signatures_of( $this->only_b(), $this->b_findings )
+		);
 	}
 
 	/**
@@ -236,6 +305,7 @@ class CanaryComparison {
 				$moved[ $finding['signature'] ]['type']    = $finding['type'];
 				$moved[ $finding['signature'] ][ $side ][] = [
 					'key'     => $finding['key'],
+					'probe'   => $finding['probe'],
 					'test'    => $finding['test'],
 					'surface' => $finding['surface'],
 				];
@@ -274,7 +344,7 @@ class CanaryComparison {
 			}
 
 			$introduced[] = $this->describe_finding( $finding, [
-				'baseline_probe_state' => $this->state_of( $this->a_states, $finding['test'] ),
+				'baseline_probe_state' => $this->state_of( $this->a_states, $finding['probe'] ),
 			] );
 		}
 
@@ -284,8 +354,21 @@ class CanaryComparison {
 	/**
 	 * Findings run A has that run B does not, split by whether run B looked.
 	 *
-	 * The probe read is the one the baseline finding was published on, matched by
-	 * test: that is the scenario whose later steps would have found it again.
+	 * Two conditions, not one. The obvious read is the probe that recorded the
+	 * finding in the baseline, since its later steps are what would have found it
+	 * again. But a finding is not tied to the probe that recorded it - that is the
+	 * premise of the moved bucket - so a fatal the candidate's probe did not see
+	 * may simply have landed during another probe's window, and if that probe did
+	 * not finish it published nothing. Gating on the recording probe alone would
+	 * call that a fix.
+	 *
+	 * So the whole candidate run has to be conclusive. That is deliberately
+	 * stricter than it needs to be for a finding a probe measures inside its own
+	 * workflow, where another probe's truncation is irrelevant. Telling those apart
+	 * means deciding which finding types can travel, and the cost of guessing that
+	 * wrong is a false resolution, which is the one error this comparison exists to
+	 * avoid. A run where every probe completed - the healthy case, and the case in
+	 * the reproduction - is unaffected.
 	 *
 	 * @param array<int,string>  $only_a
 	 * @param array<string,bool> $moved_signatures
@@ -303,17 +386,30 @@ class CanaryComparison {
 				continue;
 			}
 
-			$state = $this->state_of( $this->b_states, $finding['test'] );
+			$state = $this->state_of( $this->b_states, $finding['probe'] );
 			$entry = $this->describe_finding( $finding, [ 'probe_state' => $state ] );
 
-			if ( self::STATE_COMPLETE === $state ) {
-				$resolved[] = $entry;
+			if ( self::STATE_COMPLETE !== $state ) {
+				$entry['reason'] = self::absence_reason( $state, $finding['probe'] );
+
+				$unverified[] = $entry;
 				continue;
 			}
 
-			$entry['reason'] = self::absence_reason( $state, $finding['test'] );
+			$unfinished = $this->unfinished_probes();
 
-			$unverified[] = $entry;
+			if ( ! empty( $unfinished ) ) {
+				$entry['reason'] = sprintf(
+					'The probe "%s" completed in run B, but %s did not, and a finding can be recorded by whichever probe is running when it happens.',
+					$finding['probe'],
+					self::list_probes( $unfinished )
+				);
+
+				$unverified[] = $entry;
+				continue;
+			}
+
+			$resolved[] = $entry;
 		}
 
 		return [
@@ -342,18 +438,47 @@ class CanaryComparison {
 	}
 
 	/**
+	 * The probes run B did not carry to completion, including any that ran in the
+	 * baseline and are missing from it altogether.
+	 *
+	 * @return array<int,string>
+	 */
+	private function unfinished_probes(): array {
+		$unfinished = [];
+
+		foreach ( array_keys( $this->a_states + $this->b_states ) as $probe ) {
+			if ( self::STATE_COMPLETE !== $this->state_of( $this->b_states, (string) $probe ) ) {
+				$unfinished[] = (string) $probe;
+			}
+		}
+
+		return $unfinished;
+	}
+
+	/**
+	 * @param array<int,string> $probes
+	 */
+	private static function list_probes( array $probes ): string {
+		if ( count( $probes ) === 1 ) {
+			return sprintf( '"%s"', $probes[0] );
+		}
+
+		return sprintf( '%d other probes', count( $probes ) );
+	}
+
+	/**
 	 * Why an absence proves nothing, in the words of the state that caused it.
 	 */
-	private static function absence_reason( string $state, string $test ): string {
+	private static function absence_reason( string $state, string $probe ): string {
 		if ( 'truncated' === $state ) {
-			return sprintf( 'The probe "%s" stopped early in run B, so this was never looked for.', $test );
+			return sprintf( 'The probe "%s" stopped early in run B, so this was never looked for.', $probe );
 		}
 
 		if ( 'incomplete' === $state ) {
-			return sprintf( 'The probe "%s" broke in run B and published nothing, so this was never looked for.', $test );
+			return sprintf( 'The probe "%s" broke in run B and published nothing, so this was never looked for.', $probe );
 		}
 
-		return sprintf( 'Run B has no completed probe "%s", so this was never looked for.', $test );
+		return sprintf( 'Run B has no completed probe "%s", so this was never looked for.', $probe );
 	}
 
 	/**
@@ -366,18 +491,18 @@ class CanaryComparison {
 	private function changed_probe_states(): array {
 		$changed = [];
 
-		foreach ( array_keys( $this->a_states + $this->b_states ) as $test ) {
-			$a = $this->state_of( $this->a_states, $test );
-			$b = $this->state_of( $this->b_states, $test );
+		foreach ( array_keys( $this->a_states + $this->b_states ) as $probe ) {
+			$a = $this->state_of( $this->a_states, (string) $probe );
+			$b = $this->state_of( $this->b_states, (string) $probe );
 
 			if ( $a === $b ) {
 				continue;
 			}
 
 			$changed[] = [
-				'test' => (string) $test,
-				'a'    => $a,
-				'b'    => $b,
+				'probe' => (string) $probe,
+				'a'     => $a,
+				'b'     => $b,
 			];
 		}
 
@@ -443,6 +568,7 @@ class CanaryComparison {
 			'surface'   => $finding['surface'],
 			'profile'   => $finding['profile'],
 			'fixtures'  => $finding['fixtures'],
+			'probe'     => $finding['probe'],
 			'test'      => $finding['test'],
 		], $extra );
 	}
@@ -486,6 +612,23 @@ class CanaryComparison {
 	}
 
 	/**
+	 * The probe's identity: its published id, or the CTRF test key when a run
+	 * predates the id being published.
+	 *
+	 * @param string                                              $test_key
+	 * @param array<string,array{type:string,description:string}> $annotations
+	 */
+	private static function probe_identity( string $test_key, array $annotations ): string {
+		foreach ( $annotations as $annotation ) {
+			if ( self::PROBE_ID_ANNOTATION === $annotation['type'] && '' !== trim( $annotation['description'] ) ) {
+				return trim( $annotation['description'] );
+			}
+		}
+
+		return $test_key;
+	}
+
+	/**
 	 * Read every `canary-finding` annotation in a run, keyed by finding key.
 	 *
 	 * Two annotations with the same key are the same identity by construction, so
@@ -497,6 +640,8 @@ class CanaryComparison {
 		$findings = [];
 
 		foreach ( $run->tests as $test_key => $test ) {
+			$probe = self::probe_identity( (string) $test_key, $test['annotations'] );
+
 			foreach ( $test['annotations'] as $annotation ) {
 				if ( self::FINDING_ANNOTATION !== $annotation['type'] ) {
 					continue;
@@ -508,6 +653,7 @@ class CanaryComparison {
 					continue;
 				}
 
+				$finding['probe']            = $probe;
 				$finding['test']             = (string) $test_key;
 				$findings[ $finding['key'] ] = $finding;
 			}
@@ -590,6 +736,8 @@ class CanaryComparison {
 		$states = [];
 
 		foreach ( $run->tests as $test_key => $test ) {
+			$probe = self::probe_identity( (string) $test_key, $test['annotations'] );
+
 			foreach ( $test['annotations'] as $annotation ) {
 				if ( self::PROBE_STATE_ANNOTATION !== $annotation['type'] ) {
 					continue;
@@ -601,7 +749,7 @@ class CanaryComparison {
 					$state = self::STATE_UNKNOWN;
 				}
 
-				$states[ (string) $test_key ] = self::least_covered( $states[ (string) $test_key ] ?? self::STATE_COMPLETE, $state );
+				$states[ $probe ] = self::least_covered( $states[ $probe ] ?? self::STATE_COMPLETE, $state );
 			}
 		}
 
