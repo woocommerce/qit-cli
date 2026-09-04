@@ -339,10 +339,23 @@ HELP
 
 		if ( $regressions === 0 ) {
 			$output->writeln( '<info>No failures introduced by run B.</info>' );
-		} elseif ( isset( $comparison['canary'] ) ) {
-			$output->writeln( sprintf( '<fg=red>Run B introduced %d finding(s) or failure(s).</>', $regressions ) );
+
+			return;
+		}
+
+		// The two are counted separately because they are different things. A probe
+		// fails when it records anything, so its findings are the finer statement and
+		// the ones the buckets above name; a failure left over is one no finding
+		// accounts for, which usually means the harness rather than the product.
+		$findings = isset( $comparison['canary'] ) ? $comparison['canary']['totals']['introduced'] : 0;
+		$failures = $regressions - $findings;
+
+		if ( $findings > 0 && $failures > 0 ) {
+			$output->writeln( sprintf( '<fg=red>Run B introduced %d canary finding(s) and %d unexplained failure(s).</>', $findings, $failures ) );
+		} elseif ( $findings > 0 ) {
+			$output->writeln( sprintf( '<fg=red>Run B introduced %d canary finding(s).</>', $findings ) );
 		} else {
-			$output->writeln( sprintf( '<fg=red>Run B introduced %d failure(s).</>', $regressions ) );
+			$output->writeln( sprintf( '<fg=red>Run B introduced %d failure(s).</>', $failures ) );
 		}
 	}
 

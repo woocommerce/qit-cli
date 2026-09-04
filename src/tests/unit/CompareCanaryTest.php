@@ -1024,4 +1024,66 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 			array_column( $result['annotations']['removed'], 'description' )
 		);
 	}
+
+	/**
+	 * Findings and leftover failures are counted separately in the summary, because
+	 * they are different things: a probe fails when it records anything, so its
+	 * findings are the finer statement, and a failure no finding accounts for
+	 * usually means the harness rather than the product.
+	 */
+	public function test_the_summary_separates_findings_from_unexplained_failures(): void {
+		$broken           = $this->probe( 'woo-canary.harness.smoke', 'incomplete' );
+		$broken['status'] = 'failed';
+
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete' ),
+				$this->probe( 'woo-canary.harness.smoke', 'complete' ),
+			] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-cart.php' ),
+				] ),
+				$broken,
+			] ),
+		] );
+
+		$this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertStringContainsString(
+			'Run B introduced 1 canary finding(s) and 1 unexplained failure(s).',
+			$this->application_tester->getDisplay()
+		);
+	}
+
+	/**
+	 * A run whose regressions are all findings says so, rather than hedging between
+	 * the two.
+	 */
+	public function test_the_summary_names_findings_when_that_is_all_there_is(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.custom-fields', 'complete' ) ] ),
+			$this->make_run( 1002, [
+				$this->probe( 'woo-canary.checkout.custom-fields', 'complete', [
+					$this->finding( 'fatal', 'Uncaught Error @ class-wc-cart.php' ),
+					$this->finding( 'http-error', '500 /?wc-ajax=checkout' ),
+				] ),
+			] ),
+		] );
+
+		$this->application_tester->run( [
+			'command' => 'compare',
+			'run_a'   => '1001',
+			'run_b'   => '1002',
+		], [ 'capture_stderr_separately' => true ] );
+
+		$this->assertStringContainsString(
+			'Run B introduced 2 canary finding(s).',
+			$this->application_tester->getDisplay()
+		);
+	}
 }
