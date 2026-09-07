@@ -44,6 +44,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 		parent::configure();
 		$this->setDescription( 'Run activation tests' );
 		$this->configure_extension_set_option();
+		$this->configure_remote_option();
 	}
 
 	/******************************************************************
@@ -52,7 +53,7 @@ class RunActivationTestCommand extends RunE2ECommand {
 	protected function doExecute( QITInput $input, OutputInterface $output ): int {
 		/** @var \QIT_CLI\QITInput $input */
 
-		$remote_result = $this->run_remote_extension_set_if_provided( $input, $output, 'activation' );
+		$remote_result = $this->run_remote_if_requested( $input, $output, 'activation' );
 		if ( $remote_result !== null ) {
 			return $remote_result;
 		}
