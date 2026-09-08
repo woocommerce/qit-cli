@@ -28,6 +28,7 @@ class ExposedRunActivationTestCommand extends RunActivationTestCommand {
  */
 class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	private const FALLBACK = 'woocommerce/activation:latest';
+	private const NIGHTLY  = 'woocommerce/activation:nightly';
 
 	/**
 	 * @param array<string, mixed>|null $offered Null removes the key.
@@ -84,14 +85,42 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 			'activation' => $this->published( [ '11.0' ] ),
 		] );
 
-		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
+		// 11.1 is ahead of the only activation line published, so it takes the
+		// nightly tag. Either way it is not `:11.1`, which is what reading the
+		// Core E2E key would have produced.
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.1.0' ) );
 		$this->assertSame( 'woocommerce/activation:11.0', $this->resolve_for( '11.0.1' ) );
 	}
 
 	public function test_falls_back_to_the_activation_package_not_the_core_e2e_one(): void {
 		$this->given_sync_offers( [ 'e2e' => $this->published( [ '11.1' ], 'woocommerce/core-e2e-tests' ) ] );
 
+		// Nothing is published for activation at all, so there is nothing for
+		// 11.1 to be ahead of and the stable fallback stands.
 		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
+	}
+
+	public function test_takes_the_nightly_package_for_a_version_ahead_of_every_published_line(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0', '11.1' ] ) ] );
+
+		// The next line, and its prerelease, before the package covering it is
+		// published: both run trunk's markup rather than the last release's.
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0' ) );
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0-rc.1' ) );
+	}
+
+	public function test_takes_the_nightly_package_for_the_nightly_channel(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0', '11.1' ] ) ] );
+
+		// `nightly` is built from trunk, so it is ahead of every published line by
+		// definition and carries no version to compare.
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( 'nightly' ) );
+	}
+
+	public function test_stops_using_nightly_once_the_line_is_published(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.1', '11.2' ] ) ] );
+
+		$this->assertSame( 'woocommerce/activation:11.2', $this->resolve_for( '11.2.0-rc.1' ) );
 	}
 
 	public function test_uses_a_version_pinned_as_a_plugin_option(): void {

@@ -34,6 +34,24 @@ trait SelectsVersionedTestPackage {
 	abstract protected function fallback_test_package(): string;
 
 	/**
+	 * What to run for a WooCommerce version newer than every published package.
+	 *
+	 * The two fallbacks answer different questions. `fallback_test_package()` is
+	 * for a version this cannot place — older than the newest line, or not a
+	 * version at all — and stays on the newest published stable line. This one is
+	 * for a version that is simply ahead: a `nightly`, or the next line's
+	 * prerelease before its package exists. Those run trunk's markup, so they get
+	 * the package published from trunk.
+	 *
+	 * Null when the package has no such tag published, which leaves the command
+	 * on the single fallback it had before. Concrete rather than abstract so a
+	 * command opts in by overriding, and one that has not stays as it was.
+	 */
+	protected function nightly_test_package(): ?string {
+		return null;
+	}
+
+	/**
 	 * The package covering the WooCommerce version this run asks for.
 	 *
 	 * Nothing is worked out here on purpose. The Manager resolves it and hands
@@ -109,18 +127,22 @@ trait SelectsVersionedTestPackage {
 			: null;
 
 		if ( $covering === null ) {
-			// Every WooCommerce version without a package of its own lands here.
-			// The run goes ahead on the default, which is worth saying out loud:
-			// the suite it runs was not written for the version it is running
-			// against, and the default is a moving tag, so a rerun may not run
-			// the same specs.
+			// Every WooCommerce version without a package of its own lands here,
+			// and they split in two. A version ahead of every published line is
+			// running trunk's markup, so it takes the package published from
+			// trunk. Anything else stays on the newest published stable line.
+			$uncovered = $this->uncovered_test_package( $requested, is_array( $versions ) ? $versions : [] );
+
+			// Worth saying out loud either way: the suite was not written for the
+			// version it is running against, and both tags move, so a rerun may
+			// not run the same specs.
 			$this->announce( $output, $speak, sprintf(
 				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
 				$requested,
-				$this->fallback_test_package()
+				$uncovered
 			) );
 
-			return $this->fallback_test_package();
+			return $uncovered;
 		}
 
 		$test_package = $package . ':' . $covering;
@@ -132,6 +154,78 @@ trait SelectsVersionedTestPackage {
 		) );
 
 		return $test_package;
+	}
+
+	/**
+	 * The package for a WooCommerce version nothing covers.
+	 *
+	 * `nightly` when the version is ahead of every published line, the stable
+	 * fallback otherwise. A command with no nightly tag published keeps the
+	 * single fallback, so this can only ever narrow what it used to return.
+	 *
+	 * @param string            $requested The version the run asked for.
+	 * @param array<int, mixed> $published Published versions, as sync data lists them.
+	 */
+	private function uncovered_test_package( string $requested, array $published ): string {
+		$nightly = $this->nightly_test_package();
+
+		if ( $nightly === null || ! self::ahead_of_published( $requested, $published ) ) {
+			return $this->fallback_test_package();
+		}
+
+		return $nightly;
+	}
+
+	/**
+	 * Whether a WooCommerce version is newer than every published package version.
+	 *
+	 * `nightly` is ahead by definition: it is built from trunk, which is always
+	 * the line no package covers yet. It is also the one request that carries no
+	 * version to compare, and resolving it to trunk's `major.minor` would only
+	 * reintroduce that question a release later.
+	 *
+	 * Everything else is compared on `major.minor`, so a prerelease counts as the
+	 * line it belongs to: 11.2.0-rc.1 is ahead while 11.1 is the newest published,
+	 * and stops being ahead the moment 11.2 is published. A version that cannot be
+	 * read as one — and there is no list to compare against on a Manager that
+	 * publishes none — is not ahead, which keeps the stable fallback.
+	 *
+	 * @param string            $requested The version the run asked for.
+	 * @param array<int, mixed> $published Published versions, as sync data lists them.
+	 */
+	private static function ahead_of_published( string $requested, array $published ): bool {
+		if ( $requested === 'nightly' ) {
+			return true;
+		}
+
+		$requested = self::major_minor( $requested );
+
+		if ( $requested === null ) {
+			return false;
+		}
+
+		$ahead = false;
+
+		foreach ( $published as $version ) {
+			if ( ! is_scalar( $version ) ) {
+				continue;
+			}
+
+			$version = self::major_minor( trim( (string) $version ) );
+
+			if ( $version === null ) {
+				// `latest`, and anything else that does not name a line.
+				continue;
+			}
+
+			if ( version_compare( $requested, $version, '<=' ) ) {
+				return false;
+			}
+
+			$ahead = true;
+		}
+
+		return $ahead;
 	}
 
 	/** Writes a line unless the caller asked for machine-readable output. */
