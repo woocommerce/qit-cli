@@ -53,13 +53,15 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	 * @param array<int, string> $versions
 	 * @return array<string, mixed>
 	 */
-	private function published( array $versions, string $package = 'woocommerce/activation', ?string $nightly = self::NIGHTLY ): array {
+	private function published( array $versions, string $package = 'woocommerce/activation', bool $with_nightly = true ): array {
 		$offered = [ 'package' => $package, 'versions' => $versions ];
 
-		// The Manager advertises the tag only while it is published, so a null
-		// here is what a Manager with no nightly tag looks like.
-		if ( $nightly !== null ) {
-			$offered['nightly'] = $nightly;
+		// The tag travels alone and is composed onto this entry's own `package`,
+		// so an entry can never advertise another package's tag. The Manager
+		// advertises it only while it is published, and false is what a Manager
+		// with none looks like.
+		if ( $with_nightly ) {
+			$offered['nightly'] = 'nightly';
 		}
 
 		return $offered;
@@ -115,7 +117,7 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 
 	public function test_keeps_the_stable_fallback_when_the_manager_advertises_no_nightly_tag(): void {
 		$this->given_sync_offers( [
-			'activation' => $this->published( [ '11.0', '11.1' ], 'woocommerce/activation', null ),
+			'activation' => $this->published( [ '11.0', '11.1' ], 'woocommerce/activation', false ),
 		] );
 
 		// The tag is not published, so naming it would send the run after a

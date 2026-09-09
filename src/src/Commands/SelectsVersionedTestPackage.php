@@ -110,8 +110,14 @@ trait SelectsVersionedTestPackage {
 		// so its absence is the answer to whether one can be run. Nothing here can
 		// check that itself: a local run picks its package before the Manager is
 		// told the run exists.
+		//
+		// A tag, not a package id — the same shape the versions arrive in, and
+		// composed onto `package` the same way, so nothing downstream can be handed
+		// a bare word where it expects a reference.
 		$nightly = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['nightly'] ?? null ) : null;
-		$nightly = is_string( $nightly ) && $nightly !== '' ? $nightly : null;
+		$nightly = is_string( $package ) && is_string( $nightly ) && $nightly !== ''
+			? $package . ':' . $nightly
+			: null;
 
 		$covering = is_string( $package ) && is_array( $versions )
 			? self::covering_version( $requested, $versions )
@@ -130,12 +136,14 @@ trait SelectsVersionedTestPackage {
 
 			// Worth saying out loud either way: the suite was not written for the
 			// version it is running against, and both tags move, so a rerun may
-			// not run the same specs.
-			$this->announce( $output, $speak, sprintf(
-				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
-				$requested,
-				$uncovered
-			) );
+			// not run the same specs. "Nothing covers it" reads as a shortfall,
+			// which is wrong for the nightly branch — nothing is meant to cover a
+			// version with no released line, and that tag is written for it.
+			$notice = $uncovered === $nightly
+				? '<comment>WooCommerce %s has no released line of its own, so its package is %s.</comment>'
+				: '<comment>No test package covers WooCommerce %s. Using %s instead.</comment>';
+
+			$this->announce( $output, $speak, sprintf( $notice, $requested, $uncovered ) );
 
 			return $uncovered;
 		}
@@ -189,6 +197,15 @@ trait SelectsVersionedTestPackage {
 	 * So: `nightly`, and anything carrying a prerelease or `-dev` suffix. A plain
 	 * `11.2.0` is released. A string that names no version at all cannot be
 	 * placed, and is treated as released for the same reason.
+	 *
+	 * Only `nightly` and a `-dev` build are trunk. A prerelease is tagged from
+	 * `release/X.Y`, which is cut before trunk bumps to the next line, so during
+	 * 11.2's RC window trunk is already 11.3.0-dev and the tag is a line further
+	 * along than the store under test. It is included anyway: the RC branched off
+	 * trunk weeks earlier, while `latest` is a whole cycle behind it, and asking
+	 * for an RC is opting into an unreleased version either way. An approximation
+	 * on an opt-in path, where a released line gets none on the default one.
+	 * Publishing the line's package ends it.
 	 */
 	private static function names_an_unreleased_version( string $requested ): bool {
 		$requested = trim( $requested );
