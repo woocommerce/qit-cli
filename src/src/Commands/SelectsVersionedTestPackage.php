@@ -190,6 +190,13 @@ trait SelectsVersionedTestPackage {
 	 * read as one — and there is no list to compare against on a Manager that
 	 * publishes none — is not ahead, which keeps the stable fallback.
 	 *
+	 * A released line counts as ahead too, not only a prerelease of one: a whole
+	 * line can go GA before its package is published. Trunk is then further ahead
+	 * than the release being tested, so its specs are an approximation. They are
+	 * the closer of the two on offer — the release branched from trunk weeks ago,
+	 * `latest` is a cycle behind it — and publishing the line's own package is
+	 * what actually settles it.
+	 *
 	 * @param string            $requested The version the run asked for.
 	 * @param array<int, mixed> $published Published versions, as sync data lists them.
 	 */
