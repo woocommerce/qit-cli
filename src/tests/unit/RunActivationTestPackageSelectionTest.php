@@ -28,6 +28,7 @@ class ExposedRunActivationTestCommand extends RunActivationTestCommand {
  */
 class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	private const FALLBACK = 'woocommerce/activation:latest';
+	private const NIGHTLY  = 'woocommerce/activation:nightly';
 
 	/**
 	 * @param array<string, mixed>|null $offered Null removes the key.
@@ -52,8 +53,18 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	 * @param array<int, string> $versions
 	 * @return array<string, mixed>
 	 */
-	private function published( array $versions, string $package = 'woocommerce/activation' ): array {
-		return [ 'package' => $package, 'versions' => $versions ];
+	private function published( array $versions, string $package = 'woocommerce/activation', bool $with_nightly = true ): array {
+		$offered = [ 'package' => $package, 'versions' => $versions ];
+
+		// The tag travels alone and is composed onto this entry's own `package`,
+		// so an entry can never advertise another package's tag. The Manager
+		// advertises it only while it is published, and false is what a Manager
+		// with none looks like.
+		if ( $with_nightly ) {
+			$offered['nightly'] = 'nightly';
+		}
+
+		return $offered;
 	}
 
 	private function resolve_for( string $woocommerce_version ): string {
@@ -91,7 +102,51 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	public function test_falls_back_to_the_activation_package_not_the_core_e2e_one(): void {
 		$this->given_sync_offers( [ 'e2e' => $this->published( [ '11.1' ], 'woocommerce/core-e2e-tests' ) ] );
 
+		// Nothing is published for activation at all, so there is nothing for
+		// 11.1 to be ahead of and the stable fallback stands.
 		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
+	}
+
+	public function test_takes_the_nightly_package_for_a_version_ahead_of_every_published_line(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0', '11.1' ] ) ] );
+
+		// A prerelease of the next line, before the package covering it exists.
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0-rc.1' ) );
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0-beta.1' ) );
+	}
+
+	public function test_keeps_the_stable_fallback_when_the_manager_advertises_no_nightly_tag(): void {
+		$this->given_sync_offers( [
+			'activation' => $this->published( [ '11.0', '11.1' ], 'woocommerce/activation', false ),
+		] );
+
+		// The tag is not published, so naming it would send the run after a
+		// package that is not there.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.2.0-rc.1' ) );
+		$this->assertSame( self::FALLBACK, $this->resolve_for( 'nightly' ) );
+	}
+
+	public function test_a_released_line_with_no_package_yet_keeps_the_stable_fallback(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0', '11.1' ] ) ] );
+
+		// 11.2.0 is released, so `stable` resolves to it and a plain
+		// `run:activation` lands here. Trunk is a line further along by then, and
+		// the default run is the wrong place to find that out.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.2.0' ) );
+	}
+
+	public function test_takes_the_nightly_package_for_the_nightly_channel(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0', '11.1' ] ) ] );
+
+		// `nightly` is built from trunk, so it is ahead of every published line by
+		// definition and carries no version to compare.
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( 'nightly' ) );
+	}
+
+	public function test_stops_using_nightly_once_the_line_is_published(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.1', '11.2' ] ) ] );
+
+		$this->assertSame( 'woocommerce/activation:11.2', $this->resolve_for( '11.2.0-rc.1' ) );
 	}
 
 	public function test_uses_a_version_pinned_as_a_plugin_option(): void {

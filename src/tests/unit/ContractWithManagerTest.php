@@ -13,6 +13,14 @@ use Symfony\Component\Console\Output\BufferedOutput;
  * Manager against a registry holding core-e2e-tests 10.0, 11.0 and 11.1, and
  * activation 10.9, 11.0, 11.1 and latest. Both halves of the contract are real;
  * only the transport is skipped.
+ *
+ * One exception, and it is the key this file exists to pin: activation's
+ * `nightly` was written in by hand, from the Manager change that emits it
+ * (Automattic/compatibility-dashboard#1816), because no deployed Manager sends
+ * it yet. So the cases below assert against an anticipated payload rather than
+ * an observed one, and a Manager that ships a different key name would leave
+ * them green while `--woo=nightly` quietly resolved to `latest` for good.
+ * Re-capture this file once that change is deployed, and delete this paragraph.
  */
 class ContractWithManagerTest extends \QIT_CLI_Tests\QITTestCase {
 	public function setUp(): void {
@@ -83,6 +91,12 @@ class ContractWithManagerTest extends \QIT_CLI_Tests\QITTestCase {
 			'stable channel'         => [ 'stable', 'woocommerce/activation:11.0' ],
 			'rc channel'             => [ 'rc', 'woocommerce/activation:11.1' ],
 			'no version given'       => [ null, 'woocommerce/activation:11.0' ],
+			// 11.2 is past everything the payload offers, so these two exercise
+			// the ahead-of-every-published-line branch against the real contract:
+			// an unreleased version takes the nightly tag, a released one does not.
+			'ahead and unreleased'   => [ '11.2.0-rc.1', 'woocommerce/activation:nightly' ],
+			'ahead and released'     => [ '11.2.0', 'woocommerce/activation:latest' ],
+			'nightly channel'        => [ 'nightly', 'woocommerce/activation:nightly' ],
 		];
 	}
 

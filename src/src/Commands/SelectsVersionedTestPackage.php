@@ -18,7 +18,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * for the runs it creates itself, and a third copy would be one too many.
  *
  * A using command declares two things: the key it is published under in sync
- * data, and what to run when nothing covers the version.
+ * data, and what to run when nothing covers the version. Which tag covers a
+ * version WooCommerce has not released is the Manager's to say, and it says so
+ * in sync data alongside the versions.
  */
 trait SelectsVersionedTestPackage {
 	/**
@@ -104,23 +106,46 @@ trait SelectsVersionedTestPackage {
 		$package  = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['package'] ?? null ) : null;
 		$versions = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['versions'] ?? null ) : null;
 
+		// The Manager advertises its nightly tag only while that tag is published,
+		// so its absence is the answer to whether one can be run. Nothing here can
+		// check that itself: a local run picks its package before the Manager is
+		// told the run exists.
+		//
+		// A tag, not a package id — the same shape the versions arrive in, and
+		// composed onto `package` the same way, so nothing downstream can be handed
+		// a bare word where it expects a reference.
+		$nightly = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['nightly'] ?? null ) : null;
+		$nightly = is_string( $package ) && is_string( $nightly ) && $nightly !== ''
+			? $package . ':' . $nightly
+			: null;
+
 		$covering = is_string( $package ) && is_array( $versions )
 			? self::covering_version( $requested, $versions )
 			: null;
 
 		if ( $covering === null ) {
-			// Every WooCommerce version without a package of its own lands here.
-			// The run goes ahead on the default, which is worth saying out loud:
-			// the suite it runs was not written for the version it is running
-			// against, and the default is a moving tag, so a rerun may not run
-			// the same specs.
-			$this->announce( $output, $speak, sprintf(
-				'<comment>No test package covers WooCommerce %s. Using %s instead.</comment>',
+			// Every WooCommerce version without a package of its own lands here,
+			// and they split in two. A version ahead of every published line is
+			// running trunk's markup, so it takes the package published from
+			// trunk. Anything else stays on the newest published stable line.
+			$uncovered = $this->uncovered_test_package(
 				$requested,
-				$this->fallback_test_package()
-			) );
+				is_array( $versions ) ? $versions : [],
+				$nightly
+			);
 
-			return $this->fallback_test_package();
+			// Worth saying out loud either way: the suite was not written for the
+			// version it is running against, and both tags move, so a rerun may
+			// not run the same specs. "Nothing covers it" reads as a shortfall,
+			// which is wrong for the nightly branch — nothing is meant to cover a
+			// version with no released line, and that tag is written for it.
+			$notice = $uncovered === $nightly
+				? '<comment>WooCommerce %s has no released line of its own, so its package is %s.</comment>'
+				: '<comment>No test package covers WooCommerce %s. Using %s instead.</comment>';
+
+			$this->announce( $output, $speak, sprintf( $notice, $requested, $uncovered ) );
+
+			return $uncovered;
 		}
 
 		$test_package = $package . ':' . $covering;
@@ -132,6 +157,125 @@ trait SelectsVersionedTestPackage {
 		) );
 
 		return $test_package;
+	}
+
+	/**
+	 * The package for a WooCommerce version nothing covers.
+	 *
+	 * The Manager's nightly tag when the version is ahead of every published line
+	 * and WooCommerce has not released it, the stable fallback otherwise. A test
+	 * type the Manager advertises no nightly tag for keeps the single fallback,
+	 * so this can only ever narrow what it used to return.
+	 *
+	 * @param string            $requested The version the run asked for.
+	 * @param array<int, mixed> $published Published versions, as sync data lists them.
+	 * @param string|null       $nightly   The tag sync data advertises, if any.
+	 */
+	private function uncovered_test_package( string $requested, array $published, ?string $nightly ): string {
+		if (
+			$nightly === null
+			|| ! self::names_an_unreleased_version( $requested )
+			|| ! self::ahead_of_published( $requested, $published )
+		) {
+			return $this->fallback_test_package();
+		}
+
+		return $nightly;
+	}
+
+	/**
+	 * Whether the request names something WooCommerce has not released.
+	 *
+	 * The nightly package is for versions that do not exist as a release yet, and
+	 * asking for one is opting in to that. A released version is a different
+	 * matter even when no package covers it: a line can go GA before its package
+	 * is published, and `stable` resolves to it, so a plain `run:activation` with
+	 * no `--woo` would land there. Sending the default run to trunk's suite for
+	 * the length of a publishing gap trades one markup mismatch for another, on
+	 * the path most runs take. It keeps the stable fallback, as it always had.
+	 *
+	 * So: `nightly`, and anything carrying a prerelease or `-dev` suffix. A plain
+	 * `11.2.0` is released. A string that names no version at all cannot be
+	 * placed, and is treated as released for the same reason.
+	 *
+	 * Only `nightly` and a `-dev` build are trunk. A prerelease is tagged from
+	 * `release/X.Y`, which is cut before trunk bumps to the next line, so during
+	 * 11.2's RC window trunk is already 11.3.0-dev and the tag is a line further
+	 * along than the store under test. It is included anyway: the RC branched off
+	 * trunk weeks earlier, while `latest` is a whole cycle behind it, and asking
+	 * for an RC is opting into an unreleased version either way. An approximation
+	 * on an opt-in path, where a released line gets none on the default one.
+	 * Publishing the line's package ends it.
+	 */
+	private static function names_an_unreleased_version( string $requested ): bool {
+		$requested = trim( $requested );
+
+		if ( $requested === 'nightly' ) {
+			return true;
+		}
+
+		if ( self::major_minor( $requested ) === null ) {
+			return false;
+		}
+
+		return preg_match( '/^\d+(?:\.\d+)*$/', $requested ) !== 1;
+	}
+
+	/**
+	 * Whether a WooCommerce version is newer than every published package version.
+	 *
+	 * `nightly` is ahead by definition: it is built from trunk, which is always
+	 * the line no package covers yet. It is also the one request that carries no
+	 * version to compare, and resolving it to trunk's `major.minor` would only
+	 * reintroduce that question a release later.
+	 *
+	 * Everything else is compared on `major.minor`, so a prerelease counts as the
+	 * line it belongs to: 11.2.0-rc.1 is ahead while 11.1 is the newest published,
+	 * and stops being ahead the moment 11.2 is published. A version that cannot be
+	 * read as one — and there is no list to compare against on a Manager that
+	 * publishes none — is not ahead, which keeps the stable fallback.
+	 *
+	 * That last case is why `nightly` and a prerelease can part company here with
+	 * nothing published: `nightly` says which build is running and needs no list,
+	 * while `11.2.0-rc.1` is a version that needs one to be placed. With no list,
+	 * placing it is a guess, and the stable fallback is the cautious guess.
+	 *
+	 * @param string            $requested The version the run asked for.
+	 * @param array<int, mixed> $published Published versions, as sync data lists them.
+	 */
+	private static function ahead_of_published( string $requested, array $published ): bool {
+		if ( $requested === 'nightly' ) {
+			return true;
+		}
+
+		$requested = self::major_minor( $requested );
+
+		if ( $requested === null ) {
+			return false;
+		}
+
+		$ahead = false;
+
+		foreach ( $published as $version ) {
+			if ( ! is_scalar( $version ) ) {
+				continue;
+			}
+
+			$version = self::major_minor( trim( (string) $version ) );
+
+			if ( $version === null ) {
+				// `latest`, and anything else that does not name a line.
+				continue;
+			}
+
+			if ( version_compare( $requested, $version, '<=' ) ) {
+				return false;
+			}
+
+			$ahead = true;
+		}
+
+		return $ahead;
 	}
 
 	/** Writes a line unless the caller asked for machine-readable output. */
