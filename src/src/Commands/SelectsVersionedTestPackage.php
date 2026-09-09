@@ -17,8 +17,9 @@ use Symfony\Component\Console\Output\OutputInterface;
  * versions. One implementation on purpose — the Manager applies the same rule
  * for the runs it creates itself, and a third copy would be one too many.
  *
- * A using command declares two things: the key it is published under in sync
- * data, and what to run when nothing covers the version.
+ * A using command declares three things: the key it is published under in sync
+ * data, what to run when nothing covers the version, and — for a command whose
+ * package has one — the tag to run for a version WooCommerce has not released.
  */
 trait SelectsVersionedTestPackage {
 	/**
@@ -169,11 +170,44 @@ trait SelectsVersionedTestPackage {
 	private function uncovered_test_package( string $requested, array $published ): string {
 		$nightly = $this->nightly_test_package();
 
-		if ( $nightly === null || ! self::ahead_of_published( $requested, $published ) ) {
+		if (
+			$nightly === null
+			|| ! self::names_an_unreleased_version( $requested )
+			|| ! self::ahead_of_published( $requested, $published )
+		) {
 			return $this->fallback_test_package();
 		}
 
 		return $nightly;
+	}
+
+	/**
+	 * Whether the request names something WooCommerce has not released.
+	 *
+	 * The nightly package is for versions that do not exist as a release yet, and
+	 * asking for one is opting in to that. A released version is a different
+	 * matter even when no package covers it: a line can go GA before its package
+	 * is published, and `stable` resolves to it, so a plain `run:activation` with
+	 * no `--woo` would land there. Sending the default run to trunk's suite for
+	 * the length of a publishing gap trades one markup mismatch for another, on
+	 * the path most runs take. It keeps the stable fallback, as it always had.
+	 *
+	 * So: `nightly`, and anything carrying a prerelease or `-dev` suffix. A plain
+	 * `11.2.0` is released. A string that names no version at all cannot be
+	 * placed, and is treated as released for the same reason.
+	 */
+	private static function names_an_unreleased_version( string $requested ): bool {
+		$requested = trim( $requested );
+
+		if ( $requested === 'nightly' ) {
+			return true;
+		}
+
+		if ( self::major_minor( $requested ) === null ) {
+			return false;
+		}
+
+		return preg_match( '/^\d+(?:\.\d+)*$/', $requested ) !== 1;
 	}
 
 	/**
@@ -190,12 +224,10 @@ trait SelectsVersionedTestPackage {
 	 * read as one — and there is no list to compare against on a Manager that
 	 * publishes none — is not ahead, which keeps the stable fallback.
 	 *
-	 * A released line counts as ahead too, not only a prerelease of one: a whole
-	 * line can go GA before its package is published. Trunk is then further ahead
-	 * than the release being tested, so its specs are an approximation. They are
-	 * the closer of the two on offer — the release branched from trunk weeks ago,
-	 * `latest` is a cycle behind it — and publishing the line's own package is
-	 * what actually settles it.
+	 * That last case is why `nightly` and a prerelease can part company here with
+	 * nothing published: `nightly` says which build is running and needs no list,
+	 * while `11.2.0-rc.1` is a version that needs one to be placed. With no list,
+	 * placing it is a guess, and the stable fallback is the cautious guess.
 	 *
 	 * @param string            $requested The version the run asked for.
 	 * @param array<int, mixed> $published Published versions, as sync data lists them.

@@ -83,6 +83,12 @@ class ContractWithManagerTest extends \QIT_CLI_Tests\QITTestCase {
 			'stable channel'         => [ 'stable', 'woocommerce/activation:11.0' ],
 			'rc channel'             => [ 'rc', 'woocommerce/activation:11.1' ],
 			'no version given'       => [ null, 'woocommerce/activation:11.0' ],
+			// 11.2 is past everything the payload offers, so these two exercise
+			// the ahead-of-every-published-line branch against the real contract:
+			// an unreleased version takes the nightly tag, a released one does not.
+			'ahead and unreleased'   => [ '11.2.0-rc.1', 'woocommerce/activation:nightly' ],
+			'ahead and released'     => [ '11.2.0', 'woocommerce/activation:latest' ],
+			'nightly channel'        => [ 'nightly', 'woocommerce/activation:nightly' ],
 		];
 	}
 

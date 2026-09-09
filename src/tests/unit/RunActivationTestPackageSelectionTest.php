@@ -85,10 +85,7 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 			'activation' => $this->published( [ '11.0' ] ),
 		] );
 
-		// 11.1 is ahead of the only activation line published, so it takes the
-		// nightly tag. Either way it is not `:11.1`, which is what reading the
-		// Core E2E key would have produced.
-		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.1.0' ) );
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.1.0' ) );
 		$this->assertSame( 'woocommerce/activation:11.0', $this->resolve_for( '11.0.1' ) );
 	}
 
@@ -103,10 +100,18 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	public function test_takes_the_nightly_package_for_a_version_ahead_of_every_published_line(): void {
 		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0', '11.1' ] ) ] );
 
-		// The next line, and its prerelease, before the package covering it is
-		// published: both run trunk's markup rather than the last release's.
-		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0' ) );
+		// A prerelease of the next line, before the package covering it exists.
 		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0-rc.1' ) );
+		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0-beta.1' ) );
+	}
+
+	public function test_a_released_line_with_no_package_yet_keeps_the_stable_fallback(): void {
+		$this->given_sync_offers( [ 'activation' => $this->published( [ '11.0', '11.1' ] ) ] );
+
+		// 11.2.0 is released, so `stable` resolves to it and a plain
+		// `run:activation` lands here. Trunk is a line further along by then, and
+		// the default run is the wrong place to find that out.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.2.0' ) );
 	}
 
 	public function test_takes_the_nightly_package_for_the_nightly_channel(): void {
