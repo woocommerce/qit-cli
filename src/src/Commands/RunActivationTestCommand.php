@@ -37,17 +37,6 @@ class RunActivationTestCommand extends RunE2ECommand {
 		return 'woocommerce/activation:latest';
 	}
 
-	/**
-	 * Used for a WooCommerce version ahead of every published line.
-	 *
-	 * The activation suite drives WooCommerce's admin UI, and that markup is
-	 * where the two tags part company: trunk opens the add-products search as
-	 * the modal initialises, the published lines do not.
-	 */
-	protected function nightly_test_package(): ?string {
-		return 'woocommerce/activation:nightly';
-	}
-
 	/******************************************************************
 	 * CLI definition
 	 *****************************************************************/

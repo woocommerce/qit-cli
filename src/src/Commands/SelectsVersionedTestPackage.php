@@ -17,9 +17,10 @@ use Symfony\Component\Console\Output\OutputInterface;
  * versions. One implementation on purpose — the Manager applies the same rule
  * for the runs it creates itself, and a third copy would be one too many.
  *
- * A using command declares three things: the key it is published under in sync
- * data, what to run when nothing covers the version, and — for a command whose
- * package has one — the tag to run for a version WooCommerce has not released.
+ * A using command declares two things: the key it is published under in sync
+ * data, and what to run when nothing covers the version. Which tag covers a
+ * version WooCommerce has not released is the Manager's to say, and it says so
+ * in sync data alongside the versions.
  */
 trait SelectsVersionedTestPackage {
 	/**
@@ -33,24 +34,6 @@ trait SelectsVersionedTestPackage {
 
 	/** What to run when no published version covers the WooCommerce version. */
 	abstract protected function fallback_test_package(): string;
-
-	/**
-	 * What to run for a WooCommerce version newer than every published package.
-	 *
-	 * The two fallbacks answer different questions. `fallback_test_package()` is
-	 * for a version this cannot place — older than the newest line, or not a
-	 * version at all — and stays on the newest published stable line. This one is
-	 * for a version that is simply ahead: a `nightly`, or the next line's
-	 * prerelease before its package exists. Those run trunk's markup, so they get
-	 * the package published from trunk.
-	 *
-	 * Null when the package has no such tag published, which leaves the command
-	 * on the single fallback it had before. Concrete rather than abstract so a
-	 * command opts in by overriding, and one that has not stays as it was.
-	 */
-	protected function nightly_test_package(): ?string {
-		return null;
-	}
 
 	/**
 	 * The package covering the WooCommerce version this run asks for.
@@ -123,6 +106,13 @@ trait SelectsVersionedTestPackage {
 		$package  = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['package'] ?? null ) : null;
 		$versions = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['versions'] ?? null ) : null;
 
+		// The Manager advertises its nightly tag only while that tag is published,
+		// so its absence is the answer to whether one can be run. Nothing here can
+		// check that itself: a local run picks its package before the Manager is
+		// told the run exists.
+		$nightly = is_array( $offered ) ? ( $offered[ $this->package_test_type() ]['nightly'] ?? null ) : null;
+		$nightly = is_string( $nightly ) && $nightly !== '' ? $nightly : null;
+
 		$covering = is_string( $package ) && is_array( $versions )
 			? self::covering_version( $requested, $versions )
 			: null;
@@ -132,7 +122,11 @@ trait SelectsVersionedTestPackage {
 			// and they split in two. A version ahead of every published line is
 			// running trunk's markup, so it takes the package published from
 			// trunk. Anything else stays on the newest published stable line.
-			$uncovered = $this->uncovered_test_package( $requested, is_array( $versions ) ? $versions : [] );
+			$uncovered = $this->uncovered_test_package(
+				$requested,
+				is_array( $versions ) ? $versions : [],
+				$nightly
+			);
 
 			// Worth saying out loud either way: the suite was not written for the
 			// version it is running against, and both tags move, so a rerun may
@@ -160,16 +154,16 @@ trait SelectsVersionedTestPackage {
 	/**
 	 * The package for a WooCommerce version nothing covers.
 	 *
-	 * `nightly` when the version is ahead of every published line, the stable
-	 * fallback otherwise. A command with no nightly tag published keeps the
-	 * single fallback, so this can only ever narrow what it used to return.
+	 * The Manager's nightly tag when the version is ahead of every published line
+	 * and WooCommerce has not released it, the stable fallback otherwise. A test
+	 * type the Manager advertises no nightly tag for keeps the single fallback,
+	 * so this can only ever narrow what it used to return.
 	 *
 	 * @param string            $requested The version the run asked for.
 	 * @param array<int, mixed> $published Published versions, as sync data lists them.
+	 * @param string|null       $nightly   The tag sync data advertises, if any.
 	 */
-	private function uncovered_test_package( string $requested, array $published ): string {
-		$nightly = $this->nightly_test_package();
-
+	private function uncovered_test_package( string $requested, array $published, ?string $nightly ): string {
 		if (
 			$nightly === null
 			|| ! self::names_an_unreleased_version( $requested )

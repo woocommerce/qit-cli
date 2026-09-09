@@ -53,8 +53,16 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 	 * @param array<int, string> $versions
 	 * @return array<string, mixed>
 	 */
-	private function published( array $versions, string $package = 'woocommerce/activation' ): array {
-		return [ 'package' => $package, 'versions' => $versions ];
+	private function published( array $versions, string $package = 'woocommerce/activation', ?string $nightly = self::NIGHTLY ): array {
+		$offered = [ 'package' => $package, 'versions' => $versions ];
+
+		// The Manager advertises the tag only while it is published, so a null
+		// here is what a Manager with no nightly tag looks like.
+		if ( $nightly !== null ) {
+			$offered['nightly'] = $nightly;
+		}
+
+		return $offered;
 	}
 
 	private function resolve_for( string $woocommerce_version ): string {
@@ -103,6 +111,17 @@ class RunActivationTestPackageSelectionTest extends \QIT_CLI_Tests\QITTestCase {
 		// A prerelease of the next line, before the package covering it exists.
 		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0-rc.1' ) );
 		$this->assertSame( self::NIGHTLY, $this->resolve_for( '11.2.0-beta.1' ) );
+	}
+
+	public function test_keeps_the_stable_fallback_when_the_manager_advertises_no_nightly_tag(): void {
+		$this->given_sync_offers( [
+			'activation' => $this->published( [ '11.0', '11.1' ], 'woocommerce/activation', null ),
+		] );
+
+		// The tag is not published, so naming it would send the run after a
+		// package that is not there.
+		$this->assertSame( self::FALLBACK, $this->resolve_for( '11.2.0-rc.1' ) );
+		$this->assertSame( self::FALLBACK, $this->resolve_for( 'nightly' ) );
 	}
 
 	public function test_a_released_line_with_no_package_yet_keeps_the_stable_fallback(): void {
