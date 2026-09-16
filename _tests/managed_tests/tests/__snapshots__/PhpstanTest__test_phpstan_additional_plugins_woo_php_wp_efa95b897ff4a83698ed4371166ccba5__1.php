@@ -48,8 +48,10 @@
             "phpstan_level": 2,
             "test_variation": "",
             "test_packages": [],
+            "test_package_checksums": [],
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
+            "validation_policy_version": "",
             "test_result_json_extracted": "{EXTRACTED}"
         },
         {

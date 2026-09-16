@@ -36,7 +36,7 @@
             },
             "test_results_manager_url": "https:\\/\\/test-results-manager.com",
             "test_results_manager_expiration": 1234567890,
-            "test_summary": "Tests: 140 total, 138 passed, 0 failed, 2 skipped",
+            "test_summary": "Tests: 126 total, 123 passed, 0 failed, 3 skipped",
             "version": "undefined",
             "update_complete": true,
             "malware_whitelist_paths": [],
@@ -46,9 +46,15 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_packages": [],
+            "test_packages": [
+                "woocommerce\\/core-e2e-tests:11.1"
+            ],
+            "test_package_checksums": {
+                "woocommerce\\/core-e2e-tests:11.1": "12e13909de8c7e838552ea28eafdb0b167092a1ef406717b483e9ac8098ab351"
+            },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
+            "validation_policy_version": "",
             "extension_specs": [
                 {
                     "slug": "woocommerce",
@@ -77,10 +83,10 @@
                         }
                     },
                     "summary": {
-                        "tests": 140,
-                        "passed": 138,
+                        "tests": 126,
+                        "passed": 123,
                         "failed": 0,
-                        "skipped": 2,
+                        "skipped": 3,
                         "pending": 0,
                         "other": 0,
                         "start": 1111111111,
@@ -89,16 +95,16 @@
                     "tests": [
                         {
                             "name": "wp plugin activate woocommerce",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-0",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-0",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Plugin already activated.\\nWarning: Plugin \'woocommerce\' is already active.",
@@ -110,17 +116,61 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "wp user create customer customer@woocommercecoree2etestsuite.com --user_pass=password --role=customer --first_name=Jane --last_name=Smith",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-1",
+                            "name": "wp theme install twentytwentythree --activate",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-1",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Installing Twenty Twenty-Three (1.7)\\nDownloading installation package from https:\\/\\/downloads.wordpress.org\\/theme\\/twentytwentythree.1.7.zip...\\nUsing cached file \'\\/qit\\/cache\\/wp-cli\\/theme\\/twentytwentythree-1.7.zip\'...\\nUnpacking the package...\\nInstalling the theme...\\nTheme installed successfully.\\nActivating \'twentytwentythree\'...\\nSuccess: Switched to \'Twenty Twenty-Three\' theme.\\nSuccess: Installed 1 of 1 themes.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp rewrite structure \'\\/%postname%\\/\' --hard",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-2",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
+                                "testType": "e2e",
+                                "exitCode": 0,
+                                "output": "Success: Rewrite structure set.\\nWarning: Regenerating a .htaccess file requires special configuration. See usage docs.\\nSuccess: Rewrite rules flushed.\\nWarning: Regenerating a .htaccess file requires special configuration. See usage docs.",
+                                "isLifecycle": true,
+                                "countsTowardTotals": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "wp user create customer customer@woocommercecoree2etestsuite.com --user_pass=password --role=customer --first_name=Jane --last_name=Smith",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-3",
+                            "status": "passed",
+                            "duration": 999,
+                            "extra": {
+                                "type": "lifecycle",
+                                "phase": "globalSetup",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Created user 2.",
@@ -133,16 +183,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile_completed yes",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-2",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-4",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
@@ -155,16 +205,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_redirect_to_setup no",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-3",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-5",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_redirect_to_setup\' option.",
@@ -177,16 +227,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile \'{\\"completed\\":true,\\"skipped\\":true}\' --format=json",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-4",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-6",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile\' option.",
@@ -199,16 +249,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_coming_soon no",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-5",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-7",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_coming_soon\' option.",
@@ -221,16 +271,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_store_pages_only no",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-6",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-8",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_store_pages_only\' option.",
@@ -243,16 +293,16 @@
                         },
                         {
                             "name": "wp option update blogname \'WooCommerce Core E2E Test Suite\'",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-7",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-9",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'blogname\' option.",
@@ -265,16 +315,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_enable_ajax_add_to_cart yes",
-                            "id": "woocommerce\\/core-e2e-tests:latest-globalSetup-8",
+                            "id": "woocommerce\\/core-e2e-tests:11.1-globalSetup-10",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/core-e2e-tests:latest",
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "package": "woocommerce\\/core-e2e-tests:11.1",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Value passed for \'woocommerce_enable_ajax_add_to_cart\' option is unchanged.",
@@ -310,13 +360,13 @@
                                         "type": "skip",
                                         "description": "Skipping installing WC using WC Beta Tester; INSTALL_WC not found.",
                                         "location": {
-                                            "file": "\\/tmp\\/qit-cache\\/packages\\/afc7c3d8e592598aad011f844226664c\\/fixtures\\/install-wc.setup.ts",
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/01817ecfff68e84a9b0ea8db7aab95fa\\/fixtures\\/install-wc.setup.ts",
                                             "line": 23,
                                             "column": 8
                                         }
                                     }
                                 ],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -357,7 +407,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -386,6 +436,10 @@
                                     "status": "passed"
                                 },
                                 {
+                                    "name": "enable product object caching",
+                                    "status": "passed"
+                                },
+                                {
                                     "name": "disable coming soon",
                                     "status": "passed"
                                 },
@@ -400,6 +454,26 @@
                                 {
                                     "name": "general settings",
                                     "status": "passed"
+                                },
+                                {
+                                    "name": "tax display settings",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "clear tax rates",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "clear orphaned tax classes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "enable offline payment gateways",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "enable baseline free shipping",
+                                    "status": "passed"
                                 }
                             ],
                             "suite": "site setup > ..\\/fixtures\\/site.setup.ts",
@@ -412,7 +486,279 @@
                             ],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should add only one product to the cart with AJAX add to cart buttons disabled and \\"Geolocate (with page caching support)\\" as the default customer location",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > cart\\/add-to-cart.spec.ts > Add to Cart behavior",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "should be able to navigate and remove item from mini cart using keyboard",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@could-be-lower-level-test"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/add-to-cart.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Add product to cart and open mini cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify and interact with remove button",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify cart is empty",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > cart\\/add-to-cart.spec.ts > Add to Cart behavior",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can undo product removal in classic cart",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "add product to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "remove product and verify undo link appears",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "click undo to restore product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "remove product again after undo",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify undo link disappears after navigation",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > cart\\/cart.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can add and remove products, increase quantity and proceed to checkout - blocks cart",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "empty cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "one product in cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can increase quantity",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can add another product to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can proceed to checkout and return",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the first product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the last product",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > cart\\/cart.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can add and remove products, increase quantity and proceed to checkout - classic cart",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/cart.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "empty cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "one product in cart is displayed",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can increase quantity",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can add another product to cart",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can proceed to checkout and return",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the first product",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "can remove the last product",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > cart\\/cart.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -448,7 +794,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -484,7 +830,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -520,7 +866,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -556,7 +902,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -592,7 +938,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -628,7 +974,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -664,7 +1010,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -700,7 +1046,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -736,7 +1082,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -772,7 +1118,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -784,7 +1130,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "allows cart block to apply coupon of any type",
+                            "name": "applies a coupon via the cart block form",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -792,8 +1138,7 @@
                             "rawStatus": "passed",
                             "tags": [
                                 "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
+                                "@services"
                             ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.ts",
@@ -808,79 +1153,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "allows cart block to apply multiple coupons",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/cart-block-coupons.spec.ts > Cart Block Applying Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "prevents cart block applying same coupon twice",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-block-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/cart-block-coupons.spec.ts > Cart Block Applying Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -916,7 +1189,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -928,7 +1201,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "allows applying coupon of type fixed_cart",
+                            "name": "applies a coupon via the classic cart form",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -937,24 +1210,14 @@
                             "tags": [
                                 "@payments",
                                 "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
+                                "@hpos"
                             ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and apply coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and apply coupons",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
+                            "steps": [],
+                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart applying coupons",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -962,7 +1225,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -974,7 +1237,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "allows applying coupon of type percent",
+                            "name": "rejected coupon surfaces its error in cart and checkout",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -983,238 +1246,7 @@
                             "tags": [
                                 "@payments",
                                 "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and apply coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and apply coupons",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "allows applying coupon of type fixed_product",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and apply coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and apply coupons",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "prevents applying same coupon twice",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try applying same coupon twice",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try applying same coupon twice",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "allows applying multiple coupons",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try applying multiple coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try applying multiple coupons",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "restores total when coupons are removed",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try restoring total when removed coupons",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try restoring total when removed coupons",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-coupons.spec.ts > Cart & Checkout applying coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "expired coupon cannot be used",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
+                                "@hpos"
                             ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
@@ -1222,11 +1254,11 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Load cart page and try expired coupon usage",
+                                    "name": "cart",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Load checkout page and try expired coupon usage",
+                                    "name": "checkout",
                                     "status": "passed"
                                 }
                             ],
@@ -1238,7 +1270,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1250,7 +1282,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "coupon requiring min and max amounts and can only be used alone can only be used within limits",
+                            "name": "accepted coupon surfaces success in cart and checkout",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -1259,8 +1291,7 @@
                             "tags": [
                                 "@payments",
                                 "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
+                                "@hpos"
                             ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
@@ -1268,11 +1299,11 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Load cart page and try limited coupon usage",
+                                    "name": "cart",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Load checkout page and try limited coupon usage",
+                                    "name": "checkout",
                                     "status": "passed"
                                 }
                             ],
@@ -1284,7 +1315,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1296,7 +1327,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "coupon cannot be used on sale item",
+                            "name": "email-restricted coupon can be used by the right customer but only once",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -1305,284 +1336,7 @@
                             "tags": [
                                 "@payments",
                                 "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try coupon usage on sale item",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try coupon usage on sale item",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "coupon can only be used twice",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try over limit coupon usage",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try over limit coupon usage",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "coupon cannot be used on certain products\\/categories (included product\\/category)",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try included certain items coupon usage",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try included certain items coupon usage",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "coupon can be used on certain products\\/categories",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try on certain products coupon usage",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try on certain products coupon usage",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "coupon cannot be used on specific products\\/categories (excluded product\\/category)",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try excluded items coupon usage",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try excluded items coupon usage",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "coupon can be used on other products\\/categories",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "Load cart page and try coupon usage on other items",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "Load checkout page and try coupon usage on other items",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "coupon cannot be used by any customer on cart (email restricted)",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
+                                "@hpos"
                             ],
                             "type": "e2e",
                             "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
@@ -1597,7 +1351,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1609,81 +1363,7 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "coupon cannot be used by any customer on checkout (email restricted)",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "coupon can be used by the right customer (email restricted) but only once",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@payments",
-                                "@services",
-                                "@hpos",
-                                "@could-be-lower-level-test"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/cart-checkout-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [],
-                            "suite": "e2e > coupons\\/cart-checkout-restricted-coupons.spec.ts > Cart & Checkout Restricted Coupons",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new fixedCart coupon",
+                            "name": "can create a product-restricted coupon through the admin form",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
@@ -1693,12 +1373,12 @@
                                 "@services"
                             ],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
+                            "filePath": "\\/normalized\\/path\\/coupons.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "add new coupon",
+                                    "name": "fill the rendered coupon form",
                                     "status": "passed"
                                 },
                                 {
@@ -1706,11 +1386,11 @@
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "verify coupon creation",
+                                    "name": "verify persisted product restriction",
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
+                            "suite": "e2e > coupons\\/coupons.spec.ts > Coupon management",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -1718,7 +1398,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -1730,34 +1410,40 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can create new fixedProduct coupon",
+                            "name": "Merchant can view a list of all customers, filter and download",
                             "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
                             "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
+                            "tags": [],
                             "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
+                            "filePath": "\\/normalized\\/path\\/customer-list.spec.ts",
                             "retries": 0,
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "add new coupon",
+                                    "name": "Go to the customers reports page",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "publish the coupon",
+                                    "name": "Check that the customers are displayed in the list",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "verify coupon creation",
+                                    "name": "Check that the customer list can be filtered by first name",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Hide and display columns",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Download the customer list",
                                     "status": "passed"
                                 }
                             ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
+                            "suite": "e2e > customer\\/customer-list.spec.ts > Merchant > Customer List",
                             "attachments": [],
                             "stdout": [
                                 "[IGNORED FOR WOO-E2E]"
@@ -1765,812 +1451,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new percentage coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new expiryDate coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon expiry date",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new freeShipping coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-coupon.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify free shipping",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-coupon.spec.ts > Coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new minimumSpend coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set minimum spend coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify minimum spend coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new maximumSpend coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set maximum spend coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify maximum spend coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new individualUse coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set individual use coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify individual use coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new excludeSaleItems coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set exclude sale items coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify exclude sale items coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new productCategories coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set product categories coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify product categories coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new excludeProductCategories coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set exclude product categories coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify exclude product categories coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new excludeProductBrands coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set exclude product brands coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new products coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set products coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify products coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new excludeProducts coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set exclude products coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify exclude products coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new allowedEmails coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set allowed emails coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify allowed emails coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new usageLimitPerCoupon coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set usage limit coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify usage limit coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
-                                "phase": "run",
-                                "testType": "e2e",
-                                "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/core-e2e-tests",
-                                "isLocal": false,
-                                "packageType": "test",
-                                "packageOrder": 1
-                            },
-                            "retryAttempts": []
-                        },
-                        {
-                            "name": "can create new usageLimitPerUser coupon",
-                            "status": "passed",
-                            "duration": 999,
-                            "start": 1111111111,
-                            "stop": 2222222222,
-                            "rawStatus": "passed",
-                            "tags": [
-                                "@services"
-                            ],
-                            "type": "e2e",
-                            "filePath": "\\/normalized\\/path\\/create-restricted-coupons.spec.ts",
-                            "retries": 0,
-                            "flaky": false,
-                            "steps": [
-                                {
-                                    "name": "add new coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "set usage limit per user coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "publish the coupon",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify coupon creation",
-                                    "status": "passed"
-                                },
-                                {
-                                    "name": "verify usage limit per user coupon",
-                                    "status": "passed"
-                                }
-                            ],
-                            "suite": "e2e > coupons\\/create-restricted-coupons.spec.ts > Restricted coupon management",
-                            "attachments": [],
-                            "stdout": [
-                                "[IGNORED FOR WOO-E2E]"
-                            ],
-                            "stderr": [],
-                            "extra": {
-                                "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2611,7 +1492,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2664,7 +1545,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2696,7 +1577,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2728,7 +1609,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2760,7 +1641,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2792,7 +1673,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2828,7 +1709,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2863,7 +1744,51 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can add a product using the keyboard without a rogue search box",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/create-order.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/create-order.spec.ts > WooCommerce Orders > Add new order",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/01817ecfff68e84a9b0ea8db7aab95fa\\/tests\\/order\\/create-order.spec.ts",
+                                            "line": 428,
+                                            "column": 8
+                                        }
+                                    }
+                                ],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2898,7 +1823,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2933,7 +1858,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -2968,7 +1893,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3003,7 +1928,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3038,7 +1963,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3073,7 +1998,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3108,7 +2033,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3143,7 +2068,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3178,7 +2103,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3213,7 +2138,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3225,12 +2150,12 @@
                             "retryAttempts": []
                         },
                         {
-                            "name": "can add and delete order notes",
-                            "status": "skipped",
+                            "name": "saving an order does not trigger a false unsaved-changes warning",
+                            "status": "passed",
                             "duration": 999,
                             "start": 1111111111,
                             "stop": 2222222222,
-                            "rawStatus": "skipped",
+                            "rawStatus": "passed",
                             "tags": [
                                 "@services",
                                 "@hpos"
@@ -3247,17 +2172,43 @@
                             ],
                             "stderr": [],
                             "extra": {
-                                "annotations": [
-                                    {
-                                        "type": "skip",
-                                        "location": {
-                                            "file": "\\/tmp\\/qit-cache\\/packages\\/afc7c3d8e592598aad011f844226664c\\/tests\\/order\\/order-edit.spec.ts",
-                                            "line": 233,
-                                            "column": 7
-                                        }
-                                    }
-                                ],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can add and delete order notes",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3305,7 +2256,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3337,6 +2288,10 @@
                                     "status": "passed"
                                 },
                                 {
+                                    "name": "Update the shipping method name",
+                                    "status": "passed"
+                                },
+                                {
                                     "name": "Load the billing address and then copy it to the shipping address",
                                     "status": "passed"
                                 },
@@ -3353,7 +2308,42 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "shows the lost connection notice when the heartbeat request fails",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/order-edit.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/order-edit.spec.ts > Edit order",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3388,7 +2378,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3423,7 +2413,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3458,7 +2448,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3493,7 +2483,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3529,7 +2519,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3565,7 +2555,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3600,7 +2590,42 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can delete an issued refund",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@payments",
+                                "@hpos"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/order-refund.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > order\\/order-refund.spec.ts > WooCommerce Orders > Refund an order",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3636,7 +2661,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3670,7 +2695,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3704,7 +2729,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3738,7 +2763,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3772,7 +2797,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3806,7 +2831,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3840,7 +2865,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3874,7 +2899,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3908,7 +2933,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -3991,7 +3016,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4070,7 +3095,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4149,7 +3174,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4224,7 +3249,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4269,7 +3294,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4314,7 +3339,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4359,7 +3384,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4412,7 +3437,209 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can bulk edit products",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "select and bulk edit the products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the regular price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the sale price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the stock quantity",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "save the updates",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the changes",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > product\\/product-edit.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can restore regular price when bulk editing products",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "select and bulk edit the products",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "update the sale price",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "save the updates",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "verify the changes",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Update products leaving the \\"Sale > Change to\\" empty",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify products have their regular price again",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > product\\/product-edit.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "can decrease the sale price if the product was not previously in sale when bulk editing products",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Update products with the \\"Sale > Decrease existing sale price\\" option",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify products have a sale price",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > product\\/product-edit.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "increasing the sale price from 0 does not change the sale price when bulk editing products",
+                            "status": "passed",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "passed",
+                            "tags": [
+                                "@services"
+                            ],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/product-edit.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [
+                                {
+                                    "name": "Update products with the \\"Sale > Increase existing sale price\\" option",
+                                    "status": "passed"
+                                },
+                                {
+                                    "name": "Verify products have a sale price",
+                                    "status": "passed"
+                                }
+                            ],
+                            "suite": "e2e > product\\/product-edit.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4447,7 +3674,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4482,7 +3709,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4514,7 +3741,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4546,7 +3773,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4578,7 +3805,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4610,7 +3837,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4642,7 +3869,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4674,7 +3901,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4706,7 +3933,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4738,7 +3965,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4770,7 +3997,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4802,7 +4029,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4834,7 +4061,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4866,7 +4093,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4915,7 +4142,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4951,7 +4178,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -4985,7 +4212,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5017,7 +4244,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5049,7 +4276,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5081,7 +4308,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5113,7 +4340,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5145,7 +4372,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5180,7 +4407,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5215,7 +4442,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5249,7 +4476,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5283,7 +4510,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5317,7 +4544,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5349,7 +4576,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5381,7 +4608,48 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
+                                "phase": "run",
+                                "testType": "e2e",
+                                "namespace": "woocommerce",
+                                "packageId": "woocommerce\\/core-e2e-tests",
+                                "isLocal": false,
+                                "packageType": "test",
+                                "packageOrder": 1
+                            },
+                            "retryAttempts": []
+                        },
+                        {
+                            "name": "saves an unsaved shipping zone when adding a method",
+                            "status": "skipped",
+                            "duration": 999,
+                            "start": 1111111111,
+                            "stop": 2222222222,
+                            "rawStatus": "skipped",
+                            "tags": [],
+                            "type": "e2e",
+                            "filePath": "\\/normalized\\/path\\/shipping-zones.spec.ts",
+                            "retries": 0,
+                            "flaky": false,
+                            "steps": [],
+                            "suite": "e2e > shipping\\/shipping-zones.spec.ts",
+                            "attachments": [],
+                            "stdout": [
+                                "[IGNORED FOR WOO-E2E]"
+                            ],
+                            "stderr": [],
+                            "extra": {
+                                "annotations": [
+                                    {
+                                        "type": "skip",
+                                        "location": {
+                                            "file": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/01817ecfff68e84a9b0ea8db7aab95fa\\/tests\\/shipping\\/shipping-zones.spec.ts",
+                                            "line": 128,
+                                            "column": 6
+                                        }
+                                    }
+                                ],
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5417,7 +4685,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5453,7 +4721,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5493,7 +4761,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5521,7 +4789,7 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Go to the shop and browse by the category",
+                                    "name": "Open a product and browse to its category via the breadcrumb",
                                     "status": "passed"
                                 },
                                 {
@@ -5537,7 +4805,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5565,11 +4833,11 @@
                             "flaky": false,
                             "steps": [
                                 {
-                                    "name": "Go to the shop and sort by price high to low",
+                                    "name": "Sort by price high to low",
                                     "status": "passed"
                                 },
                                 {
-                                    "name": "Go to the shop and sort by price low to high",
+                                    "name": "Sort by price low to high",
                                     "status": "passed"
                                 }
                             ],
@@ -5581,7 +4849,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5615,7 +4883,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/core-e2e-tests:latest",
+                                "packageSlug": "woocommerce\\/core-e2e-tests:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -5632,11 +4900,11 @@
                             "version": "1.0.0",
                             "packages": [
                                 {
-                                    "packageId": "woocommerce\\/core-e2e-tests:latest",
+                                    "packageId": "woocommerce\\/core-e2e-tests:11.1",
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,
-                                    "testCount": 131,
+                                    "testCount": 115,
                                     "packageType": "test",
                                     "executionOrder": 1,
                                     "firstSeen": 0,
@@ -5657,7 +4925,7 @@
                                     "packagesWithBlob": 0,
                                     "totalPackagesWithTests": 1,
                                     "missingFrom": [
-                                        "core-e2e-tests:latest"
+                                        "core-e2e-tests:11.1"
                                     ]
                                 },
                                 "allure": {
@@ -5677,8 +4945,8 @@
                 "qm_logs": [],
                 "debug_log": [
                     {
-                        "count": "Between 10 and 149, normalized to 75",
-                        "message": "The Automattic\\\\WooCommerce\\\\Admin\\\\API\\\\Options::update_options function is deprecated since version 6.3."
+                        "count": "1",
+                        "message": "PHP Notice: Undefined property: stdClass::$version_checked in \\/var\\/www\\/html\\/wp-includes\\/update.php on line {LINE}"
                     }
                 ]
             }

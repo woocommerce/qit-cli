@@ -46,9 +46,15 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_packages": [],
+            "test_packages": [
+                "woocommerce\\/activation:11.1"
+            ],
+            "test_package_checksums": {
+                "woocommerce\\/activation:11.1": "b2d8fb32127d915840e0cedede19e13c7f44c43101246e50418596cccf550f58"
+            },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
+            "validation_policy_version": "",
             "extension_specs": [
                 {
                     "slug": "woocommerce",
@@ -89,16 +95,16 @@
                     "tests": [
                         {
                             "name": "wp plugin activate woocommerce",
-                            "id": "woocommerce\\/activation:latest-globalSetup-0",
+                            "id": "woocommerce\\/activation:11.1-globalSetup-0",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:latest",
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "package": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:latest",
+                                "packageId": "woocommerce\\/activation:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Plugin \'woocommerce\' activated.\\nSuccess: Activated 1 of 1 plugins.",
@@ -111,19 +117,19 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile_completed yes",
-                            "id": "woocommerce\\/activation:latest-globalSetup-1",
+                            "id": "woocommerce\\/activation:11.1-globalSetup-1",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:latest",
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "package": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:latest",
+                                "packageId": "woocommerce\\/activation:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
-                                "output": "Notice: Function _load_textdomain_just_in_time was called <strong>incorrectly<\\/strong>. Translation loading for the <code>woocommerce<\\/code> domain was triggered too early. This is usually an indicator for some code in the plugin or theme running too early. Translations should be loaded at the <code>init<\\/code> action or later. Please see <a href=\\"https:\\/\\/developer.wordpress.org\\/advanced-administration\\/debug\\/debug-wordpress\\/\\">Debugging in WordPress<\\/a> for more information. (This message was added in version 6.7.0.) in \\/var\\/www\\/html\\/wp-includes\\/functions.php on line {LINE}\\nSuccess: Updated \'woocommerce_onboarding_profile_completed\' option.",
+                                "output": "Success: Updated \'woocommerce_onboarding_profile_completed\' option.",
                                 "isLifecycle": true,
                                 "countsTowardTotals": false,
                                 "packageType": "test",
@@ -133,16 +139,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_redirect_to_setup no",
-                            "id": "woocommerce\\/activation:latest-globalSetup-2",
+                            "id": "woocommerce\\/activation:11.1-globalSetup-2",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:latest",
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "package": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:latest",
+                                "packageId": "woocommerce\\/activation:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_redirect_to_setup\' option.",
@@ -155,16 +161,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_onboarding_profile \'{\\"completed\\":true,\\"skipped\\":true}\' --format=json",
-                            "id": "woocommerce\\/activation:latest-globalSetup-3",
+                            "id": "woocommerce\\/activation:11.1-globalSetup-3",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:latest",
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "package": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:latest",
+                                "packageId": "woocommerce\\/activation:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_onboarding_profile\' option.",
@@ -177,16 +183,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_coming_soon no",
-                            "id": "woocommerce\\/activation:latest-globalSetup-4",
+                            "id": "woocommerce\\/activation:11.1-globalSetup-4",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:latest",
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "package": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:latest",
+                                "packageId": "woocommerce\\/activation:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_coming_soon\' option.",
@@ -199,16 +205,16 @@
                         },
                         {
                             "name": "wp option update woocommerce_store_pages_only no",
-                            "id": "woocommerce\\/activation:latest-globalSetup-5",
+                            "id": "woocommerce\\/activation:11.1-globalSetup-5",
                             "status": "passed",
                             "duration": 999,
                             "extra": {
                                 "type": "lifecycle",
                                 "phase": "globalSetup",
-                                "package": "woocommerce\\/activation:latest",
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "package": "woocommerce\\/activation:11.1",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "namespace": "woocommerce",
-                                "packageId": "woocommerce\\/activation:latest",
+                                "packageId": "woocommerce\\/activation:11.1",
                                 "testType": "e2e",
                                 "exitCode": 0,
                                 "output": "Success: Updated \'woocommerce_store_pages_only\' option.",
@@ -279,7 +285,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -311,7 +317,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -329,8 +335,8 @@
                             "start": 1111111111,
                             "stop": 2222222222,
                             "message": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php({LINE}): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php({LINE}): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m",
-                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php({LINE}): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php({LINE}): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:681:89\\n    at \\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/tests\\/activation.spec.js:604:9",
-                            "snippet": "\\u001b[0m \\u001b[90m 679 |\\u001b[39m\\n \\u001b[90m 680 |\\u001b[39m             \\u001b[90m\\/\\/ There should be no \\"Fatal Error\\" in the debug log.\\u001b[39m\\n\\u001b[31m\\u001b[1m>\\u001b[22m\\u001b[39m\\u001b[90m 681 |\\u001b[39m             expect(debugLog\\u001b[33m.\\u001b[39mjoin(\\u001b[32m\'\\\\n\'\\u001b[39m)\\u001b[33m,\\u001b[39m \\u001b[32m\'There was a fatal error in the debug log\'\\u001b[39m)\\u001b[33m.\\u001b[39mnot\\u001b[33m.\\u001b[39mtoContain(\\u001b[32m\'Fatal error\'\\u001b[39m)\\u001b[33m;\\u001b[39m\\n \\u001b[90m     |\\u001b[39m                                                                                         \\u001b[31m\\u001b[1m^\\u001b[22m\\u001b[39m\\n \\u001b[90m 682 |\\u001b[39m\\n \\u001b[90m 683 |\\u001b[39m             visitedPages\\u001b[33m.\\u001b[39mpush(addedMenuItem\\u001b[33m.\\u001b[39murl)\\u001b[33m;\\u001b[39m\\n \\u001b[90m 684 |\\u001b[39m\\u001b[0m",
+                            "trace": "Error: There was a fatal error in the debug log\\n\\n\\u001b[2mexpect(\\u001b[22m\\u001b[31mreceived\\u001b[39m\\u001b[2m).\\u001b[22mnot\\u001b[2m.\\u001b[22mtoContain\\u001b[2m(\\u001b[22m\\u001b[32mexpected\\u001b[39m\\u001b[2m) \\/\\/ indexOf\\u001b[22m\\n\\nExpected substring: not \\u001b[32m\\"Fatal error\\"\\u001b[39m\\nReceived string:        \\u001b[31m\\"[TIMESTAMP] PHP \\u001b[7mFatal error\\u001b[27m:  Uncaught Error: Call to undefined function call_to_an_undefined_function() in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php:29\\u001b[39m\\n\\u001b[31mStack trace:\\u001b[39m\\n\\u001b[31m#0 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): {closure}(\'\')\\u001b[39m\\n\\u001b[31m#1 \\/var\\/www\\/html\\/wp-includes\\/class-wp-hook.php({LINE}): WP_Hook->apply_filters(\'\', Array)\\u001b[39m\\n\\u001b[31m#2 \\/var\\/www\\/html\\/wp-includes\\/plugin.php({LINE}): WP_Hook->do_action(Array)\\u001b[39m\\n\\u001b[31m#3 \\/var\\/www\\/html\\/wp-admin\\/admin.php({LINE}): do_action(\'toplevel_page_p...\')\\u001b[39m\\n\\u001b[31m#4 {main}\\u001b[39m\\n\\u001b[31m  thrown in \\/var\\/www\\/html\\/wp-content\\/plugins\\/woocommerce-product-feeds\\/woocommerce-product-feeds.php on line 29\\"\\u001b[39m\\n    at \\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a8512e16002e059223ecf288532ac3b5\\/tests\\/activation.spec.js:681:89\\n    at \\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a8512e16002e059223ecf288532ac3b5\\/tests\\/activation.spec.js:604:9",
+                            "snippet": "  679 |\\n  680 |             \\/\\/ There should be no \\"Fatal Error\\" in the debug log.\\n> 681 |             expect(debugLog.join(\'\\\\n\'), \'There was a fatal error in the debug log\').not.toContain(\'Fatal error\');\\n      |                                                                                         ^\\n  682 |\\n  683 |             visitedPages.push(addedMenuItem.url);\\n  684 |",
                             "rawStatus": "failed",
                             "tags": [],
                             "type": "e2e",
@@ -352,12 +358,12 @@
                                 {
                                     "name": "00_Plugin_A",
                                     "contentType": "image\\/jpeg",
-                                    "path": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/test-results\\/activation-Visit-wp-admin-pages-added-by-the-plugin-chromium\\/attachments\\/00-Plugin-A-HASHNORMALIZED.jpg"
+                                    "path": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a8512e16002e059223ecf288532ac3b5\\/test-results\\/activation-Visit-wp-admin-pages-added-by-the-plugin-chromium\\/attachments\\/00-Plugin-A-HASHNORMALIZED.jpg"
                                 },
                                 {
                                     "name": "01_Plugin_B",
                                     "contentType": "image\\/jpeg",
-                                    "path": "\\/tmp\\/qit-cache\\/packages\\/a2e9cee1612f8a15d851484d861bc9bc\\/test-results\\/activation-Visit-wp-admin-pages-added-by-the-plugin-chromium\\/attachments\\/01-Plugin-B-HASHNORMALIZED.jpg"
+                                    "path": "\\/private\\/var\\/folders\\/5w\\/k525n7ss29l4c0nh9hfyrhy40000gn\\/T\\/qit-cache\\/packages\\/a8512e16002e059223ecf288532ac3b5\\/test-results\\/activation-Visit-wp-admin-pages-added-by-the-plugin-chromium\\/attachments\\/01-Plugin-B-HASHNORMALIZED.jpg"
                                 },
                                 {
                                     "name": "screenshot",
@@ -388,7 +394,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -418,7 +424,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -448,7 +454,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -478,7 +484,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -508,7 +514,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -538,7 +544,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -568,7 +574,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -598,7 +604,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -628,7 +634,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -658,7 +664,7 @@
                             "stderr": [],
                             "extra": {
                                 "annotations": [],
-                                "packageSlug": "woocommerce\\/activation:latest",
+                                "packageSlug": "woocommerce\\/activation:11.1",
                                 "phase": "run",
                                 "testType": "e2e",
                                 "namespace": "woocommerce",
@@ -675,7 +681,7 @@
                             "version": "1.0.0",
                             "packages": [
                                 {
-                                    "packageId": "woocommerce\\/activation:latest",
+                                    "packageId": "woocommerce\\/activation:11.1",
                                     "namespace": "woocommerce",
                                     "testType": "e2e",
                                     "hasRunPhase": true,

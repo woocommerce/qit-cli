@@ -61,10 +61,26 @@ These self-tests validate that the **Quality Insights Toolkit (QIT)** flags expe
 
 ---
 
+## Setup
+
+The self-tests need two sets of Composer dependencies, and both `vendor/` directories are gitignored, so install them once per checkout or worktree:
+
+```bash
+cd src && composer install                     # the CLI under test
+cd ../_tests/managed_tests && composer install  # the harness (PHPUnit, snapshot assertions, Symfony Process)
+```
+
+The harness shells out to `src/qit-cli.php` rather than to the built `qit` phar, so the CLI's own dependencies must be installed too. Skipping either one fails with `Failed opening required '.../vendor/autoload.php'` — from `QITSelfTests.php` at startup for the harness, or at test dispatch for the CLI.
+
+Both `composer.json` files pin `platform.php` (7.2.5 for the harness, 7.4 for the CLI), so a newer local PHP still resolves the same dependency set.
+
+---
+
 ## Running Tests
 
 1. **Navigate** to `_tests/managed_tests`.
-2. **Execute** the test script:
+2. **Install dependencies** if you haven't already (see [Setup](#setup)).
+3. **Execute** the test script:
    ```bash
    php QITSelfTests.php
    ```

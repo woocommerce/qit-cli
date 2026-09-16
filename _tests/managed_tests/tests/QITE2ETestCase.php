@@ -315,6 +315,7 @@ class QITE2ETestCase extends TestCase {
 					}
 
 					$is_woo_e2e = stripos( $file_path, 'woo-e2e/' ) !== false;
+					$is_woo_api = stripos( $file_path, 'woo-api/' ) !== false;
 
 					// Remove lines containing "Using cached file" from all tests' stdout arrays,
 					// and then remove duplicates via array_unique, as they can cause flakiness in snapshot testing.
@@ -324,7 +325,7 @@ class QITE2ETestCase extends TestCase {
 							$test['retryAttempts'] = [];
 
 							if (
-								$is_woo_e2e &&
+								( $is_woo_e2e || $is_woo_api ) &&
 								( $test['name'] ?? '' ) === 'wp plugin activate woocommerce' &&
 								( $test['extra']['output'] ?? '' ) === "Warning: Plugin 'woocommerce' is already active.\nSuccess: Plugin already activated."
 							) {
@@ -776,11 +777,11 @@ class QITE2ETestCase extends TestCase {
 
 				// Check if the current key is in the processing rules.
 				if ( array_key_exists( $k, $rules ) ) {
-					// Special case: test_result_json is optional for e2e and activation test types
+					// Special case: test_result_json is optional for test types that report results via ctrf_json.
 					if ( $k === 'test_result_json' ) {
 						$test_type = $j['test_type'] ?? '';
-						if ( in_array( $test_type, [ 'e2e', 'activation' ], true ) && empty( $v ) ) {
-							// Skip validation for empty test_result_json in e2e/activation tests
+						if ( in_array( $test_type, [ 'e2e', 'activation', 'woo-api' ], true ) && empty( $v ) ) {
+							// Skip validation for empty test_result_json in e2e/activation/woo-api tests
 							continue;
 						}
 					}

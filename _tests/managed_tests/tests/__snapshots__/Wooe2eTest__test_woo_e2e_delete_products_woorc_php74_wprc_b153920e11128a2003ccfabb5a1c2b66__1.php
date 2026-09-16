@@ -46,9 +46,15 @@
             "extension_set": "",
             "phpstan_level": null,
             "test_variation": "",
-            "test_packages": [],
+            "test_packages": [
+                "woocommerce\\/core-e2e-tests:11.1"
+            ],
+            "test_package_checksums": {
+                "woocommerce\\/core-e2e-tests:11.1": "12e13909de8c7e838552ea28eafdb0b167092a1ef406717b483e9ac8098ab351"
+            },
             "test_group_id": "",
             "created_at": "2025-01-01 00:00:00",
+            "validation_policy_version": "",
             "extension_specs": [
                 {
                     "slug": "woocommerce",
