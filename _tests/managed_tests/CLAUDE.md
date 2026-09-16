@@ -17,6 +17,19 @@ Self-tests run real tests against QIT production and compare results against sto
 | Woo API | ~10 min | heavy |
 | Woo E2E | ~22 min | heavy |
 
+### Setup (once per checkout/worktree)
+
+Two separate `vendor/` directories are needed, both gitignored, so a fresh checkout or worktree needs both installs:
+
+```bash
+cd src && composer install                    # the CLI itself
+cd ../_tests/managed_tests && composer install # the self-test harness
+```
+
+Without the second, `QITSelfTests.php` dies with `Failed opening required '.../_tests/managed_tests/vendor/autoload.php'`.
+
+Without the first, preparation succeeds and the run dies at dispatch instead, with `Failed to get valid JSON test_run_id from qit run command` followed by `Failed opening required '.../src/vendor/autoload.php'` — the harness shells out to `src/qit-cli.php`, not to the built `qit` phar.
+
 ### Updating snapshots
 
 From `/storage/qit/qit-cli/_tests/managed_tests`:
@@ -63,6 +76,7 @@ If `--json` output changes shape (fields decoded, added, removed), the test-resu
 
 ### Process
 
+0. **Install self-test dependencies** if this checkout is fresh (see [Setup](#setup-once-per-checkoutworktree))
 1. **Update self-test snapshots** (see above) and commit
 2. **Build the phar**:
    ```bash
