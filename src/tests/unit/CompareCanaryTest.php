@@ -125,6 +125,40 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	/**
+	 * A `canary-profile` annotation, as the package publishes it: the whole applied
+	 * state, not just the profile name.
+	 *
+	 * @param array<string,mixed> $overrides
+	 *
+	 * @return array<string,string>
+	 */
+	private function profile_annotation( array $overrides = [] ): array {
+		return [
+			'type'        => 'canary-profile',
+			'description' => (string) json_encode( array_merge( [
+				'id'           => 'synthetic',
+				'hpos'         => false,
+				'hpos_sync'    => false,
+				'hpos_refused' => '',
+				'object_cache' => false,
+				'legacy_data'  => [],
+			], $overrides ) ),
+		];
+	}
+
+	/**
+	 * @param array<string,mixed> $probe
+	 * @param array<string,mixed> $overrides
+	 *
+	 * @return array<string,mixed>
+	 */
+	private function with_profile( array $probe, array $overrides = [] ): array {
+		$probe['extra']['annotations'][] = $this->profile_annotation( $overrides );
+
+		return $probe;
+	}
+
+	/**
 	 * @param array<int,array<string,mixed>> $runs
 	 */
 	private function mock_runs( array $runs ): void {
@@ -448,6 +482,89 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertSame( 0, $result['canary']['totals']['resolved'] );
 		$this->assertStringContainsString( 'could not be read', $result['canary']['warnings'][0] );
 		$this->assertStringContainsString( 'run A', $result['canary']['warnings'][0] );
+	}
+
+	/**
+	 * A profile is the shape of the store the probes ran against, so two runs on
+	 * different profiles are as incomparable as two on different PHP versions - and
+	 * the guard could not see it, because the profile travelled only inside each
+	 * finding's own payload and in an artifact QIT does not upload.
+	 */
+	public function test_runs_on_different_canary_profiles_are_flagged_as_differing(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->with_profile( $this->probe( 'woo-canary.checkout.field-editor', 'complete' ) ),
+			] ),
+			$this->make_run( 1002, [
+				$this->with_profile(
+					$this->probe( 'woo-canary.checkout.field-editor', 'complete' ),
+					[ 'id' => 'legacy-data', 'legacy_data' => [ 'numeric-product-status', 'orphaned-variation' ] ]
+				),
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame(
+			'synthetic (HPOS: off, sync: off, object cache: off)',
+			$result['runs']['a']['context']['canary_profile']
+		);
+		$this->assertSame(
+			'legacy-data (HPOS: off, sync: off, object cache: off, legacy shapes: 2)',
+			$result['runs']['b']['context']['canary_profile']
+		);
+		$this->assertContains( 'canary_profile', array_column( $result['guard']['differences'], 'field' ) );
+	}
+
+	/**
+	 * The name agreeing is not the same as the store agreeing. A build with no HPOS
+	 * classes cannot honour a profile that asks for HPOS, and two runs labelled
+	 * `hpos` can therefore have used different order storage - which is the case the
+	 * profile name on its own would hide.
+	 */
+	public function test_the_same_profile_applied_differently_is_still_a_difference(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [
+				$this->with_profile(
+					$this->probe( 'woo-canary.storage.hpos-parity', 'complete' ),
+					[ 'id' => 'hpos', 'hpos' => true, 'hpos_sync' => true ]
+				),
+			] ),
+			$this->make_run( 1002, [
+				$this->with_profile(
+					$this->probe( 'woo-canary.storage.hpos-parity', 'complete' ),
+					[ 'id' => 'hpos', 'hpos' => null, 'hpos_sync' => null, 'hpos_refused' => 'orders are out of sync' ]
+				),
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame(
+			'hpos (HPOS: on, sync: on, object cache: off)',
+			$result['runs']['a']['context']['canary_profile']
+		);
+		$this->assertSame(
+			'hpos (HPOS: unknown, sync: unknown, object cache: off, storage change refused)',
+			$result['runs']['b']['context']['canary_profile']
+		);
+		$this->assertContains( 'canary_profile', array_column( $result['guard']['differences'], 'field' ) );
+	}
+
+	/**
+	 * Every other test type publishes no such annotation, and must not acquire an
+	 * empty context row or a phantom difference because of it.
+	 */
+	public function test_a_run_without_a_profile_annotation_reports_no_profile(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.field-editor', 'complete' ) ] ),
+			$this->make_run( 1002, [ $this->probe( 'woo-canary.checkout.field-editor', 'complete' ) ] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertSame( '', $result['runs']['a']['context']['canary_profile'] );
+		$this->assertNotContains( 'canary_profile', array_column( $result['guard']['differences'], 'field' ) );
 	}
 
 	/**

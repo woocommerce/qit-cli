@@ -26,6 +26,7 @@ class RunSnapshot {
 		'sut'                 => 'Extension',
 		'sut_version'         => 'Extension version',
 		'test_packages'       => 'Test packages',
+		'canary_profile'      => 'Canary profile',
 	];
 
 	public string $id = '';
@@ -63,6 +64,11 @@ class RunSnapshot {
 	public const SUMMARY_KEYS = [ 'tests', 'passed', 'failed', 'skipped', 'pending', 'other' ];
 
 	/**
+	 * The annotation the ecosystem canary publishes its store shape in.
+	 */
+	public const PROFILE_ANNOTATION = 'canary-profile';
+
+	/**
 	 * Build a snapshot from a Manager test run record.
 	 *
 	 * @param string              $run_id  The ID the run was requested by.
@@ -87,7 +93,7 @@ class RunSnapshot {
 		$snapshot->result_url = (string) ( $run['test_results_manager_url'] ?? '' );
 		$snapshot->tests      = self::normalize_tests( $ctrf['tests'] ?? [] );
 		$snapshot->summary    = self::normalize_summary( $ctrf['summary'] ?? [], $snapshot->tests );
-		$snapshot->context    = self::normalize_context( $run, $ctrf );
+		$snapshot->context    = self::normalize_context( $run, $ctrf, $snapshot->tests );
 
 		return $snapshot;
 	}
@@ -275,10 +281,11 @@ class RunSnapshot {
 	 *
 	 * @param array<string,mixed> $run
 	 * @param array<string,mixed> $ctrf
+	 * @param array<string,mixed> $tests Normalized tests, for context carried in annotations.
 	 *
 	 * @return array<string,string>
 	 */
-	private static function normalize_context( array $run, array $ctrf ): array {
+	private static function normalize_context( array $run, array $ctrf, array $tests ): array {
 		$context = [];
 
 		foreach ( array_keys( self::CONTEXT_LABELS ) as $field ) {
@@ -299,9 +306,127 @@ class RunSnapshot {
 			$context['sut_version'] = (string) $run['version'];
 		}
 
-		$context['test_packages'] = self::normalize_packages( $ctrf );
+		$context['test_packages']  = self::normalize_packages( $ctrf );
+		$context['canary_profile'] = self::normalize_canary_profile( $tests );
 
 		return $context;
+	}
+
+	/**
+	 * The store shape an ecosystem canary run used, read off its `canary-profile`
+	 * annotation.
+	 *
+	 * A canary profile decides what the probes ran *against* - whether the store
+	 * held legacy row shapes, where its orders were stored, whether a persistent
+	 * object cache was in place. A finding present under one shape and absent under
+	 * another says nothing about the build, so two runs on different profiles are
+	 * as incomparable as two runs on different PHP versions, and belong in the same
+	 * guard.
+	 *
+	 * The whole applied state is rendered, not just the profile name. A build with
+	 * no HPOS classes cannot honour a profile that asks for HPOS, so two runs can
+	 * agree on the name and still have run against different order storage - which
+	 * is the case the name alone would hide.
+	 *
+	 * Empty for every run that carries no such annotation, which is every test type
+	 * but this one; the renderer drops a context row that is empty on both sides,
+	 * and the guard sees two equal values.
+	 *
+	 * @param array<string,mixed> $tests
+	 */
+	private static function normalize_canary_profile( array $tests ): string {
+		$rendered = [];
+
+		foreach ( $tests as $test ) {
+			$annotations = isset( $test['annotations'] ) && is_array( $test['annotations'] ) ? $test['annotations'] : [];
+
+			foreach ( $annotations as $annotation ) {
+				if ( ! is_array( $annotation ) || ( $annotation['type'] ?? '' ) !== self::PROFILE_ANNOTATION ) {
+					continue;
+				}
+
+				$description = isset( $annotation['description'] ) && is_scalar( $annotation['description'] )
+					? (string) $annotation['description']
+					: '';
+
+				$summary = self::render_canary_profile( $description );
+
+				if ( $summary !== '' && ! in_array( $summary, $rendered, true ) ) {
+					$rendered[] = $summary;
+				}
+			}
+		}
+
+		// Every probe in a run publishes the same state, so more than one value here
+		// means the run changed profile partway through. Joined rather than picked
+		// from, because silently reporting one of them would hide that.
+		sort( $rendered );
+
+		return implode( ' | ', $rendered );
+	}
+
+	/**
+	 * Render one `canary-profile` payload as a single comparable line.
+	 *
+	 * Deliberately lossy on the refusal reason, which is prose from WooCommerce and
+	 * would put a paragraph in a table cell; that a refusal happened is the part the
+	 * guard needs, and the reason is in the run's own results.
+	 *
+	 * A payload that is not the expected JSON is returned trimmed rather than
+	 * dropped: an unreadable value that differs between two runs is still a
+	 * difference worth flagging.
+	 */
+	private static function render_canary_profile( string $description ): string {
+		$decoded = json_decode( $description, true );
+
+		if ( ! is_array( $decoded ) ) {
+			return trim( $description );
+		}
+
+		$id = isset( $decoded['id'] ) && is_scalar( $decoded['id'] ) ? (string) $decoded['id'] : '';
+
+		if ( $id === '' ) {
+			return trim( $description );
+		}
+
+		$parts = [
+			'HPOS: ' . self::render_tristate( $decoded['hpos'] ?? null ),
+			'sync: ' . self::render_tristate( $decoded['hpos_sync'] ?? null ),
+			'object cache: ' . self::render_tristate( $decoded['object_cache'] ?? null ),
+		];
+
+		$legacy = isset( $decoded['legacy_data'] ) && is_array( $decoded['legacy_data'] ) ? $decoded['legacy_data'] : [];
+
+		if ( ! empty( $legacy ) ) {
+			$parts[] = sprintf( 'legacy shapes: %d', count( $legacy ) );
+		}
+
+		$refused = isset( $decoded['hpos_refused'] ) && is_scalar( $decoded['hpos_refused'] )
+			? trim( (string) $decoded['hpos_refused'] )
+			: '';
+
+		if ( $refused !== '' ) {
+			$parts[] = 'storage change refused';
+		}
+
+		return sprintf( '%s (%s)', $id, implode( ', ', $parts ) );
+	}
+
+	/**
+	 * `on`, `off`, or `unknown` for a dimension the build could not report.
+	 *
+	 * `unknown` is not `off`: a build with no HPOS classes cannot say where orders
+	 * are stored, and reporting that as "off" would make it compare equal to a run
+	 * that genuinely had HPOS disabled.
+	 *
+	 * @param mixed $value
+	 */
+	private static function render_tristate( $value ): string {
+		if ( is_null( $value ) ) {
+			return 'unknown';
+		}
+
+		return $value ? 'on' : 'off';
 	}
 
 	/**
