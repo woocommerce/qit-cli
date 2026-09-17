@@ -514,6 +514,15 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 			$result['runs']['b']['context']['canary_profile']
 		);
 		$this->assertContains( 'canary_profile', array_column( $result['guard']['differences'], 'field' ) );
+
+		// The profile is the only thing that differs here, which is the case the
+		// count rule lets through: one differing dimension is normally the variable
+		// under test. A profile never is, so it has to warn on its own.
+		$this->assertCount( 1, $result['guard']['differences'] );
+		$this->assertFalse( $result['guard']['comparable'] );
+		$this->assertStringContainsString( 'different canary profiles', $result['guard']['warnings'][0] );
+		$this->assertStringContainsString( 'synthetic', $result['guard']['warnings'][0] );
+		$this->assertStringContainsString( 'legacy-data', $result['guard']['warnings'][0] );
 	}
 
 	/**
@@ -549,6 +558,25 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 			$result['runs']['b']['context']['canary_profile']
 		);
 		$this->assertContains( 'canary_profile', array_column( $result['guard']['differences'], 'field' ) );
+		$this->assertFalse( $result['guard']['comparable'] );
+	}
+
+	/**
+	 * A run carrying no profile against one that does is still two different stores,
+	 * and the empty side has to read as something other than a profile named "".
+	 */
+	public function test_a_missing_profile_on_one_side_is_a_difference(): void {
+		$this->mock_runs( [
+			$this->make_run( 1001, [ $this->probe( 'woo-canary.checkout.field-editor', 'complete' ) ] ),
+			$this->make_run( 1002, [
+				$this->with_profile( $this->probe( 'woo-canary.checkout.field-editor', 'complete' ) ),
+			] ),
+		] );
+
+		$result = $this->run_compare_json();
+
+		$this->assertFalse( $result['guard']['comparable'] );
+		$this->assertStringContainsString( 'no profile against synthetic', $result['guard']['warnings'][0] );
 	}
 
 	/**
@@ -565,6 +593,7 @@ class CompareCanaryTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->assertSame( '', $result['runs']['a']['context']['canary_profile'] );
 		$this->assertNotContains( 'canary_profile', array_column( $result['guard']['differences'], 'field' ) );
+		$this->assertSame( [], $result['guard']['warnings'] );
 	}
 
 	/**

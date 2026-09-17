@@ -191,6 +191,27 @@ class RunComparison {
 		// only differences that reach here are ones the runs can actually be judged on.
 		$warnings = [];
 
+		// The canary profile is exempt from the count rule above, because that rule
+		// rests on an assumption the profile breaks: that a single differing
+		// dimension is the variable under test, and therefore expected. The profile
+		// never is. It is the shape of the store the probes ran against, so two runs
+		// on different profiles are not one experiment with one variable - they are
+		// two different stores, and a finding on one side may be the store rather
+		// than the build. Left to the count rule, that comparison passes silently
+		// whenever nothing else differs, which is exactly when a reader is most
+		// likely to attribute the whole list to the candidate.
+		foreach ( $differences as $difference ) {
+			if ( $difference['field'] !== 'canary_profile' ) {
+				continue;
+			}
+
+			$warnings[] = sprintf(
+				'The runs used different canary profiles (%s against %s). A profile is the store the probes ran against, so a finding present on one side and absent on the other may be the difference in stores rather than anything the build did.',
+				$difference['a'] !== '' ? $difference['a'] : 'no profile',
+				$difference['b'] !== '' ? $difference['b'] : 'no profile'
+			);
+		}
+
 		if ( count( $differences ) > 1 ) {
 			$labels     = array_column( $differences, 'label' );
 			$warnings[] = sprintf(
