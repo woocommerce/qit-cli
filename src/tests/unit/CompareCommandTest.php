@@ -70,12 +70,44 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->assertStringNotContainsString( 'plugin-4', $this->display() );
 	}
 
-	public function test_human_output_links_to_the_report_page(): void {
-		$this->mock_manager( [ 'report_url' => 'https://qit.woo.com/?qit_compare=1001.abc~1002.def' ] + $this->document( 'human-output' ) );
+	public function test_the_managers_bare_string_error_reads_without_quotes(): void {
+		$this->mock_manager( '"Test run with ID 1002 does not exist."' );
+
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'Could not compare test runs 1001 and 1002: Test run with ID 1002 does not exist.', $this->display() );
+		$this->assertStringNotContainsString( '"Test run with ID', $this->display() );
+	}
+
+	public function test_a_document_missing_its_sections_is_an_unexpected_response(): void {
+		$document = $this->document( 'human-output' );
+		unset( $document['tests'] );
+		$this->mock_manager( $document );
+
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'The Manager returned an unexpected response.', $this->display() );
+	}
+
+	public function test_an_authentication_error_does_not_blame_the_run_ids(): void {
+		$this->mock_manager( [
+			'code'    => 'rest_forbidden',
+			'message' => 'Invalid credentials.',
+		] );
+
+		$this->assertSame( Command::INVALID, $this->compare() );
+		$this->assertStringContainsString( 'Invalid credentials.', $this->display() );
+		$this->assertStringNotContainsString( 'qit list-tests', $this->display() );
+	}
+
+	public function test_a_context_field_this_cli_does_not_know_is_still_shown(): void {
+		$document = $this->document( 'human-output' );
+		$document['runs']['a']['context']['redis_version'] = '7.2';
+		$document['runs']['b']['context']['redis_version'] = '7.4';
+		$document['guard']['differences'][]                = [ 'field' => 'redis_version', 'label' => 'Redis', 'a' => '7.2', 'b' => '7.4' ];
+		$this->mock_manager( $document );
 
 		$this->compare();
 
-		$this->assertStringContainsString( 'Report: https://qit.woo.com/?qit_compare=1001.abc~1002.def', $this->display() );
+		$this->assertRegExp( '/Redis\s+7\.2\s+7\.4\s+differs/', $this->display() );
 	}
 
 	public function test_canary_human_output_names_every_bucket(): void {
@@ -89,7 +121,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	public function test_the_summary_does_not_call_a_move_a_regression(): void {
-		$this->mock_manager( $this->document( 'canary-move-not-regression' ) );
+		$this->mock_manager( $this->document( 'canary-move' ) );
 
 		$this->compare();
 
@@ -98,7 +130,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 	}
 
 	public function test_the_report_reconciles_a_move_with_the_test_buckets(): void {
-		$this->mock_manager( $this->document( 'canary-move-reconciled' ) );
+		$this->mock_manager( $this->document( 'canary-move' ) );
 
 		$this->compare();
 

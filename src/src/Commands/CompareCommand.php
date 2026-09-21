@@ -43,6 +43,11 @@ class CompareCommand extends QITCommand {
 
 	private const SUMMARY_KEYS = [ 'tests', 'passed', 'failed', 'skipped', 'pending', 'other' ];
 
+	/**
+	 * Top-level sections every schema 1 document carries.
+	 */
+	private const DOCUMENT_KEYS = [ 'runs', 'guard', 'summary', 'tests', 'annotations', 'totals' ];
+
 	private const PROBE_COMPLETE = 'complete';
 
 	protected function configure(): void {
@@ -99,7 +104,8 @@ ends without a verdict.
 Reporting a difference is not a failure: a comparison that ran exits 0 whatever it
 found, so dropping this into a pipeline does not turn the step red. Pass
 --exit-code to gate on the result, as you would with "git diff --exit-code", and
-it exits 1 when run B introduced failures.
+it exits 1 when run B introduced failures. That holds for runs that are not
+comparable too, so a mismatched pair cannot pass a gate unnoticed.
 
 Exit status codes: 0 (the comparison ran), 1 (only with --exit-code: run B
 introduced failures), 2 (the runs could not be fetched or compared).
@@ -202,12 +208,27 @@ HELP
 				) );
 			}
 
+			foreach ( self::DOCUMENT_KEYS as $key ) {
+				if ( ! isset( $response[ $key ] ) || ! is_array( $response[ $key ] ) ) {
+					throw new \RuntimeException( 'The Manager returned an unexpected response.' );
+				}
+			}
+
 			return $response;
 		}
 
-		$message = is_array( $response ) && isset( $response['message'] ) && is_string( $response['message'] )
-			? $response['message']
-			: 'The Manager returned an unexpected response.';
+		if ( is_array( $response ) && isset( $response['message'] ) && is_string( $response['message'] ) ) {
+			$message = $response['message'];
+		} elseif ( trim( $json ) !== '' && ! is_array( $response ) ) {
+			$message = $this->unwrap_manager_message( $json );
+		} else {
+			$message = 'The Manager returned an unexpected response.';
+		}
+
+		// A WP_Error body carries a code: authentication, not the run IDs, went wrong.
+		if ( is_array( $response ) && isset( $response['code'] ) ) {
+			throw new \RuntimeException( $message );
+		}
 
 		throw new \RuntimeException( sprintf(
 			"Could not compare test runs %s and %s: %s\nCheck that both IDs are correct and belong to this account. Run \"qit list-tests\" to see your recent test runs.",
@@ -223,8 +244,8 @@ HELP
 	 * quoting bug when pasted into a sentence. Unwrap that, and pass anything else
 	 * through untouched.
 	 *
-	 * The {"message": "..."} shape needs no handling here: RequestBuilder already
-	 * unwraps it before it throws, so it cannot reach this method.
+	 * The {"message": "..."} shape needs no handling here: it is read before this
+	 * method is reached.
 	 */
 	private function unwrap_manager_message( string $message ): string {
 		$message = trim( $message );
@@ -339,15 +360,19 @@ HELP
 	 * @param array<string,mixed> $comparison
 	 */
 	private function render_context( array $comparison, OutputInterface $output ): void {
-		$a_context = $comparison['runs']['a']['context'];
-		$b_context = $comparison['runs']['b']['context'];
+		$a_context = (array) $comparison['runs']['a']['context'];
+		$b_context = (array) $comparison['runs']['b']['context'];
 		$differing = array_column( $comparison['guard']['differences'], 'field' );
 
-		$rows = [];
+		$rows   = [];
+		$labels = array_column( $comparison['guard']['differences'], 'label', 'field' ) + self::CONTEXT_LABELS;
+		// Known fields in order, then any the Manager added since, so a differing field is never hidden.
+		$fields = array_unique( array_merge( array_keys( self::CONTEXT_LABELS ), array_keys( array_merge( $a_context, $b_context ) ) ) );
 
-		foreach ( self::CONTEXT_LABELS as $field => $label ) {
-			$a_value = $a_context[ $field ] ?? '';
-			$b_value = $b_context[ $field ] ?? '';
+		foreach ( $fields as $field ) {
+			$label   = (string) ( $labels[ $field ] ?? $field );
+			$a_value = (string) ( $a_context[ $field ] ?? '' );
+			$b_value = (string) ( $b_context[ $field ] ?? '' );
 
 			if ( $a_value === '' && $b_value === '' ) {
 				continue;
@@ -507,8 +532,8 @@ HELP
 			return sprintf(
 				'    %s <fg=gray>(%s -> %s)</>',
 				OutputFormatter::escape( $probe['probe'] ),
-				$probe['a'],
-				$probe['b']
+				OutputFormatter::escape( (string) $probe['a'] ),
+				OutputFormatter::escape( (string) $probe['b'] )
 			);
 		}, $canary['probes']['changed'] );
 

@@ -167,5 +167,6 @@
     "annotations": 1,
     "regressions": 1
   },
-  "has_regressions": true
+  "has_regressions": true,
+  "report_url": "https://qit.woo.com/?qit_compare=1001.abc~1002.def"
 }

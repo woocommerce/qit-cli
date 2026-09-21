@@ -41,3 +41,5 @@ Nothing in: Other status changes.
 
 0 test(s) unchanged.
 The candidate introduced 1 failure(s).
+
+Report: https://qit.woo.com/?qit_compare=1001.abc~1002.def
