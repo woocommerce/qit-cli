@@ -65,7 +65,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->compare( [ '--limit' => '2' ] );
 
-		$this->assertStringContainsString( 'Introduced failures (5)', $this->display() );
+		$this->assertStringContainsString( 'Newly failing (5)', $this->display() );
 		$this->assertStringContainsString( '... and 3 more. Use --limit=0 to show all.', $this->display() );
 		$this->assertStringNotContainsString( 'plugin-4', $this->display() );
 	}
@@ -83,7 +83,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->assertSame( Command::SUCCESS, $this->compare() );
 
-		foreach ( [ 'Ecosystem canary findings', 'Introduced (1)', 'Moved between probes (1)', 'Not looked for in run B (1)', 'Resolved (0)', 'Probe state changes (1)', 'could not be judged' ] as $expected ) {
+		foreach ( [ 'Ecosystem canary findings', 'Introduced (1)', 'Moved between probes (1)', 'Not looked for on the candidate (1)', 'Nothing in: Resolved', 'Probe state changes (1)', 'could not be judged' ] as $expected ) {
 			$this->assertStringContainsString( $expected, $this->display() );
 		}
 	}
@@ -94,7 +94,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 		$this->compare();
 
 		$this->assertStringContainsString( 'Moved between probes (1)', $this->display() );
-		$this->assertStringContainsString( 'No failures introduced by run B.', $this->display() );
+		$this->assertStringContainsString( 'No failures introduced by the candidate.', $this->display() );
 	}
 
 	public function test_the_report_reconciles_a_move_with_the_test_buckets(): void {
@@ -110,7 +110,7 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->compare();
 
-		$this->assertStringContainsString( 'Run B introduced 1 canary finding(s) and 1 unexplained failure(s).', $this->display() );
+		$this->assertStringContainsString( 'The candidate introduced 1 canary finding(s) and 1 unexplained failure(s).', $this->display() );
 	}
 
 	public function test_the_summary_names_findings_when_that_is_all_there_is(): void {
@@ -118,7 +118,20 @@ class CompareCommandTest extends \QIT_CLI_Tests\QITTestCase {
 
 		$this->compare();
 
-		$this->assertStringContainsString( 'Run B introduced 2 canary finding(s).', $this->display() );
+		$this->assertStringContainsString( 'The candidate introduced 2 canary finding(s).', $this->display() );
+	}
+
+	public function test_runs_that_cannot_be_compared_end_without_a_verdict(): void {
+		$document                        = $this->document( 'human-output' );
+		$document['guard']['comparable'] = false;
+		$document['guard']['warnings']   = [ 'The runs used different canary profiles (hpos against synthetic).' ];
+		$this->mock_manager( $document );
+
+		$this->compare();
+
+		$this->assertStringContainsString( 'Warning: The runs used different canary profiles (hpos against synthetic).', $this->display() );
+		$this->assertStringContainsString( 'Not comparable: the runs differ in more than the version under test', $this->display() );
+		$this->assertStringNotContainsString( 'introduced', $this->display() );
 	}
 
 	public function test_json_output_is_the_managers_document(): void {
